@@ -13,6 +13,7 @@ import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_group_drawer.dart';
 import 'package:xta/home/home_timeline_picker.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 
 /// Both Home entry points use the same live selection surface.
@@ -46,7 +47,7 @@ Future<HomeTimelineSelection?> showHomeSourcePicker(BuildContext context) async 
                     HomeTimelineOption(
                       id: source.id.id,
                       label: source.titleBuilder(context),
-                      mark: source.mark ?? Icon(source.icon),
+                      mark: source.markAt(homeTimelineMarkSize),
                       plugin: source.id.isPlugin,
                       unread: unread.contains(
                         source.id == FeedTab.following
@@ -62,7 +63,7 @@ Future<HomeTimelineSelection?> showHomeSourcePicker(BuildContext context) async 
                     HomeTimelineOption(
                       id: group.id,
                       label: group.name,
-                      mark: GroupMark.forGroup(group, size: 24),
+                      mark: GroupMark.forGroup(group, size: homeTimelineMarkSize * pluginMarkLiveShare),
                       plugin: false,
                       unread: unread.contains(group.id),
                     ),

@@ -5,8 +5,12 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
-const double kGroupControlBarHeight = 56;
+const double kGroupControlBarHeight = kTweetTouchTarget;
 const double kGroupControlRadius = 12;
+const double kGroupTitleMarkSize = 32;
+
+/// The name's size when a member count sits under it: two lines have to share a toolbar the one title had alone.
+const double kGroupTitleNameSize = 17;
 
 int groupActiveFilterCount(SubscriptionGroupGet group) {
   if (!group.custom) return 0;
@@ -55,23 +59,15 @@ class GroupFeedControlBar extends StatelessWidget
     final background =
         XLookTokens.maybeOf(context)?.background ??
         Theme.of(context).scaffoldBackgroundColor;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        border: Border(
-          bottom: BorderSide(
-            color: tweetDividerColor(context),
-            width: kTweetDividerThickness,
-          ),
-        ),
-      ),
+    // The feed shell draws the divider under this bar.
+    return ColoredBox(
+      color: background,
       child: SizedBox(
         height: kGroupControlBarHeight,
         child: ListView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(
             horizontal: kTweetHorizontalPadding,
-            vertical: kTweetSpace1,
           ),
           children: [
             _GroupChoice(
@@ -170,6 +166,88 @@ class _GroupChoice extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
       child: chip,
+    );
+  }
+}
+
+/// A group's mark beside its name, with the member count under the name.
+///
+/// The app bar title of every group feed, so the count needs no row of its own
+/// below the toolbar. [trailing] follows the name on its line.
+class GroupTitleLabel extends StatelessWidget {
+  final String name;
+  final Widget? mark;
+  final String? subtitle;
+  final List<Widget> trailing;
+
+  const GroupTitleLabel({
+    super.key,
+    required this.name,
+    this.mark,
+    this.subtitle,
+    this.trailing = const [],
+  });
+
+  /// The mark only shows when the name keeps at least two touch targets' width beside it.
+  static const double markMinWidth =
+      kGroupTitleMarkSize + kTweetSpace3 + 2 * kTweetTouchTarget;
+
+  @override
+  Widget build(BuildContext context) {
+    final mark = this.mark;
+    return LayoutBuilder(
+      builder: (context, constraints) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (mark != null && constraints.maxWidth >= markMinWidth) ...[
+            mark,
+            const SizedBox(width: kTweetSpace3),
+          ],
+          Flexible(child: _lines(context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _lines(BuildContext context) {
+    final theme = Theme.of(context);
+    final titleStyle =
+        theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge;
+    final subtitle = this.subtitle;
+    final nameStyle = subtitle == null
+        ? titleStyle
+        : titleStyle?.copyWith(fontSize: kGroupTitleNameSize);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: nameStyle,
+              ),
+            ),
+            DefaultTextStyle.merge(
+              style: nameStyle,
+              child: Row(mainAxisSize: MainAxisSize.min, children: trailing),
+            ),
+          ],
+        ),
+        if (subtitle != null)
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
     );
   }
 }

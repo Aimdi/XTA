@@ -129,6 +129,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivAccessExpiresAt, '');
     await prefs.set(optionPluginPixivUserId, 0);
     await prefs.set(optionPluginPixivShowR18, false);
+    await prefs.set(optionPluginPixivHideAi, false);
     await prefs.set(optionPluginPixivMutedAuthors, '[]');
     await prefs.set(optionPluginPixivMutedTags, '[]');
     await prefs.set(optionPluginPixivMutedIllusts, '[]');

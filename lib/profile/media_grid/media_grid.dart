@@ -35,16 +35,18 @@ MediaGridConfig mediaGridConfigOf(BuildContext context) {
   final layout =
       prefs.get<String>(optionMediaGridLayout) ?? mediaGridLayoutMasonry;
   final mediaRadius = tweetMediaRadiusOf(context);
+  // Home's pages scroll on behind its floating bar.
+  final bottom = MediaQuery.paddingOf(context).bottom;
   return switch (layout) {
     mediaGridLayoutFeed => (
       columns: 1,
       spacing: kTweetSpace3,
       radius: mediaRadius,
-      padding: const EdgeInsetsDirectional.fromSTEB(
+      padding: EdgeInsetsDirectional.fromSTEB(
         kTweetSpace4,
         kTweetSpace2,
         kTweetSpace4,
-        kTweetSpace4,
+        kTweetSpace4 + bottom,
       ),
       minAspectRatio: kMediaMinAspect,
       maxAspectRatio: kMediaMaxAspect,
@@ -53,7 +55,12 @@ MediaGridConfig mediaGridConfigOf(BuildContext context) {
       columns: 2,
       spacing: kTweetSpace2,
       radius: mediaRadius.clamp(8.0, 12.0).toDouble(),
-      padding: const EdgeInsets.all(kTweetSpace2),
+      padding: EdgeInsets.fromLTRB(
+        kTweetSpace2,
+        kTweetSpace2,
+        kTweetSpace2,
+        kTweetSpace2 + bottom,
+      ),
       minAspectRatio: kMediaMinAspect,
       maxAspectRatio: 3 / 2,
     ),
@@ -63,7 +70,12 @@ MediaGridConfig mediaGridConfigOf(BuildContext context) {
           .toInt(),
       spacing: kTweetMediaGap,
       radius: mediaRadius.clamp(6.0, 8.0).toDouble(),
-      padding: const EdgeInsets.all(kTweetMediaGap),
+      padding: EdgeInsets.fromLTRB(
+        kTweetMediaGap,
+        kTweetMediaGap,
+        kTweetMediaGap,
+        kTweetMediaGap + bottom,
+      ),
       minAspectRatio: 3 / 5,
       maxAspectRatio: 2,
     ),
@@ -148,14 +160,8 @@ class _MediaGridState extends State<MediaGrid>
           )
         : mediaGridConfigOf(context);
 
-    return ReadRecovery(
-      changes: widget.controller,
-      isLoading: () => widget.controller.value.isLoading,
-      recoverableFailure: () => recoverableReadFailure(
-        pagingErrorOf(widget.controller.value)?.error ??
-            widget.controller.value.error,
-      ),
-      retry: widget.controller.fetchNextPage,
+    return PagingReadRecovery(
+      controller: widget.controller,
       child: RefreshIndicator(
         onRefresh: () async => widget.controller.refresh(),
         child: PagingListener<int, MediaGridItem>(

@@ -1,5 +1,6 @@
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:xta/ui/read_failure_kind.dart';
+import 'package:xta/ui/reader_failure.dart' show ScheduledReadRetry;
 import 'dart:async';
 import 'dart:io' show Platform, SocketException;
 
@@ -16,6 +17,7 @@ import 'package:xta/client/login_webview.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
+import 'package:xta/ui/snack_bar_policy.dart';
 
 /// Snackbar for work already under way, with a small spinner in place of an
 /// icon so a slow download does not look like a frozen one.
@@ -25,8 +27,7 @@ import 'package:xta/settings/diagnostics_screen.dart';
 ///
 /// The spinner takes no colour, so it picks up the accent from whichever theme
 /// the snackbar is shown in.
-SnackBar workingSnackBar(String message) => SnackBar(
-      duration: const Duration(minutes: 2),
+SnackBar workingSnackBar(String message) => WorkingSnackBar(
       content: Row(
         children: [
           const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
@@ -88,7 +89,11 @@ class ErrorLayout extends StatelessWidget {
           constraints: BoxConstraints(minHeight: constraints.hasBoundedHeight ? constraints.maxHeight : 0),
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: children),
+            // A surface that retries on its own says so below its buttons.
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [...children, const ScheduledReadRetry()],
+            ),
           ),
         ),
       ),

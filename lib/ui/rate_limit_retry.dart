@@ -35,6 +35,9 @@ DateTime? knownRateLimitReset(Object? error, List<Map<String, DateTime>> account
   return resets.reduce((a, b) => a.isBefore(b) ? a : b);
 }
 
+/// `m:ss` for a wait the reader watches count down.
+String formatRetryCountdown(int seconds) => '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+
 Future<DateTime?> readRateLimitReset(Object? error) async {
   final now = DateTime.now();
   if (error is HttpException) return knownRateLimitReset(error, const [], now);
@@ -125,9 +128,7 @@ class _RateLimitRetryButtonState extends State<RateLimitRetryButton> with Widget
       icon: const Icon(Icons.refresh),
       onPressed: seconds > 0 ? null : widget.onRetry,
       label: Text(
-        seconds > 0
-            ? L10n.of(context).reader_retry_in('${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}')
-            : L10n.of(context).retry,
+        seconds > 0 ? L10n.of(context).reader_retry_in(formatRetryCountdown(seconds)) : L10n.of(context).retry,
       ),
     ),
   );

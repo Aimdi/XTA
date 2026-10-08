@@ -6,6 +6,8 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/utils/read_visibility.dart';
 
+const _threeSteps = [Duration(seconds: 2), Duration(seconds: 5), Duration(seconds: 15)];
+
 void main() {
   setUp(() {
     VisibilityDetectorController.instance.updateInterval = Duration.zero;
@@ -28,6 +30,7 @@ void main() {
         body: ReadRecovery(
           networkEvents: signals.stream,
           changes: changes,
+          retryDelays: _threeSteps,
           isLoading: () => loading,
           recoverableFailure: () => failure,
           retry: () {
@@ -274,6 +277,7 @@ class _RecoveryHarness {
       body: ReadRecovery(
         networkStates: network.stream,
         changes: changes,
+        retryDelays: _threeSteps,
         isLoading: () => loading,
         recoverableFailure: () => failure,
         retry: retry,

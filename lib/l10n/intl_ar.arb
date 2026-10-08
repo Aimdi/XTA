@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "يمكن للتطبيقات الأخرى تشغيل الصوت في الخلفية عند تشغيل هذا التطبيق",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "التدوين المصغّر",
+  "alt_microblogging": "Mastodon & Bluesky",
   "@alt_microblogging": {},
   "alt_microblogging_group": "تجميع خدمات التدوين المصغّر",
   "@alt_microblogging_group": {},
@@ -1284,6 +1284,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "إضافة موقع booru",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "إضافة وسم",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "إضافة إلى البحث الحالي",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1300,8 +1304,16 @@
   },
   "plugin_booru_clear_history": "Clear search history",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "مسح الوسوم",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "تعديل كنص",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "انقر للتعديل",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "أو",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Follow tags from search or a post to fill this tab",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "No recent posts for your followed tags",
@@ -1332,16 +1344,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Follow tag",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "Following {tag}",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "استبعاد",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "Host URL",
@@ -1378,6 +1382,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Open video",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "الأعلى نقاطًا",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
@@ -1398,8 +1404,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "انقر للإضافة إلى البحث · اضغط مطولًا للاستبعاد",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "وسوم ذات صلة",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "إزالة الموقع",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "حفظ البحث",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "عمليات البحث المحفوظة",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1414,6 +1428,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "No recent searches yet",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "تم حفظ البحث — ستظهر المنشورات الجديدة في «{tab}»",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
@@ -1432,8 +1454,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Suggestions",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
@@ -1476,6 +1496,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "إزالة من عمليات البحث المحفوظة",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "يتم عرض آخر قائمة تم جلبها",
@@ -3614,5 +3636,51 @@
   "@sync_unsafe_server": {},
   "sync_history": "النسخ الاحتياطية السابقة",
   "@sync_history": {},
-  "home_keep_controls_visible": "إبقاء عناصر التحكم ظاهرة"
+  "home_keep_controls_visible": "إبقاء عناصر التحكم ظاهرة",
+  "reader_auto_retry_seconds": "ستتم إعادة المحاولة بعد {seconds} ث…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "ستتم إعادة المحاولة بعد {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_download_page": "تنزيل هذه الصفحة",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "تنزيل كل الصفحات",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "كل الصفحات",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "نسخ الرابط",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "تم نسخ الرابط",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "إجراءات أخرى",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "الصفحة {current} من {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "جارٍ تنزيل الصفحة {current} من {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "المزيد من {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "تشغيل الرسم المتحرك",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "إيقاف الرسم المتحرك مؤقتًا",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "إخفاء الأعمال المولّدة بالذكاء الاصطناعي",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "يُخفي الأعمال التي وسمها أصحابها بأنها مولّدة بالذكاء الاصطناعي. تبقى إشاراتك ظاهرة دائمًا.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "ذكاء اصطناعي",
+  "@plugin_pixiv_ai": {}
 }

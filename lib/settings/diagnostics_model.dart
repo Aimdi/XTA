@@ -28,12 +28,9 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
       final now = DateTime.now();
       final probes = <DiagnosticsProbe>[];
       final packageInfo = await _probe(probes, 'android platform call', PackageInfo.fromPlatform);
-      final accounts = await _probe(probes, 'database read (read-only connection)', getAccounts);
-      await _probe(probes, 'database read (writable connection)', () async {
-        await (await Repository.writable()).rawQuery('SELECT 1');
-      });
+      final accounts = await _probe(probes, 'database read', getAccounts);
       // A transaction that changes nothing: it needs the same write lock a like or a group change needs.
-      await _probe(probes, 'database save (writable connection)', () async {
+      await _probe(probes, 'database save', () async {
         await (await Repository.writable()).transaction((txn) => txn.rawQuery('SELECT 1'));
       });
       probes.add(DiagnosticsProbe('android main thread', failure: await mainThreadStallSummary()));

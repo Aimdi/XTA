@@ -15,8 +15,16 @@ direction to existing plugin navigation.
   row. Preserve inner filter controls, safe areas, Back and reader state.
 - Retain 48dp touch targets and permit extra height for very large text.
   Preserve service marks, localization and existing light/dark/true-black themes.
-- Substack remains the visual reference; X and Reddit retain their specialized
-  Home controls at the same compact toolbar height.
+- Substack remains the visual reference. X and Reddit use the same Home row as
+  Pixiv and Hacker News: service mark as source picker, sections when the
+  source has them (Reddit: Following, Popular, All), search as the visible
+  primary action, and the options button. X's library destinations and its
+  timeline actions (search loaded posts, refresh, Home feed accounts, with the
+  attention dot while accounts or groups are filtered) move into options; X
+  needs no Open client entry there. Reddit's sort, saved, communities, reading
+  route and settings join options, and its followed-community chips move there
+  instead of adding a row above the feed. Only Following keeps its own app bar
+  and reading controls.
 
 Scope is shared presentation and Home hosting. No API, persistence, dependency,
 posting capability, plugin membership or release changes.

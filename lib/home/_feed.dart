@@ -39,10 +39,12 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
-import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
+typedef FeedTabMarkBuilder = Widget Function(double size);
+
+Widget _xMark(double size) => pluginMark(coreXPlugin, size: size);
 
 /// One entry on the home feed strip (Following, For you, or a pinned plugin).
 ///
@@ -83,9 +85,12 @@ class FeedTabOption {
   final FeedTab id;
   final FeedTabTitleBuilder titleBuilder;
   final IconData? icon;
-  final Widget? mark;
+  final FeedTabMarkBuilder? markBuilder;
 
-  FeedTabOption(this.id, this.titleBuilder, {this.icon, this.mark});
+  FeedTabOption(this.id, this.titleBuilder, {this.icon, this.markBuilder});
+
+  /// The mark drawn at [size], for rows that give it a bigger box than the strip.
+  Widget markAt(double size) => markBuilder?.call(size) ?? markIcon(icon ?? id.icon, size: size);
 }
 
 /// House for Following, spark for For you — matches the chip-style tab row.
@@ -95,7 +100,7 @@ const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
   FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
+  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close, markBuilder: _xMark),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -106,7 +111,7 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
 List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
     FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
+    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close, markBuilder: _xMark),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
     if (pluginId == pluginIdX) continue;
@@ -115,7 +120,12 @@ List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefSer
       continue;
     }
     options.add(
-      FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c), icon: plugin.icon, mark: pluginMark(plugin, size: 16)),
+      FeedTabOption(
+        FeedTab(pluginId),
+        (c) => plugin.title(c),
+        icon: plugin.icon,
+        markBuilder: (size) => pluginMark(plugin, size: size),
+      ),
     );
   }
   return List.unmodifiable(options);
@@ -277,10 +287,6 @@ class _FeedScreenState extends State<FeedScreen> {
       _stripStore = strip;
       _lastStripPlugins = List<String>.from(strip.state);
       _disposeStripObserver = strip.observer(onState: _onStripChanged);
-      strip.seedEnabled();
-      // Hidden-tab plugins used to live as Groups chips. Pin them here so
-      // switching sites stays on the home strip.
-      strip.pinHiddenTabs();
     }
 
     final filter = context.read<HomeAccountFilterStore>();
@@ -471,6 +477,33 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
+  int get _filteredCount => _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
+
+  /// Search loaded, refresh and the account filter, shared by Following and X.
+  /// Toolbar and pull-to-refresh share the registered feed operation.
+  List<Widget> _timelineActions(BuildContext context, {required bool refresh}) {
+    final filtered = _filteredCount;
+    return defaultGroupActions(
+      context,
+      model: context.read<GroupModel>(),
+      showMore: false,
+      showRefresh: refresh,
+      onRefresh: () => context.read<FeedRefreshController>().refresh(),
+      showSettings: false,
+      extra: [
+        IconButton(
+          tooltip: L10n.of(context).home_feed_accounts,
+          icon: Badge.count(
+            count: filtered,
+            isLabelVisible: filtered > 0,
+            child: Icon(filtered > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
+          ),
+          onPressed: () => showHomeAccountFilterSheet(context),
+        ),
+      ],
+    );
+  }
+
   String _unreadKeyFor(FeedTab tab) {
     if (tab == FeedTab.following) {
       return feedKeyFollowing;
@@ -521,17 +554,21 @@ class _FeedScreenState extends State<FeedScreen> {
       });
     }
 
-    final docked = tab.isPlugin && tab != FeedTab.x && tab != FeedTab.reddit;
+    final docked = tab.isPlugin;
     final activePlugin = pluginById(tab.id);
+    // X's library destinations in its options already reach its whole client.
+    final client = tab == FeedTab.x ? null : activePlugin;
     return PluginHomeDockScope(
       store: _dock,
       source: tab.id,
       enabled: docked,
       compact: true,
-      openClientLabel: activePlugin == null ? '' : L10n.of(context).plugin_open_client(activePlugin.title(context)),
-      onOpenClient: () {
-        if (mounted && activePlugin != null) openPluginClient(context, activePlugin);
-      },
+      openClientLabel: client == null ? '' : L10n.of(context).plugin_open_client(client.title(context)),
+      onOpenClient: client == null
+          ? null
+          : () {
+              if (mounted) openPluginClient(context, client);
+            },
       child: GroupFeedShell(
         key: ValueKey('home-shell-${widget.id}'),
         scrollController: widget.scrollController,
@@ -589,83 +626,19 @@ class _FeedScreenState extends State<FeedScreen> {
               )
             : null,
         leading: const DrawerAvatarButton(),
+        // Only Following still uses the app bar; plugin sources draw toolbarBuilder.
         titleBuilder: (context) {
           final source = available.firstWhere((option) => option.id == tab);
-          return ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
-            store: _dock,
-            onState: (context, _) {
-              final sections = _dock.content(tab.id, 'navigation')?.tabs;
-              final section = sections?.where((section) => section.selected).firstOrNull;
-              return GroupUnreadScope(
-                builder: (context, unreadIds) => HomeTimelineTitle(
-                  label: source.titleBuilder(context),
-                  sectionLabel: docked ? section?.label : null,
-                  mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
-                  unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
-                  onPressed: () => _pickSource(context),
-                ),
-              );
-            },
+          return GroupUnreadScope(
+            builder: (context, unreadIds) => HomeTimelineTitle(
+              label: source.titleBuilder(context),
+              mark: source.markAt(22),
+              unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
+              onPressed: () => _pickSource(context),
+            ),
           );
         },
-        actionsBuilder: (context) {
-          if (docked) return const [];
-          // Reddit brings its own bar: sorting, search and adding a subreddit
-          // are what this feed is steered with, and the generic feed actions
-          // steer nothing here. Its overflow carries the app settings so they
-          // stay reachable from this tab too.
-          if (tab == FeedTab.reddit) {
-            return [
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
-                child: RedditFeedActions(
-                  showAppSettings: true,
-                  onOpenClient: () => openPluginClient(context, pluginById(tab.id)!),
-                ),
-              ),
-            ];
-          }
-
-          if (tab.isPlugin && tab != FeedTab.x) {
-            final plugin = pluginById(tab.id)!;
-            return [
-              HomeAppBarActions(
-                children: [
-                  IconButton(
-                    key: ValueKey('open-client-${plugin.id}'),
-                    tooltip: L10n.of(context).plugin_open_client(plugin.title(context)),
-                    icon: const Icon(Icons.open_in_new),
-                    onPressed: () => openPluginClient(context, plugin),
-                  ),
-                ],
-              ),
-            ];
-          }
-
-          // Toolbar and pull-to-refresh share the registered feed operation.
-          final model = context.read<GroupModel>();
-          final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
-          final actions = defaultGroupActions(
-            context,
-            model: model,
-            showMore: false,
-            showRefresh: tab == FeedTab.foryou,
-            onRefresh: () => context.read<FeedRefreshController>().refresh(),
-            showSettings: false,
-            extra: [
-              IconButton(
-                tooltip: L10n.of(context).home_feed_accounts,
-                icon: Badge.count(
-                  count: disabledCount,
-                  isLabelVisible: disabledCount > 0,
-                  child: Icon(disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
-                ),
-                onPressed: () => showHomeAccountFilterSheet(context),
-              ),
-            ],
-          );
-          return [HomeAppBarActions(children: actions)];
-        },
+        actionsBuilder: (context) => [HomeAppBarActions(children: _timelineActions(context, refresh: false))],
         bodyBuilder: (context) => HomeReadingViewport(
           store: _dock.controls,
           source: tab.id,
@@ -679,6 +652,16 @@ class _FeedScreenState extends State<FeedScreen> {
                 visible: _view.state.controlsVisible && tab == FeedTab.following,
                 child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
               ),
+              if (tab == FeedTab.x)
+                PluginDockContribution(
+                  key: const ValueKey('home-x-timeline-actions'),
+                  slot: 'reading',
+                  content: PluginDockContent(
+                    actions: _timelineActions(context, refresh: true),
+                    attention: _filteredCount > 0,
+                  ),
+                  fallback: const SizedBox.shrink(),
+                ),
             ],
           ),
           child: NotificationListener<ScrollMetricsNotification>(

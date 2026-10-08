@@ -8,6 +8,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/deck_groups.dart';
 import 'package:xta/group/feed_refresh_controller.dart';
+import 'package:xta/group/group_feed_title.dart';
 import 'package:xta/group/group_model.dart' show GroupModel, GroupsModel;
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/ui/reader_chrome.dart';
@@ -86,7 +87,7 @@ class _DeckColumnState extends State<_DeckColumn> {
         child: GroupFeedShell(
           scrollController: _scrollController,
           groupId: widget.group.id,
-          titleBuilder: (context) => Text(widget.group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+          titleBuilder: (context) => GroupFeedTitle(name: widget.group.name, groupId: widget.group.id),
           bodyBuilder: (context) => SubscriptionGroupScreenContent(id: widget.group.id),
           actionsBuilder: (context) => const [],
         ),

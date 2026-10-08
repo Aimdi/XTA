@@ -9,6 +9,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
+import 'package:xta/plugins/booru/booru_query.dart';
 
 enum BooruErrorKind {
   notConfigured,
@@ -90,14 +91,7 @@ class BooruClient {
     String query, {
     int page = 1,
     int limit = defaultPageSize,
-  }) {
-    final tags = query
-        .trim()
-        .split(RegExp(r'\s+'))
-        .where((t) => t.isNotEmpty)
-        .toList(growable: false);
-    return posts(tags: tags, page: page, limit: limit);
-  }
+  }) => posts(tags: booruQueryTokens(query), page: page, limit: limit);
 
   Future<BooruPostPage> posts({
     required List<String> tags,
@@ -151,17 +145,22 @@ class BooruClient {
     }
   }
 
-  /// One page per tag query, newest-first merge for interleaved feeds.
+  /// One page per followed tag or saved search, newest-first merge for
+  /// interleaved feeds.
   Future<List<BooruPost>> postsForTags(
     Iterable<String> tags, {
     int limitPerTag = 10,
   }) async {
-    final unique = <String>{for (final tag in tags) ?normaliseBooruTag(tag)};
+    final unique = <String>{for (final tag in tags) ?normaliseBooruQuery(tag)};
     if (unique.isEmpty) return const [];
 
     final pages = await Future.wait([
-      for (final tag in unique)
-        posts(tags: [tag], page: 1, limit: limitPerTag).catchError(
+      for (final query in unique)
+        posts(
+          tags: booruQueryTokens(query),
+          page: 1,
+          limit: limitPerTag,
+        ).catchError(
           (_) => const BooruPostPage(posts: [], page: 1, hasMore: false),
         ),
     ]);

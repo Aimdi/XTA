@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -58,9 +59,18 @@ class _Client extends RedditClient {
   }
 }
 
-Widget _app(Widget child) {
+Future<void> _noRefresh() async {}
+
+/// The actions laid out the way the standalone bar lays them out.
+Widget _actions({VoidCallback? onOpenSaved, Future<void> Function()? onRefresh}) => RedditFeedActions(
+  onRefresh: onRefresh ?? _noRefresh,
+  onOpenSaved: onOpenSaved ?? () {},
+  builder: (actions) => Row(mainAxisSize: MainAxisSize.min, children: actions),
+);
+
+Widget _app(Widget child, {BasePrefService? prefs}) {
   return PrefService(
-    service: PrefServiceCache(),
+    service: prefs ?? PrefServiceCache(),
     child: MaterialApp(
       localizationsDelegates: const [
         L10n.delegate,
@@ -90,10 +100,14 @@ void main() {
               context,
               MaterialPageRoute(
                 builder: (_) => Scaffold(
-                  body: RedditHomeChrome(
-                    source: const RedditHomeSource(mode: RedditFeedMode.following),
-                    onMode: (_) {},
-                    actions: [RedditFeedActions(onOpenSaved: () => saved++)],
+                  body: RedditFeedActions(
+                    onRefresh: _noRefresh,
+                    onOpenSaved: () => saved++,
+                    builder: (actions) => RedditHomeChrome(
+                      source: const RedditHomeSource(mode: RedditFeedMode.following),
+                      onMode: (_) {},
+                      actions: actions,
+                    ),
                   ),
                 ),
               ),
@@ -118,27 +132,59 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Reddit chrome has search, not a plus next to it', (tester) async {
-    await tester.pumpWidget(_app(const RedditFeedActions()));
+  testWidgets('Reddit chrome leads with search, then sort and one menu, not a plus', (tester) async {
+    await tester.pumpWidget(_app(_actions()));
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.search), findsOneWidget);
+    final search = find.byIcon(Icons.search);
+    final sort = find.byTooltip('Sort');
+    final menu = find.byIcon(Icons.more_vert);
+    expect(search, findsOneWidget);
+    expect(sort, findsOneWidget);
+    expect(menu, findsOneWidget);
+    // Home keeps the first action visible beside its options button.
+    expect(tester.getCenter(search).dx, lessThan(tester.getCenter(sort).dx));
+    expect(tester.getCenter(sort).dx, lessThan(tester.getCenter(menu).dx));
     expect(find.byIcon(Icons.add), findsNothing);
-    expect(find.byIcon(Icons.list), findsOneWidget);
-    expect(find.byIcon(Icons.more_vert), findsOneWidget);
+    expect(find.byIcon(Icons.list), findsNothing, reason: 'Communities live in the menu.');
   });
 
-  testWidgets('overflow offers settings, not Reddit sign-in', (tester) async {
-    await tester.pumpWidget(_app(const RedditFeedActions()));
+  testWidgets('overflow offers saved, communities and settings, not Reddit sign-in', (tester) async {
+    await tester.pumpWidget(_app(_actions()));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.more_vert));
     await tester.pumpAndSettle();
 
     expect(find.text('Sign in to Reddit'), findsNothing);
+    expect(find.text('Saved'), findsOneWidget);
+    expect(find.text('Subscriptions'), findsOneWidget);
     expect(find.text('Reddit · Settings'), findsOneWidget);
     expect(find.text('Best available'), findsOneWidget);
     expect(find.text('Without an account'), findsOneWidget);
+    expect(find.text('Settings'), findsNothing, reason: 'App settings stay in the drawer.');
+    expect(find.text('Open Reddit'), findsNothing, reason: 'Home adds the full-client entry itself.');
+  });
+
+  testWidgets('choosing how Reddit is read stores it and refetches the visible feed', (tester) async {
+    final prefs = PrefServiceCache();
+    var refreshes = 0;
+    await tester.pumpWidget(_app(_actions(onRefresh: () async => refreshes++), prefs: prefs));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Without an account'));
+    await tester.pumpAndSettle();
+    expect(prefs.get<String>(optionPluginRedditSource), redditSourcePublic);
+    expect(refreshes, 1);
+
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    final public = tester.widget<ListTile>(
+      find.ancestor(of: find.text('Without an account'), matching: find.byType(ListTile)),
+    );
+    expect(public.trailing, isA<Icon>());
   });
 
   testWidgets('the list sheet opens a community when its row is tapped', (tester) async {
@@ -164,14 +210,16 @@ void main() {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: L10n.delegate.supportedLocales,
-            home: Scaffold(appBar: AppBar(actions: [RedditFeedActions()])),
+            home: Scaffold(appBar: AppBar(actions: [_actions()])),
           ),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.list));
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Subscriptions'));
     await tester.pumpAndSettle();
 
     expect(find.text('Your communities'), findsOneWidget);

@@ -41,6 +41,12 @@ class PixivIllust {
   final String thumbnailUrl;
   final String? largeUrl;
   final List<String> pageUrls;
+
+  /// Per-page full-resolution files, index-aligned with [viewerUrls].
+  final List<String> originalUrls;
+
+  /// Per-page small previews for the page overview, index-aligned with [viewerUrls].
+  final List<String> pageThumbUrls;
   final List<PixivTag> tags;
   final int pageCount;
   final int width;
@@ -53,6 +59,9 @@ class PixivIllust {
   final int totalBookmarks;
   final int totalViews;
   final bool isR18;
+
+  /// The creator marked the work as AI-generated.
+  final bool isAi;
   final bool isBookmarked;
 
   const PixivIllust({
@@ -67,6 +76,8 @@ class PixivIllust {
     required this.userAccount,
     this.largeUrl,
     this.pageUrls = const [],
+    this.originalUrls = const [],
+    this.pageThumbUrls = const [],
     this.tags = const [],
     this.width = 0,
     this.height = 0,
@@ -75,6 +86,7 @@ class PixivIllust {
     this.totalBookmarks = 0,
     this.totalViews = 0,
     this.isR18 = false,
+    this.isAi = false,
     this.isBookmarked = false,
   });
 
@@ -87,6 +99,8 @@ class PixivIllust {
         thumbnailUrl: thumbnailUrl,
         largeUrl: largeUrl,
         pageUrls: pageUrls,
+        originalUrls: originalUrls,
+        pageThumbUrls: pageThumbUrls,
         tags: tags,
         pageCount: pageCount,
         width: width,
@@ -99,6 +113,7 @@ class PixivIllust {
         totalBookmarks: totalBookmarks ?? this.totalBookmarks,
         totalViews: totalViews,
         isR18: isR18,
+        isAi: isAi,
         isBookmarked: isBookmarked ?? this.isBookmarked,
       );
 
@@ -126,6 +141,18 @@ class PixivIllust {
       return [large];
     }
     return [thumbnailUrl];
+  }
+
+  /// The file to save for [page]: the original when Pixiv sent one.
+  String downloadUrlAt(int page) => _alignedOr(originalUrls, page);
+
+  /// A light preview of [page] for thumbnails.
+  String thumbUrlAt(int page) => _alignedOr(pageThumbUrls, page);
+
+  String _alignedOr(List<String> urls, int page) {
+    final pages = viewerUrls;
+    final index = page.clamp(0, pages.length - 1);
+    return urls.length == pages.length && urls[index].isNotEmpty ? urls[index] : pages[index];
   }
 }
 
@@ -261,6 +288,33 @@ String? _pageImageUrl(Json page) {
       urls['square_medium'].string;
 }
 
+String? _pageOriginalUrl(Json page) =>
+    page['image_urls']['original'].string ?? _pageImageUrl(page);
+
+/// Page preview — the aspect-preserving `medium`, since overview tiles are page-shaped.
+String? _pageThumbUrl(Json page) {
+  final urls = page['image_urls'];
+  return urls['medium'].string ?? urls['square_medium'].string ?? _pageImageUrl(page);
+}
+
+/// Every page through [pick], or the single-page fallback when it yields none.
+List<String> _perPage(Json illust, String? Function(Json page) pick, String? single) {
+  final pages = illust['meta_pages'].list;
+  if (pages.isNotEmpty) {
+    return [for (final page in pages) ?pick(page)];
+  }
+  return single == null || single.isEmpty ? const [] : [single];
+}
+
+List<String> _originalUrlsOf(Json illust) => _perPage(
+  illust,
+  _pageOriginalUrl,
+  illust['meta_single_page']['original_image_url'].string ?? _largeImageUrl(illust),
+);
+
+List<String> _pageThumbUrlsOf(Json illust) =>
+    _perPage(illust, _pageThumbUrl, _pageThumbUrl(illust) ?? _firstImageUrl(illust));
+
 List<String> _pageUrlsOf(Json illust) {
   final pages = illust['meta_pages'].list;
   if (pages.isNotEmpty) {
@@ -308,6 +362,8 @@ PixivIllust? pixivIllustFromJson(Object? json) {
     thumbnailUrl: thumb,
     largeUrl: _largeImageUrl(data),
     pageUrls: _pageUrlsOf(data),
+    originalUrls: _originalUrlsOf(data),
+    pageThumbUrls: _pageThumbUrlsOf(data),
     tags: _tagsOf(data),
     pageCount: data['page_count'].integer ?? 1,
     width: data['width'].integer ?? 0,
@@ -320,6 +376,7 @@ PixivIllust? pixivIllustFromJson(Object? json) {
     totalBookmarks: data['total_bookmarks'].integer ?? 0,
     totalViews: data['total_view'].integer ?? 0,
     isR18: pixivIsR18(data),
+    isAi: data['illust_ai_type'].integer == 2,
     isBookmarked: data['is_bookmarked'].boolean == true,
   );
 }
@@ -358,13 +415,14 @@ double pixivDetailViewerHeight({
 List<PixivIllust> parsePixivIllustList(
   Object? json, {
   bool includeR18 = false,
+  bool includeAi = true,
 }) {
   final root = Json(json);
   final list = root['illusts'].list;
   return [
     for (final item in list)
       if (pixivIllustFromJson(item.raw) case final illust?)
-        if (includeR18 || !illust.isR18) illust,
+        if ((includeR18 || !illust.isR18) && (includeAi || !illust.isAi)) illust,
   ];
 }
 

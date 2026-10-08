@@ -2,12 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/x/x_plugin.dart' show pluginIdX;
+
+/// Share of a mark's box its glyph spans: Material's 20dp live area in a
+/// 24dp icon.
+///
+/// Material icons carry that padding in the font, and the few drawn smaller
+/// or larger are scaled to it; brand paths are drawn edge to edge, so they
+/// are fitted into it. Every kind of mark then reads the same size at the
+/// same [PluginBrandMark.size].
+const double pluginMarkLiveShare = 20 / 24;
 
 /// Service mark for a plugin — official glyphs where we have them, Material
 /// fallback otherwise.
 ///
 /// Path glyphs are Simple Icons (CC0). Bluesky reuses the butterfly already
 /// painted on cards so the strip and a mixed feed do not disagree.
+///
+/// The glyph keeps [size] in a bigger box too, centred in it.
 class PluginBrandMark extends StatelessWidget {
   final XtaPlugin plugin;
   final double size;
@@ -22,42 +34,99 @@ class PluginBrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tint = color ?? plugin.brandColor;
-    return switch (plugin.id) {
-      pluginIdBluesky => BlueskyButterflyIcon(size: size, color: tint),
-      pluginIdSubstack => _paint(_SubstackPainter(tint)),
-      pluginIdPixiv => _paint(_PathPainter(_pixiv, tint)),
-      pluginIdMastodon => _paint(_PathPainter(_mastodon, tint)),
-      pluginIdTiktok => _paint(_PathPainter(_tiktok, tint)),
-      pluginIdInstagram => _paint(_InstagramPainter(tint)),
-      pluginIdEhViewer => _paint(_EhHPainter(tint)),
-      pluginIdBooru => Icon(Icons.inventory_2, size: size, color: tint),
-      _ => Icon(plugin.icon, size: size, color: tint),
-    };
+    final tint = color ?? pluginMarkTint(context, plugin);
+    return Center(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: SizedBox.square(
+        dimension: size,
+        child: Center(child: _glyph(tint)),
+      ),
+    );
   }
 
-  Widget _paint(CustomPainter painter) =>
-      CustomPaint(size: Size.square(size), painter: painter);
+  Widget _glyph(Color tint) {
+    final live = size * pluginMarkLiveShare;
+    if (plugin.id == pluginIdBluesky) {
+      return BlueskyButterflyIcon(size: live, color: tint);
+    }
+    final glyph = _glyphs[plugin.id];
+    if (glyph == null) return markIcon(plugin.icon, size: size, color: tint);
+    return CustomPaint(
+      size: Size.square(live),
+      painter: _GlyphPainter(glyph, tint),
+    );
+  }
 }
+
+/// X's mark is monochrome and follows the text colour, as X draws it;
+/// every other mark uses its brand colour.
+Color pluginMarkTint(BuildContext context, XtaPlugin plugin) =>
+    plugin.id == pluginIdX
+    ? Theme.of(context).colorScheme.onSurface
+    : plugin.brandColor;
 
 /// The same mark the store, strip and plugin-timelines sheet should share.
 Widget pluginMark(XtaPlugin plugin, {double size = 24, Color? color}) {
   return PluginBrandMark(plugin: plugin, size: size, color: color);
 }
 
-class _PathPainter extends CustomPainter {
-  final Path path;
+/// A Material icon used as a mark, scaled when its glyph does not span the
+/// live area the way every other mark of [size] does.
+Widget markIcon(IconData icon, {required double size, Color? color}) {
+  final glyph = Icon(icon, size: size, color: color);
+  final extent = _iconExtents[icon];
+  return extent == null
+      ? glyph
+      : Transform.scale(scale: 20 / extent, child: glyph);
+}
+
+/// Material glyphs whose longest side is not the usual 20 of the 24 grid.
+final Map<IconData, double> _iconExtents = {
+  Icons.close: 13.8,
+  Icons.rss_feed: 15.5,
+  Icons.candlestick_chart: 16,
+  Icons.bookmark_add: 18,
+  Icons.hub: 24,
+};
+
+/// A brand glyph and the square it is drawn edge to edge in.
+typedef _Glyph = ({Path path, Rect frame});
+
+const _simpleIconsFrame = Rect.fromLTWH(0, 0, 24, 24);
+
+final Map<String, _Glyph> _glyphs = {
+  pluginIdX: (path: _x, frame: _simpleIconsFrame),
+  pluginIdSubstack: (path: _substack, frame: _simpleIconsFrame),
+  pluginIdPixiv: (path: _pixiv, frame: _simpleIconsFrame),
+  pluginIdMastodon: (path: _mastodon, frame: _simpleIconsFrame),
+  pluginIdTiktok: (path: _tiktok, frame: _simpleIconsFrame),
+  pluginIdInstagram: (
+    path: _instagram,
+    frame: const Rect.fromLTRB(2, 2, 22, 22),
+  ),
+  pluginIdEhViewer: (
+    path: _ehH,
+    frame: const Rect.fromLTRB(2.4, 2.4, 21.6, 21.6),
+  ),
+};
+
+/// Maps a glyph's frame onto the painted box.
+class _GlyphPainter extends CustomPainter {
+  final _Glyph glyph;
   final Color color;
 
-  _PathPainter(this.path, this.color);
+  _GlyphPainter(this.glyph, this.color);
 
   @override
   void paint(Canvas canvas, Size size) {
+    final frame = glyph.frame;
     canvas
       ..save()
-      ..scale(size.shortestSide / 24)
+      ..scale(size.width / frame.width, size.height / frame.height)
+      ..translate(-frame.left, -frame.top)
       ..drawPath(
-        path,
+        glyph.path,
         Paint()
           ..color = color
           ..style = PaintingStyle.fill
@@ -67,37 +136,14 @@ class _PathPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _PathPainter old) =>
-      old.color != color || old.path != path;
+  bool shouldRepaint(covariant _GlyphPainter old) =>
+      old.color != color || old.glyph != glyph;
 }
 
 /// Substack's three-bar / folded-paper mark (Simple Icons geometry).
-class _SubstackPainter extends CustomPainter {
-  final Color color;
-
-  _SubstackPainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide / 24;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill
-      ..isAntiAlias = true;
-    canvas
-      ..save()
-      ..scale(s)
-      ..drawRect(const Rect.fromLTWH(1.46, 0, 21.08, 2.836), paint)
-      ..drawRect(const Rect.fromLTWH(1.46, 5.406, 21.08, 2.836), paint)
-      ..drawPath(_substackFold, paint)
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _SubstackPainter old) => old.color != color;
-}
-
-final _substackFold = Path()
+final _substack = Path()
+  ..addRect(const Rect.fromLTWH(1.46, 0, 21.08, 2.836))
+  ..addRect(const Rect.fromLTWH(1.46, 5.406, 21.08, 2.836))
   ..moveTo(1.46, 10.812)
   ..lineTo(1.46, 24)
   ..lineTo(12, 18.11)
@@ -106,74 +152,19 @@ final _substackFold = Path()
   ..close();
 
 /// Instagram camera glyph: rounded square, lens, viewfinder.
-class _InstagramPainter extends CustomPainter {
-  final Color color;
-
-  _InstagramPainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide / 24;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill
-      ..isAntiAlias = true;
-    final path = Path()
-      ..fillType = PathFillType.evenOdd
-      ..addRRect(RRect.fromLTRBR(2, 2, 22, 22, const Radius.circular(6)))
-      ..addRRect(
-        RRect.fromLTRBR(4.1, 4.1, 19.9, 19.9, const Radius.circular(4.2)),
-      )
-      ..addOval(Rect.fromCircle(center: const Offset(12, 12.2), radius: 5.1))
-      ..addOval(Rect.fromCircle(center: const Offset(12, 12.2), radius: 3.15))
-      ..addOval(
-        Rect.fromCircle(center: const Offset(17.35, 6.65), radius: 1.25),
-      );
-    canvas
-      ..save()
-      ..scale(s)
-      ..drawPath(path, paint)
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _InstagramPainter old) => old.color != color;
-}
+final _instagram = Path()
+  ..fillType = PathFillType.evenOdd
+  ..addRRect(RRect.fromLTRBR(2, 2, 22, 22, const Radius.circular(6)))
+  ..addRRect(RRect.fromLTRBR(4.1, 4.1, 19.9, 19.9, const Radius.circular(4.2)))
+  ..addOval(Rect.fromCircle(center: const Offset(12, 12.2), radius: 5.1))
+  ..addOval(Rect.fromCircle(center: const Offset(12, 12.2), radius: 3.15))
+  ..addOval(Rect.fromCircle(center: const Offset(17.35, 6.65), radius: 1.25));
 
 /// A bold H — the usual shorthand for the E-Hentai / ExHentai plugin.
-class _EhHPainter extends CustomPainter {
-  final Color color;
-
-  _EhHPainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.shortestSide / 24;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill
-      ..isAntiAlias = true;
-    canvas
-      ..save()
-      ..scale(s)
-      ..drawRRect(
-        RRect.fromLTRBR(3.6, 2.4, 8.4, 21.6, const Radius.circular(1.2)),
-        paint,
-      )
-      ..drawRRect(
-        RRect.fromLTRBR(15.6, 2.4, 20.4, 21.6, const Radius.circular(1.2)),
-        paint,
-      )
-      ..drawRRect(
-        RRect.fromLTRBR(3.6, 10.1, 20.4, 13.9, const Radius.circular(1)),
-        paint,
-      )
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _EhHPainter old) => old.color != color;
-}
+final _ehH = Path()
+  ..addRRect(RRect.fromLTRBR(3.6, 2.4, 8.4, 21.6, const Radius.circular(1.2)))
+  ..addRRect(RRect.fromLTRBR(15.6, 2.4, 20.4, 21.6, const Radius.circular(1.2)))
+  ..addRRect(RRect.fromLTRBR(3.6, 10.1, 20.4, 13.9, const Radius.circular(1)));
 
 final _tiktok = Path()
   ..moveTo(12.525, 0.02)
@@ -297,4 +288,33 @@ final _pixiv = Path()
   ..cubicTo(17.437, 13.759, 17.971, 12.524, 17.977, 11.024)
   ..cubicTo(17.972, 9.484, 17.473, 8.16, 16.557, 7.164)
   ..cubicTo(15.639, 6.172, 14.283, 5.519, 12.555, 5.518)
+  ..close();
+
+// X geometry: Simple Icons (CC0), icons/x.svg at revision
+// d4e6ba93e48f178898707f0145ec285f28b64b38.
+final _x = Path()
+  ..fillType = PathFillType.evenOdd
+  ..moveTo(14.234, 10.162)
+  ..lineTo(22.977, 0)
+  ..lineTo(20.905, 0)
+  ..lineTo(13.314, 8.824)
+  ..lineTo(7.251, 0)
+  ..lineTo(0.258, 0)
+  ..lineTo(9.426, 13.343)
+  ..lineTo(0.258, 24)
+  ..lineTo(2.33, 24)
+  ..lineTo(10.346, 14.682)
+  ..lineTo(16.749, 24)
+  ..lineTo(23.742, 24)
+  ..lineTo(14.234, 10.162)
+  ..close()
+  ..moveTo(11.397, 13.461)
+  ..lineTo(10.468, 12.132)
+  ..lineTo(3.076, 1.56)
+  ..lineTo(6.258, 1.56)
+  ..lineTo(12.223, 10.092)
+  ..lineTo(13.152, 11.421)
+  ..lineTo(20.906, 22.511)
+  ..lineTo(17.724, 22.511)
+  ..lineTo(11.397, 13.461)
   ..close();

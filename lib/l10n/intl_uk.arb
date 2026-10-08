@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "Інші застосунки можуть відтворювати звук у фоні, коли цей застосунок працює",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "Мікроблоги",
+  "alt_microblogging": "Mastodon & Bluesky",
   "@alt_microblogging": {},
   "alt_microblogging_group": "Об’єднати сервіси мікроблогів",
   "@alt_microblogging_group": {},
@@ -1284,6 +1284,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "Додати сайт booru",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "Додати тег",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "Додати до поточного пошуку",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1300,8 +1304,16 @@
   },
   "plugin_booru_clear_history": "Clear search history",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "Очистити теги",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "Змінити як текст",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "Торкніться, щоб змінити",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "Або",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Follow tags from search or a post to fill this tab",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "No recent posts for your followed tags",
@@ -1332,16 +1344,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Follow tag",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "Following {tag}",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "Виключити",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "Host URL",
@@ -1378,6 +1382,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Open video",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "Найвища оцінка",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
@@ -1398,8 +1404,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "Торкніться, щоб додати до пошуку · утримуйте, щоб виключити",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "Схожі теги",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "Видалити сайт",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "Зберегти пошук",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "Збережені пошуки",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1414,6 +1428,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "No recent searches yet",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "Пошук збережено — нові дописи з’являться в розділі «{tab}»",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
@@ -1432,8 +1454,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Suggestions",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
@@ -1476,6 +1496,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "Видалити зі збережених пошуків",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "Показано останній отриманий список",
@@ -3614,5 +3636,51 @@
   "@sync_unsafe_server": {},
   "sync_history": "Попередні резервні копії",
   "@sync_history": {},
-  "home_keep_controls_visible": "Завжди показувати елементи керування"
+  "home_keep_controls_visible": "Завжди показувати елементи керування",
+  "reader_auto_retry_seconds": "Повтор через {seconds} с…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Повтор через {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_download_page": "Завантажити цю сторінку",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Завантажити всі сторінки",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Усі сторінки",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Копіювати посилання",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Посилання скопійовано",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Інші дії",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Сторінка {current} з {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Завантаження сторінки {current} з {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Більше від {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Відтворити анімацію",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Призупинити анімацію",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Приховувати роботи, створені ШІ",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Приховує роботи, які автори позначили як створені ШІ. Ваші закладки завжди залишаються видимими.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "ШІ",
+  "@plugin_pixiv_ai": {}
 }

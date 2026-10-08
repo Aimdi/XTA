@@ -1,3 +1,5 @@
+import 'package:xta/utils/pref_lists.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/settings/annotation_backup.dart';
 import 'package:xta/downloads/downloads_screen.dart';
 import 'package:xta/offline/offline_library_screen.dart';
@@ -84,7 +86,8 @@ Future<void> _applyBackup(BuildContext context, SettingsData data, ImportChoice 
 
   var settings = data.settings;
   if (settings != null) {
-    prefs.fromMap(settings);
+    // Lists such as the Home timelines were silently dropped before they were converted.
+    await prefs.fromMap(prefsForImport(settings));
   }
 
   await importModel.importData(backupTables(data, includeReadPositions: choice.includeReadPositions));
@@ -114,6 +117,9 @@ Future<void> _reloadAfterImport(BuildContext context) async {
   final sources = subscriptionSources;
 
   await subscriptions.reloadSubscriptions();
+  if (context.mounted) {
+    context.read<FeedStripStore>().update(feedStripPluginIds(PrefService.of(context, listen: false)));
+  }
   await folders.listFolders();
   await likedTweets.listLikedTweets();
   if (context.mounted) {

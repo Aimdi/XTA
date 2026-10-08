@@ -10,14 +10,17 @@ const optionHomePages = 'home.pages';
 const optionHomeInitialTab = 'home.initial_tab';
 const optionHomeDefaultFeedTab = 'home.default_feed_tab';
 
-/// Plugin ids pinned next to Following / For you on the home feed strip.
+/// Plugin ids the reader added next to Following / For you on Home.
 ///
-/// Null means “never configured” — every enabled network that can sit on the
-/// strip is offered. An empty list means the reader cleared every plugin tab
-/// on purpose.
+/// Null or empty means no plugin timeline: Home offers Following and X until
+/// the reader adds one through “Add timeline”.
 const optionHomeFeedStripPlugins = 'home.feed_strip_plugins';
 
-/// Plugin ids already offered a home-strip pin, so removing one sticks.
+/// Set once the strip holds only what the reader added; older installs keep
+/// what they showed before that through `migrateFeedStripPins`.
+const optionHomeFeedStripHandPicked = 'home.feed_strip_hand_picked';
+
+/// Plugin ids the old automatic Home pinning had offered; nothing adds to it now.
 const optionSeededStripPlugins = 'home.seeded_strip_plugins';
 
 /// Plugin ids used most recently on the home strip, newest first.
@@ -365,6 +368,7 @@ const optionPluginPixivAccessToken = 'plugin.pixiv.access_token';
 const optionPluginPixivAccessExpiresAt = 'plugin.pixiv.access_expires_at';
 const optionPluginPixivUserId = 'plugin.pixiv.user_id';
 const optionPluginPixivShowR18 = 'plugin.pixiv.show_r18';
+const optionPluginPixivHideAi = 'plugin.pixiv.hide_ai';
 const optionPluginPixivMutedAuthors = 'plugin.pixiv.muted_authors';
 const optionPluginPixivMutedTags = 'plugin.pixiv.muted_tags';
 const optionPluginPixivMutedIllusts = 'plugin.pixiv.muted_illusts';

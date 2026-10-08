@@ -142,7 +142,9 @@ class DownloadTransfer {
     if (offset == 0) await _discard(file, metadata);
     for (var attempt = 0; attempt < 2; attempt++) {
       cancellation.check();
-      final request = http.Request('GET', uri)..headers['accept-encoding'] = 'identity';
+      final request = http.Request('GET', uri)
+        ..headers.addAll(downloadRequestHeaders(uri))
+        ..headers['accept-encoding'] = 'identity';
       if (offset > 0) request.headers.addAll({'range': 'bytes=$offset-', 'if-range': validator!});
       final response = await client.send(request).timeout(const Duration(seconds: 45));
       cancellation.check();

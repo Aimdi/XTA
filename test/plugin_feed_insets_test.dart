@@ -39,6 +39,27 @@ void main() {
     expect(padding.bottom, kPluginHomeNavClearance);
   });
 
+  testWidgets('embedded lists clear a floating bar taller than the fixed clearance', (tester) async {
+    late EdgeInsets padding;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(padding: EdgeInsets.only(bottom: 104)),
+          child: PluginEmbedded(
+            child: Builder(
+              builder: (context) {
+                padding = pluginFeedPadding(context);
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(padding.bottom, 104 + kPluginStandaloneGutter);
+  });
+
   testWidgets('embedded lists do not reuse the requested outer controller', (
     tester,
   ) async {

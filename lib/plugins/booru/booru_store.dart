@@ -8,9 +8,11 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:sqflite/sqflite.dart';
 
-/// Followed tags, stored so they can be group members.
+/// Followed tags and saved searches (a followed entry may hold several tags),
+/// stored so they can be group members.
 class BooruTagsStore extends Store<List<String>> {
   BooruTagsStore() : super(const []);
 
@@ -27,17 +29,16 @@ class BooruTagsStore extends Store<List<String>> {
     return rows.map((e) => e['name'] as String).toList(growable: false);
   }
 
+  // Writes happen before execute(): it drops a call superseded within its
+  // debounce window, which would silently lose the write with it.
   Future<void> add(String tag) async {
-    await execute(() async {
-      await _write(tag);
-      return _read();
-    });
+    await _write(tag);
+    await load();
   }
 
   Future<void> remove(String tag) async {
-    await execute(() async {
-      final id = normaliseBooruTag(tag);
-      if (id == null) return _read();
+    final id = normaliseBooruQuery(tag);
+    if (id != null) {
       final database = await Repository.writable();
       await database.delete(
         tableBooruSubscription,
@@ -49,12 +50,12 @@ class BooruTagsStore extends Store<List<String>> {
         where: 'profile_id = ?',
         whereArgs: [id],
       );
-      return _read();
-    });
+    }
+    await load();
   }
 
   Future<void> _write(String tag) async {
-    final normalised = normaliseBooruTag(tag);
+    final normalised = normaliseBooruQuery(tag);
     if (normalised == null) return;
 
     final database = await Repository.writable();

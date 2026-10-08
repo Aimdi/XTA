@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/reddit/reddit_account.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
@@ -18,193 +19,104 @@ import 'package:xta/subscriptions/users_model.dart';
 
 /// The controls a Reddit feed needs, wherever it is being shown.
 ///
-/// Reddit is two screens now — its own tab and an entry in the home switcher —
-/// and the second one arrived with only the generic feed actions, so sorting,
-/// searching and the list of followed communities were all missing from it.
-/// They live here so there is one set rather than two that drift.
+/// One set for the standalone reader and Home, so they cannot drift. Search
+/// comes first because Home keeps the first action visible beside its options
+/// button; sort and the menu move into that options sheet there.
 ///
 /// Subreddits are added from search, not a second plus next to the lens.
-/// Sign-in stays in Reddit settings — the overflow is for how Reddit is read.
-///
-/// Returns a Row so it can sit as a single entry in an `AppBar.actions` list.
-class RedditFeedActions extends StatefulWidget {
-  /// Adds the app's own settings to the overflow menu, for a bar that has no
-  /// other route to them.
-  final bool showAppSettings;
-  final VoidCallback? onOpenClient;
-  final VoidCallback? onOpenSaved;
-
+/// Sign-in stays in Reddit settings — the menu is for how Reddit is read.
+class RedditFeedActions extends StatelessWidget {
   /// Called after a setting changes what the active Reddit body should fetch.
-  final Future<void> Function()? onRefresh;
+  final Future<void> Function() onRefresh;
+  final VoidCallback onOpenSaved;
+  final Widget Function(List<Widget> actions) builder;
 
-  const RedditFeedActions({
-    super.key,
-    this.showAppSettings = false,
-    this.onOpenClient,
-    this.onOpenSaved,
-    this.onRefresh,
-  });
-
-  @override
-  State<RedditFeedActions> createState() => _RedditFeedActionsState();
-}
-
-class _RedditFeedActionsState extends State<RedditFeedActions> {
-  /// Which route Reddit is read through.
-  ///
-  /// The client would otherwise decide silently from whatever credentials
-  /// happen to be stored, so a reader who would rather not be identified had no
-  /// way to say so while a sign-in existed.
-  Widget _sourceMenu(BuildContext context) {
-    final prefs = PrefService.of(context);
-    final l10n = L10n.of(context);
-
-    final public = redditPrefersPublic(prefs);
-
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert),
-      tooltip: '${l10n.plugin_reddit_title} · ${MaterialLocalizations.of(context).moreButtonTooltip}',
-      onSelected: (value) => _onMenuSelected(value, prefs),
-      itemBuilder: (context) => [
-        if (widget.onOpenSaved != null) ...[
-          PopupMenuItem(
-            value: _menuSaved,
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.bookmark_border),
-              title: Text(l10n.saved),
-            ),
-          ),
-          PopupMenuItem(
-            value: _menuCommunities,
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.list),
-              title: Text(l10n.subscriptions),
-            ),
-          ),
-          const PopupMenuDivider(),
-        ],
-        PopupMenuItem(
-          value: redditSourceAuto,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            // Which of the two is in force was not shown anywhere, so the menu
-            // that sets it could not answer what it was currently set to.
-            trailing: public ? null : const Icon(Icons.check),
-            title: Text(l10n.plugin_reddit_source_auto),
-            subtitle: Text(l10n.plugin_reddit_source_auto_description),
-          ),
-        ),
-        PopupMenuItem(
-          value: redditSourcePublic,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            trailing: public ? const Icon(Icons.check) : null,
-            title: Text(l10n.plugin_reddit_source_public),
-            subtitle: Text(l10n.plugin_reddit_source_public_description),
-          ),
-        ),
-        if (widget.onOpenClient != null)
-          PopupMenuItem(
-            value: _menuClient,
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.open_in_new),
-              title: Text(l10n.plugin_open_client(l10n.plugin_reddit_title)),
-            ),
-          ),
-        const PopupMenuDivider(),
-        PopupMenuItem(
-          value: _menuPluginSettings,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.forum_outlined),
-            title: Text('${l10n.plugin_reddit_title} · ${l10n.settings}'),
-          ),
-        ),
-        if (widget.showAppSettings)
-          PopupMenuItem(
-            value: _menuAppSettings,
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.settings),
-              title: Text(l10n.settings),
-            ),
-          ),
-      ],
-    );
-  }
+  const RedditFeedActions({super.key, required this.onRefresh, required this.onOpenSaved, required this.builder});
 
   /// Values the menu uses for the actions that are not a source choice.
   static const _menuPluginSettings = '_pluginSettings';
-  static const _menuClient = '_client';
   static const _menuSaved = '_saved';
   static const _menuCommunities = '_communities';
-  static const _menuAppSettings = '_appSettings';
-
-  Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
-    if (value == _menuSaved) {
-      widget.onOpenSaved?.call();
-      return;
-    }
-    if (value == _menuCommunities) {
-      await _manageSubreddits();
-      return;
-    }
-    if (value == _menuClient) {
-      widget.onOpenClient?.call();
-      return;
-    }
-    if (value == _menuPluginSettings) {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSettingsScreen()));
-      // Everything on that screen — the sign-in, the client id, the route —
-      // changes what this menu should say next time it opens.
-      if (mounted) setState(() {});
-      return;
-    }
-    if (value == _menuAppSettings) {
-      Navigator.pushNamed(context, routeSettings);
-      return;
-    }
-
-    await prefs.set(optionPluginRedditSource, value);
-    if (mounted) {
-      await _refreshActive();
-    }
-  }
-
-  Future<void> _manageSubreddits() => showRedditCommunitiesSheet(context);
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          tooltip: l10n.plugin_reddit_sort,
-          icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
-          onPressed: () async {
-            if (await openRedditSortSheet(context) != null && context.mounted) {
-              await _refreshActive();
-            }
-          },
-        ),
-        IconButton(
-          tooltip: l10n.plugin_reddit_search_hint,
-          icon: const Icon(Icons.search),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
-        ),
-        if (widget.onOpenSaved == null)
-          IconButton(tooltip: l10n.subscriptions, icon: const Icon(Icons.list), onPressed: _manageSubreddits),
-        _sourceMenu(context),
-      ],
-    );
+    // Listening repaints the sort icon after the sort sheet saves a new one.
+    final sort = storedRedditSort(PrefService.of(context));
+    return builder([
+      IconButton(
+        tooltip: l10n.plugin_reddit_search_hint,
+        icon: const Icon(Icons.search),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
+      ),
+      IconButton(
+        tooltip: l10n.plugin_reddit_sort,
+        icon: Icon(redditSortLabel(context, sort).icon),
+        onPressed: () async {
+          if (await openRedditSortSheet(context) != null && context.mounted) await onRefresh();
+        },
+      ),
+      PluginHomeMenu(
+        tooltip: '${l10n.plugin_reddit_title} · ${MaterialLocalizations.of(context).moreButtonTooltip}',
+        onSelected: (value) => _onMenuSelected(context, value),
+        itemBuilder: (_) => _menuItems(context),
+      ),
+    ]);
   }
 
-  Future<void> _refreshActive() => widget.onRefresh?.call() ?? context.read<RedditFeedStore>().refresh();
+  /// Which route Reddit is read through.
+  ///
+  /// The client would otherwise decide silently from whatever credentials
+  /// happen to be stored, so a reader who would rather not be identified had no
+  /// way to say so while a sign-in existed. Read when the menu opens, so it
+  /// always answers what is currently in force.
+  List<PopupMenuEntry<String>> _menuItems(BuildContext context) {
+    final l10n = L10n.of(context);
+    final public = redditPrefersPublic(PrefService.of(context, listen: false));
+    return [
+      _item(_menuSaved, Icons.bookmark_border, l10n.saved),
+      _item(_menuCommunities, Icons.list, l10n.subscriptions),
+      const PopupMenuDivider(),
+      _route(redditSourceAuto, l10n.plugin_reddit_source_auto, l10n.plugin_reddit_source_auto_description, !public),
+      _route(
+        redditSourcePublic,
+        l10n.plugin_reddit_source_public,
+        l10n.plugin_reddit_source_public_description,
+        public,
+      ),
+      const PopupMenuDivider(),
+      _item(_menuPluginSettings, Icons.forum_outlined, '${l10n.plugin_reddit_title} · ${l10n.settings}'),
+    ];
+  }
+
+  PopupMenuItem<String> _item(String value, IconData icon, String label) => PopupMenuItem(
+    value: value,
+    child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(icon), title: Text(label)),
+  );
+
+  PopupMenuItem<String> _route(String value, String label, String description, bool selected) => PopupMenuItem(
+    value: value,
+    child: ListTile(
+      contentPadding: EdgeInsets.zero,
+      trailing: selected ? const Icon(Icons.check) : null,
+      title: Text(label),
+      subtitle: Text(description),
+    ),
+  );
+
+  Future<void> _onMenuSelected(BuildContext context, String value) async {
+    switch (value) {
+      case _menuSaved:
+        onOpenSaved();
+      case _menuCommunities:
+        await showRedditCommunitiesSheet(context);
+      case _menuPluginSettings:
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSettingsScreen()));
+      default:
+        await PrefService.of(context, listen: false).set(optionPluginRedditSource, value);
+        if (context.mounted) await onRefresh();
+    }
+  }
 }
 
 /// Opens a followed community without leaving the Reddit home chrome.

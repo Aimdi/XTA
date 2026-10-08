@@ -167,13 +167,13 @@ void main() {
       registryFetchedAt: null,
       generatedAt: DateTime.utc(2026, 10, 3),
       probes: const [
-        DiagnosticsProbe('database read (read-only connection)', elapsed: Duration(milliseconds: 12)),
-        DiagnosticsProbe('database save (writable connection)', failure: 'still waiting after 5s'),
+        DiagnosticsProbe('database read', elapsed: Duration(milliseconds: 12)),
+        DiagnosticsProbe('database save', failure: 'still waiting after 5s'),
       ],
     ).toPlainText();
 
     expect(text, contains('local checks:'));
-    expect(text, contains('  database read (read-only connection): ok 12ms'));
-    expect(text, contains('  database save (writable connection): still waiting after 5s'));
+    expect(text, contains('  database read: ok 12ms'));
+    expect(text, contains('  database save: still waiting after 5s'));
   });
 }

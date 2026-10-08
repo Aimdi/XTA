@@ -108,7 +108,7 @@ void main() {
       }
     });
 
-    test('enabling RSS selects its tab and pins the home strip', () async {
+    test('enabling RSS selects its tab and leaves Home to the reader', () async {
       final prefs = PrefServiceCache(
         cache: {
           optionHomePages: ['feed', 'subscriptions', 'trending', 'saved'],
@@ -123,7 +123,7 @@ void main() {
       final model = await _load(prefs);
 
       expect(_selected(model, pluginIdRss), isTrue);
-      expect(feedStripPluginIds(prefs), contains(pluginIdRss));
+      expect(feedStripPluginIds(prefs), isNot(contains(pluginIdRss)));
     });
 
     test(

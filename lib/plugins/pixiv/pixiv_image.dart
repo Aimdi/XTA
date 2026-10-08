@@ -66,6 +66,13 @@ class PixivNetworkImage extends StatelessWidget {
   }
 }
 
+/// Quiet thumbnail states: the tile's surface shows while loading, an icon marks a failure.
+Widget? pixivTileLoadState(BuildContext context, ExtendedImageState state) => switch (state.extendedImageLoadState) {
+  LoadState.loading => const SizedBox.shrink(),
+  LoadState.failed => Icon(Icons.broken_image_outlined, color: Theme.of(context).colorScheme.outline),
+  LoadState.completed => null,
+};
+
 /// Warm disk cache for thumbs the masonry is about to show.
 ///
 /// Uses the same half-width [cacheWidth] as tiles so prefetch actually hits the

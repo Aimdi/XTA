@@ -3,16 +3,13 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_settings.dart';
 import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
@@ -87,9 +84,6 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
 
   @override
   bool get wantKeepAlive => true;
-
-  /// The default Following feed uses group id `-1` — not a named group.
-  bool get _isHomeFeed => widget.groupId == '-1';
 
   CombinedGroupsStore? _combined;
   void Function()? _disposeCombinedObserver;
@@ -185,7 +179,6 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (!_isHomeFeed) _GroupIdentityRow(model: _groupModel, groupId: widget.groupId),
           ?inner,
           tweetHairlineDivider(context),
         ],
@@ -197,11 +190,6 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
     var height = kTweetDividerThickness;
     if (inner != null) {
       height += inner.preferredSize.height;
-    }
-    // Identity row: mark + member count. The home Following feed is not a
-    // named group — that row was leftover group chrome on the reader home.
-    if (!_isHomeFeed) {
-      height += 36;
     }
     return height;
   }
@@ -277,55 +265,6 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
           ),
         ),
       ],
-    );
-  }
-}
-
-class _GroupIdentityRow extends StatelessWidget {
-  final GroupModel model;
-  final String groupId;
-
-  const _GroupIdentityRow({required this.model, required this.groupId});
-
-  @override
-  Widget build(BuildContext context) {
-    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-      store: model,
-      onState: (context, group) {
-        if (group.id.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        final meta = context.read<GroupsModel>().state.where((g) => g.id == groupId).firstOrNull;
-        final seed = meta != null ? groupSeedColor(meta) : groupFallbackColor(group.name);
-        final memberCount = group.subscriptions.length;
-        final theme = Theme.of(context);
-
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-          child: Row(
-            children: [
-              GroupMark(
-                name: group.name,
-                seed: seed,
-                emoji: meta?.emoji,
-                icon: group.icon,
-                markStyle: meta?.markStyle ?? 0,
-                size: 22,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  L10n.of(context).subscription_group_member_count(memberCount),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

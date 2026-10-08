@@ -145,11 +145,18 @@ class PixivIllustTile extends StatelessWidget {
                       left: 6,
                       child: _chip(context, Icons.play_circle_outline, l10n.plugin_pixiv_ugoira),
                     ),
-                  if (illust.isR18)
+                  if (illust.isR18 || illust.isAi)
                     Positioned(
                       bottom: 6,
                       left: 6,
-                      child: _chip(context, Icons.eighteen_up_rating_outlined, l10n.plugin_pixiv_r18),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 4,
+                        children: [
+                          if (illust.isR18) _chip(context, Icons.eighteen_up_rating_outlined, l10n.plugin_pixiv_r18),
+                          if (illust.isAi) _chip(context, Icons.auto_awesome_outlined, l10n.plugin_pixiv_ai),
+                        ],
+                      ),
                     ),
                   Positioned(right: 0, bottom: 0, child: PixivBookmarkButton(illust: illust, compact: true)),
                 ],

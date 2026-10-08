@@ -6,10 +6,12 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/feed_switcher_menu.dart';
+import 'package:xta/group/group_chrome.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/subscriptions/_groups_edit.dart' show openSubscriptionGroupDialog;
 import 'package:xta/subscriptions/group_identity.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// The feed title as a button that opens a group picker, so you can hop between
 /// groups without going back to the Groups tab.
@@ -17,8 +19,17 @@ class GroupSwitcherTitle extends StatelessWidget {
   final String name;
   final String currentGroupId;
   final ValueChanged<SubscriptionGroup> onSwitch;
+  final Widget? mark;
+  final String? subtitle;
 
-  const GroupSwitcherTitle({super.key, required this.name, required this.currentGroupId, required this.onSwitch});
+  const GroupSwitcherTitle({
+    super.key,
+    required this.name,
+    required this.currentGroupId,
+    required this.onSwitch,
+    this.mark,
+    this.subtitle,
+  });
 
   /// Opens the short menu, and does whatever it came back with.
   ///
@@ -50,37 +61,35 @@ class GroupSwitcherTitle extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(9999),
         onTap: () => _open(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+          child: Padding(
+            // Two lines at the largest title text scale fill the toolbar without the vertical padding.
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: subtitle == null ? 4 : 0),
+            child: GroupTitleLabel(
+              name: name,
+              mark: mark,
+              subtitle: subtitle,
+              trailing: [
+                // Says the feed is more than the group it is named after, which
+                // nothing else on the screen would.
+                ScopedBuilder<CombinedGroupsStore, Set<String>>(
+                  store: context.read<CombinedGroupsStore>(),
+                  onState: (context, alsoRead) {
+                    final extra = alsoRead.where((e) => e != currentGroupId).length;
+                    if (extra == 0) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: Text('+$extra', style: TextStyle(color: theme.colorScheme.primary)),
+                    );
+                  },
                 ),
-              ),
-              // Says the feed is more than the group it is named after, which
-              // nothing else on the screen would.
-              ScopedBuilder<CombinedGroupsStore, Set<String>>(
-                store: context.read<CombinedGroupsStore>(),
-                onState: (context, alsoRead) {
-                  final extra = alsoRead.where((e) => e != currentGroupId).length;
-                  if (extra == 0) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 6),
-                    child: Text('+$extra', style: TextStyle(color: theme.colorScheme.primary)),
-                  );
-                },
-              ),
-              const SizedBox(width: 2),
-              Icon(Icons.expand_more, size: 20, color: theme.appBarTheme.foregroundColor),
-            ],
+                const SizedBox(width: 2),
+                Icon(Icons.expand_more, size: 20, color: theme.appBarTheme.foregroundColor),
+              ],
+            ),
           ),
         ),
       ),

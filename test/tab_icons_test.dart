@@ -75,7 +75,7 @@ void main() {
                       child: FeedStripTab(
                         title: e.titleBuilder(context),
                         icon: e.icon ?? e.id.icon,
-                        mark: e.mark,
+                        mark: e.markBuilder?.call(16),
                       ),
                     ),
                 ],
@@ -88,9 +88,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byIcon(followingTabIcon), findsOneWidget);
-    expect(find.byIcon(FeedTab.x.icon), findsOneWidget);
+    // X shows its own mark, as the compact header does, rather than a close glyph.
+    expect(find.byIcon(FeedTab.x.icon), findsNothing);
     expect(find.byIcon(forYouTabIcon), findsNothing);
-    expect(find.byType(PluginBrandMark), findsNWidgets(3));
+    expect(find.byType(PluginBrandMark), findsNWidgets(4));
     expect(find.byIcon(Icons.inventory_2), findsOneWidget);
     expect(find.text('Substack'), findsOneWidget);
     expect(find.text('Pixiv'), findsOneWidget);

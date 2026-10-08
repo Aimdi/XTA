@@ -32,6 +32,7 @@ import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/tweet/tweet.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/utils/read_visibility.dart';
 
@@ -161,8 +162,12 @@ class _HomeHarness {
         home: RepaintBoundary(
           key: const ValueKey('home-render'),
           child: Scaffold(
+            // As in ScaffoldWithBottomNavigation: the feed scrolls on behind the bar.
+            extendBody: true,
             drawer: const Drawer(child: Center(child: Text('Drawer fixture'))),
-            body: FeedScreen(scrollController: scroll, id: '-1', name: 'Home'),
+            body: HomeNavigationClearance(
+              child: FeedScreen(scrollController: scroll, id: '-1', name: 'Home'),
+            ),
             bottomNavigationBar: HomeNavigationBar(
               selectedIndex: 0,
               showLabels: true,
@@ -283,7 +288,7 @@ void main() {
         expect(find.byType(HomeFeedStrip), findsNothing);
         final feed = tester.getRect(find.byType(SubscriptionGroupScreenContent));
         final nav = tester.getRect(find.byType(HomeNavigationBar));
-        expect(feed.bottom, closeTo(nav.top, 1));
+        expect(feed.bottom, closeTo(nav.bottom, 1));
         final swipe = await tester.startGesture(tester.getCenter(find.byKey(const ValueKey('home-source-swipe'))));
         await swipe.moveBy(Offset(large ? 110 : -110, 0));
         await tester.pump();
@@ -389,6 +394,31 @@ void main() {
     }, skip: _before);
   }
 
+  testWidgets('The last Home post scrolls fully above the floating bar', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(bottom: 24);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPadding);
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(() => h.seed(postCount: 20));
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+
+    h.scroll.position.jumpTo(h.scroll.position.maxScrollExtent);
+    await tester.pumpAndSettle();
+    h.scroll.position.jumpTo(h.scroll.position.maxScrollExtent);
+    await tester.pumpAndSettle();
+
+    final pill = tester.getRect(find.byType(NavigationBar));
+    expect(tester.getRect(find.byType(SubscriptionGroupScreenContent)).bottom, 844);
+    expect(find.textContaining('Reading fixture 19', findRichText: true), findsOneWidget);
+    expect(tester.getRect(find.byType(TweetTile).last).bottom, lessThanOrEqualTo(pill.top));
+    expect(tester.takeException(), isNull);
+  }, skip: _before);
+
   testWidgets('A short scrollable Home keeps controls stable', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
@@ -489,8 +519,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(_media), findsNothing);
     final original = tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed;
-    await tester.tap(find.byIcon(Icons.refresh));
+    // For you's refresh lives in the compact header's options sheet.
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tap(find.widgetWithText(ListTile, 'Refresh'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.widgetWithText(ListTile, 'Refresh'), findsNothing);
     expect(tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed, same(original));
     h.selected.select(FeedTab.following);
     await tester.pumpAndSettle();

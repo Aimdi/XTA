@@ -46,3 +46,14 @@ List<String>? stringListFrom(Object? raw) {
   }
   return null;
 }
+
+/// [settings] as shared preferences can store them: JSON hands lists back as `List<dynamic>`, which they refuse.
+Map<String, dynamic> prefsForImport(Map<String, dynamic> settings) =>
+    settings.map((key, value) => MapEntry(key, value is List ? stringListFrom(value) : value));
+
+/// Drops [value] from the string list stored under [key]; an unset list, or one without it, is left alone.
+Future<void> removeFromStringListPref(BasePrefService prefs, String key, String value) async {
+  final list = stringListPref(prefs, key);
+  if (list == null || !list.contains(value)) return;
+  await prefs.set(key, list.where((e) => e != value).toList());
+}

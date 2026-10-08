@@ -13,8 +13,8 @@ List<String> enabledStripPluginIds(BasePrefService prefs) => [
     if (plugin.supportsFeedStrip && plugin.isEnabled(prefs)) plugin.id,
 ];
 
-/// Enabled plugins that hid their bottom-nav tab. They used to fall back to
-/// Groups chips; the home strip is where you switch sites now.
+/// Enabled plugins that hid their bottom-nav tab. Home used to show these on
+/// its own; [legacyFeedStripIds] keeps them there for installs that had them.
 List<String> hiddenTabFeedStripIds(BasePrefService prefs) => [
   for (final plugin in builtInPlugins)
     if (plugin.supportsFeedStrip &&
@@ -23,78 +23,50 @@ List<String> hiddenTabFeedStripIds(BasePrefService prefs) => [
       plugin.id,
 ];
 
-/// Saved pins plus hidden-tab plugins, so turning a tab off cannot strand it.
-List<String> feedStripVisibleIds(BasePrefService prefs, List<String> pinned) {
-  final seen = <String>{};
-  return [
-    for (final id in pinned)
-      if (seen.add(id)) id,
-    for (final id in hiddenTabFeedStripIds(prefs))
-      if (seen.add(id)) id,
-  ];
-}
+/// The pins Home can show right now, each once and in pin order.
+List<String> feedStripVisibleIds(BasePrefService prefs, List<String> pinned) =>
+    [
+      for (final id in _distinct(pinned))
+        if (pluginById(id) case final plugin?
+            when plugin.supportsFeedStrip && plugin.isEnabled(prefs))
+          id,
+    ];
 
-/// Plugin ids currently pinned on the home feed strip (next to For you).
+/// Plugin ids the reader added next to Following / For you, in their order.
 ///
-/// Null pref = never configured → every enabled network. Empty list = the
-/// reader removed every plugin pin on purpose — except plugins that hid
-/// their bottom-nav tab, which stay here so they remain reachable.
-List<String> feedStripPluginIds(BasePrefService prefs) {
-  final raw = stringListPref(prefs, optionHomeFeedStripPlugins);
-  final pinned = raw != null
-      ? List<String>.from(raw)
-      : enabledStripPluginIds(prefs);
-  return feedStripVisibleIds(prefs, pinned);
+/// Unset means nothing was added, so a fresh install offers only Following and
+/// X until the reader picks a timeline under “Add timeline”.
+List<String> feedStripPluginIds(BasePrefService prefs) =>
+    _distinct(stringListPref(prefs, optionHomeFeedStripPlugins) ?? const []);
+
+/// What Home showed before timelines were hand-picked: the saved pins, or
+/// every enabled network when none were saved, plus hidden-tab plugins.
+List<String> legacyFeedStripIds(BasePrefService prefs) => _distinct([
+  ...(stringListPref(prefs, optionHomeFeedStripPlugins) ??
+      enabledStripPluginIds(prefs)),
+  ...hiddenTabFeedStripIds(prefs),
+]);
+
+/// Runs once per install, before Home is built. A first launch starts with no
+/// plugin timeline; an older install keeps exactly the timelines it showed.
+Future<void> migrateFeedStripPins(
+  BasePrefService prefs, {
+  required bool firstLaunch,
+}) async {
+  if (prefs.get(optionHomeFeedStripHandPicked) == true) return;
+  final pins = firstLaunch ? <String>[] : legacyFeedStripIds(prefs);
+  final saved = stringListPref(prefs, optionHomeFeedStripPlugins);
+  if (saved == null || !_same(saved, pins)) {
+    await prefs.set(optionHomeFeedStripPlugins, pins);
+  }
+  await prefs.set(optionHomeFeedStripHandPicked, true);
 }
 
-/// Pins newly enabled networks once, the same way a first install used to
-/// drop Reddit next to For you. A pin the reader then removes stays gone.
-Future<List<String>> seedFeedStripPlugins(BasePrefService prefs) async {
-  final current = feedStripPluginIds(prefs);
-  final seeded =
-      stringListPref(prefs, optionSeededStripPlugins) ?? const <String>[];
-  final next = List<String>.from(current);
-  final newly = <String>[];
+/// Takes a plugin off Home, e.g. when it is uninstalled.
+Future<void> forgetFeedStripPlugin(BasePrefService prefs, String pluginId) =>
+    removeFromStringListPref(prefs, optionHomeFeedStripPlugins, pluginId);
 
-  for (final id in enabledStripPluginIds(prefs)) {
-    if (seeded.contains(id) || next.contains(id)) continue;
-    next.add(id);
-    newly.add(id);
-  }
-
-  if (newly.isEmpty &&
-      stringListPref(prefs, optionHomeFeedStripPlugins) != null) {
-    return current;
-  }
-
-  final seededNext = {...seeded, ...next}.toList();
-  await prefs.set(optionSeededStripPlugins, seededNext);
-  await prefs.set(optionHomeFeedStripPlugins, next);
-  return next;
-}
-
-/// Drops a plugin from the strip and lets a later install offer it again.
-Future<void> forgetFeedStripPlugin(
-  BasePrefService prefs,
-  String pluginId,
-) async {
-  final pinned = stringListPref(prefs, optionHomeFeedStripPlugins);
-  if (pinned != null && pinned.contains(pluginId)) {
-    await prefs.set(
-      optionHomeFeedStripPlugins,
-      pinned.where((id) => id != pluginId).toList(),
-    );
-  }
-  final seeded = stringListPref(prefs, optionSeededStripPlugins);
-  if (seeded != null && seeded.contains(pluginId)) {
-    await prefs.set(
-      optionSeededStripPlugins,
-      seeded.where((id) => id != pluginId).toList(),
-    );
-  }
-}
-
-/// Enabled plugins that can be pinned but are not on the strip yet.
+/// Enabled plugins that can be added but are not on Home yet.
 List<XtaPlugin> feedStripCandidates(
   BasePrefService prefs,
   List<String> pinned,
@@ -108,8 +80,8 @@ List<XtaPlugin> feedStripCandidates(
       .toList(growable: false);
 }
 
-/// Pins [pluginId] on the home strip. Used when a plugin is installed or its
-/// bottom-nav tab is turned off — Groups is not a site switcher.
+/// Adds [pluginId] to Home. Used when the reader hides its bottom-nav tab, so
+/// the plugin moves to Home instead of dropping out of reach.
 Future<void> pinPluginOnFeedStrip(
   BasePrefService prefs,
   String pluginId,
@@ -117,14 +89,8 @@ Future<void> pinPluginOnFeedStrip(
   final plugin = pluginById(pluginId);
   if (plugin == null || !plugin.supportsFeedStrip) return;
 
-  final raw = stringListPref(prefs, optionHomeFeedStripPlugins);
-  final pinned = raw ?? feedStripPluginIds(prefs);
-  if (pinned.contains(pluginId)) {
-    if (raw == null) {
-      await prefs.set(optionHomeFeedStripPlugins, List<String>.from(pinned));
-    }
-    return;
-  }
+  final pinned = feedStripPluginIds(prefs);
+  if (pinned.contains(pluginId)) return;
   await prefs.set(optionHomeFeedStripPlugins, [...pinned, pluginId]);
 }
 
@@ -210,29 +176,14 @@ class FeedStripStore extends Store<List<String>> {
     await add(pluginId);
   }
 
-  /// Offer a pin to every enabled network that has never been offered one.
-  Future<void> seedEnabled() async {
-    final next = await seedFeedStripPlugins(prefs);
-    if (!_same(next, state)) update(next);
-  }
-
-  /// Persist hidden-tab plugins so they survive as home destinations.
-  Future<void> pinHiddenTabs() async {
-    final extra = [
-      for (final id in hiddenTabFeedStripIds(prefs))
-        if (!state.contains(id)) id,
-    ];
-    if (extra.isEmpty) return;
-    await ensurePersisted();
-    await setPlugins([...state, ...extra]);
-  }
-
   Future<void> forget(String pluginId) async {
     await forgetFeedStripPlugin(prefs, pluginId);
     if (!state.contains(pluginId)) return;
     update(state.where((id) => id != pluginId).toList());
   }
 }
+
+List<String> _distinct(Iterable<String> ids) => ids.toSet().toList();
 
 bool _same(List<String> a, List<String> b) {
   if (a.length != b.length) return false;

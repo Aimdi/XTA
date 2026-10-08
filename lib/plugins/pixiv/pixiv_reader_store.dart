@@ -4,7 +4,12 @@ class PixivReaderState {
   final bool vertical;
   final int pageIndex;
 
-  const PixivReaderState({this.vertical = true, this.pageIndex = 0});
+  /// The page under the slider thumb while it is dragged.
+  final int? scrubIndex;
+
+  const PixivReaderState({this.vertical = true, this.pageIndex = 0, this.scrubIndex});
+
+  int get shownIndex => scrubIndex ?? pageIndex;
 }
 
 class PixivReaderStore extends Store<PixivReaderState> {
@@ -14,8 +19,8 @@ class PixivReaderStore extends Store<PixivReaderState> {
   bool _restoringPosition = false;
   bool _closed = false;
 
-  PixivReaderStore({required this.pageCount, int initialPage = 0})
-    : super(PixivReaderState(pageIndex: _bounded(initialPage, pageCount)));
+  PixivReaderStore({required this.pageCount, int initialPage = 0, bool vertical = true})
+    : super(PixivReaderState(vertical: vertical, pageIndex: _bounded(initialPage, pageCount)));
 
   static int _bounded(int index, int count) => count <= 0 ? 0 : index.clamp(0, count - 1);
 
@@ -23,7 +28,15 @@ class PixivReaderStore extends Store<PixivReaderState> {
     if (_closed) return;
     final next = _bounded(index, pageCount);
     if (next == state.pageIndex) return;
-    update(PixivReaderState(vertical: state.vertical, pageIndex: next));
+    update(PixivReaderState(vertical: state.vertical, pageIndex: next, scrubIndex: state.scrubIndex));
+  }
+
+  /// Follows the slider while dragging; null hands the counter back to the page.
+  void scrub(int? index) {
+    if (_closed) return;
+    final next = index == null ? null : _bounded(index, pageCount);
+    if (next == state.scrubIndex) return;
+    update(PixivReaderState(vertical: state.vertical, pageIndex: state.pageIndex, scrubIndex: next));
   }
 
   void toggleDirection() {

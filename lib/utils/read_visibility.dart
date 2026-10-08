@@ -49,6 +49,9 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
       if (!mounted || _visible != next) return;
       next ? widget.onVisible() : widget.onHidden();
     });
+    // Visibility reports arrive between frames; a static error screen would
+    // otherwise never render the frame that delivers them.
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   @override

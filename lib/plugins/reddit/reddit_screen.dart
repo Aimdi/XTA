@@ -5,6 +5,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
@@ -104,10 +105,10 @@ class _RedditScreenState extends State<RedditScreen> with AutomaticKeepAliveClie
         store: store,
         onState: (context, source) => Column(
           children: [
-            RedditHomeChrome(
-              source: source,
-              onMode: store.selectMode,
-              actions: [RedditFeedActions(onRefresh: _refreshCurrent, onOpenSaved: _openSaved)],
+            RedditFeedActions(
+              onRefresh: _refreshCurrent,
+              onOpenSaved: _openSaved,
+              builder: (actions) => RedditHomeChrome(source: source, onMode: store.selectMode, actions: actions),
             ),
             RedditSubredditChips(home: store),
             Expanded(
@@ -211,9 +212,14 @@ class RedditSubredditChips extends StatelessWidget {
         if (names.isEmpty) {
           return const SizedBox.shrink();
         }
+        // Inside Home the chips move into the options sheet, not above the feed.
         return ScopedBuilder<RedditHomeStore, RedditHomeSource>(
           store: home,
-          onState: (context, source) => _chipRow(context, names, source),
+          onState: (context, source) => PluginDockContribution(
+            slot: 'following',
+            content: PluginDockContent(leading: _chipRow(context, names, source), attention: source.viewingSubreddit),
+            fallback: _chipRow(context, names, source),
+          ),
         );
       },
     );

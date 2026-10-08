@@ -39,7 +39,9 @@ class ProgressiveFeedView extends StatelessWidget {
                         child: ActionChip(
                           avatar: entry.value.loading
                               ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
-                              : Icon(entry.value.error != null ? Icons.error_outline : Icons.history, size: 16),
+                              : entry.value.error != null
+                              ? const ScheduledReadRetry(idle: Icon(Icons.error_outline, size: 16), builder: _waiting)
+                              : const Icon(Icons.history, size: 16),
                           label: Text(pluginById(entry.key)?.title(context) ?? entry.key),
                           onPressed: () {
                             if (entry.value.error != null) {
@@ -77,3 +79,6 @@ class ProgressiveFeedView extends StatelessWidget {
     ),
   );
 }
+
+/// A source that will retry on its own shows a clock rather than an error.
+Widget _waiting(BuildContext context, int seconds) => const Icon(Icons.schedule, size: 16);

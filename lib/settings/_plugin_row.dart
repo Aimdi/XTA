@@ -162,12 +162,7 @@ class InstalledPluginRow extends StatelessWidget {
     // auto-selects a plugin tab it has never seeded, so that memory is cleared
     // here or the switch would turn on and nothing appear.
     if (next) {
-      final seeded =
-          stringListPref(prefs, optionSeededPluginTabs) ?? const <String>[];
-      await prefs.set(
-        optionSeededPluginTabs,
-        seeded.where((e) => e != plugin.id).toList(),
-      );
+      await removeFromStringListPref(prefs, optionSeededPluginTabs, plugin.id);
     } else if (context.mounted) {
       // Off the bottom bar → home strip, not a Groups chip.
       await pinPluginOnFeedStripIn(context, plugin.id);

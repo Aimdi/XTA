@@ -35,13 +35,16 @@ class PluginCompactHeader extends StatelessWidget {
         builder: (context, constraints) {
           final navigation = store.content(plugin.id, 'navigation');
           final reading = store.content(plugin.id, 'reading');
+          final following = store.content(plugin.id, 'following');
           final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
           final primary =
               reading?.search ?? navigation?.search ?? navigation?.actions.whereType<IconButton>().firstOrNull;
           final markWidth = onPickSource != null || !showBack ? 48.0 : 24.0;
           final reserved = 8 + markWidth + (showBack ? 48 : 0) + 48 + (tabs.isEmpty ? 0 : 48);
           final showPrimary = primary != null && constraints.maxWidth >= reserved + 48;
-          final color = ensureContrast(plugin.brandColor, Theme.of(context).scaffoldBackgroundColor);
+          final background = Theme.of(context).scaffoldBackgroundColor;
+          final color = ensureContrast(plugin.brandColor, background);
+          final markColor = ensureContrast(pluginMarkTint(context, plugin), background);
           return IconButtonTheme(
             data: const IconButtonThemeData(style: pluginActionButtonStyle),
             child: Padding(
@@ -59,7 +62,7 @@ class PluginCompactHeader extends StatelessWidget {
                         icon: Badge(
                           isLabelVisible: unread,
                           smallSize: 7,
-                          child: pluginMark(plugin, size: 24, color: color),
+                          child: pluginMark(plugin, size: 24, color: markColor),
                         ),
                       ),
                     )
@@ -71,7 +74,7 @@ class PluginCompactHeader extends StatelessWidget {
                         child: Semantics(
                           label: plugin.title(context),
                           image: true,
-                          child: pluginMark(plugin, size: 24, color: color),
+                          child: pluginMark(plugin, size: 24, color: markColor),
                         ),
                       ),
                     ),
@@ -85,7 +88,7 @@ class PluginCompactHeader extends StatelessWidget {
                     services: services,
                     includeActions: true,
                     includeSearch: true,
-                    attention: reading?.attention ?? false,
+                    attention: [navigation, reading, following].any((content) => content?.attention ?? false),
                   ),
                 ],
               ),

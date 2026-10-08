@@ -64,7 +64,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "Cho phép những ứng dụng khác phát trong nền",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "Tiểu blog",
+  "alt_microblogging": "Mastodon & Bluesky",
   "@alt_microblogging": {},
   "alt_microblogging_group": "Nhóm các dịch vụ tiểu blog",
   "@alt_microblogging_group": {},
@@ -1281,6 +1281,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "Thêm trang booru",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "Thêm thẻ",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "Thêm vào tìm kiếm hiện tại",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1297,8 +1301,16 @@
   },
   "plugin_booru_clear_history": "Clear search history",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "Xóa các thẻ",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "Sửa dạng văn bản",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "Chạm để sửa",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "Hoặc",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Follow tags from search or a post to fill this tab",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "No recent posts for your followed tags",
@@ -1329,16 +1341,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Follow tag",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "Following {tag}",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "Loại trừ",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "Host URL",
@@ -1375,6 +1379,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Open video",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "Điểm cao nhất",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
@@ -1395,8 +1401,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "Chạm để thêm vào tìm kiếm · nhấn giữ để loại trừ",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "Thẻ liên quan",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "Xóa trang",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "Lưu tìm kiếm",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "Tìm kiếm đã lưu",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1411,6 +1425,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "No recent searches yet",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "Đã lưu tìm kiếm — bài đăng mới sẽ xuất hiện trong “{tab}”",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
@@ -1429,8 +1451,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Suggestions",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
@@ -1473,6 +1493,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "Xóa khỏi tìm kiếm đã lưu",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "Đang hiển thị danh sách nhận được gần nhất",
@@ -3611,5 +3633,51 @@
   "@sync_unsafe_server": {},
   "sync_history": "Các bản sao lưu trước",
   "@sync_history": {},
-  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển"
+  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển",
+  "reader_auto_retry_seconds": "Sẽ thử lại sau {seconds} giây…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Sẽ thử lại sau {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_download_page": "Tải trang này xuống",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Tải tất cả các trang xuống",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Tất cả các trang",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Sao chép liên kết",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Đã sao chép liên kết",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Thao tác khác",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Trang {current}/{total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Đang tải trang {current}/{total} xuống…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Thêm từ {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Phát hoạt ảnh",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Tạm dừng hoạt ảnh",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Ẩn tác phẩm do AI tạo",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Ẩn các tác phẩm được tác giả đánh dấu là do AI tạo. Dấu trang của bạn luôn hiển thị.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

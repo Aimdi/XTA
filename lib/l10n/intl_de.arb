@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "Andere Apps können Audio im Hintergrund abspielen, wenn diese App läuft",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "Microblogs",
+  "alt_microblogging": "Mastodon & Bluesky",
   "@alt_microblogging": {},
   "alt_microblogging_group": "Microblogging-Dienste gruppieren",
   "@alt_microblogging_group": {},
@@ -1284,6 +1284,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "Booru-Seite hinzufügen",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "Tag hinzufügen",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "Zur aktuellen Suche hinzufügen",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "API-Schlüssel",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — manche Hosts (Gelbooru, Danbooru) brauchen einen Schlüssel für zuverlässigen Zugriff.",
@@ -1300,8 +1304,16 @@
   },
   "plugin_booru_clear_history": "Suchverlauf löschen",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "Alle Tags entfernen",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Danbooru- und Gelbooru-Hosts durchsuchen — Tags in Gruppen folgen",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "Als Text bearbeiten",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "Tippen zum Bearbeiten",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "Oder",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Folge Tags über Suche oder Beitrag, um diesen Tab zu füllen",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "Keine aktuellen Beiträge für gefolgte Tags",
@@ -1332,16 +1344,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "Anfrage abgelehnt — Login und API-Schlüssel prüfen",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Tag folgen",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "{tag} wird gefolgt",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "Ausschließen",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Booru-Tags",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "Host-URL",
@@ -1378,6 +1382,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Video öffnen",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "Höchster Score",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Passwort-Hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru erwartet den SHA1-Hash der Seite, nicht das Klartextpasswort.",
@@ -1398,8 +1404,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensibel",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "Tippen fügt zur Suche hinzu · lang drücken schließt aus",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "Verwandte Tags",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "Seite entfernen",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "Suche speichern",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "Gespeicherte Suchen",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1414,6 +1428,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "Noch keine Suchen",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "Suche gespeichert – neue Beiträge erscheinen unter „{tab}“",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Inhalt",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Zugangsdaten",
@@ -1432,8 +1454,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Quelle",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Vorschläge",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Gefolgt",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Neueste",
@@ -1476,6 +1496,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "Aus gespeicherten Suchen entfernen",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "Angezeigt wird die zuletzt geladene Liste",
@@ -3614,5 +3636,51 @@
   "@sync_unsafe_server": {},
   "sync_history": "Frühere Backups",
   "@sync_history": {},
-  "home_keep_controls_visible": "Bedienelemente immer anzeigen"
+  "home_keep_controls_visible": "Bedienelemente immer anzeigen",
+  "reader_auto_retry_seconds": "Versuche es in {seconds} s erneut …",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Versuche es in {time} erneut …",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_download_page": "Diese Seite herunterladen",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Alle Seiten herunterladen",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Alle Seiten",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Link kopieren",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link kopiert",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Weitere Aktionen",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Seite {current} von {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Seite {current} von {total} wird heruntergeladen…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Mehr von {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Animation abspielen",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Animation anhalten",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "KI-generierte Werke ausblenden",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Blendet Werke aus, die ihre Urheber als KI-generiert gekennzeichnet haben. Deine eigenen Lesezeichen bleiben immer sichtbar.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "KI",
+  "@plugin_pixiv_ai": {}
 }

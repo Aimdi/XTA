@@ -107,25 +107,15 @@ abstract class XtaPlugin {
     await resetPreferences(prefs);
     await setEnabled(prefs, false);
 
-    final pinned = stringListPref(prefs, optionHomeFeedStripPlugins);
-    if (pinned != null && pinned.contains(id)) {
-      await prefs.set(
-        optionHomeFeedStripPlugins,
-        pinned.where((e) => e != id).toList(),
-      );
-    }
-    final seeded = stringListPref(prefs, optionSeededStripPlugins);
-    if (seeded != null && seeded.contains(id)) {
-      await prefs.set(
-        optionSeededStripPlugins,
-        seeded.where((e) => e != id).toList(),
-      );
-    }
+    await removeFromStringListPref(prefs, optionHomeFeedStripPlugins, id);
+    await removeFromStringListPref(prefs, optionSeededStripPlugins, id);
 
     final tab = homeTabPrefKey;
     if (tab != null) {
-      // Installing it again should offer the tab, as a first install does.
+      // Installing it again should offer the tab, as a first install does: the page list only adds a tab it has
+      // never seeded, so that memory goes too.
       await prefs.set(tab, true);
+      await removeFromStringListPref(prefs, optionSeededPluginTabs, id);
     }
 
     if (context.mounted) {

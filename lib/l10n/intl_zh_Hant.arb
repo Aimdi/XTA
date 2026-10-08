@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "當此應用程式執行時，其他應用程式可以在背景播放音訊",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "微網誌",
+  "alt_microblogging": "Mastodon & Bluesky",
   "@alt_microblogging": {},
   "alt_microblogging_group": "合併微網誌服務",
   "@alt_microblogging_group": {},
@@ -1284,6 +1284,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "新增 Booru 站點",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "新增標籤",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "加入目前的搜尋",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1300,8 +1304,16 @@
   },
   "plugin_booru_clear_history": "Clear search history",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "清除標籤",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "以文字編輯",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "輕觸即可編輯",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "或",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Follow tags from search or a post to fill this tab",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "No recent posts for your followed tags",
@@ -1332,16 +1344,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Follow tag",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "Following {tag}",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "排除",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "Host URL",
@@ -1378,6 +1382,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Open video",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "最高分",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
@@ -1398,8 +1404,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "輕觸加入搜尋 · 長按排除",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "相關標籤",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "移除站點",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "儲存搜尋",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "已儲存的搜尋",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1414,6 +1428,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "No recent searches yet",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "已儲存搜尋，新貼文會顯示在「{tab}」中",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
@@ -1432,8 +1454,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Suggestions",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
@@ -1476,6 +1496,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "從已儲存的搜尋中移除",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "正在顯示上次取得的清單",
@@ -3614,5 +3636,51 @@
   "@sync_unsafe_server": {},
   "sync_history": "先前的備份",
   "@sync_history": {},
-  "home_keep_controls_visible": "一律顯示控制項"
+  "home_keep_controls_visible": "一律顯示控制項",
+  "reader_auto_retry_seconds": "{seconds} 秒後重試…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "{time} 後重試…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_download_page": "下載本頁",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "下載全部頁面",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "全部頁面",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "複製連結",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "已複製連結",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "更多操作",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "第 {current} 頁，共 {total} 頁",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "正在下載第 {current} 頁，共 {total} 頁…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "{name} 的更多作品",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "播放動圖",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "暫停動圖",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "隱藏 AI 生成作品",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "隱藏作者標註為 AI 生成的作品。你自己的收藏始終可見。",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

@@ -1118,8 +1118,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                                   ),
                                 ),
                               ),
-                              if (!batches.loading && batches.failed.isNotEmpty)
+                              if (!batches.loading && batches.failed.isNotEmpty) ...[
+                                const Flexible(child: ScheduledReadRetry()),
                                 TextButton(onPressed: _retryBatches, child: Text(L10n.of(context).retry)),
+                              ],
                             ],
                           ),
                         ),

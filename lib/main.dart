@@ -1,6 +1,7 @@
 import 'package:xta/tweet/video_memory_observer.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
+import 'package:xta/ui/snack_bar_policy.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -448,9 +449,11 @@ Future<void> main() async {
   // moment later is already a supported state. Both start after first paint.
   setTimeagoLocales();
 
-  final prefService = await PrefServiceShared.init(
-    prefix: 'pref_',
-    defaults: {
+  final prefService = await PrefServiceShared.init(prefix: 'pref_');
+  // Every launch writes the defaults below, so no key yet means the first one.
+  final firstLaunch = prefService.getKeys().isEmpty;
+  await prefService.setDefaultValues(
+    {
       optionConfirmClose: true,
       optionDisableAnimations: false,
       optionGestureDoubleTapLike: false,
@@ -553,7 +556,7 @@ Future<void> main() async {
       optionPluginThreadsUseSessionApis: false,
       optionPluginBlueskyInHomeFeed: false,
       optionPluginMastodonInHomeFeed: false,
-      optionPluginRedditShowTab: false,
+      optionPluginRedditShowTab: true,
       optionPluginRedditSort: redditSortHot,
       optionPluginRedditTimeFilter: redditTimeFilterDay,
       optionPluginRedditFeedMode: redditFeedModeFollowing,
@@ -685,6 +688,7 @@ Future<void> main() async {
 
   await _migrateMediaQualityPrefs(prefService);
   await _migrateCollapseBoostsDefaultOff(prefService);
+  await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
 
   CrashReporter.install(prefService);
 
@@ -1346,7 +1350,10 @@ class _FritterAppState extends State<FritterApp> {
                   // Reading aloud outlives the article it started in, so the
                   // way to stop it has to be reachable from wherever the reader
                   // has gone. Nothing is added while nothing is being read.
-                  return UndoHost(child: SpeechBarScaffold(child: child ?? Container()));
+                  // Every route shares XtaScaffoldMessenger's timing rules.
+                  return XtaScaffoldMessenger(
+                    child: UndoHost(child: SpeechBarScaffold(child: child ?? Container())),
+                  );
                 },
               ),
             ),

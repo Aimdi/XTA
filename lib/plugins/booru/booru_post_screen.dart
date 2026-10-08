@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -7,12 +9,16 @@ import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
+import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 
 class BooruPostScreen extends StatelessWidget {
   final BooruPost post;
 
-  const BooruPostScreen({super.key, required this.post});
+  /// The search this post was opened from; its tags can be added to it.
+  final BooruSearchStore? search;
+
+  const BooruPostScreen({super.key, required this.post, this.search});
 
   @override
   Widget build(BuildContext context) {
@@ -129,14 +135,14 @@ class BooruPostScreen extends StatelessWidget {
                             await store.add(tag);
                           }
                         },
-                        child: ActionChip(
+                        child: InputChip(
                           label: Text(tag),
                           avatar: Icon(
                             tags.contains(tag)
                                 ? Icons.check
                                 : muted.contains(tag)
                                 ? Icons.volume_off
-                                : Icons.add,
+                                : Icons.sell_outlined,
                             size: 16,
                           ),
                           onPressed: () => Navigator.push(
@@ -146,6 +152,12 @@ class BooruPostScreen extends StatelessWidget {
                                   BooruSearchScreen(initialQuery: tag),
                             ),
                           ),
+                          deleteIcon: const Icon(Icons.playlist_add, size: 18),
+                          deleteButtonTooltipMessage:
+                              l10n.plugin_booru_add_to_search,
+                          onDeleted: search == null
+                              ? null
+                              : () => _addToSearch(context, tag),
                         ),
                       ),
                   ],
@@ -204,6 +216,11 @@ class BooruPostScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _addToSearch(BuildContext context, String tag) {
+    unawaited(search?.refine(tag));
+    Navigator.pop(context);
   }
 
   Future<void> _open(String url) async {

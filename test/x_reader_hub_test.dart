@@ -141,10 +141,7 @@ void main() {
       await accounts.destroy();
       await avatar.destroy();
       await tester.runAsync(() async {
-        final reader = await Repository.readOnly();
-        await reader.close();
-        final database = await Repository.writable();
-        await database.close();
+        await (await Repository.writable()).close();
         await directory!.delete(recursive: true);
       });
     });

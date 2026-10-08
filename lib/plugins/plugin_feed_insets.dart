@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 
@@ -10,7 +12,11 @@ const double kPluginStandaloneGutter = 24;
 
 /// Padding for a plugin timeline sitting under the home strip.
 EdgeInsets pluginFeedPadding(BuildContext context, {EdgeInsets extra = EdgeInsets.zero}) {
-  final bottom = PluginEmbedded.maybeOf(context) ? kPluginHomeNavClearance : kPluginStandaloneGutter;
+  // Home's floating bar adds its own height to the bottom padding; a fixed clearance alone left the last card under it.
+  final bottom = math.max(
+    PluginEmbedded.maybeOf(context) ? kPluginHomeNavClearance : 0.0,
+    MediaQuery.paddingOf(context).bottom + kPluginStandaloneGutter,
+  );
   return EdgeInsets.only(bottom: bottom).add(extra) as EdgeInsets;
 }
 
