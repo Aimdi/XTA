@@ -119,6 +119,34 @@ def apk_paths(directory):
     return paths
 
 
+def release_apk_name(tag, abis):
+    if abis == sorted(ABI_OFFSETS):
+        suffix = ""
+    elif len(abis) == 1 and abis[0] in ABI_OFFSETS:
+        suffix = f"_{abis[0]}"
+    else:
+        raise ValueError("Unsupported APK architecture set")
+    name = f"xta-{tag}{suffix}.apk"
+    require(Path(name).name == name, "Release tag cannot be used as an APK filename")
+    return name
+
+
+def release_apks(directory, tag):
+    inspected = [(path, inspect_apk(path)) for path in apk_paths(directory)]
+    if not tag:
+        return inspected
+    planned = [(path, path.with_name(release_apk_name(tag, details["abis"])), details)
+               for path, details in inspected]
+    require(len(planned) == 4 and len({target for _, target, _ in planned}) == 4,
+            "Release must contain all four unique APK variants")
+    require(all(path == target or (not target.exists() and not target.is_symlink())
+                for path, target, _ in planned), "Refusing to overwrite an APK destination")
+    for path, target, _ in planned:
+        if path != target:
+            path.rename(target)
+    return sorted(((target, details) for _, target, details in planned), key=lambda item: item[0].name)
+
+
 def record(directory, tag, checks_path):
     origin = source()
     if tag:
@@ -127,8 +155,8 @@ def record(directory, tag, checks_path):
     require(all(checks.get(key) == value for key, value in origin.items()), "Checks belong to different source")
     require(checks.get("checks") == [name for name, _ in CHECKS], "Source verification is incomplete")
     artifacts = []
-    for path in apk_paths(directory):
-        artifacts.append({"name": path.name, "sha256": digest(path), "size": path.stat().st_size, **inspect_apk(path)})
+    for path, details in release_apks(directory, tag):
+        artifacts.append({"name": path.name, "sha256": digest(path), "size": path.stat().st_size, **details})
     manifest = {
         "schema": 1,
         **origin,
