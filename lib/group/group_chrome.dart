@@ -188,52 +188,65 @@ class GroupTitleLabel extends StatelessWidget {
     this.trailing = const [],
   });
 
+  /// The mark only shows when the name keeps at least two touch targets' width beside it.
+  static const double markMinWidth =
+      kGroupTitleMarkSize + kTweetSpace3 + 2 * kTweetTouchTarget;
+
   @override
   Widget build(BuildContext context) {
+    final mark = this.mark;
+    return LayoutBuilder(
+      builder: (context, constraints) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (mark != null && constraints.maxWidth >= markMinWidth) ...[
+            mark,
+            const SizedBox(width: kTweetSpace3),
+          ],
+          Flexible(child: _lines(context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _lines(BuildContext context) {
     final theme = Theme.of(context);
     final titleStyle =
         theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge;
     final subtitle = this.subtitle;
-    final mark = this.mark;
-    return Row(
+    final nameStyle = subtitle == null
+        ? titleStyle
+        : titleStyle?.copyWith(fontSize: kGroupTitleNameSize);
+    return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (mark != null) ...[mark, const SizedBox(width: kTweetSpace3)],
-        Flexible(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: subtitle == null
-                          ? titleStyle
-                          : titleStyle?.copyWith(
-                              fontSize: kGroupTitleNameSize,
-                            ),
-                    ),
-                  ),
-                  ...trailing,
-                ],
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: nameStyle,
               ),
-              if (subtitle != null)
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-            ],
-          ),
+            ),
+            DefaultTextStyle.merge(
+              style: nameStyle,
+              child: Row(mainAxisSize: MainAxisSize.min, children: trailing),
+            ),
+          ],
         ),
+        if (subtitle != null)
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
       ],
     );
   }

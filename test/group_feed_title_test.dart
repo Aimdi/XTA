@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,7 +54,13 @@ class _FakeGroupsModel extends GroupsModel {
   }
 }
 
-Widget _app(GroupModel model, Widget title, {double textScale = 1}) {
+Widget _app(
+  GroupModel model,
+  Widget title, {
+  double textScale = 1,
+  CombinedGroupsStore? combined,
+  PreferredSizeWidget Function(Widget title)? appBar,
+}) {
   final prefs = PrefServiceCache(
     cache: {optionSubscriptionGroupsOrderByField: 'name', optionSubscriptionGroupsOrderByAscending: true},
   );
@@ -63,7 +70,7 @@ Widget _app(GroupModel model, Widget title, {double textScale = 1}) {
       providers: [
         Provider<GroupModel>.value(value: model),
         Provider<GroupsModel>(create: (_) => _FakeGroupsModel(prefs)),
-        Provider<CombinedGroupsStore>(create: (_) => CombinedGroupsStore()),
+        Provider<CombinedGroupsStore>(create: (_) => combined ?? CombinedGroupsStore()),
         Provider<FeedTabStore>(create: (_) => FeedTabStore(FeedTab.following)),
       ],
       child: MaterialApp(
@@ -79,7 +86,7 @@ Widget _app(GroupModel model, Widget title, {double textScale = 1}) {
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
           child: child!,
         ),
-        home: Scaffold(appBar: AppBar(title: title)),
+        home: Scaffold(appBar: appBar?.call(title) ?? AppBar(title: title)),
       ),
     ),
   );
@@ -166,5 +173,74 @@ void main() {
 
     expect(find.text('2 subscriptions'), findsOneWidget);
     expect(tester.getTopLeft(find.text('Anime')), before);
+  });
+
+  testWidgets('a pushed group on a 360dp phone keeps its name and drops the mark instead', (tester) async {
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final model = GroupModel('anime', reader: () async => _loaded(12));
+    addTearDown(model.destroy);
+    await model.loadGroup();
+
+    await tester.pumpWidget(
+      _app(
+        model,
+        GroupFeedTitle(name: 'Anime', groupId: 'anime', onSwitch: (_) {}),
+        appBar: (title) => AppBar(
+          leading: const BackButton(),
+          title: title,
+          actions: [
+            for (final icon in [Icons.search, Icons.build, Icons.arrow_upward, Icons.refresh]) Icon(icon),
+          ].map((icon) => IconButton(onPressed: () {}, icon: icon)).toList(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(GroupMark), findsNothing);
+    expect(tester.getSize(find.text('Anime')).width, greaterThan(0));
+  });
+
+  testWidgets('a narrow deck column title does not overflow', (tester) async {
+    tester.view.physicalSize = const Size(119, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final model = GroupModel('anime', reader: () async => _loaded(12));
+    addTearDown(model.destroy);
+    await model.loadGroup();
+
+    await tester.pumpWidget(
+      _app(
+        model,
+        const GroupFeedTitle(name: 'Anime', groupId: 'anime'),
+        appBar: (title) => AppBar(leading: const BackButton(), title: title),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the combined-groups count matches the name it follows', (tester) async {
+    final model = GroupModel('anime', reader: () async => _loaded(2));
+    final combined = CombinedGroupsStore()..toggle('art');
+    addTearDown(model.destroy);
+    addTearDown(combined.destroy);
+    await model.loadGroup();
+
+    await tester.pumpWidget(
+      _app(
+        model,
+        GroupFeedTitle(name: 'Anime', groupId: 'anime', onSwitch: (_) {}),
+        combined: combined,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final name = tester.renderObject<RenderParagraph>(find.text('Anime')).text.style;
+    final extra = tester.renderObject<RenderParagraph>(find.text('+1')).text.style;
+    expect(extra?.fontSize, name?.fontSize);
   });
 }
