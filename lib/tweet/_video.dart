@@ -45,22 +45,25 @@ class TweetVideoMetadata {
 
   TweetVideoMetadata(this.aspectRatio, this.imageUrl, this.streamUrlsBuilder);
 
+  /// The progressive MP4 variants, highest bitrate first.
+  static List<TweetVideoQuality> mp4Qualities(List<Variant> variants) =>
+      variants
+          .where((e) => e.bitrate != null)
+          .where((e) => e.url != null)
+          .where((e) => e.contentType == 'video/mp4')
+          .sorted((a, b) => -(a.bitrate!.compareTo(b.bitrate!)))
+          .map(
+            (e) => TweetVideoQuality(e.url!, _qualityLabel(e.url!, e.bitrate)),
+          )
+          .toList();
+
   static Future<TweetVideoUrls> Function() streamUrlsBuilderFromVariants(
     List<Variant> variants,
   ) {
     // Use progressive MP4, not X's HLS master playlist (variants[0]): libmpv
     // plays the .m3u8 poorly (delayed start, bad seek, phantom subtitle tracks).
     // Fall back to variants[0] only when no MP4 exists (e.g. live broadcasts).
-    var mp4Variants = variants
-        .where((e) => e.bitrate != null)
-        .where((e) => e.url != null)
-        .where((e) => e.contentType == 'video/mp4')
-        .sorted((a, b) => -(a.bitrate!.compareTo(b.bitrate!)))
-        .toList();
-
-    var qualities = mp4Variants
-        .map((e) => TweetVideoQuality(e.url!, _qualityLabel(e.url!, e.bitrate)))
-        .toList();
+    var qualities = mp4Qualities(variants);
 
     var mp4Url = qualities.isNotEmpty ? qualities.first.url : null;
     var streamUrl = mp4Url ?? variants[0].url!;
