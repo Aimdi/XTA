@@ -1,6 +1,7 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
+import 'package:xta/tweet/ticker/ticker_range.dart';
 
 /// In-memory last prints, shared by the stocks tab, the ticker page, and
 /// cashtags in the timeline.
@@ -8,6 +9,10 @@ import 'package:xta/tweet/ticker/ticker_quote.dart';
 /// A quote lives here for a couple of minutes so a `$AAPL` in the feed can
 /// show today's move without every tile asking the host again. Failures are
 /// swallowed: a missing price must not become an error banner on a post.
+///
+/// Every entry is a one-day quote: its baseline is the previous session's
+/// close, so the move beside a price is the day's move, and its bars are the
+/// day's intraday line a watchlist row draws as a sparkline.
 class TickerQuoteCache extends Store<Map<String, TickerQuote>> {
   TickerQuoteCache({TickerClient? client})
     : _client = client ?? TickerClient(),
@@ -28,23 +33,24 @@ class TickerQuoteCache extends Store<Map<String, TickerQuote>> {
     update({...state, key: quote});
   }
 
+  /// Fetches every symbol that is missing or stale, [_maxConcurrent] at a
+  /// time, so a long watchlist fills in completely rather than four rows.
   Future<void> ensure(Iterable<String> symbols) async {
-    final needed = [
+    final needed = {
       for (final raw in symbols)
         if (_shouldFetch(raw.toUpperCase())) raw.toUpperCase(),
-    ];
-    if (needed.isEmpty) {
-      return;
+    }.toList();
+    for (var i = 0; i < needed.length; i += _maxConcurrent) {
+      await Future.wait(needed.skip(i).take(_maxConcurrent).map(_fetchOne));
     }
+  }
 
-    final queued = <Future<void>>[];
-    for (final symbol in needed) {
-      if (queued.length >= _maxConcurrent) {
-        break;
-      }
-      queued.add(_fetchOne(symbol));
+  /// Pull-to-refresh: forget when [symbols] were fetched, then fetch them.
+  Future<void> refresh(Iterable<String> symbols) {
+    for (final raw in symbols) {
+      _fetchedAt.remove(raw.toUpperCase());
     }
-    await Future.wait(queued);
+    return ensure(symbols);
   }
 
   bool _shouldFetch(String key) {
@@ -60,7 +66,12 @@ class TickerQuoteCache extends Store<Map<String, TickerQuote>> {
     try {
       remember(
         symbol,
-        await _client.fetchQuote(symbol, range: '5d', interval: '1d'),
+        await _client.fetchQuote(
+          symbol,
+          range: TickerRange.day.range,
+          interval: TickerRange.day.interval,
+          includePrePost: true,
+        ),
       );
     } on TickerException {
       _fetchedAt[symbol] = DateTime.now();

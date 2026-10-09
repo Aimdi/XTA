@@ -53,17 +53,17 @@ void main() {
         final client = TickerClient(
           httpClient: MockClient((request) async {
             asked.add(request.url.pathSegments.last);
-            if (request.url.path.endsWith('BTC-USD')) {
-              return http.Response(_chart('BTC-USD'), 200);
+            if (request.url.path.endsWith('SHIB-USD')) {
+              return http.Response(_chart('SHIB-USD'), 200);
             }
             return http.Response('no', 404);
           }),
         );
 
-        final quote = await client.fetchQuote('BTC');
+        final quote = await client.fetchQuote('SHIB');
 
-        expect(quote.symbol, 'BTC-USD');
-        expect(asked, ['BTC', 'BTC-USD']);
+        expect(quote.symbol, 'SHIB-USD');
+        expect(asked, ['SHIB', 'SHIB-USD']);
       },
     );
 

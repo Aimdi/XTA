@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
+import 'package:xta/plugins/stocks/stocks_quote_row.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/ui/x_controls.dart';
 
@@ -29,7 +30,7 @@ class StocksWatchlistReel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48 + MediaQuery.textScalerOf(context).scale(assets.isEmpty ? 30 : 46),
+      height: 48 + MediaQuery.textScalerOf(context).scale(assets.isEmpty ? 36 : 52),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -79,8 +80,6 @@ class _WatchlistChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final price = quote?.displayPrice;
-    final percent = quote?.changePercent;
-    final colour = percent == null ? theme.colorScheme.outline : stockChangeColour(quote?.isUp);
     final outline = selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant;
 
     return Semantics(
@@ -110,46 +109,20 @@ class _WatchlistChip extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      price == null ? kStockPlaceholder : stockAssetPrice(price),
+                      price == null ? kStockPlaceholder : stockPrice(price),
                       style: theme.textTheme.bodySmall!.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: price == null ? theme.colorScheme.outline : theme.colorScheme.onSurface,
+                        fontFeatures: kStockFigures,
+                        color: price == null ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 6),
-                    _ChangePill(percent: percent, colour: colour),
+                    StocksChangeChip(percent: quote?.changePercent),
                   ],
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ChangePill extends StatelessWidget {
-  final double? percent;
-  final Color colour;
-
-  const _ChangePill({required this.percent, required this.colour});
-
-  @override
-  Widget build(BuildContext context) {
-    final label = percent == null ? kStockPlaceholder : stockPercentLabel(percent!);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        color: percent == null ? Theme.of(context).colorScheme.surfaceContainerHighest : colour.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-          fontWeight: FontWeight.w800,
-          color: percent == null ? Theme.of(context).colorScheme.outline : colour,
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/plugins/stocks/crypto_address.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/crypto_client.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
@@ -13,6 +14,11 @@ class StocksSearchState {
   final bool failed;
   final List<TickerSearchHit> stocks;
   final List<CryptoMarket> tokens;
+
+  /// Set when the query is a pasted contract address: the results are then
+  /// that exact contract on each network it exists on, not a name search.
+  final CryptoAddressInput? address;
+
   const StocksSearchState({
     this.query = '',
     this.crypto = false,
@@ -20,6 +26,7 @@ class StocksSearchState {
     this.failed = false,
     this.stocks = const [],
     this.tokens = const [],
+    this.address,
   });
 }
 
@@ -31,28 +38,35 @@ class StocksSearchStore extends Store<StocksSearchState> {
   bool _closed = false;
   StocksSearchStore({required this.tickerClient, required this.cryptoClient}) : super(const StocksSearchState());
 
+  /// A pasted address switches to crypto on its own: no stock has one, and
+  /// the reader should not have to find the right chip first.
   void change(String query, {bool? crypto, bool immediate = false}) {
     _debounce?.cancel();
     final generation = ++_generation;
-    final isCrypto = crypto ?? state.crypto;
-    update(StocksSearchState(query: query.trim(), crypto: isCrypto, loading: query.trim().isNotEmpty));
-    if (query.trim().isEmpty) return;
-    if (immediate) {
-      unawaited(_search(state.query, isCrypto, generation));
+    final trimmed = query.trim();
+    final address = detectCryptoAddress(trimmed);
+    final isCrypto = address != null || (crypto ?? state.crypto);
+    update(StocksSearchState(query: trimmed, crypto: isCrypto, address: address, loading: trimmed.isNotEmpty));
+    if (trimmed.isEmpty) return;
+    void run() => _search(trimmed, isCrypto, address, generation);
+    if (immediate || address != null) {
+      run();
     } else {
-      _debounce = Timer(const Duration(milliseconds: 300), () => _search(state.query, isCrypto, generation));
+      _debounce = Timer(const Duration(milliseconds: 300), run);
     }
   }
 
-  Future<void> _search(String query, bool crypto, int generation) async {
+  Future<void> _search(String query, bool crypto, CryptoAddressInput? address, int generation) async {
     try {
       final stocks = crypto ? <TickerSearchHit>[] : await tickerClient.searchSymbols(query);
-      final tokens = crypto ? await cryptoClient.search(query) : <CryptoMarket>[];
+      final tokens = address != null
+          ? await cryptoClient.resolve(address)
+          : (crypto ? await cryptoClient.search(query) : <CryptoMarket>[]);
       if (_closed || generation != _generation) return;
-      update(StocksSearchState(query: query, crypto: crypto, stocks: stocks, tokens: tokens));
+      update(StocksSearchState(query: query, crypto: crypto, address: address, stocks: stocks, tokens: tokens));
     } catch (_) {
       if (_closed || generation != _generation) return;
-      update(StocksSearchState(query: query, crypto: crypto, failed: true));
+      update(StocksSearchState(query: query, crypto: crypto, address: address, failed: true));
     }
   }
 

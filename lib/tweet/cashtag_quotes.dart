@@ -77,9 +77,6 @@ class _QuoteChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final percent = quote.changePercent;
-    final colour = percent == null
-        ? theme.colorScheme.outline
-        : stockChangeColour(quote.isUp);
     final price = quote.displayPrice;
 
     return ActionChip(
@@ -87,13 +84,13 @@ class _QuoteChip extends StatelessWidget {
       label: Text(
         [
           '\$$symbol',
-          if (price != null) stockMoneyFormat.format(price),
+          if (price != null) stockPrice(price),
           if (percent != null) stockPercentLabel(percent),
         ].join('  '),
       ),
       labelStyle: theme.textTheme.labelMedium!.copyWith(
         fontWeight: FontWeight.w700,
-        color: colour,
+        color: stockTrendColour(context, percent),
       ),
       onPressed: () => openTicker(context, symbol),
     );

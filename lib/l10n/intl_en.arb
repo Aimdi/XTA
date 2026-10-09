@@ -4101,5 +4101,76 @@
   "sort_most_followers": "Most followers",
   "@sort_most_followers": {
     "description": "Order option for people who reposted: accounts with the most followers first"
+  },
+  "plugin_stocks_open": "Open",
+  "@plugin_stocks_open": {
+    "description": "Stat label: the price at which today's trading session opened (a noun, not the verb)."
+  },
+  "plugin_stocks_prev_close": "Prev. close",
+  "@plugin_stocks_prev_close": {
+    "description": "Stat label: closing price of the previous trading session."
+  },
+  "plugin_stocks_market_open": "Market open",
+  "@plugin_stocks_market_open": {
+    "description": "Status label: the exchange is in its regular trading session right now."
+  },
+  "plugin_stocks_market_closed": "Market closed",
+  "@plugin_stocks_market_closed": {
+    "description": "Status label: the exchange is not trading right now."
+  },
+  "plugin_stocks_data_unavailable": "Market data could not be loaded",
+  "@plugin_stocks_data_unavailable": {
+    "description": "Error shown when prices, trending tickers or search results fail to load."
+  },
+  "plugin_stocks_market_cap": "Market cap",
+  "@plugin_stocks_market_cap": {
+    "description": "Stat label: market capitalisation."
+  },
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {
+    "description": "Stat label: fully diluted valuation of a crypto token. Keep the abbreviation if crypto apps in the language use it."
+  },
+  "plugin_stocks_liquidity": "Liquidity",
+  "@plugin_stocks_liquidity": {
+    "description": "Stat label: USD value locked in the token's trading pool."
+  },
+  "plugin_stocks_volume_24h": "24h volume",
+  "@plugin_stocks_volume_24h": {
+    "description": "Stat label: trading volume over the last 24 hours."
+  },
+  "plugin_stocks_change_hours": "{hours}h change",
+  "@plugin_stocks_change_hours": {
+    "description": "Stat label: price change over the last N hours, e.g. '6h change'.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_stocks_crypto_address_copied": "Contract address copied",
+  "@plugin_stocks_crypto_address_copied": {
+    "description": "Snackbar after long-pressing a token to copy its contract address."
+  },
+  "plugin_stocks_crypto_no_token": "No token found for this contract address",
+  "@plugin_stocks_crypto_no_token": {
+    "description": "Shown in the add sheet when a pasted contract address matches no token on any network."
+  },
+  "plugin_stocks_crypto_include_cashtag": "Include {cashtag} posts",
+  "@plugin_stocks_crypto_include_cashtag": {
+    "description": "Filter chip: also show posts that use the token's cashtag (e.g. $PEPE), not only its contract address.",
+    "placeholders": {
+      "cashtag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_stocks_crypto_posts_hint_cashtag": "Posts match this contract address or {cashtag}. Other tokens can use the same symbol.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {
+    "description": "Hint above a token's posts when its cashtag is included in the search.",
+    "placeholders": {
+      "cashtag": {
+        "type": "String"
+      }
+    }
   }
 }
