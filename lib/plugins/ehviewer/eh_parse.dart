@@ -546,3 +546,27 @@ String? _decodeAttr(String? raw) {
   if (raw == null || raw.isEmpty) return null;
   return _decode(raw);
 }
+
+/// `tagsuggest` answers with its tags keyed by id (or an empty list). An
+/// alias carries its master tag (`mns`, `mtn`), which is the one to search.
+List<EhTag> parseEhTagSuggestions(Object? raw) {
+  final tags = Json(raw)['tags'];
+  final items = tags.raw is Map
+      ? (tags.raw as Map).values.map(Json.new)
+      : tags.list;
+  final seen = <String>{};
+  return [
+    for (final item in items)
+      if (_suggestion(item) case final tag? when seen.add(tag.raw)) tag,
+  ];
+}
+
+EhTag? _suggestion(Json item) {
+  final alias = item['mtn'].string != null;
+  final name = (alias ? item['mtn'] : item['tn']).string?.trim();
+  if (name == null || name.isEmpty) return null;
+  return EhTag(
+    EhNamespace.tryParse((alias ? item['mns'] : item['ns']).string),
+    name,
+  );
+}
