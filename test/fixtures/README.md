@@ -12,6 +12,8 @@ responses over hand-written stubs.
 | `UserTweets/add_entries.json` | Slim `TimelineAddEntries` from guest `UserTweets` | `Twitter.createTweetChains` |
 | `Retweeters/ok.json` | Hand-shaped `Retweeters` timeline (`user_results` + cursor) | `TimelineParser.retweetersInstructions` / `parseUsersTimeline` |
 | `Retweeters/module.json` | Hand-shaped Retweeters `TimelineTimelineModule` + `userResults` | `TimelineParser.parseUsersTimeline` |
+| `UnifiedCard/image_carousel_website.json` | Card of a recorded `TweetResultByRestId` (QuaX fixture, MIT), trimmed to two pictures | `CarouselCardData`, `TweetCard` |
+| `UnifiedCard/grok_share.json` | Card of a recorded `TweetResultByRestId` (QuaX fixture, MIT), conversation text shortened | `GrokShareCardData`, `TweetCard` |
 
 Guest `TweetDetail` returned 404; tweet shapes were taken from `UserTweets`
 instead. No auth tokens are stored in these files.

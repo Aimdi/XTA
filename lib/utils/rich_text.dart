@@ -14,6 +14,7 @@ import 'package:xta/utils/_entities.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
+import 'package:xta/utils/urls.dart';
 
 /// Turning a post's text and its entity list into spans.
 ///
@@ -197,11 +198,15 @@ List<InlineSpan> displayRichText(List<RichTextPart> richText) {
 
 /// All of a post's runs, in order: the entities where X placed them, and the
 /// text between them scanned for what descriptions leave unmarked.
+///
+/// [hideGrokShareLinks] drops the links to a shared Grok conversation that the
+/// post's card already shows.
 List<RichTextPart> buildRichText(
   BuildContext context,
   String rawText,
-  Object? rawEntities,
-) {
+  Object? rawEntities, {
+  bool hideGrokShareLinks = false,
+}) {
   final runes = rawText.runes.toList(growable: false);
 
   final recognizers = <GestureRecognizer>[];
@@ -216,7 +221,11 @@ List<RichTextPart> buildRichText(
     },
   );
 
-  final entities = _parseEntities(context, rawEntities);
+  final entities = _parseEntities(
+    context,
+    rawEntities,
+    hideGrokShareLinks: hideGrokShareLinks,
+  );
   final parts = <RichTextPart>[];
 
   var index = 0;
@@ -320,7 +329,11 @@ String? _runesToText(List<int> runes, int start, [int? end]) {
   return _unescape.convert(string);
 }
 
-List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
+List<Entity> _parseEntities(
+  BuildContext context,
+  Object? rawEntities, {
+  bool hideGrokShareLinks = false,
+}) {
   if (rawEntities == null) {
     return const [];
   }
@@ -414,7 +427,7 @@ List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
         // hand it to the browser when none claims it.
         if (!context.mounted) return;
         await openLink(context, uri);
-      }),
+      }, hidden: hideGrokShareLinks && grokShareIdIn(url.expandedUrl) != null),
     );
   }
 

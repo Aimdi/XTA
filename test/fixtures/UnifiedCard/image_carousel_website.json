@@ -1,0 +1,13 @@
+{
+  "name": "unified_card",
+  "url": "card://2082854527430967296",
+  "binding_values": [
+    {
+      "key": "unified_card",
+      "value": {
+        "type": "STRING",
+        "string_value": "{\"type\":\"image_carousel_website\",\"component_objects\":{\"details_1\":{\"type\":\"details\",\"data\":{\"title\":{\"content\":\"\\ud83d\\udd17  Tap to read\",\"is_rtl\":false},\"subtitle\":{\"content\":\"uefa.com\",\"is_rtl\":false},\"destination\":\"browser_1\"}},\"swipeable_media_1\":{\"type\":\"swipeable_media\",\"data\":{\"media_list\":[{\"id\":\"3_2082854064501489664\",\"destination\":\"browser_1\"},{\"id\":\"3_2082853967843762176\",\"destination\":\"browser_1\"}]}}},\"destination_objects\":{\"browser_1\":{\"type\":\"browser\",\"data\":{\"url_data\":{\"url\":\"https://www.uefa.com/news-media/news/02a7-213a92896eb0-54dfbf454e3b-1000--statement-on-behalf-of-uefa-and-its-55-national-associations/\",\"vanity\":\"uefa.com\"}}}},\"components\":[\"swipeable_media_1\",\"details_1\"],\"media_entities\":{\"3_2082854064501489664\":{\"id_str\":\"2082854064501489664\",\"media_url_https\":\"https://pbs.twimg.com/media/HOfIvHmXAAAHq_8.jpg\",\"type\":\"photo\",\"original_info\":{\"width\":1080,\"height\":1350},\"sizes\":{\"large\":{\"w\":1080,\"h\":1350,\"resize\":\"fit\"}}},\"3_2082853967843762176\":{\"id_str\":\"2082853967843762176\",\"media_url_https\":\"https://pbs.twimg.com/media/HOfIpfhXIAAgE5C.jpg\",\"type\":\"photo\",\"original_info\":{\"width\":1080,\"height\":1350},\"sizes\":{\"large\":{\"w\":1080,\"h\":1350,\"resize\":\"fit\"}}}}}"
+      }
+    }
+  ]
+}

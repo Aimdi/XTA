@@ -102,13 +102,17 @@ class UrlEntity extends Entity {
   final Url url;
   final VoidCallback onTap;
 
-  UrlEntity(this.url, this.onTap) : super(url.indices);
+  /// Set when a card under the text already shows where the link leads.
+  final bool hidden;
+
+  UrlEntity(this.url, this.onTap, {this.hidden = false}) : super(url.indices);
 
   @override
   InlineSpan getContent(EntitySpanContext context) {
     // An article or broadcast link is shown as its own block under the text,
     // so leaving the URL in the text too would say the same thing twice.
-    if (articleIdIn(url.expandedUrl) != null ||
+    if (hidden ||
+        articleIdIn(url.expandedUrl) != null ||
         broadcastIdIn(url.expandedUrl) != null ||
         spaceIdIn(url.expandedUrl) != null) {
       return const TextSpan(text: '');

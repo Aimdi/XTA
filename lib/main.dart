@@ -1490,6 +1490,9 @@ class _DefaultPageState extends State<DefaultPage> {
       case LiveUriInfo(url: final watchUrl):
         await openLivePlayerFromUrl(context, watchUrl);
         return;
+      case GrokShareUriInfo(url: final url):
+        await openPostLink(context, url);
+        return;
       case UnknownResult():
         showDialog(
           context: context,

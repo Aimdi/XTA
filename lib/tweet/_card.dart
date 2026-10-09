@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +8,10 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
+import 'package:xta/tweet/grok_share_card.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/unified_card.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -50,26 +50,14 @@ class _TweetCardState extends State<TweetCard> {
   @override
   void initState() {
     super.initState();
-    _unifiedCard = _decodeUnifiedCard(widget.card);
+    _unifiedCard = unifiedCardOf(widget.card);
   }
 
   @override
   void didUpdateWidget(TweetCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(widget.card, oldWidget.card)) {
-      _unifiedCard = _decodeUnifiedCard(widget.card);
-    }
-  }
-
-  static Map<String, dynamic>? _decodeUnifiedCard(Map<String, dynamic>? card) {
-    final raw = Json(card)['binding_values']['unified_card']['string_value'].string;
-    if (raw == null) return null;
-
-    try {
-      return jsonDecode(raw) as Map<String, dynamic>;
-    } catch (e) {
-      TweetCard.log.severe('Unable to decode the unified card');
-      return null;
+      _unifiedCard = unifiedCardOf(widget.card);
     }
   }
 
@@ -356,9 +344,47 @@ class _TweetCardState extends State<TweetCard> {
           sensitive: false,
         );
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
+      case 'image_carousel_website':
+        return _createCarouselCard(context, unifiedCard, imageSize);
+      case null when GrokShareCardData.isGrokShare(unifiedCard):
+        return _createGrokShareCard(context, unifiedCard);
       default:
         return Container();
     }
+  }
+
+  /// Every picture of the carousel in the media row, above the page they lead to.
+  Widget _createCarouselCard(
+    BuildContext context,
+    Map<String, dynamic> unifiedCard,
+    String imageSize,
+  ) {
+    final carousel = CarouselCardData.fromUnified(unifiedCard);
+    if (carousel == null) return Container();
+    final media = TweetMedia(
+      media: carousel.media,
+      username: widget.tweet.user?.screenName ?? '',
+      sensitive: false,
+    );
+    return _createWebsiteCard(
+      context,
+      unifiedCard,
+      carousel.url,
+      imageSize,
+      media,
+    );
+  }
+
+  Widget _createGrokShareCard(
+    BuildContext context,
+    Map<String, dynamic> unifiedCard,
+  ) {
+    final share = GrokShareCardData.fromUnified(unifiedCard);
+    if (share == null) return Container();
+    return GrokShareCard(
+      share: share,
+      onTap: () => _openLink(context, share.url, null),
+    );
   }
 
   Widget _createVoteCard(BuildContext context, Map<String, dynamic> card, int numberOfChoices) {

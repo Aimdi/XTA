@@ -62,6 +62,26 @@ String? articleIdIn(String? url) {
   return parts[2];
 }
 
+/// The conversation id in an `x.com/i/grok/share/…` link, or null if it is
+/// not one.
+///
+/// A shared Grok conversation is no post, profile or list, so it used to read
+/// as an unknown X link. Only X's web page can show the whole of it.
+String? grokShareIdIn(String? url) {
+  final uri = Uri.tryParse(url?.trim() ?? '');
+  if (uri == null || !_xHosts.contains(uri.host.toLowerCase())) {
+    return null;
+  }
+  final parts = uri.pathSegments.where((e) => e.isNotEmpty).toList(growable: false);
+  if (parts.length < 4 ||
+      parts[0] != 'i' ||
+      parts[1] != 'grok' ||
+      parts[2] != 'share') {
+    return null;
+  }
+  return parts[3];
+}
+
 /// The broadcast id in an `x.com/i/broadcasts/…` (or `/i/broadcast/…`,
 /// `pscp.tv/w/…`) link, or null if it is not one.
 ///
@@ -240,6 +260,11 @@ Future<void> openInDefaultBrowser(String url) async {
   await intent.launch();
 }
 
+/// True when [url] is an X page XTA has no screen for and must leave to a
+/// browser: a VIEW of it without a named browser would reopen this app.
+bool _needsNamedBrowser(String url) =>
+    isLiveWatchUrl(url) || grokShareIdIn(url) != null;
+
 /// True when [url] is an X broadcast, Periscope watch link, or Space.
 ///
 /// In-app playback goes through the live player screen. A generic VIEW of
@@ -267,7 +292,7 @@ Future<bool> _openInNamedBrowser(String url, String? package) async {
   }
 }
 
-/// Opens a broadcast or Space in a real browser.
+/// Opens a broadcast, Space or shared Grok conversation in a real browser.
 ///
 /// Custom Tabs and a named browser package never bounce back into XTA.
 /// [openExternally] is not used: its fallback is a generic VIEW of x.com.
@@ -302,10 +327,10 @@ Future<void> openLiveUrl(BuildContext context, String uri) async {
 /// asked for that in settings, otherwise in the browser they named — or the
 /// system default, if they named none.
 ///
-/// Broadcasts and Spaces always go through [openLiveUrl]: a generic VIEW of
-/// x.com would reopen this app and show "unable to open link".
+/// Broadcasts, Spaces and Grok shares always go through [openLiveUrl]: a
+/// generic VIEW of x.com would reopen this app instead of a browser.
 Future<void> openUri(BuildContext context, String uri) async {
-  if (isLiveWatchUrl(uri)) {
+  if (_needsNamedBrowser(uri)) {
     await openLiveUrl(context, uri);
     return;
   }
@@ -455,6 +480,14 @@ Future<String?> _resolveShortUrl(Uri shortUrl) async {
 
 class UnknownResult extends UriParseResult {}
 
+/// An `x.com/i/grok/share/{id}` link: a shared Grok conversation, which only
+/// X's web page shows in full.
+class GrokShareUriInfo extends UriParseResult {
+  final String url;
+
+  GrokShareUriInfo(this.url);
+}
+
 /// An `x.com/i/broadcasts/{id}` or `x.com/i/spaces/{id}` (or pscp.tv) link.
 ///
 /// In-app playback is the live player screen. parseUri still returns this so
@@ -499,6 +532,9 @@ Future<UriParseResult> parseUri(Uri link) async {
   final liveInfo = _parseAsLiveLink(link);
   if (liveInfo != null) {
     return liveInfo;
+  }
+  if (grokShareIdIn(link.toString()) != null) {
+    return GrokShareUriInfo(link.toString());
   }
   final profileInfo = _parseAsProfileLink(parts);
   if (profileInfo != null) {

@@ -19,6 +19,7 @@ import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/avatar_follow_badge.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/unified_card.dart';
 import 'package:xta/tweet/tweet_header.dart';
 import 'package:xta/tweet/tweet_post_menu.dart';
 import 'package:xta/tweet/focal_post.dart';
@@ -204,6 +205,7 @@ class TweetTileState extends State<TweetTile> {
       context,
       tweetTextFinal,
       entitiesFinal,
+      hideGrokShareLinks: isGrokShareCard(actualTweet.card),
     );
     // A re-initialisation (element reused for another tweet) replaces the
     // lists; the old ones' recognizers go with them.
@@ -299,6 +301,7 @@ class TweetTileState extends State<TweetTile> {
         context,
         res.body['result']['text'],
         res.body['result']['entities'],
+        hideGrokShareLinks: isGrokShareCard(_displayedTweet.card),
       );
 
       // We cache the translated parts in a property in case the user swaps back and forth
