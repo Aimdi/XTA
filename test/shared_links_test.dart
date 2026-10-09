@@ -55,4 +55,46 @@ void main() {
     final client = MockClient((_) async => throw StateError('unexpected request'));
     expect((await resolveSharedXLink('https://twitter.com/reader', client: client))?.path, '/reader');
   });
+
+  group('sharedTargetOf', () {
+    test('an X link opens on the X screens, even after another link', () {
+      final target = sharedTargetOf('About https://example.com/story via https://x.com/reader/status/1');
+      expect(target, isA<SharedXTarget>());
+      expect((target as SharedXTarget).link.path, '/reader/status/1');
+    });
+
+    test('another network\'s link is handed to the link opener, caption and all', () {
+      for (final url in [
+        'https://bsky.app/profile/reader.bsky.social/post/3k',
+        'https://mastodon.social/@reader/111',
+        'https://www.threads.net/@reader/post/C1',
+        'https://www.reddit.com/r/flutter/comments/abc/title/',
+        'https://reader.substack.com/p/a-post',
+      ]) {
+        final target = sharedTargetOf('Worth a read: $url.');
+        expect(target, isA<SharedWebTarget>(), reason: url);
+        expect((target as SharedWebTarget).link.toString(), url, reason: url);
+      }
+    });
+
+    test('a link with credentials in it is not opened', () {
+      expect(sharedTargetOf('https://user@example.com/page'), isA<SharedSearchTarget>());
+    });
+
+    test('text without a link becomes a search, its whitespace collapsed', () {
+      final target = sharedTargetOf('  flutter\n  release   notes ');
+      expect((target as SharedSearchTarget).query, 'flutter release notes');
+    });
+
+    test('a long share is cut to what X search accepts, without splitting a character', () {
+      final query = (sharedTargetOf('😀' * 600) as SharedSearchTarget).query;
+      expect(query.runes.length, 500);
+      expect(query, '😀' * 500);
+    });
+
+    test('an empty share opens nothing', () {
+      expect(sharedTargetOf(''), isA<SharedNothing>());
+      expect(sharedTargetOf(' \n\t'), isA<SharedNothing>());
+    });
+  });
 }

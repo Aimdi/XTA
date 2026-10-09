@@ -90,6 +90,7 @@ import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/saved_folders_screen.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/links/link_opening.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_top_bar_pins.dart';
 import 'package:xta/search/search.dart';
@@ -1418,20 +1419,36 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Future<void> _handleSharedText(String text) async {
     try {
-      final link = await resolveSharedXLink(text);
-      if (!mounted) return;
-      if (link == null) {
-        showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
-        return;
-      }
-      await handleInitialLink(link);
+      await switch (sharedTargetOf(text)) {
+        SharedXTarget() => _openSharedXLink(text),
+        SharedWebTarget(link: final link) => openPostLink(
+          context,
+          link.toString(),
+        ),
+        SharedSearchTarget(query: final query) => submitScopedSearch(
+          context,
+          query,
+        ),
+        SharedNothing() => _cannotOpenShare(),
+      };
     } catch (error, stackTrace) {
-      log.warning('Unable to open shared X link', error, stackTrace);
-      if (mounted) {
-        showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
-      }
+      log.warning('Unable to open shared text', error, stackTrace);
+      if (mounted) await _cannotOpenShare();
     }
   }
+
+  Future<void> _openSharedXLink(String text) async {
+    final link = await resolveSharedXLink(text);
+    if (!mounted) return;
+    if (link == null) return _cannotOpenShare();
+    await handleInitialLink(link);
+  }
+
+  Future<void> _cannotOpenShare() async => showSnackBar(
+    context,
+    icon: '🔗',
+    message: L10n.of(context).unable_to_open_link,
+  );
 
   Future<void> handleInitialLink(Uri link) async {
     if (await openWithPlugins(context, link.toString())) {

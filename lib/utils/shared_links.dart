@@ -24,15 +24,64 @@ bool _supported(Uri uri) =>
     !uri.hasPort &&
     _shareHosts.contains(uri.host.toLowerCase());
 
-/// Shares often contain the post's caption before the actual link.
-Uri? extractSharedXLink(String text) {
+/// Every web link in [text], in order, trailing punctuation trimmed.
+Iterable<Uri> _sharedLinks(String text) sync* {
   final urls = RegExp(r'''https?://[^\s<>"\u200b]+''', caseSensitive: false);
   for (final match in urls.allMatches(text)) {
     final candidate = match.group(0)!.replaceFirst(RegExp(r'''[)\]}>.,!?;:'"]+$'''), '');
     final uri = Uri.tryParse(candidate);
-    if (uri != null && _supported(uri)) return uri;
+    if (uri != null) yield uri;
   }
-  return null;
+}
+
+/// Shares often contain the post's caption before the actual link.
+Uri? extractSharedXLink(String text) => _sharedLinks(text).where(_supported).firstOrNull;
+
+bool _isWebLink(Uri uri) =>
+    (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty && uri.userInfo.isEmpty;
+
+/// X caps a search query at 500 characters.
+const _maxSharedQuery = 500;
+
+/// What a piece of text shared to the app from another one asks to open.
+sealed class SharedTarget {
+  const SharedTarget();
+}
+
+/// An X post, profile or short link: opened on the native X screens.
+final class SharedXTarget extends SharedTarget {
+  final Uri link;
+  const SharedXTarget(this.link);
+}
+
+/// Any other web page: a native screen when a plugin reads it, else the browser.
+final class SharedWebTarget extends SharedTarget {
+  final Uri link;
+  const SharedWebTarget(this.link);
+}
+
+/// Text without a link, searched for.
+final class SharedSearchTarget extends SharedTarget {
+  final String query;
+  const SharedSearchTarget(this.query);
+}
+
+/// Nothing to open: an empty share.
+final class SharedNothing extends SharedTarget {
+  const SharedNothing();
+}
+
+/// Routes a share. An X link wins over any other link in the text, since a
+/// caption can quote a page the post is about; a share with no link at all is
+/// a search.
+SharedTarget sharedTargetOf(String text) {
+  final xLink = extractSharedXLink(text);
+  if (xLink != null) return SharedXTarget(xLink);
+  final webLink = _sharedLinks(text).where(_isWebLink).firstOrNull;
+  if (webLink != null) return SharedWebTarget(webLink);
+  final query = text.trim().replaceAll(RegExp(r'\s+'), ' ');
+  if (query.isEmpty) return const SharedNothing();
+  return SharedSearchTarget(String.fromCharCodes(query.runes.take(_maxSharedQuery)).trim());
 }
 
 /// Resolve only X short links, without following redirects to arbitrary hosts.
