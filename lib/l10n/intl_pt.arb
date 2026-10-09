@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "A ler mais {count} em conjunto",
   "@group_combined_count": {},
-  "group_discovery_ai": "Encontrar contas semelhantes com IA",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Descobre contas que não segues com base nos membros deste grupo. Abre um perfil para o seguir ou adicionar a um grupo.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Ainda não foram encontradas contas semelhantes que não sigas. Tenta novamente quando os membros partilharem mais publicações.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Não foi possível carregar algumas fontes. Puxa para baixo para tentar novamente.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Com base em {read} de 1 membro} other{Com base em {read} de {total} membros}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Procurar mais",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Partilhado por {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Citado por {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Resposta de {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Mencionado por {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Seguido por 1 membro} other{Seguido por {count} membros}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "O Bluesky sugere isto para {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Semelhante às obras de {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{e mais 1} other{e mais {count}}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Adicionar a “{group}”",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Adicionado",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Outros grupos…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Abrir perfil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Repor sugestões",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Mostrar publicação",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Encontrar contas semelhantes com IA",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{e mais 1} other{e mais {count}}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Com base em {read} de 1 membro} other{Com base em {read} de {total} membros}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Descobre contas que não segues com base nos membros deste grupo. Abre um perfil para o seguir ou adicionar a um grupo.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Ainda não foram encontradas contas semelhantes que não sigas. Tenta novamente quando os membros partilharem mais publicações.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Sugestões atualizadas",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Seguido por 1 membro} other{Seguido por {count} membros}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Mencionado por {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Abrir perfil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Outros grupos…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Não foi possível carregar algumas fontes. Puxa para baixo para tentar novamente.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Citado por {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Semelhante às obras de {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Resposta de {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Partilhado por {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Repor sugestões",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Procurar mais",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Mostrar publicação",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "O Bluesky sugere isto para {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Não lido",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,8 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "É preciso deixar pelo menos uma conta ligada",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Manter os controlos visíveis",
+  "@home_keep_controls_visible": {},
   "home_networks": "Redes",
   "@home_networks": {},
   "home_networks_all": "Todas as redes",
@@ -2217,6 +2219,10 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avançado: colar token de atualização",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "IA",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Todas as páginas",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Favoritar",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Pasta de favoritos",
@@ -2229,8 +2235,18 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Públicos",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_link": "Copiar link",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_current_page": "Página {current} de {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Leitor privado do Pixiv — a seguir, ranking, favoritos e pesquisa. Sem publicar",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Descarregar todas as páginas",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Descarregar esta página",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "A descarregar a página {current} de {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Ainda não há nada no feed de seguidos",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Não foi possível contactar o Pixiv",
@@ -2245,10 +2261,20 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Seguir",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_hide_ai": "Ocultar obras geradas por IA",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Oculta as obras que os autores marcaram como geradas por IA. Os seus favoritos continuam sempre visíveis.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_link_copied": "Link copiado",
+  "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_more_about": "Acerca de",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Conta",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Mais ações",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Mais de {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Silenciar",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Preferências",
@@ -2393,6 +2419,10 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Pausar animação",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Reproduzir animação",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Remover dos favoritos",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Deixar de seguir",
@@ -3131,6 +3161,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "Limitado pelo 𝕏",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Nova tentativa dentro de {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Nova tentativa dentro de {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Destaques, etiquetas e notas de artigos",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Lotes verificados: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "É apresentada uma cópia guardada durante a atualização.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Alterações guardadas",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Falha na ligação",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Rascunho restaurado",
+  "@reader_draft_restored": {},
+  "reader_extract": "Extrair texto de captura",
+  "@reader_extract": {},
+  "reader_extract_notice": "A imagem PNG ou JPEG escolhida será enviada para {host} com o modelo de IA configurado. O texto extraído pode conter erros.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Destacar e anotar",
+  "@reader_highlight": {},
+  "reader_less_like": "Menos conteúdos semelhantes",
+  "@reader_less_like": {},
+  "reader_link_posts": "Mais publicações com esta ligação: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Mais conteúdos semelhantes",
+  "@reader_more_like": {},
+  "reader_new_posts": "Novas publicações",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Esta fonte limita os pedidos. Tente mais tarde.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Operações de leitura recentes",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Tentar novamente em {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Pesquisar na biblioteca",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Pesquisar nas publicações carregadas",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Pesquise texto, ligações ou autores nas publicações já carregadas.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Inicie sessão novamente para continuar",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Esta fonte ainda está a carregar. As outras publicações estão disponíveis.",
+  "@reader_source_loading": {},
+  "reader_undo": "Desfazer",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Não foi possível anular. Os dados podem ter sido alterados.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Posições de leitura",
   "@reading_positions": {},
   "recent": "Recentes",
@@ -3361,6 +3484,8 @@
   "@switch_group": {},
   "sync": "Sincronização",
   "@sync": {},
+  "sync_conflict": "A cópia no servidor foi alterada. Restaure-a e reveja-a antes de enviar outra.",
+  "@sync_conflict": {},
   "sync_description": "Copia as tuas subscrições, grupos e publicações guardadas para um servidor WebDAV teu",
   "@sync_description": {},
   "sync_download": "Restaurar a partir do servidor",
@@ -3377,6 +3502,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "O servidor recusou estas credenciais",
   "@sync_error_unauthorized": {},
+  "sync_history": "Cópias anteriores",
+  "@sync_history": {},
   "sync_include_accounts": "Incluir as sessões do 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Desativado por predefinição. As tuas sessões são fichas de sessão do 𝕏; só as envies se confiares no servidor e nas suas cópias de segurança.",
@@ -3391,6 +3518,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Este servidor não consegue proteger as cópias de segurança contra alterações simultâneas.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Enviar agora",
   "@sync_upload": {},
   "sync_uploaded": "Enviado",
@@ -3638,133 +3767,5 @@
   "zen_mode_page_cap": "Comprimento do feed no modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantas páginas o feed carrega no modo zen antes de fazer uma pausa.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Mais publicações com esta ligação: {count}",
-  "reader_connection_failed": "Falha na ligação",
-  "reader_sign_in_needed": "Inicie sessão novamente para continuar",
-  "reader_rate_limit_hint": "Esta fonte limita os pedidos. Tente mais tarde.",
-  "reader_new_posts": "Novas publicações",
-  "reader_source_loading": "Esta fonte ainda está a carregar. As outras publicações estão disponíveis.",
-  "reader_cached_content": "É apresentada uma cópia guardada durante a atualização.",
-  "reader_draft_restored": "Rascunho restaurado",
-  "reader_search_all": "Pesquisar na biblioteca",
-  "reader_highlight": "Destacar e anotar",
-  "reader_extract": "Extrair texto de captura",
-  "reader_extract_notice": "A imagem PNG ou JPEG escolhida será enviada para {host} com o modelo de IA configurado. O texto extraído pode conter erros.",
-  "reader_more_like": "Mais conteúdos semelhantes",
-  "reader_less_like": "Menos conteúdos semelhantes",
-  "reader_undo": "Desfazer",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Lotes verificados: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Destaques, etiquetas e notas de artigos",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Alterações guardadas",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Não foi possível anular. Os dados podem ter sido alterados.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Operações de leitura recentes",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Pesquisar nas publicações carregadas",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Pesquise texto, ligações ou autores nas publicações já carregadas.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Tentar novamente em {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "A cópia no servidor foi alterada. Restaure-a e reveja-a antes de enviar outra.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Este servidor não consegue proteger as cópias de segurança contra alterações simultâneas.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Cópias anteriores",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Manter os controlos visíveis",
-  "reader_auto_retry_seconds": "Nova tentativa dentro de {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Nova tentativa dentro de {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Descarregar esta página",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Descarregar todas as páginas",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Todas as páginas",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Copiar link",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Link copiado",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Mais ações",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Página {current} de {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "A descarregar a página {current} de {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Mais de {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Reproduzir animação",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Pausar animação",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Ocultar obras geradas por IA",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Oculta as obras que os autores marcaram como geradas por IA. Os seus favoritos continuam sempre visíveis.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

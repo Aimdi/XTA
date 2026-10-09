@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Llegint-ne {count} més alhora",
   "@group_combined_count": {},
-  "group_discovery_ai": "Troba comptes semblants amb IA",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Descobreix comptes que no segueixes a partir dels membres d’aquest grup. Obre un perfil per seguir-lo o afegir-lo a un grup.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Encara no s’han trobat comptes semblants que no segueixis. Torna-ho a provar quan els membres comparteixin més publicacions.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "No s’han pogut carregar algunes fonts. Llisca cap avall per tornar-ho a provar.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Basat en {read} d’1 membre} other{Basat en {read} de {total} membres}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Explora’n més",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Compartit per {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Citat per {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Resposta de {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Mencionat per {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Seguit per 1 membre} other{Seguit per {count} membres}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky ho suggereix per a {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Semblant a les obres de {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{i 1 més} other{i {count} més}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Afegeix a «{group}»",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Afegit",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Altres grups…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Obre el perfil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Restableix els suggeriments",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Mostra la publicació",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Troba comptes semblants amb IA",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{i 1 més} other{i {count} més}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Basat en {read} d’1 membre} other{Basat en {read} de {total} membres}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Descobreix comptes que no segueixes a partir dels membres d’aquest grup. Obre un perfil per seguir-lo o afegir-lo a un grup.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Encara no s’han trobat comptes semblants que no segueixis. Torna-ho a provar quan els membres comparteixin més publicacions.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Suggeriments actualitzats",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Seguit per 1 membre} other{Seguit per {count} membres}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Mencionat per {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Obre el perfil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Altres grups…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "No s’han pogut carregar algunes fonts. Llisca cap avall per tornar-ho a provar.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Citat per {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Semblant a les obres de {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Resposta de {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Compartit per {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Restableix els suggeriments",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Explora’n més",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Mostra la publicació",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky ho suggereix per a {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "No llegit",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,8 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Cal deixar com a mínim un compte activat",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Mantén els controls visibles",
+  "@home_keep_controls_visible": {},
   "home_networks": "Xarxes",
   "@home_networks": {},
   "home_networks_all": "Totes les xarxes",
@@ -2217,6 +2219,10 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avançat: enganxa el testimoni d’actualització",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "IA",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Totes les pàgines",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Marcador",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Carpeta d'adreces",
@@ -2229,8 +2235,18 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Públics",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_link": "Copia l’enllaç",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_current_page": "Pàgina {current} de {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Lector privat de Pixiv: seguiment, rànquing, marcadors i cerca. Sense publicar",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Baixa totes les pàgines",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Baixa aquesta pàgina",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "S’està baixant la pàgina {current} de {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Encara no hi ha res al fil de seguiments",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "No s’ha pogut contactar amb Pixiv",
@@ -2245,10 +2261,20 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Segueix",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_hide_ai": "Amaga les obres generades amb IA",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Amaga les obres que els autors han marcat com a generades amb IA. Els teus marcadors sempre es mostren.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_link_copied": "Enllaç copiat",
+  "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_more_about": "Quant a",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Compte",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Més accions",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Més de {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Silenci",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Preferències",
@@ -2393,6 +2419,10 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Posa en pausa l’animació",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Reprodueix l’animació",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Treu el marcador",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Deixa de seguir",
@@ -3131,6 +3161,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 ha limitat les peticions",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Es tornarà a provar d’aquí a {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Es tornarà a provar d’aquí a {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Fragments ressaltats, etiquetes i notes dels articles",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Lots comprovats: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Es mostra una còpia desada mentre s’actualitza la font.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Canvis desats",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Ha fallat la connexió",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Esborrany restaurat",
+  "@reader_draft_restored": {},
+  "reader_extract": "Extreu text d’una captura",
+  "@reader_extract": {},
+  "reader_extract_notice": "La imatge PNG o JPEG triada s’enviarà a {host} amb el model d’IA configurat. El text extret pot contenir errors.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Ressalta i anota",
+  "@reader_highlight": {},
+  "reader_less_like": "Menys contingut semblant",
+  "@reader_less_like": {},
+  "reader_link_posts": "Més publicacions amb aquest enllaç: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Més contingut semblant",
+  "@reader_more_like": {},
+  "reader_new_posts": "Publicacions noves",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Aquesta font limita les sol·licituds. Torna-ho a provar més tard.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Operacions de lectura recents",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Torna-ho a provar d’aquí a {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Cerca a la biblioteca",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Cerca a les publicacions carregades",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Cerca text, enllaços o autors a les publicacions ja carregades.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Torna a iniciar la sessió per continuar",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Aquesta font encara es carrega. Les altres publicacions ja estan disponibles.",
+  "@reader_source_loading": {},
+  "reader_undo": "Desfés",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "No s’ha pogut desfer. Pot ser que les dades hagin canviat.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Posicions de lectura",
   "@reading_positions": {},
   "recent": "Recents",
@@ -3361,6 +3484,8 @@
   "@switch_group": {},
   "sync": "Sincronització",
   "@sync": {},
+  "sync_conflict": "La còpia del servidor ha canviat. Restaura-la i revisa-la abans de pujar-ne una altra.",
+  "@sync_conflict": {},
   "sync_description": "Copia les teves subscripcions, grups i publicacions desades a un servidor WebDAV teu",
   "@sync_description": {},
   "sync_download": "Restaura des del servidor",
@@ -3377,6 +3502,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "El servidor ha rebutjat aquestes credencials",
   "@sync_error_unauthorized": {},
+  "sync_history": "Còpies anteriors",
+  "@sync_history": {},
   "sync_include_accounts": "Inclou les sessions d'𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Desactivat per defecte. Les teves sessions són testimonis d'𝕏; puja-les només si confies en el servidor i en les seves còpies de seguretat.",
@@ -3391,6 +3518,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Aquest servidor no pot protegir les còpies de seguretat de canvis simultanis.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Puja-ho ara",
   "@sync_upload": {},
   "sync_uploaded": "Pujat",
@@ -3638,133 +3767,5 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Més publicacions amb aquest enllaç: {count}",
-  "reader_connection_failed": "Ha fallat la connexió",
-  "reader_sign_in_needed": "Torna a iniciar la sessió per continuar",
-  "reader_rate_limit_hint": "Aquesta font limita les sol·licituds. Torna-ho a provar més tard.",
-  "reader_new_posts": "Publicacions noves",
-  "reader_source_loading": "Aquesta font encara es carrega. Les altres publicacions ja estan disponibles.",
-  "reader_cached_content": "Es mostra una còpia desada mentre s’actualitza la font.",
-  "reader_draft_restored": "Esborrany restaurat",
-  "reader_search_all": "Cerca a la biblioteca",
-  "reader_highlight": "Ressalta i anota",
-  "reader_extract": "Extreu text d’una captura",
-  "reader_extract_notice": "La imatge PNG o JPEG triada s’enviarà a {host} amb el model d’IA configurat. El text extret pot contenir errors.",
-  "reader_more_like": "Més contingut semblant",
-  "reader_less_like": "Menys contingut semblant",
-  "reader_undo": "Desfés",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Lots comprovats: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Fragments ressaltats, etiquetes i notes dels articles",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Canvis desats",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "No s’ha pogut desfer. Pot ser que les dades hagin canviat.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Operacions de lectura recents",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Cerca a les publicacions carregades",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Cerca text, enllaços o autors a les publicacions ja carregades.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Torna-ho a provar d’aquí a {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "La còpia del servidor ha canviat. Restaura-la i revisa-la abans de pujar-ne una altra.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Aquest servidor no pot protegir les còpies de seguretat de canvis simultanis.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Còpies anteriors",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Mantén els controls visibles",
-  "reader_auto_retry_seconds": "Es tornarà a provar d’aquí a {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Es tornarà a provar d’aquí a {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Baixa aquesta pàgina",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Baixa totes les pàgines",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Totes les pàgines",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Copia l’enllaç",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Enllaç copiat",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Més accions",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Pàgina {current} de {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "S’està baixant la pàgina {current} de {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Més de {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Reprodueix l’animació",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Posa en pausa l’animació",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Amaga les obres generades amb IA",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Amaga les obres que els autors han marcat com a generades amb IA. Els teus marcadors sempre es mostren.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

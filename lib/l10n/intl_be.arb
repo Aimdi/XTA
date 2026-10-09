@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Разам чытаецца яшчэ: {count}",
   "@group_combined_count": {},
-  "group_discovery_ai": "Знайсці падобныя акаўнты з дапамогай ШІ",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Знаходзьце акаўнты, на якія вы не падпісаны, на аснове ўдзельнікаў групы. Адкрыйце профіль, каб падпісацца або дадаць яго ў групу.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Падобныя акаўнты, на якія вы не падпісаны, пакуль не знойдзены. Паспрабуйце зноў, калі ўдзельнікі групы падзеляцца новымі допісамі.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Не атрымалася загрузіць некаторыя крыніцы. Пацягніце ўніз, каб паўтарыць.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{На аснове {read} з {total} удзельніка} few{На аснове {read} з {total} удзельнікаў} many{На аснове {read} з {total} удзельнікаў} other{На аснове {read} з {total} удзельніка}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Праверыць яшчэ",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Рэпост ад {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Цытуе {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Адказ ад {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Згадвае {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Сочыць {count} удзельнік} few{Сочаць {count} удзельнікі} many{Сочаць {count} удзельнікаў} other{Сочаць {count} удзельніка}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky прапануе для {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Падобна на працы {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{і яшчэ {count}} few{і яшчэ {count}} many{і яшчэ {count}} other{і яшчэ {count}}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Дадаць у «{group}»",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Дададзена",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Іншыя групы…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Адкрыць профіль",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Скінуць рэкамендацыі",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Паказаць пост",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Знайсці падобныя акаўнты з дапамогай ШІ",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{і яшчэ {count}} few{і яшчэ {count}} many{і яшчэ {count}} other{і яшчэ {count}}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{На аснове {read} з {total} удзельніка} few{На аснове {read} з {total} удзельнікаў} many{На аснове {read} з {total} удзельнікаў} other{На аснове {read} з {total} удзельніка}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Знаходзьце акаўнты, на якія вы не падпісаны, на аснове ўдзельнікаў групы. Адкрыйце профіль, каб падпісацца або дадаць яго ў групу.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Падобныя акаўнты, на якія вы не падпісаны, пакуль не знойдзены. Паспрабуйце зноў, калі ўдзельнікі групы падзеляцца новымі допісамі.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Рэкамендацыі абноўлены",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Сочыць {count} удзельнік} few{Сочаць {count} удзельнікі} many{Сочаць {count} удзельнікаў} other{Сочаць {count} удзельніка}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Згадвае {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Адкрыць профіль",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Іншыя групы…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Не атрымалася загрузіць некаторыя крыніцы. Пацягніце ўніз, каб паўтарыць.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Цытуе {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Падобна на працы {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Адказ ад {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Рэпост ад {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Скінуць рэкамендацыі",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Праверыць яшчэ",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Паказаць пост",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky прапануе для {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Непрачытанае",
   "@group_has_unread": {},
   "group_mark_style_auto": "Аўта",
@@ -759,6 +759,8 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Хоць адзін уліковы запіс мусіць застацца ўключаным",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Заўсёды паказваць элементы кіравання",
+  "@home_keep_controls_visible": {},
   "home_networks": "Сеткі",
   "@home_networks": {},
   "home_networks_all": "Усе сеткі",
@@ -2217,6 +2219,10 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Дадаткова: уставіць refresh-токен",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "ШІ",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Усе старонкі",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "У закладкі",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Папка закладак",
@@ -2229,8 +2235,18 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Публічныя",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_link": "Скапіяваць спасылку",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_current_page": "Старонка {current} з {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Прыватны чытач Pixiv — стужка, рэйтынг, закладкі і пошук. Без публікацый",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Спампаваць усе старонкі",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Спампаваць гэту старонку",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Спампоўваецца старонка {current} з {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "У стужцы падпісак пакуль нічога няма",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Не ўдалося злучыцца з Pixiv",
@@ -2245,10 +2261,20 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Падпісацца",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_hide_ai": "Хаваць працы, створаныя ШІ",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Хавае працы, якія аўтары пазначылі як створаныя ШІ. Уласныя закладкі заўсёды застаюцца бачнымі.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_link_copied": "Спасылка скапіявана",
+  "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_more_about": "Пра праграму",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Уліковы запіс",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Іншыя дзеянні",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Яшчэ ад {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Налады заглушэння",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Налады",
@@ -2393,6 +2419,10 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Прыпыніць анімацыю",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Прайграць анімацыю",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Прыбраць закладку",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Адпісацца",
@@ -3131,6 +3161,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 абмежаваў частату запытаў",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Паўтор праз {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Паўтор праз {seconds} с…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Вылучэнні, тэгі і нататкі да артыкулаў",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Праверана пакетаў: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Пакуль крыніца абнаўляецца, паказваецца захаваная копія.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Змены захаваны",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Памылка злучэння",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Чарнавік адноўлены",
+  "@reader_draft_restored": {},
+  "reader_extract": "Распазнаць тэкст са здымка экрана",
+  "@reader_extract": {},
+  "reader_extract_notice": "Выбраная выява PNG або JPEG будзе адпраўлена на {host} з наладжанай мадэллю ШІ. Распазнаны тэкст можа змяшчаць памылкі.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Вылучыць і дадаць нататку",
+  "@reader_highlight": {},
+  "reader_less_like": "Менш падобнага",
+  "@reader_less_like": {},
+  "reader_link_posts": "Іншыя допісы з гэтай спасылкай: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Больш падобнага",
+  "@reader_more_like": {},
+  "reader_new_posts": "Новыя допісы",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Гэта крыніца абмяжоўвае запыты. Паспрабуйце пазней.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Апошнія аперацыі чытання",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Паўтарыць праз {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Пошук у бібліятэцы",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Пошук у загружаных допісах",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Шукайце тэкст, спасылкі ці аўтараў ва ўжо загружаных допісах.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Увайдзіце зноў, каб працягнуць",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Гэта крыніца яшчэ загружаецца. Іншыя допісы ўжо даступныя.",
+  "@reader_source_loading": {},
+  "reader_undo": "Адмяніць",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Не ўдалося адмяніць. Магчыма, даныя змяніліся.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Месцы чытання",
   "@reading_positions": {},
   "recent": "Апошнія",
@@ -3361,6 +3484,8 @@
   "@switch_group": {},
   "sync": "Сінхранізацыя",
   "@sync": {},
+  "sync_conflict": "Рэзервовая копія на серверы змянілася. Перад адпраўкай аднавіце і праверце яе.",
+  "@sync_conflict": {},
   "sync_description": "Капіруйце свае падпіскі, групы і захаваныя допісы на ўласны сервер WebDAV",
   "@sync_description": {},
   "sync_download": "Аднавіць з сервера",
@@ -3377,6 +3502,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Сервер адхіліў гэтыя даныя",
   "@sync_error_unauthorized": {},
+  "sync_history": "Папярэднія рэзервовыя копіі",
+  "@sync_history": {},
   "sync_include_accounts": "Уключыць уваходы ў 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Выключана па змаўчанні. Вашы ўваходы — гэта сеансавыя токены 𝕏; выгружайце іх, толькі калі давяраеце серверу і яго рэзервовым копіям.",
@@ -3391,6 +3518,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Гэты сервер не можа бяспечна абараніць рэзервовыя копіі ад адначасовых змен.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Выгрузіць зараз",
   "@sync_upload": {},
   "sync_uploaded": "Выгружана",
@@ -3638,133 +3767,5 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Іншыя допісы з гэтай спасылкай: {count}",
-  "reader_connection_failed": "Памылка злучэння",
-  "reader_sign_in_needed": "Увайдзіце зноў, каб працягнуць",
-  "reader_rate_limit_hint": "Гэта крыніца абмяжоўвае запыты. Паспрабуйце пазней.",
-  "reader_new_posts": "Новыя допісы",
-  "reader_source_loading": "Гэта крыніца яшчэ загружаецца. Іншыя допісы ўжо даступныя.",
-  "reader_cached_content": "Пакуль крыніца абнаўляецца, паказваецца захаваная копія.",
-  "reader_draft_restored": "Чарнавік адноўлены",
-  "reader_search_all": "Пошук у бібліятэцы",
-  "reader_highlight": "Вылучыць і дадаць нататку",
-  "reader_extract": "Распазнаць тэкст са здымка экрана",
-  "reader_extract_notice": "Выбраная выява PNG або JPEG будзе адпраўлена на {host} з наладжанай мадэллю ШІ. Распазнаны тэкст можа змяшчаць памылкі.",
-  "reader_more_like": "Больш падобнага",
-  "reader_less_like": "Менш падобнага",
-  "reader_undo": "Адмяніць",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Праверана пакетаў: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Вылучэнні, тэгі і нататкі да артыкулаў",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Змены захаваны",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Не ўдалося адмяніць. Магчыма, даныя змяніліся.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Апошнія аперацыі чытання",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Пошук у загружаных допісах",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Шукайце тэкст, спасылкі ці аўтараў ва ўжо загружаных допісах.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Паўтарыць праз {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Рэзервовая копія на серверы змянілася. Перад адпраўкай аднавіце і праверце яе.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Гэты сервер не можа бяспечна абараніць рэзервовыя копіі ад адначасовых змен.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Папярэднія рэзервовыя копіі",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Заўсёды паказваць элементы кіравання",
-  "reader_auto_retry_seconds": "Паўтор праз {seconds} с…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Паўтор праз {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Спампаваць гэту старонку",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Спампаваць усе старонкі",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Усе старонкі",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Скапіяваць спасылку",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Спасылка скапіявана",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Іншыя дзеянні",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Старонка {current} з {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Спампоўваецца старонка {current} з {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Яшчэ ад {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Прайграць анімацыю",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Прыпыніць анімацыю",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Хаваць працы, створаныя ШІ",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Хавае працы, якія аўтары пазначылі як створаныя ШІ. Уласныя закладкі заўсёды застаюцца бачнымі.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "ШІ",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

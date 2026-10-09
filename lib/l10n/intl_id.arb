@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "{count} lainnya dibaca bersamaan",
   "@group_combined_count": {},
-  "group_discovery_ai": "Cari akun serupa dengan AI",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Temukan akun yang belum Anda ikuti berdasarkan anggota grup ini. Buka profil untuk mengikutinya atau menambahkannya ke grup.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Belum ada akun serupa yang belum Anda ikuti. Coba lagi setelah anggota grup membagikan lebih banyak postingan.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Beberapa sumber tidak dapat dimuat. Tarik ke bawah untuk mencoba lagi.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, other{Berdasarkan {read} dari {total} anggota}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Pindai lebih banyak",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Diposting ulang oleh {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Dikutip oleh {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Dibalas oleh {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Disebut oleh {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, other{Diikuti oleh {count} anggota}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky menyarankan ini untuk {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Mirip dengan karya {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, other{dan {count} lainnya}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Tambahkan ke “{group}”",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Ditambahkan",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Grup lain…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Buka profil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Atur ulang saran",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Tampilkan postingan",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Cari akun serupa dengan AI",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, other{dan {count} lainnya}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, other{Berdasarkan {read} dari {total} anggota}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Temukan akun yang belum Anda ikuti berdasarkan anggota grup ini. Buka profil untuk mengikutinya atau menambahkannya ke grup.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Belum ada akun serupa yang belum Anda ikuti. Coba lagi setelah anggota grup membagikan lebih banyak postingan.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Saran diperbarui",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, other{Diikuti oleh {count} anggota}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Disebut oleh {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Buka profil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Grup lain…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Beberapa sumber tidak dapat dimuat. Tarik ke bawah untuk mencoba lagi.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Dikutip oleh {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Mirip dengan karya {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Dibalas oleh {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Diposting ulang oleh {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Atur ulang saran",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Pindai lebih banyak",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Tampilkan postingan",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky menyarankan ini untuk {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Belum dibaca",
   "@group_has_unread": {},
   "group_mark_style_auto": "Otomatis",
@@ -759,6 +759,8 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Setidaknya satu akun harus tetap aktif",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Selalu tampilkan kontrol",
+  "@home_keep_controls_visible": {},
   "home_networks": "Jaringan",
   "@home_networks": {},
   "home_networks_all": "Semua jaringan",
@@ -2217,6 +2219,10 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Lanjutan: tempel refresh token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Semua halaman",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Markah",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Folder bookmark",
@@ -2229,8 +2235,18 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publik",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_link": "Salin tautan",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_current_page": "Halaman {current} dari {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Pembaca Pixiv pribadi — mengikuti, peringkat, penanda, dan pencarian. Tanpa posting",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Unduh semua halaman",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Unduh halaman ini",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Mengunduh halaman {current} dari {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Belum ada apa pun di feed mengikuti",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Tidak dapat menjangkau Pixiv",
@@ -2245,10 +2261,20 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Ikuti",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_hide_ai": "Sembunyikan karya buatan AI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Menyembunyikan karya yang ditandai pembuatnya sebagai buatan AI. Penanda Anda sendiri selalu tetap terlihat.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_link_copied": "Tautan disalin",
+  "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_more_about": "Tentang",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Akun",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Tindakan lainnya",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Lainnya dari {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Pengaturan bisu",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Preferensi",
@@ -2393,6 +2419,10 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Jeda animasi",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Putar animasi",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Hapus markah",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Berhenti mengikuti",
@@ -3131,6 +3161,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "Dibatasi oleh 𝕏",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Mencoba lagi dalam {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Mencoba lagi dalam {seconds} dtk…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Sorotan, tag, dan catatan artikel",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Batch diperiksa: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Menampilkan salinan tersimpan saat sumber diperbarui.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Perubahan disimpan",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Koneksi gagal",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Draf dipulihkan",
+  "@reader_draft_restored": {},
+  "reader_extract": "Ekstrak teks tangkapan layar",
+  "@reader_extract": {},
+  "reader_extract_notice": "Gambar PNG atau JPEG yang dipilih akan dikirim ke {host} menggunakan model AI yang Anda atur. Teks hasil ekstraksi mungkin mengandung kesalahan.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Sorot dan beri catatan",
+  "@reader_highlight": {},
+  "reader_less_like": "Lebih sedikit seperti ini",
+  "@reader_less_like": {},
+  "reader_link_posts": "Postingan lain dengan tautan ini: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Lebih banyak seperti ini",
+  "@reader_more_like": {},
+  "reader_new_posts": "Postingan baru",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Sumber ini membatasi permintaan. Coba lagi nanti.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Operasi pembacaan terbaru",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Coba lagi dalam {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Cari di pustaka",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Cari di postingan yang dimuat",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Cari teks, tautan, atau penulis dalam postingan yang sudah dimuat.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Masuk lagi untuk melanjutkan",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Sumber ini masih dimuat. Postingan lain sudah bisa dibaca.",
+  "@reader_source_loading": {},
+  "reader_undo": "Urungkan",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Tidak dapat mengurungkan. Data mungkin telah berubah.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Posisi membaca",
   "@reading_positions": {},
   "recent": "Terbaru",
@@ -3361,6 +3484,8 @@
   "@switch_group": {},
   "sync": "Sinkronisasi",
   "@sync": {},
+  "sync_conflict": "Cadangan di server telah berubah. Pulihkan dan periksa sebelum mengunggah.",
+  "@sync_conflict": {},
   "sync_description": "Salin langganan, grup, dan postingan tersimpan ke server WebDAV milik Anda sendiri",
   "@sync_description": {},
   "sync_download": "Pulihkan dari server",
@@ -3377,6 +3502,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Server menolak kredensial tersebut",
   "@sync_error_unauthorized": {},
+  "sync_history": "Cadangan sebelumnya",
+  "@sync_history": {},
   "sync_include_accounts": "Sertakan sesi masuk 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Mati secara bawaan. Sesi masuk Anda adalah token sesi 𝕏; unggah hanya jika Anda memercayai server dan cadangannya.",
@@ -3391,6 +3518,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Server ini tidak dapat melindungi cadangan dari perubahan bersamaan dengan aman.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Unggah sekarang",
   "@sync_upload": {},
   "sync_uploaded": "Terunggah",
@@ -3638,133 +3767,5 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Postingan lain dengan tautan ini: {count}",
-  "reader_connection_failed": "Koneksi gagal",
-  "reader_sign_in_needed": "Masuk lagi untuk melanjutkan",
-  "reader_rate_limit_hint": "Sumber ini membatasi permintaan. Coba lagi nanti.",
-  "reader_new_posts": "Postingan baru",
-  "reader_source_loading": "Sumber ini masih dimuat. Postingan lain sudah bisa dibaca.",
-  "reader_cached_content": "Menampilkan salinan tersimpan saat sumber diperbarui.",
-  "reader_draft_restored": "Draf dipulihkan",
-  "reader_search_all": "Cari di pustaka",
-  "reader_highlight": "Sorot dan beri catatan",
-  "reader_extract": "Ekstrak teks tangkapan layar",
-  "reader_extract_notice": "Gambar PNG atau JPEG yang dipilih akan dikirim ke {host} menggunakan model AI yang Anda atur. Teks hasil ekstraksi mungkin mengandung kesalahan.",
-  "reader_more_like": "Lebih banyak seperti ini",
-  "reader_less_like": "Lebih sedikit seperti ini",
-  "reader_undo": "Urungkan",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Batch diperiksa: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Sorotan, tag, dan catatan artikel",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Perubahan disimpan",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Tidak dapat mengurungkan. Data mungkin telah berubah.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Operasi pembacaan terbaru",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Cari di postingan yang dimuat",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Cari teks, tautan, atau penulis dalam postingan yang sudah dimuat.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Coba lagi dalam {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Cadangan di server telah berubah. Pulihkan dan periksa sebelum mengunggah.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Server ini tidak dapat melindungi cadangan dari perubahan bersamaan dengan aman.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Cadangan sebelumnya",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Selalu tampilkan kontrol",
-  "reader_auto_retry_seconds": "Mencoba lagi dalam {seconds} dtk…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Mencoba lagi dalam {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Unduh halaman ini",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Unduh semua halaman",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Semua halaman",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Salin tautan",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Tautan disalin",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Tindakan lainnya",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Halaman {current} dari {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Mengunduh halaman {current} dari {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Lainnya dari {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Putar animasi",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Jeda animasi",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Sembunyikan karya buatan AI",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Menyembunyikan karya yang ditandai pembuatnya sebagai buatan AI. Penanda Anda sendiri selalu tetap terlihat.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

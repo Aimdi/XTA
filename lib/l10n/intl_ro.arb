@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Se mai citesc {count} împreună",
   "@group_combined_count": {},
-  "group_discovery_ai": "Găsește conturi similare cu AI",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Descoperă conturi pe care nu le urmărești, pe baza membrilor acestui grup. Deschide un profil pentru a-l urmări sau a-l adăuga într-un grup.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Nu s-au găsit încă conturi similare pe care nu le urmărești. Încearcă din nou când membrii grupului distribuie mai multe postări.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Unele surse nu au putut fi încărcate. Trage în jos pentru a reîncerca.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Pe baza a {read} din 1 membru} few{Pe baza a {read} din {total} membri} other{Pe baza a {read} din {total} de membri}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Scanează mai mult",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Distribuit de {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Citat de {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Răspuns de la {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Menționat de {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Urmărit de 1 membru} few{Urmărit de {count} membri} other{Urmărit de {count} de membri}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky sugerează asta pentru {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Similar cu lucrările lui {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{și încă 1} few{și încă {count}} other{și încă {count}}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Adaugă în „{group}”",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Adăugat",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Alte grupuri…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Deschide profilul",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Resetează sugestiile",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Afișează postarea",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Găsește conturi similare cu AI",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{și încă 1} few{și încă {count}} other{și încă {count}}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Pe baza a {read} din 1 membru} few{Pe baza a {read} din {total} membri} other{Pe baza a {read} din {total} de membri}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Descoperă conturi pe care nu le urmărești, pe baza membrilor acestui grup. Deschide un profil pentru a-l urmări sau a-l adăuga într-un grup.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Nu s-au găsit încă conturi similare pe care nu le urmărești. Încearcă din nou când membrii grupului distribuie mai multe postări.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Sugestii actualizate",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Urmărit de 1 membru} few{Urmărit de {count} membri} other{Urmărit de {count} de membri}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Menționat de {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Deschide profilul",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Alte grupuri…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Unele surse nu au putut fi încărcate. Trage în jos pentru a reîncerca.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Citat de {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Similar cu lucrările lui {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Răspuns de la {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Distribuit de {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Resetează sugestiile",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Scanează mai mult",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Afișează postarea",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky sugerează asta pentru {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Necitit",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,8 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Cel puțin un cont trebuie să rămână pornit",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Păstrează comenzile vizibile",
+  "@home_keep_controls_visible": {},
   "home_networks": "Rețele",
   "@home_networks": {},
   "home_networks_all": "Toate rețelele",
@@ -2217,6 +2219,10 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avansat: lipește token de reînnoire",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "IA",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Toate paginile",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Semn de carte",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Folder de semne de carte",
@@ -2229,8 +2235,18 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publice",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_link": "Copiază linkul",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_current_page": "Pagina {current} din {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Cititor Pixiv privat — urmăriți, clasamente, semne de carte și căutare. Fără publicare",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Descarcă toate paginile",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Descarcă această pagină",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Se descarcă pagina {current} din {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Nimic încă în fluxul de urmăriri",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Nu s-a putut contacta Pixiv",
@@ -2245,10 +2261,20 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Urmărește",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_hide_ai": "Ascunde lucrările generate cu IA",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Ascunde lucrările pe care autorii le-au marcat ca generate cu IA. Semnele tale de carte rămân mereu vizibile.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_link_copied": "Link copiat",
+  "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_more_about": "Despre",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Cont",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Mai multe acțiuni",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Mai multe de la {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Dezactivare sunet",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Preferințe",
@@ -2393,6 +2419,10 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Întrerupe animația",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Redă animația",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Elimină semnul de carte",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Nu mai urmări",
@@ -3131,6 +3161,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "Limitat de 𝕏",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Se reîncearcă în {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Se reîncearcă în {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Evidențieri, etichete și notițe pentru articole",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Loturi verificate: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Se afișează o copie salvată în timpul actualizării sursei.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Modificări salvate",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Conexiune eșuată",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Ciornă restaurată",
+  "@reader_draft_restored": {},
+  "reader_extract": "Extrage text din captură",
+  "@reader_extract": {},
+  "reader_extract_notice": "Imaginea PNG sau JPEG aleasă va fi trimisă la {host} folosind modelul AI configurat. Textul extras poate conține greșeli.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Evidențiază și adaugă o notă",
+  "@reader_highlight": {},
+  "reader_less_like": "Mai puține similare",
+  "@reader_less_like": {},
+  "reader_link_posts": "Alte postări cu acest link: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Mai multe similare",
+  "@reader_more_like": {},
+  "reader_new_posts": "Postări noi",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Această sursă limitează cererile. Încearcă mai târziu.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Operațiuni de citire recente",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Încearcă din nou peste {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Caută în bibliotecă",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Caută în postările încărcate",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Caută text, linkuri sau autori în postările deja încărcate.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Autentifică-te din nou pentru a continua",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Această sursă încă se încarcă. Celelalte postări sunt disponibile.",
+  "@reader_source_loading": {},
+  "reader_undo": "Anulează",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Nu s-a putut anula. Este posibil ca datele să se fi schimbat.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Pozițiile de citire",
   "@reading_positions": {},
   "recent": "Recente",
@@ -3361,6 +3484,8 @@
   "@switch_group": {},
   "sync": "Sincronizare",
   "@sync": {},
+  "sync_conflict": "Copia de pe server s-a modificat. Restaureaz-o și verific-o înainte de încărcare.",
+  "@sync_conflict": {},
   "sync_description": "Copiază abonamentele, grupurile și postările salvate pe un server WebDAV al tău",
   "@sync_description": {},
   "sync_download": "Restaurează de pe server",
@@ -3377,6 +3502,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Serverul a respins aceste date de autentificare",
   "@sync_error_unauthorized": {},
+  "sync_history": "Copii anterioare",
+  "@sync_history": {},
   "sync_include_accounts": "Include autentificările 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Dezactivat implicit. Autentificările tale sunt jetoane de sesiune 𝕏; încarcă-le doar dacă ai încredere în server și în copiile lui de siguranță.",
@@ -3391,6 +3518,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Acest server nu poate proteja copiile de siguranță împotriva modificărilor simultane.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Încarcă acum",
   "@sync_upload": {},
   "sync_uploaded": "Încărcat",
@@ -3638,133 +3767,5 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Alte postări cu acest link: {count}",
-  "reader_connection_failed": "Conexiune eșuată",
-  "reader_sign_in_needed": "Autentifică-te din nou pentru a continua",
-  "reader_rate_limit_hint": "Această sursă limitează cererile. Încearcă mai târziu.",
-  "reader_new_posts": "Postări noi",
-  "reader_source_loading": "Această sursă încă se încarcă. Celelalte postări sunt disponibile.",
-  "reader_cached_content": "Se afișează o copie salvată în timpul actualizării sursei.",
-  "reader_draft_restored": "Ciornă restaurată",
-  "reader_search_all": "Caută în bibliotecă",
-  "reader_highlight": "Evidențiază și adaugă o notă",
-  "reader_extract": "Extrage text din captură",
-  "reader_extract_notice": "Imaginea PNG sau JPEG aleasă va fi trimisă la {host} folosind modelul AI configurat. Textul extras poate conține greșeli.",
-  "reader_more_like": "Mai multe similare",
-  "reader_less_like": "Mai puține similare",
-  "reader_undo": "Anulează",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Loturi verificate: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Evidențieri, etichete și notițe pentru articole",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Modificări salvate",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Nu s-a putut anula. Este posibil ca datele să se fi schimbat.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Operațiuni de citire recente",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Caută în postările încărcate",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Caută text, linkuri sau autori în postările deja încărcate.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Încearcă din nou peste {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Copia de pe server s-a modificat. Restaureaz-o și verific-o înainte de încărcare.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Acest server nu poate proteja copiile de siguranță împotriva modificărilor simultane.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Copii anterioare",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Păstrează comenzile vizibile",
-  "reader_auto_retry_seconds": "Se reîncearcă în {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Se reîncearcă în {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Descarcă această pagină",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Descarcă toate paginile",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Toate paginile",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Copiază linkul",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Link copiat",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Mai multe acțiuni",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Pagina {current} din {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Se descarcă pagina {current} din {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Mai multe de la {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Redă animația",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Întrerupe animația",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Ascunde lucrările generate cu IA",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Ascunde lucrările pe care autorii le-au marcat ca generate cu IA. Semnele tale de carte rămân mereu vizibile.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

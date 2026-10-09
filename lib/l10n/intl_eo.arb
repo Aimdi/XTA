@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Kune legiĝas ankoraŭ {count}",
   "@group_combined_count": {},
-  "group_discovery_ai": "Trovi similajn kontojn per artefarita intelekto",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Malkovru kontojn, kiujn vi ne sekvas, surbaze de la membroj de ĉi tiu grupo. Malfermu profilon por sekvi ĝin aŭ aldoni ĝin al grupo.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Ankoraŭ neniuj similaj nesekvataj kontoj troviĝis. Reprovu post kiam grupanoj diskonigos pliajn afiŝojn.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Kelkaj fontoj ne povis esti ŝargitaj. Tiru malsupren por reprovi.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Surbaze de {read} el 1 membro} other{Surbaze de {read} el {total} membroj}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Skani pli",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Diskonigita de {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Citita de {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Respondita de {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Menciita de {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Sekvata de 1 membro} other{Sekvata de {count} membroj}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky proponas ĉi tion por {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Simila al verkoj de {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{kaj 1 plia} other{kaj {count} pliaj}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Aldoni al „{group}“",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Aldonita",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Aliaj grupoj…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Malfermi profilon",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Restarigi proponojn",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Montri afiŝon",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Trovi similajn kontojn per artefarita intelekto",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{kaj 1 plia} other{kaj {count} pliaj}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Surbaze de {read} el 1 membro} other{Surbaze de {read} el {total} membroj}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Malkovru kontojn, kiujn vi ne sekvas, surbaze de la membroj de ĉi tiu grupo. Malfermu profilon por sekvi ĝin aŭ aldoni ĝin al grupo.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Ankoraŭ neniuj similaj nesekvataj kontoj troviĝis. Reprovu post kiam grupanoj diskonigos pliajn afiŝojn.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Proponoj ĝisdatigitaj",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Sekvata de 1 membro} other{Sekvata de {count} membroj}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Menciita de {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Malfermi profilon",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Aliaj grupoj…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Kelkaj fontoj ne povis esti ŝargitaj. Tiru malsupren por reprovi.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Citita de {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Simila al verkoj de {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Respondita de {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Diskonigita de {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Restarigi proponojn",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Skani pli",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Montri afiŝon",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky proponas ĉi tion por {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Nelegita",
   "@group_has_unread": {},
   "group_mark_style_auto": "Aŭtomata",
@@ -759,6 +759,8 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Almenaŭ unu konto devas resti ŝaltita",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Teni la regilojn videblaj",
+  "@home_keep_controls_visible": {},
   "home_networks": "Retoj",
   "@home_networks": {},
   "home_networks_all": "Ĉiuj retoj",
@@ -2217,6 +2219,10 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Altnivela: alglui refreshan ĵetonon",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Ĉiuj paĝoj",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Legosigno",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Legosignilo-dosierujo",
@@ -2229,8 +2235,18 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publikaj",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_link": "Kopii ligilon",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_current_page": "Paĝo {current} el {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Privata Pixiv-legilo — sekvado, rangigo, legosignoj kaj serĉo. Sen afiŝado",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Elŝuti ĉiujn paĝojn",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Elŝuti ĉi tiun paĝon",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Elŝutas paĝon {current} el {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Ankoraŭ nenio en la sekva fluo",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Ne eblis atingi Pixiv",
@@ -2245,10 +2261,20 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Sekvi",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_hide_ai": "Kaŝi AI-generitajn verkojn",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Kaŝas verkojn, kiujn iliaj kreintoj markis kiel AI-generitajn. Viaj propraj legosignoj ĉiam restas videblaj.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_link_copied": "Ligilo kopiita",
+  "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_more_about": "Pri",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Pliaj agoj",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Pli de {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Silentigo",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Agordoj",
@@ -2393,6 +2419,10 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Paŭzigi la animacion",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Ludi la animacion",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Forigi legosignon",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Ĉesi sekvi",
@@ -3131,6 +3161,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 limigis la petojn",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Reprovos post {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Reprovos post {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Emfazoj, etikedoj kaj notoj de artikoloj",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Kontrolitaj aroj: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Konservita kopio estas montrata dum la fonto ĝisdatiĝas.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Ŝanĝoj konservitaj",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Konekto malsukcesis",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Malneto restarigita",
+  "@reader_draft_restored": {},
+  "reader_extract": "Eltiri tekston el ekrankopio",
+  "@reader_extract": {},
+  "reader_extract_notice": "La elektita PNG aŭ JPEG estos sendita al {host} per via agordita AI-modelo. La eltirita teksto povas enhavi erarojn.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Emfazi kaj aldoni noton",
+  "@reader_highlight": {},
+  "reader_less_like": "Malpli da similaj",
+  "@reader_less_like": {},
+  "reader_link_posts": "Pliaj afiŝoj kun ĉi tiu ligilo: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Pli da similaj",
+  "@reader_more_like": {},
+  "reader_new_posts": "Novaj afiŝoj",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Ĉi tiu fonto limigas petojn. Provu denove poste.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Lastatempaj legoperacioj",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Reprovi post {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Serĉi en via biblioteko",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Serĉi en ŝargitaj afiŝoj",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Serĉu tekston, ligilojn aŭ aŭtorojn en jam ŝargitaj afiŝoj.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Ensalutu denove por daŭrigi",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Ĉi tiu fonto ankoraŭ ŝargiĝas. Aliaj afiŝoj jam estas legeblaj.",
+  "@reader_source_loading": {},
+  "reader_undo": "Malfari",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Ne eblis malfari. La datumoj eble ŝanĝiĝis.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Legpozicioj",
   "@reading_positions": {},
   "recent": "Lastatempaj",
@@ -3361,6 +3484,8 @@
   "@switch_group": {},
   "sync": "Sinkronigo",
   "@sync": {},
+  "sync_conflict": "La servila sekurkopio ŝanĝiĝis. Restarigu kaj kontrolu ĝin antaŭ alŝuto.",
+  "@sync_conflict": {},
   "sync_description": "Kopias viajn abonojn, grupojn kaj konservitajn afiŝojn al WebDAV-servilo, kiun vi mem administras",
   "@sync_description": {},
   "sync_download": "Restarigi de la servilo",
@@ -3377,6 +3502,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "La servilo malakceptis tiujn akreditaĵojn",
   "@sync_error_unauthorized": {},
+  "sync_history": "Antaŭaj sekurkopioj",
+  "@sync_history": {},
   "sync_include_accounts": "Inkluzivi la ensalutojn de 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Defaŭlte malŝaltita. Viaj ensalutoj estas seancaj ĵetonoj de 𝕏; alŝutu ilin nur se vi fidas la servilon kaj ĝiajn sekurkopiojn.",
@@ -3391,6 +3518,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Ĉi tiu servilo ne povas sekure protekti sekurkopiojn kontraŭ samtempaj ŝanĝoj.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Alŝuti nun",
   "@sync_upload": {},
   "sync_uploaded": "Alŝutita",
@@ -3638,133 +3767,5 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Pliaj afiŝoj kun ĉi tiu ligilo: {count}",
-  "reader_connection_failed": "Konekto malsukcesis",
-  "reader_sign_in_needed": "Ensalutu denove por daŭrigi",
-  "reader_rate_limit_hint": "Ĉi tiu fonto limigas petojn. Provu denove poste.",
-  "reader_new_posts": "Novaj afiŝoj",
-  "reader_source_loading": "Ĉi tiu fonto ankoraŭ ŝargiĝas. Aliaj afiŝoj jam estas legeblaj.",
-  "reader_cached_content": "Konservita kopio estas montrata dum la fonto ĝisdatiĝas.",
-  "reader_draft_restored": "Malneto restarigita",
-  "reader_search_all": "Serĉi en via biblioteko",
-  "reader_highlight": "Emfazi kaj aldoni noton",
-  "reader_extract": "Eltiri tekston el ekrankopio",
-  "reader_extract_notice": "La elektita PNG aŭ JPEG estos sendita al {host} per via agordita AI-modelo. La eltirita teksto povas enhavi erarojn.",
-  "reader_more_like": "Pli da similaj",
-  "reader_less_like": "Malpli da similaj",
-  "reader_undo": "Malfari",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Kontrolitaj aroj: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Emfazoj, etikedoj kaj notoj de artikoloj",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Ŝanĝoj konservitaj",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Ne eblis malfari. La datumoj eble ŝanĝiĝis.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Lastatempaj legoperacioj",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Serĉi en ŝargitaj afiŝoj",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Serĉu tekston, ligilojn aŭ aŭtorojn en jam ŝargitaj afiŝoj.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Reprovi post {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "La servila sekurkopio ŝanĝiĝis. Restarigu kaj kontrolu ĝin antaŭ alŝuto.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Ĉi tiu servilo ne povas sekure protekti sekurkopiojn kontraŭ samtempaj ŝanĝoj.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Antaŭaj sekurkopioj",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Teni la regilojn videblaj",
-  "reader_auto_retry_seconds": "Reprovos post {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Reprovos post {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Elŝuti ĉi tiun paĝon",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Elŝuti ĉiujn paĝojn",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Ĉiuj paĝoj",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Kopii ligilon",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Ligilo kopiita",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Pliaj agoj",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Paĝo {current} el {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Elŝutas paĝon {current} el {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Pli de {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Ludi la animacion",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Paŭzigi la animacion",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Kaŝi AI-generitajn verkojn",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Kaŝas verkojn, kiujn iliaj kreintoj markis kiel AI-generitajn. Viaj propraj legosignoj ĉiam restas videblaj.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }
