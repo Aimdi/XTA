@@ -167,9 +167,10 @@ class TweetWithCard extends Tweet {
     }
 
     var resCore = Json(result)['core']['user_results']['result'].raw;
-    // A subscriber-only preview carries its author in the newer shape only,
-    // without `legacy`.
-    if (resCore is Map<String, dynamic> && (resCore['legacy'] != null || resCore['core'] != null)) {
+    // Current responses, subscriber-only previews included, carry the author
+    // without `legacy` (see fromNonLegacyJson).
+    if (resCore is Map<String, dynamic> &&
+        (resCore['legacy'] != null || resCore['core'] != null || resCore['rest_id'] != null)) {
       user = UserWithExtra.fromNonLegacyJson(resCore);
     }
 

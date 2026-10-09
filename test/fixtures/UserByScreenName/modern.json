@@ -1,0 +1,121 @@
+{
+  "data": {
+    "user": {
+      "result": {
+        "__typename": "User",
+        "action_counts": {
+          "favorites_count": 0
+        },
+        "affiliates_highlighted_label": {},
+        "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2095923817080295424/YjqaAMdO_normal.jpg"
+        },
+        "banner": {
+          "image_url": "https://pbs.twimg.com/profile_banners/2095909295913103360/1788542164"
+        },
+        "business_account": {},
+        "core": {
+          "created_at": "Fri Sep 04 16:19:42 +0000 2026",
+          "name": "QuaX Tests",
+          "screen_name": "quax_tests"
+        },
+        "creator_subscriptions_count": 0,
+        "follow_request_sent": false,
+        "grok_translated_bio_with_availability": {
+          "is_available": false
+        },
+        "has_graduated_access": true,
+        "has_hidden_subscriptions_on_profile": false,
+        "highlights_info": {
+          "can_highlight_tweets": false,
+          "highlighted_tweets": "0"
+        },
+        "id": "VXNlcjoyMDk1OTA5Mjk1OTEzMTAzMzYw",
+        "is_blue_verified": false,
+        "is_profile_translatable": false,
+        "legacy_extended_profile": {},
+        "location": {
+          "location": "India"
+        },
+        "media_permissions": {
+          "can_media_tag": true
+        },
+        "notifications_settings": {
+          "notifications_enabled": false
+        },
+        "parody_commentary_fan_label": "None",
+        "pinned_items": {},
+        "possibly_sensitive": false,
+        "privacy": {
+          "protected": false
+        },
+        "profile_bio": {
+          "description": "🧪 Throwaway account · QuaX parsing fixtures 🇫🇷\n  Nothing real, every post is a test case.\n  https://t.co/XbzZfYVJIK · https://t.co/Akx2T6uckh\n  Ping @jack",
+          "entities": {
+            "description": {
+              "urls": [
+                {
+                  "display_url": "github.com/Teskann/QuaX",
+                  "expanded_url": "http://github.com/Teskann/QuaX",
+                  "indices": [
+                    92,
+                    115
+                  ],
+                  "url": "https://t.co/XbzZfYVJIK"
+                },
+                {
+                  "display_url": "flutter.dev",
+                  "expanded_url": "https://flutter.dev",
+                  "indices": [
+                    118,
+                    141
+                  ],
+                  "url": "https://t.co/Akx2T6uckh"
+                }
+              ]
+            }
+          }
+        },
+        "profile_description_language": "en",
+        "profile_image_shape": "Circle",
+        "profile_metadata": {
+          "profile_interstitial_type": ""
+        },
+        "profile_sort_enabled": false,
+        "profile_translation": {
+          "translator_type": "none"
+        },
+        "relationship_counts": {
+          "followers": 0,
+          "following": 0
+        },
+        "relationship_perspectives": {
+          "blocked_by": false,
+          "blocking": false,
+          "followed_by": false,
+          "following": false,
+          "live_following": false,
+          "muting": false
+        },
+        "rest_id": "2095909295913103360",
+        "super_follow_eligible": false,
+        "super_followed_by": false,
+        "super_following": false,
+        "tweet_counts": {
+          "media_tweets": 17,
+          "tweets": 41
+        },
+        "user_seed_tweet_count": 0,
+        "verification": {
+          "verified": false
+        },
+        "verification_info": {
+          "is_identity_verified": false
+        },
+        "website": {
+          "url": ""
+        }
+      }
+    }
+  }
+}

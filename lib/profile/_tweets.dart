@@ -100,7 +100,7 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   }
 
   Future<TweetStatus> _load(String? cursor) {
-    final operation = widget.includeReplies ? 'UserTweetsAndReplies' : 'UserTweets';
+    final operation = widget.includeReplies ? 'UserTweetsAndReplies' : 'UserOriginalsTimeline';
     return withRateLimitOperations([operation], () => widget.fetchTweets?.call(cursor) ?? _getTweets(cursor));
   }
 

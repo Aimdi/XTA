@@ -46,7 +46,7 @@ class XEndpoints {
   static const homeTimeline = 'HomeTimeline';
   static const userMedia = 'UserMedia';
   static const userTweetsAndReplies = 'UserTweetsAndReplies';
-  static const userTweets = 'UserTweets';
+  static const userOriginalsTimeline = 'UserOriginalsTimeline';
   static const audioSpaceById = 'AudioSpaceById';
 
   static const Map<String, XEndpoint> shipped = {
@@ -59,11 +59,11 @@ class XEndpoints {
     userByScreenName: XEndpoint(
       name: userByScreenName,
       operation: 'UserByScreenName',
-      queryId: 'IGgvgiOx4QZndDHuD3x9TQ',
+      queryId: 'KybxDj9RrADIITXlGG8kpw',
       host: 'twitter.com',
     ),
-    following: XEndpoint(name: following, operation: 'Following', queryId: 'F42cDX8PDFxkbjjq6JrM2w', host: 'x.com'),
-    followers: XEndpoint(name: followers, operation: 'Followers', queryId: '_orfRBQae57vylFPH0Huhg', host: 'x.com'),
+    following: XEndpoint(name: following, operation: 'Following', queryId: 'uwmIAx89XrXNuGY-Y7WFLg', host: 'x.com'),
+    followers: XEndpoint(name: followers, operation: 'Followers', queryId: 'mrqxgX8JzwlL6pvYiC5CPA', host: 'x.com'),
     retweeters: XEndpoint(name: retweeters, operation: 'Retweeters', queryId: 'ROjiuYueotTnWoI8m2YaiQ', host: 'x.com'),
     listByRestId: XEndpoint(
       name: listByRestId,
@@ -81,14 +81,14 @@ class XEndpoints {
     tweetDetail: XEndpoint(
       name: tweetDetail,
       operation: 'TweetDetail',
-      queryId: 'oCon7R-cgWRFy6EfZjaKfg',
+      queryId: 'blErEeZkos5TDrWmrCp7cw',
       host: 'x.com',
     ),
     // Quotes (`quoted_tweet_id:`) and Following search chunks.
     searchTimeline: XEndpoint(
       name: searchTimeline,
       operation: 'SearchTimeline',
-      queryId: 'Yw6L66Pw54NHKuq4Dp7b4Q',
+      queryId: 'uGB-gNd5HE4TkpO70OcFNw',
       host: 'x.com',
     ),
     // People search hits the same operation; keep a separate registry key so an
@@ -96,23 +96,30 @@ class XEndpoints {
     searchTimelineUsers: XEndpoint(
       name: searchTimelineUsers,
       operation: 'SearchTimeline',
-      queryId: 'Yw6L66Pw54NHKuq4Dp7b4Q',
+      queryId: 'uGB-gNd5HE4TkpO70OcFNw',
       host: 'twitter.com',
     ),
     homeTimeline: XEndpoint(
       name: homeTimeline,
       operation: 'HomeTimeline',
-      queryId: '7zlnp2TxC044W4C1ZUJMHw',
+      queryId: 'whgGeEQDhEDkPQEJiJvYQw',
       host: 'twitter.com',
     ),
     userMedia: XEndpoint(name: userMedia, operation: 'UserMedia', queryId: '9EovraBTXJYGSEQXZqlLmQ', host: 'x.com'),
     userTweetsAndReplies: XEndpoint(
       name: userTweetsAndReplies,
       operation: 'UserTweetsAndReplies',
-      queryId: 'D5eKzDa5ZoJuC1TCeAXbWA',
+      queryId: 'Z1m9j8S1leAzQp6yZXuaSg',
       host: 'x.com',
     ),
-    userTweets: XEndpoint(name: userTweets, operation: 'UserTweets', queryId: '36rb3Xj3iJ64Q-9wKDjCcQ', host: 'x.com'),
+    // The web's Posts tab. Replaced UserTweets, so it is a new registry key: an
+    // older build would apply an override for it to the wrong operation.
+    userOriginalsTimeline: XEndpoint(
+      name: userOriginalsTimeline,
+      operation: 'UserOriginalsTimeline',
+      queryId: 'qtvmQffnepvr0oPe4A8MqQ',
+      host: 'x.com',
+    ),
     audioSpaceById: XEndpoint(
       name: audioSpaceById,
       operation: 'AudioSpaceById',

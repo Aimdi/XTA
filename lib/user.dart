@@ -15,6 +15,7 @@ import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/verified_badges.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user_verification.dart';
+import 'package:xta/utils/json.dart';
 import 'package:provider/provider.dart';
 
 Widget _createUserAvatar(String? uri, double size, [int? cacheWidth]) {
@@ -293,16 +294,53 @@ class UserWithExtra extends User {
     // A response that has finished that migration must still yield a usable
     // profile, so an absent `legacy` degrades to whatever the rest carries
     // rather than throwing and taking the whole screen down.
-    var userWithExtra = UserWithExtra.fromJson((json["legacy"] as Map<String, dynamic>?) ?? const <String, dynamic>{});
+    final legacy = json["legacy"];
+    var userWithExtra = UserWithExtra.fromJson({
+      if (legacy is Map<String, dynamic>) ...legacy,
+      ..._modernUserFields(Json(json)),
+    });
     userWithExtra
-      ..name = json["core"]?["name"] ?? userWithExtra.name
-      ..createdAt = convertTwitterDateTime(json["core"]?["created_at"]) ?? userWithExtra.createdAt
-      ..screenName = json["core"]?["screen_name"] ?? userWithExtra.screenName
       ..verified = json["is_blue_verified"] ?? userWithExtra.verified
-      ..profileImageUrlHttps = json["avatar"]?["image_url"] ?? userWithExtra.profileImageUrlHttps
-      ..idStr = json["rest_id"] ?? userWithExtra.idStr
       ..verification = UserVerification.fromJson(json);
     return userWithExtra;
+  }
+
+  /// The profile fields of a user result that has no `legacy` left (current
+  /// UserByScreenName, timelines, follows and people search), under the
+  /// `legacy` names [UserWithExtra.fromJson] reads. Absent fields are left out
+  /// so a half-migrated result keeps its `legacy` values.
+  static Map<String, dynamic> _modernUserFields(Json user) {
+    String? text(Json value) => (value.string?.isEmpty ?? true) ? null : value.string;
+    final avatar = text(user['avatar']['image_url']);
+    final entities = user['profile_bio']['entities'].raw;
+    final fields = <String, dynamic>{
+      'id_str': user['rest_id'].string,
+      'name': user['core']['name'].string,
+      'screen_name': user['core']['screen_name'].string,
+      'created_at': user['core']['created_at'].string,
+      'location': text(user['location']['location']),
+      'url': text(user['website']['url']),
+      'description': user['profile_bio']['description'].string,
+      'entities': entities is Map<String, dynamic> ? entities : null,
+      'protected': user['privacy']['protected'].boolean,
+      'followers_count': user['relationship_counts']['followers'].integer,
+      'friends_count': user['relationship_counts']['following'].integer,
+      'favorites_count': user['action_counts']['favorites_count'].integer,
+      'statuses_count': user['tweet_counts']['tweets'].integer,
+      'profile_banner_url': text(user['banner']['image_url']),
+      'profile_image_url_https': avatar,
+      'possibly_sensitive': user['possibly_sensitive'].boolean,
+      'default_profile_image': avatar?.contains('default_profile_images'),
+    };
+    fields.removeWhere((_, value) => value == null);
+    return fields;
+  }
+
+  /// Pinned post ids: `pinned_items` on current results, `legacy` on older ones.
+  static List<String> pinnedTweetIdsOf(Map<String, dynamic> json) {
+    final modern = Json(json)['pinned_items']['tweet_ids_str'];
+    final ids = modern.exists ? modern : Json(json)['legacy']['pinned_tweet_ids_str'];
+    return [for (final id in ids.list) ?id.string];
   }
 
   factory UserWithExtra.fromJson(Map<String, dynamic> json) {
