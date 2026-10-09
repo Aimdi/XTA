@@ -1,9 +1,10 @@
 import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_settings.dart';
 import 'package:xta/settings/settings_chrome.dart';
 
@@ -51,7 +52,7 @@ class SettingsAccessibilityFragment extends StatelessWidget {
                 icon: Icons.record_voice_over_outlined,
                 title: L10n.of(context).settings_speech,
                 description: L10n.of(context).settings_speech_description,
-                onTap: () => openTtsSettings(context, FlutterTts()),
+                onTap: () => openTtsSettings(context, context.read<SpeechStore>().tts),
               ),
             ],
           ),
