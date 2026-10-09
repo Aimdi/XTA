@@ -4,6 +4,9 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/links/link_opening.dart';
+import 'package:xta/links/link_post_context.dart';
+import 'package:xta/links/link_preview_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_poll.dart';
 import 'package:xta/plugins/mastodon/mastodon_activity.dart';
@@ -18,7 +21,6 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
-import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
@@ -120,6 +122,7 @@ class MastodonPostCard extends StatelessWidget {
                       key: ValueKey((post.url, post.id, post.spoilerText, post.sensitive)),
                       post: post,
                       media: _media(context),
+                      linkPreview: _linkPreview(context),
                     ),
                     _MastodonEngagementRow(
                       post: post,
@@ -247,6 +250,34 @@ class MastodonPostCard extends StatelessWidget {
     );
   }
 
+  Widget? _linkPreview(BuildContext context) {
+    final card = post.linkCard;
+    if (card == null) return null;
+    return LinkPreviewCard(
+      url: card.url,
+      title: card.title,
+      description: card.description,
+      imageUrl: card.imageUrl,
+      layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage, kind: card.type),
+      onTap: () => openPostLink(context, card.url, title: card.title, post: _linkContext(context)),
+    );
+  }
+
+  LinkPostContext _linkContext(BuildContext context) => LinkPostContext(
+    sourceId: pluginIdMastodon,
+    author: post.authorName,
+    avatarUrl: post.avatarUrl,
+    replies: post.repliesCount,
+    reposts: post.reblogsCount,
+    likes: post.favouritesCount,
+    postUrl: post.url,
+    openPost: openOnTap
+        ? () {
+            if (context.mounted) _open(context);
+          }
+        : null,
+  );
+
   Widget _media(BuildContext context) {
     if (!post.hasMedia) return const SizedBox.shrink();
     return PluginPostMedia(
@@ -291,79 +322,6 @@ class _MastodonHandle extends StatelessWidget {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: style,
-    );
-  }
-}
-
-/// Large article / link preview from Mastodon's PreviewCard.
-class _MastodonLinkPreview extends StatelessWidget {
-  final MastodonLinkCard card;
-
-  const _MastodonLinkPreview({required this.card});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final radius = tweetMediaRadiusOf(context);
-    final host = card.providerName ?? Uri.tryParse(card.url)?.host ?? card.url;
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => openLink(context, card.url),
-        borderRadius: BorderRadius.circular(radius),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.outlineVariant),
-            borderRadius: BorderRadius.circular(radius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (card.hasImage)
-                AspectRatio(
-                  aspectRatio: kMastodonMediaMaxAspectRatio,
-                  child: ExtendedImage.network(card.imageUrl!, fit: BoxFit.cover, cacheWidth: (width * scale).ceil()),
-                ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      host,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                    if (card.title != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.title!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
-                      ),
-                    ],
-                    if (card.description != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.description!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -465,8 +423,9 @@ class _MastodonRevealStore extends Store<bool> {
 class _SpoilerBody extends StatefulWidget {
   final MastodonPost post;
   final Widget media;
+  final Widget? linkPreview;
 
-  const _SpoilerBody({super.key, required this.post, required this.media});
+  const _SpoilerBody({super.key, required this.post, required this.media, this.linkPreview});
 
   @override
   State<_SpoilerBody> createState() => _SpoilerBodyState();
@@ -524,7 +483,7 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
           if (!post.sensitive || open) widget.media,
         ],
         if (post.poll != null) ...[const SizedBox(height: 10), MastodonPollResults(poll: post.poll!)],
-        if (post.linkCard != null) ...[const SizedBox(height: 10), _MastodonLinkPreview(card: post.linkCard!)],
+        if (widget.linkPreview case final preview?) ...[const SizedBox(height: 10), preview],
       ],
     );
   }

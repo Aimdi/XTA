@@ -28,6 +28,9 @@ import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/links/link_opening.dart';
+import 'package:xta/links/link_post_context.dart';
+import 'package:xta/links/link_preview_card.dart';
 
 const double kBlueskyAvatarSize = 48;
 
@@ -176,13 +179,13 @@ class BlueskyPostCard extends StatelessWidget {
             ? BlueskyContentWarning(
                 key: ValueKey('warning-${post.uri}'),
                 identity: blueskyWarningIdentity(post),
-                child: _attachments(),
+                child: _attachments(context),
               )
-            : _attachments(),
+            : _attachments(context),
     ],
   );
 
-  Widget _attachments() => Column(
+  Widget _attachments(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (post.hasMedia) ...[
@@ -190,8 +193,32 @@ class BlueskyPostCard extends StatelessWidget {
         PluginPostMedia(items: post.mediaItems, sourceName: 'bluesky'),
       ],
       if (post.quotedPost != null) ...[const SizedBox(height: 10), _QuotedPost(quote: post.quotedPost!)],
-      if (post.linkCard != null) ...[const SizedBox(height: 10), _BlueskyLinkPreview(card: post.linkCard!)],
+      if (post.linkCard != null) ...[const SizedBox(height: 10), _linkPreview(context, post.linkCard!)],
     ],
+  );
+
+  Widget _linkPreview(BuildContext context, BlueskyLinkCard card) => LinkPreviewCard(
+    url: card.url,
+    title: card.title,
+    description: card.description,
+    imageUrl: card.imageUrl,
+    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
+    onTap: () => openPostLink(context, card.url, title: card.title, post: _linkContext(context)),
+  );
+
+  LinkPostContext _linkContext(BuildContext context) => LinkPostContext(
+    sourceId: pluginIdBluesky,
+    author: post.authorName,
+    avatarUrl: post.avatarUrl,
+    replies: post.replyCount,
+    reposts: post.repostCount,
+    likes: post.likeCount,
+    postUrl: post.url,
+    openPost: openOnTap
+        ? () {
+            if (context.mounted) _open(context);
+          }
+        : null,
   );
 
   Widget _repostBanner(BuildContext context) {
@@ -393,78 +420,6 @@ class _QuotedPost extends StatelessWidget {
       ],
     ],
   );
-}
-
-class _BlueskyLinkPreview extends StatelessWidget {
-  final BlueskyLinkCard card;
-
-  const _BlueskyLinkPreview({required this.card});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final radius = tweetMediaRadiusOf(context);
-    final host = Uri.tryParse(card.url)?.host ?? card.url;
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => openLink(context, card.url),
-        borderRadius: BorderRadius.circular(radius),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.outlineVariant),
-            borderRadius: BorderRadius.circular(radius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (card.hasImage)
-                AspectRatio(
-                  aspectRatio: clampPluginMediaAspect(null),
-                  child: ExtendedImage.network(card.imageUrl!, fit: BoxFit.cover, cacheWidth: (width * scale).ceil()),
-                ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      host,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                    if (card.title != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.title!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
-                      ),
-                    ],
-                    if (card.description != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.description!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Replies / reposts from the AppView; likes are local (never sent to Bluesky).

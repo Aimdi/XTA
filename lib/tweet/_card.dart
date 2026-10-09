@@ -8,7 +8,6 @@ import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
-import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/poll.dart';
@@ -18,7 +17,9 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/links/link_opening.dart';
+import 'package:xta/links/link_preview_card.dart';
+import 'package:xta/tweet/tweet_link_context.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/json.dart';
 
@@ -92,29 +93,42 @@ class _TweetCardState extends State<TweetCard> {
       child,
       onTap: url == null
           ? null
-          : () async {
-              if (await openNativeLink(context, url) || !context.mounted) {
-                return;
-              }
-              if (!canOpenInArticleScreen(url)) {
-                await openLink(context, url);
-                return;
-              }
-              final readerTitle =
-                  title?.trim().isNotEmpty == true
-                  ? title!.trim()
-                  : Uri.tryParse(url)?.host;
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ArticleScreen(
-                    url: url,
-                    title: readerTitle,
-                    openNative: openNativeLink,
-                  ),
-                ),
-              );
-            },
+          : () => _openLink(context, url, title),
+    );
+  }
+
+  Future<void> _openLink(BuildContext context, String url, String? title) =>
+      openPostLink(
+        context,
+        url,
+        title: title,
+        post: tweetLinkContext(context, widget.tweet),
+      );
+
+  /// An article link as Threads shows one: a tile, the domain, the title.
+  Widget _createCompactCard(
+    BuildContext context,
+    Json values,
+    String? url,
+    String imageSize,
+  ) {
+    final title = values['title']['string_value'].string;
+    final image = imageSize == 'disabled'
+        ? null
+        : values['thumbnail_image']['image_value']['url'].string;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        kTweetHorizontalPadding,
+        kTweetSpace2,
+        kTweetHorizontalPadding,
+        0,
+      ),
+      child: LinkPreviewCard(
+        url: url ?? values['vanity_url']['string_value'].string ?? '',
+        title: title,
+        imageUrl: image,
+        onTap: url == null ? null : () => _openLink(context, url, title),
+      ),
     );
   }
 
@@ -385,6 +399,22 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
+  /// A large-image card stays large only when its picture is the content —
+  /// a video page, say; a news story's share image goes in the tile.
+  bool _prefersCompact(
+    Map<String, dynamic> card,
+    String? url,
+    String imageSize,
+  ) {
+    final image = Json(card)['binding_values']['thumbnail_image']['image_value']
+        ['url'].string;
+    return linkPreviewLayoutFor(
+          url ?? '',
+          hasImage: image != null && imageSize != 'disabled',
+        ) ==
+        LinkPreviewLayout.compact;
+  }
+
   String? _findCardUrl(Map<String, dynamic> card) {
     final link = Json(card)['url'].string;
     if (link == null || link.isEmpty) return null;
@@ -417,36 +447,13 @@ class _TweetCardState extends State<TweetCard> {
 
     switch (card['name']) {
       case 'summary':
-        final values = Json(card)['binding_values'];
-        final image = values['thumbnail_image$imageKey']['image_value'].raw;
-        final title = values['title']['string_value'].string;
-        final description = values['description']['string_value'].string;
-        final vanityUrl = values['vanity_url']['string_value'].string;
-        return _createCard(
-          _findCardUrl(card),
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: _createImage(
-                  imageSize,
-                  image is Map<String, dynamic> ? image : null,
-                  BoxFit.cover,
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: _createListTile(
-                  context,
-                  title ?? '',
-                  description,
-                  vanityUrl,
-                ),
-              ),
-            ],
-          ),
+      case 'summary_large_image'
+          when _prefersCompact(card, _findCardUrl(card), imageSize):
+        return _createCompactCard(
           context,
-          title: title,
+          Json(card)['binding_values'],
+          _findCardUrl(card),
+          imageSize,
         );
       case 'summary_large_image':
         final values = Json(card)['binding_values'];

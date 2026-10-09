@@ -22,9 +22,11 @@ import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
-import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/links/link_opening.dart';
+import 'package:xta/links/link_post_context.dart';
+import 'package:xta/links/link_preview_card.dart';
 
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
@@ -161,7 +163,7 @@ class ThreadsPostCard extends StatelessWidget {
                               ],
                               if (post.linkCard != null) ...[
                                 const SizedBox(height: 10),
-                                _ThreadsLinkPreview(card: post.linkCard!),
+                                _linkPreview(context, post.linkCard!),
                               ],
                               _ThreadsEngagementRow(
                                 post: post,
@@ -183,6 +185,31 @@ class ThreadsPostCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _linkPreview(BuildContext context, ThreadsLinkCard card) => LinkPreviewCard(
+    url: card.url,
+    title: card.title,
+    description: card.description,
+    imageUrl: card.imageUrl,
+    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
+    imageBuilder: (_, url, cacheWidth) => ThreadsNetworkImage(url, fit: BoxFit.cover, cacheWidth: cacheWidth),
+    onTap: () => openPostLink(context, card.url, title: card.title, post: _linkContext(context)),
+  );
+
+  LinkPostContext _linkContext(BuildContext context) => LinkPostContext(
+    sourceId: pluginIdThreads,
+    author: post.authorName,
+    avatarUrl: post.avatarUrl,
+    replies: post.replyCount,
+    reposts: post.repostCount,
+    likes: post.likeCount,
+    postUrl: post.url,
+    openPost: openOnTap
+        ? () {
+            if (context.mounted) _open(context);
+          }
+        : null,
+  );
 
   Widget _repostLine(BuildContext context) {
     final theme = Theme.of(context);
@@ -288,79 +315,6 @@ class ThreadsPostCard extends StatelessWidget {
           child: Text(L10n.of(context).plugin_threads_follow),
         );
       },
-    );
-  }
-}
-
-/// Large article / link preview from Threads' `link_preview_attachment`.
-class _ThreadsLinkPreview extends StatelessWidget {
-  final ThreadsLinkCard card;
-
-  const _ThreadsLinkPreview({required this.card});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final radius = tweetMediaRadiusOf(context);
-    final host = card.providerName ?? Uri.tryParse(card.url)?.host ?? card.url;
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => openLink(context, card.url),
-        borderRadius: BorderRadius.circular(radius),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.outlineVariant),
-            borderRadius: BorderRadius.circular(radius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (card.hasImage)
-                AspectRatio(
-                  aspectRatio: clampPluginMediaAspect(null),
-                  child: ThreadsNetworkImage(card.imageUrl!, fit: BoxFit.cover, cacheWidth: (width * scale).ceil()),
-                ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      host,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                    if (card.title != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.title!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
-                      ),
-                    ],
-                    if (card.description != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.description!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
