@@ -7,9 +7,9 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/utils/json.dart';
 
-/// Moebooru answers `include_tags` with a name → kind map; Gelbooru with its
-/// tag list.
-Map<String, BooruTagCategory> parseBooruTagKinds(Object? raw, {required BooruEngine engine}) {
+/// Moebooru answers `include_tags` with a name → kind map; the others with
+/// a tag list carrying kinds and counts.
+Map<String, BooruTagInfo> parseBooruTagInfo(Object? raw, {required BooruEngine engine}) {
   final kinds = Json(raw)['tags'].raw;
   if (engine == BooruEngine.moebooru && kinds is Map) {
     return Map.fromEntries([
@@ -17,14 +17,17 @@ Map<String, BooruTagCategory> parseBooruTagKinds(Object? raw, {required BooruEng
         if (key is String) ?_moebooruKind(key, value),
     ]);
   }
-  return {for (final tag in parseBooruTagSuggestions(raw, engine: engine)) tag.name: ?tag.category};
+  return {
+    for (final tag in parseBooruTagSuggestions(raw, engine: engine))
+      tag.name: BooruTagInfo(category: tag.category, postCount: tag.postCount),
+  };
 }
 
-MapEntry<String, BooruTagCategory>? _moebooruKind(String name, Object? kind) {
+MapEntry<String, BooruTagInfo>? _moebooruKind(String name, Object? kind) {
   final category = kind is int
       ? BooruTagCategory.fromWire(kind, BooruEngine.moebooru)
       : BooruTagCategory.named(kind is String ? kind : null);
-  return category == null ? null : MapEntry(name, category);
+  return category == null ? null : MapEntry(name, BooruTagInfo(category: category));
 }
 
 /// The body of the wiki page for [tag], or null when there is none. Hosts

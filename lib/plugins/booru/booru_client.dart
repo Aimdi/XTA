@@ -159,15 +159,28 @@ class BooruClient {
     );
   }
 
-  /// The kind of each of [post]'s tags. Empty when the host cannot say.
-  Future<Map<String, BooruTagCategory>> tagCategories(BooruPost post) async {
-    if (post.tagCategories.isNotEmpty) return post.tagCategories;
-    final uri = booruTagKindsUri(site, postId: post.id, tags: post.tags);
-    if (uri == null) return const {};
+  /// Kind and post count of each of [post]'s tags. Kinds the post carries
+  /// stand in where the lookup is missing or fails.
+  Future<Map<String, BooruTagInfo>> tagInfo(BooruPost post) async {
+    final fromPost = {
+      for (final MapEntry(key: tag, value: category)
+          in post.tagCategories.entries)
+        tag: BooruTagInfo(category: category),
+    };
+    final uri = booruTagInfoUri(site, postId: post.id, tags: post.tags);
+    if (uri == null) return fromPost;
     try {
-      return parseBooruTagKinds(await fetchJson(uri), engine: engine);
+      final looked = parseBooruTagInfo(await fetchJson(uri), engine: engine);
+      return {
+        ...fromPost,
+        for (final MapEntry(key: tag, value: info) in looked.entries)
+          tag: BooruTagInfo(
+            category: info.category ?? fromPost[tag]?.category,
+            postCount: info.postCount,
+          ),
+      };
     } catch (_) {
-      return const {};
+      return fromPost;
     }
   }
 

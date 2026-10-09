@@ -18,6 +18,7 @@ import 'package:xta/plugins/booru/booru_related.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
 import 'package:xta/plugins/booru/booru_tag_sheet.dart';
+import 'package:xta/plugins/booru/booru_tag_style.dart';
 
 /// One post on its own, as opened from a card in a mixed feed.
 class BooruPostScreen extends StatelessWidget {
@@ -45,7 +46,7 @@ class BooruPostDetails extends StatefulWidget {
 }
 
 class _BooruPostDetailsState extends State<BooruPostDetails> {
-  late final BooruLoadStore<Map<String, BooruTagCategory>> _kinds;
+  late final BooruLoadStore<Map<String, BooruTagInfo>> _tagInfo;
   late final BooruEngine _engine;
 
   BooruPost get _post => widget.post;
@@ -55,13 +56,13 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     super.initState();
     final client = context.read<BooruClient>();
     _engine = BooruEngine.tryParse(_post.engine) ?? client.engine;
-    _kinds = BooruLoadStore(() => client.tagCategories(_post));
-    if (_post.tagCategories.isEmpty) unawaited(_kinds.ensure());
+    _tagInfo = BooruLoadStore(() => client.tagInfo(_post));
+    unawaited(_tagInfo.ensure());
   }
 
   @override
   void dispose() {
-    unawaited(_kinds.destroy());
+    unawaited(_tagInfo.destroy());
     super.dispose();
   }
 
@@ -74,11 +75,11 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
       children: [
         BooruPostMedia(post: _post),
         BooruPostFacts(post: _post),
-        ScopedBuilder<BooruLoadStore<Map<String, BooruTagCategory>>, Map<String, BooruTagCategory>?>(
-          store: _kinds,
-          onLoading: (_) => _tags(_post.tagCategories),
-          onError: (_, _) => _tags(_post.tagCategories),
-          onState: (_, kinds) => _tags(kinds ?? _post.tagCategories),
+        ScopedBuilder<BooruLoadStore<Map<String, BooruTagInfo>>, Map<String, BooruTagInfo>?>(
+          store: _tagInfo,
+          onLoading: (_) => _tags(_postInfo),
+          onError: (_, _) => _tags(_postInfo),
+          onState: (_, info) => _tags(info ?? _postInfo),
         ),
         if (source.isNotEmpty)
           ListTile(
@@ -94,14 +95,20 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     );
   }
 
-  Widget _tags(Map<String, BooruTagCategory> kinds) {
+  /// What the post itself says, shown until the lookup answers.
+  Map<String, BooruTagInfo> get _postInfo => {
+    for (final MapEntry(key: tag, value: category) in _post.tagCategories.entries)
+      tag: BooruTagInfo(category: category),
+  };
+
+  Widget _tags(Map<String, BooruTagInfo> info) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
-    final artist = booruArtistTag(_post.tags, kinds);
+    final artist = booruArtistTag(_post.tags, info);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BooruTagGroups(groups: booruTagGroups(_post.tags, kinds), onTap: _openTag),
+        BooruTagSection(tags: _post.tags, info: info, onTap: _openTag),
         if (_post.tags.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -110,7 +117,7 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
         if (artist != null)
           BooruRelatedStrip(
             key: ValueKey('booru-artist-$artist'),
-            title: l10n.plugin_booru_more_from(artist),
+            title: l10n.plugin_booru_more_from(booruTagDisplayName(artist)),
             query: artist,
             exclude: _post,
           ),

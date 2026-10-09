@@ -72,18 +72,26 @@ bool booruHasPopularList(BooruEngine engine) => engine != BooruEngine.gelbooruV2
 /// Only Danbooru pages through its popular list; the others send one page.
 bool booruPopularPages(BooruEngine engine) => engine == BooruEngine.danbooru;
 
-/// Tag kinds for [tags] of post [postId], for engines whose posts leave them
-/// out. Null where the post already carries them or the host cannot say.
-Uri? booruTagKindsUri(BooruSite site, {required String postId, required List<String> tags}) {
+/// Kinds and post counts for [tags] of post [postId], in one request. Null
+/// where the host cannot answer for a list of tags.
+Uri? booruTagInfoUri(BooruSite site, {required String postId, required List<String> tags}) {
+  if (tags.isEmpty) return null;
+  final limit = '${tags.length}';
   switch (site.engine) {
+    case BooruEngine.danbooru:
+      return site.endpoint('/tags.json', {
+        'search[name_comma]': tags.join(','),
+        'only': 'name,category,post_count',
+        'limit': limit,
+      });
+    case BooruEngine.e621:
+      return site.endpoint('/tags.json', {'search[name]': tags.join(','), 'limit': limit});
+    case BooruEngine.gelbooruV2:
+      return site.dapi('tag', {'names': tags.join(' '), 'limit': limit});
+    // Moebooru looks tags up one pattern at a time; its post can name their
+    // kinds, though not their counts.
     case BooruEngine.moebooru:
       return site.endpoint('/post.json', {'tags': 'id:$postId', 'api_version': '2', 'include_tags': '1', 'limit': '1'});
-    case BooruEngine.gelbooruV2:
-      if (tags.isEmpty) return null;
-      return site.dapi('tag', {'names': tags.join(' '), 'limit': '${tags.length}'});
-    case BooruEngine.danbooru:
-    case BooruEngine.e621:
-      return null;
   }
 }
 

@@ -253,22 +253,32 @@ void main() {
 
     test('Rule34 is asked on its API host', () {
       const site = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://rule34.xxx');
-      final uri = booruTagKindsUri(site, postId: '1', tags: ['a', 'b'])!;
+      final uri = booruTagInfoUri(site, postId: '1', tags: ['a', 'b'])!;
       expect(uri.host, 'api.rule34.xxx');
       expect(uri.queryParameters['names'], 'a b');
       expect(uri.queryParameters['s'], 'tag');
     });
 
-    test('tag kinds are only looked up where posts leave them out', () {
+    test('one request names every tag of a post', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      expect(booruTagInfoUri(danbooru, postId: '7', tags: ['a', 'b_c'])!.queryParameters, {
+        'search[name_comma]': 'a,b_c',
+        'only': 'name,category,post_count',
+        'limit': '2',
+      });
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+      expect(booruTagInfoUri(e621, postId: '7', tags: ['a', 'b'])!.queryParameters, {
+        'search[name]': 'a,b',
+        'limit': '2',
+      });
       const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
-      expect(booruTagKindsUri(moebooru, postId: '7', tags: ['a'])!.queryParameters, {
+      expect(booruTagInfoUri(moebooru, postId: '7', tags: ['a'])!.queryParameters, {
         'tags': 'id:7',
         'api_version': '2',
         'include_tags': '1',
         'limit': '1',
       });
-      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
-      expect(booruTagKindsUri(danbooru, postId: '7', tags: ['a']), isNull);
+      expect(booruTagInfoUri(danbooru, postId: '7', tags: const []), isNull);
     });
 
     test('wiki pages and comments', () {
@@ -287,27 +297,44 @@ void main() {
   });
 
   group('detail parsers', () {
-    test('Moebooru tag map and Gelbooru tag list', () {
+    test('Moebooru tag map; Danbooru, e621 and Gelbooru tag lists with counts', () {
+      Map<String, (BooruTagCategory?, int?)> read(Object raw, BooruEngine engine) => {
+        for (final MapEntry(:key, :value) in parseBooruTagInfo(raw, engine: engine).entries)
+          key: (value.category, value.postCount),
+      };
       expect(
-        parseBooruTagKinds({
+        read({
           'posts': [],
           'tags': {'kantoku': 'artist', 'clouds': 'general', 'jpeg_artifacts': 'faults', 'x': 'unknown'},
-        }, engine: BooruEngine.moebooru),
+        }, BooruEngine.moebooru),
         {
-          'kantoku': BooruTagCategory.artist,
-          'clouds': BooruTagCategory.general,
-          'jpeg_artifacts': BooruTagCategory.meta,
+          'kantoku': (BooruTagCategory.artist, null),
+          'clouds': (BooruTagCategory.general, null),
+          'jpeg_artifacts': (BooruTagCategory.meta, null),
         },
       );
       expect(
-        parseBooruTagKinds({
+        read({
           'tag': [
-            {'name': 'kantoku', 'type': 1},
-            {'name': 'highres', 'type': 5},
+            {'name': 'kantoku', 'type': 1, 'count': 50},
+            {'name': 'highres', 'type': 5, 'count': 9000000},
           ],
-        }, engine: BooruEngine.gelbooruV2),
-        {'kantoku': BooruTagCategory.artist, 'highres': BooruTagCategory.meta},
+        }, BooruEngine.gelbooruV2),
+        {'kantoku': (BooruTagCategory.artist, 50), 'highres': (BooruTagCategory.meta, 9000000)},
       );
+      expect(
+        read([
+          {'name': 'blush', 'category': 0, 'post_count': 3890000},
+        ], BooruEngine.danbooru),
+        {'blush': (BooruTagCategory.general, 3890000)},
+      );
+      expect(
+        read([
+          {'name': 'fox', 'category': 5, 'post_count': 12},
+        ], BooruEngine.e621),
+        {'fox': (BooruTagCategory.species, 12)},
+      );
+      expect(read({'tags': []}, BooruEngine.e621), isEmpty);
     });
 
     test('wiki bodies', () {
@@ -439,7 +466,7 @@ void main() {
       expect(await client.wiki('nothing'), isNull);
     });
 
-    test('tag kinds come from the post when it has them, else one lookup', () async {
+    test('Moebooru kinds come from one post lookup', () async {
       var calls = 0;
       final client = _client(
         'moebooru',
@@ -455,20 +482,41 @@ void main() {
           );
         }),
       );
-      final known = _post(categories: {'solo': BooruTagCategory.general});
-      expect(await client.tagCategories(known), known.tagCategories);
-      expect(calls, 0);
-      expect(await client.tagCategories(_post(engine: 'moebooru')), {'kantoku': BooruTagCategory.artist});
+      final info = await client.tagInfo(_post(engine: 'moebooru'));
+      expect(info.keys, ['kantoku']);
+      expect(info['kantoku']!.category, BooruTagCategory.artist);
       expect(calls, 1);
     });
 
-    test('a failed tag lookup leaves the tags ungrouped', () async {
+    test('counts from the lookup join the kinds the post carries', () async {
+      final client = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient(
+          (request) async => http.Response(
+            jsonEncode([
+              {'name': 'solo', 'post_count': 4330000},
+            ]),
+            200,
+          ),
+        ),
+      );
+      final info = await client.tagInfo(
+        _post(categories: {'solo': BooruTagCategory.general, 'smile': BooruTagCategory.general}),
+      );
+      expect(info['solo']!.postCount, 4330000);
+      expect(info['solo']!.category, BooruTagCategory.general);
+      expect(info['smile']!.category, BooruTagCategory.general);
+      expect(info['smile']!.postCount, isNull);
+    });
+
+    test('a failed tag lookup leaves the tags ungrouped and uncounted', () async {
       final client = _client(
         'gelbooru_v2',
         'https://safebooru.org',
         MockClient((request) async => http.Response('<xml/>', 200)),
       );
-      expect(await client.tagCategories(_post(engine: 'gelbooru_v2')), isEmpty);
+      expect(await client.tagInfo(_post(engine: 'gelbooru_v2')), isEmpty);
     });
   });
 }

@@ -19,6 +19,8 @@ import 'package:xta/plugins/booru/booru_related.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
+import 'package:xta/plugins/booru/booru_tag_style.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 
 BooruPost _post(
   String id, {
@@ -71,6 +73,13 @@ class _Client extends BooruClient {
       BooruComment(id: '1', author: 'reader', body: '[b]Nice[/b] [[kantoku]]', createdAt: DateTime.utc(2024), score: 1),
     ];
   }
+
+  static const counts = {'kantoku': 50, 'solo': 4330000, 'highres': 9000000, 'blue_eyes': 573000};
+
+  @override
+  Future<Map<String, BooruTagInfo>> tagInfo(BooruPost post) async => {
+    for (final tag in post.tags) tag: BooruTagInfo(category: post.tagCategories[tag], postCount: counts[tag]),
+  };
 
   @override
   Future<String?> wiki(String tag) async {
@@ -174,21 +183,53 @@ void main() {
   });
 
   group('tag groups', () {
-    test('kinds order the groups; unknown tags count as general', () {
+    test('kinds order the groups; unknown tags count as general; names sort A–Z', () {
       final groups = booruTagGroups(
         ['solo', 'kantoku', 'highres', 'mystery'],
-        {'kantoku': BooruTagCategory.artist, 'solo': BooruTagCategory.general, 'highres': BooruTagCategory.meta},
+        const {
+          'kantoku': BooruTagInfo(category: BooruTagCategory.artist),
+          'solo': BooruTagInfo(category: BooruTagCategory.general),
+          'highres': BooruTagInfo(category: BooruTagCategory.meta),
+        },
       );
       expect(groups.map((g) => g.category), [BooruTagCategory.artist, BooruTagCategory.general, BooruTagCategory.meta]);
-      expect(groups[1].tags, ['solo', 'mystery']);
-      expect(booruTagGroups(['a'], const {}).single.category, isNull);
+      expect(groups[1].tags, ['mystery', 'solo']);
+      final unknown = booruTagGroups(['b', 'a'], const {}).single;
+      expect(unknown.category, isNull);
+      expect(unknown.tags, ['a', 'b']);
       expect(booruTagGroups(const [], const {}), isEmpty);
     });
 
+    test('by use, the most used come first and uncounted tags last', () {
+      const info = {'a': BooruTagInfo(postCount: 5), 'b': BooruTagInfo(postCount: 900), 'c': BooruTagInfo()};
+      expect(booruTagGroups(['c', 'a', 'b'], info, sort: BooruTagSort.count).single.tags, ['b', 'a', 'c']);
+      expect(BooruTagSort.parse('count'), BooruTagSort.count);
+      expect(BooruTagSort.parse(null), BooruTagSort.name);
+    });
+
+    test('chips read like the host: spaces, short counts, kind colours', () {
+      expect(booruTagDisplayName('blue_eyes'), 'blue eyes');
+      expect(pluginCompactCount(5450000, 'en'), '5.45M');
+      expect(pluginCompactCount(2410, 'en'), '2.41K');
+      expect(pluginCompactCount(50, 'en'), '50');
+      for (final brightness in Brightness.values) {
+        final scheme = ColorScheme.fromSeed(seedColor: Colors.teal, brightness: brightness);
+        final general = pluginTagPalette(booruTagKind(BooruTagCategory.general), scheme);
+        expect(general.text, isNot(scheme.onSurface));
+        expect(general.fill, isNot(general.text));
+        expect(pluginTagPalette(null, scheme).text, scheme.onSurface);
+        final kinds = booruTagCategoryOrder.map((c) => booruTagColor(c, scheme)).toSet();
+        expect(kinds, hasLength(booruTagCategoryOrder.length));
+      }
+    });
+
     test('the artist for "More from" skips placeholder artist tags', () {
-      final kinds = {'unknown_artist': BooruTagCategory.artist, 'kantoku': BooruTagCategory.artist};
-      expect(booruArtistTag(['unknown_artist', 'kantoku'], kinds), 'kantoku');
-      expect(booruArtistTag(['unknown_artist'], kinds), isNull);
+      const info = {
+        'unknown_artist': BooruTagInfo(category: BooruTagCategory.artist),
+        'kantoku': BooruTagInfo(category: BooruTagCategory.artist),
+      };
+      expect(booruArtistTag(['unknown_artist', 'kantoku'], info), 'kantoku');
+      expect(booruArtistTag(['unknown_artist'], info), isNull);
     });
 
     test('family query names the parent', () {
@@ -215,8 +256,29 @@ void main() {
       expect(find.text('someone'), findsOneWidget);
       expect(find.text('Artist'), findsOneWidget);
       expect(find.text('Meta'), findsOneWidget);
+      expect(find.text('kantoku  50'), findsOneWidget);
+      expect(find.text('highres  9M'), findsOneWidget);
       expect(client.searches, contains('kantoku'));
       expect(find.text('More from kantoku'), findsOneWidget);
+    });
+
+    testWidgets('tags sort by name or by use, and the choice is kept', (tester) async {
+      final post = _post(
+        '1',
+        tags: const ['solo', 'blue_eyes'],
+        categories: {'solo': BooruTagCategory.general, 'blue_eyes': BooruTagCategory.general},
+      );
+      await _pump(tester, BooruPostScreen(post: post));
+      double x(String tag) => tester.getTopLeft(find.byKey(ValueKey('booru-post-tag-$tag'))).dx;
+
+      expect(find.text('blue eyes  573K'), findsOneWidget);
+      expect(x('blue_eyes'), lessThan(x('solo')));
+      await tester.tap(find.byKey(const ValueKey('booru-tag-sort')));
+      await tester.pumpAndSettle();
+      expect(x('solo'), lessThan(x('blue_eyes')));
+      expect(find.text('Most used'), findsOneWidget);
+      final prefs = PrefService.of(tester.element(find.byType(BooruPostScreen)), listen: false);
+      expect(prefs.get<String>(optionPluginBooruTagSort), 'count');
     });
 
     testWidgets('comments load when opened', (tester) async {

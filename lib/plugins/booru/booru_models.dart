@@ -272,6 +272,14 @@ enum BooruTagCategory {
       };
 }
 
+/// What a host says about one tag: its kind and how many posts carry it.
+class BooruTagInfo {
+  final BooruTagCategory? category;
+  final int? postCount;
+
+  const BooruTagInfo({this.category, this.postCount});
+}
+
 class BooruTagSuggestion {
   final String name;
   final int? postCount;
