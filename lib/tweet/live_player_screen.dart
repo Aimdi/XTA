@@ -39,6 +39,7 @@ class LivePlayerScreen extends StatelessWidget {
           loop: false,
           alwaysPlay: true,
           tweetId: request.spaceId ?? request.broadcastId,
+          showLoadingIndicator: true,
           metadata: TweetVideoMetadata.live(
             aspectRatio: request.aspectRatio,
             imageUrl: request.imageUrl,

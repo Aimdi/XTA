@@ -19,7 +19,8 @@ const _tileWidth = 320.0;
 
 Future<TweetVideoUrls> _neverResolves() => Completer<TweetVideoUrls>().future;
 
-TweetVideo _xVideo({bool gif = false}) => TweetVideo(
+TweetVideo _xVideo({bool gif = false, bool spinner = false}) => TweetVideo(
+  showLoadingIndicator: spinner,
   username: 'reader',
   loop: gif,
   alwaysPlay: gif,
@@ -105,6 +106,13 @@ void main() {
 
     await tester.pump(const Duration(seconds: 2));
     expect(find.byType(CircularProgressIndicator), findsNothing);
+    await _unmount(tester);
+  });
+
+  testWidgets('a full-screen player that opts in still shows it is loading', (tester) async {
+    await _pumpLoading(tester, _app(_xVideo(spinner: true), pool: VideoControllerPool(maxSize: 1)));
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
     await _unmount(tester);
   });
 

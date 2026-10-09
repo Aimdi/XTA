@@ -126,6 +126,10 @@ class TweetVideo extends StatefulWidget {
   /// Called once when playback fails before the first frame (e.g. CDN 403).
   final VoidCallback? onPlaybackError;
 
+  /// Feed videos wait silently on their poster; a full-screen player with
+  /// nothing else on screen keeps a spinner so a slow stream reads as loading.
+  final bool showLoadingIndicator;
+
   const TweetVideo({
     super.key,
     required this.username,
@@ -136,6 +140,7 @@ class TweetVideo extends StatefulWidget {
     this.tweetId,
     this.mediaIndex = 0,
     this.onPlaybackError,
+    this.showLoadingIndicator = false,
   });
 
   @override
@@ -652,9 +657,14 @@ class _TweetVideoState extends State<TweetVideo> {
             setState(() => _posterGone = true);
           }
         },
-        child: widget.metadata.imageUrl != null
-            ? CappedNetworkImage(url: widget.metadata.imageUrl!)
-            : const SizedBox.expand(),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (widget.metadata.imageUrl != null)
+              CappedNetworkImage(url: widget.metadata.imageUrl!),
+            if (_loadingIndicator case final spinner?) Center(child: spinner),
+          ],
+        ),
       ),
     );
   }
@@ -721,6 +731,9 @@ class _TweetVideoState extends State<TweetVideo> {
   bool get _startsByItself =>
       _autoPlay || widget.alwaysPlay || _userRequestedPlay;
 
+  Widget? get _loadingIndicator =>
+      widget.showLoadingIndicator ? const CircularProgressIndicator() : null;
+
   /// Poster shown while every pooled player is still on screen. Tap retries
   /// acquire; a short timer retries once a hidden tile hands its slot back.
   Widget _waitingForSlotPoster() {
@@ -740,7 +753,7 @@ class _TweetVideoState extends State<TweetVideo> {
         child: _poster(
           muteCorner: _startsByItself,
           child: _startsByItself
-              ? null
+              ? _loadingIndicator
               : FritterCenterPlayButton(
                   backgroundColor: Colors.black54,
                   iconColor: Colors.white,
@@ -829,7 +842,7 @@ class _TweetVideoState extends State<TweetVideo> {
         final hasVideo = pooled != null;
 
         if (isLoading && !hasVideo) {
-          return _poster(muteCorner: true);
+          return _poster(child: _loadingIndicator, muteCorner: true);
         }
 
         if (hasError && !_firstFrameRendered) {

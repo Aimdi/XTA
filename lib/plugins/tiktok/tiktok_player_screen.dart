@@ -120,6 +120,7 @@ class _TikTokPlayerScreenState extends State<TikTokPlayerScreen> {
             loop: true,
             alwaysPlay: true,
             tweetId: 'tiktok-player-${post.id}',
+            showLoadingIndicator: true,
             metadata: TweetVideoMetadata(
               post.aspectRatio,
               post.coverUrl,
