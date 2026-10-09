@@ -118,7 +118,9 @@ class TweetWithCard extends Tweet {
     tweetWithCard.viewCount = e['viewCount'];
     tweetWithCard.source = tweet.source;
     tweetWithCard.text = tweet.text;
-    tweetWithCard.user = tweet.user;
+    // Read back as the app's own user so the badges it serialized survive.
+    final userJson = e['user'];
+    tweetWithCard.user = userJson is Map<String, dynamic> ? UserWithExtra.fromJson(userJson) : tweet.user;
     tweetWithCard.coordinates = tweet.coordinates;
     tweetWithCard.truncated = tweet.truncated;
     tweetWithCard.place = tweet.place;

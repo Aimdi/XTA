@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Jälgijad sinu tellimuste seast",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Põhineb viimastel jälgimistel, mille rakendus on lugenud sinu ainsa tellimuse kohta. Seda kontot võivad jälgida ka teised.} other{Põhineb viimastel jälgimistel, mille rakendus on lugenud sinu {total} tellimusest {checked} kohta. Seda kontot võivad jälgida ka teised.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Kinnitatud konto",
+  "@verified_account": {},
+  "verified_organization": "Kinnitatud organisatsioon",
+  "@verified_organization": {},
+  "verified_government": "Kinnitatud valitsuskonto",
+  "@verified_government": {},
+  "affiliated_with": "Seotud organisatsiooniga {name}",
+  "@affiliated_with": {}
 }

@@ -3783,5 +3783,13 @@
   "profile_followed_by_title": "Người theo dõi bạn đã đăng kí",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, other{Dựa trên các lượt theo dõi mới nhất mà ứng dụng đã đọc cho {checked} trong {total} người bạn đăng kí. Người khác cũng có thể đang theo dõi tài khoản này.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Tài khoản đã xác minh",
+  "@verified_account": {},
+  "verified_organization": "Tổ chức đã xác minh",
+  "@verified_organization": {},
+  "verified_government": "Tài khoản chính phủ đã xác minh",
+  "@verified_government": {},
+  "affiliated_with": "Liên kết với {name}",
+  "@affiliated_with": {}
 }

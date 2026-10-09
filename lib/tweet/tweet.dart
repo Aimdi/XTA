@@ -768,6 +768,7 @@ class TweetTileState extends State<TweetTile> {
       displayName: hideAuthorInformation ? null : tweet.user!.name,
       handle: hideAuthorInformation ? null : tweet.user!.screenName,
       verified: !hideAuthorInformation && (tweet.user!.verified ?? false),
+      verification: hideAuthorInformation ? null : tweet.user!.badges,
       timestamp: createdAt == null
           ? null
           : Timestamp(
@@ -855,6 +856,9 @@ class TweetTileState extends State<TweetTile> {
                   handle: hideAuthorInformation ? null : tweet.user!.screenName,
                   verified:
                       !hideAuthorInformation && (tweet.user!.verified ?? false),
+                  verification: hideAuthorInformation
+                      ? null
+                      : tweet.user!.badges,
                   timestamp: createdAt == null
                       ? null
                       : Timestamp(

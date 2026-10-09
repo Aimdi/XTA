@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Sledující z vašich odběrů",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Podle nejnovějších sledování, která aplikace načetla u vašeho jediného odběru. Tento účet mohou sledovat i další.} few{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběrů. Tento účet mohou sledovat i další.} many{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběru. Tento účet mohou sledovat i další.} other{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběrů. Tento účet mohou sledovat i další.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Ověřený účet",
+  "@verified_account": {},
+  "verified_organization": "Ověřená organizace",
+  "@verified_organization": {},
+  "verified_government": "Ověřený vládní účet",
+  "@verified_government": {},
+  "affiliated_with": "Přidružený k {name}",
+  "@affiliated_with": {}
 }

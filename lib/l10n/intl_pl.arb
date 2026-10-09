@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Obserwujący z twoich subskrypcji",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla twojej jedynej subskrypcji. To konto mogą obserwować też inni.} few{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla {checked} z {total} twoich subskrypcji. To konto mogą obserwować też inni.} many{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla {checked} z {total} twoich subskrypcji. To konto mogą obserwować też inni.} other{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla {checked} z {total} twoich subskrypcji. To konto mogą obserwować też inni.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Zweryfikowane konto",
+  "@verified_account": {},
+  "verified_organization": "Zweryfikowana organizacja",
+  "@verified_organization": {},
+  "verified_government": "Zweryfikowane konto rządowe",
+  "@verified_government": {},
+  "affiliated_with": "Powiązane z {name}",
+  "@affiliated_with": {}
 }

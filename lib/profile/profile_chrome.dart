@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/verified_badges.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
+import 'package:xta/user_verification.dart';
 
 const double kProfileBannerHeight = 168;
 const double kProfileAvatarSize = 88;
@@ -255,6 +257,9 @@ class ProfileIdentityHeader extends StatelessWidget {
   final String name;
   final String handle;
   final bool verified;
+
+  /// The parsed badges; when absent, [verified] alone draws the blue check.
+  final UserVerification? verification;
   final bool protected;
   final String protectedLabel;
   final Widget? bio;
@@ -271,6 +276,7 @@ class ProfileIdentityHeader extends StatelessWidget {
     required this.name,
     required this.handle,
     required this.verified,
+    this.verification,
     required this.protected,
     required this.protectedLabel,
     this.bio,
@@ -282,6 +288,7 @@ class ProfileIdentityHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final badges = verification ?? UserVerification.fromFlag(verified);
     return DecoratedBox(
       decoration: BoxDecoration(color: tweetSurfaceColor(context)),
       child: Column(
@@ -332,11 +339,11 @@ class ProfileIdentityHeader extends StatelessWidget {
                         height: 1.15,
                       ),
                     ),
-                    if (verified)
-                      Icon(
-                        Icons.verified,
-                        size: 18,
-                        color: tweetReadableAccentColor(context),
+                    if (badges.hasBadges)
+                      VerifiedBadges(
+                        verification: badges,
+                        gap: kTweetSpace1,
+                        leadingGap: false,
                       ),
                     if (protected)
                       Tooltip(

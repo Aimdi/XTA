@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Seguidors entre les teves subscripcions",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Segons els seguits més recents que l’app ha llegit de la teva única subscripció. Pot ser que altres també segueixin aquest compte.} other{Segons els seguits més recents que l’app ha llegit de {checked} de les teves {total} subscripcions. Pot ser que altres també segueixin aquest compte.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Compte verificat",
+  "@verified_account": {},
+  "verified_organization": "Organització verificada",
+  "@verified_organization": {},
+  "verified_government": "Compte governamental verificat",
+  "@verified_government": {},
+  "affiliated_with": "Afiliat a {name}",
+  "@affiliated_with": {}
 }

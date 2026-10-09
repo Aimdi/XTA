@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Pengikut dari langganan Anda",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, other{Berdasarkan akun yang diikuti terbaru yang telah dibaca aplikasi untuk {checked} dari {total} langganan Anda. Akun lain mungkin juga mengikuti akun ini.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Akun terverifikasi",
+  "@verified_account": {},
+  "verified_organization": "Organisasi terverifikasi",
+  "@verified_organization": {},
+  "verified_government": "Akun pemerintah terverifikasi",
+  "@verified_government": {},
+  "affiliated_with": "Berafiliasi dengan {name}",
+  "@affiliated_with": {}
 }

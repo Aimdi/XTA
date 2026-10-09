@@ -146,8 +146,10 @@ class _ProfileFollowsState extends State<ProfileFollows>
                 fetchNextPage: fetchNextPage,
                 addAutomaticKeepAlives: false,
                 builderDelegate: PagedChildBuilderDelegate(
-                  itemBuilder: (context, user, index) =>
-                      UserTile(user: UserSubscription.fromUser(user)),
+                  itemBuilder: (context, user, index) => UserTile(
+                    user: UserSubscription.fromUser(user),
+                    verification: user.badges,
+                  ),
                   newPageErrorIndicatorBuilder: (context) =>
                       FullPageErrorWidget(
                         error: pagingErrorOf(state)?.error,

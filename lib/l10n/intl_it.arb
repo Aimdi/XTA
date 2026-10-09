@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Follower tra le tue iscrizioni",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{In base agli ultimi account seguiti che l’app ha letto per la tua unica iscrizione. Anche altri potrebbero seguire questo account.} other{In base agli ultimi account seguiti che l’app ha letto per {checked} delle tue {total} iscrizioni. Anche altri potrebbero seguire questo account.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Account verificato",
+  "@verified_account": {},
+  "verified_organization": "Organizzazione verificata",
+  "@verified_organization": {},
+  "verified_government": "Account governativo verificato",
+  "@verified_government": {},
+  "affiliated_with": "Affiliato a {name}",
+  "@affiliated_with": {}
 }

@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Čytačy z vašych padpisak",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašaj padpiski (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.} few{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašych padpisak (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.} many{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašych padpisak (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.} other{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašych padpisak (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Paćvierdžany akaŭnt",
+  "@verified_account": {},
+  "verified_organization": "Paćvierdžanaja arhanizacyja",
+  "@verified_organization": {},
+  "verified_government": "Paćvierdžany dziaržaŭny akaŭnt",
+  "@verified_government": {},
+  "affiliated_with": "Źviazany z {name}",
+  "@affiliated_with": {}
 }

@@ -367,6 +367,16 @@ ProfileUriInfo? _parseAsProfileLink(List<String> parts) {
   return null;
 }
 
+/// The screen name an X profile link points at, or null when [url] is not one —
+/// another host, a post, a list. Pure: unlike [parseUri] it resolves nothing.
+String? xProfileScreenName(String? url) {
+  final uri = Uri.tryParse(url ?? '');
+  if (uri == null || !_xHosts.contains(uri.host.toLowerCase())) {
+    return null;
+  }
+  return _parseAsProfileLink(uri.pathSegments.where((e) => e.isNotEmpty).toList())?.screenName;
+}
+
 class ListUriInfo extends UriParseResult {
   final String id;
 

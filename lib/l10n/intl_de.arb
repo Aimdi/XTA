@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Follower aus deinen Abos",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Grundlage sind die neuesten Follows, die die App für dein einziges Abo gelesen hat. Auch andere können diesem Konto folgen.} other{Grundlage sind die neuesten Follows, die die App für {checked} deiner {total} Abos gelesen hat. Auch andere können diesem Konto folgen.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Verifiziertes Konto",
+  "@verified_account": {},
+  "verified_organization": "Verifizierte Organisation",
+  "@verified_organization": {},
+  "verified_government": "Verifiziertes Regierungskonto",
+  "@verified_government": {},
+  "affiliated_with": "Verbunden mit {name}",
+  "@affiliated_with": {}
 }

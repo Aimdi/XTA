@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Читатели из ваших подписок",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{По спискам «Читает», которые приложение уже загрузило для {checked} из {total} вашей подписки (только последние). Этот аккаунт могут читать и другие.} few{По спискам «Читает», которые приложение уже загрузило для {checked} из {total} ваших подписок (только последние). Этот аккаунт могут читать и другие.} many{По спискам «Читает», которые приложение уже загрузило для {checked} из {total} ваших подписок (только последние). Этот аккаунт могут читать и другие.} other{По спискам «Читает», которые приложение уже загрузило для {checked} из {total} ваших подписок (только последние). Этот аккаунт могут читать и другие.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Подтверждённый аккаунт",
+  "@verified_account": {},
+  "verified_organization": "Подтверждённая организация",
+  "@verified_organization": {},
+  "verified_government": "Подтверждённый государственный аккаунт",
+  "@verified_government": {},
+  "affiliated_with": "Связан с {name}",
+  "@affiliated_with": {}
 }

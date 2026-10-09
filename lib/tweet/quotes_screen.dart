@@ -245,8 +245,10 @@ class _RetweetersListState extends State<RetweetersList>
             primary: false,
             addAutomaticKeepAlives: false,
             builderDelegate: PagedChildBuilderDelegate(
-              itemBuilder: (context, user, index) =>
-                  UserTile(user: UserSubscription.fromUser(user)),
+              itemBuilder: (context, user, index) => UserTile(
+                user: UserSubscription.fromUser(user),
+                verification: user.badges,
+              ),
               newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
                 error: pagingErrorOf(state)?.error,
                 stackTrace: pagingErrorOf(state)?.stackTrace,

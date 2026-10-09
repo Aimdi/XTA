@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Чытачы з вашых падпісак",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашай падпіскі (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.} few{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашых падпісак (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.} many{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашых падпісак (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.} other{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашых падпісак (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Пацверджаны ўліковы запіс",
+  "@verified_account": {},
+  "verified_organization": "Пацверджаная арганізацыя",
+  "@verified_organization": {},
+  "verified_government": "Пацверджаны дзяржаўны ўліковы запіс",
+  "@verified_government": {},
+  "affiliated_with": "Звязаны з {name}",
+  "@affiliated_with": {}
 }

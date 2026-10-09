@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Aboneliklerinizdeki takipçiler",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Uygulamanın tek aboneliğiniz için okuduğu en son takiplere dayanır. Bu hesabı başkaları da takip ediyor olabilir.} other{Uygulamanın {total} aboneliğinizden {checked} tanesi için okuduğu en son takiplere dayanır. Bu hesabı başkaları da takip ediyor olabilir.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Doğrulanmış hesap",
+  "@verified_account": {},
+  "verified_organization": "Doğrulanmış kuruluş",
+  "@verified_organization": {},
+  "verified_government": "Doğrulanmış devlet hesabı",
+  "@verified_government": {},
+  "affiliated_with": "{name} ile bağlantılı",
+  "@affiliated_with": {}
 }

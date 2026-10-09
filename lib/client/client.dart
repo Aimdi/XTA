@@ -659,6 +659,8 @@ class Twitter {
             ...res['legacy'],
             'id_str': res['rest_id'],
             'ext_is_blue_verified': res['is_blue_verified'],
+            'affiliates_highlighted_label': res['affiliates_highlighted_label'],
+            'verification': res['verification'],
           });
         })
         .toList();

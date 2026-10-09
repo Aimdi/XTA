@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Zure harpidetzetako jarraitzaileak",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Aplikazioak irakurritako azken jarraipenetan oinarrituta ({checked}/{total} harpidetza). Beste batzuek ere jarrai diezaiokete kontu honi.} other{Aplikazioak irakurritako azken jarraipenetan oinarrituta ({checked}/{total} harpidetza). Beste batzuek ere jarrai diezaiokete kontu honi.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Egiaztatutako kontua",
+  "@verified_account": {},
+  "verified_organization": "Egiaztatutako erakundea",
+  "@verified_organization": {},
+  "verified_government": "Egiaztatutako gobernu-kontua",
+  "@verified_government": {},
+  "affiliated_with": "Afiliazioa: {name}",
+  "@affiliated_with": {}
 }

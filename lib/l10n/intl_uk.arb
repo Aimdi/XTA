@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Ваші підписки серед підписників",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{За списками «Слідкує», які застосунок уже завантажив для {checked} з {total} вашої підписки (лише останні). За цим обліковим записом можуть стежити й інші.} few{За списками «Слідкує», які застосунок уже завантажив для {checked} з {total} ваших підписок (лише останні). За цим обліковим записом можуть стежити й інші.} many{За списками «Слідкує», які застосунок уже завантажив для {checked} з {total} ваших підписок (лише останні). За цим обліковим записом можуть стежити й інші.} other{За списками «Слідкує», які застосунок уже завантажив для {checked} з {total} ваших підписок (лише останні). За цим обліковим записом можуть стежити й інші.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Підтверджений акаунт",
+  "@verified_account": {},
+  "verified_organization": "Підтверджена організація",
+  "@verified_organization": {},
+  "verified_government": "Підтверджений державний акаунт",
+  "@verified_government": {},
+  "affiliated_with": "Пов'язаний з {name}",
+  "@affiliated_with": {}
 }

@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "आपकी सदस्यताओं में से फ़ॉलोअर",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{ऐप ने आपकी एकमात्र सदस्यता के जो नवीनतम फ़ॉलो पढ़े हैं, उनके आधार पर। दूसरे भी इस खाते को फ़ॉलो कर सकते हैं।} other{ऐप ने आपकी {total} सदस्यताओं में से {checked} के जो नवीनतम फ़ॉलो पढ़े हैं, उनके आधार पर। दूसरे भी इस खाते को फ़ॉलो कर सकते हैं।}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "सत्यापित खाता",
+  "@verified_account": {},
+  "verified_organization": "सत्यापित संगठन",
+  "@verified_organization": {},
+  "verified_government": "सत्यापित सरकारी खाता",
+  "@verified_government": {},
+  "affiliated_with": "{name} से संबद्ध",
+  "@affiliated_with": {}
 }

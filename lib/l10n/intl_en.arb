@@ -4027,5 +4027,13 @@
   "profile_followed_by_basis": "{total, plural, one{Based on the latest follows the app has read for {checked} of your {total} subscription. Others may follow this account too.} other{Based on the latest follows the app has read for {checked} of your {total} subscriptions. Others may follow this account too.}}",
   "@profile_followed_by_basis": {
     "description": "Footnote on that screen: the app only knows the most recent follows of the subscriptions whose following list it has read ({checked} of {total}), so the list may be incomplete."
-  }
+  },
+  "verified_account": "Verified account",
+  "@verified_account": {},
+  "verified_organization": "Verified organization",
+  "@verified_organization": {},
+  "verified_government": "Verified government account",
+  "@verified_government": {},
+  "affiliated_with": "Affiliated with {name}",
+  "@affiliated_with": {}
 }

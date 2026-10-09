@@ -475,6 +475,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       name: user.name ?? username,
       handle: '@$username',
       verified: user.verified ?? false,
+      verification: user.badges,
       protected: user.protected ?? false,
       protectedLabel: L10n.of(context).private_profile,
       bio: _descriptionParts.isEmpty

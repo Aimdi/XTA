@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "フォローしている登録アカウント",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, other{登録アカウント{total}件のうち、アプリが読み込んだ{checked}件の最新のフォローに基づいています。ほかにもフォローしている人がいる可能性があります。}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "認証済みアカウント",
+  "@verified_account": {},
+  "verified_organization": "認証済みの組織",
+  "@verified_organization": {},
+  "verified_government": "認証済みの政府アカウント",
+  "@verified_government": {},
+  "affiliated_with": "{name}の関連アカウント",
+  "@affiliated_with": {}
 }

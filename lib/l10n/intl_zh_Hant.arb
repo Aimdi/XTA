@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "你訂閱的追蹤者",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, other{根據應用程式已讀取的你 {total} 個訂閱中 {checked} 個的最新追蹤。其他人也可能追蹤此帳號。}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "已認證帳號",
+  "@verified_account": {},
+  "verified_organization": "已認證機構",
+  "@verified_organization": {},
+  "verified_government": "已認證政府帳號",
+  "@verified_government": {},
+  "affiliated_with": "隸屬於 {name}",
+  "@affiliated_with": {}
 }

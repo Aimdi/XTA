@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Abonnés parmi vos abonnements",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{D’après les derniers comptes suivis que l’app a lus pour votre unique abonnement. D’autres peuvent aussi suivre ce compte.} other{D’après les derniers comptes suivis que l’app a lus pour {checked} de vos {total} abonnements. D’autres peuvent aussi suivre ce compte.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Compte vérifié",
+  "@verified_account": {},
+  "verified_organization": "Organisation vérifiée",
+  "@verified_organization": {},
+  "verified_government": "Compte gouvernemental vérifié",
+  "@verified_government": {},
+  "affiliated_with": "Affilié à {name}",
+  "@affiliated_with": {}
 }

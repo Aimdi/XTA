@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "이 계정을 팔로우하는 구독 계정",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, other{구독 {total}개 중 앱이 불러온 {checked}개의 최근 팔로우를 기준으로 합니다. 다른 사람도 이 계정을 팔로우할 수 있습니다.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "인증된 계정",
+  "@verified_account": {},
+  "verified_organization": "인증된 조직",
+  "@verified_organization": {},
+  "verified_government": "인증된 정부 계정",
+  "@verified_government": {},
+  "affiliated_with": "{name} 소속",
+  "@affiliated_with": {}
 }

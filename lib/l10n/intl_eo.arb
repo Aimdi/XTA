@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Sekvantoj el viaj abonoj",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Laŭ la plej freŝaj sekvoj, kiujn la apo legis por via sola abono. Ankaŭ aliaj eble sekvas ĉi tiun konton.} other{Laŭ la plej freŝaj sekvoj, kiujn la apo legis por {checked} el viaj {total} abonoj. Ankaŭ aliaj eble sekvas ĉi tiun konton.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Kontrolita konto",
+  "@verified_account": {},
+  "verified_organization": "Kontrolita organizo",
+  "@verified_organization": {},
+  "verified_government": "Kontrolita registara konto",
+  "@verified_government": {},
+  "affiliated_with": "Aligita al {name}",
+  "@affiliated_with": {}
 }

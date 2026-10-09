@@ -3786,5 +3786,13 @@
   "profile_followed_by_title": "Volgers uit je abonnementen",
   "@profile_followed_by_title": {},
   "profile_followed_by_basis": "{total, plural, one{Op basis van de nieuwste gevolgde accounts die de app voor je enige abonnement heeft gelezen. Ook anderen kunnen dit account volgen.} other{Op basis van de nieuwste gevolgde accounts die de app voor {checked} van je {total} abonnementen heeft gelezen. Ook anderen kunnen dit account volgen.}}",
-  "@profile_followed_by_basis": {}
+  "@profile_followed_by_basis": {},
+  "verified_account": "Geverifieerd account",
+  "@verified_account": {},
+  "verified_organization": "Geverifieerde organisatie",
+  "@verified_organization": {},
+  "verified_government": "Geverifieerd overheidsaccount",
+  "@verified_government": {},
+  "affiliated_with": "Verbonden aan {name}",
+  "@affiliated_with": {}
 }
