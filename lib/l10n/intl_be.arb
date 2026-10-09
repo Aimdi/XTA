@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Нічога",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Доўга націсніце на пункт, каб пакінуць уключаным толькі яго.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Сярод чытачоў: {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Сярод чытачоў: {first} і {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Сярод чытачоў: {first}, {second} і {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Сярод чытачоў: {first}, {second} і яшчэ {count} з вашых падпісак} few{Сярод чытачоў: {first}, {second} і яшчэ {count} з вашых падпісак} many{Сярод чытачоў: {first}, {second} і яшчэ {count} з вашых падпісак} other{Сярод чытачоў: {first}, {second} і яшчэ {count} з вашых падпісак}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Чытачы з вашых падпісак",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашай падпіскі (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.} few{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашых падпісак (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.} many{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашых падпісак (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.} other{Паводле спісаў «Чытае», якія праграма ўжо загрузіла для {checked} з {total} вашых падпісак (толькі апошнія). Гэты акаўнт могуць чытаць і іншыя.}}",
+  "@profile_followed_by_basis": {}
 }

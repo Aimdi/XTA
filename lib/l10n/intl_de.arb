@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Keine",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Lange drücken, um nur diesen Eintrag aktiv zu lassen.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Gefolgt von {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Gefolgt von {first} und {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Gefolgt von {first}, {second} und {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Gefolgt von {first}, {second} und einem weiteren deiner Abos} other{Gefolgt von {first}, {second} und {count} weiteren deiner Abos}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Follower aus deinen Abos",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Grundlage sind die neuesten Follows, die die App für dein einziges Abo gelesen hat. Auch andere können diesem Konto folgen.} other{Grundlage sind die neuesten Follows, die die App für {checked} deiner {total} Abos gelesen hat. Auch andere können diesem Konto folgen.}}",
+  "@profile_followed_by_basis": {}
 }

@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "全不选",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "长按某一项即可只保留它开启。",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first} 正在关注",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first} 和 {second} 正在关注",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}、{second} 和 {third} 正在关注",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, other{{first}、{second} 及你订阅的其他 {count} 人正在关注}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "你订阅的关注者",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, other{根据应用已读取的你 {total} 个订阅中 {checked} 个的最新关注。其他人也可能关注此账号。}}",
+  "@profile_followed_by_basis": {}
 }

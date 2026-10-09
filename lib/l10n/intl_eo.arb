@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Neniu",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Longe premu eron por lasi nur ĝin ŝaltita.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Sekvata de {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Sekvata de {first} kaj {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Sekvata de {first}, {second} kaj {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Sekvata de {first}, {second} kaj 1 plia el viaj abonoj} other{Sekvata de {first}, {second} kaj {count} pliaj el viaj abonoj}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Sekvantoj el viaj abonoj",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Laŭ la plej freŝaj sekvoj, kiujn la apo legis por via sola abono. Ankaŭ aliaj eble sekvas ĉi tiun konton.} other{Laŭ la plej freŝaj sekvoj, kiujn la apo legis por {checked} el viaj {total} abonoj. Ankaŭ aliaj eble sekvas ĉi tiun konton.}}",
+  "@profile_followed_by_basis": {}
 }

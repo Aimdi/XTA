@@ -260,6 +260,7 @@ class ProfileIdentityHeader extends StatelessWidget {
   final Widget? bio;
   final List<Widget> metadata;
   final List<Widget> counts;
+  final Widget? followedBy;
   final Widget? note;
 
   const ProfileIdentityHeader({
@@ -275,6 +276,7 @@ class ProfileIdentityHeader extends StatelessWidget {
     this.bio,
     this.metadata = const [],
     this.counts = const [],
+    this.followedBy,
     this.note,
   });
 
@@ -364,6 +366,7 @@ class ProfileIdentityHeader extends StatelessWidget {
                   Wrap(children: metadata),
                 ],
                 if (counts.isNotEmpty) Wrap(children: counts),
+                ?followedBy,
                 if (note != null) note!,
               ],
             ),

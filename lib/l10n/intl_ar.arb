@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "لا شيء",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "اضغط مطولًا على عنصر لإبقائه وحده مفعّلًا.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "يتابعه {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "يتابعه {first} و{second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "يتابعه {first} و{second} و{third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, zero{يتابعه {first} و{second}} one{يتابعه {first} و{second} وحساب آخر من اشتراكاتك} two{يتابعه {first} و{second} وحسابان آخران من اشتراكاتك} few{يتابعه {first} و{second} و{count} حسابات أخرى من اشتراكاتك} many{يتابعه {first} و{second} و{count} حسابًا آخر من اشتراكاتك} other{يتابعه {first} و{second} و{count} حساب آخر من اشتراكاتك}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "متابِعون من اشتراكاتك",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, zero{بناءً على أحدث قوائم المتابَعة التي قرأها التطبيق لـ{checked} من {total} اشتراكات لديك. قد يتابع هذا الحساب آخرون أيضًا.} one{بناءً على أحدث قائمة متابَعة قرأها التطبيق لاشتراكك الوحيد. قد يتابع هذا الحساب آخرون أيضًا.} two{بناءً على أحدث قوائم المتابَعة التي قرأها التطبيق لـ{checked} من اشتراكَيك. قد يتابع هذا الحساب آخرون أيضًا.} few{بناءً على أحدث قوائم المتابَعة التي قرأها التطبيق لـ{checked} من {total} اشتراكات لديك. قد يتابع هذا الحساب آخرون أيضًا.} many{بناءً على أحدث قوائم المتابَعة التي قرأها التطبيق لـ{checked} من {total} اشتراكًا لديك. قد يتابع هذا الحساب آخرون أيضًا.} other{بناءً على أحدث قوائم المتابَعة التي قرأها التطبيق لـ{checked} من {total} اشتراك لديك. قد يتابع هذا الحساب آخرون أيضًا.}}",
+  "@profile_followed_by_basis": {}
 }

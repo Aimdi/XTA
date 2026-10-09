@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "कोई नहीं",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "किसी एक को देर तक दबाएँ, ताकि सिर्फ़ वही चालू रहे।",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first} फ़ॉलो करते हैं",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first} और {second} फ़ॉलो करते हैं",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}, {second} और {third} फ़ॉलो करते हैं",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{{first}, {second} और आपकी सदस्यताओं में से 1 अन्य फ़ॉलो करते हैं} other{{first}, {second} और आपकी सदस्यताओं में से {count} अन्य फ़ॉलो करते हैं}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "आपकी सदस्यताओं में से फ़ॉलोअर",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{ऐप ने आपकी एकमात्र सदस्यता के जो नवीनतम फ़ॉलो पढ़े हैं, उनके आधार पर। दूसरे भी इस खाते को फ़ॉलो कर सकते हैं।} other{ऐप ने आपकी {total} सदस्यताओं में से {checked} के जो नवीनतम फ़ॉलो पढ़े हैं, उनके आधार पर। दूसरे भी इस खाते को फ़ॉलो कर सकते हैं।}}",
+  "@profile_followed_by_basis": {}
 }

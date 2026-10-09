@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Bat ere ez",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Sakatu luze bat hori bakarrik aktibo uzteko.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Jarraitzaileak: {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Jarraitzaileak: {first} eta {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Jarraitzaileak: {first}, {second} eta {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Jarraitzaileak: {first}, {second} eta zure harpidetzetako beste 1} other{Jarraitzaileak: {first}, {second} eta zure harpidetzetako beste {count}}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Zure harpidetzetako jarraitzaileak",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Aplikazioak irakurritako azken jarraipenetan oinarrituta ({checked}/{total} harpidetza). Beste batzuek ere jarrai diezaiokete kontu honi.} other{Aplikazioak irakurritako azken jarraipenetan oinarrituta ({checked}/{total} harpidetza). Beste batzuek ere jarrai diezaiokete kontu honi.}}",
+  "@profile_followed_by_basis": {}
 }

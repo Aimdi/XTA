@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "없음",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "길게 누르면 그 항목만 켜 둡니다.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first}님이 팔로우합니다",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first}님, {second}님이 팔로우합니다",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}님, {second}님, {third}님이 팔로우합니다",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, other{{first}님, {second}님 외 구독 중인 {count}명이 팔로우합니다}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "이 계정을 팔로우하는 구독 계정",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, other{구독 {total}개 중 앱이 불러온 {checked}개의 최근 팔로우를 기준으로 합니다. 다른 사람도 이 계정을 팔로우할 수 있습니다.}}",
+  "@profile_followed_by_basis": {}
 }

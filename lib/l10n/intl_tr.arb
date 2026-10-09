@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Hiçbiri",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Yalnızca birini açık bırakmak için ona uzun basın.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first} takip ediyor",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first} ve {second} takip ediyor",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}, {second} ve {third} takip ediyor",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{{first}, {second} ve aboneliklerinizden 1 kişi daha takip ediyor} other{{first}, {second} ve aboneliklerinizden {count} kişi daha takip ediyor}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Aboneliklerinizdeki takipçiler",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Uygulamanın tek aboneliğiniz için okuduğu en son takiplere dayanır. Bu hesabı başkaları da takip ediyor olabilir.} other{Uygulamanın {total} aboneliğinizden {checked} tanesi için okuduğu en son takiplere dayanır. Bu hesabı başkaları da takip ediyor olabilir.}}",
+  "@profile_followed_by_basis": {}
 }

@@ -3771,5 +3771,17 @@
   "home_feed_select_none": "Không chọn",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Nhấn giữ một mục để chỉ bật mục đó.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Được {first} theo dõi",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Được {first} và {second} theo dõi",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Được {first}, {second} và {third} theo dõi",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, other{Được {first}, {second} và {count} người khác bạn đăng kí theo dõi}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Người theo dõi bạn đã đăng kí",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, other{Dựa trên các lượt theo dõi mới nhất mà ứng dụng đã đọc cho {checked} trong {total} người bạn đăng kí. Người khác cũng có thể đang theo dõi tài khoản này.}}",
+  "@profile_followed_by_basis": {}
 }

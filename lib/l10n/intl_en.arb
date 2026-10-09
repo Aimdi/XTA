@@ -4003,5 +4003,29 @@
   "home_feed_only_hint": "Long-press one to keep only it on.",
   "@home_feed_only_hint": {
     "description": "Hint in the Home feed account/group filter: long-pressing a row turns that one on and all others off."
+  },
+  "profile_followed_by_one": "Followed by {first}",
+  "@profile_followed_by_one": {
+    "description": "Line under the follower counts of an X profile. {first} is the display name of one of the reader's LOCAL subscriptions (accounts the reader subscribes to in this app) that follows this profile on X."
+  },
+  "profile_followed_by_two": "Followed by {first} and {second}",
+  "@profile_followed_by_two": {
+    "description": "Same line as profile_followed_by_one with two subscription names."
+  },
+  "profile_followed_by_three": "Followed by {first}, {second} and {third}",
+  "@profile_followed_by_three": {
+    "description": "Same line as profile_followed_by_one with three subscription names."
+  },
+  "profile_followed_by_many": "{count, plural, one{Followed by {first}, {second} and 1 other you subscribe to} other{Followed by {first}, {second} and {count} others you subscribe to}}",
+  "@profile_followed_by_many": {
+    "description": "Same line with two names, then {count} more of the reader's local subscriptions that also follow this profile (count is always 2 or more)."
+  },
+  "profile_followed_by_title": "Followers you subscribe to",
+  "@profile_followed_by_title": {
+    "description": "Title of the screen listing the reader's local subscriptions that follow this X profile."
+  },
+  "profile_followed_by_basis": "{total, plural, one{Based on the latest follows the app has read for {checked} of your {total} subscription. Others may follow this account too.} other{Based on the latest follows the app has read for {checked} of your {total} subscriptions. Others may follow this account too.}}",
+  "@profile_followed_by_basis": {
+    "description": "Footnote on that screen: the app only knows the most recent follows of the subscriptions whose following list it has read ({checked} of {total}), so the list may be incomplete."
   }
 }

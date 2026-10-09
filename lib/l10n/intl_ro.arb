@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Niciunul",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Apasă lung pe unul ca să rămână activ doar acela.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Urmărit de {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Urmărit de {first} și {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Urmărit de {first}, {second} și {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Urmărit de {first}, {second} și încă 1 dintre abonamentele tale} few{Urmărit de {first}, {second} și încă {count} dintre abonamentele tale} other{Urmărit de {first}, {second} și încă {count} dintre abonamentele tale}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Urmăritori dintre abonamentele tale",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Pe baza celor mai recente conturi urmărite pe care aplicația le-a citit pentru singurul tău abonament. Și alții pot urmări acest cont.} few{Pe baza celor mai recente conturi urmărite pe care aplicația le-a citit pentru {checked} din cele {total} abonamente ale tale. Și alții pot urmări acest cont.} other{Pe baza celor mai recente conturi urmărite pe care aplicația le-a citit pentru {checked} din cele {total} de abonamente ale tale. Și alții pot urmări acest cont.}}",
+  "@profile_followed_by_basis": {}
 }

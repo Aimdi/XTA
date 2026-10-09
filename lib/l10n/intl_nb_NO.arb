@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Ingen",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Trykk lenge på ett for å bare ha det på.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Fulgt av {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Fulgt av {first} og {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Fulgt av {first}, {second} og {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Fulgt av {first}, {second} og 1 annet av abonnementene dine} other{Fulgt av {first}, {second} og {count} andre av abonnementene dine}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Følgere blant abonnementene dine",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Basert på de nyeste kontoene som det eneste abonnementet ditt følger, slik appen har lest dem. Andre kan også følge denne kontoen.} other{Basert på de nyeste kontoene som {checked} av dine {total} abonnementer følger, slik appen har lest dem. Andre kan også følge denne kontoen.}}",
+  "@profile_followed_by_basis": {}
 }

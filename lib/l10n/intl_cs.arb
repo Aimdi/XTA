@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Nic",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Dlouhým stisknutím položky necháte zapnutou jen ji.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Sleduje {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Sledují {first} a {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Sledují {first}, {second} a {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Sledují {first}, {second} a 1 další z vašich odběrů} few{Sledují {first}, {second} a {count} další z vašich odběrů} many{Sledují {first}, {second} a {count} dalšího z vašich odběrů} other{Sledují {first}, {second} a {count} dalších z vašich odběrů}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Sledující z vašich odběrů",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Podle nejnovějších sledování, která aplikace načetla u vašeho jediného odběru. Tento účet mohou sledovat i další.} few{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběrů. Tento účet mohou sledovat i další.} many{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběru. Tento účet mohou sledovat i další.} other{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběrů. Tento účet mohou sledovat i další.}}",
+  "@profile_followed_by_basis": {}
 }

@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Nenhum",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Toque e segure um item para deixar só ele ativado.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Seguido por {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Seguido por {first} e {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Seguido por {first}, {second} e {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Seguido por {first}, {second} e mais 1 das suas inscrições} other{Seguido por {first}, {second} e mais {count} das suas inscrições}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Seguidores entre suas inscrições",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Com base nas contas seguidas mais recentes que o app leu para sua única inscrição. Outras pessoas também podem seguir esta conta.} other{Com base nas contas seguidas mais recentes que o app leu para {checked} das suas {total} inscrições. Outras pessoas também podem seguir esta conta.}}",
+  "@profile_followed_by_basis": {}
 }

@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Cap",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Mantén premut un element per deixar només aquest activat.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Seguit per {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Seguit per {first} i {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Seguit per {first}, {second} i {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Seguit per {first}, {second} i 1 subscripció teva més} other{Seguit per {first}, {second} i {count} subscripcions teves més}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Seguidors entre les teves subscripcions",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Segons els seguits més recents que l’app ha llegit de la teva única subscripció. Pot ser que altres també segueixin aquest compte.} other{Segons els seguits més recents que l’app ha llegit de {checked} de les teves {total} subscripcions. Pot ser que altres també segueixin aquest compte.}}",
+  "@profile_followed_by_basis": {}
 }

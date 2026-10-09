@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "なし",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "長押しすると、その項目だけをオンにします。",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first}さんがフォローしています",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first}さんと{second}さんがフォローしています",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}さん、{second}さん、{third}さんがフォローしています",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, other{{first}さん、{second}さん、ほか登録アカウント{count}人がフォローしています}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "フォローしている登録アカウント",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, other{登録アカウント{total}件のうち、アプリが読み込んだ{checked}件の最新のフォローに基づいています。ほかにもフォローしている人がいる可能性があります。}}",
+  "@profile_followed_by_basis": {}
 }

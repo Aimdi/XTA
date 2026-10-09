@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Żadne",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Przytrzymaj pozycję, aby zostawić włączoną tylko ją.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Obserwuje: {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Obserwują: {first} i {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Obserwują: {first}, {second} i {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Obserwują: {first}, {second} i 1 inna z twoich subskrypcji} few{Obserwują: {first}, {second} i {count} inne z twoich subskrypcji} many{Obserwują: {first}, {second} i {count} innych z twoich subskrypcji} other{Obserwują: {first}, {second} i {count} innej z twoich subskrypcji}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Obserwujący z twoich subskrypcji",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla twojej jedynej subskrypcji. To konto mogą obserwować też inni.} few{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla {checked} z {total} twoich subskrypcji. To konto mogą obserwować też inni.} many{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla {checked} z {total} twoich subskrypcji. To konto mogą obserwować też inni.} other{Na podstawie najnowszych obserwacji, które aplikacja odczytała dla {checked} z {total} twoich subskrypcji. To konto mogą obserwować też inni.}}",
+  "@profile_followed_by_basis": {}
 }

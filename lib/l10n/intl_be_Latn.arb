@@ -3774,5 +3774,17 @@
   "home_feed_select_none": "Ničoha",
   "@home_feed_select_none": {},
   "home_feed_only_hint": "Doŭha nacisnicie na punkt, kab pakinuć ŭklučanym tolki jaho.",
-  "@home_feed_only_hint": {}
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Siarod čytačoŭ: {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Siarod čytačoŭ: {first} i {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Siarod čytačoŭ: {first}, {second} i {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Siarod čytačoŭ: {first}, {second} i jašče {count} z vašych padpisak} few{Siarod čytačoŭ: {first}, {second} i jašče {count} z vašych padpisak} many{Siarod čytačoŭ: {first}, {second} i jašče {count} z vašych padpisak} other{Siarod čytačoŭ: {first}, {second} i jašče {count} z vašych padpisak}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Čytačy z vašych padpisak",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašaj padpiski (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.} few{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašych padpisak (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.} many{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašych padpisak (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.} other{Pavodle spisaŭ «Čytaje», jakija prahrama ŭžo zahruzila dla {checked} z {total} vašych padpisak (tolki apošnija). Hety akaŭnt mohuć čytać i inšyja.}}",
+  "@profile_followed_by_basis": {}
 }

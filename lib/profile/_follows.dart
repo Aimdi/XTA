@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
+import 'package:xta/group/group_discovery_follows.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/read_recovery.dart';
 
@@ -56,6 +61,7 @@ class _ProfileFollowsState extends State<ProfileFollows>
   }
 
   Future<CursorPage<String, UserWithExtra>> _fetchPage(String? cursor) async {
+    final remember = cursor == null && _isSubscribedFollowing();
     final result = await Twitter.getProfileFollows(
       widget.user.screenName!,
       widget.type,
@@ -63,6 +69,7 @@ class _ProfileFollowsState extends State<ProfileFollows>
       count: _pageSize,
       id: widget.user.idStr,
     );
+    if (remember) _rememberFollows(result.users);
 
     final next = result.cursorBottom;
     final fresh = result.users
@@ -76,6 +83,20 @@ class _ProfileFollowsState extends State<ProfileFollows>
         fresh.isEmpty;
     return (items: fresh, nextCursor: end ? null : next);
   }
+
+  /// A subscription's first Following page also answers "Followed by" on
+  /// other profiles, so it is kept like a Discover read.
+  bool _isSubscribedFollowing() =>
+      widget.type == 'following' &&
+      context.read<SubscriptionsModel>().state.any(
+        (s) => s is UserSubscription && s.id == widget.user.idStr,
+      );
+
+  void _rememberFollows(List<UserWithExtra> users) => unawaited(
+    DiscoveryFollowsCache.shared
+        .remember(widget.user.idStr!, discoveryFollowsOf(users))
+        .catchError((Object _) {}),
+  );
 
   @override
   Widget build(BuildContext context) {
