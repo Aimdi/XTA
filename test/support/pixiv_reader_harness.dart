@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
@@ -128,7 +129,8 @@ class FakePixivDownloader extends PixivDownloader {
   void cancel(Uri uri) => cancelled.add(uri);
 
   @override
-  Future<String?> batchFolder(BasePrefService prefs) async => folder;
+  Future<DownloadDestination?> batchDestination(BasePrefService prefs) async =>
+      folder == null ? null : DownloadDestination.folder(folder!);
 }
 
 class PixivHarness {

@@ -54,14 +54,17 @@ class DownloadTransfer {
   final http.Client Function() clientFactory;
   final Future<Directory> Function() temporaryDirectory;
   final SaveStagedDownload save;
+  final Future<bool> Function() sharedStorageAvailable;
 
   DownloadTransfer({
     http.Client Function()? clientFactory,
     Future<Directory> Function()? temporaryDirectory,
     SaveStagedDownload? save,
+    Future<bool> Function()? sharedStorageAvailable,
   }) : clientFactory = clientFactory ?? http.Client.new,
        temporaryDirectory = temporaryDirectory ?? getApplicationSupportDirectory,
-       save = save ?? _save;
+       save = save ?? _save,
+       sharedStorageAvailable = sharedStorageAvailable ?? DownloadDirectory.canSaveToSharedStorage;
 
   static Future<void> clearInterruptedFiles() async {
     final root = await getApplicationSupportDirectory();
@@ -98,8 +101,10 @@ class DownloadTransfer {
     try {
       await _receive(client, entry.uri, file, metadata, cancellation, progress);
       cancellation.check();
-      phase(entry.treeUri == null ? DownloadStatus.choosingLocation : DownloadStatus.saving);
-      final destination = await save(entry, file, cancellation);
+      final target = await _target(entry);
+      cancellation.check();
+      phase(target.treeUri == null && !target.background ? DownloadStatus.choosingLocation : DownloadStatus.saving);
+      final destination = await save(target, file, cancellation);
       cancellation.check();
       finished = true;
       return destination;
@@ -110,6 +115,12 @@ class DownloadTransfer {
       }
     }
   }
+
+  /// Android 9 and older have no picker-free shared folders; they ask instead.
+  Future<DownloadEntry> _target(DownloadEntry entry) async =>
+      entry.treeUri == null && entry.background && !await sharedStorageAvailable()
+      ? entry.copyWith(background: false)
+      : entry;
 
   Future<void> _discard(File file, File metadata) async {
     for (final item in [file, metadata, File('${metadata.path}.tmp')]) {
@@ -216,24 +227,50 @@ class DownloadTransfer {
 
   static Future<String?> _save(DownloadEntry entry, File file, DownloadCancellation cancellation) async {
     cancellation.check();
-    if (entry.treeUri == null) {
-      return FlutterFileDialog.saveFile(
-        params: SaveFileDialogParams(
+    final treeUri = entry.treeUri;
+    if (treeUri != null) {
+      return _copy(
+        entry,
+        cancellation,
+        () => DownloadDirectory.saveFile(
+          treeUri: treeUri,
           fileName: entry.fileName,
-          sourceFilePath: file.path,
-          mimeTypesFilter: [mimeTypeFor(entry.fileName)],
+          sourcePath: file.path,
+          operationId: entry.id,
         ),
       );
     }
+    if (entry.background) {
+      return _copy(
+        entry,
+        cancellation,
+        () => DownloadDirectory.saveFileToSharedStorage(
+          fileName: entry.fileName,
+          sourcePath: file.path,
+          operationId: entry.id,
+        ),
+      );
+    }
+    return FlutterFileDialog.saveFile(
+      params: SaveFileDialogParams(
+        fileName: entry.fileName,
+        sourceFilePath: file.path,
+        mimeTypesFilter: [mimeTypeFor(entry.fileName)],
+      ),
+    );
+  }
+
+  /// Runs a native copy that [cancellation] can stop, removing anything it
+  /// wrote if the cancel arrived too late to stop it.
+  static Future<String> _copy(
+    DownloadEntry entry,
+    DownloadCancellation cancellation,
+    Future<String?> Function() copy,
+  ) async {
     cancellation.onCancel(() {
       unawaited(DownloadDirectory.cancelSave(entry.id).catchError((Object _) {}));
     });
-    final result = await DownloadDirectory.saveFile(
-      treeUri: entry.treeUri!,
-      fileName: entry.fileName,
-      sourcePath: file.path,
-      operationId: entry.id,
-    );
+    final result = await copy();
     if (cancellation.cancelled && result != null) {
       await DownloadDirectory.deleteDocument(result);
     }

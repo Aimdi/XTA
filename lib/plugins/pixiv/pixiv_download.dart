@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
@@ -19,13 +19,14 @@ const pixivDownloadSource = 'pixiv';
 PluginMediaItem pixivPageMedia(PixivIllust illust, int page) =>
     PluginMediaItem(url: illust.viewerUrls[page], downloadUrl: illust.downloadUrlAt(page));
 
-/// Every page of [illust] queued into [treeUri], named like Pixiv's own files.
-List<DownloadRequest> pixivPageRequests(PixivIllust illust, String treeUri) => [
+/// Every page of [illust] queued for [destination], named like Pixiv's own files.
+List<DownloadRequest> pixivPageRequests(PixivIllust illust, DownloadDestination destination) => [
   for (var page = 0; page < illust.viewerUrls.length; page++)
     DownloadRequest(
       uri: Uri.parse(illust.downloadUrlAt(page)),
       fileName: pluginMediaFileName(pixivPageMedia(illust, page), pixivDownloadSource),
-      treeUri: treeUri,
+      treeUri: destination.treeUri,
+      background: destination.background,
     ),
 ];
 
@@ -46,6 +47,7 @@ class PixivDownloader {
         uri: request.uri,
         fileName: request.fileName,
         treeUri: request.treeUri,
+        background: request.background,
       );
       return entry.status == DownloadStatus.completed;
     } catch (_) {
@@ -60,11 +62,13 @@ class PixivDownloader {
     }
   }
 
-  /// The configured download folder, else one asked for once for the whole work.
-  Future<String?> batchFolder(BasePrefService prefs) async {
-    final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
-    if (prefs.get(optionDownloadType) != optionDownloadTypeAsk && treeUri.isNotEmpty) return treeUri;
-    return DownloadDirectory.pick();
+  /// The configured destination, else a folder asked for once for the whole
+  /// work; null when the user backs out of choosing one.
+  Future<DownloadDestination?> batchDestination(BasePrefService prefs) async {
+    final configured = DownloadDestination.fromPrefs(prefs);
+    if (!configured.asks) return configured;
+    final treeUri = await DownloadDirectory.pick();
+    return treeUri == null ? null : DownloadDestination.folder(treeUri);
   }
 }
 
@@ -122,9 +126,9 @@ Future<void> downloadAllPixivPages(BuildContext context, PixivIllust illust) asy
   final downloader = PixivDownloader.of(context);
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
-  final folder = await downloader.batchFolder(PrefService.of(context, listen: false));
-  if (folder == null || !messenger.mounted) return;
-  final requests = pixivPageRequests(illust, folder);
+  final destination = await downloader.batchDestination(PrefService.of(context, listen: false));
+  if (destination == null || !messenger.mounted) return;
+  final requests = pixivPageRequests(illust, destination);
   final store = PixivDownloadStore(save: downloader.save, cancelActive: downloader.cancel, total: requests.length);
   messenger
     ..clearSnackBars()

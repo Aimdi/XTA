@@ -2,6 +2,7 @@ import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/settings/settings_view_store.dart';
@@ -223,15 +224,23 @@ class DownloadTypeSettingState extends State<DownloadTypeSetting> {
             widget.prefs.get<String>(optionDownloadPath) ?? '';
         final treeUri =
             widget.prefs.get<String>(optionDownloadTreeUri) ?? '';
+        final background =
+            DownloadDestination.fromPrefs(widget.prefs).background;
         return Column(
           children: [
             SettingsControlTarget(id: optionDownloadType, child: PrefDropdown(
               onChange: (_) => _viewStore.refresh(),
               fullWidth: false,
               title: Text(L10n.current.download_handling),
-              subtitle: Text(L10n.current.download_handling_description),
+              subtitle: Text(background
+                  ? L10n.current.download_handling_type_auto_description
+                  : L10n.current.download_handling_description),
               pref: optionDownloadType,
               items: [
+                DropdownMenuItem(
+                  value: optionDownloadTypeAuto,
+                  child: Text(L10n.current.download_handling_type_auto),
+                ),
                 DropdownMenuItem(
                   value: optionDownloadTypeAsk,
                   child: Text(L10n.current.download_handling_type_ask),

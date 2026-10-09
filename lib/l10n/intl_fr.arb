@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Inclure les publications avec {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Les publications sont recherchées avec cette adresse de contrat ou {cashtag}. D’autres jetons peuvent utiliser le même symbole.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Enregistrer en arrière-plan",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Enregistre sans demander : les images dans Pictures/XTA, les vidéos dans Movies/XTA et les autres fichiers dans Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Enregistré dans {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Inclou publicacions amb {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Es cerquen publicacions amb aquesta adreça de contracte o amb {cashtag}. Altres tokens poden fer servir el mateix símbol.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Desa en segon pla",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Desa sense preguntar: les imatges a Pictures/XTA, els vídeos a Movies/XTA i la resta de fitxers a Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "S'ha desat a {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

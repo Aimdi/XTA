@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Kaasa {cashtag} postitused",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Postitusi otsitakse selle lepingu aadressi või {cashtag} järgi. Sama sümbolit võivad kasutada ka teised tokenid.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Salvesta taustal",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Salvestab küsimata: pildid kausta Pictures/XTA, videod kausta Movies/XTA ja muud failid kausta Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Salvestatud kausta {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

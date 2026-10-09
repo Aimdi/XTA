@@ -106,6 +106,12 @@ const optionDownloadTreeUri = 'download.tree_uri';
 
 const optionDownloadTypeDirectory = 'directory';
 const optionDownloadTypeAsk = 'ask';
+// Saves into Pictures/XTA, Movies/XTA or Download/XTA without a picker.
+const optionDownloadTypeAuto = 'auto';
+
+/// One-shot: readers left on the old "ask" default move to background saving
+/// once, then the Media setting owns the choice.
+const optionDownloadTypeAutoMigrated = 'download.type_auto_default_v1';
 
 const optionLocale = 'locale';
 const optionLocaleDefault = 'system';

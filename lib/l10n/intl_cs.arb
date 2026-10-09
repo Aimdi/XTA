@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Zahrnout příspěvky s {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Příspěvky se hledají podle této adresy kontraktu nebo {cashtag}. Stejný symbol mohou používat i jiné tokeny.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Ukládat na pozadí",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Ukládá bez ptaní: obrázky do Pictures/XTA, videa do Movies/XTA a ostatní soubory do Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Uloženo do {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

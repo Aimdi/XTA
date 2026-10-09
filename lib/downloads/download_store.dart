@@ -72,7 +72,14 @@ class DownloadStore extends Store<DownloadCenterState> {
     }
   }
 
-  Future<DownloadEntry> enqueue({required Uri uri, required String fileName, String? treeUri}) async {
+  /// Queues [uri]; it is saved into [treeUri] when given, else into the shared
+  /// folder for its type when [background], else wherever the user picks.
+  Future<DownloadEntry> enqueue({
+    required Uri uri,
+    required String fileName,
+    String? treeUri,
+    bool background = false,
+  }) async {
     await initialize();
     if (_closed) throw StateError('Downloads store is closed');
     if (!_historyLoaded) await retryHistory();
@@ -81,11 +88,13 @@ class DownloadStore extends Store<DownloadCenterState> {
       throw ArgumentError.value(uri, 'uri', 'Expected a web media URL');
     }
     if (state.entries.where((entry) => entry.active).length >= 100) throw StateError('Download queue is full');
+    final folder = treeUri == null || treeUri.isEmpty ? null : treeUri;
     final entry = DownloadEntry(
       id: const Uuid().v4(),
       uri: uri,
       fileName: safeDownloadName(fileName),
-      treeUri: treeUri == null || treeUri.isEmpty ? null : treeUri,
+      treeUri: folder,
+      background: background && folder == null,
       createdAt: DateTime.now(),
     );
     final completion = Completer<DownloadEntry>();
@@ -104,7 +113,12 @@ class DownloadStore extends Store<DownloadCenterState> {
     final completed = await Future.wait(
       requests.map((request) async {
         try {
-          final entry = await enqueue(uri: request.uri, fileName: request.fileName, treeUri: request.treeUri);
+          final entry = await enqueue(
+            uri: request.uri,
+            fileName: request.fileName,
+            treeUri: request.treeUri,
+            background: request.background,
+          );
           return entry.status == DownloadStatus.completed;
         } catch (_) {
           return false;

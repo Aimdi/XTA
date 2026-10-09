@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Включить публикации с {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Публикации ищутся по этому адресу контракта или {cashtag}. Другие токены могут использовать тот же символ.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Сохранять в фоне",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Сохраняет без вопросов: изображения в Pictures/XTA, видео в Movies/XTA, остальные файлы в Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Сохранено в {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

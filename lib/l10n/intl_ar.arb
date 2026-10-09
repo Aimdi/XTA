@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "تضمين منشورات {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "تُبحث المنشورات باستخدام عنوان العقد هذا أو {cashtag}. قد تستخدم عملات أخرى الرمز نفسه.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "الحفظ في الخلفية",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "يحفظ دون سؤال: الصور في Pictures/XTA، ومقاطع الفيديو في Movies/XTA، والملفات الأخرى في Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "تم الحفظ في {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

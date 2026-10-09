@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Include postările cu {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Postările sunt căutate după această adresă de contract sau după {cashtag}. Alte tokenuri pot folosi același simbol.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Salvează în fundal",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Salvează fără să întrebe: imaginile în Pictures/XTA, videoclipurile în Movies/XTA și celelalte fișiere în Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Salvat în {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

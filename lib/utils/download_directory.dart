@@ -52,6 +52,29 @@ class DownloadDirectory {
       'sourcePath': sourcePath, 'operationId': operationId,
     });
 
+  /// Whether files can be saved into the shared Pictures, Movies and Download
+  /// folders without a picker: MediaStore takes them from Android 10 on.
+  static Future<bool> canSaveToSharedStorage() async {
+    try {
+      return await _channel.invokeMethod<bool>('canSaveToSharedStorage') ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Copies a staged file into the shared folder for its type (see
+  /// [SharedDownloadFolder]), where the gallery sees it at once. Returns the
+  /// new item's URI, or null when the operation was cancelled.
+  static Future<String?> saveFileToSharedStorage({required String fileName,
+      required String sourcePath, required String operationId}) {
+    final folder = SharedDownloadFolder.of(fileName);
+    return _channel.invokeMethod<String>('saveFileToSharedStorage', {
+      'fileName': fileName, 'mimeType': mimeTypeFor(fileName),
+      'collection': folder.collection, 'relativePath': folder.relativePath,
+      'sourcePath': sourcePath, 'operationId': operationId,
+    });
+  }
+
   static Future<void> cancelSave(String operationId) =>
     _channel.invokeMethod<void>('cancelDownloadSave', {'operationId': operationId});
 
@@ -75,6 +98,27 @@ class DownloadDirectory {
 
     final withoutVolume = documentId.contains(':') ? documentId.split(':').last : documentId;
     return withoutVolume.isEmpty ? documentId : withoutVolume;
+  }
+}
+
+/// Where a download saved without a picker lands: the folder the gallery or
+/// file manager already shows for its type, with an XTA subfolder.
+enum SharedDownloadFolder {
+  pictures('images', 'Pictures/XTA'),
+  movies('video', 'Movies/XTA'),
+  downloads('downloads', 'Download/XTA');
+
+  /// The MediaStore collection, as the platform side names it.
+  final String collection;
+  final String relativePath;
+
+  const SharedDownloadFolder(this.collection, this.relativePath);
+
+  static SharedDownloadFolder of(String fileName) {
+    final mimeType = mimeTypeFor(fileName);
+    if (mimeType.startsWith('image/')) return pictures;
+    if (mimeType.startsWith('video/')) return movies;
+    return downloads;
   }
 }
 

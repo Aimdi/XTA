@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Уключыць допісы з {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Пошук допісаў вядзецца па гэтым адрасе кантракта або {cashtag}. Іншыя токены могуць мець той жа сімвал.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Захоўваць у фоне",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Захоўвае без пытанняў: выявы ў Pictures/XTA, відэа ў Movies/XTA, іншыя файлы ў Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Захавана ў {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "{cashtag} 게시물 포함",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "이 컨트랙트 주소 또는 {cashtag}(으)로 게시물을 검색합니다. 다른 토큰도 같은 심볼을 쓸 수 있습니다.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "백그라운드에서 저장",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "묻지 않고 저장합니다: 이미지는 Pictures/XTA, 동영상은 Movies/XTA, 기타 파일은 Download/XTA에 저장됩니다",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder}에 저장됨",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

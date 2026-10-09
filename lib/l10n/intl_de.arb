@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Beiträge mit {cashtag} einbeziehen",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Beiträge werden anhand dieser Vertragsadresse oder {cashtag} gesucht. Andere Token können dasselbe Kürzel verwenden.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Im Hintergrund speichern",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Speichert ohne Nachfrage: Bilder in Pictures/XTA, Videos in Movies/XTA, andere Dateien in Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Gespeichert in {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

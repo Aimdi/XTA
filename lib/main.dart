@@ -32,6 +32,7 @@ import 'package:xta/client/headers.dart';
 
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
@@ -467,9 +468,7 @@ Future<void> main() async {
       optionTickerChart: true,
       optionTextScaleFactor: 1.0,
       optionDisableScreenshots: false,
-      optionDownloadPath: '',
-      optionDownloadTreeUri: '',
-      optionDownloadType: optionDownloadTypeAsk,
+      ...downloadPrefDefaults,
       optionHomePages: defaultHomePages.map((e) => e.id).toList(),
       optionLocale: optionLocaleDefault,
       optionHomeInitialTab: 'feed',
@@ -696,6 +695,7 @@ Future<void> main() async {
 
   await _migrateMediaQualityPrefs(prefService);
   await _migrateCollapseBoostsDefaultOff(prefService);
+  await migrateDownloadTypeDefault(prefService);
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
 
   CrashReporter.install(prefService);

@@ -3871,5 +3871,17 @@
   "plugin_stocks_crypto_include_cashtag": "Bao gồm bài đăng có {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Bài đăng được tìm theo địa chỉ hợp đồng này hoặc {cashtag}. Các token khác có thể dùng cùng ký hiệu.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Lưu trong nền",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Lưu mà không hỏi: ảnh vào Pictures/XTA, video vào Movies/XTA, các tệp khác vào Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Đã lưu vào {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Ukliučyć dopisy z {cashtag}",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Pošuk dopisaŭ viadziecca pa hetym adrasie kantrakta abo {cashtag}. Inšyja tokieny mohuć mieć toj ža simval.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Zachoŭvać u fonie",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Zachoŭvaje biez pytanniaŭ: vyjavy ŭ Pictures/XTA, videa ŭ Movies/XTA, inšyja fajly ŭ Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Zachavana ŭ {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

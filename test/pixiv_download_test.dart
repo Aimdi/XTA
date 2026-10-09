@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/downloads/download_transfer.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
@@ -180,7 +181,7 @@ void main() {
   });
 
   test('page requests save the originals under Pixiv-style names', () {
-    final requests = pixivPageRequests(pixivWork(pages: 2), 'content://tree/x');
+    final requests = pixivPageRequests(pixivWork(pages: 2), const DownloadDestination.folder('content://tree/x'));
     expect(requests.map((request) => request.fileName), ['pixiv-120_p0.png', 'pixiv-120_p1.png']);
     expect(requests.first.uri.toString(), 'https://i.pximg.net/img-original/img/2026/07/01/00/00/00/120_p0.png');
     expect(requests.map((request) => request.treeUri).toSet(), {'content://tree/x'});

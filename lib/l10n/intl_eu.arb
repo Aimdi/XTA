@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "Sartu {cashtag} duten argitalpenak",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Argitalpenak kontratuaren helbide honekin edo {cashtag} ikurrarekin bilatzen dira. Beste token batzuek ikur bera erabil dezakete.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Gorde atzeko planoan",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Galdetu gabe gordetzen du: irudiak Pictures/XTA karpetan, bideoak Movies/XTA karpetan eta gainerako fitxategiak Download/XTA karpetan",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} karpetan gorde da",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

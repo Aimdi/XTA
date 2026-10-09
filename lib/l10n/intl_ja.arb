@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "{cashtag} の投稿も含める",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "このコントラクトアドレスまたは {cashtag} で投稿を検索します。同じシンボルを使う別のトークンもあります。",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "バックグラウンドで保存",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "確認せずに保存します：画像は Pictures/XTA、動画は Movies/XTA、その他のファイルは Download/XTA へ",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} に保存しました",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

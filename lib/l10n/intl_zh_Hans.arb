@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "包含 {cashtag} 的帖子",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "按此合约地址或 {cashtag} 搜索帖子。其他代币也可能使用相同代号。",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "后台保存",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "无需询问直接保存：图片存到 Pictures/XTA，视频存到 Movies/XTA，其他文件存到 Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "已保存到 {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

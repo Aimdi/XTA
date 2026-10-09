@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "{cashtag} gönderilerini dahil et",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "Gönderiler bu sözleşme adresiyle veya {cashtag} ile aranır. Başka tokenlar da aynı sembolü kullanabilir.",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Arka planda kaydet",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Sormadan kaydeder: resimleri Pictures/XTA, videoları Movies/XTA, diğer dosyaları Download/XTA klasörüne",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} klasörüne kaydedildi",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

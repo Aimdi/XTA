@@ -3874,5 +3874,17 @@
   "plugin_stocks_crypto_include_cashtag": "{cashtag} वाली पोस्ट भी शामिल करें",
   "@plugin_stocks_crypto_include_cashtag": {},
   "plugin_stocks_crypto_posts_hint_cashtag": "पोस्ट इस कॉन्ट्रैक्ट पते या {cashtag} से खोजी जाती हैं। दूसरे टोकन भी यही चिह्न इस्तेमाल कर सकते हैं।",
-  "@plugin_stocks_crypto_posts_hint_cashtag": {}
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "बैकग्राउंड में सहेजें",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "बिना पूछे सहेजता है: तस्वीरें Pictures/XTA में, वीडियो Movies/XTA में और बाकी फ़ाइलें Download/XTA में",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} में सहेजा गया",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }

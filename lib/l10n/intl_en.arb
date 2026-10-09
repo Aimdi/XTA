@@ -4172,5 +4172,22 @@
         "type": "String"
       }
     }
+  },
+  "download_handling_type_auto": "Save in the background",
+  "@download_handling_type_auto": {
+    "description": "Download setting option: save without asking into the shared Pictures, Movies or Download folder."
+  },
+  "download_handling_type_auto_description": "Saves without asking: pictures to Pictures/XTA, videos to Movies/XTA, other files to Download/XTA",
+  "@download_handling_type_auto_description": {
+    "description": "Subtitle while background saving is selected. Pictures/XTA, Movies/XTA and Download/XTA are folder names on the device; keep them as is."
+  },
+  "download_saved_to": "Saved to {folder}",
+  "@download_saved_to": {
+    "description": "Snackbar after a download was saved without asking. folder is a device folder such as Pictures/XTA; keep it as is.",
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
   }
 }
