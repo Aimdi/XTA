@@ -55,6 +55,7 @@ class MainActivity : AudioServiceActivity() {
                     "deleteDownloadedDocument" -> deleteDownloadedDocument(call, result)
                     "openDownloadedDocument" -> openDownloadedDocument(call, result)
                     "enterPictureInPicture" -> enterPictureInPicture(call, result)
+                    "enableWebViewPopups" -> enableWebViewPopups(flutterEngine, call, result)
                     else -> result.notImplemented()
                 }
             }
@@ -103,6 +104,16 @@ class MainActivity : AudioServiceActivity() {
         } catch (e: IllegalArgumentException) {
             result.success(false)
         }
+    }
+
+    /** Lets the sign-in WebView open popups (Sign in with Google), see [WebViewPopups]. */
+    private fun enableWebViewPopups(engine: FlutterEngine, call: MethodCall, result: MethodChannel.Result) {
+        val id = call.argument<Number>("webViewId")?.toLong()
+        if (id == null) {
+            result.error("INVALID_ARGUMENT", "webViewId is null", null)
+            return
+        }
+        result.success(WebViewPopups.install(this, engine, id))
     }
 
     private fun scanMediaFile(call: MethodCall, result: MethodChannel.Result) {

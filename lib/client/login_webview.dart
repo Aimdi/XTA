@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Cookie;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
@@ -9,6 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/subscriptions/_import.dart' show SubscriptionImportScreen;
 import 'package:webview_cookie_manager_plus/webview_cookie_manager_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class TwitterLoginWebview extends StatefulWidget {
   const TwitterLoginWebview({super.key});
@@ -18,11 +20,18 @@ class TwitterLoginWebview extends StatefulWidget {
 }
 
 class _TwitterLoginWebviewState extends State<TwitterLoginWebview> {
+  static const _channel = MethodChannel('browser_resolver');
+
   // Built once: a controller made in build() was replaced, and the login page
   // reloaded from scratch, whenever this page rebuilt — mid-login when
   // animations are off (QuaX issue #106).
   final _webviewCookieManager = WebviewCookieManager();
   final _webviewController = WebViewController();
+
+  // X can report reaching its home page twice in a row. Handling both would
+  // save the account twice and close this page twice, the second time closing
+  // the screen under it too.
+  bool _loggingIn = false;
 
   @override
   void initState() {
@@ -51,16 +60,33 @@ class _TwitterLoginWebviewState extends State<TwitterLoginWebview> {
     _webviewController.setJavaScriptMode(JavaScriptMode.unrestricted);
     _webviewController.loadRequest(Uri.https("x.com", "i/flow/login"));
     _webviewController.setUserAgent(userAgentHeader.toString());
-    _webviewController.setNavigationDelegate(NavigationDelegate(onUrlChange: _onUrlChange));
+    _webviewController.setNavigationDelegate(
+      NavigationDelegate(onPageStarted: (_) => _enablePopups(), onUrlChange: _onUrlChange),
+    );
+  }
+
+  /// "Sign in with Google" opens a popup that must keep `window.opener` to hand
+  /// its token back; webview_flutter drops such popups, so the Android side
+  /// shows them for this WebView (and only this one).
+  Future<void> _enablePopups() async {
+    final platform = _webviewController.platform;
+    if (platform is! AndroidWebViewController) return;
+    try {
+      await _channel.invokeMethod<void>('enableWebViewPopups', {'webViewId': platform.webViewIdentifier});
+    } on PlatformException catch (_) {
+      // Without popups the username/password sign-in still works.
+    } on MissingPluginException catch (_) {}
   }
 
   Future<void> _onUrlChange(UrlChange change) async {
-    if (change.url != "https://x.com/home") return;
+    if (change.url != "https://x.com/home" || _loggingIn) return;
+    _loggingIn = true;
     final cookies = await _webviewCookieManager.getCookies("https://x.com/i/flow/login");
-    final screenName = (await _webviewController.runJavaScriptReturningResult(
-      "document.documentElement.outerHTML.match(/\"screen_name\":\"([^\"]+)\"/)?.[1] ?? '';",
-    )).toString().replaceAll('"', '');
-    if (screenName == "") return;
+    final screenName = await _readScreenName();
+    if (screenName == "") {
+      _loggingIn = false;
+      return;
+    }
 
     try {
       await _saveAccount(cookies, screenName);
@@ -70,6 +96,22 @@ class _TwitterLoginWebviewState extends State<TwitterLoginWebview> {
     } catch (e) {
       throw Exception(e);
     }
+  }
+
+  /// X's home page fills in the screen name after the URL changed, and no other
+  /// URL change follows, so wait for it.
+  Future<String> _readScreenName() async {
+    for (var attempt = 0; attempt < 20; attempt++) {
+      final result = await _webviewController.runJavaScriptReturningResult(
+        "document.documentElement.outerHTML.match(/\"screen_name\":\"([^\"]+)\"/)?.[1] ?? '';",
+      );
+      final screenName = result.toString().replaceAll('"', '');
+      if (screenName != "") {
+        return screenName;
+      }
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+    return "";
   }
 
   Future<void> _saveAccount(List<Cookie> cookies, String screenName) async {
@@ -135,7 +177,7 @@ class _TwitterLoginWebviewState extends State<TwitterLoginWebview> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(toolbarHeight: 50),
-      body: WebViewWidget(controller: _webviewController),
+      body: SafeArea(top: false, child: WebViewWidget(controller: _webviewController)),
     );
   }
 }
