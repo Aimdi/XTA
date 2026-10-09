@@ -67,7 +67,7 @@ class QuackerTwitterClient extends TwitterClient {
     );
     final code = response.statusCode;
     if (code >= 200 && code < 300) {
-      RateLimitTracker.clear(account.id, endpoint);
+      RateLimitTracker.record(account.id, endpoint, response.headers, DateTime.now());
       if (!account.isClean) {
         await recordAccountSuccess(account.id);
       }
@@ -135,6 +135,7 @@ class QuackerTwitterClient extends TwitterClient {
         break;
       }
       tried.add(account.id);
+      RateLimitTracker.consume(account.id, endpoint, now);
 
       final response = await XRegularAccount().fetch(
         uri,
@@ -146,7 +147,7 @@ class QuackerTwitterClient extends TwitterClient {
       final code = response.statusCode;
 
       if (code >= 200 && code < 300) {
-        RateLimitTracker.clear(account.id, endpoint);
+        RateLimitTracker.record(account.id, endpoint, response.headers, DateTime.now());
         if (!account.isClean) {
           await recordAccountSuccess(account.id);
         }

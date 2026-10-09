@@ -256,6 +256,38 @@ void main() {
         isFalse,
       );
     });
+
+    // Ported from QuaX commit 6dca796: X reports the quota left with every
+    // answer, so a spent account is set aside before it is refused.
+    test('an account whose quota X reports spent is set aside for the next request', () async {
+      await seedAccounts(2);
+      final reset = DateTime.now().add(const Duration(minutes: 5)).millisecondsSinceEpoch ~/ 1000;
+      final attempted = <String>[];
+      xHttpClient = MockClient((request) async {
+        attempted.add(request.headers['x-test-account']!);
+        return http.Response('ok', 200, headers: {'x-rate-limit-remaining': '0', 'x-rate-limit-reset': '$reset'});
+      });
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+
+      expect(attempted, hasLength(2), reason: 'a spent quota is not a failure: no retry, no extra request');
+      expect(attempted.toSet(), hasLength(2), reason: 'the second read goes to the account with quota left');
+    });
+
+    test('a spent quota on every account still sends the request', () async {
+      await seedAccounts(1);
+      final reset = DateTime.now().add(const Duration(minutes: 5)).millisecondsSinceEpoch ~/ 1000;
+      var calls = 0;
+      xHttpClient = MockClient((_) async {
+        calls++;
+        return http.Response('ok', 200, headers: {'x-rate-limit-remaining': '0', 'x-rate-limit-reset': '$reset'});
+      });
+
+      await QuackerTwitterClient.fetch(uri);
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+      expect(calls, 2, reason: 'flags only order accounts; X decides whether the quota is really spent');
+    });
   });
 
   for (final reset in ['invalid', '9999999999999999999']) {
