@@ -438,6 +438,22 @@ List<PixivUser> parsePixivUserList(Object? json) {
   ];
 }
 
+/// A creator together with the works Pixiv previews beside them.
+typedef PixivUserPreview = ({PixivUser user, List<PixivIllust> illusts});
+
+/// Pure parse of `/v1/user/related` → creators with their preview works.
+List<PixivUserPreview> parsePixivUserPreviews(Object? json) => [
+  for (final item in Json(json)['user_previews'].list)
+    if (_previewUser(item) case final user? when user.id != 0)
+      (
+        user: user,
+        illusts: [
+          for (final illust in item['illusts'].list)
+            if (pixivIllustFromJson(illust.raw) case final work?) work,
+        ],
+      ),
+];
+
 PixivUser? _previewUser(Json item) {
   if (item['user'].exists) {
     return PixivUser.fromUserJson(item['user'].raw);

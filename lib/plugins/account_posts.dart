@@ -53,10 +53,21 @@ class AccountPostCache<T> {
   });
 
   final Map<String, ({DateTime at, List<T> posts})> _entries = {};
+  final Map<String, DateTime> _attemptedAt = {};
 
   /// Forgets everything, for when the answers would now come from elsewhere —
   /// a different session, a different instance.
-  void clear() => _entries.clear();
+  void clear() {
+    _entries.clear();
+    _attemptedAt.clear();
+  }
+
+  /// [keys] with the ones never asked for first, then the longest unasked.
+  ///
+  /// A capped [merge] spends its budget on the front of the list, so a caller
+  /// that passes the same order every time reads the same accounts every time
+  /// and never reaches the rest. Ties keep the caller's order.
+  List<String> prioritize(List<String> keys) => prioritizeByAttempt(keys, (key) => _attemptedAt[key]);
 
   List<T>? _fresh(String key) {
     final entry = _entries[key];
@@ -123,6 +134,7 @@ class AccountPostCache<T> {
           return held;
         }
         remaining--;
+        _attemptedAt[key] = DateTime.now();
 
         try {
           final posts = await fetch(key);
@@ -221,4 +233,15 @@ class _ThrottledPartial<T> {
     _last = DateTime.now();
     _emit!(posts);
   }
+}
+
+/// [keys] never attempted first, then the longest ago; ties keep the caller's
+/// order. The rotation every per-member cache samples its members with.
+List<String> prioritizeByAttempt(List<String> keys, DateTime? Function(String key) attemptedAt) {
+  final order = {for (var i = 0; i < keys.length; i++) keys[i]: i};
+  return order.keys.toList()
+    ..sort((a, b) {
+      final age = (attemptedAt(a) ?? DateTime(0)).compareTo(attemptedAt(b) ?? DateTime(0));
+      return age != 0 ? age : order[a]!.compareTo(order[b]!);
+    });
 }

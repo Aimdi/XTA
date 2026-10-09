@@ -293,4 +293,15 @@ void main() {
       expect(posts.map((e) => e.from), ['dated', 'undated']);
     });
   });
+
+  test('prioritize puts never-asked accounts first, then the longest unasked', () async {
+    final cache = _cache();
+    List<_Post> fetch(String key) => [(from: key, at: _at(1))];
+    await cache.merge(['a', 'b', 'c'], (key) async => fetch(key), maxFetches: 2);
+    expect(cache.prioritize(['a', 'b', 'c']), ['c', 'a', 'b']);
+    await cache.merge(cache.prioritize(['a', 'b', 'c']), (key) async => fetch(key), maxFetches: 1);
+    expect(cache.prioritize(['a', 'b', 'c']), ['a', 'b', 'c']);
+    cache.clear();
+    expect(cache.prioritize(['c', 'a']), ['c', 'a']);
+  });
 }

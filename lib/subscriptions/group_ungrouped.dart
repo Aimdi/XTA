@@ -121,6 +121,16 @@ Set<String> nameTokens(String text) => {
     if (part.length >= 3) part,
 };
 
+final _unicodeWord = RegExp(r'[\p{L}\p{N}]+', unicode: true);
+
+/// [nameTokens] for any script: runs of letters or digits of two characters
+/// or more, lower-cased, so "イラスト" and "Künstler" keep their words instead
+/// of turning into nothing and "nstler".
+Set<String> unicodeNameTokens(String text) => {
+  for (final match in _unicodeWord.allMatches(text.toLowerCase()))
+    if (match[0]!.length >= 2) match[0]!,
+};
+
 Set<String> accountTokens(AccountRef account) => {
   ...nameTokens(account.handle),
   ...nameTokens(account.name),

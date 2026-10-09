@@ -93,7 +93,7 @@ void main() {
     final store = GroupDiscoveryStore(storage: storage);
     await store.load(
       sources: [
-        () async => [candidate],
+        DiscoveryLoad(DiscoverySource.x, members: 1, read: (_) async => DiscoveryBatch([candidate], read: 1)),
       ],
       followed: {},
       groupName: 'Space',
@@ -104,7 +104,7 @@ void main() {
     final restored = GroupDiscoveryStore(storage: storage);
     await restored.load(
       sources: [
-        () async => [candidate],
+        DiscoveryLoad(DiscoverySource.x, members: 1, read: (_) async => DiscoveryBatch([candidate], read: 1)),
       ],
       followed: {},
       groupName: 'Renamed',
@@ -115,7 +115,7 @@ void main() {
     expect(store.state.accounts.single.key, candidate.key);
     await restored.load(
       sources: [
-        () async => [candidate],
+        DiscoveryLoad(DiscoverySource.x, members: 1, read: (_) async => DiscoveryBatch([candidate], read: 1)),
       ],
       followed: {},
       groupName: 'Other',

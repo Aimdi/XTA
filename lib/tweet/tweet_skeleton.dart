@@ -24,7 +24,7 @@ class TweetFeedSkeleton extends StatefulWidget {
 
 class _TweetFeedSkeletonState extends State<TweetFeedSkeleton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _pulse = _skeletonPulse(this);
+  late final AnimationController _pulse = skeletonPulseController(this);
 
   @override
   void didChangeDependencies() {
@@ -53,10 +53,23 @@ class _TweetFeedSkeletonState extends State<TweetFeedSkeleton>
   }
 }
 
-AnimationController _skeletonPulse(TickerProvider vsync) => AnimationController(
+/// The shared pulse every skeleton bone follows; start it with [applySkeletonPulse].
+AnimationController skeletonPulseController(TickerProvider vsync) => AnimationController(
   vsync: vsync,
   duration: const Duration(milliseconds: 1100),
 );
+
+/// A bone's colour at [pulse] (0..1), between the theme's skeleton surface and highlight.
+Color skeletonBoneColor(BuildContext context, double pulse) {
+  final tokens = XLookTokens.maybeOf(context);
+  final base = tokens == null
+      ? Theme.of(context).colorScheme.surfaceContainerHighest
+      : xLookSkeletonSurface(tokens);
+  final highlight = tokens == null
+      ? Theme.of(context).colorScheme.surfaceContainerHigh
+      : xLookSkeletonHighlight(tokens);
+  return Color.lerp(base, highlight, Curves.easeInOut.transform(pulse))!;
+}
 
 /// The accessibility preference and the platform's own "remove animations"
 /// setting both leave the bones at a flat colour rather than pulsing.
@@ -98,7 +111,7 @@ class TweetSkeletonTile extends StatefulWidget {
 class _TweetSkeletonTileState extends State<TweetSkeletonTile>
     with SingleTickerProviderStateMixin {
   late final AnimationController? _own = widget.pulse == null
-      ? _skeletonPulse(this)
+      ? skeletonPulseController(this)
       : null;
 
   Animation<double> get _pulse => widget.pulse ?? _own!;
@@ -122,12 +135,6 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile>
   @override
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
-    final base = tokens == null
-        ? Theme.of(context).colorScheme.surfaceContainerHighest
-        : xLookSkeletonSurface(tokens);
-    final highlight = tokens == null
-        ? Theme.of(context).colorScheme.surfaceContainerHigh
-        : xLookSkeletonHighlight(tokens);
     final avatarSize = tokens?.avatarSize ?? 40;
     final mediaRadius = tokens?.mediaRadius ?? 16;
 
@@ -135,17 +142,13 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile>
       child: AnimatedBuilder(
         animation: _pulse,
         builder: (context, child) {
-          final color = Color.lerp(
-            base,
-            highlight,
-            Curves.easeInOut.transform(_pulse.value),
-          )!;
+          final color = skeletonBoneColor(context, _pulse.value);
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Bone(
+                SkeletonBone(
                   width: avatarSize,
                   height: avatarSize,
                   radius: avatarSize / 2,
@@ -156,13 +159,13 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _Bone(width: 140, height: 12, color: color),
+                      SkeletonBone(width: 140, height: 12, color: color),
                       const SizedBox(height: 8),
-                      _Bone(width: double.infinity, height: 12, color: color),
+                      SkeletonBone(width: double.infinity, height: 12, color: color),
                       const SizedBox(height: 6),
-                      _Bone(width: 220, height: 12, color: color),
+                      SkeletonBone(width: 220, height: 12, color: color),
                       const SizedBox(height: 12),
-                      _Bone(
+                      SkeletonBone(
                         width: double.infinity,
                         height: 120,
                         radius: mediaRadius,
@@ -180,13 +183,15 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile>
   }
 }
 
-class _Bone extends StatelessWidget {
+/// One grey block of a skeleton. `double.infinity` width fills the row.
+class SkeletonBone extends StatelessWidget {
   final double width;
   final double height;
   final double radius;
   final Color color;
 
-  const _Bone({
+  const SkeletonBone({
+    super.key,
     required this.width,
     required this.height,
     required this.color,

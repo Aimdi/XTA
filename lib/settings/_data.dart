@@ -31,9 +31,8 @@ import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 
-Future<void> _importFromFile(BuildContext context, File file) async {
-  await importSettingsJson(context, file.readAsStringSync());
-}
+Future<bool> _importFromFile(BuildContext context, File file) =>
+    importSettingsJson(context, file.readAsStringSync());
 
 /// Applies an exported backup document, once the reader has seen what is in it.
 /// Shared by the file import and the WebDAV restore so a restore can never
@@ -200,11 +199,13 @@ Future<String> appVersionLabel() async {
   return '${info.version}+${info.buildNumber}';
 }
 
-Future<void> importBackup(BuildContext context) async {
+/// Whether a backup was applied; a cancelled picker or a rejected file is false.
+Future<bool> importBackup(BuildContext context) async {
   var path = await FlutterFileDialog.pickFile(params: const OpenFileDialogParams());
   if (path != null && context.mounted) {
-    await _importFromFile(context, File(path));
+    return _importFromFile(context, File(path));
   }
+  return false;
 }
 
 class SettingsDataFragment extends StatelessWidget {
