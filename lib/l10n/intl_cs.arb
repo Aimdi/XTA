@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Kdykoli si ho můžete stáhnout znovu.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Otevřít na web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Zbytek si mohou přečíst jen platící odběratelé @{screenName} na X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Tento tweet je jen pro platící odběratele svého autora na X.",
+  "@subscribers_only_post_of_author": {}
 }

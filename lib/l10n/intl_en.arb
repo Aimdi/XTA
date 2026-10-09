@@ -4256,5 +4256,13 @@
   "open_on_web_archive": "Open on web.archive.org",
   "@open_on_web_archive": {
     "description": "Button under a post X no longer shows (deleted, private or suspended), opening the Wayback Machine's saved copies of it. web.archive.org is the site's address and stays as is."
+  },
+  "subscribers_only_post": "Only @{screenName}'s paid subscribers on X can read the rest",
+  "@subscribers_only_post": {
+    "description": "Under the cut-off preview of a post its author reserves to their paid X subscribers (X Subscriptions, formerly Super Follows), not XTA's local subscriptions. screenName is the author's handle."
+  },
+  "subscribers_only_post_of_author": "This post is only for its author's paid subscribers on X.",
+  "@subscribers_only_post_of_author": {
+    "description": "Stands in for a post X hides entirely because its author reserves it to their paid X subscribers (X Subscriptions), without saying who the author is. Not XTA's local subscriptions."
   }
 }

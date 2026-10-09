@@ -1,0 +1,900 @@
+{
+  "data": {
+    "user": {
+      "result": {
+        "__typename": "User",
+        "timeline": {
+          "timeline": {
+            "instructions": [
+              {
+                "type": "TimelineClearCache"
+              },
+              {
+                "entries": [
+                  {
+                    "content": {
+                      "__typename": "TimelineTimelineItem",
+                      "clientEventInfo": {
+                        "component": "organic_tweets",
+                        "element": "tweet"
+                      },
+                      "entryType": "TimelineTimelineItem",
+                      "itemContent": {
+                        "__typename": "TimelineTweet",
+                        "itemType": "TimelineTweet",
+                        "tweetDisplayType": "Tweet",
+                        "tweet_results": {
+                          "result": {
+                            "__typename": "Tweet",
+                            "card": {
+                              "rest_id": "https://t.co/MU09DoAkhZ"
+                            },
+                            "cashtag_attachments": [],
+                            "core": {
+                              "user_results": {
+                                "result": {
+                                  "__typename": "User",
+                                  "action_counts": {
+                                    "favorites_count": 65174
+                                  },
+                                  "affiliates_highlighted_label": {},
+                                  "avatar": {
+                                    "image_url": "https://pbs.twimg.com/profile_images/1861752372638171136/0VkHHpXF_normal.jpg"
+                                  },
+                                  "banner": {
+                                    "image_url": "https://pbs.twimg.com/profile_banners/3864149734/1732394190"
+                                  },
+                                  "core": {
+                                    "created_at": "Sun Oct 04 18:38:49 +0000 2015",
+                                    "name": "Osemka",
+                                    "screen_name": "Osemka8"
+                                  },
+                                  "follow_request_sent": false,
+                                  "has_graduated_access": true,
+                                  "id": "VXNlcjozODY0MTQ5NzM0",
+                                  "is_blue_verified": true,
+                                  "location": {
+                                    "location": ""
+                                  },
+                                  "media_permissions": {
+                                    "can_media_tag": true
+                                  },
+                                  "notifications_settings": {
+                                    "notifications_enabled": false
+                                  },
+                                  "parody_commentary_fan_label": "None",
+                                  "pinned_items": {
+                                    "tweet_ids_str": [
+                                      "2033815601668329786"
+                                    ]
+                                  },
+                                  "possibly_sensitive": false,
+                                  "privacy": {
+                                    "protected": false
+                                  },
+                                  "profile_bio": {
+                                    "description": "Logic over indicators | 🇸🇮",
+                                    "entities": {
+                                      "description": {}
+                                    }
+                                  },
+                                  "profile_image_shape": "Circle",
+                                  "profile_metadata": {
+                                    "profile_interstitial_type": ""
+                                  },
+                                  "profile_translation": {
+                                    "translator_type": "none"
+                                  },
+                                  "relationship_counts": {
+                                    "followers": 20848,
+                                    "following": 37
+                                  },
+                                  "relationship_perspectives": {
+                                    "blocked_by": false,
+                                    "blocking": false,
+                                    "followed_by": false,
+                                    "following": false,
+                                    "live_following": false,
+                                    "muting": false
+                                  },
+                                  "rest_id": "3864149734",
+                                  "super_follow_eligible": true,
+                                  "super_followed_by": false,
+                                  "super_following": false,
+                                  "tweet_counts": {
+                                    "media_tweets": 9542,
+                                    "tweets": 40358
+                                  },
+                                  "verification": {
+                                    "verified": false
+                                  },
+                                  "website": {
+                                    "url": ""
+                                  }
+                                }
+                              }
+                            },
+                            "edit_control": {
+                              "edit_tweet_ids": [
+                                "2105651449673761205"
+                              ],
+                              "editable_until_msecs": "1790865001000",
+                              "edits_remaining": "5",
+                              "is_edit_eligible": true
+                            },
+                            "grok_analysis_button": true,
+                            "grok_annotations": {},
+                            "grok_translated_post_with_availability": {
+                              "is_available": false
+                            },
+                            "is_translatable": false,
+                            "legacy": {
+                              "bookmark_count": 1,
+                              "bookmarked": false,
+                              "conversation_id_str": "2105651449673761205",
+                              "created_at": "Thu Oct 01 13:30:01 +0000 2026",
+                              "display_text_range": [
+                                0,
+                                154
+                              ],
+                              "entities": {
+                                "urls": [
+                                  {
+                                    "display_url": "x.com/Osemka8/status…",
+                                    "expanded_url": "https://x.com/Osemka8/status/2100494972931993879?s=20",
+                                    "indices": [
+                                      131,
+                                      154
+                                    ],
+                                    "url": "https://t.co/MU09DoAkhZ"
+                                  }
+                                ]
+                              },
+                              "favorite_count": 16,
+                              "favorited": false,
+                              "full_text": "Yields matter exactly 0 for the bull run we're going to experience. It's noise you're being fed and you're eating it up\n\nSee here: https://t.co/MU09DoAkhZ",
+                              "id_str": "2105651449673761205",
+                              "is_quote_status": true,
+                              "lang": "en",
+                              "possibly_sensitive": false,
+                              "possibly_sensitive_editable": true,
+                              "quote_count": 0,
+                              "quoted_status_id_str": "2105571640079691893",
+                              "quoted_status_permalink": {
+                                "display": "x.com/DasDreamz/stat…",
+                                "expanded": "https://twitter.com/DasDreamz/status/2105571640079691893",
+                                "url": "https://t.co/aPvnAPtror"
+                              },
+                              "reply_count": 0,
+                              "retweet_count": 0,
+                              "retweeted": false,
+                              "user_id_str": "3864149734"
+                            },
+                            "quick_promote_eligibility": {
+                              "eligibility": "IneligibleNotVerified"
+                            },
+                            "quoted_status_result": {
+                              "result": {
+                                "__typename": "Tweet",
+                                "core": {
+                                  "user_results": {
+                                    "result": {
+                                      "__typename": "User",
+                                      "action_counts": {
+                                        "favorites_count": 2989
+                                      },
+                                      "affiliates_highlighted_label": {},
+                                      "avatar": {
+                                        "image_url": "https://pbs.twimg.com/profile_images/1944121727107174400/XZy54vyF_normal.jpg"
+                                      },
+                                      "banner": {
+                                        "image_url": ""
+                                      },
+                                      "core": {
+                                        "created_at": "Wed Feb 17 07:53:20 +0000 2021",
+                                        "name": "jeez lord",
+                                        "screen_name": "DasDreamz"
+                                      },
+                                      "follow_request_sent": false,
+                                      "has_graduated_access": true,
+                                      "id": "VXNlcjoxMzYxOTQ2Nzc3MjgxMjY1NjY0",
+                                      "is_blue_verified": false,
+                                      "location": {
+                                        "location": ""
+                                      },
+                                      "media_permissions": {
+                                        "can_media_tag": false
+                                      },
+                                      "notifications_settings": {
+                                        "notifications_enabled": false
+                                      },
+                                      "parody_commentary_fan_label": "None",
+                                      "pinned_items": {
+                                        "tweet_ids_str": [
+                                          "1943546616360653134"
+                                        ]
+                                      },
+                                      "possibly_sensitive": false,
+                                      "privacy": {
+                                        "protected": false
+                                      },
+                                      "profile_bio": {
+                                        "description": "",
+                                        "entities": {
+                                          "description": {}
+                                        }
+                                      },
+                                      "profile_image_shape": "Circle",
+                                      "profile_metadata": {
+                                        "profile_interstitial_type": ""
+                                      },
+                                      "profile_translation": {
+                                        "translator_type": "none"
+                                      },
+                                      "relationship_counts": {
+                                        "followers": 163,
+                                        "following": 963
+                                      },
+                                      "relationship_perspectives": {
+                                        "blocked_by": false,
+                                        "blocking": false,
+                                        "followed_by": false,
+                                        "following": false,
+                                        "live_following": false,
+                                        "muting": false
+                                      },
+                                      "rest_id": "1361946777281265664",
+                                      "super_follow_eligible": false,
+                                      "super_followed_by": false,
+                                      "super_following": false,
+                                      "tweet_counts": {
+                                        "media_tweets": 204,
+                                        "tweets": 5674
+                                      },
+                                      "verification": {
+                                        "verified": false
+                                      },
+                                      "website": {
+                                        "url": ""
+                                      }
+                                    }
+                                  }
+                                },
+                                "edit_control": {
+                                  "edit_tweet_ids": [
+                                    "2105571640079691893"
+                                  ],
+                                  "editable_until_msecs": "1790845973000",
+                                  "edits_remaining": "5",
+                                  "is_edit_eligible": false
+                                },
+                                "grok_analysis_button": true,
+                                "grok_translated_post_with_availability": {
+                                  "is_available": false
+                                },
+                                "is_translatable": false,
+                                "legacy": {
+                                  "bookmark_count": 0,
+                                  "bookmarked": false,
+                                  "conversation_id_str": "2105568398516379772",
+                                  "created_at": "Thu Oct 01 08:12:53 +0000 2026",
+                                  "display_text_range": [
+                                    9,
+                                    54
+                                  ],
+                                  "entities": {
+                                    "user_mentions": [
+                                      {
+                                        "id_str": "3864149734",
+                                        "indices": [
+                                          0,
+                                          8
+                                        ],
+                                        "name": "Osemka",
+                                        "screen_name": "Osemka8"
+                                      }
+                                    ]
+                                  },
+                                  "favorite_count": 1,
+                                  "favorited": false,
+                                  "full_text": "@Osemka8 How is it possible when yields are rocketing?",
+                                  "id_str": "2105571640079691893",
+                                  "in_reply_to_screen_name": "Osemka8",
+                                  "in_reply_to_status_id_str": "2105568398516379772",
+                                  "in_reply_to_user_id_str": "3864149734",
+                                  "is_quote_status": false,
+                                  "lang": "en",
+                                  "quote_count": 0,
+                                  "reply_count": 0,
+                                  "retweet_count": 0,
+                                  "retweeted": false,
+                                  "user_id_str": "1361946777281265664"
+                                },
+                                "rest_id": "2105571640079691893",
+                                "unmention_data": {},
+                                "views": {
+                                  "count": "1457",
+                                  "state": "EnabledWithCount"
+                                }
+                              }
+                            },
+                            "rest_id": "2105651449673761205",
+                            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+                            "unmention_data": {},
+                            "views": {
+                              "count": "2135",
+                              "state": "EnabledWithCount"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "entryId": "tweet-2105651449673761205",
+                    "sortIndex": "2105664464454942719"
+                  },
+                  {
+                    "content": {
+                      "__typename": "TimelineTimelineModule",
+                      "clientEventInfo": {
+                        "component": "organic_tweets"
+                      },
+                      "displayType": "VerticalConversation",
+                      "entryType": "TimelineTimelineModule",
+                      "items": [
+                        {
+                          "dispensable": true,
+                          "entryId": "profile-originals-conversation-2105664464454942722-tweet-2105632562995417225",
+                          "item": {
+                            "clientEventInfo": {
+                              "component": "organic_tweets",
+                              "element": "tweet"
+                            },
+                            "itemContent": {
+                              "__typename": "TimelineTweet",
+                              "itemType": "TimelineTweet",
+                              "tweetDisplayType": "Tweet",
+                              "tweet_results": {
+                                "result": {
+                                  "__typename": "TweetPreviewDisplay",
+                                  "cta": {
+                                    "title": "Subscribe to unlock",
+                                    "url": {
+                                      "url": "https://x.com/Osemka8/superfollows/subscribe",
+                                      "urlType": "DeepLink"
+                                    }
+                                  },
+                                  "limited_action_results": {
+                                    "limited_actions": [
+                                      {
+                                        "action": "Reply"
+                                      },
+                                      {
+                                        "action": "Retweet"
+                                      },
+                                      {
+                                        "action": "QuoteTweet"
+                                      },
+                                      {
+                                        "action": "Like"
+                                      },
+                                      {
+                                        "action": "React"
+                                      },
+                                      {
+                                        "action": "AddToBookmarks"
+                                      },
+                                      {
+                                        "action": "AddToMoment"
+                                      },
+                                      {
+                                        "action": "PinToProfile"
+                                      },
+                                      {
+                                        "action": "ViewHiddenReplies"
+                                      },
+                                      {
+                                        "action": "VoteOnPoll"
+                                      },
+                                      {
+                                        "action": "ShowRetweetActionMenu"
+                                      },
+                                      {
+                                        "action": "ReplyDownVote"
+                                      },
+                                      {
+                                        "action": "SendViaDm"
+                                      },
+                                      {
+                                        "action": "ViewPostEngagements"
+                                      }
+                                    ]
+                                  },
+                                  "tweet": {
+                                    "bookmark_count": 0,
+                                    "core": {
+                                      "user_results": {
+                                        "result": {
+                                          "__typename": "User",
+                                          "action_counts": {
+                                            "favorites_count": 65174
+                                          },
+                                          "affiliates_highlighted_label": {},
+                                          "avatar": {
+                                            "image_url": "https://pbs.twimg.com/profile_images/1861752372638171136/0VkHHpXF_normal.jpg"
+                                          },
+                                          "banner": {
+                                            "image_url": "https://pbs.twimg.com/profile_banners/3864149734/1732394190"
+                                          },
+                                          "core": {
+                                            "created_at": "Sun Oct 04 18:38:49 +0000 2015",
+                                            "name": "Osemka",
+                                            "screen_name": "Osemka8"
+                                          },
+                                          "follow_request_sent": false,
+                                          "has_graduated_access": true,
+                                          "id": "VXNlcjozODY0MTQ5NzM0",
+                                          "is_blue_verified": true,
+                                          "location": {
+                                            "location": ""
+                                          },
+                                          "media_permissions": {
+                                            "can_media_tag": true
+                                          },
+                                          "notifications_settings": {
+                                            "notifications_enabled": false
+                                          },
+                                          "parody_commentary_fan_label": "None",
+                                          "pinned_items": {
+                                            "tweet_ids_str": [
+                                              "2033815601668329786"
+                                            ]
+                                          },
+                                          "possibly_sensitive": false,
+                                          "privacy": {
+                                            "protected": false
+                                          },
+                                          "profile_bio": {
+                                            "description": "Logic over indicators | 🇸🇮",
+                                            "entities": {
+                                              "description": {}
+                                            }
+                                          },
+                                          "profile_image_shape": "Circle",
+                                          "profile_metadata": {
+                                            "profile_interstitial_type": ""
+                                          },
+                                          "profile_translation": {
+                                            "translator_type": "none"
+                                          },
+                                          "relationship_counts": {
+                                            "followers": 20848,
+                                            "following": 37
+                                          },
+                                          "relationship_perspectives": {
+                                            "blocked_by": false,
+                                            "blocking": false,
+                                            "followed_by": false,
+                                            "following": false,
+                                            "live_following": false,
+                                            "muting": false
+                                          },
+                                          "rest_id": "3864149734",
+                                          "super_follow_eligible": true,
+                                          "super_followed_by": false,
+                                          "super_following": false,
+                                          "tweet_counts": {
+                                            "media_tweets": 9542,
+                                            "tweets": 40358
+                                          },
+                                          "verification": {
+                                            "verified": false
+                                          },
+                                          "website": {
+                                            "url": ""
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "created_at": "Thu Oct 01 12:14:58 +0000 2026",
+                                    "entities": {},
+                                    "favorite_count": 6,
+                                    "quote_count": 0,
+                                    "reply_count": 1,
+                                    "rest_id": "2105632562995417225",
+                                    "retweet_count": 1,
+                                    "text": "In regards to timing and when we start moving up a…",
+                                    "view_count": {
+                                      "count": "187"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "dispensable": false,
+                          "entryId": "profile-originals-conversation-2105664464454942722-tweet-2105635055611584664",
+                          "item": {
+                            "clientEventInfo": {
+                              "component": "organic_tweets",
+                              "element": "tweet"
+                            },
+                            "itemContent": {
+                              "__typename": "TimelineTweet",
+                              "itemType": "TimelineTweet",
+                              "tweetDisplayType": "Tweet",
+                              "tweet_results": {
+                                "result": {
+                                  "__typename": "TweetPreviewDisplay",
+                                  "cta": {
+                                    "title": "Subscribe to unlock",
+                                    "url": {
+                                      "url": "https://x.com/Osemka8/superfollows/subscribe",
+                                      "urlType": "DeepLink"
+                                    }
+                                  },
+                                  "limited_action_results": {
+                                    "limited_actions": [
+                                      {
+                                        "action": "Reply"
+                                      },
+                                      {
+                                        "action": "Retweet"
+                                      },
+                                      {
+                                        "action": "QuoteTweet"
+                                      },
+                                      {
+                                        "action": "Like"
+                                      },
+                                      {
+                                        "action": "React"
+                                      },
+                                      {
+                                        "action": "AddToBookmarks"
+                                      },
+                                      {
+                                        "action": "AddToMoment"
+                                      },
+                                      {
+                                        "action": "PinToProfile"
+                                      },
+                                      {
+                                        "action": "ViewHiddenReplies"
+                                      },
+                                      {
+                                        "action": "VoteOnPoll"
+                                      },
+                                      {
+                                        "action": "ShowRetweetActionMenu"
+                                      },
+                                      {
+                                        "action": "ReplyDownVote"
+                                      },
+                                      {
+                                        "action": "SendViaDm"
+                                      },
+                                      {
+                                        "action": "ViewPostEngagements"
+                                      }
+                                    ]
+                                  },
+                                  "tweet": {
+                                    "bookmark_count": 0,
+                                    "core": {
+                                      "user_results": {
+                                        "result": {
+                                          "__typename": "User",
+                                          "action_counts": {
+                                            "favorites_count": 65174
+                                          },
+                                          "affiliates_highlighted_label": {},
+                                          "avatar": {
+                                            "image_url": "https://pbs.twimg.com/profile_images/1861752372638171136/0VkHHpXF_normal.jpg"
+                                          },
+                                          "banner": {
+                                            "image_url": "https://pbs.twimg.com/profile_banners/3864149734/1732394190"
+                                          },
+                                          "core": {
+                                            "created_at": "Sun Oct 04 18:38:49 +0000 2015",
+                                            "name": "Osemka",
+                                            "screen_name": "Osemka8"
+                                          },
+                                          "follow_request_sent": false,
+                                          "has_graduated_access": true,
+                                          "id": "VXNlcjozODY0MTQ5NzM0",
+                                          "is_blue_verified": true,
+                                          "location": {
+                                            "location": ""
+                                          },
+                                          "media_permissions": {
+                                            "can_media_tag": true
+                                          },
+                                          "notifications_settings": {
+                                            "notifications_enabled": false
+                                          },
+                                          "parody_commentary_fan_label": "None",
+                                          "pinned_items": {
+                                            "tweet_ids_str": [
+                                              "2033815601668329786"
+                                            ]
+                                          },
+                                          "possibly_sensitive": false,
+                                          "privacy": {
+                                            "protected": false
+                                          },
+                                          "profile_bio": {
+                                            "description": "Logic over indicators | 🇸🇮",
+                                            "entities": {
+                                              "description": {}
+                                            }
+                                          },
+                                          "profile_image_shape": "Circle",
+                                          "profile_metadata": {
+                                            "profile_interstitial_type": ""
+                                          },
+                                          "profile_translation": {
+                                            "translator_type": "none"
+                                          },
+                                          "relationship_counts": {
+                                            "followers": 20848,
+                                            "following": 37
+                                          },
+                                          "relationship_perspectives": {
+                                            "blocked_by": false,
+                                            "blocking": false,
+                                            "followed_by": false,
+                                            "following": false,
+                                            "live_following": false,
+                                            "muting": false
+                                          },
+                                          "rest_id": "3864149734",
+                                          "super_follow_eligible": true,
+                                          "super_followed_by": false,
+                                          "super_following": false,
+                                          "tweet_counts": {
+                                            "media_tweets": 9542,
+                                            "tweets": 40358
+                                          },
+                                          "verification": {
+                                            "verified": false
+                                          },
+                                          "website": {
+                                            "url": ""
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "created_at": "Thu Oct 01 12:24:52 +0000 2026",
+                                    "entities": {},
+                                    "favorite_count": 3,
+                                    "quote_count": 0,
+                                    "reply_count": 0,
+                                    "reply_to_results": {
+                                      "rest_id": "2105632562995417225"
+                                    },
+                                    "rest_id": "2105635055611584664",
+                                    "retweet_count": 1,
+                                    "text": "ATM you can see two things: BTC.D turned positive …",
+                                    "view_count": {
+                                      "count": "72"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "metadata": {
+                        "conversationMetadata": {
+                          "allTweetIds": [
+                            "2105632562995417225",
+                            "2105635055611584664"
+                          ],
+                          "enableDeduplication": true
+                        }
+                      }
+                    },
+                    "entryId": "profile-originals-conversation-2105664464454942722",
+                    "sortIndex": "2105664464454942718"
+                  },
+                  {
+                    "content": {
+                      "__typename": "TimelineTimelineItem",
+                      "clientEventInfo": {
+                        "component": "organic_tweets",
+                        "element": "tweet"
+                      },
+                      "entryType": "TimelineTimelineItem",
+                      "itemContent": {
+                        "__typename": "TimelineTweet",
+                        "itemType": "TimelineTweet",
+                        "tweetDisplayType": "Tweet",
+                        "tweet_results": {
+                          "result": {
+                            "__typename": "TweetPreviewDisplay",
+                            "cta": {
+                              "title": "Subscribe to unlock",
+                              "url": {
+                                "url": "https://x.com/Osemka8/superfollows/subscribe",
+                                "urlType": "DeepLink"
+                              }
+                            },
+                            "limited_action_results": {
+                              "limited_actions": [
+                                {
+                                  "action": "Reply"
+                                },
+                                {
+                                  "action": "Retweet"
+                                },
+                                {
+                                  "action": "QuoteTweet"
+                                },
+                                {
+                                  "action": "Like"
+                                },
+                                {
+                                  "action": "React"
+                                },
+                                {
+                                  "action": "AddToBookmarks"
+                                },
+                                {
+                                  "action": "AddToMoment"
+                                },
+                                {
+                                  "action": "PinToProfile"
+                                },
+                                {
+                                  "action": "ViewHiddenReplies"
+                                },
+                                {
+                                  "action": "VoteOnPoll"
+                                },
+                                {
+                                  "action": "ShowRetweetActionMenu"
+                                },
+                                {
+                                  "action": "ReplyDownVote"
+                                },
+                                {
+                                  "action": "SendViaDm"
+                                },
+                                {
+                                  "action": "ViewPostEngagements"
+                                }
+                              ]
+                            },
+                            "tweet": {
+                              "bookmark_count": 1,
+                              "core": {
+                                "user_results": {
+                                  "result": {
+                                    "__typename": "User",
+                                    "action_counts": {
+                                      "favorites_count": 65174
+                                    },
+                                    "affiliates_highlighted_label": {},
+                                    "avatar": {
+                                      "image_url": "https://pbs.twimg.com/profile_images/1861752372638171136/0VkHHpXF_normal.jpg"
+                                    },
+                                    "banner": {
+                                      "image_url": "https://pbs.twimg.com/profile_banners/3864149734/1732394190"
+                                    },
+                                    "core": {
+                                      "created_at": "Sun Oct 04 18:38:49 +0000 2015",
+                                      "name": "Osemka",
+                                      "screen_name": "Osemka8"
+                                    },
+                                    "follow_request_sent": false,
+                                    "has_graduated_access": true,
+                                    "id": "VXNlcjozODY0MTQ5NzM0",
+                                    "is_blue_verified": true,
+                                    "location": {
+                                      "location": ""
+                                    },
+                                    "media_permissions": {
+                                      "can_media_tag": true
+                                    },
+                                    "notifications_settings": {
+                                      "notifications_enabled": false
+                                    },
+                                    "parody_commentary_fan_label": "None",
+                                    "pinned_items": {
+                                      "tweet_ids_str": [
+                                        "2033815601668329786"
+                                      ]
+                                    },
+                                    "possibly_sensitive": false,
+                                    "privacy": {
+                                      "protected": false
+                                    },
+                                    "profile_bio": {
+                                      "description": "Logic over indicators | 🇸🇮",
+                                      "entities": {
+                                        "description": {}
+                                      }
+                                    },
+                                    "profile_image_shape": "Circle",
+                                    "profile_metadata": {
+                                      "profile_interstitial_type": ""
+                                    },
+                                    "profile_translation": {
+                                      "translator_type": "none"
+                                    },
+                                    "relationship_counts": {
+                                      "followers": 20848,
+                                      "following": 37
+                                    },
+                                    "relationship_perspectives": {
+                                      "blocked_by": false,
+                                      "blocking": false,
+                                      "followed_by": false,
+                                      "following": false,
+                                      "live_following": false,
+                                      "muting": false
+                                    },
+                                    "rest_id": "3864149734",
+                                    "super_follow_eligible": true,
+                                    "super_followed_by": false,
+                                    "super_following": false,
+                                    "tweet_counts": {
+                                      "media_tweets": 9542,
+                                      "tweets": 40358
+                                    },
+                                    "verification": {
+                                      "verified": false
+                                    },
+                                    "website": {
+                                      "url": ""
+                                    }
+                                  }
+                                }
+                              },
+                              "created_at": "Thu Oct 01 09:25:26 +0000 2026",
+                              "entities": {},
+                              "favorite_count": 8,
+                              "quote_count": 0,
+                              "reply_count": 1,
+                              "rest_id": "2105589900078641579",
+                              "retweet_count": 0,
+                              "text": "I know I've written about this for you guys, but c…",
+                              "view_count": {
+                                "count": "250"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "entryId": "tweet-2105589900078641579",
+                    "sortIndex": "2105664464454942711"
+                  },
+                  {
+                    "content": {
+                      "__typename": "TimelineTimelineCursor",
+                      "cursorType": "Bottom",
+                      "entryType": "TimelineTimelineCursor",
+                      "value": "DAAHCgABHTjSrJP__-kLAAIAAAATMjEwNTI0ODc5MjE3Nzk1MDc1NwgAAwAAAAIAAA"
+                    },
+                    "entryId": "cursor-bottom-2105664464454942699",
+                    "sortIndex": "2105664464454942699"
+                  }
+                ],
+                "type": "TimelineAddEntries"
+              }
+            ],
+            "metadata": {
+              "scribeConfig": {
+                "page": "profileOriginals"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

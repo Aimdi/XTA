@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Vy možacie spampavać jaho znoŭ u luby čas.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Adčynić na web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Praciah dastupny tolki płatnym padpisčykam @{screenName} u X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Hety post dastupny tolki płatnym padpisčykam jaho aŭtara ŭ X.",
+  "@subscribers_only_post_of_author": {}
 }

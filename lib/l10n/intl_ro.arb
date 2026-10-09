@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "O poți descărca din nou oricând.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Deschide pe web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Doar abonații plătitori ai lui @{screenName} de pe X pot citi restul",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Această postare este doar pentru abonații plătitori ai autorului de pe X.",
+  "@subscribers_only_post_of_author": {}
 }

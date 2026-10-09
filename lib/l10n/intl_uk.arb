@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Ви можете завантажити його знову будь-коли.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Відкрити на web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Продовження доступне лише платним підписникам @{screenName} в X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Цей твіт доступний лише платним підписникам автора в X.",
+  "@subscribers_only_post_of_author": {}
 }

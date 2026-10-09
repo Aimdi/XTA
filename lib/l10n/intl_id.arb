@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Anda dapat mengunduhnya lagi kapan saja.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Buka di web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Hanya pelanggan berbayar @{screenName} di X yang bisa membaca selengkapnya",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Cuitan ini hanya untuk pelanggan berbayar penulisnya di X.",
+  "@subscribers_only_post_of_author": {}
 }

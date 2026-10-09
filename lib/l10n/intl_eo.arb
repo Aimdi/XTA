@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Vi povas reelŝuti ĝin iam ajn.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Malfermi ĉe web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Nur pagantaj abonantoj de @{screenName} ĉe X povas legi la reston",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Tiu ĉi pepo estas nur por la pagantaj abonantoj de ĝia aŭtoro ĉe X.",
+  "@subscribers_only_post_of_author": {}
 }

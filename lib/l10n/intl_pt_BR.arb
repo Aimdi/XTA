@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Você pode baixá-la de novo quando quiser.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Abrir no web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Só assinantes pagos de @{screenName} no X podem ler o restante",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Este tweet é exclusivo para assinantes pagos do autor no X.",
+  "@subscribers_only_post_of_author": {}
 }

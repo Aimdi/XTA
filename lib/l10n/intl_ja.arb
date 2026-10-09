@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "いつでも再ダウンロードできます。",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "web.archive.org で開く",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "続きは X で @{screenName} の有料サブスクライバーだけが読めます",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "このツイートは X で投稿者の有料サブスクライバー限定です。",
+  "@subscribers_only_post_of_author": {}
 }

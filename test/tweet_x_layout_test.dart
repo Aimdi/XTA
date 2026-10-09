@@ -157,6 +157,20 @@ void main() {
       expect(find.widgetWithText(TextButton, 'Open on web.archive.org'), findsOneWidget);
       expect(find.byType(TweetEmbedSurface), findsOneWidget, reason: 'one frame, not a card inside a card');
     });
+
+    testWidgets('a subscriber-only preview says why it stops short', (tester) async {
+      await _pumpTile(tester, _post(lang: 'en')..isSubscriberPreview = true, width: 320);
+
+      expect(tester.takeException(), isNull);
+      expect(find.text("Only @author1's paid subscribers on X can read the rest"), findsOneWidget);
+      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+    });
+
+    testWidgets('an ordinary post carries no subscriber line', (tester) async {
+      await _pumpTile(tester, _post(lang: 'en'));
+
+      expect(find.byIcon(Icons.lock_outline), findsNothing);
+    });
   });
 
   group('footer', () {

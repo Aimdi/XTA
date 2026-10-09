@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "आप इसे कभी भी फिर से डाउनलोड कर सकते हैं।",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "web.archive.org पर खोलें",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "बाकी हिस्सा केवल X पर @{screenName} के सशुल्क सब्सक्राइबर पढ़ सकते हैं",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "यह पोस्ट केवल X पर इसके लेखक के सशुल्क सब्सक्राइबर के लिए है।",
+  "@subscribers_only_post_of_author": {}
 }

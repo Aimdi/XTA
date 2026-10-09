@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Du kan laste den ned igjen når som helst.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Åpne på web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Bare betalende abonnenter av @{screenName} på X kan lese resten",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Denne tweeten er bare for forfatterens betalende abonnenter på X.",
+  "@subscribers_only_post_of_author": {}
 }

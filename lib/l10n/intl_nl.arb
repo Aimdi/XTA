@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Je kunt hem altijd opnieuw downloaden.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Openen op web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Alleen betalende abonnees van @{screenName} op X kunnen de rest lezen",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Dit bericht is alleen voor betalende abonnees van de auteur op X.",
+  "@subscribers_only_post_of_author": {}
 }

@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "언제든지 다시 다운로드할 수 있습니다.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "web.archive.org에서 열기",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "나머지는 X에서 @{screenName}의 유료 구독자만 읽을 수 있습니다",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "이 트윗은 X에서 작성자의 유료 구독자 전용입니다.",
+  "@subscribers_only_post_of_author": {}
 }

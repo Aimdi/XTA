@@ -3927,5 +3927,9 @@
   "tts_offline_voice_delete_description": "Bạn có thể tải lại bất cứ lúc nào.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Mở trên web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Chỉ người đăng ký trả phí của @{screenName} trên X mới đọc được phần còn lại",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Bài viết này chỉ dành cho người đăng ký trả phí của tác giả trên X.",
+  "@subscribers_only_post_of_author": {}
 }

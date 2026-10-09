@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "La pots tornar a descarregar quan vulguis.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Obre a web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Només els subscriptors de pagament de @{screenName} a X poden llegir la resta",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Aquest tuit només és per als subscriptors de pagament del seu autor a X.",
+  "@subscribers_only_post_of_author": {}
 }

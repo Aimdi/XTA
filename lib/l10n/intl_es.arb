@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Puedes volver a descargarla cuando quieras.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Abrir en web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Solo los suscriptores de pago de @{screenName} en X pueden leer el resto",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Esta publicación es solo para los suscriptores de pago de su autor en X.",
+  "@subscribers_only_post_of_author": {}
 }

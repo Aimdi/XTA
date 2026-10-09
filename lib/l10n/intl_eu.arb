@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Nahi duzunean deskarga dezakezu berriro.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Ireki web.archive.org-en",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "@{screenName} erabiltzailearen ordainpeko harpidedunek soilik irakur dezakete gainerakoa X-en",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Txio hau egilearen ordainpeko harpidedunentzat soilik da X-en.",
+  "@subscribers_only_post_of_author": {}
 }

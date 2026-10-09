@@ -845,6 +845,8 @@ class TweetTileState extends State<TweetTile> {
       if (tweet.article == null) content,
       if (tweet.article == null)
         CashtagQuotesBar(symbols: tweetCashtags(tweet)),
+      if (tweet.isSubscriberPreview)
+        _SubscriberPreviewLine(screenName: tweet.user?.screenName),
       if (articleLink != null)
         ArticleLinkCard(
           url: articleLink,
@@ -1099,6 +1101,28 @@ class _ReplyingToLine extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Says why a post its author reserves to paid subscribers stops short: X
+/// only sends its beginning.
+class _SubscriberPreviewLine extends StatelessWidget {
+  final String? screenName;
+
+  const _SubscriberPreviewLine({required this.screenName});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenName = this.screenName;
+    return TweetContextRow(
+      icon: Icons.lock_outline,
+      contentStart: kTweetHorizontalPadding,
+      label: Text(
+        screenName == null || screenName.isEmpty
+            ? L10n.of(context).subscribers_only_post_of_author
+            : L10n.of(context).subscribers_only_post(screenName),
       ),
     );
   }

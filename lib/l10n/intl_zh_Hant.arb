@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "你隨時可以重新下載。",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "在 web.archive.org 上開啟",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "只有 @{screenName} 在 X 上的付費訂閱者才能閱讀全文",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "此推文僅限作者在 X 上的付費訂閱者查看。",
+  "@subscribers_only_post_of_author": {}
 }

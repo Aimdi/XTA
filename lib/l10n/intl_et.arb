@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Saad selle igal ajal uuesti alla laadida.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Ava web.archive.org-is",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Ülejäänut saavad lugeda ainult @{screenName} tasulised tellijad X-is",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "See säuts on ainult autori tasulistele tellijatele X-is.",
+  "@subscribers_only_post_of_author": {}
 }

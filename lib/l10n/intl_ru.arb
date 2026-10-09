@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Вы сможете скачать его снова в любой момент.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Открыть на web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Продолжение доступно только платным подписчикам @{screenName} в X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Этот твит доступен только платным подписчикам автора в X.",
+  "@subscribers_only_post_of_author": {}
 }

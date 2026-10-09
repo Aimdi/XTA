@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "يمكنك تحميله مرة أخرى في أي وقت.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "فتح على web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "لا يقرأ البقية إلا المشتركون المدفوعون لدى @{screenName} على X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "هذه التغريدة مخصصة للمشتركين المدفوعين لدى كاتبها على X فقط.",
+  "@subscribers_only_post_of_author": {}
 }

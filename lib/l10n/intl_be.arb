@@ -3930,5 +3930,9 @@
   "tts_offline_voice_delete_description": "Вы можаце спампаваць яго зноў у любы час.",
   "@tts_offline_voice_delete_description": {},
   "open_on_web_archive": "Адкрыць на web.archive.org",
-  "@open_on_web_archive": {}
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Працяг даступны толькі платным падпісчыкам @{screenName} у X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Гэты твіт даступны толькі платным падпісчыкам яго аўтара ў X.",
+  "@subscribers_only_post_of_author": {}
 }
