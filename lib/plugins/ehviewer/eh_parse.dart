@@ -78,6 +78,11 @@ EhGalleryPage parseEhGalleryList(String html) {
         pageCount: int.tryParse(_pagesInRow.firstMatch(row)?.group(1) ?? ''),
         postedAt: _parsePosted(_posted.firstMatch(row)?.group(1)),
         uploader: _decode(_uploader.firstMatch(row)?.group(1) ?? ''),
+        rating: parseEhListRating(row),
+        tags: [
+          for (final tag in _listTag.allMatches(row))
+            _decode(tag.group(1) ?? tag.group(2)!),
+        ],
       ),
     );
   }
@@ -90,6 +95,25 @@ EhGalleryPage parseEhGalleryList(String html) {
     nextUrl: nextUrl,
     hasMore: nextUrl != null && nextUrl.isNotEmpty,
   );
+}
+
+final _listStars = RegExp(
+  r'class="ir[^"]*"[^>]*background-position:\s*(-?\d+)px\s+(-?\d+)px',
+);
+final _listTag = RegExp(
+  r'<div[^>]*class="gt[lw]?"[^>]*title="([^"]+)"'
+  r'|<div[^>]*title="([^"]+)"[^>]*class="gt[lw]?"',
+);
+
+/// A list row draws its rating as a sprite of stars: each 16px left is a
+/// star less, and the lower row (-21px) takes off a half.
+double? parseEhListRating(String row) {
+  final match = _listStars.firstMatch(row);
+  final x = int.tryParse(match?.group(1) ?? '');
+  final y = int.tryParse(match?.group(2) ?? '');
+  if (x == null || y == null) return null;
+  final rating = 5 + x / 16 - (y == -21 ? 0.5 : 0);
+  return rating.clamp(0, 5).toDouble();
 }
 
 EhGalleryDetail? parseEhGalleryDetail(

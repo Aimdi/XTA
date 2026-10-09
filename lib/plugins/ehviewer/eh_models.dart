@@ -78,6 +78,24 @@ class EhGallery {
 
   String get id => '$gid/$token';
 
+  /// The language its tags name; translation marks are not languages.
+  String? get tagLanguage => tags
+      .map(EhTag.parse)
+      .where(
+        (tag) =>
+            tag.namespace == EhNamespace.language &&
+            !_languageMarks.contains(tag.name),
+      )
+      .firstOrNull
+      ?.name;
+
+  static const _languageMarks = {
+    'translated',
+    'rewrite',
+    'speechless',
+    'text cleaned',
+  };
+
   String get displayTitle => titleFor(preferJapanese: true);
 
   String titleFor({required bool preferJapanese}) {

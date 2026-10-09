@@ -189,6 +189,8 @@ class EhGalleryTile extends StatelessWidget {
                           cacheWidth: (constraints.maxWidth * MediaQuery.devicePixelRatioOf(context)).ceil(),
                         ),
                       ),
+                      if (gallery.tagLanguage case final language?)
+                        PositionedDirectional(start: 6, bottom: 6, child: _LanguageBadge(language: language)),
                       if (gallery.category != null)
                         Positioned(
                           left: 6,
@@ -234,9 +236,9 @@ class EhGalleryTile extends StatelessWidget {
                       style: theme.textTheme.labelMedium,
                     ),
                   ],
-                  if (gallery.pageCount != null) ...[
+                  if (gallery.pageCount != null || gallery.rating != null) ...[
                     const SizedBox(height: 2),
-                    Text(l10n.plugin_eh_pages(gallery.pageCount!), style: theme.textTheme.labelSmall),
+                    _RatingAndPages(gallery: gallery, l10n: l10n),
                   ],
                 ],
               ),
@@ -244,6 +246,62 @@ class EhGalleryTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _LanguageBadge extends StatelessWidget {
+  final String language;
+
+  const _LanguageBadge({required this.language});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: language,
+      excludeSemantics: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.66), borderRadius: BorderRadius.circular(4)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+          child: Text(
+            ehLanguageCode(language),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// `★ 4.5 · 24 pages` on one line, so tiles keep their height.
+class _RatingAndPages extends StatelessWidget {
+  final EhGallery gallery;
+  final L10n l10n;
+
+  const _RatingAndPages({required this.gallery, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelSmall;
+    final rating = gallery.rating;
+    final pages = gallery.pageCount;
+    return Row(
+      children: [
+        if (rating != null) ...[
+          Icon(Icons.star_rounded, size: 14, color: Colors.amber.shade700),
+          Text(
+            rating.toStringAsFixed(1),
+            style: style,
+            semanticsLabel: l10n.plugin_eh_rating(rating.toStringAsFixed(1)),
+          ),
+        ],
+        if (rating != null && pages != null) Text(' · ', style: style),
+        if (pages != null)
+          Flexible(
+            child: Text(l10n.plugin_eh_pages(pages), style: style, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
+      ],
     );
   }
 }

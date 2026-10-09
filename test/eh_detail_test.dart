@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_parse.dart';
 import 'package:xta/plugins/ehviewer/eh_tags.dart';
+import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
 
 const _detail = '''
@@ -82,6 +83,37 @@ void main() {
       expect(ehTagKind(EhNamespace.parody), PluginTagKind.copyright);
       expect(ehTagKind(EhNamespace.group), PluginTagKind.artist);
       expect(ehTagKind(null), isNull);
+    });
+  });
+
+  group('list rows', () {
+    const row = '''
+<table><tr><td class="gl1c glcat"><div class="cn ct2">Manga</div></td>
+<td class="gl2c"><div class="ir" style="background-position:-16px -21px;opacity:1"></div>
+<div class="gt" title="language:english">english</div><div title="language:translated" class="gtl">translated</div>
+<div class="gt" title="female:big breasts">big breasts</div><div>24 pages</div></td>
+<td class="gl3c glname"><a href="https://e-hentai.org/g/7/abc/"><div class="glink">Row</div></a></td></tr></table>
+''';
+
+    test('rating stars, tags and language come off the row', () {
+      final gallery = parseEhGalleryList(row).galleries.single;
+      expect(gallery.rating, 3.5);
+      expect(gallery.tags, ['language:english', 'language:translated', 'female:big breasts']);
+      expect(gallery.tagLanguage, 'english');
+      expect(gallery.pageCount, 24);
+    });
+
+    test('star sprite offsets', () {
+      expect(parseEhListRating('<div class="ir" style="background-position:0px -1px">'), 5);
+      expect(parseEhListRating('<div class="ir" style="background-position:-64px -1px">'), 1);
+      expect(parseEhListRating('<div class="ir" style="background-position:-80px -21px">'), 0);
+      expect(parseEhListRating('<div>'), isNull);
+    });
+
+    test('language badges', () {
+      expect(ehLanguageCode('Japanese'), 'JA');
+      expect(ehLanguageCode('tagalog'), 'TA');
+      expect(const EhGallery(gid: 1, token: 't', title: 'x', tags: ['language:translated']).tagLanguage, isNull);
     });
   });
 }
