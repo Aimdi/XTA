@@ -92,6 +92,11 @@ class PluginTagChip extends StatelessWidget {
           ],
         ),
         semanticsLabel: semanticsLabel,
+        // A chip clips its label to one line; a long tag and its translation
+        // get a second line, then an ellipsis.
+        softWrap: true,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
       ),
       backgroundColor: palette.fill,
       side: BorderSide(color: palette.border),
