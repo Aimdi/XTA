@@ -11,6 +11,8 @@ import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
+import 'package:xta/plugins/threads/threads_thread_screen.dart';
+import 'package:xta/plugins/plugin_url.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 String _threadsSearchError(L10n l10n, Object error) {
@@ -94,6 +96,16 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
   Future<void> _search() async {
     final query = _controller.text.trim();
     if (query.isEmpty) return;
+
+    // A pasted post link opens that post, as tapping it anywhere would.
+    if (parseThreadsLink(query) case ThreadsPostLink(:final url, :final handle)) {
+      Navigator.pop(context);
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: ThreadsPost.linkStub(url, handle: handle))),
+      );
+      return;
+    }
 
     final handle = normaliseThreadsHandle(query);
     final direct = context.read<ThreadsDirectClient>();

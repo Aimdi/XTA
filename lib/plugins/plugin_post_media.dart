@@ -21,6 +21,7 @@ class PluginMediaItem {
     this.isVideo = false,
     this.downloadUrl,
     this.shareUrl,
+    this.videoUrl,
   });
 
   final String url;
@@ -33,6 +34,10 @@ class PluginMediaItem {
 
   /// Destination shared from the fullscreen viewer. Defaults to [url].
   final String? shareUrl;
+
+  /// The playable file behind a video entry, when the source hands one out.
+  /// [url] stays the poster either way.
+  final String? videoUrl;
 
   String get resolvedDownloadUrl => downloadUrl ?? url;
   String get resolvedShareUrl => shareUrl ?? url;
@@ -89,6 +94,10 @@ double? pluginMediaAspectFrom(Object? raw) {
 typedef PluginMediaImageBuilder =
     Widget Function(BuildContext context, PluginMediaItem item, BoxFit fit);
 
+/// An inline player for a video entry, or null to keep the poster tile.
+typedef PluginMediaVideoBuilder =
+    Widget? Function(BuildContext context, PluginMediaItem item, int index);
+
 typedef VisiblePluginMedia = ({
   List<PluginMediaItem> items,
   int initialIndex,
@@ -126,12 +135,16 @@ class PluginPostMedia extends StatelessWidget {
     this.imageBuilder,
     this.sourceName = 'xta',
     this.onOpenPost,
+    this.videoBuilder,
   });
 
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
   final String sourceName;
   final VoidCallback? onOpenPost;
+
+  /// Plays a video entry in place instead of showing its poster.
+  final PluginMediaVideoBuilder? videoBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +157,7 @@ class PluginPostMedia extends StatelessWidget {
         index: 0,
         items: items,
         imageBuilder: imageBuilder,
+        videoBuilder: videoBuilder,
         sourceName: sourceName,
         onOpenPost: onOpenPost,
       );
@@ -151,6 +165,7 @@ class PluginPostMedia extends StatelessWidget {
     return _PluginMediaPager(
       items: items,
       imageBuilder: imageBuilder,
+      videoBuilder: videoBuilder,
       sourceName: sourceName,
       onOpenPost: onOpenPost,
     );
@@ -162,11 +177,13 @@ class _PluginMediaPager extends StatefulWidget {
     required this.items,
     required this.sourceName,
     this.imageBuilder,
+    this.videoBuilder,
     this.onOpenPost,
   });
 
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
+  final PluginMediaVideoBuilder? videoBuilder;
   final String sourceName;
   final VoidCallback? onOpenPost;
 
@@ -196,6 +213,7 @@ class _PluginMediaPagerState extends State<_PluginMediaPager> {
               index: i,
               items: items,
               imageBuilder: widget.imageBuilder,
+              videoBuilder: widget.videoBuilder,
               sourceName: widget.sourceName,
               onOpenPost: widget.onOpenPost,
               fill: true,
@@ -230,6 +248,7 @@ class _PluginMediaTile extends StatelessWidget {
     required this.items,
     required this.sourceName,
     this.imageBuilder,
+    this.videoBuilder,
     this.onOpenPost,
     this.fill = false,
   });
@@ -238,6 +257,7 @@ class _PluginMediaTile extends StatelessWidget {
   final int index;
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
+  final PluginMediaVideoBuilder? videoBuilder;
   final String sourceName;
   final VoidCallback? onOpenPost;
   final bool fill;
@@ -245,6 +265,19 @@ class _PluginMediaTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = tweetMediaRadiusOf(context);
+    final player = item.isVideo ? videoBuilder?.call(context, item, index) : null;
+    if (player != null) {
+      final clipped = ClipRRect(
+        borderRadius: fill ? BorderRadius.zero : BorderRadius.circular(radius),
+        child: player,
+      );
+      return fill
+          ? clipped
+          : AspectRatio(
+              aspectRatio: clampPluginMediaAspect(item.aspectRatio),
+              child: clipped,
+            );
+    }
     final image =
         imageBuilder?.call(context, item, BoxFit.cover) ??
         LayoutBuilder(

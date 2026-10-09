@@ -24,11 +24,19 @@ bool _supported(Uri uri) =>
     !uri.hasPort &&
     _shareHosts.contains(uri.host.toLowerCase());
 
+/// Every http(s) link in shared text, trailing punctuation removed, in order.
+///
 /// Shares often contain the post's caption before the actual link.
-Uri? extractSharedXLink(String text) {
+List<String> sharedTextUrls(String text) {
   final urls = RegExp(r'''https?://[^\s<>"\u200b]+''', caseSensitive: false);
-  for (final match in urls.allMatches(text)) {
-    final candidate = match.group(0)!.replaceFirst(RegExp(r'''[)\]}>.,!?;:'"]+$'''), '');
+  return [
+    for (final match in urls.allMatches(text))
+      match.group(0)!.replaceFirst(RegExp(r'''[)\]}>.,!?;:'"]+$'''), ''),
+  ];
+}
+
+Uri? extractSharedXLink(String text) {
+  for (final candidate in sharedTextUrls(text)) {
     final uri = Uri.tryParse(candidate);
     if (uri != null && _supported(uri)) return uri;
   }

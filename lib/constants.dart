@@ -246,6 +246,12 @@ const optionPluginThreadsInstance = 'plugin.threads.instance';
 const optionPluginThreadsLikedPosts = 'plugin.threads.liked_posts';
 const optionPluginThreadsSearchHistory = 'plugin.threads.search_history';
 
+/// The Threads tab's filter choices (content, replies, reposts), as JSON.
+const optionPluginThreadsFeedOptions = 'plugin.threads.feed_options';
+
+/// The Threads tab's newest posts, kept so a restart paints them at once.
+const optionPluginThreadsFeedSnapshot = 'plugin.threads.feed_snapshot';
+
 /// Whether followed Threads accounts also appear in Following and For you.
 const optionPluginThreadsInHomeFeed = 'plugin.threads.in_home_feed';
 
@@ -302,6 +308,11 @@ const threadsGuestMinGap = Duration(milliseconds: 550);
 /// Floor between cookie/Bearer departures. Longer than a person tapping
 /// around, short enough that a handful of opted-in session reads still finish.
 const threadsSessionMinGap = Duration(seconds: 3);
+
+/// How long an opened Threads conversation is reused before Meta is asked
+/// again, and how many are kept.
+const threadsConversationTtl = Duration(minutes: 10);
+const threadsConversationCacheSize = 40;
 
 /// Bluesky, read through the public AppView — local follows, no Bluesky account.
 const pluginIdBluesky = 'bluesky';

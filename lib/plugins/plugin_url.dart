@@ -164,8 +164,12 @@ PluginLink? parseThreadsLink(String url) {
   if (segments.isEmpty) {
     return null;
   }
+  // Share sheets hand out `/t/CODE`; Threads redirects it to the post, so the
+  // author is only known once the page is read.
   if (segments[0].toLowerCase() == 't') {
-    return null;
+    return segments.length >= 2 && segments[1].isNotEmpty
+        ? ThreadsPostLink(url: 'https://www.threads.com/t/${segments[1]}', handle: '')
+        : null;
   }
   final handle = _atHandle(segments[0]);
   if (handle == null) {

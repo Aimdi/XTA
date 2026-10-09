@@ -1,9 +1,11 @@
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:xta/plugins/threads/threads_likes_store.dart';
+import 'package:xta/plugins/threads/threads_profile_store.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
@@ -43,7 +45,8 @@ String threadsApiErrorMessage(L10n l10n, Object error) {
   };
 }
 
-/// One Threads profile plus their public posts.
+/// One Threads profile plus their public posts, replies, media, and the posts
+/// of theirs the reader liked on this device.
 class ThreadsProfileScreen extends StatefulWidget {
   final String username;
 
@@ -53,234 +56,132 @@ class ThreadsProfileScreen extends StatefulWidget {
   State<ThreadsProfileScreen> createState() => _ThreadsProfileScreenState();
 }
 
-class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
-  ThreadsProfile? _profile;
-  List<ThreadsPost> _posts = const [];
-  Object? _error;
-  var _loading = true;
-  final _tabs = PluginViewStore(PluginProfileFeedTab.posts);
-  PluginProfileFeedTab get _tab => _tabs.state;
+const _threadsProfileTabs = [
+  PluginProfileFeedTab.posts,
+  PluginProfileFeedTab.replies,
+  PluginProfileFeedTab.media,
+  PluginProfileFeedTab.saved,
+];
 
-  String get _handle =>
-      (normaliseThreadsHandle(widget.username) ?? widget.username)
-          .trim()
-          .toLowerCase();
+class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
+  late final ThreadsProfileStore _profile = ThreadsProfileStore(
+    handle: _handle,
+    direct: context.read<ThreadsDirectClient>(),
+    api: context.read<ThreadsApi>(),
+    feed: context.read<ThreadsFeedStore>(),
+    prefs: PrefService.of(context, listen: false),
+  );
+  final _tabs = PluginViewStore(PluginProfileFeedTab.posts);
+
+  String get _handle => (normaliseThreadsHandle(widget.username) ?? widget.username).trim().toLowerCase();
+
+  String get _profileUrl => '$threadsWebBase/@$_handle';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _load();
+        _profile.load();
       }
     });
   }
 
   @override
   void dispose() {
+    _profile.destroy();
     _tabs.destroy();
     super.dispose();
   }
 
-  Future<void> _load({bool forceRefresh = false}) async {
-    final keepContent = _profile != null || _posts.isNotEmpty;
-    if (!keepContent) {
-      setState(() {
-        _loading = true;
-        _error = null;
-      });
-    }
-
-    final handle = _handle;
-    if (handle.isEmpty) {
-      if (mounted) {
-        setState(() {
-          _error = ThreadsException(
-            ThreadsErrorKind.noSuchFeed,
-            'empty handle',
-          );
-          _loading = false;
-        });
-      }
-      return;
-    }
-
-    final prefs = PrefService.of(context, listen: false);
-    final direct = context.read<ThreadsDirectClient>();
-    final api = context.read<ThreadsApi>();
-    final feed = context.read<ThreadsFeedStore>();
-    final apiBase =
-        prefs.get<String>(optionPluginThreadsApiBase) ?? kThreadsApiDefaultBase;
-    final apiToken = prefs.get<String>(optionPluginThreadsApiToken) ?? '';
-
-    // Header + posts for one handle: guest HTML is single-flight in the client
-    // so this is not two paced GETs. Prefer cache on first open; pull forces.
-    final profileFuture = _resolveProfile(
-      direct,
-      api,
-      apiBase,
-      apiToken,
-      handle,
-    );
-    final postsFuture = feed.postsFor([handle], forceRefresh: forceRefresh);
-
-    ThreadsProfile? profile;
-    Object? profileError;
-    List<ThreadsPost> posts = const [];
-    Object? postsError;
-
-    try {
-      try {
-        profile = await profileFuture;
-      } catch (e) {
-        profileError = e;
-      }
-
-      try {
-        posts = await postsFuture;
-      } catch (e) {
-        postsError = e;
-      }
-
-      if (!mounted) {
-        return;
-      }
-
-      profile ??= threadsProfileFromPosts(handle, posts);
-
-      if (profile == null && posts.isEmpty) {
-        if (!keepContent) {
-          setState(() {
-            _error =
-                profileError ??
-                postsError ??
-                ThreadsException(
-                  ThreadsErrorKind.noSuchFeed,
-                  'profile missing',
-                );
-          });
-        }
-        return;
-      }
-
-      setState(() {
-        _profile = profile;
-        _posts = posts;
-        _error = null;
-      });
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-      }
-    }
-  }
-
-  Future<ThreadsProfile?> _resolveProfile(
-    ThreadsDirectClient direct,
-    ThreadsApi api,
-    String apiBase,
-    String apiToken,
-    String handle,
-  ) async {
-    try {
-      return await direct.fetchGuestProfile(handle);
-    } catch (_) {
-      // Fall through.
-    }
-    if (direct.hasCookies) {
-      try {
-        return await direct.fetchProfile(handle);
-      } catch (_) {
-        // Fall through.
-      }
-    }
-    try {
-      return await api.profile(apiBase, apiToken, handle);
-    } catch (_) {
-      return null;
+  void _select(PluginProfileFeedTab tab) {
+    _tabs.select(tab);
+    if (tab == PluginProfileFeedTab.replies) {
+      _profile.loadReplies();
     }
   }
 
   Future<void> _follow(ThreadsProfile profile) async {
     final messenger = ScaffoldMessenger.of(context);
     final added = L10n.of(context).plugin_threads_account_added;
-    final accounts = context.read<ThreadsAccountsStore>();
     final feed = context.read<ThreadsFeedStore>();
 
-    await accounts.add(profile.toAccount());
-    if (mounted) {
-      await feed.refresh();
-    }
+    await context.read<ThreadsAccountsStore>().add(profile.toAccount());
     messenger.showSnackBar(SnackBar(content: Text(added)));
-    if (mounted) {
-      setState(() {});
-    }
+    await feed.refresh();
   }
-
-  Future<void> _addToGroup(ThreadsProfile profile) =>
-      addThreadsAccountToGroup(context, profile.toAccount());
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('@$_handle')),
-      body: ScopedBuilder<PluginViewStore<PluginProfileFeedTab>, PluginProfileFeedTab>(
-        store: _tabs,
-        onState: (_, _) => _body(context, l10n),
+      appBar: AppBar(
+        title: Text('@$_handle'),
+        actions: [
+          IconButton(
+            tooltip: l10n.share_link,
+            icon: const Icon(Icons.share_outlined),
+            onPressed: () => SharePlus.instance.share(ShareParams(text: _profileUrl)),
+          ),
+          IconButton(
+            tooltip: l10n.open_in_browser,
+            icon: const Icon(Icons.open_in_new),
+            onPressed: () => openUri(context, _profileUrl),
+          ),
+        ],
+      ),
+      body: TripleBuilder<ThreadsProfileStore, ThreadsProfileState>(
+        store: _profile,
+        builder: (context, triple) {
+          final state = triple.state;
+          if (state.isEmpty && triple.error != null) {
+            return _failure(l10n, triple.error!);
+          }
+          final profile = state.profile;
+          if (profile == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return ScopedBuilder<PluginViewStore<PluginProfileFeedTab>, PluginProfileFeedTab>(
+            store: _tabs,
+            onState: (context, tab) => _body(context, l10n, state, profile, tab),
+          );
+        },
       ),
     );
   }
 
-  Widget _body(BuildContext context, L10n l10n) {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+  Widget _failure(L10n l10n, Object error) => Padding(
+    padding: const EdgeInsets.all(24),
+    child: FullPageErrorWidget(
+      error: error,
+      stackTrace: null,
+      prefix: threadsApiErrorMessage(l10n, error),
+      onRetry: _profile.load,
+    ),
+  );
 
-    final error = _error;
-    if (error != null) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: threadsApiErrorMessage(l10n, error),
-          onRetry: _load,
-        ),
-      );
-    }
-
-    final profile = _profile;
-    if (profile == null) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: FullPageErrorWidget(
-          error: ThreadsException(
-            ThreadsErrorKind.noSuchFeed,
-            'profile missing',
-          ),
-          stackTrace: null,
-          prefix: l10n.plugin_threads_error_no_feed,
-          onRetry: _load,
-        ),
-      );
-    }
-    final alreadyFollows = context.read<ThreadsAccountsStore>().state.any(
-      (a) => a.handle == profile.username,
-    );
-    final posts = _postsForTab(_tab);
+  Widget _body(
+    BuildContext context,
+    L10n l10n,
+    ThreadsProfileState state,
+    ThreadsProfile profile,
+    PluginProfileFeedTab tab,
+  ) {
+    final accounts = context.read<ThreadsAccountsStore>();
+    final posts = state.forTab(tab, liked: tab == PluginProfileFeedTab.saved ? _liked(context) : const []);
+    final waiting = tab == PluginProfileFeedTab.replies && state.loadingReplies && posts.isEmpty;
 
     return ReaderSwipeNavigation(
-      index: _tab.index,
-      count: 3,
+      index: _threadsProfileTabs.indexOf(tab),
+      count: _threadsProfileTabs.length,
       identity: _handle,
       onChanged: (index) {
-        _tabs.select(PluginProfileFeedTab.values[index]);
+        _select(_threadsProfileTabs[index]);
         return true;
       },
       child: RefreshIndicator(
-        onRefresh: () => _load(forceRefresh: true),
+        onRefresh: () => _profile.load(force: true),
         child: FeedListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 24),
@@ -289,59 +190,50 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
             if (index == 0) {
               return Padding(
                 padding: const EdgeInsets.all(16),
-                child: ThreadsProfileCard(
-                  profile: profile,
-                  onFollow: alreadyFollows ? null : () => _follow(profile),
-                  onAddToGroup: () => _addToGroup(profile),
+                child: ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
+                  store: accounts,
+                  onState: (context, _) => ThreadsProfileCard(
+                    profile: profile,
+                    onFollow: accounts.follows(profile.username) ? null : () => _follow(profile),
+                    onAddToGroup: () => addThreadsAccountToGroup(context, profile.toAccount()),
+                  ),
                 ),
               );
             }
             if (index == 1) {
-              return PluginProfileTabBar(
-                selected: _tab,
-                onSelected: _tabs.select,
+              return PluginProfileTabBar(selected: tab, onSelected: _select, tabs: _threadsProfileTabs);
+            }
+            if (waiting) {
+              return const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
               );
             }
             if (posts.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                child: Text(
-                  _tab == PluginProfileFeedTab.replies
-                      ? l10n.plugin_threads_replies_empty
-                      : l10n.plugin_threads_no_posts,
-                  textAlign: TextAlign.center,
-                ),
+                child: Text(_emptyLabel(l10n, tab), textAlign: TextAlign.center),
               );
             }
             final post = posts[index - 2];
-            return ThreadsPostCard(
-              key: ValueKey(post.id),
-              post: post,
-              showSourceBadge: false,
-            );
+            return ThreadsPostCard(key: ValueKey(post.id), post: post, showSourceBadge: false);
           },
         ),
       ),
     );
   }
 
-  List<ThreadsPost> _postsForTab(PluginProfileFeedTab tab) {
-    return switch (tab) {
-      PluginProfileFeedTab.posts => [
-        for (final post in _posts)
-          if (!post.isReply) post,
-      ],
-      PluginProfileFeedTab.replies => [
-        for (final post in _posts)
-          if (post.isReply) post,
-      ],
-      PluginProfileFeedTab.media => [
-        for (final post in _posts)
-          if (post.hasMedia) post,
-      ],
-      PluginProfileFeedTab.saved => const [],
-    };
-  }
+  /// The reader's own hearts on this account's posts — kept on this device.
+  List<ThreadsPost> _liked(BuildContext context) => [
+    for (final post in context.read<ThreadsLikesStore>().likedPosts)
+      if (post.handle == _handle) post,
+  ];
+
+  String _emptyLabel(L10n l10n, PluginProfileFeedTab tab) => switch (tab) {
+    PluginProfileFeedTab.replies => l10n.plugin_threads_replies_empty,
+    PluginProfileFeedTab.saved => l10n.plugin_threads_liked_empty,
+    _ => l10n.plugin_threads_no_posts,
+  };
 }
 
 /// The profile itself: face, name, what they say about themselves, and what

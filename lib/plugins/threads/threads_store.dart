@@ -7,6 +7,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/account_posts.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/plugins/threads/threads_feed_snapshot.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 
 /// How long a handle's posts are reused before Meta is asked for them again.
@@ -127,10 +128,59 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
     await execute(() => _loadPosts(force: force, onPartial: update));
   }
 
+  Future<List<ThreadsPost>> _loadPosts({
+    required bool force,
+    void Function(List<ThreadsPost>)? onPartial,
+  }) async {
+    final posts = await _readPosts(force: force, onPartial: onPartial);
+    await _remember(posts);
+    return posts;
+  }
+
   /// How many followed handles still need a network read.
   int pending(List<String> handles) => _posts.pendingCount(handles);
 
-  Future<List<ThreadsPost>> _loadPosts({
+  /// Paints the feed the reader last saw, before anything is asked of Meta.
+  ///
+  /// Accounts that answered within [kThreadsCacheTtl] are taken as read, so a
+  /// restart a minute after a refresh costs no requests at all; older ones are
+  /// on screen at once and refreshed behind them as usual.
+  void restore() {
+    if (state.isNotEmpty) {
+      return;
+    }
+    final handles = accounts.state.map((e) => e.handle).toSet();
+    final snapshot = ThreadsFeedSnapshot.decode(
+      prefs.get<String>(optionPluginThreadsFeedSnapshot),
+    ).followedBy(handles);
+    if (snapshot.isEmpty) {
+      return;
+    }
+    _forgetOnCredentialChange();
+    for (final MapEntry(key: handle, value: at) in snapshot.answeredAt.entries) {
+      _posts.seed(handle, snapshot.postsOf(handle), at);
+    }
+    update(snapshot.posts);
+  }
+
+  /// Empties the feed and what it remembers, for when the plugin is removed.
+  Future<void> forget() async {
+    _posts.clear();
+    update(const []);
+    await prefs.set(optionPluginThreadsFeedSnapshot, '');
+  }
+
+  /// Only the followed accounts' feed is kept: a Bearer "For you" page is not
+  /// anyone's account, and the next restore would drop it anyway.
+  Future<void> _remember(List<ThreadsPost> posts) async {
+    if (posts.isEmpty || accounts.state.isEmpty) {
+      return;
+    }
+    final snapshot = ThreadsFeedSnapshot(posts: posts, answeredAt: _posts.answeredAt);
+    await prefs.set(optionPluginThreadsFeedSnapshot, snapshot.encode());
+  }
+
+  Future<List<ThreadsPost>> _readPosts({
     required bool force,
     void Function(List<ThreadsPost>)? onPartial,
   }) async {

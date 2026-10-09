@@ -294,6 +294,71 @@ void main() {
     });
   });
 
+  group('refreshing a held timeline', () {
+    test('a refresh never paints fewer accounts than it held', () async {
+      final cache = _cache(concurrency: 1);
+      await cache.merge(['a', 'b', 'c'], (key) async => [(from: key, at: _at(1))]);
+
+      final seen = <Set<String>>[];
+      await cache.merge(
+        ['a', 'b', 'c'],
+        (key) async => [(from: key, at: _at(2))],
+        forceRefresh: true,
+        onPartial: (posts) => seen.add(posts.map((p) => p.from).toSet()),
+      );
+
+      expect(seen, isNotEmpty);
+      expect(seen.every((froms) => froms.length == 3), isTrue, reason: 'held accounts stay on screen while refetched');
+    });
+
+    test('an account whose refresh fails keeps what it said last', () async {
+      final cache = _cache();
+      await cache.merge(['a', 'b'], (key) async => [(from: key, at: _at(1))]);
+
+      final posts = await cache.merge(['a', 'b'], (key) async {
+        if (key == 'b') throw StateError('throttled');
+        return [(from: 'a2', at: _at(2))];
+      }, forceRefresh: true);
+
+      expect(posts.map((p) => p.from), ['a2', 'b']);
+    });
+
+    test('a refresh where every account fails still reports the failure', () async {
+      final cache = _cache();
+      await cache.merge(['a', 'b'], (key) async => [(from: key, at: _at(1))]);
+
+      expect(
+        cache.merge(['a', 'b'], (_) async => throw StateError('offline'), forceRefresh: true),
+        throwsStateError,
+      );
+    });
+
+    test('seeded accounts answer from the seed inside the window', () async {
+      final cache = _cache();
+      cache.seed('a', [(from: 'restored', at: _at(1))], DateTime.now().subtract(const Duration(minutes: 1)));
+      cache.seed('b', [(from: 'old', at: _at(1))], DateTime.now().subtract(const Duration(hours: 2)));
+
+      final asked = <String>[];
+      final posts = await cache.merge(['a', 'b'], (key) async {
+        asked.add(key);
+        return [(from: '$key-new', at: _at(2))];
+      });
+
+      expect(asked, ['b']);
+      expect(posts.map((p) => p.from), ['b-new', 'restored']);
+      expect(cache.answeredAt.keys, containsAll(['a', 'b']));
+    });
+
+    test('a seed never replaces something newer', () async {
+      final cache = _cache();
+      await cache.merge(['a'], (_) async => [(from: 'live', at: _at(2))]);
+      cache.seed('a', [(from: 'restored', at: _at(1))], DateTime.now().subtract(const Duration(minutes: 1)));
+
+      final posts = await cache.merge(['a'], (_) async => fail('cached'));
+      expect(posts.single.from, 'live');
+    });
+  });
+
   test('prioritize puts never-asked accounts first, then the longest unasked', () async {
     final cache = _cache();
     List<_Post> fetch(String key) => [(from: key, at: _at(1))];

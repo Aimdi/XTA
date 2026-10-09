@@ -61,8 +61,14 @@ void main() {
       );
     });
 
-    test('ignores short /t/ links', () {
-      expect(parseThreadsLink('https://www.threads.net/t/Dabc123'), isNull);
+    test('opens short /t/ links as posts whose author is read later', () {
+      expect(
+        parseThreadsLink('https://www.threads.net/t/Dabc123'),
+        isA<ThreadsPostLink>()
+            .having((l) => l.url, 'url', 'https://www.threads.com/t/Dabc123')
+            .having((l) => l.handle, 'handle', ''),
+      );
+      expect(parseThreadsLink('https://www.threads.net/t/'), isNull);
     });
   });
 

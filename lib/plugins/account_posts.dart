@@ -62,6 +62,22 @@ class AccountPostCache<T> {
     _attemptedAt.clear();
   }
 
+  /// When each account last answered, for persisting alongside its posts.
+  Map<String, DateTime> get answeredAt => {for (final e in _entries.entries) e.key: e.value.at};
+
+  /// Restores what an account answered at [at] — from a snapshot written
+  /// before a restart — unless something newer is already held. Within [ttl]
+  /// the account is then not asked again, exactly as if it had been read in
+  /// this session.
+  void seed(String key, List<T> posts, DateTime at) {
+    final held = _entries[key];
+    if (held != null && !held.at.isBefore(at)) {
+      return;
+    }
+    _entries[key] = (at: at, posts: posts);
+    _attemptedAt[key] ??= at;
+  }
+
   /// [keys] with the ones never asked for first, then the longest unasked.
   ///
   /// A capped [merge] spends its budget on the front of the list, so a caller
@@ -105,23 +121,15 @@ class AccountPostCache<T> {
 
     var remaining = maxFetches ?? keys.length;
     Object? lastError;
-    final done = <List<T>>[];
+    var readAnything = false;
     final partial = _ThrottledPartial<T>(onPartial);
+    final run = _MergeRun<T>(_merged, partial, partial.listening ? _heldFor(keys) : {});
     try {
       final batches = await mapWithConcurrency(keys, concurrency, (key) async {
         if (!forceRefresh) {
           if (_fresh(key) case final cached?) {
-            _deliver(done, cached, partial.call);
-            return cached;
-          }
-        } else if (onPartial != null) {
-          // Stale-while-revalidate: paint what we already have while Meta is asked
-          // again, so a pull-to-refresh does not blank the feed into a wait.
-          // Do not record into `done` — the network result replaces this paint,
-          // and recording both would duplicate the account in the merge.
-          final stale = _entries[key]?.posts;
-          if (stale != null && stale.isNotEmpty) {
-            partial(_merged([...done, stale]));
+            readAnything |= cached.isNotEmpty;
+            return run.answer(key, cached);
           }
         }
         // Decremented before the await, so concurrent workers cannot each see the
@@ -130,27 +138,32 @@ class AccountPostCache<T> {
         // must not collapse the timeline to the first batch.
         if (remaining <= 0) {
           final held = _entries[key]?.posts ?? <T>[];
-          _deliver(done, held, partial.call);
-          return held;
+          readAnything |= held.isNotEmpty;
+          return run.answer(key, held);
         }
         remaining--;
         _attemptedAt[key] = DateTime.now();
+        run.showHeld();
 
         try {
           final posts = await fetch(key);
           _entries[key] = (at: DateTime.now(), posts: posts);
-          _deliver(done, posts, partial.call);
-          return posts;
+          readAnything |= posts.isNotEmpty;
+          return run.answer(key, posts);
         } catch (e) {
           lastError = e;
-          return <T>[];
+          // What the account said last beats it vanishing from the timeline
+          // because one refresh of it failed.
+          return run.answer(key, _entries[key]?.posts ?? <T>[]);
         }
       });
 
-      final posts = _merged(batches);
-      if (posts.isEmpty && lastError != null) {
+      // Posts kept only because their refresh failed are not an answer: when
+      // nothing else was read, the failure is what the reader needs to hear.
+      if (!readAnything && lastError != null) {
         throw lastError!;
       }
+      final posts = _merged(batches);
 
       return posts;
     } finally {
@@ -158,19 +171,13 @@ class AccountPostCache<T> {
     }
   }
 
-  void _deliver(
-    List<List<T>> done,
-    List<T> posts,
-    void Function(List<T>)? onPartial,
-  ) {
-    if (onPartial == null) {
-      return;
-    }
-    done.add(posts);
-    if (posts.isNotEmpty) {
-      onPartial(_merged(done));
-    }
-  }
+  /// What each of [keys] last answered, stale or not — painted in its place
+  /// until it answers again, so a refresh never collapses the timeline to the
+  /// accounts read so far.
+  Map<String, List<T>> _heldFor(List<String> keys) => {
+    for (final key in keys)
+      if (_entries[key]?.posts case final posts? when posts.isNotEmpty) key: posts,
+  };
 
   List<T> _merged(List<List<T>> batches) {
     final posts = batches.expand((e) => e.take(perAccount)).toList();
@@ -186,12 +193,50 @@ class AccountPostCache<T> {
       keys.where((key) => _fresh(key) == null).length;
 }
 
+/// One [AccountPostCache.merge]: the accounts answered so far, and what the
+/// rest last said, painted together.
+class _MergeRun<T> {
+  _MergeRun(this._merge, this._partial, this._held);
+
+  final List<T> Function(List<List<T>>) _merge;
+  final _ThrottledPartial<T> _partial;
+  final Map<String, List<T>> _held;
+  final _done = <List<T>>[];
+  var _shownHeld = false;
+
+  /// Records [key]'s answer and repaints when it changed what is on screen.
+  List<T> answer(String key, List<T> posts) {
+    final dropped = _held.remove(key);
+    if (_partial.listening) {
+      _done.add(posts);
+      if (posts.isNotEmpty || (dropped?.isNotEmpty ?? false)) {
+        _paint();
+      }
+    }
+    return posts;
+  }
+
+  /// Stale-while-revalidate: paint what is already held before the first
+  /// network wait, so a refresh does not blank the feed into one.
+  void showHeld() {
+    if (_shownHeld || _held.isEmpty) {
+      return;
+    }
+    _shownHeld = true;
+    _paint();
+  }
+
+  void _paint() => _partial(_merge([..._done, ..._held.values]));
+}
+
 /// First paint is immediate; later ones share a frame window.
 class _ThrottledPartial<T> {
   _ThrottledPartial(this._emit);
 
   final void Function(List<T>)? _emit;
   List<T>? _pending;
+
+  bool get listening => _emit != null;
   DateTime? _last;
   Timer? _timer;
   var _opened = false;
