@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/home/home_navigation_visibility.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -696,34 +697,114 @@ class HomeLoadingState extends StatelessWidget {
   }
 }
 
-/// Slides the bar below the screen edge and fades it while [store] says it is
-/// hidden, without changing the Scaffold's layout: the pages keep their
-/// clearance, so nothing underneath moves. A hidden bar takes no taps.
-class HomeNavigationSlide extends StatelessWidget {
+/// Moves the bar with the store's motion: off the bottom edge as the reader
+/// scrolls down, back as they scroll up, without changing the Scaffold's
+/// layout. The pages keep their clearance, so nothing underneath moves, and
+/// the translation carries hit testing along, so taps pass through where the
+/// bar was. It only translates: fading the pill would drop its backdrop blur
+/// the moment it left full opacity.
+class HomeNavigationSlide extends StatefulWidget {
   final HomeNavigationVisibilityStore store;
   final Widget child;
 
-  /// Past the edge by a quarter so the pill's outer shadow leaves with it.
-  static const Offset hiddenOffset = Offset(0, 1.25);
+  /// Past the edge by a quarter of its height so the outer shadow leaves too.
+  static const double travelFactor = 1.25;
 
-  const HomeNavigationSlide({super.key, required this.store, required this.child});
+  const HomeNavigationSlide({
+    super.key,
+    required this.store,
+    required this.child,
+  });
+
+  @override
+  State<HomeNavigationSlide> createState() => _HomeNavigationSlideState();
+}
+
+class _HomeNavigationSlideState extends State<HomeNavigationSlide>
+    with SingleTickerProviderStateMixin
+    implements HomeNavigationMotion {
+  @override
+  late final AnimationController controller = AnimationController(vsync: this);
+
+  late final Animation<Offset> _offset = controller.drive(
+    Tween(
+      begin: Offset.zero,
+      end: const Offset(0, HomeNavigationSlide.travelFactor),
+    ),
+  );
+
+  double _height = 0;
+
+  @override
+  double get travel => _height * HomeNavigationSlide.travelFactor;
+
+  @override
+  bool get reduceMotion => mounted && xtaReduceMotion(context);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.store.attach(this);
+  }
+
+  @override
+  void didUpdateWidget(HomeNavigationSlide oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.store, widget.store)) return;
+    oldWidget.store.detach(this);
+    widget.store.attach(this);
+  }
+
+  @override
+  void dispose() {
+    widget.store.detach(this);
+    controller.dispose();
+    super.dispose();
+  }
+
+  void _measured(double height) => _height = height;
 
   @override
   Widget build(BuildContext context) {
-    final duration = xtaMotionDuration(context, kXtaMotionStandard);
-    return ScopedBuilder<HomeNavigationVisibilityStore, bool>(
-      store: store,
-      onState: (context, shown) => AnimatedSlide(
-        offset: shown ? Offset.zero : hiddenOffset,
-        duration: duration,
-        curve: shown ? Curves.easeOutCubic : Curves.easeInCubic,
-        child: AnimatedOpacity(
-          opacity: shown ? 1 : 0,
-          duration: duration,
-          curve: Curves.easeOutCubic,
-          child: IgnorePointer(ignoring: !shown, child: child),
+    return _HeightProbe(
+      onHeight: _measured,
+      child: SlideTransition(
+        position: _offset,
+        child: ScopedBuilder<HomeNavigationVisibilityStore, bool>(
+          store: widget.store,
+          onState: (context, shown) =>
+              IgnorePointer(ignoring: !shown, child: widget.child),
         ),
       ),
     );
+  }
+}
+
+/// Reports its child's height after every layout, without a rebuild.
+class _HeightProbe extends SingleChildRenderObjectWidget {
+  final ValueSetter<double> onHeight;
+
+  const _HeightProbe({required this.onHeight, super.child});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _RenderHeightProbe(onHeight);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderHeightProbe renderObject,
+  ) => renderObject.onHeight = onHeight;
+}
+
+class _RenderHeightProbe extends RenderProxyBox {
+  ValueSetter<double> onHeight;
+
+  _RenderHeightProbe(this.onHeight);
+
+  @override
+  void performLayout() {
+    super.performLayout();
+    onHeight(size.height);
   }
 }

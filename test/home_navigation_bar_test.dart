@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_navigation_visibility.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -215,5 +217,78 @@ void main() {
     await tester.pump();
 
     expect(tester.getRect(_highlight).center.dx, closeTo(_destination(tester, 3).center.dx, 0.5));
+  });
+
+  group('sliding away while scrolling', _scrollingTests);
+}
+
+Widget _scrolling(HomeNavigationVisibilityStore store, {bool accessible = false}) => PrefService(
+  service: PrefServiceCache(defaults: {optionHideNavigationOnScroll: true}),
+  child: MaterialApp(
+    theme: xLookLightTheme(null),
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(accessibleNavigation: accessible),
+      child: child!,
+    ),
+    home: Scaffold(
+      extendBody: true,
+      body: Builder(
+        builder: (context) => NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            store.onScroll(notification, accessible: MediaQuery.accessibleNavigationOf(context));
+            return false;
+          },
+          child: ListView(children: [for (var i = 0; i < 40; i++) SizedBox(height: 80, child: Text('row $i'))]),
+        ),
+      ),
+      bottomNavigationBar: HomeNavigationSlide(
+        store: store,
+        child: HomeNavigationBar(
+          selectedIndex: 0,
+          items: _items,
+          showLabels: true,
+          disableAnimations: false,
+          onSelected: (_) {},
+        ),
+      ),
+    ),
+  ),
+);
+
+void _scrollingTests() {
+  HomeNavigationVisibilityStore store() {
+    final visibility = HomeNavigationVisibilityStore(PrefServiceCache(defaults: {optionHideNavigationOnScroll: true}));
+    addTearDown(visibility.destroy);
+    return visibility;
+  }
+
+  testWidgets('the bar leaves the screen while the pages keep their clearance', (tester) async {
+    _phone(tester);
+    final visibility = store();
+    await tester.pumpWidget(_scrolling(visibility));
+    final clearance = MediaQuery.paddingOf(tester.element(find.byType(ListView))).bottom;
+    expect(clearance, greaterThan(kHomeNavigationHeight));
+
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+    expect(visibility.state, isFalse);
+    expect(tester.getRect(find.byType(NavigationBar)).top, greaterThanOrEqualTo(844));
+    expect(MediaQuery.paddingOf(tester.element(find.byType(ListView))).bottom, clearance);
+  });
+
+  testWidgets('with a screen reader the bar never moves', (tester) async {
+    _phone(tester);
+    final visibility = store();
+    await tester.pumpWidget(_scrolling(visibility, accessible: true));
+    final resting = tester.getRect(find.byType(NavigationBar));
+
+    final gesture = await tester.startGesture(tester.getCenter(find.byType(ListView)));
+    await gesture.moveBy(const Offset(0, -60));
+    await tester.pump();
+    expect(tester.getRect(find.byType(NavigationBar)), resting);
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(visibility.state, isTrue);
+    expect(tester.getRect(find.byType(NavigationBar)), resting);
   });
 }
