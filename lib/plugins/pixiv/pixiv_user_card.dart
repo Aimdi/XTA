@@ -19,20 +19,33 @@ class PixivFollowStore extends Store<PixivFollowState> {
   final PixivClient client;
   final int userId;
 
+  var _closed = false;
+
   PixivFollowStore(this.client, this.userId, {required bool followed}) : super((followed: followed, busy: false));
 
   /// Follows publicly or unfollows; a failure puts the button back and rethrows.
   Future<void> toggle() async {
     if (state.busy) return;
     final was = state.followed;
-    update((followed: was, busy: true));
+    _set((followed: was, busy: true));
     try {
       await (was ? client.unfollowUser(userId) : client.followUser(userId));
-      update((followed: !was, busy: false));
+      _set((followed: !was, busy: false));
     } catch (_) {
-      update((followed: was, busy: false));
+      _set((followed: was, busy: false));
       rethrow;
     }
+  }
+
+  /// A follow still on its way when the button goes away lands nowhere.
+  void _set(PixivFollowState next) {
+    if (!_closed) update(next);
+  }
+
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    return super.destroy();
   }
 }
 
@@ -72,10 +85,12 @@ class _PixivFollowButtonState extends State<PixivFollowButton> {
   PixivFollowStore _storeFor(PixivUser user) =>
       PixivFollowStore(context.read<PixivClient>(), user.id, followed: user.isFollowed);
 
+  /// A new creator, or a reload that says otherwise about this one, starts over.
   @override
   void didUpdateWidget(covariant PixivFollowButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.user.id != widget.user.id) {
+    final state = _store.state;
+    if (oldWidget.user.id != widget.user.id || (!state.busy && state.followed != widget.user.isFollowed)) {
       _store.destroy();
       _store = _storeFor(widget.user);
     }
@@ -90,9 +105,10 @@ class _PixivFollowButtonState extends State<PixivFollowButton> {
   Future<void> _toggle() async {
     final l10n = L10n.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final store = _store;
     try {
-      await _store.toggle();
-      widget.onChanged?.call(_store.state.followed);
+      await store.toggle();
+      if (mounted) widget.onChanged?.call(store.state.followed);
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
     }
@@ -100,6 +116,7 @@ class _PixivFollowButtonState extends State<PixivFollowButton> {
 
   @override
   Widget build(BuildContext context) => ScopedBuilder<PixivFollowStore, PixivFollowState>(
+    key: ObjectKey(_store),
     store: _store,
     onState: (context, state) => _button(context, state),
   );

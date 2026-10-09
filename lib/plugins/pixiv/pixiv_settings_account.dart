@@ -152,16 +152,16 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(l10n.plugin_pixiv_signed_in(name), style: Theme.of(context).textTheme.titleSmall),
         ),
-      Row(
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           FilledButton(
             onPressed: view.signingIn || signedIn ? null : _signIn,
             child: view.signingIn ? const _Spinner() : Text(l10n.plugin_pixiv_sign_in),
           ),
-          if (signedIn) ...[
-            const SizedBox(width: 12),
-            TextButton(onPressed: _signOut, child: Text(l10n.plugin_pixiv_sign_out)),
-          ],
+          if (signedIn) TextButton(onPressed: _signOut, child: Text(l10n.plugin_pixiv_sign_out)),
         ],
       ),
     ];
