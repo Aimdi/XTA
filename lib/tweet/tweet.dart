@@ -17,6 +17,7 @@ import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/_card.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
+import 'package:xta/tweet/avatar_follow_badge.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_header.dart';
 import 'package:xta/tweet/tweet_open.dart';
@@ -539,9 +540,7 @@ class TweetTileState extends State<TweetTile> {
     var tweetText = tweet.fullText ?? tweet.text;
     if (tweetText == null) {
       return _buildErrorTweet(
-        L10n.of(
-          context,
-        ).the_tweet_did_not_contain_any_text_this_is_unexpected,
+        L10n.of(context).the_tweet_did_not_contain_any_text_this_is_unexpected,
       );
     }
 
@@ -734,65 +733,16 @@ class TweetTileState extends State<TweetTile> {
             distinct: (_) => context.read<SubscriptionsModel>().state.any(
               (s) => s.id == tweet.user!.idStr,
             ),
-            onState: (_, subscriptions) {
-              final followed = subscriptions.any(
-                (s) => s.id == tweet.user!.idStr,
-              );
-              if (followed) {
-                return plainAvatar;
-              }
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  plainAvatar,
-                  PositionedDirectional(
-                    end: -4,
-                    bottom: -2,
-                    child: Semantics(
-                      button: true,
-                      label: L10n.of(context).subscribe,
-                      child: TooltipTheme(
-                        data: const TooltipThemeData(
-                          triggerMode: TooltipTriggerMode.manual,
-                        ),
-                        child: Tooltip(
-                          message: L10n.of(context).subscribe,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => _showSubscribeSheet(
-                              context,
-                              _subscriptionFor(tweet.user!),
-                            ),
-                            child: SizedBox.square(
-                              dimension: 32,
-                              child: Center(
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    color: tweetAccentColor(context),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: tweetSurfaceColor(context),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 14,
-                                    color: tweetOnAccentColor(context),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+            onState: (_, subscriptions) => AvatarFollowBadge(
+              avatar: plainAvatar,
+              avatarSize: avatarSize,
+              followed: subscriptions.any((s) => s.id == tweet.user!.idStr),
+              onFollow: () => context
+                  .read<SubscriptionsModel>()
+                  .toggleSubscribe(_subscriptionFor(tweet.user!), false),
+              onMore: () =>
+                  _showSubscribeSheet(context, _subscriptionFor(tweet.user!)),
+            ),
           );
 
     void onTapProfile() {
@@ -901,15 +851,10 @@ class TweetTileState extends State<TweetTile> {
                   kTweetSpace1,
                 ),
                 child: TweetAuthorBlock(
-                  displayName: hideAuthorInformation
-                      ? null
-                      : tweet.user!.name,
-                  handle: hideAuthorInformation
-                      ? null
-                      : tweet.user!.screenName,
+                  displayName: hideAuthorInformation ? null : tweet.user!.name,
+                  handle: hideAuthorInformation ? null : tweet.user!.screenName,
                   verified:
-                      !hideAuthorInformation &&
-                      (tweet.user!.verified ?? false),
+                      !hideAuthorInformation && (tweet.user!.verified ?? false),
                   timestamp: createdAt == null
                       ? null
                       : Timestamp(
