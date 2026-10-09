@@ -1,4 +1,4 @@
-import 'package:dart_twitter_api/twitter_api.dart' show User;
+import 'package:dart_twitter_api/twitter_api.dart' show QuotedStatusPermalink, User;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -138,6 +138,24 @@ void main() {
       expect(find.text('Author 2'), findsOneWidget);
       expect(find.byIcon(Icons.more_horiz), findsOneWidget);
       expect(find.byIcon(Icons.share), findsOneWidget);
+    });
+
+    testWidgets('a quoted post X withholds can be looked up by its permalink', (tester) async {
+      final quoting =
+          _post(
+              quoted: TweetWithCard.tombstone({
+                'text': {'text': 'This Post was deleted by the Post author. Learn more'},
+              }),
+            )
+            ..quotedStatusIdStr = '2095934459606376826'
+            ..quotedStatusPermalink = (QuotedStatusPermalink()
+              ..expanded = 'https://twitter.com/quax_tests/status/2095934459606376826');
+      await _pumpTile(tester, quoting);
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('This Post was deleted by the Post author.'), findsOneWidget);
+      expect(find.widgetWithText(TextButton, 'Open on web.archive.org'), findsOneWidget);
+      expect(find.byType(TweetEmbedSurface), findsOneWidget, reason: 'one frame, not a card inside a card');
     });
   });
 

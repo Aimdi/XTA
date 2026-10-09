@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "Saad selle igal ajal uuesti alla laadida.",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Ava web.archive.org-is",
+  "@open_on_web_archive": {}
 }

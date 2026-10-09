@@ -3925,5 +3925,7 @@
     }
   },
   "tts_offline_voice_delete_description": "Bạn có thể tải lại bất cứ lúc nào.",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Mở trên web.archive.org",
+  "@open_on_web_archive": {}
 }

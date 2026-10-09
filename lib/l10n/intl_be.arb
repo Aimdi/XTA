@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "Вы можаце спампаваць яго зноў у любы час.",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Адкрыць на web.archive.org",
+  "@open_on_web_archive": {}
 }

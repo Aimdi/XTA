@@ -9,6 +9,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
+import 'package:xta/tweet/unavailable_post.dart';
 import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/sort_menu_button.dart';
@@ -480,7 +481,7 @@ class _StatusScreenState extends State<_StatusScreen> {
         );
       }
       if (paging.status == PagingStatus.noItemsFound) {
-        return Center(child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user));
+        return _unavailableFocalPage(context);
       }
       return const Center(child: CircularProgressIndicator());
     }
@@ -492,14 +493,15 @@ class _StatusScreenState extends State<_StatusScreen> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       children: [
         for (final chain in visible)
-          TweetConversation(
-              key: ValueKey(chain.id),
-              id: chain.id,
-              tweets: chain.tweets,
-              username: null,
-              isPinned: chain.isPinned,
-              tweetOpened: widget.tweetOpened,
-              initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
+          _unavailableFocal(context, chain) ??
+              TweetConversation(
+                  key: ValueKey(chain.id),
+                  id: chain.id,
+                  tweets: chain.tweets,
+                  username: null,
+                  isPinned: chain.isPinned,
+                  tweetOpened: widget.tweetOpened,
+                  initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
         InkWell(
           onTap: () => context.read<ZenRepliesState>().reveal(),
           child: Padding(
@@ -539,14 +541,33 @@ class _StatusScreenState extends State<_StatusScreen> {
     );
   }
 
+  /// The opened post when X sent it as unavailable: it stands in for the post,
+  /// with the author this screen was opened with.
+  Widget? _unavailableFocal(BuildContext context, TweetChain chain) {
+    final tweet = chain.tweets.singleOrNull;
+    if (chain.id != widget.id || tweet?.isTombstone != true) {
+      return null;
+    }
+    return _unavailableFocalTile(context, tweet?.text);
+  }
+
+  Widget _unavailableFocalTile(BuildContext context, String? message) => UnavailablePostTile(
+      message: message ?? L10n.of(context).this_tweet_is_unavailable, screenName: widget.username, id: widget.id);
+
+  /// X answered with nothing at all for the opened post, which is how it
+  /// answers for a deleted one.
+  Widget _unavailableFocalPage(BuildContext context) =>
+      Align(alignment: Alignment.topCenter, child: _unavailableFocalTile(context, null));
+
   Widget _conversationTile(BuildContext context, TweetChain chain, int index) {
-    final conversation = TweetConversation(
-        id: chain.id,
-        tweets: chain.tweets,
-        username: null,
-        isPinned: chain.isPinned,
-        tweetOpened: widget.tweetOpened,
-        initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0);
+    final conversation = _unavailableFocal(context, chain) ??
+        TweetConversation(
+            id: chain.id,
+            tweets: chain.tweets,
+            username: null,
+            isPinned: chain.isPinned,
+            tweetOpened: widget.tweetOpened,
+            initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0);
     final focal = chain.tweets.firstWhereOrNull((t) => t.idStr == widget.id);
     return AutoScrollTag(
       key: ValueKey(chain.id),
@@ -581,9 +602,7 @@ class _StatusScreenState extends State<_StatusScreen> {
       );
     }
     if (state.items!.isEmpty) {
-      return Center(
-        child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user),
-      );
+      return _unavailableFocalPage(context);
     }
     return PagedListView<int, TweetChain>(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -620,7 +639,7 @@ class _StatusScreenState extends State<_StatusScreen> {
         );
       }
       if (state.status == PagingStatus.noItemsFound) {
-        return Center(child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user));
+        return _unavailableFocalPage(context);
       }
       return const Center(child: CircularProgressIndicator());
     }

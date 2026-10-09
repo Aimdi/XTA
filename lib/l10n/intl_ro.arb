@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "O poți descărca din nou oricând.",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Deschide pe web.archive.org",
+  "@open_on_web_archive": {}
 }

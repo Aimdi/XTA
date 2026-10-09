@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "İstediğiniz zaman yeniden indirebilirsiniz.",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "web.archive.org'da aç",
+  "@open_on_web_archive": {}
 }

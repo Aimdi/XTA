@@ -4252,5 +4252,9 @@
   "tts_offline_voice_delete_description": "You can download it again at any time.",
   "@tts_offline_voice_delete_description": {
     "description": "Dialog text before deleting a downloaded voice."
+  },
+  "open_on_web_archive": "Open on web.archive.org",
+  "@open_on_web_archive": {
+    "description": "Button under a post X no longer shows (deleted, private or suspended), opening the Wayback Machine's saved copies of it. web.archive.org is the site's address and stays as is."
   }
 }

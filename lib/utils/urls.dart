@@ -467,6 +467,25 @@ PostUriInfo? _parseAsPostLink(List<String> parts) {
   return null;
 }
 
+/// The author and id in a post link, read without resolving it — so not for
+/// t.co links.
+PostUriInfo? parsePostLink(Uri link) => _parseAsPostLink(link.pathSegments.where((e) => e.isNotEmpty).toList());
+
+final _handlePattern = RegExp(r'^[A-Za-z0-9_]{1,15}$');
+final _postIdPattern = RegExp(r'^[0-9]+$');
+
+/// The Wayback Machine's list of captures of a post, or null when [screenName]
+/// or [id] is not a real handle or post id.
+///
+/// The address is twitter.com because most captures predate x.com, and the
+/// trailing star also matches the addresses that carried a query.
+Uri? waybackSearchUri(String screenName, String id) {
+  if (!_handlePattern.hasMatch(screenName) || !_postIdPattern.hasMatch(id)) {
+    return null;
+  }
+  return Uri.parse('https://web.archive.org/web/*/twitter.com/$screenName/status/$id*');
+}
+
 Future<String?> _resolveShortUrl(Uri shortUrl) async {
   final request = http.Request('GET', shortUrl)
     ..followRedirects = false;

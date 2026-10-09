@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "आप इसे कभी भी फिर से डाउनलोड कर सकते हैं।",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "web.archive.org पर खोलें",
+  "@open_on_web_archive": {}
 }

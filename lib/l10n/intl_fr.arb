@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "Vous pourrez la retélécharger à tout moment.",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Ouvrir sur web.archive.org",
+  "@open_on_web_archive": {}
 }

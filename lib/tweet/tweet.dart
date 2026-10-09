@@ -22,6 +22,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/unified_card.dart';
 import 'package:xta/tweet/tweet_header.dart';
 import 'package:xta/tweet/tweet_post_menu.dart';
+import 'package:xta/tweet/unavailable_post.dart';
 import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
@@ -37,6 +38,7 @@ import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/translation.dart';
+import 'package:xta/utils/urls.dart' show parsePostLink;
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -414,6 +416,20 @@ class TweetTileState extends State<TweetTile> {
     );
   }
 
+  /// A quoted post X will not show. Its permalink still names the author,
+  /// which is what finding it in the Wayback Machine takes.
+  Widget _buildUnavailableQuote(TweetWithCard tweet) {
+    final permalink = Uri.tryParse(tweet.quotedStatusPermalink?.expanded ?? '');
+    final post = permalink == null ? null : parsePostLink(permalink);
+    return UnavailablePostTile(
+      message:
+          tweet.quotedStatusWithCard?.text ??
+          L10n.of(context).this_tweet_is_unavailable,
+      screenName: post?.screenName,
+      id: tweet.quotedStatusIdStr ?? post?.id,
+    );
+  }
+
   Future<Uint8List?> captureWidget() async {
     // The RepaintBoundary is the root of this State's build, so the State's own
     // render object is it — no per-tile GlobalKey needed (each one costs a trip
@@ -571,7 +587,10 @@ class TweetTileState extends State<TweetTile> {
       Widget quotedContent;
       VoidCallback? quotedOnTap;
       var quotedContentOwnsSurface = false;
-      if (tweet.quotedStatusWithCard != null) {
+      if (tweet.quotedStatusWithCard?.isTombstone ?? false) {
+        quotedContent = _buildUnavailableQuote(tweet);
+        quotedContentOwnsSurface = true;
+      } else if (tweet.quotedStatusWithCard != null) {
         // Open the quoted post from the card chrome; its own text tap is off
         // (isQuotedTweet) so "show more" is not fighting an open-on-tap handler.
         final quoted = tweet.quotedStatusWithCard!;

@@ -3928,5 +3928,7 @@
     }
   },
   "tts_offline_voice_delete_description": "你隨時可以重新下載。",
-  "@tts_offline_voice_delete_description": {}
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "在 web.archive.org 上開啟",
+  "@open_on_web_archive": {}
 }
