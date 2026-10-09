@@ -12,6 +12,7 @@ import 'package:xta/tweet/_video_controls.dart';
 import 'package:xta/tweet/video_audio_focus.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/tweet/video_fullscreen.dart';
+import 'package:xta/tweet/video_mute_badge.dart';
 import 'package:xta/tweet/video_playback_policy.dart';
 import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/tweet/media_strip.dart';
@@ -610,7 +611,9 @@ class _TweetVideoState extends State<TweetVideo> {
           : (state) => XtaControls(
               pooled: pooled,
               username: widget.username,
-              allowMuting: true,
+              // The always-visible corner badge is this tile's mute control.
+              allowMuting: false,
+              reserveMuteCorner: true,
               accentColor: accent,
               subtitlesEnabled: _subtitlesEnabled,
               onToggleSubtitles: () => _toggleSubtitles(pooled),
@@ -624,43 +627,44 @@ class _TweetVideoState extends State<TweetVideo> {
       ),
     );
 
-    if (_posterGone) {
-      return video;
-    }
-
-    // Poster + spinner over the always-painting video texture, fading out on the
-    // first frame so there's no black flash on the swap.
     return Stack(
       fit: StackFit.expand,
       children: [
         video,
-        IgnorePointer(
-          child: AnimatedOpacity(
-            opacity: _firstFrameRendered ? 0.0 : 1.0,
-            duration: xtaMotionDuration(context, kXtaMotionStandard),
-            onEnd: () {
-              if (_firstFrameRendered && !_posterGone)
-                setState(() => _posterGone = true);
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.center,
-              children: [
-                if (widget.metadata.imageUrl != null)
-                  CappedNetworkImage(url: widget.metadata.imageUrl!),
-                if (!widget.disableControls)
-                  const Center(child: CircularProgressIndicator()),
-              ],
-            ),
-          ),
-        ),
+        if (!_posterGone) _posterOverlay(),
+        if (_showsMuteCorner) InlineVideoMuteCorner(player: pooled.player),
       ],
+    );
+  }
+
+  bool get _showsMuteCorner => !widget.disableControls;
+
+  /// The poster over the always-painting video texture, fading out on the first
+  /// frame so there's no black flash on the swap. While it buffers the poster
+  /// simply stays — no spinner, the way a feed video should wait.
+  Widget _posterOverlay() {
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        opacity: _firstFrameRendered ? 0.0 : 1.0,
+        duration: xtaMotionDuration(context, kXtaMotionStandard),
+        onEnd: () {
+          if (_firstFrameRendered && !_posterGone) {
+            setState(() => _posterGone = true);
+          }
+        },
+        child: widget.metadata.imageUrl != null
+            ? CappedNetworkImage(url: widget.metadata.imageUrl!)
+            : const SizedBox.expand(),
+      ),
     );
   }
 
   /// The thumbnail X ships with the video, at the video's own aspect ratio, so
   /// the tile occupies its final size before any player exists.
-  Widget _poster({Widget? child}) {
+  ///
+  /// [muteCorner] marks a video that is about to play by itself: its mute badge
+  /// is already there, so it does not pop in once the player arrives.
+  Widget _poster({Widget? child, bool muteCorner = false}) {
     return AspectRatio(
       aspectRatio: widget.metadata.aspectRatio,
       child: ColoredBox(
@@ -673,6 +677,7 @@ class _TweetVideoState extends State<TweetVideo> {
                 child: CappedNetworkImage(url: widget.metadata.imageUrl!),
               ),
             ?child,
+            if (muteCorner && _showsMuteCorner) const InlineVideoMuteCorner(),
           ],
         ),
       ),
@@ -713,6 +718,9 @@ class _TweetVideoState extends State<TweetVideo> {
     });
   }
 
+  bool get _startsByItself =>
+      _autoPlay || widget.alwaysPlay || _userRequestedPlay;
+
   /// Poster shown while every pooled player is still on screen. Tap retries
   /// acquire; a short timer retries once a hidden tile hands its slot back.
   Widget _waitingForSlotPoster() {
@@ -730,8 +738,9 @@ class _TweetVideoState extends State<TweetVideo> {
           _acquireFuture = null;
         }),
         child: _poster(
-          child: (_autoPlay || widget.alwaysPlay || _userRequestedPlay)
-              ? const CircularProgressIndicator()
+          muteCorner: _startsByItself,
+          child: _startsByItself
+              ? null
               : FritterCenterPlayButton(
                   backgroundColor: Colors.black54,
                   iconColor: Colors.white,
@@ -795,7 +804,7 @@ class _TweetVideoState extends State<TweetVideo> {
       return VisibilityDetector(
         key: _creationGateKey,
         onVisibilityChanged: _onCreationGateVisibilityChanged,
-        child: _poster(),
+        child: _poster(muteCorner: true),
       );
     }
 
@@ -820,7 +829,7 @@ class _TweetVideoState extends State<TweetVideo> {
         final hasVideo = pooled != null;
 
         if (isLoading && !hasVideo) {
-          return _poster(child: const CircularProgressIndicator());
+          return _poster(muteCorner: true);
         }
 
         if (hasError && !_firstFrameRendered) {
