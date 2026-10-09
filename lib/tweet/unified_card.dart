@@ -15,10 +15,7 @@ Map<String, dynamic>? unifiedCardOf(Map<String, dynamic>? card) {
   final keyed = values['unified_card'];
   final entry = keyed.exists
       ? keyed
-      : values.list
-            .where((e) => e['key'].string == 'unified_card')
-            .map((e) => e['value'])
-            .firstOrNull;
+      : values.list.where((e) => e['key'].string == 'unified_card').map((e) => e['value']).firstOrNull;
   final raw = entry?['string_value'].string;
   if (raw == null) return null;
   try {
@@ -38,45 +35,28 @@ class CarouselCardData {
   final String? subtitle;
   final List<Media> media;
 
-  const CarouselCardData({
-    required this.url,
-    required this.title,
-    required this.subtitle,
-    required this.media,
-  });
+  const CarouselCardData({required this.url, required this.title, required this.subtitle, required this.media});
 
   /// Null when the card has no page to open, no title or no picture.
   static CarouselCardData? fromUnified(Map<String, dynamic> unified) {
     final json = Json(unified);
     final details = json['component_objects']['details_1']['data'];
     final destination = details['destination'].string ?? 'browser_1';
-    final url =
-        json['destination_objects'][destination]['data']['url_data']['url']
-            .string;
+    final url = json['destination_objects'][destination]['data']['url_data']['url'].string;
     final title = details['title']['content'].string;
-    final media =
-        json['component_objects']['swipeable_media_1']['data']['media_list']
-            .list
-            .map((item) => item['id'].string)
-            .nonNulls
-            .map((id) => json['media_entities'][id].raw)
-            .whereType<Map<String, dynamic>>()
-            .map(Media.fromJson)
-            .toList(growable: false);
+    final media = json['component_objects']['swipeable_media_1']['data']['media_list'].list
+        .map((item) => item['id'].string)
+        .nonNulls
+        .map((id) => json['media_entities'][id].raw)
+        .whereType<Map<String, dynamic>>()
+        .map(Media.fromJson)
+        .toList(growable: false);
     if (url == null || title == null || media.isEmpty) return null;
-    return CarouselCardData(
-      url: url,
-      title: title,
-      subtitle: details['subtitle']['content'].string,
-      media: media,
-    );
+    return CarouselCardData(url: url, title: title, subtitle: details['subtitle']['content'].string, media: media);
   }
 }
 
-final _grokRenderTags = RegExp(
-  r'<grok:render[^>]*>.*?</grok:render>',
-  dotAll: true,
-);
+final _grokRenderTags = RegExp(r'<grok:render[^>]*>.*?</grok:render>', dotAll: true);
 
 /// A shared Grok conversation, e.g. https://x.com/elonmusk/status/2098507671083036843.
 ///
@@ -97,8 +77,7 @@ class GrokShareCardData {
   });
 
   static bool isGrokShare(Map<String, dynamic>? unified) =>
-      Json(unified)['component_objects']['details_1']['type'].string ==
-      'grok_share';
+      Json(unified)['component_objects']['details_1']['type'].string == 'grok_share';
 
   /// Null when the card has no conversation to show or nowhere to lead.
   static GrokShareCardData? fromUnified(Map<String, dynamic> unified) {
@@ -106,9 +85,7 @@ class GrokShareCardData {
     final json = Json(unified);
     final data = json['component_objects']['details_1']['data'];
     final destination = data['destination'].string ?? 'destination_1';
-    final url =
-        json['destination_objects'][destination]['data']['url_data']['url']
-            .string;
+    final url = json['destination_objects'][destination]['data']['url_data']['url'].string;
     final preview = data['conversation_preview'].list;
     final question = _firstMessage(preview, 'USER');
     if (url == null || question == null) return null;
@@ -116,9 +93,7 @@ class GrokShareCardData {
     return GrokShareCardData(
       url: url,
       question: question,
-      answer: (_firstMessage(preview, 'AGENT') ?? '')
-          .replaceAll(_grokRenderTags, '')
-          .trim(),
+      answer: (_firstMessage(preview, 'AGENT') ?? '').replaceAll(_grokRenderTags, '').trim(),
       grokScreenName: grok['screen_name'].string ?? 'grok',
       grokImageUrl: grok['profile_image_url_https'].string,
     );
@@ -134,5 +109,4 @@ class GrokShareCardData {
 /// Whether [card] shows a shared Grok conversation, whose link the post's text
 /// then need not repeat.
 bool isGrokShareCard(Map<String, dynamic>? card) =>
-    Json(card)['name'].string == 'unified_card' &&
-    GrokShareCardData.isGrokShare(unifiedCardOf(card));
+    Json(card)['name'].string == 'unified_card' && GrokShareCardData.isGrokShare(unifiedCardOf(card));

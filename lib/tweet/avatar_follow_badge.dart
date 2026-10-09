@@ -7,8 +7,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/motion.dart';
 
 /// Diameter of the follow badge on an avatar of [avatarSize], ring included.
-double avatarFollowBadgeSize(double avatarSize) =>
-    (avatarSize * .42).clamp(14.0, 20.0);
+double avatarFollowBadgeSize(double avatarSize) => (avatarSize * .42).clamp(14.0, 20.0);
 
 /// Threads' follow badge: a small disc sitting on the avatar's rim at the
 /// lower-right, where the circle crosses the 45° diagonal. One tap follows;
@@ -108,8 +107,7 @@ class _Disc extends StatelessWidget {
       ),
       child: AnimatedSwitcher(
         duration: xtaMotionDuration(context, kXtaMotionFast),
-        transitionBuilder: (child, animation) =>
-            ScaleTransition(scale: animation, child: child),
+        transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
         child: Icon(
           followed ? Icons.check_rounded : Icons.add_rounded,
           key: ValueKey(followed),

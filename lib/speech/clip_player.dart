@@ -18,10 +18,8 @@ class ContinuityClipPlayer implements ClipPlayer {
   ContinuityPlayer? _player;
   Completer<UtteranceOutcome>? _pending;
 
-  ContinuityClipPlayer({
-    ContinuityPlayer Function()? create,
-    this.startTimeout = const Duration(seconds: 10),
-  }) : _create = create ?? MediaKitContinuityPlayer.createPodcast;
+  ContinuityClipPlayer({ContinuityPlayer Function()? create, this.startTimeout = const Duration(seconds: 10)})
+    : _create = create ?? MediaKitContinuityPlayer.createPodcast;
 
   @override
   Future<UtteranceOutcome> play(String path) async {

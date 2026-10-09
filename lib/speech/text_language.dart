@@ -12,12 +12,8 @@ String? detectTextLanguage(String text, {int sample = 4000}) {
       .toList(growable: false);
   if (words.length < 8) return null;
 
-  final scores = {
-    for (final entry in _stopWords.entries)
-      entry.key: words.where(entry.value.contains).length,
-  };
-  final ranked = scores.entries.toList()
-    ..sort((a, b) => b.value.compareTo(a.value));
+  final scores = {for (final entry in _stopWords.entries) entry.key: words.where(entry.value.contains).length};
+  final ranked = scores.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
   final best = ranked.first;
   final runnerUp = ranked[1].value;
   final enough = best.value >= 3 && best.value >= words.length * 0.08;
@@ -26,10 +22,7 @@ String? detectTextLanguage(String text, {int sample = 4000}) {
 
 /// The twenty or so commonest short words of each language reading aloud is
 /// likely to meet.
-final _stopWords = {
-  for (final entry in _stopWordLists.entries)
-    entry.key: entry.value.split(' ').toSet(),
-};
+final _stopWords = {for (final entry in _stopWordLists.entries) entry.key: entry.value.split(' ').toSet()};
 
 const _stopWordLists = {
   'en':

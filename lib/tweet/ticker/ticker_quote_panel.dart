@@ -27,8 +27,7 @@ class TickerQuotePanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isAmbiguousTicker(store.symbol))
-            _InstrumentPicker(state: state, store: store),
+          if (isAmbiguousTicker(store.symbol)) _InstrumentPicker(state: state, store: store),
           ..._body(context, state),
           _RangePicker(selected: state.range, onSelected: store.selectRange),
           if (state.dayQuote != null)
@@ -55,9 +54,7 @@ class TickerQuotePanel extends StatelessWidget {
     }
     // The picker stays below, so the row does not vanish under the finger
     // that just tapped a range.
-    return const [
-      SizedBox(height: 200, child: Center(child: CircularProgressIndicator())),
-    ];
+    return const [SizedBox(height: 200, child: Center(child: CircularProgressIndicator()))];
   }
 }
 
@@ -66,11 +63,7 @@ class _QuoteHeader extends StatelessWidget {
   final TickerQuote quote;
   final String symbol;
 
-  const _QuoteHeader({
-    required this.state,
-    required this.quote,
-    required this.symbol,
-  });
+  const _QuoteHeader({required this.state, required this.quote, required this.symbol});
 
   @override
   Widget build(BuildContext context) {
@@ -89,27 +82,21 @@ class _QuoteHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   '\$${spokenCashtag(symbol)}',
-                  style: theme.textTheme.titleLarge!.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w900),
                 ),
               ),
-              if (session != null && !quote.tradesAroundTheClock)
-                _SessionLabel(session: session),
+              if (session != null && !quote.tradesAroundTheClock) _SessionLabel(session: session),
             ],
           ),
           if (quote.shortName != null)
             Text(
               quote.shortName!,
-              style: theme.textTheme.bodyMedium!.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           const SizedBox(height: 4),
           _price(context, price),
           _move(context, price),
-          if (scrubbed == null && quote.extendedPrint != null)
-            _ExtendedLine(quote: quote),
+          if (scrubbed == null && quote.extendedPrint != null) _ExtendedLine(quote: quote),
         ],
       ),
     );
@@ -123,19 +110,14 @@ class _QuoteHeader extends StatelessWidget {
       children: [
         Text(
           price == null ? kStockPlaceholder : stockPrice(price),
-          style: theme.textTheme.headlineMedium!.copyWith(
-            fontWeight: FontWeight.w800,
-            fontFeatures: kStockFigures,
-          ),
+          style: theme.textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800, fontFeatures: kStockFigures),
         ),
         if (quote.currency != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               quote.currency!,
-              style: theme.textTheme.bodyMedium!.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
       ],
@@ -167,12 +149,7 @@ class _QuoteHeader extends StatelessWidget {
               color: stockTrendColour(context, percent),
             ),
           ),
-        Text(
-          caption,
-          style: theme.textTheme.bodySmall!.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        Text(caption, style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       ],
     );
   }
@@ -200,18 +177,10 @@ class _ExtendedLine extends StatelessWidget {
       child: Wrap(
         spacing: 8,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
+          Text(label, style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
           Text(
             stockPrice(extended.price),
-            style: theme.textTheme.bodySmall!.copyWith(
-              fontWeight: FontWeight.w700,
-              fontFeatures: kStockFigures,
-            ),
+            style: theme.textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w700, fontFeatures: kStockFigures),
           ),
           if (percent != null)
             Text(
@@ -243,21 +212,14 @@ class _SessionLabel extends StatelessWidget {
       TickerSession.post => l10n.plugin_stocks_after_hours,
       TickerSession.closed => l10n.plugin_stocks_market_closed,
     };
-    final dot = open
-        ? stockTrendColour(context, 1)
-        : theme.colorScheme.onSurfaceVariant;
+    final dot = open ? stockTrendColour(context, 1) : theme.colorScheme.onSurfaceVariant;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.circle, size: 8, color: dot),
         const SizedBox(width: 6),
-        Text(
-          text,
-          style: theme.textTheme.labelMedium!.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        Text(text, style: theme.textTheme.labelMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       ],
     );
   }

@@ -20,14 +20,12 @@ import 'package:xta/utils/browsers.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Opens a link inside XTA when an XTA screen can read it; true when it did.
-typedef LinkNativeHandler =
-    Future<bool> Function(BuildContext context, String url);
+typedef LinkNativeHandler = Future<bool> Function(BuildContext context, String url);
 
 /// Shares a link; the platform share sheet in the app.
 typedef LinkSharer = Future<void> Function(String url);
 
-Future<void> _shareWithPlatform(String url) =>
-    SharePlus.instance.share(ShareParams(text: url));
+Future<void> _shareWithPlatform(String url) => SharePlus.instance.share(ShareParams(text: url));
 
 enum LinkBrowserAction { openExternally, copyLink, share, reload }
 
@@ -67,10 +65,7 @@ class _LinkBrowserScreenState extends State<LinkBrowserScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final url = prepareUrl(
-        PrefService.of(context, listen: false),
-        widget.url,
-      );
+      final url = prepareUrl(PrefService.of(context, listen: false), widget.url);
       _store.started(url);
       unawaited(_page.load(url));
     });
@@ -100,9 +95,7 @@ class _LinkBrowserScreenState extends State<LinkBrowserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final background =
-        XLookTokens.maybeOf(context)?.background ??
-        Theme.of(context).scaffoldBackgroundColor;
+    final background = XLookTokens.maybeOf(context)?.background ?? Theme.of(context).scaffoldBackgroundColor;
     return XtaSystemBars(
       child: PopScope(
         canPop: false,
@@ -148,10 +141,7 @@ class _LinkBrowserScreenState extends State<LinkBrowserScreen> {
   Widget _progress(LinkBrowserState state) => SizedBox(
     height: 2,
     child: state.loading
-        ? LinearProgressIndicator(
-            value: state.progress > 0 ? state.progress : null,
-            minHeight: 2,
-          )
+        ? LinearProgressIndicator(value: state.progress > 0 ? state.progress : null, minHeight: 2)
         : Divider(height: 2, thickness: kTweetDividerThickness),
   );
 
@@ -170,9 +160,7 @@ class _LinkBrowserScreenState extends State<LinkBrowserScreen> {
           child: LinkPostContextBar(
             post: post,
             onBackToPost: _backToPost,
-            onSharePost: post.postUrl == null
-                ? null
-                : () => widget.share(post.postUrl!),
+            onSharePost: post.postUrl == null ? null : () => widget.share(post.postUrl!),
           ),
         ),
       ],
@@ -184,11 +172,7 @@ class _LinkBrowserScreenState extends State<LinkBrowserScreen> {
     final url = prepareUrl(prefs, _store.state.url);
     switch (action) {
       case LinkBrowserAction.openExternally:
-        await openExternally(
-          url,
-          package:
-              prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser,
-        );
+        await openExternally(url, package: prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser);
       case LinkBrowserAction.copyLink:
         final messenger = ScaffoldMessenger.maybeOf(context);
         final copied = L10n.of(context).link_browser_link_copied;
@@ -209,12 +193,7 @@ class _LinkBrowserTopBar extends StatelessWidget {
   final VoidCallback onClose;
   final ValueChanged<LinkBrowserAction> onAction;
 
-  const _LinkBrowserTopBar({
-    required this.state,
-    required this.source,
-    required this.onClose,
-    required this.onAction,
-  });
+  const _LinkBrowserTopBar({required this.state, required this.source, required this.onClose, required this.onAction});
 
   @override
   Widget build(BuildContext context) {
@@ -250,9 +229,7 @@ class _LinkBrowserTopBar extends StatelessWidget {
                 state.secure ? Icons.lock_outline : Icons.lock_open_outlined,
                 size: 14,
                 color: tweetSecondaryColor(context),
-                semanticLabel: state.secure
-                    ? l10n.link_browser_secure
-                    : l10n.link_browser_not_secure,
+                semanticLabel: state.secure ? l10n.link_browser_secure : l10n.link_browser_not_secure,
               ),
               const SizedBox(width: kTweetSpace1),
               Flexible(
@@ -266,12 +243,7 @@ class _LinkBrowserTopBar extends StatelessWidget {
             ],
           ),
           if (subtitle != null && subtitle.isNotEmpty)
-            Text(
-              subtitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: secondary,
-            ),
+            Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: secondary),
         ],
       ),
     );
@@ -301,31 +273,15 @@ class _LinkBrowserMenu extends StatelessWidget {
         ),
       ),
       itemBuilder: (context) => [
-        _item(
-          LinkBrowserAction.openExternally,
-          Icons.open_in_new,
-          l10n.open_in_browser,
-        ),
-        _item(
-          LinkBrowserAction.copyLink,
-          Icons.link,
-          l10n.link_browser_copy_link,
-        ),
+        _item(LinkBrowserAction.openExternally, Icons.open_in_new, l10n.open_in_browser),
+        _item(LinkBrowserAction.copyLink, Icons.link, l10n.link_browser_copy_link),
         _item(LinkBrowserAction.share, Icons.share_outlined, l10n.share_link),
-        _item(
-          LinkBrowserAction.reload,
-          Icons.refresh,
-          l10n.link_browser_reload,
-        ),
+        _item(LinkBrowserAction.reload, Icons.refresh, l10n.link_browser_reload),
       ],
     );
   }
 
-  PopupMenuItem<LinkBrowserAction> _item(
-    LinkBrowserAction action,
-    IconData icon,
-    String label,
-  ) => PopupMenuItem(
+  PopupMenuItem<LinkBrowserAction> _item(LinkBrowserAction action, IconData icon, String label) => PopupMenuItem(
     value: action,
     child: Row(
       children: [

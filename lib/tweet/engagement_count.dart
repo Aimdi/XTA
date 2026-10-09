@@ -9,17 +9,10 @@ final Map<String, NumberFormat> _compactByLocale = {};
 final Map<String, NumberFormat> _decimalByLocale = {};
 final RegExp _letter = RegExp(r'\p{L}', unicode: true);
 
-const List<(int, String)> _units = [
-  (1000000000, 'B'),
-  (1000000, 'M'),
-  (1000, 'K'),
-];
+const List<(int, String)> _units = [(1000000000, 'B'), (1000000, 'M'), (1000, 'K')];
 
-String _resolveLocale(String? locale) => Intl.verifiedLocale(
-  locale ?? Intl.getCurrentLocale(),
-  NumberFormat.localeExists,
-  onFailure: (_) => 'en',
-)!;
+String _resolveLocale(String? locale) =>
+    Intl.verifiedLocale(locale ?? Intl.getCurrentLocale(), NumberFormat.localeExists, onFailure: (_) => 'en')!;
 
 /// Cuts [value] down to what X displays: one decimal below ten of a unit,
 /// none above, and always rounded down — 9,190 is "9.1K", never "9.2K".
@@ -42,17 +35,12 @@ int truncateToDisplayedCount(int value) {
 String formatEngagementCount(num value, [String? locale]) {
   final resolved = _resolveLocale(locale);
   final shown = truncateToDisplayedCount(value.toInt());
-  final compact = _compactByLocale
-      .putIfAbsent(resolved, () => NumberFormat.compact(locale: resolved))
-      .format(shown);
+  final compact = _compactByLocale.putIfAbsent(resolved, () => NumberFormat.compact(locale: resolved)).format(shown);
   if (shown < 1000 || _letter.hasMatch(compact)) {
     return compact;
   }
   final (unit, suffix) = _units.firstWhere((u) => shown >= u.$1);
-  final decimal = _decimalByLocale.putIfAbsent(
-    resolved,
-    () => NumberFormat('0.#', resolved),
-  );
+  final decimal = _decimalByLocale.putIfAbsent(resolved, () => NumberFormat('0.#', resolved));
   return '${decimal.format(shown / unit)}$suffix';
 }
 

@@ -20,20 +20,14 @@ class ProfileFollowedByLine extends StatefulWidget {
   final List<Subscription> subscriptions;
   final ProfileFollowedByStore Function()? createStore;
 
-  const ProfileFollowedByLine({
-    super.key,
-    required this.profileId,
-    required this.subscriptions,
-    this.createStore,
-  });
+  const ProfileFollowedByLine({super.key, required this.profileId, required this.subscriptions, this.createStore});
 
   @override
   State<ProfileFollowedByLine> createState() => _ProfileFollowedByLineState();
 }
 
 class _ProfileFollowedByLineState extends State<ProfileFollowedByLine> {
-  late final ProfileFollowedByStore _store =
-      widget.createStore?.call() ?? ProfileFollowedByStore();
+  late final ProfileFollowedByStore _store = widget.createStore?.call() ?? ProfileFollowedByStore();
 
   @override
   void initState() {
@@ -61,9 +55,8 @@ class _ProfileFollowedByLineState extends State<ProfileFollowedByLine> {
       store: _store,
       onLoading: (_) => const SizedBox.shrink(),
       onError: (_, _) => const SizedBox.shrink(),
-      onState: (context, followedBy) => followedBy.followers.isEmpty
-          ? const SizedBox.shrink()
-          : ProfileFollowedByRow(followedBy: followedBy),
+      onState: (context, followedBy) =>
+          followedBy.followers.isEmpty ? const SizedBox.shrink() : ProfileFollowedByRow(followedBy: followedBy),
     );
   }
 }
@@ -75,10 +68,7 @@ class ProfileFollowedByRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = profileFollowedByLabel(
-      L10n.of(context),
-      followedBy.followers.map((member) => member.name).toList(),
-    );
+    final label = profileFollowedByLabel(L10n.of(context), followedBy.followers.map((member) => member.name).toList());
     return Semantics(
       button: true,
       child: InkWell(
@@ -91,12 +81,7 @@ class ProfileFollowedByRow extends StatelessWidget {
               _OverlappingAvatars(followedBy.followers),
               const SizedBox(width: kTweetSpace2),
               Expanded(
-                child: Text(
-                  label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: tweetMetadataStyle(context),
-                ),
+                child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: tweetMetadataStyle(context)),
               ),
             ],
           ),
@@ -105,11 +90,8 @@ class ProfileFollowedByRow extends StatelessWidget {
     );
   }
 
-  void _open(BuildContext context) => Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => ProfileFollowedByScreen(followedBy: followedBy),
-    ),
-  );
+  void _open(BuildContext context) =>
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfileFollowedByScreen(followedBy: followedBy)));
 }
 
 class _OverlappingAvatars extends StatelessWidget {
@@ -128,10 +110,7 @@ class _OverlappingAvatars extends StatelessWidget {
         child: Stack(
           children: [
             for (final (index, member) in shown.indexed.toList().reversed)
-              PositionedDirectional(
-                start: step * index,
-                child: _ringed(context, member),
-              ),
+              PositionedDirectional(start: step * index, child: _ringed(context, member)),
           ],
         ),
       ),
@@ -140,10 +119,7 @@ class _OverlappingAvatars extends StatelessWidget {
 
   Widget _ringed(BuildContext context, UserSubscription member) => Container(
     padding: const EdgeInsets.all(_avatarRing),
-    decoration: BoxDecoration(
-      color: tweetSurfaceColor(context),
-      shape: BoxShape.circle,
-    ),
+    decoration: BoxDecoration(color: tweetSurfaceColor(context), shape: BoxShape.circle),
     child: UserAvatar(uri: member.profileImageUrlHttps, size: _avatarSize),
   );
 }
@@ -165,18 +141,13 @@ class ProfileFollowedByScreen extends StatelessWidget {
           scrolledUnderElevation: 0,
         ),
         body: ListView(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.paddingOf(context).bottom,
-          ),
+          padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
           children: [
             for (final member in followedBy.followers) UserTile(user: member),
             Padding(
               padding: const EdgeInsets.all(kTweetHorizontalPadding),
               child: Text(
-                l10n.profile_followed_by_basis(
-                  followedBy.total,
-                  followedBy.checked,
-                ),
+                l10n.profile_followed_by_basis(followedBy.total, followedBy.checked),
                 style: tweetMetadataStyle(context),
               ),
             ),

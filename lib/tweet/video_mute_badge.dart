@@ -12,11 +12,9 @@ const double kVideoMuteCornerInset = 12;
 
 /// How far from the end edge the inline controls stop, so the seek bar never
 /// runs under the mute badge's touch target.
-const double kVideoMuteCornerReserve =
-    kVideoMuteCornerInset + kVideoMuteDiscSize + kVideoMuteCornerInset + 2;
+const double kVideoMuteCornerReserve = kVideoMuteCornerInset + kVideoMuteDiscSize + kVideoMuteCornerInset + 2;
 
-const double _kTargetEdge =
-    kVideoMuteCornerInset - (kTweetTouchTarget - kVideoMuteDiscSize) / 2;
+const double _kTargetEdge = kVideoMuteCornerInset - (kTweetTouchTarget - kVideoMuteDiscSize) / 2;
 
 /// The always-visible sound toggle in the bottom-end corner of an inline video.
 ///
@@ -52,20 +50,14 @@ class _InlineVideoMuteButton extends StatelessWidget {
       final model = context.watch<VideoContextState?>();
       if (model == null) return const SizedBox.shrink();
       final muted = model.isMuted;
-      return VideoMuteBadge(
-        muted: muted,
-        onToggle: () => model.setIsMuted(muted ? 100.0 : 0.0),
-      );
+      return VideoMuteBadge(muted: muted, onToggle: () => model.setIsMuted(muted ? 100.0 : 0.0));
     }
     return StreamBuilder<double>(
       stream: player.stream.volume,
       initialData: player.state.volume,
       builder: (context, snapshot) {
         final muted = (snapshot.data ?? 0) == 0;
-        return VideoMuteBadge(
-          muted: muted,
-          onToggle: () => player.setVolume(muted ? 100.0 : 0.0),
-        );
+        return VideoMuteBadge(muted: muted, onToggle: () => player.setVolume(muted ? 100.0 : 0.0));
       },
     );
   }
@@ -76,11 +68,7 @@ class _InlineVideoMuteButton extends StatelessWidget {
 /// The blur is clipped to the disc, so only a few hundred pixels of the video
 /// behind it are re-sampled each frame.
 class VideoMuteBadge extends StatelessWidget {
-  const VideoMuteBadge({
-    super.key,
-    required this.muted,
-    required this.onToggle,
-  });
+  const VideoMuteBadge({super.key, required this.muted, required this.onToggle});
 
   final bool muted;
   final VoidCallback onToggle;
@@ -122,10 +110,7 @@ class _GlassDisc extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.black.withValues(alpha: 0.4),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.24),
-                width: 0.75,
-              ),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.24), width: 0.75),
             ),
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -133,17 +118,10 @@ class _GlassDisc extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.center,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.16),
-                    Colors.white.withValues(alpha: 0),
-                  ],
+                  colors: [Colors.white.withValues(alpha: 0.16), Colors.white.withValues(alpha: 0)],
                 ),
               ),
-              child: Icon(
-                muted ? Icons.volume_off : Icons.volume_up,
-                size: 16,
-                color: Colors.white,
-              ),
+              child: Icon(muted ? Icons.volume_off : Icons.volume_up, size: 16, color: Colors.white),
             ),
           ),
         ),

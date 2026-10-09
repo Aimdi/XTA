@@ -17,10 +17,7 @@ const double _slack = kTweetTouchTarget - kTweetActionGlyphSize;
 /// Places an action glyph inside its 48dp target: centred, or pushed to the
 /// end of the target when [towardEnd], and level with the display name's line
 /// when [alignTop].
-EdgeInsetsDirectional tweetActionGlyphPadding({
-  bool towardEnd = false,
-  bool alignTop = false,
-}) {
+EdgeInsetsDirectional tweetActionGlyphPadding({bool towardEnd = false, bool alignTop = false}) {
   final start = towardEnd ? _slack - kTweetPairedGlyphInset : _slack / 2;
   return EdgeInsetsDirectional.only(
     start: start,

@@ -11,17 +11,10 @@ import 'package:xta/utils/paging.dart';
 
 typedef _Post = ({String id, DateTime? at, int likes});
 
-_Post _post(String id, {int? minute, int likes = 0}) => (
-  id: id,
-  at: minute == null ? null : DateTime.utc(2026, 1, 1, 12, minute),
-  likes: likes,
-);
+_Post _post(String id, {int? minute, int likes = 0}) =>
+    (id: id, at: minute == null ? null : DateTime.utc(2026, 1, 1, 12, minute), likes: likes);
 
-List<String> _replyIds(
-  List<_Post> replies,
-  ReplySort sort,
-  List<ReplySort> options,
-) => orderReplies(
+List<String> _replyIds(List<_Post> replies, ReplySort sort, List<ReplySort> options) => orderReplies(
   replies,
   sort,
   options: options,
@@ -29,17 +22,16 @@ List<String> _replyIds(
   likes: (r) => r.likes,
 ).map((r) => r.id).toList();
 
-MastodonPost _toot(String id, {String? parent, int? minute, int likes = 0}) =>
-    MastodonPost(
-      id: id,
-      replyToId: parent,
-      acct: 'a@example.social',
-      authorName: 'A',
-      text: id,
-      url: 'https://example.social/@a/$id',
-      publishedAt: minute == null ? null : DateTime.utc(2026, 1, 1, 12, minute),
-      favouritesCount: likes,
-    );
+MastodonPost _toot(String id, {String? parent, int? minute, int likes = 0}) => MastodonPost(
+  id: id,
+  replyToId: parent,
+  acct: 'a@example.social',
+  authorName: 'A',
+  text: id,
+  url: 'https://example.social/@a/$id',
+  publishedAt: minute == null ? null : DateTime.utc(2026, 1, 1, 12, minute),
+  favouritesCount: likes,
+);
 
 /// `/context` order: depth first, siblings oldest first.
 final _conversation = MastodonThread(
@@ -54,11 +46,8 @@ final _conversation = MastodonThread(
   ],
 );
 
-List<String> _tootOrder(ReplySort sort) => mastodonReplyRows(
-  _conversation,
-  {},
-  order: sort,
-).map((row) => row.post.id).toList();
+List<String> _tootOrder(ReplySort sort) =>
+    mastodonReplyRows(_conversation, {}, order: sort).map((row) => row.post.id).toList();
 
 void main() {
   group('X request variables', () {
@@ -71,19 +60,12 @@ void main() {
     });
 
     test('TweetDetail variables carry the ranking mode and cursor', () {
-      final first = Twitter.tweetDetailVariables(
-        '42',
-        rankingMode: xRankingMode(ReplySort.recent),
-      );
+      final first = Twitter.tweetDetailVariables('42', rankingMode: xRankingMode(ReplySort.recent));
       expect(first['focalTweetId'], '42');
       expect(first['rankingMode'], 'Recency');
       expect(first.containsKey('cursor'), isFalse);
 
-      final next = Twitter.tweetDetailVariables(
-        '42',
-        cursor: 'c1',
-        rankingMode: xRankingMode(ReplySort.mostLiked),
-      );
+      final next = Twitter.tweetDetailVariables('42', cursor: 'c1', rankingMode: xRankingMode(ReplySort.mostLiked));
       expect(next['rankingMode'], 'Likes');
       expect(next['cursor'], 'c1');
     });
@@ -101,14 +83,8 @@ void main() {
 
     test('an order the network lacks falls back to its default', () {
       expect(effectiveSort(ReplySort.oldest, xReplySorts), ReplySort.relevant);
-      expect(
-        effectiveSort(ReplySort.relevant, mastodonReplySorts),
-        ReplySort.oldest,
-      );
-      expect(
-        effectiveSort(ReplySort.mostLiked, blueskyReplySorts),
-        ReplySort.mostLiked,
-      );
+      expect(effectiveSort(ReplySort.relevant, mastodonReplySorts), ReplySort.oldest);
+      expect(effectiveSort(ReplySort.mostLiked, blueskyReplySorts), ReplySort.mostLiked);
       expect(effectiveSort(QuoteSort.oldest, xQuoteSorts), QuoteSort.recent);
       expect(effectiveSort(QuoteSort.top, pluginQuoteSorts), QuoteSort.recent);
     });
@@ -123,105 +99,44 @@ void main() {
     ];
 
     test('the network default keeps the order it sent', () {
-      expect(_replyIds(replies, ReplySort.relevant, blueskyReplySorts), [
-        'a',
-        'b',
-        'c',
-        'undated',
-      ]);
-      expect(_replyIds(replies, ReplySort.oldest, mastodonReplySorts), [
-        'a',
-        'b',
-        'c',
-        'undated',
-      ]);
+      expect(_replyIds(replies, ReplySort.relevant, blueskyReplySorts), ['a', 'b', 'c', 'undated']);
+      expect(_replyIds(replies, ReplySort.oldest, mastodonReplySorts), ['a', 'b', 'c', 'undated']);
     });
 
     test('recent and oldest sort by date, undated last either way', () {
-      expect(_replyIds(replies, ReplySort.recent, blueskyReplySorts), [
-        'b',
-        'c',
-        'a',
-        'undated',
-      ]);
-      expect(_replyIds(replies, ReplySort.oldest, blueskyReplySorts), [
-        'a',
-        'c',
-        'b',
-        'undated',
-      ]);
+      expect(_replyIds(replies, ReplySort.recent, blueskyReplySorts), ['b', 'c', 'a', 'undated']);
+      expect(_replyIds(replies, ReplySort.oldest, blueskyReplySorts), ['a', 'c', 'b', 'undated']);
     });
 
     test('most liked orders by likes and keeps ties in network order', () {
-      expect(_replyIds(replies, ReplySort.mostLiked, mastodonReplySorts), [
-        'b',
-        'a',
-        'c',
-        'undated',
-      ]);
+      expect(_replyIds(replies, ReplySort.mostLiked, mastodonReplySorts), ['b', 'a', 'c', 'undated']);
     });
   });
 
   group('Mastodon reply order', () {
     test('oldest is the /context order', () {
-      expect(_tootOrder(ReplySort.oldest), [
-        'r1',
-        'r1a',
-        'r2',
-        'r3',
-        'r3a',
-        'r3b',
-      ]);
+      expect(_tootOrder(ReplySort.oldest), ['r1', 'r1a', 'r2', 'r3', 'r3a', 'r3b']);
       // Relevance is not a Mastodon order: the server's order stands.
       expect(_tootOrder(ReplySort.relevant), _tootOrder(ReplySort.oldest));
     });
 
     test('recent orders siblings at every level and keeps sub-threads', () {
-      expect(_tootOrder(ReplySort.recent), [
-        'r2',
-        'r3',
-        'r3b',
-        'r3a',
-        'r1',
-        'r1a',
-      ]);
+      expect(_tootOrder(ReplySort.recent), ['r2', 'r3', 'r3b', 'r3a', 'r1', 'r1a']);
       final depths = {
-        for (final row in mastodonReplyRows(
-          _conversation,
-          {},
-          order: ReplySort.recent,
-        ))
-          row.post.id: row.depth,
+        for (final row in mastodonReplyRows(_conversation, {}, order: ReplySort.recent)) row.post.id: row.depth,
       };
       expect(depths, {'r2': 0, 'r3': 0, 'r3b': 1, 'r3a': 1, 'r1': 0, 'r1a': 1});
     });
 
     test('most liked keeps ties in server order', () {
-      expect(_tootOrder(ReplySort.mostLiked), [
-        'r2',
-        'r1',
-        'r1a',
-        'r3',
-        'r3b',
-        'r3a',
-      ]);
+      expect(_tootOrder(ReplySort.mostLiked), ['r2', 'r1', 'r1a', 'r3', 'r3b', 'r3a']);
     });
 
     test('the thread store starts from the session choice it can honour', () {
       final client = MastodonClient();
       addTearDown(client.httpClient.close);
-      final fromRelevant = MastodonThreadStore(
-        client,
-        const [],
-        _toot('focal'),
-        order: ReplySort.relevant,
-      );
-      final fromLiked = MastodonThreadStore(
-        client,
-        const [],
-        _toot('focal'),
-        order: ReplySort.mostLiked,
-      );
+      final fromRelevant = MastodonThreadStore(client, const [], _toot('focal'), order: ReplySort.relevant);
+      final fromLiked = MastodonThreadStore(client, const [], _toot('focal'), order: ReplySort.mostLiked);
       addTearDown(fromRelevant.destroy);
       addTearDown(fromLiked.destroy);
       expect(fromRelevant.state.order, ReplySort.oldest);
@@ -237,12 +152,8 @@ void main() {
       _post('b', minute: 30, likes: 2),
       _post('c', minute: 20, likes: 7),
     ];
-    List<String> ids(QuoteSort sort) => orderQuotes(
-      quotes,
-      sort,
-      postedAt: (q) => q.at,
-      likes: (q) => q.likes,
-    ).map((q) => q.id).toList();
+    List<String> ids(QuoteSort sort) =>
+        orderQuotes(quotes, sort, postedAt: (q) => q.at, likes: (q) => q.likes).map((q) => q.id).toList();
 
     test('recent, oldest and most liked sort what is loaded', () {
       expect(ids(QuoteSort.recent), ['b', 'c', 'a']);
@@ -255,10 +166,7 @@ void main() {
     test('the activity sort offers every device order', () {
       final store = ConversationSortStore()..selectQuotes(QuoteSort.mostLiked);
       addTearDown(store.destroy);
-      final sorted = pluginQuoteSort<_Post>(
-        postedAt: (q) => q.at,
-        likes: (q) => q.likes,
-      ).apply(store, quotes);
+      final sorted = pluginQuoteSort<_Post>(postedAt: (q) => q.at, likes: (q) => q.likes).apply(store, quotes);
       expect(sorted.items.map((q) => q.id), ['c', 'b', 'a']);
       final control = sorted.control as SortMenuButton<QuoteSort>;
       expect(control.value, QuoteSort.mostLiked);
@@ -277,55 +185,31 @@ void main() {
   });
 
   group('reposters', () {
-    final people = [
-      (name: 'a', followers: 5),
-      (name: 'b', followers: null),
-      (name: 'c', followers: 50),
-    ];
+    final people = [(name: 'a', followers: 5), (name: 'b', followers: null), (name: 'c', followers: 50)];
     int? followers(({String name, int? followers}) p) => p.followers;
 
     test('recent keeps the order the network returned', () {
-      expect(
-        sortReposters(
-          people,
-          ReposterSort.recent,
-          followers: followers,
-        ).map((p) => p.name),
-        ['a', 'b', 'c'],
-      );
+      expect(sortReposters(people, ReposterSort.recent, followers: followers).map((p) => p.name), ['a', 'b', 'c']);
     });
 
     test('most followers sorts on device, unknown counts last', () {
-      expect(
-        sortReposters(
-          people,
-          ReposterSort.mostFollowers,
-          followers: followers,
-        ).map((p) => p.name),
-        ['c', 'a', 'b'],
-      );
+      expect(sortReposters(people, ReposterSort.mostFollowers, followers: followers).map((p) => p.name), [
+        'c',
+        'a',
+        'b',
+      ]);
     });
 
     test('follower order is offered only when counts are present', () {
-      expect(reposterSortsFor(people, followers: followers), [
-        ReposterSort.recent,
-        ReposterSort.mostFollowers,
-      ]);
-      expect(
-        reposterSortsFor([(name: 'x', followers: null)], followers: followers),
-        [ReposterSort.recent],
-      );
+      expect(reposterSortsFor(people, followers: followers), [ReposterSort.recent, ReposterSort.mostFollowers]);
+      expect(reposterSortsFor([(name: 'x', followers: null)], followers: followers), [ReposterSort.recent]);
     });
 
     test('the activity sort hides its control without follower counts', () {
-      final store = ConversationSortStore()
-        ..selectReposters(ReposterSort.mostFollowers);
+      final store = ConversationSortStore()..selectReposters(ReposterSort.mostFollowers);
       addTearDown(store.destroy);
       final sort = pluginReposterSort(followers: followers);
-      final unknown = sort.apply(store, [
-        (name: 'x', followers: null),
-        (name: 'y', followers: null),
-      ]);
+      final unknown = sort.apply(store, [(name: 'x', followers: null), (name: 'y', followers: null)]);
       expect(unknown.control, isNull);
       expect(unknown.items.map((p) => p.name), ['x', 'y']);
       final known = sort.apply(store, people);
@@ -378,10 +262,7 @@ void main() {
         keys: const [0, 1],
         hasNextPage: true,
       );
-      final sorted = reorderPagingItems(
-        state,
-        (items) => [...items]..sort((a, b) => b.compareTo(a)),
-      );
+      final sorted = reorderPagingItems(state, (items) => [...items]..sort((a, b) => b.compareTo(a)));
       expect(sorted.pages, [
         [3, 2],
         [1],

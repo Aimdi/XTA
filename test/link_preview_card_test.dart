@@ -13,8 +13,7 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/tweet/_card.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
-const _article =
-    'https://www.washingtonpost.com/politics/2026/10/08/budget-vote/';
+const _article = 'https://www.washingtonpost.com/politics/2026/10/08/budget-vote/';
 const _longTitle =
     'Senate leaders strike a late-night deal on the budget after weeks of '
     'talks, sending the bill back to the House with amendments that could '
@@ -48,14 +47,9 @@ Future<void> _pump(
         supportedLocales: L10n.delegate.supportedLocales,
         home: Builder(
           builder: (context) => MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: TextScaler.linear(textScale)),
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
             child: Scaffold(
-              body: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: child,
-              ),
+              body: SingleChildScrollView(padding: const EdgeInsets.all(16), child: child),
             ),
           ),
         ),
@@ -68,14 +62,8 @@ Future<void> _pump(
 void main() {
   group('linkPreviewLayoutFor', () {
     test('an article is compact, with or without a picture', () {
-      expect(
-        linkPreviewLayoutFor(_article, hasImage: true),
-        LinkPreviewLayout.compact,
-      );
-      expect(
-        linkPreviewLayoutFor(_article, hasImage: false),
-        LinkPreviewLayout.compact,
-      );
+      expect(linkPreviewLayoutFor(_article, hasImage: true), LinkPreviewLayout.compact);
+      expect(linkPreviewLayoutFor(_article, hasImage: false), LinkPreviewLayout.compact);
     });
 
     test('a video page or a photo keeps the large picture', () {
@@ -85,45 +73,24 @@ void main() {
         'https://m.youtube.com/watch?v=abc',
         'https://vimeo.com/123',
       ]) {
-        expect(
-          linkPreviewLayoutFor(url, hasImage: true),
-          LinkPreviewLayout.large,
-          reason: url,
-        );
+        expect(linkPreviewLayoutFor(url, hasImage: true), LinkPreviewLayout.large, reason: url);
       }
-      expect(
-        linkPreviewLayoutFor(_article, hasImage: true, kind: 'video'),
-        LinkPreviewLayout.large,
-      );
-      expect(
-        linkPreviewLayoutFor(_article, hasImage: true, kind: 'photo'),
-        LinkPreviewLayout.large,
-      );
+      expect(linkPreviewLayoutFor(_article, hasImage: true, kind: 'video'), LinkPreviewLayout.large);
+      expect(linkPreviewLayoutFor(_article, hasImage: true, kind: 'photo'), LinkPreviewLayout.large);
     });
 
     test('nothing to show large means compact', () {
-      expect(
-        linkPreviewLayoutFor('https://youtu.be/abc', hasImage: false),
-        LinkPreviewLayout.compact,
-      );
+      expect(linkPreviewLayoutFor('https://youtu.be/abc', hasImage: false), LinkPreviewLayout.compact);
     });
   });
 
   test('linkDomain drops www and case', () {
-    expect(
-      linkDomain('https://WWW.WashingtonPost.com/a'),
-      'washingtonpost.com',
-    );
-    expect(
-      linkDomain('https://news.ycombinator.com/item'),
-      'news.ycombinator.com',
-    );
+    expect(linkDomain('https://WWW.WashingtonPost.com/a'), 'washingtonpost.com');
+    expect(linkDomain('https://news.ycombinator.com/item'), 'news.ycombinator.com');
     expect(linkDomain('nytimes.com'), 'nytimes.com');
   });
 
-  testWidgets('with an image: the tile shows it beside domain and title', (
-    tester,
-  ) async {
+  testWidgets('with an image: the tile shows it beside domain and title', (tester) async {
     var taps = 0;
     await _pump(
       tester,
@@ -151,10 +118,7 @@ void main() {
   });
 
   testWidgets('without an image: a link glyph holds the tile', (tester) async {
-    await _pump(
-      tester,
-      LinkPreviewCard(url: _article, title: 'Budget vote', onTap: () {}),
-    );
+    await _pump(tester, LinkPreviewCard(url: _article, title: 'Budget vote', onTap: () {}));
 
     expect(find.byIcon(Icons.link), findsOneWidget);
     expect(find.text('washingtonpost.com'), findsOneWidget);
@@ -163,18 +127,12 @@ void main() {
   testWidgets('a missing title falls back to the address', (tester) async {
     await _pump(tester, LinkPreviewCard(url: _article, onTap: () {}));
 
-    expect(
-      find.text('www.washingtonpost.com/politics/2026/10/08/budget-vote/'),
-      findsOneWidget,
-    );
+    expect(find.text('www.washingtonpost.com/politics/2026/10/08/budget-vote/'), findsOneWidget);
   });
 
   testWidgets('screen readers hear one link: domain and title', (tester) async {
     final handle = tester.ensureSemantics();
-    await _pump(
-      tester,
-      LinkPreviewCard(url: _article, title: 'Budget vote', onTap: () {}),
-    );
+    await _pump(tester, LinkPreviewCard(url: _article, title: 'Budget vote', onTap: () {}));
 
     final node = tester.getSemantics(find.byType(LinkPreviewCard));
     expect(node.label, 'washingtonpost.com, Budget vote');
@@ -182,37 +140,29 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets(
-    'a long title fits a 320dp phone at double text size in true black',
-    (tester) async {
-      await _pump(
-        tester,
-        LinkPreviewCard(
-          url: _article,
-          title: _longTitle,
-          imageUrl: 'https://img.example/budget.jpg',
-          imageBuilder: _fakeImage,
-          onTap: () {},
-        ),
-        width: 320,
-        textScale: 2,
-        dark: true,
-      );
+  testWidgets('a long title fits a 320dp phone at double text size in true black', (tester) async {
+    await _pump(
+      tester,
+      LinkPreviewCard(
+        url: _article,
+        title: _longTitle,
+        imageUrl: 'https://img.example/budget.jpg',
+        imageBuilder: _fakeImage,
+        onTap: () {},
+      ),
+      width: 320,
+      textScale: 2,
+      dark: true,
+    );
 
-      expect(tester.takeException(), isNull);
-      final title = tester.widget<Text>(find.text(_longTitle));
-      expect(title.maxLines, 3);
-      expect(title.overflow, TextOverflow.ellipsis);
-      expect(
-        Theme.of(tester.element(find.byType(LinkPreviewCard))).brightness,
-        Brightness.dark,
-      );
-    },
-  );
+    expect(tester.takeException(), isNull);
+    final title = tester.widget<Text>(find.text(_longTitle));
+    expect(title.maxLines, 3);
+    expect(title.overflow, TextOverflow.ellipsis);
+    expect(Theme.of(tester.element(find.byType(LinkPreviewCard))).brightness, Brightness.dark);
+  });
 
-  testWidgets('the large layout keeps the picture across the card', (
-    tester,
-  ) async {
+  testWidgets('the large layout keeps the picture across the card', (tester) async {
     await _pump(
       tester,
       LinkPreviewCard(
@@ -247,9 +197,7 @@ void main() {
     };
 
     for (final name in ['summary', 'summary_large_image']) {
-      testWidgets('an article in a $name card is the compact row', (
-        tester,
-      ) async {
+      testWidgets('an article in a $name card is the compact row', (tester) async {
         await _pump(
           tester,
           TweetCard(tweet: tweet(), card: card(name, _article)),
@@ -269,8 +217,7 @@ void main() {
     final launched = <String>[];
 
     setUp(() {
-      final messenger =
-          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       messenger.setMockMethodCallHandler(launcher, (call) async {
         launched.add((call.arguments as Map)['url'] as String);
         return true;
@@ -279,8 +226,7 @@ void main() {
     });
 
     tearDown(() {
-      final messenger =
-          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       messenger.setMockMethodCallHandler(launcher, null);
       messenger.setMockMethodCallHandler(resolver, null);
       launched.clear();
@@ -293,16 +239,10 @@ void main() {
       text: 'Worth a read',
       url: 'https://studio.example/@maya/1',
       repliesCount: 3,
-      linkCard: MastodonLinkCard(
-        url: _article,
-        title: 'Budget vote',
-        description: 'What changed',
-      ),
+      linkCard: MastodonLinkCard(url: _article, title: 'Budget vote', description: 'What changed'),
     );
 
-    testWidgets('a Mastodon article link is the shared compact row', (
-      tester,
-    ) async {
+    testWidgets('a Mastodon article link is the shared compact row', (tester) async {
       await _pump(tester, const MastodonPostCard(post: post));
 
       expect(find.byType(LinkPreviewCard), findsOneWidget);
@@ -310,14 +250,8 @@ void main() {
       expect(find.text('What changed'), findsNothing, reason: 'compact row');
     });
 
-    testWidgets('with a browser chosen in settings, the link leaves the app', (
-      tester,
-    ) async {
-      await _pump(
-        tester,
-        const MastodonPostCard(post: post),
-        prefs: {optionOpenLinksInEmbeddedBrowser: false},
-      );
+    testWidgets('with a browser chosen in settings, the link leaves the app', (tester) async {
+      await _pump(tester, const MastodonPostCard(post: post), prefs: {optionOpenLinksInEmbeddedBrowser: false});
 
       await tester.tap(find.byType(LinkPreviewCard));
       await tester.pumpAndSettle();

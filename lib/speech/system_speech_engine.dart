@@ -61,9 +61,7 @@ class SystemSpeechEngine implements SpeechEngine {
       _tts,
       textLanguage: textLanguage,
       voiceLocale: choice.voiceLocale,
-      appLocale: languageTagForShortLocale(
-        Intl.shortLocale(Intl.getCurrentLocale()),
-      ),
+      appLocale: languageTagForShortLocale(Intl.shortLocale(Intl.getCurrentLocale())),
     );
     await _applyLanguageAndVoice(choice, language);
     await _quietly(() => _tts.setVolume(1));
@@ -109,8 +107,7 @@ class SystemSpeechEngine implements SpeechEngine {
   /// Every `FlutterTts()` takes over the one platform channel's callbacks,
   /// and the settings screens used to make their own — after which this
   /// engine never heard an utterance finish. Take them back before speaking.
-  void _claimCallbacks() =>
-      _channel.setMethodCallHandler(_tts.platformCallHandler);
+  void _claimCallbacks() => _channel.setMethodCallHandler(_tts.platformCallHandler);
 
   /// Queues [chunk]. A plugin that parks the call never answers; the start
   /// watchdog covers that.
@@ -154,20 +151,12 @@ class SystemSpeechEngine implements SpeechEngine {
   /// The language first, then the voice: Android's setLanguage picks that
   /// language's default voice, so the other order threw the chosen voice
   /// away. A voice in another language than the text is left out.
-  Future<void> _applyLanguageAndVoice(
-    TtsChoice choice,
-    String? language,
-  ) async {
+  Future<void> _applyLanguageAndVoice(TtsChoice choice, String? language) async {
     if (language != null) {
       await _quietly(() => _tts.setLanguage(language));
     }
     if (choice.hasVoice && voiceSuitsLanguage(choice.voiceLocale!, language)) {
-      await _quietly(
-        () => _tts.setVoice({
-          'name': choice.voiceName!,
-          'locale': choice.voiceLocale!,
-        }),
-      );
+      await _quietly(() => _tts.setVoice({'name': choice.voiceName!, 'locale': choice.voiceLocale!}));
     }
   }
 }
@@ -179,8 +168,7 @@ bool speakRefused(dynamic result) => result == 0 || result == false;
 /// True when a voice for [voiceLocale] can read text in [language].
 bool voiceSuitsLanguage(String voiceLocale, String? language) {
   if (language == null) return true;
-  String base(String tag) =>
-      tag.replaceAll('_', '-').split('-').first.toLowerCase();
+  String base(String tag) => tag.replaceAll('_', '-').split('-').first.toLowerCase();
   return base(voiceLocale) == base(language);
 }
 

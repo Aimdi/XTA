@@ -126,12 +126,7 @@ class ReplySortButton extends StatelessWidget {
   final List<ReplySort> options;
   final ValueChanged<ReplySort> onSelected;
 
-  const ReplySortButton({
-    super.key,
-    required this.value,
-    required this.options,
-    required this.onSelected,
-  });
+  const ReplySortButton({super.key, required this.value, required this.options, required this.onSelected});
 
   @override
   Widget build(BuildContext context) => SortMenuButton<ReplySort>(

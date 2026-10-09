@@ -25,28 +25,17 @@ UserSubscription _sub(String id) => UserSubscription(
 /// [followers] subscriptions follow `p`; one more was read and does not.
 Map<String, RememberedFollows> _remembered(int followers) => {
   for (var i = 0; i < followers; i++)
-    's$i': (
-      at: DateTime(2026, 10),
-      follows: const [DiscoveryFollow(id: 'p', handle: 'p', name: 'P')],
-    ),
+    's$i': (at: DateTime(2026, 10), follows: const [DiscoveryFollow(id: 'p', handle: 'p', name: 'P')]),
   'other': (at: DateTime(2026, 10), follows: const []),
 };
 
-Future<void> _pump(
-  WidgetTester tester,
-  int followers, {
-  Locale locale = const Locale('en'),
-}) async {
+Future<void> _pump(WidgetTester tester, int followers, {Locale locale = const Locale('en')}) async {
   final prefs = PrefServiceCache();
   final groups = GroupsModel(prefs);
   final subscriptions = SubscriptionsModel(prefs, groups);
   addTearDown(subscriptions.destroy);
   addTearDown(groups.destroy);
-  final subs = [
-    for (var i = 0; i < followers; i++) _sub('s$i'),
-    _sub('other'),
-    _sub('unread'),
-  ];
+  final subs = [for (var i = 0; i < followers; i++) _sub('s$i'), _sub('other'), _sub('unread')];
   await tester.pumpWidget(
     MultiProvider(
       providers: [
@@ -66,9 +55,7 @@ Future<void> _pump(
           body: ProfileFollowedByLine(
             profileId: 'p',
             subscriptions: subs,
-            createStore: () => ProfileFollowedByStore(
-              remembered: () async => _remembered(followers),
-            ),
+            createStore: () => ProfileFollowedByStore(remembered: () async => _remembered(followers)),
           ),
         ),
       ),
@@ -77,13 +64,8 @@ Future<void> _pump(
   await tester.pumpAndSettle();
 }
 
-int _avatars() => find
-    .descendant(
-      of: find.byType(ProfileFollowedByRow),
-      matching: find.byType(UserAvatar),
-    )
-    .evaluate()
-    .length;
+int _avatars() =>
+    find.descendant(of: find.byType(ProfileFollowedByRow), matching: find.byType(UserAvatar)).evaluate().length;
 
 void main() {
   testWidgets('no known follower shows nothing', (tester) async {
@@ -106,26 +88,15 @@ void main() {
 
   testWidgets('three followers', (tester) async {
     await _pump(tester, 3);
-    expect(
-      find.text('Followed by Name s0, Name s1 and Name s2'),
-      findsOneWidget,
-    );
+    expect(find.text('Followed by Name s0, Name s1 and Name s2'), findsOneWidget);
     expect(_avatars(), 3);
   });
 
-  testWidgets('many followers cap the avatars and open the list', (
-    tester,
-  ) async {
+  testWidgets('many followers cap the avatars and open the list', (tester) async {
     await _pump(tester, 14);
-    expect(
-      find.text('Followed by Name s0, Name s1 and 12 others you subscribe to'),
-      findsOneWidget,
-    );
+    expect(find.text('Followed by Name s0, Name s1 and 12 others you subscribe to'), findsOneWidget);
     expect(_avatars(), 3);
-    expect(
-      tester.getSize(find.byType(ProfileFollowedByRow)).height,
-      greaterThanOrEqualTo(48),
-    );
+    expect(tester.getSize(find.byType(ProfileFollowedByRow)).height, greaterThanOrEqualTo(48));
 
     await tester.tap(find.byType(ProfileFollowedByRow));
     await tester.pumpAndSettle();
@@ -133,14 +104,8 @@ void main() {
     expect(find.text('Followers you subscribe to'), findsOneWidget);
     expect(find.byType(UserTile), findsWidgets);
     expect(find.text('Name s0'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.textContaining('for 15 of your 16 subscriptions'),
-      200,
-    );
-    expect(
-      find.textContaining('for 15 of your 16 subscriptions'),
-      findsOneWidget,
-    );
+    await tester.scrollUntilVisible(find.textContaining('for 15 of your 16 subscriptions'), 200);
+    expect(find.textContaining('for 15 of your 16 subscriptions'), findsOneWidget);
   });
 
   testWidgets('a long German line wraps on a narrow screen', (tester) async {

@@ -146,8 +146,7 @@ class OfflineSpeechEngine implements SpeechEngine, SpeechLookahead {
     }
   }
 
-  void _dropClip(Future<String?> clip) =>
-      unawaited(clip.then((path) => path == null ? null : _discard(path)));
+  void _dropClip(Future<String?> clip) => unawaited(clip.then((path) => path == null ? null : _discard(path)));
 
   @override
   Future<void> stop() async {

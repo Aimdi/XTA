@@ -9,10 +9,7 @@ final kokoro = OfflineVoice(
   id: 'en-kokoro',
   name: 'Kokoro',
   locale: 'en_US',
-  url: Uri.https(
-    'github.com',
-    '/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-int8-en-v0_19.tar.bz2',
-  ),
+  url: Uri.https('github.com', '/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-int8-en-v0_19.tar.bz2'),
   archiveBytes: 103248205,
   sha256: 'c9f0dd393615805b0bab050c340834d5e684e732aec91c0e860cd30e982c08bd',
   licence: 'Apache-2.0',
@@ -58,11 +55,7 @@ void main() {
         expect(voice.requiredFiles, contains('tokens.txt'));
         expect(voice.requiredFiles, contains('espeak-ng-data/phontab'));
         expect(voice.licence, isNotEmpty);
-        expect(
-          voice.voices != null,
-          voice.kind == VoiceModelKind.kokoro,
-          reason: 'only Kokoro has speaker embeddings',
-        );
+        expect(voice.voices != null, voice.kind == VoiceModelKind.kokoro, reason: 'only Kokoro has speaker embeddings');
       }
     });
 
@@ -125,10 +118,7 @@ void main() {
     test('loads VITS voices with their espeak-ng data', () {
       final voice = offlineVoiceById('de-thorsten-emotional')!;
       final config = sherpaConfigFor((voice: voice, path: '/v/de'));
-      expect(
-        config.model.vits.model,
-        '/v/de/de_DE-thorsten_emotional-medium.onnx',
-      );
+      expect(config.model.vits.model, '/v/de/de_DE-thorsten_emotional-medium.onnx');
       expect(config.model.vits.tokens, '/v/de/tokens.txt');
       expect(config.model.vits.dataDir, '/v/de/espeak-ng-data');
       expect(config.model.kokoro.model, isEmpty);

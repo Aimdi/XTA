@@ -76,18 +76,10 @@ class OfflineVoice {
   String get language => locale.split('_').first;
 
   /// Files that must exist for the voice to load.
-  List<String> get requiredFiles => [
-    model,
-    tokens,
-    '$dataDir/phontab',
-    ?voices,
-  ];
+  List<String> get requiredFiles => [model, tokens, '$dataDir/phontab', ?voices];
 }
 
-Uri _ttsModel(String name) => Uri.https(
-  'github.com',
-  '/k2-fsa/sherpa-onnx/releases/download/tts-models/$name.tar.bz2',
-);
+Uri _ttsModel(String name) => Uri.https('github.com', '/k2-fsa/sherpa-onnx/releases/download/tts-models/$name.tar.bz2');
 
 /// Hashes and sizes were taken from the archives downloaded from these URLs
 /// on 2026-10-09.
@@ -134,10 +126,7 @@ OfflineVoice? offlineVoiceById(String id) {
 }
 
 /// The voice that should read [language] out of [installed], or null.
-OfflineVoice? pickOfflineVoice(
-  Iterable<OfflineVoice> installed,
-  String? language,
-) {
+OfflineVoice? pickOfflineVoice(Iterable<OfflineVoice> installed, String? language) {
   if (language == null || language.isEmpty) return null;
   final base = language.replaceAll('-', '_').split('_').first.toLowerCase();
   final matching = installed.where((voice) => voice.language == base).toList()

@@ -12,8 +12,7 @@ class FocalPostScope extends InheritedWidget {
   const FocalPostScope({super.key, required this.id, required super.child});
 
   /// The opened post's id, or null outside a conversation screen.
-  static String? idOf(BuildContext context) =>
-      context.getInheritedWidgetOfExactType<FocalPostScope>()?.id;
+  static String? idOf(BuildContext context) => context.getInheritedWidgetOfExactType<FocalPostScope>()?.id;
 
   @override
   bool updateShouldNotify(FocalPostScope oldWidget) => id != oldWidget.id;
@@ -21,11 +20,7 @@ class FocalPostScope extends InheritedWidget {
 
 /// "16:12" and "9. Okt. 2026" for [createdAt] in [locale], honouring the
 /// device's 24-hour setting.
-(String, String) focalPostTimeAndDate(
-  DateTime createdAt,
-  String locale, {
-  required bool use24Hour,
-}) {
+(String, String) focalPostTimeAndDate(DateTime createdAt, String locale, {required bool use24Hour}) {
   final local = createdAt.toLocal();
   final time = use24Hour ? DateFormat.Hm(locale) : DateFormat.jm(locale);
   return (time.format(local), DateFormat.yMMMd(locale).format(local));
@@ -37,11 +32,7 @@ class TweetFocalMetaLine extends StatelessWidget {
   final DateTime? createdAt;
   final int? views;
 
-  const TweetFocalMetaLine({
-    super.key,
-    required this.createdAt,
-    required this.views,
-  });
+  const TweetFocalMetaLine({super.key, required this.createdAt, required this.views});
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +71,7 @@ class TweetFocalMetaLine extends StatelessWidget {
   /// the language puts it.
   List<InlineSpan> _viewsSpans(BuildContext context, TextStyle style) {
     final count = formatEngagementCount(views!);
-    final label = L10n.of(
-      context,
-    ).post_views_count(viewsPluralCount(views!), count);
+    final label = L10n.of(context).post_views_count(viewsPluralCount(views!), count);
     final at = label.indexOf(count);
     if (at < 0) {
       return [TextSpan(text: label)];
@@ -91,10 +80,7 @@ class TweetFocalMetaLine extends StatelessWidget {
       TextSpan(text: label.substring(0, at)),
       TextSpan(
         text: count,
-        style: style.copyWith(
-          color: tweetPrimaryColor(context),
-          fontWeight: FontWeight.w700,
-        ),
+        style: style.copyWith(color: tweetPrimaryColor(context), fontWeight: FontWeight.w700),
       ),
       TextSpan(text: label.substring(at + count.length)),
     ];

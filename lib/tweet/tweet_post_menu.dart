@@ -20,11 +20,7 @@ class TweetPostMenuButton extends StatelessWidget {
   final TweetWithCard tweet;
   final String shareBaseUrl;
 
-  const TweetPostMenuButton({
-    super.key,
-    required this.tweet,
-    required this.shareBaseUrl,
-  });
+  const TweetPostMenuButton({super.key, required this.tweet, required this.shareBaseUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -36,31 +32,22 @@ class TweetPostMenuButton extends StatelessWidget {
       color: tweetFooterButtonsColorOf(context),
       style: tweetActionButtonStyle(tweetActionGlyphPadding(alignTop: true)),
       tooltip: L10n.of(context).more_info,
-      onPressed: tweetId == null || url == null
-          ? null
-          : () => _showActions(context, tweetId, url),
+      onPressed: tweetId == null || url == null ? null : () => _showActions(context, tweetId, url),
     );
   }
 
   void _showActions(BuildContext context, String tweetId, String url) {
     showPluginPostActions(
       context,
-      post: PluginPostArchive(
-        id: tweetId,
-        userId: tweet.user?.idStr ?? '',
-        content: tweet.toJson(),
-      ),
+      post: PluginPostArchive(id: tweetId, userId: tweet.user?.idStr ?? '', content: tweet.toJson()),
       url: url,
       onGroup: _canFileAuthor ? () => _fileAuthorInGroups(context) : null,
       onQuotes: () => openQuotesAndRetweets(context, tweetId: tweetId),
-      onReposts: () =>
-          openQuotesAndRetweets(context, tweetId: tweetId, initialTab: 1),
+      onReposts: () => openQuotesAndRetweets(context, tweetId: tweetId, initialTab: 1),
     );
   }
 
-  bool get _canFileAuthor =>
-      tweet.user?.idStr?.isNotEmpty == true &&
-      openableProfile(tweet.user) != null;
+  bool get _canFileAuthor => tweet.user?.idStr?.isNotEmpty == true && openableProfile(tweet.user) != null;
 
   Future<void> _fileAuthorInGroups(BuildContext context) async {
     final author = tweet.user!;
@@ -78,9 +65,7 @@ class TweetPostMenuButton extends StatelessWidget {
     await pickUserGroups(
       context,
       user: user,
-      followed: context.read<SubscriptionsModel>().state.any(
-        (e) => e.id == user.id,
-      ),
+      followed: context.read<SubscriptionsModel>().state.any((e) => e.id == user.id),
       groupsForUser: groups,
     );
   }

@@ -35,11 +35,7 @@ class Harness {
   );
 }
 
-Future<void> pump(
-  WidgetTester tester,
-  VoiceDownloadStore store, {
-  double scale = 1,
-}) async {
+Future<void> pump(WidgetTester tester, VoiceDownloadStore store, {double scale = 1}) async {
   tester.view.physicalSize = const Size(320, 640);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -54,9 +50,7 @@ Future<void> pump(
         ],
         supportedLocales: L10n.delegate.supportedLocales,
         builder: (context, app) => MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.linear(scale)),
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
           child: app!,
         ),
         home: Scaffold(
@@ -72,20 +66,14 @@ Future<void> pump(
 /// each await on it needs a round of real time and then a pump.
 Future<void> settleFiles(WidgetTester tester) async {
   for (var round = 0; round < 6; round++) {
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 20)),
-    );
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
     await tester.pump();
   }
 }
 
-Finder tileOf(OfflineVoice voice) => find.ancestor(
-  of: find.text(voice.name),
-  matching: find.byType(OfflineVoiceTile),
-);
+Finder tileOf(OfflineVoice voice) => find.ancestor(of: find.text(voice.name), matching: find.byType(OfflineVoiceTile));
 
-Finder inTile(OfflineVoice voice, Finder finder) =>
-    find.descendant(of: tileOf(voice), matching: finder);
+Finder inTile(OfflineVoice voice, Finder finder) => find.descendant(of: tileOf(voice), matching: finder);
 
 void main() {
   late Harness harness;
@@ -96,22 +84,14 @@ void main() {
     harness.root.deleteSync(recursive: true);
   });
 
-  testWidgets('lists every voice with language, size and licence', (
-    tester,
-  ) async {
+  testWidgets('lists every voice with language, size and licence', (tester) async {
     await pump(tester, harness.store);
 
     expect(find.text('Downloaded voices'), findsOneWidget);
     expect(find.text('Use a downloaded voice'), findsOneWidget);
     expect(find.textContaining('GitHub (k2-fsa/sherpa-onnx)'), findsOneWidget);
-    expect(
-      find.text('Deutsch (Deutschland) · 22.4 MiB · License: CC0-1.0'),
-      findsOneWidget,
-    );
-    expect(
-      find.textContaining('English (United States) · 22.3 MiB'),
-      findsOneWidget,
-    );
+    expect(find.text('Deutsch (Deutschland) · 22.4 MiB · License: CC0-1.0'), findsOneWidget);
+    expect(find.textContaining('English (United States) · 22.3 MiB'), findsOneWidget);
     expect(find.byTooltip('Download'), findsNWidgets(2));
     expect(harness.requested, isEmpty, reason: 'nothing until a tap');
   });
@@ -138,18 +118,12 @@ void main() {
 
   testWidgets('installing, ready and failed states', (tester) async {
     await pump(tester, harness.store);
-    harness.store.update({
-      german.id: const VoiceInstalling(),
-      english.id: const VoiceFailed(VoiceFailure.checksum),
-    });
+    harness.store.update({german.id: const VoiceInstalling(), english.id: const VoiceFailed(VoiceFailure.checksum)});
     await tester.pump();
 
     expect(inTile(german, find.text('Checking and unpacking…')), findsOne);
     expect(inTile(german, find.byType(CircularProgressIndicator)), findsOne);
-    expect(
-      inTile(english, find.textContaining('did not match the expected file')),
-      findsOne,
-    );
+    expect(inTile(english, find.textContaining('did not match the expected file')), findsOne);
     expect(inTile(english, find.byTooltip('Retry')), findsOne);
 
     harness.store.update({german.id: VoiceReady('/x', 40 * 1024 * 1024)});
@@ -159,8 +133,7 @@ void main() {
   });
 
   testWidgets('delete asks first, then removes the voice', (tester) async {
-    final folder = Directory('${harness.root.path}/${german.id}')
-      ..createSync(recursive: true);
+    final folder = Directory('${harness.root.path}/${german.id}')..createSync(recursive: true);
     harness.store.update({german.id: VoiceReady(folder.path, 1)});
     await pump(tester, harness.store);
 
@@ -181,9 +154,7 @@ void main() {
     expect(folder.existsSync(), isFalse);
   });
 
-  testWidgets('fits 320 dp at large text with full-size tap targets', (
-    tester,
-  ) async {
+  testWidgets('fits 320 dp at large text with full-size tap targets', (tester) async {
     harness.store.update({
       german.id: const VoiceDownloading(5 << 20, 23479221),
       english.id: VoiceReady('/x', 40 << 20),
@@ -196,10 +167,7 @@ void main() {
     for (final button in find.byType(IconButton).evaluate()) {
       final box = button.renderObject! as RenderBox;
       expect(box.size.width, greaterThanOrEqualTo(48));
-      expect(
-        box.localToGlobal(box.size.bottomRight(Offset.zero)).dx,
-        lessThanOrEqualTo(320),
-      );
+      expect(box.localToGlobal(box.size.bottomRight(Offset.zero)).dx, lessThanOrEqualTo(320));
     }
   });
 }

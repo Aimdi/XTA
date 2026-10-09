@@ -20,13 +20,12 @@ import 'package:xta/user.dart';
 import 'support/bluesky_reading_harness.dart';
 import 'support/mastodon_harness.dart';
 
-BlueskyPost _blue(String id, String text, String at, int likes) =>
-    BlueskyPost.fromSnapshot({
-      ...bluePost(id, parent: 'root').toJson(),
-      'text': text,
-      'publishedAt': at,
-      'likeCount': likes,
-    });
+BlueskyPost _blue(String id, String text, String at, int likes) => BlueskyPost.fromSnapshot({
+  ...bluePost(id, parent: 'root').toJson(),
+  'text': text,
+  'publishedAt': at,
+  'likeCount': likes,
+});
 
 final _blueThread = BlueskyThread(
   post: bluePost('root'),
@@ -50,10 +49,7 @@ MastodonPost _toot(String id, int hour, int likes) => MastodonPost(
 
 class _TootClient extends MastodonFixtureClient {
   @override
-  Future<MastodonThread> fetchThreadAnywhere(
-    List<String> instances,
-    MastodonPost seed,
-  ) async => MastodonThread(
+  Future<MastodonThread> fetchThreadAnywhere(List<String> instances, MastodonPost seed) async => MastodonThread(
     status: _toot('root', 9, 0),
     descendants: [_toot('t1', 10, 2), _toot('t2', 11, 9), _toot('t3', 12, 4)],
   );
@@ -74,9 +70,7 @@ Future<void> _settle(WidgetTester tester) async {
 }
 
 List<String> _order(WidgetTester tester, List<String> texts) {
-  final positions = {
-    for (final text in texts) text: tester.getTopLeft(find.text(text)).dy,
-  };
+  final positions = {for (final text in texts) text: tester.getTopLeft(find.text(text)).dy};
   return [...texts]..sort((a, b) => positions[a]!.compareTo(positions[b]!));
 }
 
@@ -103,9 +97,7 @@ Widget _localized(ConversationSortStore sorts, Widget home) {
       providers: [
         Provider<ConversationSortStore>.value(value: sorts),
         Provider<GroupsModel>.value(value: groups),
-        Provider<SubscriptionsModel>(
-          create: (_) => SubscriptionsModel(prefs, groups),
-        ),
+        Provider<SubscriptionsModel>(create: (_) => SubscriptionsModel(prefs, groups)),
       ],
       child: MaterialApp(
         localizationsDelegates: const [
@@ -133,9 +125,7 @@ typedef _Quote = ({String text, int at, int likes});
 const _blueTexts = ['early and popular', 'late and quiet', 'middle and liked'];
 
 void main() {
-  testWidgets('the reply sort reorders a Bluesky thread for the session', (
-    tester,
-  ) async {
+  testWidgets('the reply sort reorders a Bluesky thread for the session', (tester) async {
     _tallView(tester);
     final h = BlueReadingHarness();
     addTearDown(() => h.close(tester));
@@ -150,18 +140,10 @@ void main() {
 
     await _choose(tester, control, 'Recent');
     expect(h.sorts.state.replies, ReplySort.recent);
-    expect(_order(tester, _blueTexts), [
-      'late and quiet',
-      'middle and liked',
-      'early and popular',
-    ]);
+    expect(_order(tester, _blueTexts), ['late and quiet', 'middle and liked', 'early and popular']);
 
     await _choose(tester, control, 'Most liked');
-    expect(_order(tester, _blueTexts), [
-      'early and popular',
-      'middle and liked',
-      'late and quiet',
-    ]);
+    expect(_order(tester, _blueTexts), ['early and popular', 'middle and liked', 'late and quiet']);
 
     // A thread opened later in the session starts from the same choice.
     await tester.pumpWidget(const SizedBox());
@@ -171,35 +153,25 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Mastodon falls back to its own order and sorts on device', (
-    tester,
-  ) async {
+  testWidgets('Mastodon falls back to its own order and sorts on device', (tester) async {
     _tallView(tester);
     final h = MastodonHarness(client: _TootClient());
     addTearDown(() => h.close(tester));
     const texts = ['Toot t1', 'Toot t2', 'Toot t3'];
 
-    await tester.pumpWidget(
-      h.app(child: MastodonThreadScreen(post: _toot('root', 9, 0))),
-    );
+    await tester.pumpWidget(h.app(child: MastodonThreadScreen(post: _toot('root', 9, 0))));
     await _settle(tester);
     // Relevance is the session default but not a Mastodon order.
     expect(find.text('Oldest'), findsOneWidget);
     expect(_order(tester, texts), texts);
 
-    await _choose(
-      tester,
-      find.byKey(const ValueKey('mastodon-thread-sort')),
-      'Most liked',
-    );
+    await _choose(tester, find.byKey(const ValueKey('mastodon-thread-sort')), 'Most liked');
     expect(h.sorts.state.replies, ReplySort.mostLiked);
     expect(_order(tester, texts), ['Toot t2', 'Toot t3', 'Toot t1']);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('a plugin quote list offers device orders above its items', (
-    tester,
-  ) async {
+  testWidgets('a plugin quote list offers device orders above its items', (tester) async {
     _tallView(tester);
     final sorts = ConversationSortStore();
     addTearDown(sorts.destroy);
@@ -222,8 +194,7 @@ void main() {
               loader: (_) async => const PluginActivityPage(quotes),
               idOf: (quote) => quote.text,
               errorLabel: (_, _) => 'error',
-              itemBuilder: (context, quote) =>
-                  ListTile(title: Text(quote.text)),
+              itemBuilder: (context, quote) => ListTile(title: Text(quote.text)),
               sort: pluginQuoteSort(
                 postedAt: (quote) => DateTime.utc(2026, 1, quote.at),
                 likes: (quote) => quote.likes,
@@ -238,29 +209,16 @@ void main() {
     await _settle(tester);
 
     expect(find.text('Recent'), findsOneWidget);
-    expect(_order(tester, texts), [
-      'third quote',
-      'second quote',
-      'first quote',
-    ]);
-    expect(
-      tester.getTopLeft(find.text('Recent')).dy,
-      lessThan(tester.getTopLeft(find.text('third quote')).dy),
-    );
+    expect(_order(tester, texts), ['third quote', 'second quote', 'first quote']);
+    expect(tester.getTopLeft(find.text('Recent')).dy, lessThan(tester.getTopLeft(find.text('third quote')).dy));
 
     await _choose(tester, find.text('Recent'), 'Most liked');
     expect(sorts.state.quotes, QuoteSort.mostLiked);
-    expect(_order(tester, texts), [
-      'second quote',
-      'first quote',
-      'third quote',
-    ]);
+    expect(_order(tester, texts), ['second quote', 'first quote', 'third quote']);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('X reposters offer follower order only with follower counts', (
-    tester,
-  ) async {
+  testWidgets('X reposters offer follower order only with follower counts', (tester) async {
     _tallView(tester);
     final sorts = ConversationSortStore();
     addTearDown(sorts.destroy);
@@ -272,14 +230,8 @@ void main() {
         Scaffold(
           body: RetweetersList(
             tweetId: '1',
-            loadPage: (_) async => (
-              items: [
-                _reposter('1', 10),
-                _reposter('2', 900),
-                _reposter('3', null),
-              ],
-              nextCursor: null,
-            ),
+            loadPage: (_) async =>
+                (items: [_reposter('1', 10), _reposter('2', 900), _reposter('3', null)], nextCursor: null),
           ),
         ),
       ),
@@ -299,10 +251,7 @@ void main() {
           body: RetweetersList(
             key: const ValueKey('no-counts'),
             tweetId: '2',
-            loadPage: (_) async => (
-              items: [_reposter('4', null), _reposter('5', null)],
-              nextCursor: null,
-            ),
+            loadPage: (_) async => (items: [_reposter('4', null), _reposter('5', null)], nextCursor: null),
           ),
         ),
       ),

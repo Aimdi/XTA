@@ -22,22 +22,14 @@ class LinkPostContextBar extends StatelessWidget {
   final VoidCallback onBackToPost;
   final VoidCallback? onSharePost;
 
-  const LinkPostContextBar({
-    super.key,
-    required this.post,
-    required this.onBackToPost,
-    this.onSharePost,
-  });
+  const LinkPostContextBar({super.key, required this.post, required this.onBackToPost, this.onSharePost});
 
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(28);
     final surface = tweetSurfaceColor(context);
     return Material(
-      color: Color.alphaBlend(
-        tweetPrimaryColor(context).withValues(alpha: 0.06),
-        surface,
-      ),
+      color: Color.alphaBlend(tweetPrimaryColor(context).withValues(alpha: 0.06), surface),
       elevation: 3,
       shadowColor: Colors.black54,
       shape: RoundedRectangleBorder(
@@ -52,11 +44,7 @@ class LinkPostContextBar extends StatelessWidget {
             IconButton(
               tooltip: L10n.of(context).share_tweet_link,
               onPressed: onSharePost,
-              icon: Icon(
-                Icons.send_outlined,
-                size: kTweetActionIconSize,
-                color: tweetSecondaryColor(context),
-              ),
+              icon: Icon(Icons.send_outlined, size: kTweetActionIconSize, color: tweetSecondaryColor(context)),
             ),
           _mark(),
         ],
@@ -80,12 +68,7 @@ class LinkPostContextBar extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: kTweetTouchTarget + 8),
           child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              kTweetSpace2 + 2,
-              kTweetSpace2,
-              kTweetSpace1,
-              kTweetSpace2,
-            ),
+            padding: const EdgeInsetsDirectional.fromSTEB(kTweetSpace2 + 2, kTweetSpace2, kTweetSpace1, kTweetSpace2),
             child: Row(
               children: [
                 _avatar(context),
@@ -114,10 +97,8 @@ class LinkPostContextBar extends StatelessWidget {
         width: _avatarSize,
         height: _avatarSize,
         fit: BoxFit.cover,
-        cacheWidth: (_avatarSize * MediaQuery.devicePixelRatioOf(context))
-            .ceil(),
-        loadStateChanged: (state) =>
-            state.extendedImageLoadState == LoadState.failed ? fallback : null,
+        cacheWidth: (_avatarSize * MediaQuery.devicePixelRatioOf(context)).ceil(),
+        loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? fallback : null,
       ),
     );
   }
@@ -142,8 +123,7 @@ class _Counts {
   factory _Counts.of(BuildContext context, LinkPostContext post) {
     final l10n = L10n.of(context);
     final hidden = _countsHidden(context);
-    String label(int? count) =>
-        hidden || count == null ? '' : compactCount(count);
+    String label(int? count) => hidden || count == null ? '' : compactCount(count);
     final entries = [
       (Icons.favorite_border, post.likes, l10n.link_post_likes_count),
       (Icons.mode_comment_outlined, post.replies, l10n.link_post_replies_count),
@@ -160,9 +140,7 @@ class _Counts {
 
   Widget build(BuildContext context) {
     final color = tweetSecondaryColor(context);
-    final style = tweetMetadataStyle(
-      context,
-    ).copyWith(color: tweetPrimaryColor(context));
+    final style = tweetMetadataStyle(context).copyWith(color: tweetPrimaryColor(context));
     return Wrap(
       spacing: kTweetSpace4,
       runSpacing: kTweetSpace1,
@@ -173,10 +151,7 @@ class _Counts {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 18, color: color),
-              if (label.isNotEmpty) ...[
-                const SizedBox(width: kTweetSpace1),
-                Text(label, style: style),
-              ],
+              if (label.isNotEmpty) ...[const SizedBox(width: kTweetSpace1), Text(label, style: style)],
             ],
           ),
       ],
@@ -188,8 +163,7 @@ class _Counts {
 bool _countsHidden(BuildContext context) {
   try {
     final prefs = PrefService.of(context, listen: false);
-    return prefs.get(optionZenMode) == true ||
-        prefs.get(optionCalmMode) == true;
+    return prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
   } catch (_) {
     return false;
   }

@@ -26,9 +26,7 @@ class VoiceDownloading extends VoiceInstall {
   const VoiceDownloading(this.received, this.total);
 
   /// 0–1, or null while the size is unknown.
-  double? get fraction => total == null || total == 0
-      ? null
-      : (received / total!).clamp(0.0, 1.0).toDouble();
+  double? get fraction => total == null || total == 0 ? null : (received / total!).clamp(0.0, 1.0).toDouble();
 }
 
 /// Downloaded; being checked against its checksum and unpacked.
@@ -65,17 +63,12 @@ typedef VoiceTransfer =
     );
 
 /// Verifies and unpacks a downloaded archive into the voices folder.
-typedef VoiceInstaller =
-    Future<void> Function(String archive, OfflineVoice voice, String root);
+typedef VoiceInstaller = Future<void> Function(String archive, OfflineVoice voice, String root);
 
-Future<void> _installInBackground(
-  String archive,
-  OfflineVoice voice,
-  String root,
-) => Isolate.run(() => installVoiceArchive(archive, voice, root));
+Future<void> _installInBackground(String archive, OfflineVoice voice, String root) =>
+    Isolate.run(() => installVoiceArchive(archive, voice, root));
 
-Future<Directory> _defaultRoot() async =>
-    Directory(p.join((await getApplicationSupportDirectory()).path, 'voices'));
+Future<Directory> _defaultRoot() async => Directory(p.join((await getApplicationSupportDirectory()).path, 'voices'));
 
 /// The downloadable voices and what state each is in, keyed by voice id.
 ///
@@ -145,11 +138,7 @@ class VoiceDownloadStore extends Store<Map<String, VoiceInstall>> {
       await root.create(recursive: true);
       final run = _transfer(_saver(voice, root.path));
       await run(_entry(voice), cancellation, _progress(voice), (_) {});
-      _set(
-        voice.id,
-        await _installedState(root.path, voice) ??
-            const VoiceFailed(VoiceFailure.archive),
-      );
+      _set(voice.id, await _installedState(root.path, voice) ?? const VoiceFailed(VoiceFailure.archive));
     } on DownloadCancelled {
       _set(voice.id, const VoiceAbsent());
     } on VoiceChecksumMismatch {
@@ -157,12 +146,7 @@ class VoiceDownloadStore extends Store<Map<String, VoiceInstall>> {
     } on VoiceArchiveInvalid {
       _set(voice.id, const VoiceFailed(VoiceFailure.archive));
     } catch (_) {
-      _set(
-        voice.id,
-        cancellation.cancelled
-            ? const VoiceAbsent()
-            : const VoiceFailed(VoiceFailure.network),
-      );
+      _set(voice.id, cancellation.cancelled ? const VoiceAbsent() : const VoiceFailed(VoiceFailure.network));
     } finally {
       _cancellations.remove(voice.id);
     }
@@ -180,9 +164,7 @@ class VoiceDownloadStore extends Store<Map<String, VoiceInstall>> {
   DownloadProgress _progress(OfflineVoice voice) {
     var shown = -1;
     return (received, total) {
-      final percent = total == null || total == 0
-          ? received >> 20
-          : received * 100 ~/ total;
+      final percent = total == null || total == 0 ? received >> 20 : received * 100 ~/ total;
       if (percent == shown || !_cancellations.containsKey(voice.id)) return;
       shown = percent;
       _set(voice.id, VoiceDownloading(received, total ?? voice.archiveBytes));
@@ -192,20 +174,19 @@ class VoiceDownloadStore extends Store<Map<String, VoiceInstall>> {
   /// Takes the downloaded archive from the transfer and installs it. The
   /// staged file is removed whatever happens, so a mismatched download is
   /// never resumed.
-  SaveStagedDownload _saver(OfflineVoice voice, String root) =>
-      (entry, file, cancellation) async {
-        _set(voice.id, const VoiceInstalling());
-        try {
-          await _install(file.path, voice, root);
-        } finally {
-          if (await file.exists()) await file.delete();
-        }
-        if (cancellation.cancelled) {
-          await _deleteFolder(voiceDirectory(root, voice));
-          throw const DownloadCancelled();
-        }
-        return voiceDirectory(root, voice);
-      };
+  SaveStagedDownload _saver(OfflineVoice voice, String root) => (entry, file, cancellation) async {
+    _set(voice.id, const VoiceInstalling());
+    try {
+      await _install(file.path, voice, root);
+    } finally {
+      if (await file.exists()) await file.delete();
+    }
+    if (cancellation.cancelled) {
+      await _deleteFolder(voiceDirectory(root, voice));
+      throw const DownloadCancelled();
+    }
+    return voiceDirectory(root, voice);
+  };
 
   /// Stops a running download; whatever it fetched so far is thrown away.
   void cancel(String id) => _cancellations[id]?.cancel();

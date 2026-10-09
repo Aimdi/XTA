@@ -27,8 +27,7 @@ class _FakePage implements LinkBrowserPage {
   _FakePage(this.store);
 
   @override
-  Widget build(BuildContext context) =>
-      const ColoredBox(key: ValueKey('page'), color: Colors.white);
+  Widget build(BuildContext context) => const ColoredBox(key: ValueKey('page'), color: Colors.white);
 
   @override
   Future<void> load(String url) async {
@@ -52,36 +51,28 @@ class _Harness {
   final shared = <String>[];
   var postOpened = 0;
 
-  LinkBrowserPage factory(LinkBrowserStore store, LinkNavigationGuard _) =>
-      page = _FakePage(store);
+  LinkBrowserPage factory(LinkBrowserStore store, LinkNavigationGuard _) => page = _FakePage(store);
 
-  LinkPostContext post({bool canOpen = true, int? likes = 26}) =>
-      LinkPostContext(
-        sourceId: 'threads',
-        author: 'Daily Reader',
-        replies: 33,
-        reposts: 9,
-        likes: likes,
-        postUrl: 'https://www.threads.com/@reader/post/abc',
-        openPost: canOpen ? () => postOpened++ : null,
-      );
+  LinkPostContext post({bool canOpen = true, int? likes = 26}) => LinkPostContext(
+    sourceId: 'threads',
+    author: 'Daily Reader',
+    replies: 33,
+    reposts: 9,
+    likes: likes,
+    postUrl: 'https://www.threads.com/@reader/post/abc',
+    openPost: canOpen ? () => postOpened++ : null,
+  );
 
-  LinkBrowserScreen screen({LinkPostContext? post, String? title}) =>
-      LinkBrowserScreen(
-        url: _article,
-        title: title,
-        post: post,
-        pageFactory: factory,
-        share: (url) async => shared.add(url),
-      );
+  LinkBrowserScreen screen({LinkPostContext? post, String? title}) => LinkBrowserScreen(
+    url: _article,
+    title: title,
+    post: post,
+    pageFactory: factory,
+    share: (url) async => shared.add(url),
+  );
 }
 
-Widget _app(
-  Widget home, {
-  Map<String, Object> prefs = const {},
-  double textScale = 1,
-  bool dark = true,
-}) => PrefService(
+Widget _app(Widget home, {Map<String, Object> prefs = const {}, double textScale = 1, bool dark = true}) => PrefService(
   service: PrefServiceCache(cache: prefs),
   child: MaterialApp(
     theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
@@ -93,9 +84,7 @@ Widget _app(
     ],
     supportedLocales: L10n.delegate.supportedLocales,
     builder: (context, child) => MediaQuery(
-      data: MediaQuery.of(
-        context,
-      ).copyWith(textScaler: TextScaler.linear(textScale)),
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
       child: child!,
     ),
     home: home,
@@ -107,10 +96,7 @@ Widget _postScreen(Widget Function() browser) => Builder(
   builder: (context) => Scaffold(
     body: Center(
       child: TextButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => browser()),
-        ),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => browser())),
         child: const Text('the post'),
       ),
     ),
@@ -129,9 +115,7 @@ void _phone(WidgetTester tester, {double width = 400}) {
 }
 
 void main() {
-  testWidgets('the top bar names the domain, the network and the padlock', (
-    tester,
-  ) async {
+  testWidgets('the top bar names the domain, the network and the padlock', (tester) async {
     _phone(tester);
     final harness = _Harness();
     await tester.pumpWidget(_app(harness.screen(post: harness.post())));
@@ -149,22 +133,13 @@ void main() {
   testWidgets('tracking is stripped before the page loads', (tester) async {
     _phone(tester);
     final harness = _Harness();
-    await tester.pumpWidget(
-      _app(
-        LinkBrowserScreen(
-          url: '$_article?utm_source=x&id=7',
-          pageFactory: harness.factory,
-        ),
-      ),
-    );
+    await tester.pumpWidget(_app(LinkBrowserScreen(url: '$_article?utm_source=x&id=7', pageFactory: harness.factory)));
     await tester.pumpAndSettle();
 
     expect(harness.page!.loaded, ['$_article?id=7']);
   });
 
-  testWidgets('the bottom bar carries the post: counts, share and the mark', (
-    tester,
-  ) async {
+  testWidgets('the bottom bar carries the post: counts, share and the mark', (tester) async {
     _phone(tester);
     final harness = _Harness();
     await tester.pumpWidget(_app(harness.screen(post: harness.post())));
@@ -173,10 +148,7 @@ void main() {
     final bar = find.byType(LinkPostContextBar);
     expect(bar, findsOneWidget);
     for (final count in ['26', '33', '9']) {
-      expect(
-        find.descendant(of: bar, matching: find.text(count)),
-        findsOneWidget,
-      );
+      expect(find.descendant(of: bar, matching: find.text(count)), findsOneWidget);
     }
     expect(find.byIcon(Icons.favorite_border), findsOneWidget);
     expect(find.byIcon(Icons.mode_comment_outlined), findsOneWidget);
@@ -193,35 +165,24 @@ void main() {
     await tester.pumpWidget(_app(harness.screen(post: harness.post())));
     await tester.pumpAndSettle();
 
-    expect(
-      find.bySemanticsLabel(
-        'Back to post, Daily Reader, Likes: 26, Replies: 33, Reposts: 9',
-      ),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsLabel('Back to post, Daily Reader, Likes: 26, Replies: 33, Reposts: 9'), findsOneWidget);
     handle.dispose();
   });
 
   testWidgets('zen mode hides the counts here too', (tester) async {
     _phone(tester);
     final harness = _Harness();
-    await tester.pumpWidget(
-      _app(harness.screen(post: harness.post()), prefs: {optionZenMode: true}),
-    );
+    await tester.pumpWidget(_app(harness.screen(post: harness.post()), prefs: {optionZenMode: true}));
     await tester.pumpAndSettle();
 
     expect(find.text('26'), findsNothing);
     expect(find.byIcon(Icons.favorite_border), findsOneWidget);
   });
 
-  testWidgets('tapping the bar closes the browser and opens the post', (
-    tester,
-  ) async {
+  testWidgets('tapping the bar closes the browser and opens the post', (tester) async {
     _phone(tester);
     final harness = _Harness();
-    await tester.pumpWidget(
-      _app(_postScreen(() => harness.screen(post: harness.post()))),
-    );
+    await tester.pumpWidget(_app(_postScreen(() => harness.screen(post: harness.post()))));
     await _openBrowser(tester);
 
     await tester.tap(find.text('26'));
@@ -232,16 +193,10 @@ void main() {
     expect(harness.postOpened, 1);
   });
 
-  testWidgets('on the post\'s own screen the bar just goes back to it', (
-    tester,
-  ) async {
+  testWidgets('on the post\'s own screen the bar just goes back to it', (tester) async {
     _phone(tester);
     final harness = _Harness();
-    await tester.pumpWidget(
-      _app(
-        _postScreen(() => harness.screen(post: harness.post(canOpen: false))),
-      ),
-    );
+    await tester.pumpWidget(_app(_postScreen(() => harness.screen(post: harness.post(canOpen: false)))));
     await _openBrowser(tester);
 
     await tester.tap(find.byType(LinkPostContextBar));
@@ -252,9 +207,7 @@ void main() {
     expect(harness.postOpened, 0);
   });
 
-  testWidgets('back steps through the page before closing the browser', (
-    tester,
-  ) async {
+  testWidgets('back steps through the page before closing the browser', (tester) async {
     _phone(tester);
     final harness = _Harness();
     await tester.pumpWidget(_app(_postScreen(() => harness.screen())));
@@ -284,38 +237,23 @@ void main() {
     expect(find.byType(LinkBrowserScreen), findsNothing);
   });
 
-  testWidgets('the menu offers the browser, copy, share and reload', (
-    tester,
-  ) async {
+  testWidgets('the menu offers the browser, copy, share and reload', (tester) async {
     _phone(tester);
     final copied = <String>[];
-    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      (call) async {
-        if (call.method == 'Clipboard.setData') {
-          copied.add((call.arguments as Map)['text'] as String);
-        }
-        return null;
-      },
-    );
-    addTearDown(
-      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-        SystemChannels.platform,
-        null,
-      ),
-    );
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        copied.add((call.arguments as Map)['text'] as String);
+      }
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
     final harness = _Harness();
     await tester.pumpWidget(_app(harness.screen(post: harness.post())));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('More options'));
     await tester.pumpAndSettle();
-    for (final label in [
-      'Open in browser',
-      'Copy link',
-      'Share link',
-      'Reload page',
-    ]) {
+    for (final label in ['Open in browser', 'Copy link', 'Share link', 'Reload page']) {
       expect(find.text(label), findsOneWidget, reason: label);
     }
 
@@ -337,9 +275,7 @@ void main() {
     expect(harness.page!.reloads, 1);
   });
 
-  testWidgets('without a post there is no bar; the title names the page', (
-    tester,
-  ) async {
+  testWidgets('without a post there is no bar; the title names the page', (tester) async {
     _phone(tester);
     final harness = _Harness();
     await tester.pumpWidget(_app(harness.screen(title: 'Article on X')));
@@ -349,29 +285,16 @@ void main() {
     expect(find.text('Article on X'), findsOneWidget);
   });
 
-  testWidgets('chrome fits 320dp at double text size in light and dark', (
-    tester,
-  ) async {
+  testWidgets('chrome fits 320dp at double text size in light and dark', (tester) async {
     for (final dark in [true, false]) {
       _phone(tester, width: 320);
       final harness = _Harness();
-      await tester.pumpWidget(
-        _app(
-          harness.screen(post: harness.post(likes: 1234567)),
-          textScale: 2,
-          dark: dark,
-        ),
-      );
+      await tester.pumpWidget(_app(harness.screen(post: harness.post(likes: 1234567)), textScale: 2, dark: dark));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
       expect(find.text(compactCount(1234567)), findsOneWidget);
-      final close = tester.getSize(
-        find.ancestor(
-          of: find.byIcon(Icons.close),
-          matching: find.byType(IconButton),
-        ),
-      );
+      final close = tester.getSize(find.ancestor(of: find.byIcon(Icons.close), matching: find.byType(IconButton)));
       expect(close.width, greaterThanOrEqualTo(48));
       expect(close.height, greaterThanOrEqualTo(48));
       final bar = tester.getSize(find.byType(LinkPostContextBar));
@@ -385,8 +308,7 @@ void main() {
     final launched = <String>[];
 
     setUp(() {
-      final messenger =
-          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       messenger.setMockMethodCallHandler(launcher, (call) async {
         launched.add((call.arguments as Map)['url'] as String);
         return true;
@@ -395,8 +317,7 @@ void main() {
     });
 
     tearDown(() {
-      final messenger =
-          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
       messenger.setMockMethodCallHandler(launcher, null);
       messenger.setMockMethodCallHandler(resolver, null);
       launched.clear();
@@ -442,9 +363,7 @@ void main() {
       expect(launched, [_article]);
     });
 
-    testWidgets('a link an XTA screen reads never reaches a browser', (
-      tester,
-    ) async {
+    testWidgets('a link an XTA screen reads never reaches a browser', (tester) async {
       _phone(tester);
       final opened = <String>[];
       await tester.pumpWidget(

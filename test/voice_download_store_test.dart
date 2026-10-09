@@ -18,13 +18,7 @@ const _root = 'vits-test-voice';
 /// tokens and espeak-ng data.
 List<int> voiceArchive({Map<String, String>? files}) {
   final archive = Archive()..add(ArchiveFile.directory('$_root/'));
-  final contents =
-      files ??
-      {
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      };
+  final contents = files ?? {'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'};
   for (final entry in contents.entries) {
     archive.add(ArchiveFile.string(entry.key, entry.value));
   }
@@ -61,36 +55,22 @@ void main() {
 
   tearDown(() => temp.delete(recursive: true));
 
-  VoiceDownloadStore store(OfflineVoice voice, http.Client client) =>
-      VoiceDownloadStore(
-        catalog: [voice],
-        root: () async => voices,
-        transfer: (save) => DownloadTransfer(
-          clientFactory: () => client,
-          temporaryDirectory: () async => staging,
-          save: save,
-        ).call,
-        install: (archive, voice, root) async =>
-            installVoiceArchive(archive, voice, root),
-      );
+  VoiceDownloadStore store(OfflineVoice voice, http.Client client) => VoiceDownloadStore(
+    catalog: [voice],
+    root: () async => voices,
+    transfer: (save) =>
+        DownloadTransfer(clientFactory: () => client, temporaryDirectory: () async => staging, save: save).call,
+    install: (archive, voice, root) async => installVoiceArchive(archive, voice, root),
+  );
 
-  http.Client serving(List<int> bytes, {List<Uri>? requested}) =>
-      MockClient.streaming((request, _) async {
-        requested?.add(request.url);
-        final halves = [
-          bytes.sublist(0, bytes.length ~/ 2),
-          bytes.sublist(bytes.length ~/ 2),
-        ];
-        return http.StreamedResponse(
-          Stream.fromIterable(halves),
-          200,
-          contentLength: bytes.length,
-        );
-      });
+  http.Client serving(List<int> bytes, {List<Uri>? requested}) => MockClient.streaming((request, _) async {
+    requested?.add(request.url);
+    final halves = [bytes.sublist(0, bytes.length ~/ 2), bytes.sublist(bytes.length ~/ 2)];
+    return http.StreamedResponse(Stream.fromIterable(halves), 200, contentLength: bytes.length);
+  });
 
-  List<File> leftovers() => staging.existsSync()
-      ? staging.listSync(recursive: true).whereType<File>().toList()
-      : const [];
+  List<File> leftovers() =>
+      staging.existsSync() ? staging.listSync(recursive: true).whereType<File>().toList() : const [];
 
   test('starts with nothing and touches no network', () async {
     final requested = <Uri>[];
@@ -104,11 +84,7 @@ void main() {
 
   test('downloads with progress, verifies and unpacks into place', () async {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
     final voice = testVoice(archive);
     final requested = <Uri>[];
@@ -126,10 +102,7 @@ void main() {
     expect(seen.whereType<VoiceInstalling>(), isNotEmpty);
     final ready = downloads.installOf('xx-test') as VoiceReady;
     expect(ready.path, p.join(voices.path, 'xx-test'));
-    expect(
-      File(p.join(ready.path, 'espeak-ng-data', 'phontab')).readAsStringSync(),
-      'phonemes',
-    );
+    expect(File(p.join(ready.path, 'espeak-ng-data', 'phontab')).readAsStringSync(), 'phonemes');
     expect(ready.bytes, greaterThan(0));
     expect((await downloads.installedFor('de-DE'))?.voice, voice);
     expect(await downloads.installedFor('en'), isNull);
@@ -138,25 +111,14 @@ void main() {
 
   test('a download that does not match its checksum is rejected', () async {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
     final voice = testVoice(archive, checksum: '0' * 64);
     final downloads = store(voice, serving(archive));
 
     await downloads.download(voice);
 
-    expect(
-      downloads.installOf('xx-test'),
-      isA<VoiceFailed>().having(
-        (f) => f.reason,
-        'reason',
-        VoiceFailure.checksum,
-      ),
-    );
+    expect(downloads.installOf('xx-test'), isA<VoiceFailed>().having((f) => f.reason, 'reason', VoiceFailure.checksum));
     expect(Directory(p.join(voices.path, 'xx-test')).existsSync(), isFalse);
     expect(voices.listSync(), isEmpty, reason: 'no staging folder left');
     expect(leftovers(), isEmpty, reason: 'mismatched file is not resumed');
@@ -169,25 +131,14 @@ void main() {
 
     await downloads.download(voice);
 
-    expect(
-      downloads.installOf('xx-test'),
-      isA<VoiceFailed>().having(
-        (f) => f.reason,
-        'reason',
-        VoiceFailure.archive,
-      ),
-    );
+    expect(downloads.installOf('xx-test'), isA<VoiceFailed>().having((f) => f.reason, 'reason', VoiceFailure.archive));
     expect(voices.listSync(), isEmpty);
   });
 
   test('an archive reaching outside its folder is rejected', () async {
     final archive = voiceArchive(
       files: {
-        ...under({
-          'voice.onnx': 'model',
-          'tokens.txt': 'a 1',
-          'espeak-ng-data/phontab': 'phonemes',
-        }),
+        ...under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
         '$_root/../../escaped.txt': 'gotcha',
       },
     );
@@ -203,14 +154,9 @@ void main() {
 
   test('a voice without a known checksum installs from a sound archive', () {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
-    final file = File(p.join(temp.path, 'voice.tar.bz2'))
-      ..writeAsBytesSync(archive);
+    final file = File(p.join(temp.path, 'voice.tar.bz2'))..writeAsBytesSync(archive);
     final unchecked = OfflineVoice(
       id: 'xx-unchecked',
       name: 'Test',
@@ -224,35 +170,21 @@ void main() {
       model: 'voice.onnx',
     );
     installVoiceArchive(file.path, unchecked, voices.path);
-    expect(
-      voiceFilesPresent(p.join(voices.path, 'xx-unchecked'), unchecked),
-      isTrue,
-    );
+    expect(voiceFilesPresent(p.join(voices.path, 'xx-unchecked'), unchecked), isTrue);
 
     final damaged = File(p.join(temp.path, 'damaged.tar.bz2'))
       ..writeAsBytesSync(archive.sublist(0, archive.length - 20));
-    expect(
-      () => installVoiceArchive(damaged.path, unchecked, voices.path),
-      throwsA(isA<VoiceArchiveInvalid>()),
-    );
+    expect(() => installVoiceArchive(damaged.path, unchecked, voices.path), throwsA(isA<VoiceArchiveInvalid>()));
   });
 
   test('cancelling stops the download and cleans up', () async {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
     final voice = testVoice(archive);
     final body = StreamController<List<int>>();
     final client = MockClient.streaming(
-      (request, _) async => http.StreamedResponse(
-        body.stream,
-        200,
-        contentLength: archive.length,
-      ),
+      (request, _) async => http.StreamedResponse(body.stream, 200, contentLength: archive.length),
     );
     final downloads = store(voice, client);
     final started = Completer<void>();
@@ -280,11 +212,7 @@ void main() {
 
   test('delete removes the voice from the device', () async {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
     final voice = testVoice(archive);
     final downloads = store(voice, serving(archive));
@@ -300,11 +228,7 @@ void main() {
 
   test('finds voices installed in an earlier session', () async {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
     final voice = testVoice(archive);
     await store(voice, serving(archive)).download(voice);
@@ -316,11 +240,7 @@ void main() {
 
   test('a failed download can be tried again', () async {
     final archive = voiceArchive(
-      files: under({
-        'voice.onnx': 'model',
-        'tokens.txt': 'a 1',
-        'espeak-ng-data/phontab': 'phonemes',
-      }),
+      files: under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
     );
     final voice = testVoice(archive);
     var attempts = 0;
@@ -329,23 +249,12 @@ void main() {
       if (attempts == 1) {
         return http.StreamedResponse(const Stream.empty(), 503);
       }
-      return http.StreamedResponse(
-        Stream.value(archive),
-        200,
-        contentLength: archive.length,
-      );
+      return http.StreamedResponse(Stream.value(archive), 200, contentLength: archive.length);
     });
     final downloads = store(voice, client);
 
     await downloads.download(voice);
-    expect(
-      downloads.installOf('xx-test'),
-      isA<VoiceFailed>().having(
-        (f) => f.reason,
-        'reason',
-        VoiceFailure.network,
-      ),
-    );
+    expect(downloads.installOf('xx-test'), isA<VoiceFailed>().having((f) => f.reason, 'reason', VoiceFailure.network));
 
     await downloads.download(voice);
     expect(downloads.installOf('xx-test'), isA<VoiceReady>());

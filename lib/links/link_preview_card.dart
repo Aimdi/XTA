@@ -13,13 +13,7 @@ enum LinkPreviewLayout {
 
 const _pictureKinds = {'video', 'photo', 'player'};
 
-const _videoHosts = {
-  'youtube.com',
-  'youtu.be',
-  'vimeo.com',
-  'twitch.tv',
-  'dailymotion.com',
-};
+const _videoHosts = {'youtube.com', 'youtu.be', 'vimeo.com', 'twitch.tv', 'dailymotion.com'};
 
 /// Compact for an article, large only when the image is what the link is.
 ///
@@ -27,19 +21,13 @@ const _videoHosts = {
 /// site offers; the share image of a news story is decoration. A video, a
 /// photo page or a player is different — the picture is the content — so
 /// those keep the full-width image.
-LinkPreviewLayout linkPreviewLayoutFor(
-  String url, {
-  required bool hasImage,
-  String? kind,
-}) {
+LinkPreviewLayout linkPreviewLayoutFor(String url, {required bool hasImage, String? kind}) {
   if (!hasImage) return LinkPreviewLayout.compact;
   if (_pictureKinds.contains(kind?.toLowerCase())) {
     return LinkPreviewLayout.large;
   }
   final host = linkDomain(url);
-  final isVideoHost = _videoHosts.any(
-    (domain) => host == domain || host.endsWith('.$domain'),
-  );
+  final isVideoHost = _videoHosts.any((domain) => host == domain || host.endsWith('.$domain'));
   return isVideoHost ? LinkPreviewLayout.large : LinkPreviewLayout.compact;
 }
 
@@ -51,20 +39,15 @@ String linkDomain(String url) {
 }
 
 /// Draws a preview image; networks with their own image loader pass one.
-typedef LinkPreviewImageBuilder =
-    Widget Function(BuildContext context, String url, int? cacheWidth);
+typedef LinkPreviewImageBuilder = Widget Function(BuildContext context, String url, int? cacheWidth);
 
-Widget _networkImage(BuildContext context, String url, int? cacheWidth) =>
-    ExtendedImage.network(
-      url,
-      fit: BoxFit.cover,
-      cache: true,
-      cacheWidth: cacheWidth,
-      loadStateChanged: (state) =>
-          state.extendedImageLoadState == LoadState.failed
-          ? const _LinkGlyph()
-          : null,
-    );
+Widget _networkImage(BuildContext context, String url, int? cacheWidth) => ExtendedImage.network(
+  url,
+  fit: BoxFit.cover,
+  cache: true,
+  cacheWidth: cacheWidth,
+  loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? const _LinkGlyph() : null,
+);
 
 const double kLinkPreviewTileSize = 56;
 const double _cardRadius = 16;
@@ -99,9 +82,7 @@ class LinkPreviewCard extends StatelessWidget {
 
   String get _title {
     final value = title?.trim() ?? '';
-    return value.isNotEmpty
-        ? value
-        : url.replaceFirst(RegExp(r'^https?://'), '');
+    return value.isNotEmpty ? value : url.replaceFirst(RegExp(r'^https?://'), '');
   }
 
   @override
@@ -148,10 +129,7 @@ class LinkPreviewCard extends StatelessWidget {
   );
 
   Widget _tile(BuildContext context) {
-    final fill = Color.alphaBlend(
-      tweetPrimaryColor(context).withValues(alpha: 0.08),
-      tweetSurfaceColor(context),
-    );
+    final fill = Color.alphaBlend(tweetPrimaryColor(context).withValues(alpha: 0.08), tweetSurfaceColor(context));
     final scale = MediaQuery.devicePixelRatioOf(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(_tileRadius),
@@ -160,11 +138,7 @@ class LinkPreviewCard extends StatelessWidget {
         child: ColoredBox(
           color: fill,
           child: _hasImage
-              ? imageBuilder(
-                  context,
-                  imageUrl!.trim(),
-                  (kLinkPreviewTileSize * scale).ceil(),
-                )
+              ? imageBuilder(context, imageUrl!.trim(), (kLinkPreviewTileSize * scale).ceil())
               : const _LinkGlyph(),
         ),
       ),
@@ -177,62 +151,33 @@ class LinkPreviewCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: imageBuilder(
-            context,
-            imageUrl!.trim(),
-            (width * scale).ceil(),
-          ),
-        ),
+        AspectRatio(aspectRatio: 16 / 9, child: imageBuilder(context, imageUrl!.trim(), (width * scale).ceil())),
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            kTweetSpace3,
-            kTweetSpace2 + 2,
-            kTweetSpace3,
-            kTweetSpace2 + 2,
-          ),
+          padding: const EdgeInsets.fromLTRB(kTweetSpace3, kTweetSpace2 + 2, kTweetSpace3, kTweetSpace2 + 2),
           child: _texts(context, domain, titleLines: 2, withDescription: true),
         ),
       ],
     );
   }
 
-  Widget _texts(
-    BuildContext context,
-    String domain, {
-    required int titleLines,
-    bool withDescription = false,
-  }) {
+  Widget _texts(BuildContext context, String domain, {required int titleLines, bool withDescription = false}) {
     final secondary = tweetMetadataStyle(context);
     final summary = description?.trim() ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          domain,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: secondary,
-        ),
+        Text(domain, maxLines: 1, overflow: TextOverflow.ellipsis, style: secondary),
         const SizedBox(height: 2),
         Text(
           _title,
           maxLines: titleLines,
           overflow: TextOverflow.ellipsis,
-          style: tweetBodyStyle(
-            context,
-          ).copyWith(fontWeight: FontWeight.w600, height: 1.3),
+          style: tweetBodyStyle(context).copyWith(fontWeight: FontWeight.w600, height: 1.3),
         ),
         if (withDescription && summary.isNotEmpty) ...[
           const SizedBox(height: kTweetSpace1),
-          Text(
-            summary,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: secondary,
-          ),
+          Text(summary, maxLines: 3, overflow: TextOverflow.ellipsis, style: secondary),
         ],
       ],
     );
@@ -243,7 +188,5 @@ class _LinkGlyph extends StatelessWidget {
   const _LinkGlyph();
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Icon(Icons.link, size: 26, color: tweetSecondaryColor(context)),
-  );
+  Widget build(BuildContext context) => Center(child: Icon(Icons.link, size: 26, color: tweetSecondaryColor(context)));
 }

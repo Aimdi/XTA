@@ -23,13 +23,10 @@ abstract class LinkBrowserPage {
   Future<bool> back();
 }
 
-typedef LinkBrowserPageFactory =
-    LinkBrowserPage Function(LinkBrowserStore store, LinkNavigationGuard guard);
+typedef LinkBrowserPageFactory = LinkBrowserPage Function(LinkBrowserStore store, LinkNavigationGuard guard);
 
-LinkBrowserPage webViewLinkBrowserPage(
-  LinkBrowserStore store,
-  LinkNavigationGuard guard,
-) => _WebViewLinkBrowserPage(store, guard);
+LinkBrowserPage webViewLinkBrowserPage(LinkBrowserStore store, LinkNavigationGuard guard) =>
+    _WebViewLinkBrowserPage(store, guard);
 
 class _WebViewLinkBrowserPage implements LinkBrowserPage {
   final WebViewController _controller = WebViewController();
@@ -56,8 +53,7 @@ class _WebViewLinkBrowserPage implements LinkBrowserPage {
   Future<void> _refuseThirdPartyCookies() async {
     final cookies = WebViewCookieManager().platform;
     final platform = _controller.platform;
-    if (cookies is AndroidWebViewCookieManager &&
-        platform is AndroidWebViewController) {
+    if (cookies is AndroidWebViewCookieManager && platform is AndroidWebViewController) {
       try {
         await cookies.setAcceptThirdPartyCookies(platform, false);
       } catch (_) {
@@ -83,15 +79,10 @@ class _WebViewLinkBrowserPage implements LinkBrowserPage {
   }
 }
 
-Future<NavigationDecision> _decide(
-  String url,
-  LinkNavigationGuard guard,
-) async {
+Future<NavigationDecision> _decide(String url, LinkNavigationGuard guard) async {
   final scheme = Uri.tryParse(url)?.scheme;
   if (scheme == 'http' || scheme == 'https') {
-    return await guard(url)
-        ? NavigationDecision.prevent
-        : NavigationDecision.navigate;
+    return await guard(url) ? NavigationDecision.prevent : NavigationDecision.navigate;
   }
   return switch (scheme) {
     'about' || 'data' || 'blob' => NavigationDecision.navigate,

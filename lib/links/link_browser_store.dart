@@ -8,20 +8,12 @@ class LinkBrowserState {
   /// 0–1 while [loading]; the page reports it as it goes.
   final double progress;
 
-  const LinkBrowserState({
-    required this.url,
-    this.loading = true,
-    this.progress = 0,
-  });
+  const LinkBrowserState({required this.url, this.loading = true, this.progress = 0});
 
   bool get secure => Uri.tryParse(url)?.scheme == 'https';
 
   LinkBrowserState copyWith({String? url, bool? loading, double? progress}) =>
-      LinkBrowserState(
-        url: url ?? this.url,
-        loading: loading ?? this.loading,
-        progress: progress ?? this.progress,
-      );
+      LinkBrowserState(url: url ?? this.url, loading: loading ?? this.loading, progress: progress ?? this.progress);
 }
 
 /// Page events land here; the chrome rebuilds from it.
@@ -33,16 +25,11 @@ class LinkBrowserStore extends Store<LinkBrowserState> {
 
   LinkBrowserStore(String url) : super(LinkBrowserState(url: url));
 
-  void started(String url) => _apply(
-    state.copyWith(url: url.isEmpty ? null : url, loading: true, progress: 0),
-  );
+  void started(String url) => _apply(state.copyWith(url: url.isEmpty ? null : url, loading: true, progress: 0));
 
-  void progressed(int percent) =>
-      _apply(state.copyWith(progress: (percent / 100).clamp(0.0, 1.0)));
+  void progressed(int percent) => _apply(state.copyWith(progress: (percent / 100).clamp(0.0, 1.0)));
 
-  void finished(String url) => _apply(
-    state.copyWith(url: url.isEmpty ? null : url, loading: false, progress: 1),
-  );
+  void finished(String url) => _apply(state.copyWith(url: url.isEmpty ? null : url, loading: false, progress: 1));
 
   void stopped() => _apply(state.copyWith(loading: false));
 

@@ -9,10 +9,7 @@ import 'package:xta/speech/offline_voice_catalog.dart';
 import 'package:xta/speech/voice_download_store.dart';
 
 /// sherpa-onnx configuration for an installed voice.
-sherpa.OfflineTtsConfig sherpaConfigFor(
-  InstalledVoice installed, {
-  int threads = 2,
-}) {
+sherpa.OfflineTtsConfig sherpaConfigFor(InstalledVoice installed, {int threads = 2}) {
   final voice = installed.voice;
   String file(String name) => p.join(installed.path, name);
   final model = switch (voice.kind) {
@@ -57,10 +54,7 @@ class SherpaVoiceSynthesizer implements VoiceSynthesizer {
   }
 
   /// Starts the isolate and loads [installed]; throws when it cannot.
-  static Future<VoiceSynthesizer> load(
-    InstalledVoice installed, {
-    required Directory clips,
-  }) async {
+  static Future<VoiceSynthesizer> load(InstalledVoice installed, {required Directory clips}) async {
     await clips.create(recursive: true);
     final port = ReceivePort();
     final replies = StreamIterator<Object?>(port);
@@ -95,9 +89,7 @@ class SherpaVoiceSynthesizer implements VoiceSynthesizer {
   void _answer(int id, String? path) {
     final pending = _pending.remove(id);
     if (pending == null) return;
-    path == null
-        ? pending.completeError(StateError('Synthesis failed'))
-        : pending.complete(path);
+    path == null ? pending.completeError(StateError('Synthesis failed')) : pending.complete(path);
   }
 
   void _fail(String reason) {
@@ -150,20 +142,12 @@ Future<void> _worker((SendPort, InstalledVoice) setup) async {
   requests.close();
 }
 
-String? _speak(
-  sherpa.OfflineTts tts,
-  OfflineVoice voice,
-  (int, String, double, String) request,
-) {
+String? _speak(sherpa.OfflineTts tts, OfflineVoice voice, (int, String, double, String) request) {
   final (_, text, speed, out) = request;
   try {
     final audio = tts.generate(text: text, sid: voice.speakerId, speed: speed);
     if (audio.samples.isEmpty) return null;
-    final written = sherpa.writeWave(
-      filename: out,
-      samples: audio.samples,
-      sampleRate: audio.sampleRate,
-    );
+    final written = sherpa.writeWave(filename: out, samples: audio.samples, sampleRate: audio.sampleRate);
     return written ? out : null;
   } catch (_) {
     return null;

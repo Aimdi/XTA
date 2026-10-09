@@ -23,11 +23,7 @@ class ProfileFollowedBy {
   /// Every X subscription other than the profile itself.
   final int total;
 
-  const ProfileFollowedBy({
-    this.followers = const [],
-    this.checked = 0,
-    this.total = 0,
-  });
+  const ProfileFollowedBy({this.followers = const [], this.checked = 0, this.total = 0});
 
   static const none = ProfileFollowedBy();
 }
@@ -41,24 +37,13 @@ ProfileFollowedBy profileFollowedBy(
   Map<String, RememberedFollows> remembered,
   Iterable<Subscription> subscriptions,
 ) {
-  final members = subscriptions
-      .whereType<UserSubscription>()
-      .where((member) => member.id != profileId)
-      .toList();
-  final checked = members
-      .where((member) => remembered.containsKey(member.id))
-      .toList();
-  final ranked =
-      [
-        for (final (order, member) in checked.indexed)
-          if (_followPosition(remembered[member.id]!.follows, profileId)
-              case final position?)
-            (member: member, position: position, order: order),
-      ]..sort(
-        (a, b) => a.position != b.position
-            ? a.position.compareTo(b.position)
-            : a.order.compareTo(b.order),
-      );
+  final members = subscriptions.whereType<UserSubscription>().where((member) => member.id != profileId).toList();
+  final checked = members.where((member) => remembered.containsKey(member.id)).toList();
+  final ranked = [
+    for (final (order, member) in checked.indexed)
+      if (_followPosition(remembered[member.id]!.follows, profileId) case final position?)
+        (member: member, position: position, order: order),
+  ]..sort((a, b) => a.position != b.position ? a.position.compareTo(b.position) : a.order.compareTo(b.order));
   return ProfileFollowedBy(
     followers: [for (final entry in ranked) entry.member],
     checked: checked.length,
@@ -77,28 +62,18 @@ String profileFollowedByLabel(L10n l10n, List<String> names) => switch (names) {
   [final a] => l10n.profile_followed_by_one(a),
   [final a, final b] => l10n.profile_followed_by_two(a, b),
   [final a, final b, final c] => l10n.profile_followed_by_three(a, b, c),
-  [final a, final b, ...final rest] => l10n.profile_followed_by_many(
-    rest.length,
-    a,
-    b,
-  ),
+  [final a, final b, ...final rest] => l10n.profile_followed_by_many(rest.length, a, b),
 };
 
-typedef RememberedFollowsReader =
-    Future<Map<String, RememberedFollows>> Function();
+typedef RememberedFollowsReader = Future<Map<String, RememberedFollows>> Function();
 
-Future<Map<String, RememberedFollows>> _sharedRemembered() =>
-    DiscoveryFollowsCache.shared.remembered();
+Future<Map<String, RememberedFollows>> _sharedRemembered() => DiscoveryFollowsCache.shared.remembered();
 
 class ProfileFollowedByStore extends Store<ProfileFollowedBy> {
   final RememberedFollowsReader remembered;
 
-  ProfileFollowedByStore({this.remembered = _sharedRemembered})
-    : super(ProfileFollowedBy.none);
+  ProfileFollowedByStore({this.remembered = _sharedRemembered}) : super(ProfileFollowedBy.none);
 
   Future<void> load(String profileId, List<Subscription> subscriptions) =>
-      execute(
-        () async =>
-            profileFollowedBy(profileId, await remembered(), subscriptions),
-      );
+      execute(() async => profileFollowedBy(profileId, await remembered(), subscriptions));
 }

@@ -46,9 +46,6 @@ LinkPostContext tweetLinkContext(BuildContext context, TweetWithCard tweet) {
 }
 
 String _shareBaseUrl(BuildContext context) {
-  final custom = PrefService.of(
-    context,
-    listen: false,
-  ).get<String>(optionShareBaseUrl);
+  final custom = PrefService.of(context, listen: false).get<String>(optionShareBaseUrl);
   return custom != null && custom.isNotEmpty ? custom : 'https://x.com';
 }

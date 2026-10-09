@@ -28,8 +28,7 @@ class FakeTtsPlatform {
   /// Android sends the text in a map, other hosts as the bare string.
   List<String> get spoken => [
     for (final call in calls)
-      if (call.method == 'speak')
-        '${call.arguments is Map ? call.arguments['text'] : call.arguments}',
+      if (call.method == 'speak') '${call.arguments is Map ? call.arguments['text'] : call.arguments}',
   ];
 
   List<String> methods(String name) => [
@@ -38,13 +37,11 @@ class FakeTtsPlatform {
   ];
 
   void install() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, _answer);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, _answer);
   }
 
   void uninstall() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
   }
 
   Future<Object?> _answer(MethodCall call) async {
@@ -85,20 +82,18 @@ class FakeTtsPlatform {
   Future<void> _report(List<String> events) async {
     for (final event in events) {
       await Future<void>.delayed(Duration.zero);
-      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .handlePlatformMessage(
-            channel.name,
-            const StandardMethodCodec().encodeMethodCall(MethodCall(event)),
-            (_) {},
-          );
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+        channel.name,
+        const StandardMethodCodec().encodeMethodCall(MethodCall(event)),
+        (_) {},
+      );
     }
   }
 }
 
 enum SpeakBehaviour { finish, error, refuse, park }
 
-String sentences(String sentence, int count) =>
-    List.filled(count, sentence).join(' ');
+String sentences(String sentence, int count) => List.filled(count, sentence).join(' ');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -119,19 +114,12 @@ void main() {
   );
 
   const english = TtsChoice();
-  final longEnglish = sentences(
-    'This is the story of a sentence that is long enough to count.',
-    200,
-  );
+  final longEnglish = sentences('This is the story of a sentence that is long enough to count.', 200);
 
   group('reading a long article', () {
     test('speaks every chunk in order and then clears the bar', () async {
       final speech = store();
-      final read = await speech.speak(
-        title: 'Post',
-        text: longEnglish,
-        choice: english,
-      );
+      final read = await speech.speak(title: 'Post', text: longEnglish, choice: english);
 
       expect(read, isTrue);
       expect(platform.spoken.length, greaterThan(2));
@@ -145,11 +133,7 @@ void main() {
     test('shows the bar while it is reading', () async {
       final speech = store();
       platform.holdUtterance = Completer<void>();
-      final reading = speech.speak(
-        title: 'Post',
-        text: 'A short post that is read aloud.',
-        choice: english,
-      );
+      final reading = speech.speak(title: 'Post', text: 'A short post that is read aloud.', choice: english);
       await pumpEventQueue();
 
       expect(speech.state, const SpeechPlayback(title: 'Post', speaking: true));
@@ -161,11 +145,7 @@ void main() {
     test('stopping half-way speaks no further chunk', () async {
       final speech = store();
       platform.holdUtterance = Completer<void>();
-      final reading = speech.speak(
-        title: 'Post',
-        text: longEnglish,
-        choice: english,
-      );
+      final reading = speech.speak(title: 'Post', text: longEnglish, choice: english);
       await pumpEventQueue();
       await speech.stop();
 
@@ -205,11 +185,7 @@ void main() {
       platform.behaviour = SpeakBehaviour.refuse;
       final speech = store();
 
-      final read = await speech.speak(
-        title: 'Post',
-        text: 'Short text to read.',
-        choice: english,
-      );
+      final read = await speech.speak(title: 'Post', text: 'Short text to read.', choice: english);
 
       expect(read, isFalse);
       expect(platform.spoken, hasLength(2));
@@ -221,22 +197,14 @@ void main() {
         ..defaultEngine = null;
       final speech = store();
 
-      final read = await speech.speak(
-        title: 'Post',
-        text: 'Short text to read.',
-        choice: english,
-      );
+      final read = await speech.speak(title: 'Post', text: 'Short text to read.', choice: english);
 
       expect(read, isFalse);
       expect(platform.spoken, isEmpty);
     });
 
     test('nothing to say is not a reading', () async {
-      final read = await store().speak(
-        title: 'Post',
-        text: '   ',
-        choice: english,
-      );
+      final read = await store().speak(title: 'Post', text: '   ', choice: english);
       expect(read, isFalse);
       expect(platform.spoken, isEmpty);
     });
@@ -262,37 +230,27 @@ void main() {
       expect(platform.methods('setEngine'), [sherpaOnnxTtsEngine]);
     });
 
-    test(
-      'still hears utterances end after the settings made a FlutterTts',
-      () async {
-        final speech = store();
-        FlutterTts(); // what the settings screens used to do
+    test('still hears utterances end after the settings made a FlutterTts', () async {
+      final speech = store();
+      FlutterTts(); // what the settings screens used to do
 
-        final read = await speech
-            .speak(title: 'Post', text: longEnglish, choice: english)
-            .timeout(const Duration(seconds: 5));
+      final read = await speech
+          .speak(title: 'Post', text: longEnglish, choice: english)
+          .timeout(const Duration(seconds: 5));
 
-        expect(read, isTrue);
-        expect(platform.spoken.length, greaterThan(2));
-      },
-    );
+      expect(read, isTrue);
+      expect(platform.spoken.length, greaterThan(2));
+    });
   });
 
   group('the language of the article picks the voice', () {
-    final german = sentences(
-      'Das ist ein Satz, der nicht auf Englisch ist und den wir vorlesen.',
-      5,
-    );
+    final german = sentences('Das ist ein Satz, der nicht auf Englisch ist und den wir vorlesen.', 5);
 
     test('an English article is read in English in a German app', () async {
       Intl.defaultLocale = 'de';
       const germanVoice = TtsChoice(voiceName: 'de-x-1', voiceLocale: 'de-DE');
 
-      await store().speak(
-        title: 'Post',
-        text: longEnglish,
-        choice: germanVoice,
-      );
+      await store().speak(title: 'Post', text: longEnglish, choice: germanVoice);
 
       expect(platform.methods('setLanguage'), ['en-US']);
       expect(platform.methods('setVoice'), isEmpty);
@@ -364,18 +322,8 @@ void main() {
 
   group('language candidates', () {
     test('the text language goes first, with the voice region', () {
-      expect(
-        speakLanguageCandidates(
-          textLanguage: 'en',
-          voiceLocale: 'en-GB',
-          appLocale: 'de-DE',
-        ).first,
-        'en-GB',
-      );
-      expect(
-        speakLanguageCandidates(textLanguage: 'en', appLocale: 'de-DE').first,
-        'en-US',
-      );
+      expect(speakLanguageCandidates(textLanguage: 'en', voiceLocale: 'en-GB', appLocale: 'de-DE').first, 'en-GB');
+      expect(speakLanguageCandidates(textLanguage: 'en', appLocale: 'de-DE').first, 'en-US');
     });
 
     test('a voice suits text in its own language only', () {

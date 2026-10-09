@@ -64,22 +64,14 @@ class _GrokQuestion extends StatelessWidget {
         child: Align(
           alignment: AlignmentDirectional.centerEnd,
           child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.secondaryContainer,
-              borderRadius: BorderRadius.circular(18),
-            ),
+            decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(18)),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: kTweetSpace3,
-                vertical: kTweetSpace2,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: kTweetSpace3, vertical: kTweetSpace2),
               child: Text(
                 message,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: tweetBodyStyle(
-                  context,
-                ).copyWith(color: colors.onSecondaryContainer),
+                style: tweetBodyStyle(context).copyWith(color: colors.onSecondaryContainer),
               ),
             ),
           ),
@@ -106,20 +98,13 @@ class _GrokAvatar extends StatelessWidget {
       onTap: () => Navigator.pushNamed(
         context,
         routeProfile,
-        arguments: ProfileScreenArguments.fromScreenName(
-          share.grokScreenName,
-          null,
-        ),
+        arguments: ProfileScreenArguments.fromScreenName(share.grokScreenName, null),
       ),
       child: image == null
           ? CircleAvatar(
               radius: _size / 2,
               backgroundColor: colors.tertiaryContainer,
-              child: Icon(
-                Icons.auto_awesome,
-                size: 18,
-                color: colors.onTertiaryContainer,
-              ),
+              child: Icon(Icons.auto_awesome, size: 18, color: colors.onTertiaryContainer),
             )
           : UserAvatar(uri: image, size: _size),
     );

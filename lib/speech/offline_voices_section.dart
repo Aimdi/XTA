@@ -24,10 +24,7 @@ class OfflineVoicesSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Text(
-            l10n.tts_offline_voices,
-            style: theme.textTheme.labelLarge,
-          ),
+          child: Text(l10n.tts_offline_voices, style: theme.textTheme.labelLarge),
         ),
         PrefSwitch(
           pref: optionTtsOfflineVoice,
@@ -39,11 +36,7 @@ class OfflineVoicesSection extends StatelessWidget {
           onState: (context, _) => Column(
             children: [
               for (final voice in store.catalog)
-                OfflineVoiceTile(
-                  voice: voice,
-                  install: store.installOf(voice.id),
-                  store: store,
-                ),
+                OfflineVoiceTile(voice: voice, install: store.installOf(voice.id), store: store),
             ],
           ),
         ),
@@ -51,9 +44,7 @@ class OfflineVoicesSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
           child: Text(
             l10n.tts_offline_voices_note,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
         ),
       ],
@@ -67,12 +58,7 @@ class OfflineVoiceTile extends StatelessWidget {
   final VoiceInstall install;
   final VoiceDownloadStore store;
 
-  const OfflineVoiceTile({
-    super.key,
-    required this.voice,
-    required this.install,
-    required this.store,
-  });
+  const OfflineVoiceTile({super.key, required this.voice, required this.install, required this.store});
 
   @override
   Widget build(BuildContext context) {
@@ -110,21 +96,15 @@ class OfflineVoiceTile extends StatelessWidget {
     final l10n = L10n.of(context);
     return switch (install) {
       VoiceAbsent() => null,
-      VoiceDownloading(:final received, :final total) =>
-        l10n.downloads_progress(
-          offlineBytes(context, received),
-          offlineBytes(context, total ?? voice.archiveBytes),
-        ),
-      VoiceInstalling() => l10n.tts_offline_voice_installing,
-      VoiceReady(:final bytes) => l10n.tts_offline_voice_ready(
-        offlineBytes(context, bytes),
+      VoiceDownloading(:final received, :final total) => l10n.downloads_progress(
+        offlineBytes(context, received),
+        offlineBytes(context, total ?? voice.archiveBytes),
       ),
-      VoiceFailed(reason: VoiceFailure.network) =>
-        l10n.tts_offline_voice_failed_network,
-      VoiceFailed(reason: VoiceFailure.checksum) =>
-        l10n.tts_offline_voice_failed_checksum,
-      VoiceFailed(reason: VoiceFailure.archive) =>
-        l10n.tts_offline_voice_failed_archive,
+      VoiceInstalling() => l10n.tts_offline_voice_installing,
+      VoiceReady(:final bytes) => l10n.tts_offline_voice_ready(offlineBytes(context, bytes)),
+      VoiceFailed(reason: VoiceFailure.network) => l10n.tts_offline_voice_failed_network,
+      VoiceFailed(reason: VoiceFailure.checksum) => l10n.tts_offline_voice_failed_checksum,
+      VoiceFailed(reason: VoiceFailure.archive) => l10n.tts_offline_voice_failed_archive,
     };
   }
 
@@ -148,12 +128,7 @@ class OfflineVoiceTile extends StatelessWidget {
       ),
       VoiceInstalling() => const SizedBox.square(
         dimension: 48,
-        child: Center(
-          child: SizedBox.square(
-            dimension: 24,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
+        child: Center(child: SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2))),
       ),
       VoiceReady() => IconButton(
         tooltip: l10n.delete,
@@ -171,14 +146,8 @@ class OfflineVoiceTile extends StatelessWidget {
         title: Text(l10n.tts_offline_voice_delete_question(voice.name)),
         content: Text(l10n.tts_offline_voice_delete_description),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.delete),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.delete)),
         ],
       ),
     );

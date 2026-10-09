@@ -13,29 +13,16 @@ enum ReposterSort { recent, mostFollowers }
 const xReplySorts = [ReplySort.relevant, ReplySort.recent, ReplySort.mostLiked];
 
 /// Bluesky's AppView returns its own ranking; the rest is sorted on device.
-const blueskyReplySorts = [
-  ReplySort.relevant,
-  ReplySort.recent,
-  ReplySort.oldest,
-  ReplySort.mostLiked,
-];
+const blueskyReplySorts = [ReplySort.relevant, ReplySort.recent, ReplySort.oldest, ReplySort.mostLiked];
 
 /// Mastodon has no ranking: `/context` is the conversation, oldest first.
-const mastodonReplySorts = [
-  ReplySort.oldest,
-  ReplySort.recent,
-  ReplySort.mostLiked,
-];
+const mastodonReplySorts = [ReplySort.oldest, ReplySort.recent, ReplySort.mostLiked];
 
 /// X ranks quotes on the server through SearchTimeline's `product`.
 const xQuoteSorts = [QuoteSort.recent, QuoteSort.top];
 
 /// Bluesky and Mastodon quote lists have no ranking; sorted on device.
-const pluginQuoteSorts = [
-  QuoteSort.recent,
-  QuoteSort.oldest,
-  QuoteSort.mostLiked,
-];
+const pluginQuoteSorts = [QuoteSort.recent, QuoteSort.oldest, QuoteSort.mostLiked];
 
 /// The sort choices a reader made this session, shared by every network.
 class ConversationSorts {
@@ -49,11 +36,7 @@ class ConversationSorts {
     this.reposters = ReposterSort.recent,
   });
 
-  ConversationSorts copyWith({
-    ReplySort? replies,
-    QuoteSort? quotes,
-    ReposterSort? reposters,
-  }) => ConversationSorts(
+  ConversationSorts copyWith({ReplySort? replies, QuoteSort? quotes, ReposterSort? reposters}) => ConversationSorts(
     replies: replies ?? this.replies,
     quotes: quotes ?? this.quotes,
     reposters: reposters ?? this.reposters,
@@ -68,28 +51,24 @@ class ConversationSortStore extends Store<ConversationSorts> {
 
   void selectQuotes(QuoteSort sort) => update(state.copyWith(quotes: sort));
 
-  void selectReposters(ReposterSort sort) =>
-      update(state.copyWith(reposters: sort));
+  void selectReposters(ReposterSort sort) => update(state.copyWith(reposters: sort));
 }
 
 /// [chosen] when this network offers it, else the network's own default.
-T effectiveSort<T>(T chosen, List<T> options) =>
-    options.contains(chosen) ? chosen : options.first;
+T effectiveSort<T>(T chosen, List<T> options) => options.contains(chosen) ? chosen : options.first;
 
 /// TweetDetail's `rankingMode` variable for [sort].
-String xRankingMode(ReplySort sort) =>
-    switch (effectiveSort(sort, xReplySorts)) {
-      ReplySort.recent => 'Recency',
-      ReplySort.mostLiked => 'Likes',
-      ReplySort.relevant || ReplySort.oldest => 'Relevance',
-    };
+String xRankingMode(ReplySort sort) => switch (effectiveSort(sort, xReplySorts)) {
+  ReplySort.recent => 'Recency',
+  ReplySort.mostLiked => 'Likes',
+  ReplySort.relevant || ReplySort.oldest => 'Relevance',
+};
 
 /// SearchTimeline's `product` for a `quoted_tweet_id:` query.
-String xQuotesProduct(QuoteSort sort) =>
-    switch (effectiveSort(sort, xQuoteSorts)) {
-      QuoteSort.top => 'Top',
-      QuoteSort.recent || QuoteSort.oldest || QuoteSort.mostLiked => 'Latest',
-    };
+String xQuotesProduct(QuoteSort sort) => switch (effectiveSort(sort, xQuoteSorts)) {
+  QuoteSort.top => 'Top',
+  QuoteSort.recent || QuoteSort.oldest || QuoteSort.mostLiked => 'Latest',
+};
 
 enum _PostOrder { asSent, newest, oldest, mostLiked }
 
@@ -138,18 +117,9 @@ List<T> _ordered<T>(
   required int Function(T post) likes,
 }) => switch (order) {
   _PostOrder.asSent => posts,
-  _PostOrder.newest => _stableSorted(
-    posts,
-    (a, b) => _compareTimes(postedAt(a), postedAt(b), newestFirst: true),
-  ),
-  _PostOrder.oldest => _stableSorted(
-    posts,
-    (a, b) => _compareTimes(postedAt(a), postedAt(b), newestFirst: false),
-  ),
-  _PostOrder.mostLiked => _stableSorted(
-    posts,
-    (a, b) => likes(b).compareTo(likes(a)),
-  ),
+  _PostOrder.newest => _stableSorted(posts, (a, b) => _compareTimes(postedAt(a), postedAt(b), newestFirst: true)),
+  _PostOrder.oldest => _stableSorted(posts, (a, b) => _compareTimes(postedAt(a), postedAt(b), newestFirst: false)),
+  _PostOrder.mostLiked => _stableSorted(posts, (a, b) => likes(b).compareTo(likes(a))),
 };
 
 /// Undated posts sort last in either direction.
@@ -163,27 +133,17 @@ int _compareTimes(DateTime? a, DateTime? b, {required bool newestFirst}) {
 /// Orders people who reposted. [ReposterSort.recent] is the network's own
 /// order; people without a follower count sort last for
 /// [ReposterSort.mostFollowers].
-List<T> sortReposters<T>(
-  List<T> people,
-  ReposterSort sort, {
-  required int? Function(T person) followers,
-}) => switch (sort) {
-  ReposterSort.recent => people,
-  ReposterSort.mostFollowers => _stableSorted(
-    people,
-    (a, b) => (followers(b) ?? -1).compareTo(followers(a) ?? -1),
-  ),
-};
+List<T> sortReposters<T>(List<T> people, ReposterSort sort, {required int? Function(T person) followers}) =>
+    switch (sort) {
+      ReposterSort.recent => people,
+      ReposterSort.mostFollowers => _stableSorted(people, (a, b) => (followers(b) ?? -1).compareTo(followers(a) ?? -1)),
+    };
 
 /// The reposter orders the loaded data can back: follower order only when
 /// the response actually carried follower counts.
-List<ReposterSort> reposterSortsFor<T>(
-  List<T> people, {
-  required int? Function(T person) followers,
-}) => [
+List<ReposterSort> reposterSortsFor<T>(List<T> people, {required int? Function(T person) followers}) => [
   ReposterSort.recent,
-  if (people.any((person) => followers(person) != null))
-    ReposterSort.mostFollowers,
+  if (people.any((person) => followers(person) != null)) ReposterSort.mostFollowers,
 ];
 
 /// [List.sort] is not stable; ties keep their original order here.

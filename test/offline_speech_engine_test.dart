@@ -199,11 +199,7 @@ void main() {
 
       final sentences = chunkForSpeech(germanText, maxChars: 300);
       expect(sentences, hasLength(1), reason: 'short text is one chunk');
-      expect(log, [
-        'synth:$germanText',
-        'play:clip:$germanText',
-        'done:clip:$germanText',
-      ]);
+      expect(log, ['synth:$germanText', 'play:clip:$germanText', 'done:clip:$germanText']);
     });
 
     test('chunks play in order with the next one prepared early', () async {
@@ -254,11 +250,7 @@ void main() {
     });
 
     test('the speech rate becomes sherpa speed', () async {
-      await store(engine()).speak(
-        title: 'Post',
-        text: germanText,
-        choice: const TtsChoice(rate: 0.6),
-      );
+      await store(engine()).speak(title: 'Post', text: germanText, choice: const TtsChoice(rate: 0.6));
       expect(synthesizers.single.speeds.single, closeTo(1.2, 1e-9));
     });
   });
@@ -276,9 +268,7 @@ void main() {
     });
 
     test('a stale "completed" before playback starts is ignored', () async {
-      final fake = FakeContinuityPlayer(
-        frame: const PlaybackFrame(completed: true),
-      );
+      final fake = FakeContinuityPlayer(frame: const PlaybackFrame(completed: true));
       fake.beforeOpen = (_) async => fake.emit(completed: true);
       final clips = ContinuityClipPlayer(create: () => fake);
       var finished = false;
@@ -302,10 +292,7 @@ void main() {
     test('a clip that never starts fails instead of hanging', () async {
       final fake = FakeContinuityPlayer();
       fake.beforeOpen = (_) => Completer<void>().future;
-      final clips = ContinuityClipPlayer(
-        create: () => fake,
-        startTimeout: const Duration(milliseconds: 20),
-      );
+      final clips = ContinuityClipPlayer(create: () => fake, startTimeout: const Duration(milliseconds: 20));
       expect(await clips.play('/tmp/d.wav'), UtteranceOutcome.failed);
     });
   });

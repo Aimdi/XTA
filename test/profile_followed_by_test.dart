@@ -16,11 +16,9 @@ UserSubscription _sub(String id) => UserSubscription(
   inFeed: true,
 );
 
-DiscoveryFollow _follow(String id) =>
-    DiscoveryFollow(id: id, handle: id, name: id);
+DiscoveryFollow _follow(String id) => DiscoveryFollow(id: id, handle: id, name: id);
 
-RememberedFollows _read(List<String> ids) =>
-    (at: DateTime(2026, 10), follows: ids.map(_follow).toList());
+RememberedFollows _read(List<String> ids) => (at: DateTime(2026, 10), follows: ids.map(_follow).toList());
 
 void main() {
   group('profileFollowedBy', () {
@@ -62,11 +60,7 @@ void main() {
           'p': _read(['p']),
           'a': _read(['p']),
         },
-        [
-          _sub('a'),
-          _sub('p'),
-          SearchSubscription(id: 'q', createdAt: DateTime(2026)),
-        ],
+        [_sub('a'), _sub('p'), SearchSubscription(id: 'q', createdAt: DateTime(2026))],
       );
       expect(result.followers.map((s) => s.id), ['a']);
       expect(result.checked, 1);
@@ -89,14 +83,8 @@ void main() {
       expect(profileFollowedByLabel(l10n, []), '');
       expect(profileFollowedByLabel(l10n, ['A']), 'Followed by A');
       expect(profileFollowedByLabel(l10n, ['A', 'B']), 'Followed by A and B');
-      expect(
-        profileFollowedByLabel(l10n, ['A', 'B', 'C']),
-        'Followed by A, B and C',
-      );
-      expect(
-        profileFollowedByLabel(l10n, ['A', 'B', 'C', 'D']),
-        'Followed by A, B and 2 others you subscribe to',
-      );
+      expect(profileFollowedByLabel(l10n, ['A', 'B', 'C']), 'Followed by A, B and C');
+      expect(profileFollowedByLabel(l10n, ['A', 'B', 'C', 'D']), 'Followed by A, B and 2 others you subscribe to');
       expect(
         profileFollowedByLabel(l10n, List.generate(14, (i) => 'N$i')),
         'Followed by N0, N1 and 12 others you subscribe to',

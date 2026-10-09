@@ -19,26 +19,19 @@ import 'package:xta/utils/urls.dart';
 
 /// A card as X sends it: binding values still a list of `{key, value}`.
 Map<String, dynamic> _rawCard(String name) =>
-    jsonDecode(File('test/fixtures/UnifiedCard/$name.json').readAsStringSync())
-        as Map<String, dynamic>;
+    jsonDecode(File('test/fixtures/UnifiedCard/$name.json').readAsStringSync()) as Map<String, dynamic>;
 
 /// The same card as the client stores it, binding values keyed.
 Map<String, dynamic> _keyedCard(String name) {
   final raw = _rawCard(name);
   return {
     ...raw,
-    'binding_values': {
-      for (final e in raw['binding_values'] as List)
-        e['key'] as String: e['value'],
-    },
+    'binding_values': {for (final e in raw['binding_values'] as List) e['key'] as String: e['value']},
   };
 }
 
 /// [name]'s card with its unified card passed through [edit].
-Map<String, dynamic> _edited(
-  String name,
-  void Function(Map<String, dynamic> unified) edit,
-) {
+Map<String, dynamic> _edited(String name, void Function(Map<String, dynamic> unified) edit) {
   final card = _keyedCard(name);
   final unified = unifiedCardOf(card)!;
   edit(unified);
@@ -88,14 +81,8 @@ Future<void> _pumpCard(WidgetTester tester, Map<String, dynamic> card) =>
 void main() {
   group('unifiedCardOf', () {
     test('reads binding values both keyed and as X sends them', () {
-      expect(
-        unifiedCardOf(_rawCard('image_carousel_website'))?['type'],
-        'image_carousel_website',
-      );
-      expect(
-        unifiedCardOf(_keyedCard('image_carousel_website'))?['type'],
-        'image_carousel_website',
-      );
+      expect(unifiedCardOf(_rawCard('image_carousel_website'))?['type'], 'image_carousel_website');
+      expect(unifiedCardOf(_keyedCard('image_carousel_website'))?['type'], 'image_carousel_website');
     });
 
     test('gives nothing for a missing or broken payload', () {
@@ -120,23 +107,13 @@ void main() {
       expect(carousel.url, startsWith('https://www.uefa.com/news-media/news/'));
       expect(carousel.title, contains('Tap to read'));
       expect(carousel.subtitle, 'uefa.com');
-      expect(carousel.media.map((m) => m.idStr), [
-        '2082854064501489664',
-        '2082853967843762176',
-      ]);
+      expect(carousel.media.map((m) => m.idStr), ['2082854064501489664', '2082853967843762176']);
     });
 
     test('gives nothing without a page, a title or a known picture', () {
-      Map<String, dynamic> copy() =>
-          jsonDecode(jsonEncode(unified)) as Map<String, dynamic>;
-      expect(
-        CarouselCardData.fromUnified(copy()..remove('destination_objects')),
-        isNull,
-      );
-      expect(
-        CarouselCardData.fromUnified(copy()..['media_entities'] = {}),
-        isNull,
-      );
+      Map<String, dynamic> copy() => jsonDecode(jsonEncode(unified)) as Map<String, dynamic>;
+      expect(CarouselCardData.fromUnified(copy()..remove('destination_objects')), isNull);
+      expect(CarouselCardData.fromUnified(copy()..['media_entities'] = {}), isNull);
       final untitled = copy();
       _details(untitled).remove('title');
       expect(CarouselCardData.fromUnified(untitled), isNull);
@@ -148,18 +125,12 @@ void main() {
 
     test('reads the question, the answer without markup, and Grok', () {
       final share = GrokShareCardData.fromUnified(unified)!;
-      expect(
-        share.url,
-        'https://x.com/i/grok/share/96b0a07447744eb79d03cbcaaf76e19f',
-      );
+      expect(share.url, 'https://x.com/i/grok/share/96b0a07447744eb79d03cbcaaf76e19f');
       expect(share.question, 'Is this real?');
       expect(share.answer, startsWith('Yes, the clip is real footage'));
       expect(share.answer, isNot(contains('grok:render')));
       expect(share.grokScreenName, 'grok');
-      expect(
-        share.grokImageUrl,
-        startsWith('https://pbs.twimg.com/profile_images/'),
-      );
+      expect(share.grokImageUrl, startsWith('https://pbs.twimg.com/profile_images/'));
     });
 
     test('falls back to @grok and no picture when the card names nobody', () {
@@ -172,22 +143,17 @@ void main() {
     test('keeps the question when there is no answer yet', () {
       final copy = jsonDecode(jsonEncode(unified)) as Map<String, dynamic>;
       final details = _details(copy);
-      details['conversation_preview'] =
-          (details['conversation_preview'] as List).take(1).toList();
+      details['conversation_preview'] = (details['conversation_preview'] as List).take(1).toList();
       final share = GrokShareCardData.fromUnified(copy)!;
       expect([share.question, share.answer], ['Is this real?', '']);
     });
 
     test('gives nothing without a conversation or a destination', () {
-      Map<String, dynamic> copy() =>
-          jsonDecode(jsonEncode(unified)) as Map<String, dynamic>;
+      Map<String, dynamic> copy() => jsonDecode(jsonEncode(unified)) as Map<String, dynamic>;
       final silent = copy();
       _details(silent).remove('conversation_preview');
       expect(GrokShareCardData.fromUnified(silent), isNull);
-      expect(
-        GrokShareCardData.fromUnified(copy()..remove('destination_objects')),
-        isNull,
-      );
+      expect(GrokShareCardData.fromUnified(copy()..remove('destination_objects')), isNull);
     });
 
     test('isGrokShareCard tells a Grok share from other cards', () {
@@ -200,17 +166,8 @@ void main() {
 
   group('Grok share links', () {
     test('are recognised on every X host', () {
-      for (final host in [
-        'x.com',
-        'www.x.com',
-        'twitter.com',
-        'mobile.twitter.com',
-      ]) {
-        expect(
-          grokShareIdIn('https://$host/i/grok/share/abc123?s=20'),
-          'abc123',
-          reason: host,
-        );
+      for (final host in ['x.com', 'www.x.com', 'twitter.com', 'mobile.twitter.com']) {
+        expect(grokShareIdIn('https://$host/i/grok/share/abc123?s=20'), 'abc123', reason: host);
       }
     });
 
@@ -229,19 +186,12 @@ void main() {
     });
 
     test('parse as a Grok share rather than an unknown link', () async {
-      final parsed = await parseUri(
-        Uri.parse('https://x.com/i/grok/share/abc123'),
-      );
+      final parsed = await parseUri(Uri.parse('https://x.com/i/grok/share/abc123'));
       expect(parsed, isA<GrokShareUriInfo>());
-      expect(
-        (parsed as GrokShareUriInfo).url,
-        'https://x.com/i/grok/share/abc123',
-      );
+      expect((parsed as GrokShareUriInfo).url, 'https://x.com/i/grok/share/abc123');
     });
 
-    testWidgets('are dropped from the text only when the card shows them', (
-      tester,
-    ) async {
+    testWidgets('are dropped from the text only when the card shows them', (tester) async {
       final entities = Entities.fromJson({
         'urls': [
           {
@@ -260,12 +210,7 @@ void main() {
           builder: (context) {
             String text(bool hide) => TextSpan(
               children: displayRichText(
-                buildRichText(
-                  context,
-                  'Look https://t.co/g',
-                  entities,
-                  hideGrokShareLinks: hide,
-                ),
+                buildRichText(context, 'Look https://t.co/g', entities, hideGrokShareLinks: hide),
               ),
             ).toPlainText();
             hidden = text(true);
@@ -284,27 +229,16 @@ void main() {
         'display_url': 'x.com/i/grok/share/abc…',
         'indices': [0, 1],
       });
-      final context = EntitySpanContext(
-        linkColor: Colors.blue,
-        recognizer: (_) => throw StateError('no tap'),
-      );
-      expect(
-        UrlEntity(url, () {}, hidden: true).getContent(context).toPlainText(),
-        '',
-      );
+      final context = EntitySpanContext(linkColor: Colors.blue, recognizer: (_) => throw StateError('no tap'));
+      expect(UrlEntity(url, () {}, hidden: true).getContent(context).toPlainText(), '');
     });
   });
 
   group('TweetCard', () {
-    testWidgets('shows every picture of a carousel above its page', (
-      tester,
-    ) async {
+    testWidgets('shows every picture of a carousel above its page', (tester) async {
       await _pumpCard(tester, _keyedCard('image_carousel_website'));
       final media = tester.widget<TweetMedia>(find.byType(TweetMedia));
-      expect(media.media.map((m) => m.idStr), [
-        '2082854064501489664',
-        '2082853967843762176',
-      ]);
+      expect(media.media.map((m) => m.idStr), ['2082854064501489664', '2082853967843762176']);
       expect(find.textContaining('Tap to read'), findsOneWidget);
       expect(find.text('uefa.com'), findsOneWidget);
     });
@@ -314,42 +248,24 @@ void main() {
       expect(find.byType(TweetMedia), findsOneWidget);
     });
 
-    testWidgets('shows a Grok share as its question and answer', (
-      tester,
-    ) async {
+    testWidgets('shows a Grok share as its question and answer', (tester) async {
       await _pumpCard(tester, _keyedCard('grok_share'));
       expect(find.byType(GrokShareCard), findsOneWidget);
       expect(find.text('Is this real?'), findsOneWidget);
-      expect(
-        find.textContaining('Yes, the clip is real footage'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Yes, the clip is real footage'), findsOneWidget);
       expect(find.textContaining('grok:render'), findsNothing);
     });
 
-    testWidgets('keeps an icon where Grok\'s picture goes when there is none', (
-      tester,
-    ) async {
-      await _pumpCard(
-        tester,
-        _edited('grok_share', (u) => _details(u).remove('grok_user')),
-      );
+    testWidgets('keeps an icon where Grok\'s picture goes when there is none', (tester) async {
+      await _pumpCard(tester, _edited('grok_share', (u) => _details(u).remove('grok_user')));
       expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
     });
 
-    testWidgets('draws nothing for a carousel or Grok share it cannot read', (
-      tester,
-    ) async {
+    testWidgets('draws nothing for a carousel or Grok share it cannot read', (tester) async {
       for (final card in [
-        _edited(
-          'image_carousel_website',
-          (u) => u.remove('destination_objects'),
-        ),
+        _edited('image_carousel_website', (u) => u.remove('destination_objects')),
         _edited('grok_share', (u) => u.remove('destination_objects')),
-        _edited(
-          'grok_share',
-          (u) => _details(u).remove('conversation_preview'),
-        ),
+        _edited('grok_share', (u) => _details(u).remove('conversation_preview')),
       ]) {
         await _pumpCard(tester, card);
         expect(tester.takeException(), isNull);

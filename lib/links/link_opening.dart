@@ -13,11 +13,7 @@ import 'package:xta/utils/urls.dart';
 /// the app turns the switch on at first launch; an unset key is that default.
 bool embeddedBrowserEnabled(BuildContext context) {
   try {
-    return PrefService.of(
-          context,
-          listen: false,
-        ).get<bool>(optionOpenLinksInEmbeddedBrowser) !=
-        false;
+    return PrefService.of(context, listen: false).get<bool>(optionOpenLinksInEmbeddedBrowser) != false;
   } catch (_) {
     return true;
   }
@@ -26,9 +22,7 @@ bool embeddedBrowserEnabled(BuildContext context) {
 /// A web address an in-app browser can show at all.
 bool isBrowsableLink(String url) {
   final uri = Uri.tryParse(url);
-  return uri != null &&
-      (uri.scheme == 'http' || uri.scheme == 'https') &&
-      uri.host.isNotEmpty;
+  return uri != null && (uri.scheme == 'http' || uri.scheme == 'https') && uri.host.isNotEmpty;
 }
 
 /// Opens a link tapped inside a post.
@@ -52,13 +46,8 @@ Future<void> openPostLink(
   await Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (_) => LinkBrowserScreen(
-        url: url,
-        title: title,
-        post: post,
-        openNative: openNative,
-        pageFactory: pageFactory,
-      ),
+      builder: (_) =>
+          LinkBrowserScreen(url: url, title: title, post: post, openNative: openNative, pageFactory: pageFactory),
     ),
   );
 }

@@ -49,15 +49,11 @@ class TickerDetailState {
     range: range ?? this.range,
     instrument: instrument ?? this.instrument,
     quote: identical(quote, _keep) ? this.quote : quote as TickerQuote?,
-    dayQuote: identical(dayQuote, _keep)
-        ? this.dayQuote
-        : dayQuote as TickerQuote?,
+    dayQuote: identical(dayQuote, _keep) ? this.dayQuote : dayQuote as TickerQuote?,
     loading: loading ?? this.loading,
     failed: failed ?? this.failed,
     news: news ?? this.news,
-    scrubbed: identical(scrubbed, _keep)
-        ? this.scrubbed
-        : scrubbed as TickerPoint?,
+    scrubbed: identical(scrubbed, _keep) ? this.scrubbed : scrubbed as TickerPoint?,
   );
 }
 
@@ -72,11 +68,7 @@ class TickerDetailStore extends Store<TickerDetailState> {
   int _generation = 0;
   bool _closed = false;
 
-  TickerDetailStore({
-    required this.symbol,
-    required this.client,
-    this.onDayQuote,
-  }) : super(const TickerDetailState());
+  TickerDetailStore({required this.symbol, required this.client, this.onDayQuote}) : super(const TickerDetailState());
 
   bool _stale(int generation) => _closed || generation != _generation;
 
@@ -89,9 +81,7 @@ class TickerDetailStore extends Store<TickerDetailState> {
     if (!silent) update(state.copyWith(loading: true, failed: false));
     try {
       final quote = await _fetch(range, instrument);
-      final day = range == TickerRange.day
-          ? quote
-          : state.dayQuote ?? await _dayOrNull(instrument);
+      final day = range == TickerRange.day ? quote : state.dayQuote ?? await _dayOrNull(instrument);
       if (_stale(generation)) return;
       update(state.copyWith(quote: quote, dayQuote: day, loading: false));
       if (range == TickerRange.day && instrument == TickerInstrument.auto) {
@@ -131,14 +121,7 @@ class TickerDetailStore extends Store<TickerDetailState> {
   /// instrument altogether, so today's figures go too.
   Future<void> selectInstrument(TickerInstrument instrument) async {
     if (instrument == state.instrument) return;
-    update(
-      state.copyWith(
-        instrument: instrument,
-        quote: null,
-        dayQuote: null,
-        scrubbed: null,
-      ),
-    );
+    update(state.copyWith(instrument: instrument, quote: null, dayQuote: null, scrubbed: null));
     await load();
   }
 

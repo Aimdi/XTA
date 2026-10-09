@@ -20,8 +20,7 @@ class VoiceArchiveInvalid implements Exception {
 }
 
 /// Where [voice] lives once installed under [root].
-String voiceDirectory(String root, OfflineVoice voice) =>
-    p.join(root, voice.id);
+String voiceDirectory(String root, OfflineVoice voice) => p.join(root, voice.id);
 
 /// Verifies [archivePath] and unpacks it to `<root>/<voice id>`.
 ///
@@ -56,11 +55,7 @@ String sha256OfFile(String path) {
   final input = sha256.startChunkedConversion(sink);
   final file = File(path).openSync();
   try {
-    for (
-      var chunk = file.readSync(1 << 20);
-      chunk.isNotEmpty;
-      chunk = file.readSync(1 << 20)
-    ) {
+    for (var chunk = file.readSync(1 << 20); chunk.isNotEmpty; chunk = file.readSync(1 << 20)) {
       input.add(chunk);
     }
   } finally {
@@ -159,9 +154,8 @@ void _requireFiles(String directory, List<String> files) {
 }
 
 /// True when every file [voice] needs is in [directory].
-bool voiceFilesPresent(String directory, OfflineVoice voice) => voice
-    .requiredFiles
-    .every((file) => File(p.join(directory, file)).existsSync());
+bool voiceFilesPresent(String directory, OfflineVoice voice) =>
+    voice.requiredFiles.every((file) => File(p.join(directory, file)).existsSync());
 
 /// Bytes the files under [directory] take.
 int directoryBytes(Directory directory) {
