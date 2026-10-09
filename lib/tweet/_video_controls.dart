@@ -862,7 +862,15 @@ class _MoreButton extends StatelessWidget {
               title: Text(L10n.of(sheetContext).download),
               onTap: () {
                 Navigator.of(sheetContext).pop();
-                downloadTweetVideo(context, username, pooled.downloadUrl);
+                downloadTweetVideo(
+                  context,
+                  username,
+                  downloadUrlFor(
+                    pooled.currentStreamUrl,
+                    pooled.qualities,
+                    pooled.downloadUrl,
+                  ),
+                );
               },
             ),
           ],
