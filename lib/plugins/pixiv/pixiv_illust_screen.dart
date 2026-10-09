@@ -18,6 +18,7 @@ import 'package:xta/plugins/pixiv/pixiv_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira_view.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/plugins/pixiv/pixiv_tag_kinds.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_zoomable.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
@@ -25,6 +26,7 @@ import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 
 /// In-app illust viewer — pages, caption, tags, stats, related works (Pixez-like).
 class PixivIllustScreen extends StatefulWidget {
@@ -455,21 +457,9 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
             const SizedBox(height: 12),
             Wrap(
               spacing: 6,
-              runSpacing: 4,
               children: [
-                for (final tag in _illust.tags)
-                  ActionChip(
-                    label: _tagLabel(tag),
-                    visualDensity: VisualDensity.compact,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            PixivSearchScreen(initialQuery: tag.name),
-                      ),
-                    ),
-                  ),
+                for (final entry in pixivKindedTags(_illust.tags))
+                  _tagChip(l10n, entry),
               ],
             ),
           ],
@@ -478,17 +468,22 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
     );
   }
 
-  /// The tag as Pixiv spells it, with its translation beside it when there is one.
-  Widget _tagLabel(PixivTag tag) {
-    final translated = tag.translatedName?.trim() ?? '';
-    if (translated.isEmpty || translated == tag.name) return Text('#${tag.name}');
-    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: '#${tag.name}'),
-          TextSpan(text: '  $translated', style: TextStyle(color: muted)),
-        ],
+  /// The tag as Pixiv spells it, tinted by its kind, with its translation
+  /// beside it; a long press mutes it.
+  Widget _tagChip(L10n l10n, PixivKindedTag entry) {
+    final tag = entry.tag;
+    return PluginTagChip(
+      key: ValueKey('pixiv-tag-${tag.name}'),
+      label: '#${tag.name}',
+      detail: tag.translation,
+      kind: entry.kind,
+      longPressHint: l10n.plugin_pixiv_mute_tag(tag.displayName),
+      onLongPress: () => _confirmMuteTag(l10n, tag),
+      onPressed: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PixivSearchScreen(initialQuery: tag.name),
+        ),
       ),
     );
   }
@@ -665,10 +660,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
                 title: Text(l10n.plugin_pixiv_mute_tag(tag.displayName)),
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  _confirmMute(
-                    l10n.plugin_pixiv_mute_tag(tag.displayName),
-                    (store) => store.muteTag(tag.name),
-                  );
+                  _confirmMuteTag(l10n, tag);
                 },
               ),
           ],
@@ -676,6 +668,11 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
       ),
     );
   }
+
+  Future<void> _confirmMuteTag(L10n l10n, PixivTag tag) => _confirmMute(
+    l10n.plugin_pixiv_mute_tag(tag.displayName),
+    (store) => store.muteTag(tag.name),
+  );
 
   Future<void> _confirmMute(
     String label,

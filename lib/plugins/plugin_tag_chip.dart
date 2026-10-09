@@ -96,7 +96,9 @@ class PluginTagChip extends StatelessWidget {
       backgroundColor: palette.fill,
       side: BorderSide(color: palette.border),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      visualDensity: VisualDensity.compact,
+      // Compact by padding, not density: a denser chip shrinks its tap target too.
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      visualDensity: VisualDensity.standard,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       onPressed: onPressed,
     );

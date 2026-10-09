@@ -20,9 +20,11 @@ import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_reader_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/plugins/pixiv/pixiv_zoomable.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
@@ -195,17 +197,75 @@ void main() {
     });
   });
 
-  testWidgets('tags show Pixiv\'s spelling with the translation beside it', (tester) async {
-    final tags = [const PixivTag(name: 'オリジナル', translatedName: 'original'), const PixivTag(name: '漫画')];
-    await pumpPixiv(
-      tester,
-      PixivIllustScreen(illust: pixivWork(tags: tags)),
-      size: const Size(390, 1600),
-      client: (prefs) => FakePixivClient(prefs, detail: pixivWork(tags: tags)),
-    );
-    expect(find.text('#オリジナル  original', findRichText: true), findsOneWidget);
-    expect(find.text('#漫画'), findsOneWidget);
-    await disposePixiv(tester);
+  group('tags', () {
+    final tags = [
+      const PixivTag(name: '女の子', translatedName: 'girl'),
+      const PixivTag(name: 'R-18'),
+      const PixivTag(name: 'マルチャーナ(勝利の女神:NIKKE)', translatedName: 'Marciana (NIKKE)'),
+      const PixivTag(name: '勝利の女神:NIKKE'),
+      const PixivTag(name: '漫画', translatedName: '漫画'),
+    ];
+    final work = pixivWork(pages: 1, tags: tags);
+
+    /// Opens the work over a home route, so muting has somewhere to return to.
+    Future<PixivHarness> pumpTags(WidgetTester tester) async {
+      final harness = await pumpPixiv(
+        tester,
+        const Scaffold(),
+        size: const Size(390, 1600),
+        client: (prefs) => FakePixivClient(prefs, detail: work),
+      );
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .push(MaterialPageRoute<void>(builder: (_) => PixivIllustScreen(illust: work)));
+      await settlePixiv(tester);
+      return harness;
+    }
+
+    testWidgets('show Pixiv\'s spelling with the translation beside it, ordered by kind', (tester) async {
+      await pumpTags(tester);
+      final chips = tester.widgetList<PluginTagChip>(find.byType(PluginTagChip));
+      expect(
+        [for (final chip in chips) (chip.label, chip.detail, chip.kind)],
+        [
+          ('#勝利の女神:NIKKE', null, PluginTagKind.copyright),
+          ('#マルチャーナ(勝利の女神:NIKKE)', 'Marciana (NIKKE)', PluginTagKind.character),
+          ('#女の子', 'girl', PluginTagKind.general),
+          ('#漫画', null, PluginTagKind.general),
+          ('#R-18', null, PluginTagKind.meta),
+        ],
+      );
+      expect(find.text('#女の子  girl', findRichText: true), findsOneWidget);
+      expect(find.text('#漫画', findRichText: true), findsOneWidget);
+      expect(tester.getSize(find.byKey(const ValueKey('pixiv-tag-女の子'))).height, greaterThanOrEqualTo(48));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a tap searches the tag', (tester) async {
+      final harness = await pumpTags(tester);
+      await tester.tap(find.byKey(const ValueKey('pixiv-tag-女の子')));
+      await settlePixiv(tester);
+      expect(
+        find.byWidgetPredicate((widget) => widget is PixivSearchScreen && widget.initialQuery == '女の子'),
+        findsOneWidget,
+      );
+      expect(harness.client.calls, contains('search:女の子'));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a long press offers to mute the tag, as the mute sheet does', (tester) async {
+      final harness = await pumpTags(tester);
+      await tester.longPress(find.byKey(const ValueKey('pixiv-tag-女の子')));
+      await settlePixiv(tester);
+      final mute = find.widgetWithText(FilledButton, 'Mute tag "girl"');
+      expect(find.descendant(of: find.byType(AlertDialog), matching: mute), findsOneWidget);
+
+      await tester.tap(mute);
+      await settlePixiv(tester);
+      expect(harness.prefs.get<String>(optionPluginPixivMutedTags), contains('女の子'));
+      expect(find.byType(PixivIllustScreen), findsNothing);
+      await disposePixiv(tester);
+    });
   });
 
   group('detail menu', () {

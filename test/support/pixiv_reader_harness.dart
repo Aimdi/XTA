@@ -82,6 +82,25 @@ class FakePixivClient extends PixivClient {
   }
 
   @override
+  Future<PixivIllustPage> searchIllust(
+    String word, {
+    String searchTarget = 'partial_match_for_tags',
+    String sort = 'date_desc',
+    String? nextUrl,
+  }) async {
+    calls.add('search:$word');
+    return const PixivIllustPage(illusts: []);
+  }
+
+  @override
+  Future<PixivIllustPage> popularPreview(String word, {String searchTarget = 'partial_match_for_tags'}) async =>
+      const PixivIllustPage(illusts: []);
+
+  @override
+  Future<({List<PixivUser> users, String? nextUrl})> searchUsers(String word, {String? nextUrl}) async =>
+      (users: const <PixivUser>[], nextUrl: null);
+
+  @override
   Future<PixivUser> userDetail(int userId) async => PixivUser(id: userId, name: 'Mika', account: 'mika', comment: '');
 
   @override
@@ -159,8 +178,10 @@ Future<PixivHarness> pumpPixiv(
   final harness = PixivHarness(prefs, client?.call(prefs) ?? FakePixivClient(prefs), FakePixivDownloader());
   final mute = PixivMuteStore(prefs);
   final bookmarks = PixivBookmarkStore();
+  final history = PixivSearchHistoryStore(prefs);
   addTearDown(mute.destroy);
   addTearDown(bookmarks.destroy);
+  addTearDown(history.destroy);
   await tester.pumpWidget(
     PrefService(
       service: prefs,
@@ -169,6 +190,7 @@ Future<PixivHarness> pumpPixiv(
           Provider<PixivClient>.value(value: harness.client),
           Provider<PixivMuteStore>.value(value: mute),
           Provider<PixivBookmarkStore>.value(value: bookmarks),
+          Provider<PixivSearchHistoryStore>.value(value: history),
           Provider<PixivDownloader>.value(value: harness.downloader),
         ],
         child: MaterialApp(

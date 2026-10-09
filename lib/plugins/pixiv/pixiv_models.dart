@@ -23,13 +23,13 @@ class PixivTag {
 
   const PixivTag({required this.name, this.translatedName});
 
-  String get displayName {
-    final translated = translatedName?.trim();
-    if (translated != null && translated.isNotEmpty) {
-      return translated;
-    }
-    return name;
+  /// The translation, when Pixiv sent one that differs from [name].
+  String? get translation {
+    final translated = translatedName?.trim() ?? '';
+    return translated.isEmpty || translated == name ? null : translated;
   }
+
+  String get displayName => translation ?? name;
 }
 
 /// One illustration card / viewer worth of fields from `app-api.pixiv.net`.
@@ -449,7 +449,7 @@ List<PixivUserPreview> parsePixivUserPreviews(Object? json) => [
         user: user,
         illusts: [
           for (final illust in item['illusts'].list)
-            if (pixivIllustFromJson(illust.raw) case final work?) work,
+            ?pixivIllustFromJson(illust.raw),
         ],
       ),
 ];
