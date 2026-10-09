@@ -117,7 +117,7 @@ void main() {
         FeedTab.foryou,
         FeedTab.reddit,
       ]);
-      expect(tabs.first.icon, Icons.home_outlined);
+      expect(tabs.first.icon, followingTabIcon);
       expect(tabs.last.icon, isNotNull);
     });
 
