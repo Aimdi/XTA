@@ -26,6 +26,9 @@ class TweetPoll {
   /// the poll has no votes, which matches no bar.
   double get leadingCount => choices.fold<double>(0, (max, c) => c.count > max ? c.count : max);
 
+  /// Whether [choice] has the most votes. Nothing leads a poll nobody voted in.
+  bool leads(PollChoice choice) => leadingCount > 0 && choice.count == leadingCount;
+
   static TweetPoll? fromCard(Map<String, dynamic> card, int numberOfChoices) {
     final values = card['binding_values'];
     if (values is! Map) {

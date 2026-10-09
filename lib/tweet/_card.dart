@@ -4,31 +4,21 @@ import 'package:flutter/material.dart';
 
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/grok_share_card.dart';
 import 'package:xta/tweet/poll.dart';
+import 'package:xta/tweet/poll_results.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/unified_card.dart';
-import 'package:xta/ui/x_look_theme.dart';
-import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/links/link_opening.dart';
 import 'package:xta/links/link_preview_card.dart';
 import 'package:xta/tweet/tweet_link_context.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/json.dart';
-
-/// Poll totals are grouped in the reader's locale. Building the pattern parses
-/// it, so one is kept per locale rather than one per build of every poll.
-final Map<String, NumberFormat> _decimalFormats = {};
-
-NumberFormat _decimalFormat(String locale) =>
-    _decimalFormats.putIfAbsent(locale, () => NumberFormat.decimalPattern(locale));
 
 class TweetCard extends StatefulWidget {
   static final log = Logger('TweetCard');
@@ -226,59 +216,6 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  /// One poll option: a rounded bar filled to its share, the option on the left
-  /// and its percentage on the right.
-  ///
-  /// The old bar was a bare [LinearProgressIndicator] with the label painted
-  /// over it — square, full-bleed and with the percentage crowding the option
-  /// text it ran into.
-  Widget _createVoteBar(BuildContext context, PollChoice choice, bool isLeading) {
-    final theme = Theme.of(context);
-    final tokens = XLookTokens.maybeOf(context);
-    final track = tokens?.divider ?? theme.dividerColor;
-    final fill = isLeading
-        ? theme.colorScheme.primary.withValues(alpha: 0.45)
-        : theme.colorScheme.primary.withValues(alpha: 0.18);
-    final weight = isLeading ? FontWeight.w700 : FontWeight.w400;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Stack(
-          children: [
-            Container(height: 34, color: track),
-            // The fill is laid out as a fraction of the bar rather than painted
-            // by a progress indicator, so it keeps the rounded ends.
-            Positioned.fill(
-              child: FractionallySizedBox(
-                alignment: AlignmentDirectional.centerStart,
-                widthFactor: choice.share.clamp(0.0, 1.0),
-                child: Container(color: fill),
-              ),
-            ),
-            SizedBox(
-              height: 34,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(choice.label,
-                          overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: weight)),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('${(choice.share * 100).round()}%', style: TextStyle(fontWeight: weight)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   dynamic _createWebsiteCard(
       BuildContext context,
       Map<String, dynamic> unifiedCard,
@@ -389,40 +326,7 @@ class _TweetCardState extends State<TweetCard> {
 
   Widget _createVoteCard(BuildContext context, Map<String, dynamic> card, int numberOfChoices) {
     final poll = TweetPoll.fromCard(card, numberOfChoices);
-    if (poll == null) {
-      return Container();
-    }
-
-    final locale = Intl.getCurrentLocale();
-    final numberFormat = _decimalFormat(locale);
-    final endsAt = poll.endsAt;
-    final closed = endsAt != null && endsAt.isBefore(DateTime.now());
-    final relative = endsAt == null
-        ? null
-        : timeago.format(endsAt, allowFromNow: true, locale: Intl.shortLocale(locale));
-
-    return TweetEmbedSurface(
-      padding: const EdgeInsets.all(kTweetSpace3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final choice in poll.choices) _createVoteBar(context, choice, choice.count == poll.leadingCount),
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: DefaultTextStyle.merge(
-              style: Theme.of(context).textTheme.bodySmall!,
-              child: Text([
-                L10n.of(context).numberFormat_format_total_votes(poll.total, numberFormat.format(poll.total)),
-                if (relative != null)
-                  closed
-                      ? L10n.of(context).ended_timeago_format_endsAt_allowFromNow_true(relative)
-                      : L10n.of(context).ends_timeago_format_endsAt_allowFromNow_true(relative),
-              ].join(' • ')),
-            ),
-          )
-        ],
-      ),
-    );
+    return poll == null ? Container() : TweetPollResults(poll: poll);
   }
 
   /// A large-image card stays large only when its picture is the content —
