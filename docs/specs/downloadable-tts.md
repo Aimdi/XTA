@@ -1,8 +1,10 @@
 # Downloadable on-device voice for reading aloud
 
-Status: research done and engine seam in place (`SpeechEngine`). The native
-dependency is **not added yet** because no Android SDK was available to build
-and check it (see "Build verification").
+Status: **implemented** (branch `offline-voice`) with `sherpa_onnx` 1.13.8 and
+two Piper voices. The maintainer accepted the GPL-3.0 espeak-ng in the APK
+("Fine with GPL and you have the option inside the app to download it").
+Section 7 describes what was built; section 8 lists what still needs an APK
+build or a phone.
 
 Reader request: "TTS in Substack doesn't work. Can't I just download a good TTS
 into XTA and it just uses this one?"
@@ -156,7 +158,7 @@ Decisions needed from the maintainer before merging:
    Next-gen Kaldi" German (Thorsten) APK and choose it in XTA → Settings →
    Speech.
 
-## 5. Design (prepared, not yet implemented)
+## 5. Design (as first planned; section 7 has what was built)
 
 The seam already exists: `SpeechEngine` in `lib/speech/tts_engines.dart`
 (`prepare`, `say`, `stop`, `maxChunkChars`). `SpeechStore` takes
@@ -224,3 +226,78 @@ checked for:
 Do that before adding the dependency, using the steps in `AGENTS.md`
 ("Verifying the environment"): `flutter build apk --debug`, then a
 `--split-per-abi` release build, then compare sizes.
+
+## 7. Implementation
+
+### Voices (pinned)
+
+Archives were downloaded from the URLs below on 2026-10-09 and hashed with
+`sha256sum`; sizes are the downloaded byte counts. Each one was then unpacked
+and synthesised with the app's own code (`installVoiceArchive` and
+`SherpaVoiceSynthesizer`) against sherpa-onnx 1.13.8's Linux x64 libraries.
+
+| Id | Archive (`https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/…`) | Bytes | SHA-256 | Licence | Speaker |
+|---|---|---|---|---|---|
+| `de-thorsten-emotional` | `vits-piper-de_DE-thorsten_emotional-medium-int8.tar.bz2` | 23479221 | `e522bea5bb42d8f572b85a39ccb2d7ec114d6c2838c198827aadaeea3d31822a` | CC0-1.0 (Thorsten-Voice dataset, per `MODEL_CARD`) | 4 = "neutral" (0 is "amused") |
+| `en-libritts-r` | `vits-piper-en_US-libritts_r-medium-int8.tar.bz2` | 23398348 | `7e4552e239988f4896872822b56e99e0e9e00958164e3f6bdf5ee14391fbe829` | CC-BY-4.0 (LibriTTS-R; fine-tuned from lessac) | 0 |
+| (not offered) Kokoro | `kokoro-int8-en-v0_19.tar.bz2` | 103248205 | `c9f0dd393615805b0bab050c340834d5e684e732aec91c0e860cd30e982c08bd` | Apache-2.0 | 0 |
+
+Synthesis speed on a 4-core x64 desktop (2 threads, one 6 s sentence):
+the Piper voices took about 0.18–0.22× real time, but Kokoro took 1.0×. On a
+phone Kokoro would leave pauses between sentences, so it is not in the
+catalog. The loader supports it (`VoiceModelKind.kokoro`); adding the row
+above to `offlineVoiceCatalog` is all that is needed once a phone measurement
+shows it keeps up.
+
+Unpacked, each Piper voice takes about 40 MB (the model plus the full
+`espeak-ng-data`); unpacking took about 4 s on the desktop.
+
+### Code
+
+| File | Role |
+|---|---|
+| `lib/speech/offline_voice_catalog.dart` | The pinned catalog (pure data) and `pickOfflineVoice`. |
+| `lib/speech/voice_archive.dart` | SHA-256 check, streaming bzip2 → tar extraction into `<voices>/.<id>.partial`, path checks (no `..`, absolute paths or links), a required-file check, then an atomic rename to `<voices>/<id>`. It runs in `Isolate.run`. |
+| `lib/speech/voice_download_store.dart` | `VoiceDownloadStore` (flutter_triple). Its states are absent, downloading (bytes), installing, ready (bytes on disk) and failed (network, checksum or archive). It downloads through the app's `DownloadTransfer` into `<appSupport>/xta-download-staging/` and supports cancel and delete. It never downloads on its own. |
+| `lib/speech/offline_speech_engine.dart` | `OfflineSpeechEngine implements SpeechEngine, SpeechLookahead`. It reads only when "Use a downloaded voice" is on and an installed voice matches the article language (or the app language if that is unknown). Otherwise `prepare` returns false and `SpeechStore` falls back to the system engine, which also happens when a voice fails to load. |
+| `lib/speech/sherpa_voice_synthesizer.dart` | A long-lived isolate holds `OfflineTts` and answers `(text, speed)` with a WAV path (`generate` + `writeWave`). Its `sherpaConfigFor` builds the VITS/Kokoro config. |
+| `lib/speech/clip_player.dart` | Plays clips through the podcast player's `ContinuityPlayer` port (media_kit), with a start watchdog. |
+| `lib/speech/offline_voices_section.dart` | The "Downloaded voices" section at the top of the read-aloud settings. It has the switch, each voice with its language, size and licence, Download (progress + cancel) and Delete (with a confirmation), and a note on where the voices come from. |
+| `lib/speech/offline_speech_setup.dart` | Production wiring (pref, clip folder in the cache dir). |
+
+`SpeechStore` calls `upcoming(next chunk)` right after `say(chunk)`, so the
+next sentence is synthesised while the current one plays. The offline engine
+uses 300-character chunks. The reader's speed (flutter_tts scale, 0.5 =
+normal) maps to sherpa `speed = rate × 2`, clamped to 0.5–2.
+
+### Licences
+
+- `sherpa_onnx` (Apache-2.0) appears on Flutter's licence page from its
+  package `LICENSE`, like every other package.
+- `libsherpa-onnx-c-api.so` statically links espeak-ng. Its strings include
+  `phontab`, `phondata` and "Wrong version of espeak-ng-data", and it has no
+  `NEEDED` entry for a separate espeak library. `main.dart` therefore
+  registers `assets/licenses/espeak-ng.txt` (a short note plus espeak-ng's
+  `COPYING`, GPL-3.0) with `LicenseRegistry`, and the README says the APK is
+  distributed under the GPL-3.0's terms. The "Released under the MIT licence"
+  line on the About page still describes the source only; the maintainer may
+  want to reword it.
+- Voices are not bundled. Each one's licence is shown next to it.
+
+## 8. Still to verify (CI / device)
+
+- `flutter build apk --debug` and the `--split-per-abi` release build with
+  the new plugin. `sherpa_onnx_android_*` ship only prebuilt `jniLibs` (no
+  NDK build, no `libc++_shared.so`, so there is no clash with media_kit). Each
+  declares `minSdk 21` (below `flutter.minSdkVersion`) and `compileSdk 34`,
+  and puts AGP 7.3.0 on its own buildscript classpath. No change to
+  `android/app/build.gradle` was needed. Release builds pass
+  `--target-platform android-x64,android-arm,android-arm64`, which leaves out
+  the x86 libraries.
+- APK size growth (estimated: about +27 MB arm64 split, about 80 MB
+  universal).
+- On a phone: download → install → read a German and an English Substack
+  post. Check the sentence gaps, stop from the speech bar, falling back to
+  the system engine for a French post, and media_kit playback of the WAV
+  clips next to a paused podcast.
+
