@@ -111,8 +111,7 @@ class PixivPagedListStore<T> extends Store<List<T>> {
 
 /// Paginated illust list — following, ranking, bookmarks, search, related.
 class PixivIllustListStore extends PixivPagedListStore<PixivIllust> {
-  PixivIllustListStore(PixivIllustPageLoader loader, {PixivIllustListFilter? filter})
-    : super(loader, keyOf: _illustId, filter: filter);
+  PixivIllustListStore(super.loader, {super.filter}) : super(keyOf: _illustId);
 }
 
 int _illustId(PixivIllust illust) => illust.id;
