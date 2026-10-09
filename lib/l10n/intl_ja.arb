@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "やや過激・過激のサムネイルをぼかす",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "投稿を開くとぼかしなしで表示されます",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "タグをクリア",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "コメント",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "クリップボードにコピーしました",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "リンクをコピー",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "タグをコピー",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "すべてのタグをコピー",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Danbooru系・Gelbooru系を閲覧し、タグをグループに追加",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "テキストとして編集",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "投稿がありません。設定でホストを確認してください",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "この日付の人気投稿はありません",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "該当するタグの投稿がありません",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "APIエンジン",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "拒否されました。ログインとAPIキーを確認してください",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "現在の検索から除外",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "除外",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "親投稿・子投稿",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, other{お気に入り {count}件}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "タグをフォロー",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booruタグ",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "全画面で開く",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "グリッドの列数",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "画面に合わせる",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "このタグの投稿をミュート",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "ホストURL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "最大レーティング",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "{name}の他の作品",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "ミュート中のタグはまだありません",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "1つの項目に複数のタグを入れると、そのすべてを含む投稿だけをミュートします。-tag や rating:e も使えます",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "ミュートタグ",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "タグをミュート",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "コメントはまだありません",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "原寸ファイルを開く",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "ホストで開く",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "ソースを開く",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "動画を開く",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "スコア順",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "全画面で原寸ファイルを表示",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "全画面表示でホストのサンプルではなく原寸ファイルを読み込みます。通信量が増えます",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "パスワードハッシュ",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooruは平文パスワードではなく、サイトのSHA1ハッシュを要求します。",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "過激",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "全年齢",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "レーティング: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "日付を選択",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "日間",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "前の期間",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "次の期間",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "月間",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "このサイトには人気リストがないため、スコアの高い投稿を表示しています",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "週間",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "投稿日時: {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "過激",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "全年齢",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "やや過激",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "センシティブ",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "このタグで検索",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "コンテンツ",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "認証情報",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "表示",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "ホスト",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "すべて表示",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booruの設定",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Booruタブを表示",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "表示名",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "小さいサムネイル",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "グリッドにホストの小さなプレビューを読み込みます。高速で通信量も少なめですが、画像はぼやけます",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "ソース",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "フォロー中",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "最新",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "タグをタップすると検索、フォロー、ミュート、Wikiの閲覧ができます",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "アーティスト",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "キャラクター",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "版権",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count}件",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,10 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "タップで検索 · 長押しでフォロー／解除",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "メタ",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_species": "種族",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1646,8 @@
       }
     }
   },
+  "plugin_booru_tags": "タグ",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "接続をテスト",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booruのテストに失敗: {detail}",
@@ -1578,12 +1666,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "サムネイルの下に詳細を表示",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "グリッドの各投稿の下にホスト、先頭のタグ、スコアを表示します",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "タグのフォローを解除",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "このタグのミュートを解除",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "保存した検索から削除",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "投稿者: {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "動画",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "高評価 {up}、低評価 {down}",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "このタグにはWikiページがありません",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "最後に取得できた一覧を表示しています",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "プラグイン一覧を取得できませんでした",

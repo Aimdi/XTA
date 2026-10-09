@@ -1464,8 +1464,6 @@
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Quelle öffnen",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Video öffnen",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Höchster Score",
   "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Passwort-Hash",
@@ -1476,14 +1474,6 @@
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "Allgemein",
   "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Bewertung: {code}",
-  "@plugin_booru_rating_label": {
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
   "plugin_booru_rating_questionable": "Fragwürdig",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensibel",
@@ -1550,8 +1540,6 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tippen zum Suchen · lang drücken zum Folgen/Entfolgen",
-  "@plugin_booru_tag_hint": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {

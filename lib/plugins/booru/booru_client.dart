@@ -6,9 +6,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/booru/booru_detail_parse.dart';
+import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
+import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 
 enum BooruErrorKind {
@@ -68,19 +71,8 @@ class BooruClient {
         : BooruRating.general;
   }
 
-  Set<String> get mutedTags {
-    final raw = prefs.get<String>(optionPluginBooruMutedTags) ?? '[]';
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is List) {
-        return {
-          for (final tag in decoded.whereType<String>())
-            ?normaliseBooruTag(tag),
-        };
-      }
-    } catch (_) {}
-    return const {};
-  }
+  Set<String> get mutedTags =>
+      parseBooruBlacklist(prefs.get<String>(optionPluginBooruMutedTags));
 
   bool get isConfigured => host.isNotEmpty;
 
@@ -107,23 +99,94 @@ class BooruClient {
 
     final effectiveTags = _withRatingTag(tags);
     final uri = _postsUri(tags: effectiveTags, page: page, limit: limit);
-    final response = await _get(uri);
-    final decoded = _decodeJson(response, uri);
-    final parsed = parseBooruPosts(decoded, engine: engine, host: host);
-    final muted = mutedTags;
-    final filtered = [
-      for (final post in parsed)
-        if (booruPostAllowed(post, maxRating) && !booruPostMuted(post, muted))
-          post,
-    ];
-
-    // Pagination follows the raw API page: rating/mute filters must not make
-    // an empty filtered page look like the end of the feed.
-    return BooruPostPage(
-      posts: filtered,
-      page: page,
-      hasMore: parsed.length >= limit,
+    final parsed = parseBooruPosts(
+      await fetchJson(uri),
+      engine: engine,
+      host: host,
     );
+    return _page(parsed, page: page, hasMore: parsed.length >= limit);
+  }
+
+  /// Pagination follows the raw API page: rating/mute filters must not make
+  /// an empty filtered page look like the end of the feed.
+  BooruPostPage _page(
+    List<BooruPost> parsed, {
+    required int page,
+    required bool hasMore,
+  }) {
+    final muted = mutedTags;
+    return BooruPostPage(
+      posts: [
+        for (final post in parsed)
+          if (booruPostAllowed(post, maxRating) && !booruPostMuted(post, muted))
+            post,
+      ],
+      page: page,
+      hasMore: hasMore,
+    );
+  }
+
+  BooruSite get site =>
+      BooruSite(engine: engine, host: host, login: login, apiKey: apiKey);
+
+  /// The host's popular list for [query]. Gelbooru keeps none, so it shows
+  /// its highest-scored posts instead.
+  Future<BooruPostPage> popular(
+    BooruPopularQuery query, {
+    int page = 1,
+    int limit = defaultPageSize,
+  }) async {
+    final uri = booruPopularUri(site, query, page: page, limit: limit);
+    if (uri == null) {
+      return posts(
+        tags: [booruScoreOrderMetatag(engine)],
+        page: page,
+        limit: limit,
+      );
+    }
+    if (page > 1 && !booruPopularPages(engine)) {
+      return BooruPostPage(posts: const [], page: page, hasMore: false);
+    }
+    final parsed = parseBooruPosts(
+      await fetchJson(uri),
+      engine: engine,
+      host: host,
+    );
+    return _page(
+      parsed,
+      page: page,
+      hasMore: booruPopularPages(engine) && parsed.length >= limit,
+    );
+  }
+
+  /// The kind of each of [post]'s tags. Empty when the host cannot say.
+  Future<Map<String, BooruTagCategory>> tagCategories(BooruPost post) async {
+    if (post.tagCategories.isNotEmpty) return post.tagCategories;
+    final uri = booruTagKindsUri(site, postId: post.id, tags: post.tags);
+    if (uri == null) return const {};
+    try {
+      return parseBooruTagKinds(await fetchJson(uri), engine: engine);
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  /// The wiki text for [tag], or null when the host has no page for it.
+  Future<String?> wiki(String tag) async {
+    final uri = booruWikiUri(site, tag);
+    if (uri == null) return null;
+    try {
+      return parseBooruWiki(await fetchJson(uri), tag: tag);
+    } on BooruException catch (e) {
+      if (e.kind == BooruErrorKind.notFound) return null;
+      rethrow;
+    }
+  }
+
+  Future<List<BooruComment>> comments(BooruPost post) async {
+    final uri = booruCommentsUri(site, post.id);
+    if (uri == null) return const [];
+    return parseBooruComments(await fetchJson(uri));
   }
 
   Future<List<BooruTagSuggestion>> suggestTags(
@@ -134,12 +197,8 @@ class BooruClient {
     if (query.isEmpty || !isConfigured) return const [];
 
     final uri = _tagsUri(query: query, limit: limit);
-    if (uri == null) return const [];
-
     try {
-      final response = await _get(uri);
-      final decoded = _decodeJson(response, uri);
-      return parseBooruTagSuggestions(decoded, engine: engine);
+      return parseBooruTagSuggestions(await fetchJson(uri), engine: engine);
     } catch (_) {
       return const [];
     }
@@ -168,7 +227,7 @@ class BooruClient {
     final byId = <String, BooruPost>{};
     for (final page in pages) {
       for (final post in page.posts) {
-        byId.putIfAbsent('${post.host}:${post.id}', () => post);
+        byId.putIfAbsent(post.key, () => post);
       }
     }
 
@@ -208,57 +267,24 @@ class BooruClient {
     ];
   }
 
-  Uri? _tagsUri({required String query, required int limit}) {
-    final base = Uri.parse(booruRequestHost(host));
-    final path = _trimPath(base.path);
+  Uri _tagsUri({required String query, required int limit}) {
     // Prefix match — engines differ on wildcard syntax.
-    switch (engine) {
-      case BooruEngine.danbooru:
-        return base.replace(
-          path: '$path/tags.json',
-          queryParameters: {
-            'search[name_matches]': '$query*',
-            'search[order]': 'count',
-            'limit': '$limit',
-            if (login.isNotEmpty) 'login': login,
-            if (apiKey.isNotEmpty) 'api_key': apiKey,
-          },
-        );
-      case BooruEngine.moebooru:
-        return base.replace(
-          path: '$path/tag.json',
-          queryParameters: {
-            'name': '$query*',
-            'order': 'count',
-            'limit': '$limit',
-          },
-        );
-      case BooruEngine.gelbooruV2:
-        return base.replace(
-          path: '$path/index.php',
-          queryParameters: {
-            'page': 'dapi',
-            's': 'tag',
-            'q': 'index',
-            'json': '1',
-            'limit': '$limit',
-            'name_pattern': '$query%',
-            if (login.isNotEmpty) 'user_id': login,
-            if (apiKey.isNotEmpty) 'api_key': apiKey,
-          },
-        );
-      case BooruEngine.e621:
-        return base.replace(
-          path: '$path/tags.json',
-          queryParameters: {
-            'search[name_matches]': '$query*',
-            'search[order]': 'count',
-            'limit': '$limit',
-            if (login.isNotEmpty) 'login': login,
-            if (apiKey.isNotEmpty) 'api_key': apiKey,
-          },
-        );
-    }
+    return switch (engine) {
+      BooruEngine.danbooru || BooruEngine.e621 => site.endpoint('/tags.json', {
+        'search[name_matches]': '$query*',
+        'search[order]': 'count',
+        'limit': '$limit',
+      }),
+      BooruEngine.moebooru => site.endpoint('/tag.json', {
+        'name': '$query*',
+        'order': 'count',
+        'limit': '$limit',
+      }),
+      BooruEngine.gelbooruV2 => site.dapi('tag', {
+        'limit': '$limit',
+        'name_pattern': '$query%',
+      }),
+    };
   }
 
   Uri _postsUri({
@@ -266,65 +292,25 @@ class BooruClient {
     required int page,
     required int limit,
   }) {
-    final base = Uri.parse(booruRequestHost(host));
     final tagQuery = tags.join(' ');
-    final path = _trimPath(base.path);
-
-    switch (engine) {
-      case BooruEngine.danbooru:
-        return base.replace(
-          path: '$path/posts.json',
-          queryParameters: {
-            'limit': '$limit',
-            'page': '$page',
-            if (tagQuery.isNotEmpty) 'tags': tagQuery,
-            if (login.isNotEmpty) 'login': login,
-            if (apiKey.isNotEmpty) 'api_key': apiKey,
-          },
-        );
-      case BooruEngine.moebooru:
-        return base.replace(
-          path: '$path/post.json',
-          queryParameters: {
-            'limit': '$limit',
-            'page': '$page',
-            if (tagQuery.isNotEmpty) 'tags': tagQuery,
-            if (login.isNotEmpty) 'login': login,
-            if (apiKey.isNotEmpty) 'password_hash': apiKey,
-          },
-        );
-      case BooruEngine.gelbooruV2:
-        return base.replace(
-          path: '$path/index.php',
-          queryParameters: {
-            'page': 'dapi',
-            's': 'post',
-            'q': 'index',
-            'json': '1',
-            'limit': '$limit',
-            'pid': '${page - 1}',
-            if (tagQuery.isNotEmpty) 'tags': tagQuery,
-            if (login.isNotEmpty) 'user_id': login,
-            if (apiKey.isNotEmpty) 'api_key': apiKey,
-          },
-        );
-      case BooruEngine.e621:
-        return base.replace(
-          path: '$path/posts.json',
-          queryParameters: {
-            'limit': '$limit',
-            'page': '$page',
-            if (tagQuery.isNotEmpty) 'tags': tagQuery,
-            if (login.isNotEmpty) 'login': login,
-            if (apiKey.isNotEmpty) 'api_key': apiKey,
-          },
-        );
-    }
-  }
-
-  String _trimPath(String path) {
-    if (path.isEmpty || path == '/') return '';
-    return path.replaceAll(RegExp(r'/+$'), '');
+    final query = {
+      'limit': '$limit',
+      if (tagQuery.isNotEmpty) 'tags': tagQuery,
+    };
+    return switch (engine) {
+      BooruEngine.danbooru || BooruEngine.e621 => site.endpoint('/posts.json', {
+        ...query,
+        'page': '$page',
+      }),
+      BooruEngine.moebooru => site.endpoint('/post.json', {
+        ...query,
+        'page': '$page',
+      }),
+      BooruEngine.gelbooruV2 => site.dapi('post', {
+        ...query,
+        'pid': '${page - 1}',
+      }),
+    };
   }
 
   Future<http.Response> _get(Uri uri) async {
@@ -339,6 +325,8 @@ class BooruClient {
       throw BooruException(BooruErrorKind.network, '$e');
     }
   }
+
+  Future<Object?> fetchJson(Uri uri) async => _decodeJson(await _get(uri), uri);
 
   Object? _decodeJson(http.Response response, Uri uri) {
     if (response.statusCode == 401 || response.statusCode == 403) {

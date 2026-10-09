@@ -14,6 +14,8 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_popular.dart';
+import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
@@ -21,7 +23,11 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
-/// Boorusama-inspired home: Latest / Following / Search entry.
+const _latestTab = 0;
+const _popularTab = 1;
+const _followingTab = 2;
+
+/// Boorusama-inspired home: Latest / Popular / Following / Search entry.
 class BooruScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -35,6 +41,8 @@ class _BooruScreenState extends State<BooruScreen> {
   late final PluginSessionLease _session;
   late final PluginViewStore<int> _tabs;
   late final BooruFeedStore _latest;
+  late final PluginViewStore<BooruPopularQuery> _popularQuery;
+  late final BooruFeedStore _popular;
   late final BooruFeedStore _following;
   Disposer? _tagsDisposer;
   var _followingBootstrapped = false;
@@ -47,6 +55,11 @@ class _BooruScreenState extends State<BooruScreen> {
     _tabs = _session.obtain('view', () => PluginViewStore<int>(0));
     final client = context.read<BooruClient>();
     _latest = _session.obtain('latest', () => BooruFeedStore(client, ({required page}) => client.latest(page: page)));
+    _popularQuery = _session.obtain('popular-query', () => PluginViewStore(BooruPopularQuery.today()));
+    _popular = _session.obtain(
+      'popular',
+      () => BooruFeedStore(client, ({required page}) => client.popular(_popularQuery.state, page: page)),
+    );
     final tagStore = context.read<BooruTagsStore>();
     _following = _session.obtain(
       'following',
@@ -69,17 +82,13 @@ class _BooruScreenState extends State<BooruScreen> {
         onState: (next) {
           if (!_listEquals(next, _lastFollowingTags)) {
             _lastFollowingTags = List.of(next);
-            if (_followingBootstrapped || _tabs.state == 1) {
+            if (_followingBootstrapped || _tabs.state == _followingTab) {
               _following.refresh();
             }
           }
         },
       );
-      if (_tabs.state == 1) {
-        await _ensureFollowing();
-      } else if (_latest.state.isEmpty) {
-        await _latest.refresh();
-      }
+      await _ensureLoaded(_tabs.state);
     });
   }
 
@@ -110,10 +119,21 @@ class _BooruScreenState extends State<BooruScreen> {
     super.dispose();
   }
 
+  Future<void> _ensureLoaded(int tab) async {
+    if (tab == _followingTab) return _ensureFollowing();
+    final feed = tab == _popularTab ? _popular : _latest;
+    if (feed.state.isEmpty) await feed.refresh();
+  }
+
   void _select(int index) {
     _tabs.select(index);
-    if (index == 1) _ensureFollowing();
-    if (index == 0 && _latest.state.isEmpty) _latest.refresh();
+    _ensureLoaded(index);
+  }
+
+  void _showPopular(BooruPopularQuery query) {
+    if (query == _popularQuery.state) return;
+    _popularQuery.select(query);
+    _popular.refresh();
   }
 
   @override
@@ -134,14 +154,20 @@ class _BooruScreenState extends State<BooruScreen> {
                 PluginHomeTab(
                   label: l10n.plugin_booru_tab_latest,
                   icon: Icons.photo_library_outlined,
-                  selected: tab == 0,
-                  onTap: () => _select(0),
+                  selected: tab == _latestTab,
+                  onTap: () => _select(_latestTab),
+                ),
+                PluginHomeTab(
+                  label: l10n.popular,
+                  icon: Icons.local_fire_department_outlined,
+                  selected: tab == _popularTab,
+                  onTap: () => _select(_popularTab),
                 ),
                 PluginHomeTab(
                   label: l10n.plugin_booru_tab_following,
                   icon: Icons.sell_outlined,
-                  selected: tab == 1,
-                  onTap: () => _select(1),
+                  selected: tab == _followingTab,
+                  onTap: () => _select(_followingTab),
                 ),
               ],
               actions: [
@@ -170,6 +196,15 @@ class _BooruScreenState extends State<BooruScreen> {
                     emptyLabel: l10n.plugin_booru_empty_latest,
                     scrollController: widget.scrollController,
                   ),
+                  (_) => ScopedBuilder<PluginViewStore<BooruPopularQuery>, BooruPopularQuery>(
+                    store: _popularQuery,
+                    onState: (context, query) => BooruPopularTab(
+                      engine: context.read<BooruClient>().engine,
+                      query: query,
+                      onChanged: _showPopular,
+                      child: _FeedTab(store: _popular, emptyLabel: l10n.plugin_booru_empty_popular),
+                    ),
+                  ),
                   (_) => _FollowingTab(store: _following),
                 ],
               ),
@@ -196,6 +231,7 @@ class _FeedTab extends StatelessWidget {
       onLoading: (_) => store.state.isNotEmpty
           ? BooruPostGrid(
               posts: store.state,
+              feed: store,
               scrollController: scrollController,
               onRefresh: store.refresh,
               loadingMore: store.loadingMore,
@@ -224,6 +260,7 @@ class _FeedTab extends StatelessWidget {
         }
         return BooruPostGrid(
           posts: posts,
+          feed: store,
           scrollController: scrollController,
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,

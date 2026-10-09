@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Clé API Gelbooru facultative — à associer à l’id utilisateur ci-dessus.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Flouter les miniatures douteuses et explicites",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Une fois ouverte, la publication s’affiche sans flou",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru n°{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Effacer les tags",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Commentaires",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Copié dans le presse-papiers",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Copier le lien",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Copier le tag",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Copier les tags",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Parcourir les sites type Danbooru et Gelbooru — suivez des tags dans les groupes",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Modifier en texte",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "Aucune publication — vérifiez l’hôte dans les réglages",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Aucune publication populaire à cette date",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "Aucune publication ne correspond à ces tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "Moteur d’API",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "Requête refusée — vérifiez l’identifiant et la clé API",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Exclure de la recherche actuelle",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Exclure",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Publication parente et enfants",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} favori} other{{count} favoris}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Suivre le tag",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Tags Booru",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Ouvrir en plein écran",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Colonnes de la grille",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Ajuster à l’écran",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Masquer les publications avec ce tag",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "URL de l’hôte",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Classification maximale",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Autres œuvres de {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "Aucun tag masqué pour l’instant",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Plusieurs tags dans une même entrée ne masquent que les publications qui les ont tous. -tag et rating:e fonctionnent aussi",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Tags masqués",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Masquer un tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Pas encore de commentaires",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Ouvrir le fichier complet",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Ouvrir sur l’hôte",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Ouvrir la source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Ouvrir la vidéo",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Meilleur score",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Fichiers originaux en plein écran",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Le plein écran charge le fichier en taille réelle plutôt que la version réduite de l’hôte. Consomme plus de données",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Hash du mot de passe",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru attend le hash SHA1 du site, pas le mot de passe en clair.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicite",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "Général",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Classification : {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Choisir une date",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Jour",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Précédent",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Suivant",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Mois",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Ce site ne propose pas de classement des populaires, voici donc ses publications les mieux notées",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Semaine",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Publié le {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicite",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "Général",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Douteux",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensible",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Rechercher ce tag",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Contenu",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Identifiants",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Affichage",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Hôte",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Tout voir",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Réglages Booru",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Afficher l’onglet Booru",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nom affiché",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Miniatures allégées",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Charge les petits aperçus de l’hôte dans la grille. Plus rapide et moins gourmand en données, mais plus flou",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Suivis",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Récents",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Touchez un tag pour le rechercher, le suivre, le masquer ou lire son wiki",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artiste",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Personnage",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} publications",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,10 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Appuyez sur un tag pour chercher · appui long pour suivre ou ne plus suivre",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Méta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_species": "Espèce",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1646,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tags",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Tester la connexion",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Échec du test Booru : {detail}",
@@ -1578,12 +1666,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Détails sous les miniatures",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Hôte, premiers tags et score sous chaque publication de la grille",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Ne plus suivre le tag",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Ne plus masquer ce tag",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Retirer des recherches enregistrées",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Mis en ligne par {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Vidéo",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} votes pour, {down} contre",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Ce tag n’a pas de page wiki",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "La dernière liste reçue est affichée",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Impossible de récupérer la liste des extensions",

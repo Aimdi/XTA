@@ -6,8 +6,8 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
-import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -72,28 +72,18 @@ class BooruTagsStore extends Store<List<String>> {
   }
 }
 
-/// Local mute list — preference-backed, like Pixiv muted tags.
+/// Local blacklist — preference-backed, like Pixiv muted tags. An entry is a
+/// tag or several tags that hide a post only together.
 class BooruMuteStore extends Store<Set<String>> {
   final BasePrefService prefs;
 
   BooruMuteStore(this.prefs) : super(const {});
 
   Future<void> load() async {
-    await execute(() async => _read());
-  }
-
-  Set<String> _read() {
-    final raw = prefs.get<String>(optionPluginBooruMutedTags) ?? '[]';
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is List) {
-        return {
-          for (final tag in decoded.whereType<String>())
-            ?normaliseBooruTag(tag),
-        };
-      }
-    } catch (_) {}
-    return const {};
+    await execute(
+      () async =>
+          parseBooruBlacklist(prefs.get<String>(optionPluginBooruMutedTags)),
+    );
   }
 
   Future<void> _persist(Set<String> tags) async {
@@ -103,13 +93,13 @@ class BooruMuteStore extends Store<Set<String>> {
   }
 
   Future<void> mute(String tag) async {
-    final normalised = normaliseBooruTag(tag);
+    final normalised = normaliseBooruQuery(tag);
     if (normalised == null) return;
     await _persist({...state, normalised});
   }
 
   Future<void> unmute(String tag) async {
-    final normalised = normaliseBooruTag(tag);
+    final normalised = normaliseBooruQuery(tag);
     if (normalised == null) return;
     await _persist({
       for (final t in state)
@@ -162,22 +152,35 @@ class BooruFeedStore extends Store<List<BooruPost>> {
     _loadingMore = true;
     try {
       // Skip empty filtered pages while the API still has more raw results.
+      var repeats = 0;
       for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
         final next = _page + 1;
         final page = await loader(page: next);
         _page = next;
         _hasMore = page.hasMore;
-        if (page.posts.isEmpty) {
-          if (!_hasMore) break;
-          continue;
+        final fresh = _unseen(page.posts);
+        if (fresh.isNotEmpty) {
+          update([...state, ...fresh]);
+          return;
         }
-        update([...state, ...page.posts]);
-        break;
+        if (page.posts.isNotEmpty) repeats++;
       }
+      // A host that ignores the page number sends the same posts forever.
+      if (repeats == 3) _hasMore = false;
     } catch (_) {
       // Keep what we have; the reader can pull-to-refresh.
     } finally {
       _loadingMore = false;
     }
+  }
+
+  /// New uploads shift a host's pages, so a page can repeat posts already
+  /// shown.
+  List<BooruPost> _unseen(List<BooruPost> posts) {
+    final seen = {for (final post in state) post.key};
+    return [
+      for (final post in posts)
+        if (seen.add(post.key)) post,
+    ];
   }
 }

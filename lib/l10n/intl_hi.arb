@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "संदिग्ध और अश्लील थंबनेल धुंधले करें",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "पोस्ट खोलने पर वह बिना धुंधलेपन के दिखती है",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "टैग साफ़ करें",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "टिप्पणियाँ",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "क्लिपबोर्ड पर कॉपी हो गया",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "लिंक कॉपी करें",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "टैग कॉपी करें",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "सभी टैग कॉपी करें",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "टेक्स्ट के रूप में संपादित करें",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "इस तारीख की कोई लोकप्रिय पोस्ट नहीं",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "मौजूदा खोज से बाहर रखें",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "बाहर रखें",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "पैरेंट और चाइल्ड पोस्ट",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} पसंदीदा} other{{count} पसंदीदा}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "टैग फ़ॉलो करें",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "फ़ुल स्क्रीन में खोलें",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "ग्रिड कॉलम",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "स्क्रीन के हिसाब से",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "इस टैग वाली पोस्ट छिपाएँ",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "{name} की और पोस्ट",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "एक प्रविष्टि में कई टैग हों, तो सिर्फ़ वे पोस्ट छिपती हैं जिनमें सभी टैग हों। -tag और rating:e भी काम करते हैं",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "अभी कोई टिप्पणी नहीं",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "सबसे ऊँचा स्कोर",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "फ़ुल स्क्रीन में मूल फ़ाइलें",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "फ़ुल स्क्रीन में होस्ट के छोटे संस्करण के बजाय पूरे आकार की फ़ाइल लोड होती है। ज़्यादा डेटा खर्च होता है",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "तारीख चुनें",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "दिन",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "पिछला",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "अगला",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "महीना",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "इस साइट पर लोकप्रिय सूची नहीं है, इसलिए सबसे ऊँचे स्कोर वाली पोस्ट दिखाई जा रही हैं",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "सप्ताह",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "{date} को पोस्ट किया गया",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "यह टैग खोजें",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "डिस्प्ले",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "सभी देखें",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "प्रदर्शित नाम",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "छोटे थंबनेल",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "ग्रिड में होस्ट के छोटे पूर्वावलोकन लोड होते हैं। तेज़ और कम डेटा खर्च, पर थोड़े धुंधले",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "किसी टैग को खोजने, फ़ॉलो करने, छिपाने या उसकी विकी पढ़ने के लिए उस पर टैप करें",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "कलाकार",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "किरदार",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "कॉपीराइट",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,10 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "मेटा",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_species": "प्रजाति",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1646,8 @@
       }
     }
   },
+  "plugin_booru_tags": "टैग",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1666,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "थंबनेल के नीचे विवरण",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "ग्रिड में हर पोस्ट के नीचे होस्ट, पहले टैग और स्कोर",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "टैग अनफ़ॉलो करें",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "इस टैग को छिपाना बंद करें",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "सहेजी गई खोजों से हटाएँ",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "{name} द्वारा अपलोड किया गया",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} अपवोट, {down} डाउनवोट",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "विकी",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "इस टैग का कोई विकी पेज नहीं है",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "पिछली प्राप्त सूची दिखाई जा रही है",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "प्लगइन सूची प्राप्त नहीं की जा सकी",

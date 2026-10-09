@@ -1471,6 +1471,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Blur questionable and explicit thumbnails",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Opening the post shows it unblurred",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1483,6 +1487,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Clear tags",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Comments",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Copied to clipboard",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Copy link",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Copy tag",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Copy tags",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Edit as text",
@@ -1497,6 +1511,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "No popular posts for this date",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1521,10 +1537,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Exclude from current search",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Exclude",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Parent and child posts",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{1 favorite} other{{count} favorites}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Follow tag",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Open full screen",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Grid columns",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Fit to screen",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Hide posts with this tag",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1545,38 +1583,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "More from {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Several tags in one entry hide only posts that have all of them. -tag and rating:e work too",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "No comments yet",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Highest score",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Original files in full screen",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Full screen loads the full-size file instead of the host's sample. Uses more data",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Pick a date",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Day",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Earlier",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Later",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Month",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "This site keeps no popular list, so its highest-scored posts are shown",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Week",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Posted {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1613,12 +1679,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Search this tag",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Display",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "See all",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1629,12 +1701,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Display name",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Smaller thumbnails",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Loads the host's small previews in the grid. Faster and lighter on data, but blurrier",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Tap a tag to search it, follow it, hide it or read its wiki",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artist",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Character",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1643,8 +1727,10 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_species": "Species",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1653,6 +1739,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tags",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1671,12 +1759,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Details under thumbnails",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Host, first tags and score below each post in the grid",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Unfollow tag",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Stop hiding this tag",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Remove from saved searches",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Uploaded by {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} up, {down} down",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "This tag has no wiki page",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Showing the last list that arrived",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "The plugin list could not be fetched",
