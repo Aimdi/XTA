@@ -1,29 +1,143 @@
-# Pixiv — remaining Pixez gaps (on top of gallery PR)
+# Pixiv — PixEz parity plan
 
-Builds on the Pixez-like gallery (Following / Ranking / Bookmarks, grid,
-in-app viewer, search). Follow and bookmark write back to Pixiv; there is
-no compose.
+Index of the work that brings XTA's private Pixiv plugin up to what
+[pixez-flutter](https://github.com/Notsfsssf/pixez-flutter) offers a reader.
+PixEz is GPL-3.0 and XTA is MIT: PixEz is read only to learn *what* a feature
+does and *which* endpoints and fields exist. No PixEz code, widget tree or file
+layout is copied or translated.
 
-## This pass
+XTA stays a reader. The only writes to Pixiv are follow / unfollow (public or
+private), bookmark add / delete (with tags and visibility) and watchlist add /
+delete. Posting comments, replies, reports, uploads and account or profile
+edits are out of scope. Viewing history stays on the device.
 
-1. **Search polish** — recent query history; open artwork/user by URL or
-   numeric ID; illust search target (partial/exact tag, title/caption) and
-   sort (newest / popular).
-2. **Bookmarks restrict** — public / private toggle for the signed-in user’s
-   bookmarks tab.
-3. **Local mute** — mute author ids, tag names, and illust ids in prefs;
-   filter following / ranking / bookmarks / search / related / profile grids.
-   Mute actions from the illust viewer (author / tags / this work).
+The plugin as it stands is described in `pixiv-plugin.md`; gallery speed work
+is in `pixiv-performance.md`.
 
-## Performance
+## Batches
 
-Gallery scroll/decode work (cacheWidth, soft refresh, medium thumbs, viewer
-quality ladder, tab keep-alive, …) lives in `docs/specs/pixiv-performance.md`.
+B0 lands first and every other batch builds on its seams. B1, B3, B4, B5a/b,
+B6a/b and B7 can then proceed side by side; the novel batches (B2a–c) follow
+once those are in.
 
-## Still later
+| Batch | Area | Status |
+|---|---|---|
+| B0 | Shared seams: transport, models, user card, file splits | Built |
+| B1 | Search: filters, shortcuts, favourite tags, SauceNAO | Planned |
+| B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Planned |
+| B2b | Novels: reader | Planned |
+| B2c | Novels: search, profiles, history, deep links | Planned |
+| B3 | Comments (reading only) | Planned |
+| B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Planned |
+| B5a | Profiles and follows | Planned |
+| B5b | Bookmarks and bookmark organisation | Planned |
+| B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Planned |
+| B6b | Saving: naming, folders, index, multi-select, ugoira export | Planned |
+| B7 | Settings, accounts, history, mute, links | Planned |
 
-- Ugoira frame playback
-- Novels
-- Local download manager
-- Comments
-- Proxy / mirror modes
+### B0 — shared seams (built)
+
+- **App-API transport.** A public transport on `PixivClient` (`getJson` with an
+  auth flag, `getNextJson`, `getText`, `postForm`, `illustPageFrom`). Pixiv's
+  expired-token reply (HTTP 400, `error.message` about the OAuth process)
+  refreshes once, single-flight, and replays. A connection dropped before any
+  header is retried once. The bearer token only goes to `app-api.pixiv.net`.
+- **Translated tags follow the app language.** Every request sends
+  `Accept-Language` from the active XTA locale (`ja`, `ko`, `zh-CN`, `zh-TW`,
+  else `en`).
+- **User preview cards.** `PixivUserPreviewCard` (avatar, name, @account, three
+  works, follow) and `PixivFollowButton` for user search, recommended users and
+  follow lists.
+- **R-18 and AI filtering in previews.** User previews follow Show R-18 and
+  Hide AI like the feeds, which also fixes group Discover suggesting creators
+  through works the reader hid.
+- **Profile counts.** `/v1/user/detail` has no follower count; the profile
+  shows works (illustrations + manga), following and My pixiv friends.
+- **Seams for the other batches:** model fields (series, comment count,
+  author followed, raw caption HTML, sanity level, premium), the generic paged
+  list store, comment and novel mutes, the follow-restrict / Home-source /
+  bookmark-tag view state, search history on the app-wide store, the
+  `pixiv_link_open.dart` routes, a leading-slivers grid, `pumpPixiv`
+  `extraProviders`, and the home, settings, tile and detail screens split into
+  section files.
+
+### B1 — search
+
+Search filter sheet (target, sort, remembered); posting-date range with
+presets; popularity filter (users入り); Premium bookmark-count range; AI and
+ugoira filters; popular preview for non-Premium readers; user search with
+preview cards and follow; tag autocomplete with multi-word editing; open by ID
+or URL; search history management (clear all); tag chips with long-press
+menu, copy and favourite; favourite tags; SauceNAO reverse image search.
+
+### B2a–B2c — novels
+
+- **B2a:** novel section; recommended novels; novel list card; muting novels;
+  novel rankings with modes and date; new novels from followed authors; novel
+  bookmarks (own and others'); bookmark a novel; series watchlist and series
+  page.
+- **B2b:** reader loading (and open by ID); header; markup rendering; embedded
+  illustrations and uploaded images; font size and spacing; reading position;
+  selectable text with Translate; menu with author and previous / next
+  chapter; share links; export as .txt.
+- **B2c:** novel search with filters; novel search landing (trending, ID jump,
+  history); profile Novels tab and novel author cards; novel reading history;
+  novel deep links.
+
+### B3 — comments (reading only)
+
+Artwork comments; reply threads; Pixiv emoji and stickers; comment mute and
+spam handling; selectable comment text with Translate; novel comments and
+replies.
+
+### B4 — discovery
+
+Recommended manga; recommended users page; Pixivision carousel, list and
+article reader; illustration ranking with all modes, pinned tabs and date;
+Following feed with public / private filter; follow hub (new works,
+bookmarks, watchlist, followed); illust / manga series page and series
+context; manga watchlist; signed-out preview; artwork ID and resolution.
+
+### B5a — profiles and follows
+
+Profile header, info and actions; profile works (illustrations and manga);
+following lists for any user; followers list; follow privately and the
+follow-detail dialog; mute users from profiles with a muted-profile
+placeholder.
+
+### B5b — bookmarks
+
+Bookmark heart with default visibility; bookmark editor with tags and
+visibility; tag picker with suggestions; bookmark lists with tag filter for
+any user; auto-tag, follow-author and download after bookmarking; haptic
+feedback.
+
+### B6a — viewing
+
+Image host mirror (`i.pixiv.re` or custom); image quality settings; grid
+column count; loading and failure states; share image and HD toggle in the
+viewer; swipe between artworks; side-by-side detail for landscape and
+tablets.
+
+### B6b — saving
+
+Ugoira export as GIF or ZIP; file-name template; per-artist and R-18
+subfolders; already-downloaded check and badge; pick pages to save; grid tile
+long-press actions; bookmark when downloading.
+
+### B7 — settings, accounts, history, mute, links
+
+Viewing history (on device); mute settings page; tag mute with regex and
+combinations; blocked-work screen with temporary reveal; Pixiv account AI
+setting and AI badge toggle; multiple accounts; caption with tappable links
+and selection; copy artwork info with a template; Pixiv link and deep-link
+routing; open pixiv links shared to XTA; More hub; start section and
+navigation.
+
+## Already on par
+
+- **R-18 hiding** drops R-18 works everywhere (feeds, previews, Discover)
+  rather than masking them, and the app-wide secure window covers the privacy
+  screen.
+- **Hide AI works** drops `illust_ai_type == 2` everywhere except the reader's
+  own bookmarks; the AI-ranking exemption arrives with B4's rankings.
