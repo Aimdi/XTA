@@ -3796,5 +3796,43 @@
   "affiliated_with": "隶属于 {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, other{{views} 次查看}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "更多选项",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "复制链接",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "已复制链接",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "重新加载页面",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "返回帖子",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "安全连接",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "连接不安全",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "喜欢：{count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "回复：{count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "转发：{count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

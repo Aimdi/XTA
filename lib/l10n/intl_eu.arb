@@ -3796,5 +3796,43 @@
   "affiliated_with": "Afiliazioa: {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, one{{views} ikustaldi} other{{views} ikustaldi}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Aukera gehiago",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Kopiatu esteka",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Esteka kopiatu da",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Kargatu berriro orria",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Itzuli argitalpenera",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Konexio segurua",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Konexioa ez da segurua",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Atsegiteak: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Erantzunak: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Birbidalketak: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3796,5 +3796,43 @@
   "affiliated_with": "Berafiliasi dengan {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, other{{views} tayangan}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Opsi lainnya",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Salin tautan",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Tautan disalin",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Muat ulang halaman",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Kembali ke postingan",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Koneksi aman",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Koneksi tidak aman",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Suka: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Balasan: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Posting ulang: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

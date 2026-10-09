@@ -3796,5 +3796,43 @@
   "affiliated_with": "Связан с {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, one{{views} просмотр} few{{views} просмотра} many{{views} просмотров} other{{views} просмотра}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Другие действия",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Копировать ссылку",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Ссылка скопирована",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Перезагрузить страницу",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Назад к посту",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Защищённое соединение",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Соединение не защищено",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Нравится: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Ответы: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Репосты: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3793,5 +3793,43 @@
   "affiliated_with": "Liên kết với {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, other{{views} lượt xem}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Tùy chọn khác",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Sao chép liên kết",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Đã sao chép liên kết",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Tải lại trang",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Quay lại bài đăng",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Kết nối an toàn",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Kết nối không an toàn",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Lượt thích: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Trả lời: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Đăng lại: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

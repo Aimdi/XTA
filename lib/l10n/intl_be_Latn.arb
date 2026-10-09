@@ -3796,5 +3796,43 @@
   "affiliated_with": "Źviazany z {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, one{{views} prahliad} few{{views} prahliady} many{{views} prahliadaŭ} other{{views} prahliadu}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Inšyja dziejanni",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Skapijavać spasyłku",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Spasyłka skapijavana",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Pierazahruzić staronku",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Nazad da dopisu",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Abaronienaje złučennie",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Złučennie nie abaroniena",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Upadabanni: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Adkazy: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Repostay: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

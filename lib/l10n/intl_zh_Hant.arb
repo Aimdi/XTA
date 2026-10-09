@@ -3796,5 +3796,43 @@
   "affiliated_with": "隸屬於 {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, other{{views} 次查看}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "更多選項",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "複製連結",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "已複製連結",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "重新載入頁面",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "返回貼文",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "安全連線",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "連線不安全",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "喜歡：{count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "回覆：{count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "轉發：{count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

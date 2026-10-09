@@ -3796,5 +3796,43 @@
   "affiliated_with": "{name}の関連アカウント",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, other{{views}件の表示}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "その他のオプション",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "リンクをコピー",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "リンクをコピーしました",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "ページを再読み込み",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "投稿に戻る",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "安全な接続",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "安全ではない接続",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "いいね: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "返信: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "リポスト: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

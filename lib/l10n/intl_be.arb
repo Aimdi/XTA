@@ -3796,5 +3796,43 @@
   "affiliated_with": "Звязаны з {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, one{{views} прагляд} few{{views} прагляды} many{{views} праглядаў} other{{views} прагляду}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Іншыя дзеянні",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Скапіяваць спасылку",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Спасылка скапіявана",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Перазагрузіць старонку",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Назад да допісу",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Абароненае злучэнне",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Злучэнне не абаронена",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Упадабанні: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Адказы: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Рэпосты: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

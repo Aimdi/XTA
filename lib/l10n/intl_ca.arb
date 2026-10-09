@@ -3796,5 +3796,43 @@
   "affiliated_with": "Afiliat a {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, one{{views} visualització} other{{views} visualitzacions}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Més opcions",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Copia l’enllaç",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Enllaç copiat",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Torna a carregar la pàgina",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Torna a la publicació",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Connexió segura",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Connexió no segura",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "M'agrada: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Respostes: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Republicacions: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

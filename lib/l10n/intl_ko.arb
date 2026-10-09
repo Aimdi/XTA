@@ -3796,5 +3796,43 @@
   "affiliated_with": "{name} 소속",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, other{조회수 {views}회}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "더보기",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "링크 복사",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "링크를 복사했습니다",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "페이지 새로고침",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "게시물로 돌아가기",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "안전한 연결",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "안전하지 않은 연결",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "좋아요: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "답글: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "리포스트: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3796,5 +3796,43 @@
   "affiliated_with": "Affilié à {name}",
   "@affiliated_with": {},
   "post_views_count": "{count, plural, one{{views} vue} other{{views} vues}}",
-  "@post_views_count": {}
+  "@post_views_count": {},
+  "link_browser_more_options": "Plus d'options",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Copier le lien",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Lien copié",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Recharger la page",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Revenir à la publication",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Connexion sécurisée",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Connexion non sécurisée",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "J'aime : {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Réponses : {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Republications : {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  }
 }
