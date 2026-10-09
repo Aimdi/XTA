@@ -61,4 +61,51 @@ void main() {
     );
     expect(pluginMediaFileName(item, 'mastodon'), 'mastodon-photo.jpg');
   });
+
+  group('plugin videos', () {
+    test('pluginMediaItemsFrom carries the stream and GIF flag', () {
+      final items = pluginMediaItemsFrom(
+        urls: ['a.jpg', 'b.jpg'],
+        videos: [false, true],
+        videoUrls: [null, 'https://x.example/b.m3u8'],
+        gifs: [false, true],
+      );
+      expect(items.first.isPlayable, isFalse);
+      expect(items.last.isPlayable, isTrue);
+      expect(items.last.isGif, isTrue);
+    });
+
+    test('a poster without a stream is not playable', () {
+      const item = PluginMediaItem(url: 'p.jpg', isVideo: true);
+      expect(item.isPlayable, isFalse);
+    });
+
+    test('an MP4 is offered for download, an HLS playlist is not', () async {
+      const mp4 = PluginMediaItem(
+        url: 'https://x.example/p.png',
+        isVideo: true,
+        videoUrl: 'https://x.example/v.mp4',
+        aspectRatio: 0.1,
+      );
+      const hls = PluginMediaItem(url: '', isVideo: true, videoUrl: 'https://x.example/watch/playlist.m3u8?session=1');
+
+      final mp4Meta = pluginVideoMetadata(mp4);
+      final mp4Urls = await mp4Meta.streamUrlsBuilder();
+      expect(mp4Meta.imageUrl, 'https://x.example/p.png');
+      expect(mp4Meta.aspectRatio, clampPluginMediaAspect(0.1));
+      expect(mp4Urls.streamUrl, 'https://x.example/v.mp4');
+      expect(mp4Urls.downloadUrl, 'https://x.example/v.mp4');
+
+      final hlsMeta = pluginVideoMetadata(hls);
+      final hlsUrls = await hlsMeta.streamUrlsBuilder();
+      expect(hlsMeta.imageUrl, isNull);
+      expect(hlsUrls.streamUrl, hls.videoUrl);
+      expect(hlsUrls.downloadUrl, isNull);
+    });
+
+    test('isHlsPlaylistUrl reads the path, not the query', () {
+      expect(isHlsPlaylistUrl('https://a.example/x/playlist.M3U8'), isTrue);
+      expect(isHlsPlaylistUrl('https://a.example/v.mp4?f=.m3u8'), isFalse);
+    });
+  });
 }
