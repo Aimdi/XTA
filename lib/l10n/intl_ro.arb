@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Ascundeți din fluxul principal",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Ascunde bara de jos la derulare",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Ascunde răspunsurile",
   "@hide_replies": {},
   "hide_replies_description": "Nu arăta în fluxuri răspunsurile acestui utilizator către alte persoane. Propriile fire rămân.",

@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "メインフィードから非表示",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "スクロール中は下部バーを隠す",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "返信を非表示",
   "@hide_replies": {},
   "hide_replies_description": "このユーザーが他の人に返信した投稿をフィードに表示しません。本人のスレッドは残ります。",

@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Amaga del canal principal",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Amaga la barra inferior en desplaçar",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Amaga les respostes",
   "@hide_replies": {},
   "hide_replies_description": "No mostrar als teus canals les respostes d’aquest usuari a altres persones. Els seus propis fils es mantenen.",

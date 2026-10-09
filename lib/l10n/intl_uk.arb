@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Приховати з головної стрічки",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Ховати нижню панель під час прокручування",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Приховати відповіді",
   "@hide_replies": {},
   "hide_replies_description": "Не показувати в лентах відповіді цього користувача іншим людям. Його власні ланцюжки залишаються.",

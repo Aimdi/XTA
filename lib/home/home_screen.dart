@@ -22,6 +22,7 @@ import 'package:xta/home/_saved.dart';
 import 'package:xta/home/edge_swipe.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_navigation_visibility.dart';
 import 'package:xta/home/home_group_drawer.dart';
 import 'package:xta/home/home_swipe_navigation.dart';
 import 'package:xta/home/network_recents_store.dart';
@@ -229,6 +230,7 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
 class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation> {
   late PageController _pageController;
   late final ValueNotifier<int> _pageIndex;
+  late final _visibility = HomeNavigationVisibilityStore(widget.prefs);
   final Map<int, ScrollController> _scrollControllers = {};
   final Map<int, FocusNode> _focusNodes = {};
 
@@ -378,27 +380,36 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
         // The pages scroll on behind the translucent floating bar.
         extendBody: true,
         drawer: _buildDrawer(context, l10n),
-        body: HomeNavigationClearance(
-          child: HomePageSwiper(
-            movePage: _movePageBy,
-            child: PageView.builder(
-              controller: _pageController,
-              // Tabs change from the bar and nowhere else. A drag anywhere in a
-              // page used to make media, nested tabs and sliders compete with the
-              // pager. Edge-aware children explicitly hand off at their boundary.
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _barPages.length,
-              onPageChanged: (page) {
-                final previous = _pageIndex.value;
-                _pageIndex.value = page;
-                _adoptSearchScope(previous, page);
-              },
-              itemBuilder: (context, index) {
-                return KeyedSubtree(
-                  key: PageStorageKey<String>(_barPages[index].id),
-                  child: widget.builder(index, _scrollControllers, _focusNodes),
-                );
-              },
+        // Every page's scrolling reaches the bar from here: down hides it, up
+        // brings it back. A screen reader keeps it put.
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            _visibility.onScroll(notification, accessible: MediaQuery.accessibleNavigationOf(context));
+            return false;
+          },
+          child: HomeNavigationClearance(
+            child: HomePageSwiper(
+              movePage: _movePageBy,
+              child: PageView.builder(
+                controller: _pageController,
+                // Tabs change from the bar and nowhere else. A drag anywhere in a
+                // page used to make media, nested tabs and sliders compete with the
+                // pager. Edge-aware children explicitly hand off at their boundary.
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _barPages.length,
+                onPageChanged: (page) {
+                  final previous = _pageIndex.value;
+                  _pageIndex.value = page;
+                  _visibility.show();
+                  _adoptSearchScope(previous, page);
+                },
+                itemBuilder: (context, index) {
+                  return KeyedSubtree(
+                    key: PageStorageKey<String>(_barPages[index].id),
+                    child: widget.builder(index, _scrollControllers, _focusNodes),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -411,25 +422,28 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
               valueListenable: _pageIndex,
               builder: (context, currentPage, _) {
                 final slots = _bottomBarSlots(context);
-                return HomeSwipeNavigation(
-                  key: const ValueKey('home-navigation-swipe'),
-                  index: currentPage,
-                  count: _barPages.length,
-                  identity: _barPages.map((page) => page.id).join('|'),
-                  onChanged: (target) => _goToPage(target, animate: true),
-                  child: HomeNavigationBar(
-                    selectedIndex: destinationIndexForPage(slots, currentPage),
-                    items: [for (final slot in slots) _navigationItemForSlot(context, slot)],
-                    showLabels: showLabels,
-                    disableAnimations: disableAnimations,
-                    onSelected: (index) => _onBarDestination(context, slots, index, currentPage),
-                    longPressIndex: slots.indexWhere(
-                      (slot) => slot.pageIndex != null && _barPages[slot.pageIndex!].id == 'feed',
+                return HomeNavigationSlide(
+                  store: _visibility,
+                  child: HomeSwipeNavigation(
+                    key: const ValueKey('home-navigation-swipe'),
+                    index: currentPage,
+                    count: _barPages.length,
+                    identity: _barPages.map((page) => page.id).join('|'),
+                    onChanged: (target) => _goToPage(target, animate: true),
+                    child: HomeNavigationBar(
+                      selectedIndex: destinationIndexForPage(slots, currentPage),
+                      items: [for (final slot in slots) _navigationItemForSlot(context, slot)],
+                      showLabels: showLabels,
+                      disableAnimations: disableAnimations,
+                      onSelected: (index) => _onBarDestination(context, slots, index, currentPage),
+                      longPressIndex: slots.indexWhere(
+                        (slot) => slot.pageIndex != null && _barPages[slot.pageIndex!].id == 'feed',
+                      ),
+                      onLongPress: (index) {
+                        final page = slots[index].pageIndex;
+                        if (page != null && _barPages[page].id == 'feed') _openHomePicker(context, page);
+                      },
                     ),
-                    onLongPress: (index) {
-                      final page = slots[index].pageIndex;
-                      if (page != null && _barPages[page].id == 'feed') _openHomePicker(context, page);
-                    },
                   ),
                 );
               },
@@ -487,6 +501,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
       return;
     }
     final pageIndex = slot.pageIndex!;
+    _visibility.show();
     if (pageIndex == currentPage) {
       final atTop = scrollControllerAtTop(_scrollControllers[currentPage]);
       if (!atTop) {
@@ -570,6 +585,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
 
   @override
   void dispose() {
+    _visibility.destroy();
     _pageIndex.dispose();
     _pageController.dispose();
     for (final controller in _scrollControllers.values) {

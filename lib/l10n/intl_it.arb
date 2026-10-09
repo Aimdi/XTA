@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Nascondi dal feed principale",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Nascondi la barra inferiore durante lo scorrimento",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Nascondi le risposte",
   "@hide_replies": {},
   "hide_replies_description": "Non mostrare nei tuoi feed le risposte di questo utente ad altre persone. I suoi thread restano.",

@@ -538,6 +538,9 @@ const xLookAccents = <String, Color>{
 const optionThemeTrueBlack = 'theme.true_black';
 const optionThemeTrueBlackTweetCards = 'theme.true_black_tweet_cards';
 const optionShowNavigationLabels = 'theme.show_navigation_labels';
+
+/// The Home bar slips away while scrolling down and returns on the first scroll up.
+const optionHideNavigationOnScroll = 'theme.hide_navigation_on_scroll';
 const optionUseAbsoluteTimestamp = "option.absolute_timestamp";
 
 const themeColors = {

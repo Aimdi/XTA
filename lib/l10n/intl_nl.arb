@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Verbergen uit hoofd-feed",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Onderste balk verbergen tijdens scrollen",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Reacties verbergen",
   "@hide_replies": {},
   "hide_replies_description": "Reacties van deze gebruiker op anderen niet in je feeds tonen. Eigen threads blijven staan.",

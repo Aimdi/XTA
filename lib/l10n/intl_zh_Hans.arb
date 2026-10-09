@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "从主信息流中隐藏",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "滚动时隐藏底栏",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "隐藏回复",
   "@hide_replies": {},
   "hide_replies_description": "不在你的信息流中显示该用户对他人的回复。他自己的推文串仍会保留。",

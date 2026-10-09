@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Sembunyikan dari feed utama",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Sembunyikan bilah bawah saat menggulir",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Sembunyikan balasan",
   "@hide_replies": {},
   "hide_replies_description": "Jangan tampilkan balasan pengguna ini kepada orang lain di feed Anda. Utas miliknya tetap ada.",

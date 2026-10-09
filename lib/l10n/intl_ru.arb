@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Скрыть из основной ленты",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Скрывать нижнюю панель при прокрутке",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Скрыть ответы",
   "@hide_replies": {},
   "hide_replies_description": "Не показывать в лентах ответы этого пользователя другим людям. Его собственные ветки остаются.",

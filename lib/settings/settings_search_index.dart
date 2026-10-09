@@ -278,6 +278,12 @@ List<SettingsControlResult> settingsControls(L10n l10n) => [
   ),
   SettingsControlResult(SearchableSettingsSection.theme, optionShowNavigationLabels, l10n.show_navigation_labels, ''),
   SettingsControlResult(
+    SearchableSettingsSection.theme,
+    optionHideNavigationOnScroll,
+    l10n.hide_navigation_on_scroll,
+    '',
+  ),
+  SettingsControlResult(
     SearchableSettingsSection.accessibility,
     optionTextScaleFactor,
     l10n.text_scale_factor,

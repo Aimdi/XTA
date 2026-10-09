@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Kaŝi el ĉefa fluo",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Kaŝi la suban breton dum rulumado",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Kaŝi respondojn",
   "@hide_replies": {},
   "hide_replies_description": "Ne montri en viaj fluoj la respondojn de ĉi tiu uzanto al aliaj homoj. Liaj propraj fadenoj restas.",

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/home/home_navigation_visibility.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/motion.dart';
@@ -688,6 +690,38 @@ class HomeLoadingState extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Slides the bar below the screen edge and fades it while [store] says it is
+/// hidden, without changing the Scaffold's layout: the pages keep their
+/// clearance, so nothing underneath moves. A hidden bar takes no taps.
+class HomeNavigationSlide extends StatelessWidget {
+  final HomeNavigationVisibilityStore store;
+  final Widget child;
+
+  /// Past the edge by a quarter so the pill's outer shadow leaves with it.
+  static const Offset hiddenOffset = Offset(0, 1.25);
+
+  const HomeNavigationSlide({super.key, required this.store, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final duration = xtaMotionDuration(context, kXtaMotionStandard);
+    return ScopedBuilder<HomeNavigationVisibilityStore, bool>(
+      store: store,
+      onState: (context, shown) => AnimatedSlide(
+        offset: shown ? Offset.zero : hiddenOffset,
+        duration: duration,
+        curve: shown ? Curves.easeOutCubic : Curves.easeInCubic,
+        child: AnimatedOpacity(
+          opacity: shown ? 1 : 0,
+          duration: duration,
+          curve: Curves.easeOutCubic,
+          child: IgnorePointer(ignoring: !shown, child: child),
         ),
       ),
     );

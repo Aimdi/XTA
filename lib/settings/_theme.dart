@@ -98,6 +98,10 @@ class SettingsThemeFragment extends StatelessWidget {
                 title: Text(l10n.show_navigation_labels),
                 pref: optionShowNavigationLabels,
               )),
+              SettingsControlTarget(id: optionHideNavigationOnScroll, child: PrefSwitch(
+                title: Text(l10n.hide_navigation_on_scroll),
+                pref: optionHideNavigationOnScroll,
+              )),
             ],
           ),
         ],
