@@ -3794,5 +3794,7 @@
   "verified_government": "Paćvierdžany dziaržaŭny akaŭnt",
   "@verified_government": {},
   "affiliated_with": "Źviazany z {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} prahliad} few{{views} prahliady} many{{views} prahliadaŭ} other{{views} prahliadu}}",
+  "@post_views_count": {}
 }

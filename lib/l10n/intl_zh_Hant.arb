@@ -3794,5 +3794,7 @@
   "verified_government": "已認證政府帳號",
   "@verified_government": {},
   "affiliated_with": "隸屬於 {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views} 次查看}}",
+  "@post_views_count": {}
 }

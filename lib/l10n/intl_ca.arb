@@ -3794,5 +3794,7 @@
   "verified_government": "Compte governamental verificat",
   "@verified_government": {},
   "affiliated_with": "Afiliat a {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} visualització} other{{views} visualitzacions}}",
+  "@post_views_count": {}
 }

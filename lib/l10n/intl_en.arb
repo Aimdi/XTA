@@ -4035,5 +4035,9 @@
   "verified_government": "Verified government account",
   "@verified_government": {},
   "affiliated_with": "Affiliated with {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} View} other{{views} Views}}",
+  "@post_views_count": {
+    "description": "How many times a post was seen, shown under an opened post like X's '77K Views'. {views} is the already shortened number (e.g. 77K, 1,2 Mio.); {count} only selects the plural form."
+  }
 }

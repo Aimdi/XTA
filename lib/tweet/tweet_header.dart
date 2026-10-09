@@ -85,12 +85,11 @@ class TweetAuthorBlock extends StatelessWidget {
             ],
           ),
         ),
+        // The actions size their own 48dp targets and place their glyphs on
+        // the name's line, as X does.
         if (trailing != null) ...[
           const SizedBox(width: kTweetSpace1),
-          SizedBox.square(
-            dimension: kTweetTouchTarget,
-            child: Center(child: trailing),
-          ),
+          trailing!,
         ],
       ],
     );
@@ -126,10 +125,12 @@ class TweetHeader extends StatelessWidget {
     final avatarSize = compact ? kTweetQuotedAvatarSize : kTweetAvatarSize;
     final top = compact ? kTweetSpace2 : kTweetVerticalPadding;
     return Padding(
+      // Header actions run to the edge: the ⋯ glyph, centred in its target,
+      // then lines up with the share glyph closing the footer.
       padding: EdgeInsetsDirectional.fromSTEB(
         kTweetHorizontalPadding,
         top,
-        kTweetSpace2,
+        trailing == null ? kTweetSpace2 : 0,
         kTweetSpace1,
       ),
       child: Row(

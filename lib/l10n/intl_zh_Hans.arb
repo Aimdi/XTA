@@ -3794,5 +3794,7 @@
   "verified_government": "已认证政府账号",
   "@verified_government": {},
   "affiliated_with": "隶属于 {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views} 次查看}}",
+  "@post_views_count": {}
 }

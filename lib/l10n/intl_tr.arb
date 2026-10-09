@@ -3794,5 +3794,7 @@
   "verified_government": "Doğrulanmış devlet hesabı",
   "@verified_government": {},
   "affiliated_with": "{name} ile bağlantılı",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views} görüntülenme}}",
+  "@post_views_count": {}
 }

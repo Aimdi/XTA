@@ -3794,5 +3794,7 @@
   "verified_government": "Підтверджений державний акаунт",
   "@verified_government": {},
   "affiliated_with": "Пов'язаний з {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} перегляд} few{{views} перегляди} many{{views} переглядів} other{{views} перегляду}}",
+  "@post_views_count": {}
 }

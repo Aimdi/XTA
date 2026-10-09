@@ -3794,5 +3794,7 @@
   "verified_government": "Egiaztatutako gobernu-kontua",
   "@verified_government": {},
   "affiliated_with": "Afiliazioa: {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} ikustaldi} other{{views} ikustaldi}}",
+  "@post_views_count": {}
 }

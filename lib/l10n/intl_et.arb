@@ -3794,5 +3794,7 @@
   "verified_government": "Kinnitatud valitsuskonto",
   "@verified_government": {},
   "affiliated_with": "Seotud organisatsiooniga {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} vaatamine} other{{views} vaatamist}}",
+  "@post_views_count": {}
 }

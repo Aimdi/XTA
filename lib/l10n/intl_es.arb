@@ -3794,5 +3794,7 @@
   "verified_government": "Cuenta gubernamental verificada",
   "@verified_government": {},
   "affiliated_with": "Afiliada a {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} visualización} other{{views} visualizaciones}}",
+  "@post_views_count": {}
 }

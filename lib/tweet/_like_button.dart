@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/motion.dart';
 
@@ -27,8 +28,6 @@ class LikeButton extends StatefulWidget {
 }
 
 class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateMixin {
-  static const double _iconSize = 20;
-
   late final AnimationController _controller = AnimationController(vsync: this, duration: kXtaMotionStandard);
 
   late final Animation<double> _scale = TweenSequence<double>([
@@ -61,18 +60,24 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final button = TextButton.icon(
+    final button = TextButton(
       onPressed: widget.onPressed == null ? null : _handleTap,
       style: footerButtonStyle,
-      icon: SizedBox(
-        width: _iconSize,
-        height: _iconSize,
-        child: ScaleTransition(
-          scale: _scale,
-          child: Icon(widget.isLiked ? Icons.favorite : Icons.favorite_border, size: _iconSize, color: widget.color),
+      child: footerCountContent(
+        SizedBox.square(
+          dimension: kTweetActionGlyphSize,
+          child: ScaleTransition(
+            scale: _scale,
+            child: Icon(
+              widget.isLiked ? Icons.favorite : Icons.favorite_border,
+              size: kTweetActionGlyphSize,
+              color: widget.color,
+            ),
+          ),
         ),
+        widget.label,
+        widget.color,
       ),
-      label: Text(widget.label, style: TextStyle(color: widget.color, fontSize: 14)),
     );
 
     final tooltip = widget.tooltip;

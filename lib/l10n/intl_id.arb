@@ -3794,5 +3794,7 @@
   "verified_government": "Akun pemerintah terverifikasi",
   "@verified_government": {},
   "affiliated_with": "Berafiliasi dengan {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views} tayangan}}",
+  "@post_views_count": {}
 }

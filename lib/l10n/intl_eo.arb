@@ -3794,5 +3794,7 @@
   "verified_government": "Kontrolita registara konto",
   "@verified_government": {},
   "affiliated_with": "Aligita al {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} vido} other{{views} vidoj}}",
+  "@post_views_count": {}
 }

@@ -3794,5 +3794,7 @@
   "verified_government": "Пацверджаны дзяржаўны ўліковы запіс",
   "@verified_government": {},
   "affiliated_with": "Звязаны з {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} прагляд} few{{views} прагляды} many{{views} праглядаў} other{{views} прагляду}}",
+  "@post_views_count": {}
 }

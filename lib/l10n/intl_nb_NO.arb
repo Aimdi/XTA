@@ -3794,5 +3794,7 @@
   "verified_government": "Verifisert myndighetskonto",
   "@verified_government": {},
   "affiliated_with": "Tilknyttet {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} visning} other{{views} visninger}}",
+  "@post_views_count": {}
 }

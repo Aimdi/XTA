@@ -3794,5 +3794,7 @@
   "verified_government": "Geverifieerd overheidsaccount",
   "@verified_government": {},
   "affiliated_with": "Verbonden aan {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} weergave} other{{views} weergaven}}",
+  "@post_views_count": {}
 }

@@ -3794,5 +3794,7 @@
   "verified_government": "सत्यापित सरकारी खाता",
   "@verified_government": {},
   "affiliated_with": "{name} से संबद्ध",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} बार देखा गया} other{{views} बार देखा गया}}",
+  "@post_views_count": {}
 }

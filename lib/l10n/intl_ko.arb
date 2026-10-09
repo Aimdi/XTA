@@ -3794,5 +3794,7 @@
   "verified_government": "인증된 정부 계정",
   "@verified_government": {},
   "affiliated_with": "{name} 소속",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{조회수 {views}회}}",
+  "@post_views_count": {}
 }

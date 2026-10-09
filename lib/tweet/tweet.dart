@@ -20,6 +20,8 @@ import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/avatar_follow_badge.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_header.dart';
+import 'package:xta/tweet/tweet_post_menu.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
@@ -34,7 +36,6 @@ import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/translation.dart';
-import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -80,11 +81,6 @@ class TweetTile extends StatefulWidget {
 class TweetTileState extends State<TweetTile> {
   static final log = Logger('TweetTile');
 
-  // Short K/M suffixes: locale-specific compact forms like "12 Tsd." or
-  // "1,2 Mio." eat the footer's width and push the trailing buttons away.
-  static final NumberFormat _numberFormat = NumberFormat.compact(
-    locale: 'en_US',
-  );
   static final RegExp _localeSeparator = RegExp(r'[-_]');
 
   late bool clickable;
@@ -661,7 +657,11 @@ class TweetTileState extends State<TweetTile> {
 
     final locale = _effectiveLocale();
 
-    // The post's top-right, next to the timestamp — not in the footer strip,
+    // The post a conversation screen was opened on gets X's time · date ·
+    // views line instead of a header timestamp and a views item in its footer.
+    final isFocal = _isFocal(context);
+
+    // The post's top-right, next to the ⋯ menu — not in the footer strip,
     // which is for engagement and was one control too wide on a phone. Only on
     // posts there is something to translate: X offers nothing on a post
     // already in your language, and a button on every card was chrome.
@@ -681,12 +681,23 @@ class TweetTileState extends State<TweetTile> {
             },
           );
 
+    // X keeps translate and the ⋯ menu side by side at the top-right. A quoted
+    // post has neither: tapping it opens the post, where both are.
+    final headerActions = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ?translateButton,
+        TweetPostMenuButton(tweet: tweet, shareBaseUrl: shareBaseUrl),
+      ],
+    );
+
     final footerBar = TweetFooterBar(
       tweet: tweet,
       tweetText: tweetText,
       shareBaseUrl: shareBaseUrl,
       locale: locale,
-      numberFormat: _numberFormat,
+      showViews: !isFocal,
       isArticle: tweet.article != null,
       onOpenTweet: () => onClickOpenTweet(tweet),
       onCaptureImage: captureWidget,
@@ -769,14 +780,14 @@ class TweetTileState extends State<TweetTile> {
       handle: hideAuthorInformation ? null : tweet.user!.screenName,
       verified: !hideAuthorInformation && (tweet.user!.verified ?? false),
       verification: hideAuthorInformation ? null : tweet.user!.badges,
-      timestamp: createdAt == null
+      timestamp: createdAt == null || isFocal
           ? null
           : Timestamp(
               timestamp: createdAt,
               absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
               compact: !widget.tweetOpened,
             ),
-      trailing: isQuotedTweet ? null : translateButton,
+      trailing: isQuotedTweet ? null : headerActions,
       compact: isQuotedTweet,
     );
 
@@ -827,6 +838,11 @@ class TweetTileState extends State<TweetTile> {
       if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
       birdwatchQuoted,
       article,
+      if (isFocal)
+        TweetFocalMetaLine(
+          createdAt: createdAt,
+          views: _hideCounts(prefs) ? null : tweet.viewCount,
+        ),
       // A quoted tweet shows no action bar: its reply/repost/like counts belong
       // to the quoted post, not to the one being read, and a second footer row
       // makes the card look like a separate timeline entry. Tapping the quote
@@ -848,7 +864,7 @@ class TweetTileState extends State<TweetTile> {
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   kTweetSpace3,
                   kTweetVerticalPadding,
-                  kTweetSpace2,
+                  0,
                   kTweetSpace1,
                 ),
                 child: TweetAuthorBlock(
@@ -859,7 +875,7 @@ class TweetTileState extends State<TweetTile> {
                   verification: hideAuthorInformation
                       ? null
                       : tweet.user!.badges,
-                  timestamp: createdAt == null
+                  timestamp: createdAt == null || isFocal
                       ? null
                       : Timestamp(
                           timestamp: createdAt,
@@ -868,7 +884,7 @@ class TweetTileState extends State<TweetTile> {
                           ),
                           compact: !widget.tweetOpened,
                         ),
-                  trailing: translateButton,
+                  trailing: headerActions,
                 ),
               ),
               bodyChildren,
@@ -912,6 +928,16 @@ class TweetTileState extends State<TweetTile> {
       ),
     );
   }
+
+  bool _isFocal(BuildContext context) {
+    final focalId = FocalPostScope.idOf(context);
+    return !isQuotedTweet &&
+        focalId != null &&
+        (focalId == tweet.idStr || focalId == _displayedTweet.idStr);
+  }
+
+  static bool _hideCounts(BasePrefService prefs) =>
+      prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
   Widget _buildThreadBody(
     Widget avatar,

@@ -3794,5 +3794,7 @@
   "verified_government": "認証済みの政府アカウント",
   "@verified_government": {},
   "affiliated_with": "{name}の関連アカウント",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views}件の表示}}",
+  "@post_views_count": {}
 }

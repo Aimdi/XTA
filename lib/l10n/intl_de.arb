@@ -3794,5 +3794,7 @@
   "verified_government": "Verifiziertes Regierungskonto",
   "@verified_government": {},
   "affiliated_with": "Verbunden mit {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} Aufruf} other{{views} Aufrufe}}",
+  "@post_views_count": {}
 }

@@ -3794,5 +3794,7 @@
   "verified_government": "Cont guvernamental verificat",
   "@verified_government": {},
   "affiliated_with": "Afiliat cu {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} vizualizare} few{{views} vizualizări} other{{views} de vizualizări}}",
+  "@post_views_count": {}
 }

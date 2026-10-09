@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
@@ -17,6 +16,7 @@ import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/quotes_screen.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/tweet/tweet_post_menu.dart';
 
 const _shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
 
@@ -88,15 +88,21 @@ Future<({_MemoryLikes likes, _MemorySaves saves})> _pumpFooter(
             data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
             child: child!,
           ),
+          // The ⋯ menu moved from the footer to the post header; both are
+          // pumped so the post's actions are exercised together.
           home: Scaffold(
-            body: TweetFooterBar(
-              tweet: tweet,
-              tweetText: 'A useful post',
-              shareBaseUrl: shareBaseUrl,
-              locale: const Locale('en'),
-              numberFormat: NumberFormat.compact(locale: 'en'),
-              onOpenTweet: onOpenTweet ?? () {},
-              onCaptureImage: capture ?? () async => null,
+            body: Column(
+              children: [
+                TweetPostMenuButton(tweet: tweet, shareBaseUrl: shareBaseUrl),
+                TweetFooterBar(
+                  tweet: tweet,
+                  tweetText: 'A useful post',
+                  shareBaseUrl: shareBaseUrl,
+                  locale: const Locale('en'),
+                  onOpenTweet: onOpenTweet ?? () {},
+                  onCaptureImage: capture ?? () async => null,
+                ),
+              ],
             ),
           ),
         ),

@@ -3791,5 +3791,7 @@
   "verified_government": "Tài khoản chính phủ đã xác minh",
   "@verified_government": {},
   "affiliated_with": "Liên kết với {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views} lượt xem}}",
+  "@post_views_count": {}
 }

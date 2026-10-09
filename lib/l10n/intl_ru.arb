@@ -3794,5 +3794,7 @@
   "verified_government": "Подтверждённый государственный аккаунт",
   "@verified_government": {},
   "affiliated_with": "Связан с {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} просмотр} few{{views} просмотра} many{{views} просмотров} other{{views} просмотра}}",
+  "@post_views_count": {}
 }

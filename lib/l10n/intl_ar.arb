@@ -3794,5 +3794,7 @@
   "verified_government": "حساب حكومي موثّق",
   "@verified_government": {},
   "affiliated_with": "تابع لـ {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, zero{{views} مشاهدة} one{{views} مشاهدة} two{{views} مشاهدة} few{{views} مشاهدات} many{{views} مشاهدة} other{{views} مشاهدة}}",
+  "@post_views_count": {}
 }

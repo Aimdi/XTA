@@ -6,6 +6,7 @@ import 'package:xta/database/timeline_cache.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/conversation.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -54,12 +55,15 @@ class StatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as StatusScreenArguments;
 
-    return _StatusScreen(
-        username: args.username,
+    // Marks the opened post so its tile shows X's time · date · views line.
+    return FocalPostScope(
         id: args.id,
-        tweetOpened: args.tweetOpened,
-        initialMediaIndex: args.initialMediaIndex,
-        initialTweet: args.initialTweet);
+        child: _StatusScreen(
+            username: args.username,
+            id: args.id,
+            tweetOpened: args.tweetOpened,
+            initialMediaIndex: args.initialMediaIndex,
+            initialTweet: args.initialTweet));
   }
 }
 

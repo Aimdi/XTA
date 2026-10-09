@@ -3794,5 +3794,7 @@
   "verified_government": "Ověřený vládní účet",
   "@verified_government": {},
   "affiliated_with": "Přidružený k {name}",
-  "@affiliated_with": {}
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} zobrazení} few{{views} zobrazení} many{{views} zobrazení} other{{views} zobrazení}}",
+  "@post_views_count": {}
 }
