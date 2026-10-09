@@ -17,7 +17,10 @@ import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/feed_post_kinds.dart';
 import 'package:xta/tweet/interleaved_items.dart';
+
+export 'package:xta/plugins/feed_post_kinds.dart';
 
 mixin SubscriptionSource {
   /// Where this source's followed accounts are stored.
@@ -47,8 +50,11 @@ mixin SubscriptionSource {
   /// May throw on failure; the progressive feed store keeps other sources readable.
   Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids);
 
-  /// [interleavedPosts] for a group feed, honouring the group's replies choice where the source can tell replies apart.
-  Future<List<InterleavedItem>> groupPosts(BuildContext context, List<String> ids, {required bool includeReplies}) =>
+  /// [interleavedPosts] for a group feed, honouring the group's reply and
+  /// repost settings ([kinds]). A source whose posts can be either has to
+  /// override this — Bluesky alone left out replies, so Threads replies and
+  /// every network's reposts still reached groups that hid them.
+  Future<List<InterleavedItem>> groupPosts(BuildContext context, List<String> ids, {required FeedPostKinds kinds}) =>
       interleavedPosts(context, ids);
 
   /// What one of this source's subscriptions is, under its name. A subreddit

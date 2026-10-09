@@ -124,6 +124,10 @@ class MastodonPost {
     this.poll,
   });
 
+  /// Whether this status answers another, the author's own included — which
+  /// [replyToAcct] alone cannot say, since a reply to yourself mentions nobody.
+  bool get isReply => (replyToId?.isNotEmpty ?? false) || replyToAcct != null;
+
   bool get hasMedia => images.isNotEmpty;
   String get pagingId => timelineId ?? id;
   DateTime? get timelineDate => timelineAt ?? publishedAt;

@@ -197,6 +197,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// these cannot share one paginator with the X side. They are fetched once per
   /// mount and slotted among the chains by date.
   final _pluginFeed = ProgressiveFeedStore();
+
+  /// The group's reply and repost settings, which the X search already carries.
+  FeedPostKinds get _postKinds => (replies: widget.includeReplies, reposts: widget.includeRetweets);
+
   Future<void> _loadPluginPosts({bool refresh = true}) async {
     if (!mounted) return;
     final loaders = <String, SourceLoader>{};
@@ -213,9 +217,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         homeFeedIds: includeHome ? source.homeFeedIds(context) : const [],
       );
       if (ids.isEmpty) continue;
-      // The replies choice is part of the key, so turning it off never shows a cached page full of replies.
-      keys[id] = _pluginFeed.cache.key(widget.includeReplies ? id : '$id:no-replies', ids);
-      loaders[id] = () => source.groupPosts(context, ids, includeReplies: widget.includeReplies);
+      // The reply and repost choices are part of the key, so turning one off never shows a cached page full of them.
+      keys[id] = _pluginFeed.cache.key(pluginFeedCacheSource(id, _postKinds), ids);
+      loaders[id] = () => source.groupPosts(context, ids, kinds: _postKinds);
     }
     await _pluginFeed.load(loaders, keys, refresh: refresh);
   }

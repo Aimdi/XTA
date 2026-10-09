@@ -109,6 +109,13 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
   ) => loadThreadsInterleaved(context, ids);
 
   @override
+  Future<List<InterleavedItem>> groupPosts(
+    BuildContext context,
+    List<String> ids, {
+    required FeedPostKinds kinds,
+  }) => loadThreadsInterleaved(context, ids, kinds: kinds);
+
+  @override
   bool inHomeFeed(BuildContext context) =>
       threadsInHomeFeed(PrefService.of(context, listen: false));
 

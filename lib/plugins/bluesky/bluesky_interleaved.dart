@@ -5,6 +5,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
+import 'package:xta/plugins/feed_post_kinds.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/ui/provenance_accent.dart';
 
@@ -35,7 +36,7 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
   BuildContext context,
   List<String> actors, {
   int limit = kBlueskyInterleavedPageSize,
-  bool includeReplies = true,
+  FeedPostKinds kinds = allFeedPostKinds,
 }) async {
   if (actors.isEmpty) {
     return const [];
@@ -43,8 +44,8 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
 
   final store = context.read<BlueskyFeedStore>();
   try {
-    final posts = await store.postsFor(actors);
-    return blueskyInterleavedItems(posts, limit: limit, includeReplies: includeReplies);
+    final posts = await store.postsFor(actors, withReplies: kinds.replies);
+    return blueskyInterleavedItems(posts, limit: limit, kinds: kinds);
   } catch (_) {
     rethrow;
   }
@@ -56,9 +57,9 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
 List<InterleavedItem> blueskyInterleavedItems(
   Iterable<BlueskyPost> posts, {
   int limit = kBlueskyInterleavedPageSize,
-  bool includeReplies = true,
+  FeedPostKinds kinds = allFeedPostKinds,
 }) => [
-      for (final post in posts.where((post) => includeReplies || !post.isReply).take(limit))
+      for (final post in posts.where((post) => blueskyFeedTakes(kinds, post)).take(limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
             date: date,
@@ -79,3 +80,10 @@ List<InterleavedItem> blueskyInterleavedItems(
             build: (_) => BlueskyPostCard(post: post, showSourceBadge: true),
           ),
     ];
+
+/// Whether [post] belongs in a feed taking [kinds]. Replies are also left out at
+/// the AppView when [kinds] hides them; this catches what a cached page or an
+/// AppView ignoring the filter lets back, and applies the repost setting, for
+/// which the AppView has no filter.
+bool blueskyFeedTakes(FeedPostKinds kinds, BlueskyPost post) =>
+    feedTakesPost(kinds, isReply: post.isReply, isRepost: post.isRepost);

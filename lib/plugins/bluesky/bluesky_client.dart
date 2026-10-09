@@ -18,6 +18,10 @@ class BlueskyException implements Exception {
   String toString() => 'BlueskyException{$kind: $message}';
 }
 
+/// The `getAuthorFeed` filter that leaves out every reply, the author's own
+/// thread continuations included, and keeps reposts.
+const blueskyAuthorFeedNoReplies = 'posts_no_replies';
+
 /// One page of an author feed from the public AppView.
 class BlueskyFeedPage {
   final List<BlueskyPost> posts;
@@ -121,7 +125,8 @@ class BlueskyClient {
   /// Recent posts by [actor], newest first within the page.
   ///
   /// [filter] is an official AppView value: `posts_and_author_threads`,
-  /// `posts_with_replies`, `posts_with_media`.
+  /// `posts_with_replies` (the default), [blueskyAuthorFeedNoReplies],
+  /// `posts_with_media`.
   Future<BlueskyFeedPage> getAuthorFeed(String actor, {int limit = 20, String? cursor, String? filter}) async {
     final query = <String, String>{'actor': actor, 'limit': '$limit'};
     if (cursor != null && cursor.isNotEmpty) {

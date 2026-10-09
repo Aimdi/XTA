@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/feed_post_kinds.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
@@ -41,6 +42,7 @@ Future<List<InterleavedItem>> loadThreadsInterleaved(
   BuildContext context,
   List<String> handles, {
   int limit = kThreadsInterleavedPageSize,
+  FeedPostKinds kinds = allFeedPostKinds,
 }) async {
   if (handles.isEmpty) {
     return const [];
@@ -49,7 +51,7 @@ Future<List<InterleavedItem>> loadThreadsInterleaved(
   final store = context.read<ThreadsFeedStore>();
   try {
     final posts = await store.postsFor(handles);
-    return threadsInterleavedItems(posts, limit: limit);
+    return threadsInterleavedItems(posts, limit: limit, kinds: kinds);
   } catch (_) {
     rethrow;
   }
@@ -58,9 +60,16 @@ Future<List<InterleavedItem>> loadThreadsInterleaved(
 /// Posts as dated items, each wearing the Threads provenance accent so a mixed
 /// timeline shows where the card came from. One with no date is dropped rather
 /// than guessed at: there is nowhere in a chronological feed to put it.
-List<InterleavedItem> threadsInterleavedItems(Iterable<ThreadsPost> posts, {int limit = kThreadsInterleavedPageSize}) =>
+///
+/// Filtered by [kinds] before [limit] is applied, so hidden replies and reposts
+/// do not use up the page.
+List<InterleavedItem> threadsInterleavedItems(
+  Iterable<ThreadsPost> posts, {
+  int limit = kThreadsInterleavedPageSize,
+  FeedPostKinds kinds = allFeedPostKinds,
+}) =>
     [
-      for (final post in posts.take(limit))
+      for (final post in posts.where((post) => threadsFeedTakes(kinds, post)).take(limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
             date: date,
@@ -78,3 +87,7 @@ List<InterleavedItem> threadsInterleavedItems(Iterable<ThreadsPost> posts, {int 
             build: (_) => ThreadsPostCard(post: post, showSourceBadge: false),
           ),
     ];
+
+/// Whether [post] belongs in a feed taking [kinds].
+bool threadsFeedTakes(FeedPostKinds kinds, ThreadsPost post) =>
+    feedTakesPost(kinds, isReply: post.isReply, isRepost: post.isRepost);

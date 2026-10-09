@@ -121,6 +121,13 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   ) => loadMastodonInterleaved(context, ids);
 
   @override
+  Future<List<InterleavedItem>> groupPosts(
+    BuildContext context,
+    List<String> ids, {
+    required FeedPostKinds kinds,
+  }) => loadMastodonInterleaved(context, ids, kinds: kinds);
+
+  @override
   List<PluginBackupSection> get backupSections => [
     PluginBackupSection(
       jsonKey: 'mastodonSubscriptions',
