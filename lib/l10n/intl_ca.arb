@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Ordre",
+  "@sort_order": {},
+  "sort_relevant": "Rellevants",
+  "@sort_relevant": {},
+  "sort_oldest": "Més antics",
+  "@sort_oldest": {},
+  "sort_most_liked": "Amb més m'agrada",
+  "@sort_most_liked": {},
+  "sort_top": "Destacats",
+  "@sort_top": {},
+  "sort_most_followers": "Amb més seguidors",
+  "@sort_most_followers": {}
 }

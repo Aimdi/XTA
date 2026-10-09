@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "क्रम",
+  "@sort_order": {},
+  "sort_relevant": "सबसे प्रासंगिक",
+  "@sort_relevant": {},
+  "sort_oldest": "सबसे पुराने",
+  "@sort_oldest": {},
+  "sort_most_liked": "सबसे ज़्यादा पसंद किए गए",
+  "@sort_most_liked": {},
+  "sort_top": "लोकप्रिय",
+  "@sort_top": {},
+  "sort_most_followers": "सबसे ज़्यादा फ़ॉलोअर",
+  "@sort_most_followers": {}
 }

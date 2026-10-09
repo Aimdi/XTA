@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Ordre de tri",
+  "@sort_order": {},
+  "sort_relevant": "Les plus pertinents",
+  "@sort_relevant": {},
+  "sort_oldest": "Les plus anciens",
+  "@sort_oldest": {},
+  "sort_most_liked": "Les plus aimés",
+  "@sort_most_liked": {},
+  "sort_top": "Populaires",
+  "@sort_top": {},
+  "sort_most_followers": "Le plus d'abonnés",
+  "@sort_most_followers": {}
 }

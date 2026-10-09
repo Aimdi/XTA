@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Ordo",
+  "@sort_order": {},
+  "sort_relevant": "Plej trafaj",
+  "@sort_relevant": {},
+  "sort_oldest": "Plej malnovaj",
+  "@sort_oldest": {},
+  "sort_most_liked": "Plej ŝatataj",
+  "@sort_most_liked": {},
+  "sort_top": "Plej popularaj",
+  "@sort_top": {},
+  "sort_most_followers": "Plej multe da sekvantoj",
+  "@sort_most_followers": {}
 }

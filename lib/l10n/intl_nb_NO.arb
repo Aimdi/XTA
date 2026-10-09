@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Sortering",
+  "@sort_order": {},
+  "sort_relevant": "Mest relevante",
+  "@sort_relevant": {},
+  "sort_oldest": "Eldste",
+  "@sort_oldest": {},
+  "sort_most_liked": "Flest liker-klikk",
+  "@sort_most_liked": {},
+  "sort_top": "Populære",
+  "@sort_top": {},
+  "sort_most_followers": "Flest følgere",
+  "@sort_most_followers": {}
 }

@@ -10,6 +10,7 @@ import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 BlueskyPost bluePost(String id, {String? parent, bool media = false, bool sensitive = false, bool video = false}) =>
@@ -115,6 +116,7 @@ class BlueReadingHarness {
   );
   final client = BlueskyReadingClient();
   final accounts = BlueskyAccountsStore();
+  final sorts = ConversationSortStore();
   late final likes = BlueLikes(prefs);
   BlueReadingHarness() {
     accounts.update([blueProfile.toAccount()]);
@@ -127,6 +129,7 @@ class BlueReadingHarness {
         Provider<BlueskyClient>.value(value: client),
         Provider<BlueskyAccountsStore>.value(value: accounts),
         Provider<BlueskyLikesStore>.value(value: likes),
+        Provider<ConversationSortStore>.value(value: sorts),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -154,6 +157,7 @@ class BlueReadingHarness {
     await tester.pump();
     await likes.destroy();
     await accounts.destroy();
+    await sorts.destroy();
     client.httpClient.close();
   }
 }

@@ -241,3 +241,15 @@ class _CursorPageController<T> extends PagingController<int, T> {
     super.dispose();
   }
 }
+
+/// [state] with its loaded items reordered by [reorder] for display, keeping
+/// the page sizes so the state stays valid. The controller is not touched.
+PagingState<K, T> reorderPagingItems<K, T>(PagingState<K, T> state, List<T> Function(List<T> items) reorder) {
+  final pages = state.pages;
+  if (pages == null) {
+    return state;
+  }
+  final sorted = reorder([for (final page in pages) ...page]);
+  var offset = 0;
+  return state.copyWith(pages: [for (final page in pages) sorted.sublist(offset, offset += page.length)]);
+}

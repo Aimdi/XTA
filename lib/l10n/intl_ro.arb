@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Ordine",
+  "@sort_order": {},
+  "sort_relevant": "Cele mai relevante",
+  "@sort_relevant": {},
+  "sort_oldest": "Cele mai vechi",
+  "@sort_oldest": {},
+  "sort_most_liked": "Cele mai apreciate",
+  "@sort_most_liked": {},
+  "sort_top": "Populare",
+  "@sort_top": {},
+  "sort_most_followers": "Cei mai mulți urmăritori",
+  "@sort_most_followers": {}
 }

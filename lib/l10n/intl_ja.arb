@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "並べ替え",
+  "@sort_order": {},
+  "sort_relevant": "関連性の高い順",
+  "@sort_relevant": {},
+  "sort_oldest": "古い順",
+  "@sort_oldest": {},
+  "sort_most_liked": "いいねが多い順",
+  "@sort_most_liked": {},
+  "sort_top": "話題",
+  "@sort_top": {},
+  "sort_most_followers": "フォロワーが多い順",
+  "@sort_most_followers": {}
 }

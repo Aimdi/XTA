@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Порядок сортування",
+  "@sort_order": {},
+  "sort_relevant": "Найактуальніші",
+  "@sort_relevant": {},
+  "sort_oldest": "Спочатку старі",
+  "@sort_oldest": {},
+  "sort_most_liked": "Найбільше вподобань",
+  "@sort_most_liked": {},
+  "sort_top": "Популярні",
+  "@sort_top": {},
+  "sort_most_followers": "Найбільше підписників",
+  "@sort_most_followers": {}
 }

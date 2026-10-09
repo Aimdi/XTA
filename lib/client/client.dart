@@ -381,18 +381,23 @@ class Twitter {
     );
   }
 
-  static Future<TweetStatus> getTweet(String id, {String? cursor}) async {
-    Map<String, dynamic> defaultParam = {
-      "variables": jsonEncode({
-        "focalTweetId": "0",
+  /// TweetDetail `variables`. [rankingMode] is how X orders the replies:
+  /// "Relevance", "Recency" or "Likes".
+  static Map<String, dynamic> tweetDetailVariables(String id, {String? cursor, String rankingMode = 'Relevance'}) => {
+        "focalTweetId": id,
         "with_rux_injections": false,
-        "rankingMode": "Relevance",
+        "rankingMode": rankingMode,
         "includePromotedContent": true,
         "withCommunity": true,
         "withQuickPromoteEligibilityTweetFields": true,
         "withBirdwatchNotes": true,
         "withVoice": true,
-      }),
+        "cursor": ?cursor,
+      };
+
+  static Future<TweetStatus> getTweet(String id, {String? cursor, String rankingMode = 'Relevance'}) async {
+    Map<String, dynamic> defaultParam = {
+      "variables": jsonEncode(tweetDetailVariables(id, cursor: cursor, rankingMode: rankingMode)),
       "features": jsonEncode({
         "rweb_video_screen_enabled": false,
         "profile_label_improvements_pcf_label_in_post_enabled": true,
@@ -442,15 +447,6 @@ class Twitter {
         "withDisallowedReplyControls": false,
       }),
     };
-
-    Map<String, dynamic> variables = json.decode(defaultParam["variables"].toString());
-    variables["focalTweetId"] = id;
-
-    if (cursor != null) {
-      variables['cursor'] = cursor;
-    }
-
-    defaultParam["variables"] = json.encode(variables);
 
     var response = await _twitterApi.client.get(XEndpoints.uri(XEndpoints.tweetDetail, defaultParam));
 

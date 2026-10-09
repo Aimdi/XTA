@@ -1,13 +1,17 @@
 import 'package:xta/ui/reader_tab_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/read_recovery.dart';
@@ -93,6 +97,8 @@ class _QuotesList extends StatefulWidget {
 class _QuotesListState extends State<_QuotesList>
     with AutomaticKeepAliveClientMixin<_QuotesList> {
   final TweetFeedController _feed = TweetFeedController();
+  late final ConversationSortStore _sorts = context
+      .read<ConversationSortStore>();
 
   @override
   bool get wantKeepAlive => true;
@@ -108,15 +114,42 @@ class _QuotesListState extends State<_QuotesList>
       'quoted_tweet_id:${widget.id}',
       true,
       cursor: cursor,
+      product: xQuotesProduct(_sorts.state.quotes),
       // Each quote is a separate post; folding by conversationId merges them.
       mapToThreads: false,
     );
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 
+  void _selectSort(QuoteSort sort) {
+    _sorts.selectQuotes(sort);
+    _feed.controller.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    return Column(
+      children: [
+        ScopedBuilder<ConversationSortStore, ConversationSorts>(
+          store: _sorts,
+          onState: (context, sorts) => Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SortMenuButton<QuoteSort>(
+              value: effectiveSort(sorts.quotes, xQuoteSorts),
+              options: xQuoteSorts,
+              labelOf: quoteSortLabel,
+              iconOf: quoteSortIcon,
+              onSelected: _selectSort,
+            ),
+          ),
+        ),
+        Expanded(child: _list(context)),
+      ],
+    );
+  }
+
+  Widget _list(BuildContext context) {
     return TweetContextScope(
       child: PaginatedTweetList(
         feed: _feed,
@@ -155,6 +188,8 @@ class _RetweetersListState extends State<RetweetersList>
 
   final Set<String> _seenIds = {};
   bool _firstLoadStarted = false;
+  late final ConversationSortStore _sorts = context
+      .read<ConversationSortStore>();
 
   @override
   bool get wantKeepAlive => true;
@@ -235,29 +270,83 @@ class _RetweetersListState extends State<RetweetersList>
               child: Text(l10n.could_not_find_any_retweets_of_this_post),
             );
           }
-          return PagedListView<int, UserWithExtra>(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom,
-            ),
-            state: state,
-            fetchNextPage: fetchNextPage,
-            scrollController: _scrollController,
-            primary: false,
-            addAutomaticKeepAlives: false,
-            builderDelegate: PagedChildBuilderDelegate(
-              itemBuilder: (context, user, index) => UserTile(
-                user: UserSubscription.fromUser(user),
-                verification: user.badges,
-              ),
-              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: l10n.unable_to_load_the_next_page_of_retweets,
-                onRetry: fetchNextPage,
-              ),
-            ),
+          return ScopedBuilder<ConversationSortStore, ConversationSorts>(
+            store: _sorts,
+            onState: (context, sorts) =>
+                _sorted(context, state, fetchNextPage, sorts.reposters),
           );
         },
+      ),
+    );
+  }
+
+  /// X returns reposters newest first and has no other order; follower order
+  /// is offered only once the loaded people carry follower counts.
+  Widget _sorted(
+    BuildContext context,
+    PagingState<int, UserWithExtra> state,
+    NextPageCallback fetchNextPage,
+    ReposterSort chosen,
+  ) {
+    final options = reposterSortsFor(
+      state.items ?? const <UserWithExtra>[],
+      followers: _followersOf,
+    );
+    final sort = effectiveSort(chosen, options);
+    final list = _list(
+      context,
+      reorderPagingItems(
+        state,
+        (people) => sortReposters(people, sort, followers: _followersOf),
+      ),
+      fetchNextPage,
+    );
+    if (options.length < 2) {
+      return list;
+    }
+    return Column(
+      children: [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: SortMenuButton<ReposterSort>(
+            value: sort,
+            options: options,
+            labelOf: reposterSortLabel,
+            iconOf: reposterSortIcon,
+            onSelected: _sorts.selectReposters,
+          ),
+        ),
+        Expanded(child: list),
+      ],
+    );
+  }
+
+  static int? _followersOf(UserWithExtra user) => user.followersCount;
+
+  Widget _list(
+    BuildContext context,
+    PagingState<int, UserWithExtra> state,
+    NextPageCallback fetchNextPage,
+  ) {
+    final l10n = L10n.of(context);
+    return PagedListView<int, UserWithExtra>(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+      state: state,
+      fetchNextPage: fetchNextPage,
+      scrollController: _scrollController,
+      primary: false,
+      addAutomaticKeepAlives: false,
+      builderDelegate: PagedChildBuilderDelegate(
+        itemBuilder: (context, user, index) => UserTile(
+          user: UserSubscription.fromUser(user),
+          verification: user.badges,
+        ),
+        newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+          error: pagingErrorOf(state)?.error,
+          stackTrace: pagingErrorOf(state)?.stackTrace,
+          prefix: l10n.unable_to_load_the_next_page_of_retweets,
+          onRetry: fetchNextPage,
+        ),
       ),
     );
   }

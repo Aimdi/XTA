@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Парадак сартавання",
+  "@sort_order": {},
+  "sort_relevant": "Актуальныя",
+  "@sort_relevant": {},
+  "sort_oldest": "Спачатку старыя",
+  "@sort_oldest": {},
+  "sort_most_liked": "Больш за ўсё ўпадабанняў",
+  "@sort_most_liked": {},
+  "sort_top": "Папулярныя",
+  "@sort_top": {},
+  "sort_most_followers": "Больш за ўсё падпісчыкаў",
+  "@sort_most_followers": {}
 }

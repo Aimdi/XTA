@@ -1,6 +1,5 @@
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
-
-enum BlueskyReplyOrder { original, newest, oldest, popular }
+import 'package:xta/ui/conversation_sort.dart';
 
 class BlueskyReplyBranch {
   final BlueskyPost post;
@@ -17,29 +16,20 @@ bool _sameAuthor(BlueskyPost post, BlueskyPost focal) {
   return post.handle.isNotEmpty && post.handle.toLowerCase() == focal.handle.toLowerCase();
 }
 
-int _compare(BlueskyPost left, BlueskyPost right, BlueskyReplyOrder order) {
-  if (order == BlueskyReplyOrder.popular) return right.likeCount.compareTo(left.likeCount);
-  final a = left.publishedAt;
-  final b = right.publishedAt;
-  if (a == null || b == null) return a == b ? 0 : (a == null ? 1 : -1);
-  return order == BlueskyReplyOrder.newest ? b.compareTo(a) : a.compareTo(b);
-}
-
 /// Order siblings without pulling a reply away from its parent.
-List<BlueskyPost> _ordered(List<BlueskyPost> posts, BlueskyReplyOrder order) {
-  if (order == BlueskyReplyOrder.original) return posts;
-  final positions = {for (var i = 0; i < posts.length; i++) posts[i].uri: i};
-  return [...posts]..sort((a, b) {
-    final compared = _compare(a, b, order);
-    return compared == 0 ? positions[a.uri]!.compareTo(positions[b.uri]!) : compared;
-  });
-}
+List<BlueskyPost> _ordered(List<BlueskyPost> posts, ReplySort order) => orderReplies(
+  posts,
+  order,
+  options: blueskyReplySorts,
+  postedAt: (post) => post.publishedAt,
+  likes: (post) => post.likeCount,
+);
 
 /// Canonical URIs deduplicate reposts and break cycles before building branches.
 List<BlueskyReplyBranch> blueskyReplyBranches(
   BlueskyThread thread, {
   bool authorOnly = false,
-  BlueskyReplyOrder order = BlueskyReplyOrder.original,
+  ReplySort order = ReplySort.relevant,
 }) {
   final excluded = {thread.post.uri, ...thread.ancestors.map((post) => post.uri)};
   final posts = <String, BlueskyPost>{};

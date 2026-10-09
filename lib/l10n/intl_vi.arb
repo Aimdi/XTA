@@ -3831,5 +3831,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Thứ tự sắp xếp",
+  "@sort_order": {},
+  "sort_relevant": "Phù hợp nhất",
+  "@sort_relevant": {},
+  "sort_oldest": "Cũ nhất",
+  "@sort_oldest": {},
+  "sort_most_liked": "Nhiều lượt thích nhất",
+  "@sort_most_liked": {},
+  "sort_top": "Nổi bật",
+  "@sort_top": {},
+  "sort_most_followers": "Nhiều người theo dõi nhất",
+  "@sort_most_followers": {}
 }

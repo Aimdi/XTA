@@ -9,8 +9,10 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_store.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/utils/urls.dart';
 
 class MastodonThreadScreen extends StatefulWidget {
@@ -22,16 +24,19 @@ class MastodonThreadScreen extends StatefulWidget {
 
 class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
   late final MastodonThreadStore _store;
+  late final ConversationSortStore _sorts;
   final _scroll = ScrollController();
 
   @override
   void initState() {
     super.initState();
     final prefs = PrefService.of(context, listen: false);
+    _sorts = context.read<ConversationSortStore>();
     _store = MastodonThreadStore(
       context.read<MastodonClient>(),
       mastodonInstanceCandidates(widget.post.acct, configured: mastodonConfiguredInstances(prefs)),
       widget.post,
+      order: _sorts.state.replies,
     );
     _store.refresh();
   }
@@ -92,7 +97,7 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
     final l10n = L10n.of(context);
     final colors = Theme.of(context).colorScheme;
     final thread = state.thread;
-    final replies = mastodonReplyRows(thread, state.collapsed, authorOnly: state.authorOnly);
+    final replies = mastodonReplyRows(thread, state.collapsed, authorOnly: state.authorOnly, order: state.order);
     final ancestors = mastodonThreadAncestors(thread);
     final leading = <Widget>[
       if (ancestors.isNotEmpty)
@@ -193,6 +198,11 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
     );
   }
 
+  void _selectOrder(ReplySort order) {
+    _sorts.selectReplies(order);
+    _store.selectOrder(order);
+  }
+
   Widget _filters(BuildContext context, MastodonThreadState state) {
     final l10n = L10n.of(context);
     return Padding(
@@ -200,6 +210,7 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
       child: Wrap(
         spacing: 8,
         runSpacing: 4,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           ChoiceChip(
             key: const ValueKey('mastodon-thread-all'),
@@ -212,6 +223,12 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
             label: Text(l10n.mastodon_thread_author),
             selected: state.authorOnly,
             onSelected: (_) => _store.selectAuthor(true),
+          ),
+          ReplySortButton(
+            key: const ValueKey('mastodon-thread-sort'),
+            value: state.order,
+            options: mastodonReplySorts,
+            onSelected: _selectOrder,
           ),
         ],
       ),

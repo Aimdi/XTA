@@ -106,6 +106,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/trends/trends_model.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/live_player_screen.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -990,6 +991,7 @@ Future<void> main() async {
                   ),
                 ),
                 Provider(create: (_) => SearchScopeStore()),
+                Provider(create: (_) => ConversationSortStore()),
                 Provider(create: (_) => DiscoverQueryStore()),
                 Provider(create: (_) => FeedStripStore(prefService)),
                 Provider(

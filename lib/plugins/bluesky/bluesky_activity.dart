@@ -60,5 +60,6 @@ Future<void> openBlueskyQuotes(BuildContext context, BlueskyPost post) {
     idOf: (post) => post.uri,
     errorLabel: blueskyErrorMessage,
     itemBuilder: (context, quote) => BlueskyPostCard(post: quote),
+    sort: pluginQuoteSort(postedAt: (quote) => quote.publishedAt, likes: (quote) => quote.likeCount),
   );
 }

@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Sıralama",
+  "@sort_order": {},
+  "sort_relevant": "En alakalı",
+  "@sort_relevant": {},
+  "sort_oldest": "En eski",
+  "@sort_oldest": {},
+  "sort_most_liked": "En çok beğenilen",
+  "@sort_most_liked": {},
+  "sort_top": "Popüler",
+  "@sort_top": {},
+  "sort_most_followers": "En çok takipçi",
+  "@sort_most_followers": {}
 }

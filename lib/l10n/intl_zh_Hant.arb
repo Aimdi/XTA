@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "排序方式",
+  "@sort_order": {},
+  "sort_relevant": "最相關",
+  "@sort_relevant": {},
+  "sort_oldest": "最早",
+  "@sort_oldest": {},
+  "sort_most_liked": "最多喜歡",
+  "@sort_most_liked": {},
+  "sort_top": "熱門",
+  "@sort_top": {},
+  "sort_most_followers": "粉絲最多",
+  "@sort_most_followers": {}
 }

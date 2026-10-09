@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Urutan",
+  "@sort_order": {},
+  "sort_relevant": "Paling relevan",
+  "@sort_relevant": {},
+  "sort_oldest": "Terlama",
+  "@sort_oldest": {},
+  "sort_most_liked": "Paling disukai",
+  "@sort_most_liked": {},
+  "sort_top": "Populer",
+  "@sort_top": {},
+  "sort_most_followers": "Pengikut terbanyak",
+  "@sort_most_followers": {}
 }

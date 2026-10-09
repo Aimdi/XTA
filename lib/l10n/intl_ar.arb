@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "ترتيب العرض",
+  "@sort_order": {},
+  "sort_relevant": "الأكثر صلة",
+  "@sort_relevant": {},
+  "sort_oldest": "الأقدم",
+  "@sort_oldest": {},
+  "sort_most_liked": "الأكثر إعجابًا",
+  "@sort_most_liked": {},
+  "sort_top": "الأبرز",
+  "@sort_top": {},
+  "sort_most_followers": "الأكثر متابعين",
+  "@sort_most_followers": {}
 }

@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Järjestus",
+  "@sort_order": {},
+  "sort_relevant": "Asjakohased",
+  "@sort_relevant": {},
+  "sort_oldest": "Vanimad",
+  "@sort_oldest": {},
+  "sort_most_liked": "Enim meeldimisi",
+  "@sort_most_liked": {},
+  "sort_top": "Populaarsed",
+  "@sort_top": {},
+  "sort_most_followers": "Enim jälgijaid",
+  "@sort_most_followers": {}
 }

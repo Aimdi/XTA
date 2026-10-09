@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Řazení",
+  "@sort_order": {},
+  "sort_relevant": "Relevantní",
+  "@sort_relevant": {},
+  "sort_oldest": "Nejstarší",
+  "@sort_oldest": {},
+  "sort_most_liked": "Nejvíc lajků",
+  "@sort_most_liked": {},
+  "sort_top": "Populární",
+  "@sort_top": {},
+  "sort_most_followers": "Nejvíc sledujících",
+  "@sort_most_followers": {}
 }

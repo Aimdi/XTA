@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "정렬",
+  "@sort_order": {},
+  "sort_relevant": "관련성 높은 순",
+  "@sort_relevant": {},
+  "sort_oldest": "오래된 순",
+  "@sort_oldest": {},
+  "sort_most_liked": "좋아요 많은 순",
+  "@sort_most_liked": {},
+  "sort_top": "인기",
+  "@sort_top": {},
+  "sort_most_followers": "팔로워 많은 순",
+  "@sort_most_followers": {}
 }

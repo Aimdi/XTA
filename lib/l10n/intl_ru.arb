@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Порядок сортировки",
+  "@sort_order": {},
+  "sort_relevant": "Самые актуальные",
+  "@sort_relevant": {},
+  "sort_oldest": "Сначала старые",
+  "@sort_oldest": {},
+  "sort_most_liked": "Больше всего лайков",
+  "@sort_most_liked": {},
+  "sort_top": "Популярные",
+  "@sort_top": {},
+  "sort_most_followers": "Больше всего подписчиков",
+  "@sort_most_followers": {}
 }

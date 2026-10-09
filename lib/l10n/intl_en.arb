@@ -4077,5 +4077,29 @@
         "type": "String"
       }
     }
+  },
+  "sort_order": "Sort order",
+  "@sort_order": {
+    "description": "Tooltip of the control that changes how replies, quotes or reposts are ordered"
+  },
+  "sort_relevant": "Relevant",
+  "@sort_relevant": {
+    "description": "Order option: replies the network ranks as most relevant first"
+  },
+  "sort_oldest": "Oldest",
+  "@sort_oldest": {
+    "description": "Order option: oldest posts first"
+  },
+  "sort_most_liked": "Most liked",
+  "@sort_most_liked": {
+    "description": "Order option: posts with the most likes first"
+  },
+  "sort_top": "Top",
+  "@sort_top": {
+    "description": "Order option for quotes: X's Top ranking (popular first)"
+  },
+  "sort_most_followers": "Most followers",
+  "@sort_most_followers": {
+    "description": "Order option for people who reposted: accounts with the most followers first"
   }
 }

@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Paradak sartavańnia",
+  "@sort_order": {},
+  "sort_relevant": "Aktualnyja",
+  "@sort_relevant": {},
+  "sort_oldest": "Spačatku staryja",
+  "@sort_oldest": {},
+  "sort_most_liked": "Bolš za ŭsio ŭpadabanniaŭ",
+  "@sort_most_liked": {},
+  "sort_top": "Papuliarnyja",
+  "@sort_top": {},
+  "sort_most_followers": "Bolš za ŭsio padpisčykaŭ",
+  "@sort_most_followers": {}
 }

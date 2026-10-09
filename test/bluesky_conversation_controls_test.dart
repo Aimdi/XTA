@@ -7,6 +7,7 @@ import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_media_grid.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_store.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'support/bluesky_reading_harness.dart';
 
 BlueskyPost _post(
@@ -76,14 +77,14 @@ void main() {
         _post('undated', parent: 'root'),
       ],
     );
-    List<String> order(BlueskyReplyOrder order) => blueskyVisibleReplies(
+    List<String> order(ReplySort order) => blueskyVisibleReplies(
       blueskyReplyBranches(thread, order: order),
       {},
     ).map((row) => row.branch.post.text).toList();
-    expect(order(BlueskyReplyOrder.original), ['a', 'a1', 'b', 'c', 'undated']);
-    expect(order(BlueskyReplyOrder.popular), ['b', 'c', 'a', 'a1', 'undated']);
-    expect(order(BlueskyReplyOrder.newest), ['b', 'c', 'a', 'a1', 'undated']);
-    expect(order(BlueskyReplyOrder.oldest), ['a', 'a1', 'c', 'b', 'undated']);
+    expect(order(ReplySort.relevant), ['a', 'a1', 'b', 'c', 'undated']);
+    expect(order(ReplySort.mostLiked), ['b', 'c', 'a', 'a1', 'undated']);
+    expect(order(ReplySort.recent), ['b', 'c', 'a', 'a1', 'undated']);
+    expect(order(ReplySort.oldest), ['a', 'a1', 'c', 'b', 'undated']);
   });
 
   test('twenty thousand nested replies build, count and collapse without recursion', () {
@@ -102,7 +103,7 @@ void main() {
     addTearDown(store.destroy);
     addTearDown(client.httpClient.close);
     await store.refresh();
-    store.selectOrder(BlueskyReplyOrder.popular);
+    store.selectOrder(ReplySort.mostLiked);
     store.selectAuthor(true);
     store.setAllExpanded(false);
     expect(store.state.collapsed, {_post('a').uri});
@@ -113,7 +114,7 @@ void main() {
     store.toggleContext();
     expect(store.state.error, isNotNull);
     expect(store.state.branches, isNotEmpty);
-    expect(store.state.order, BlueskyReplyOrder.popular);
+    expect(store.state.order, ReplySort.mostLiked);
     expect(store.state.authorOnly, isTrue);
     client.nextThread = Completer<BlueskyThread>();
     final retry = store.refresh();
@@ -147,7 +148,7 @@ void main() {
     store.toggleContext();
     store.toggle('x');
     store.selectAuthor(true);
-    store.selectOrder(BlueskyReplyOrder.newest);
+    store.selectOrder(ReplySort.recent);
     store.setAllExpanded(false);
     store.focusSelected();
     expect(store.state.thread.post.text, 'new');
@@ -302,10 +303,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('bluesky-thread-sort')));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(CheckedPopupMenuItem<BlueskyReplyOrder>, 'Most liked first'));
+    await tester.tap(find.widgetWithText(PopupMenuItem<ReplySort>, 'Most liked'));
     await tester.pumpAndSettle();
-    expect(find.byType(CheckedPopupMenuItem<BlueskyReplyOrder>), findsNothing);
-    expect(find.text('Most liked first'), findsOneWidget);
+    expect(find.byType(PopupMenuItem<ReplySort>), findsNothing);
+    expect(find.text('Most liked'), findsOneWidget);
+    expect(h.sorts.state.replies, ReplySort.mostLiked);
     await tester.tap(find.byKey(const ValueKey('bluesky-thread-jump')));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('bluesky-thread-selected')), findsOneWidget);

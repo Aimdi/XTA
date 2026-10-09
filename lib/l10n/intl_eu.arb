@@ -3834,5 +3834,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sort_order": "Ordena",
+  "@sort_order": {},
+  "sort_relevant": "Garrantzitsuenak",
+  "@sort_relevant": {},
+  "sort_oldest": "Zaharrenak",
+  "@sort_oldest": {},
+  "sort_most_liked": "Gustuko gehien dituztenak",
+  "@sort_most_liked": {},
+  "sort_top": "Nabarmenak",
+  "@sort_top": {},
+  "sort_most_followers": "Jarraitzaile gehien dituztenak",
+  "@sort_most_followers": {}
 }
