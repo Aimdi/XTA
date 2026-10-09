@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Nedlastede stemmer",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Bruk en nedlastet stemme",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Leser med en nedlastet stemme når en av dem snakker artikkelens språk; ellers brukes motoren nedenfor.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Stemmer lastes ned fra GitHub (k2-fsa/sherpa-onnx) bare når du trykker på Last ned. De kjører helt på denne enheten.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lisens: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrollerer og pakker ut …",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "På denne enheten · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Nedlastingen mislyktes. Sjekk tilkoblingen og prøv igjen.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Nedlastingen samsvarte ikke med den forventede filen og ble forkastet.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Kunne ikke pakke ut den nedlastede stemmen.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Vil du slette {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Du kan laste den ned igjen når som helst.",
+  "@tts_offline_voice_delete_description": {}
 }

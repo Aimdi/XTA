@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Voci descărcate",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Folosește o voce descărcată",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Citește cu o voce descărcată atunci când una vorbește limba articolului; altfel folosește motorul de mai jos.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Vocile se descarcă de pe GitHub (k2-fsa/sherpa-onnx) doar când atingi Descarcă. Rulează în întregime pe acest dispozitiv.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licență: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Se verifică și se dezarhivează…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Pe acest dispozitiv · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Descărcarea a eșuat. Verifică-ți conexiunea și încearcă din nou.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Fișierul descărcat nu corespundea celui așteptat și a fost șters.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Vocea descărcată nu a putut fi dezarhivată.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Ștergi {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "O poți descărca din nou oricând.",
+  "@tts_offline_voice_delete_description": {}
 }

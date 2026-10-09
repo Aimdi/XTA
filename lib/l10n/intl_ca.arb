@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Veus descarregades",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Utilitza una veu descarregada",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Llegeix amb una veu descarregada quan n'hi ha una en la llengua de l'article; si no, fa servir el motor de sota.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Les veus només es descarreguen de GitHub (k2-fsa/sherpa-onnx) quan toques Descarregar. Funcionen completament en aquest dispositiu.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Llicència: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "S'està comprovant i descomprimint…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "En aquest dispositiu · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "No s'ha pogut descarregar. Comprova la connexió i torna-ho a provar.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "La descàrrega no coincidia amb el fitxer esperat i s'ha descartat.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "No s'ha pogut descomprimir la veu descarregada.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Vols suprimir {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "La pots tornar a descarregar quan vulguis.",
+  "@tts_offline_voice_delete_description": {}
 }

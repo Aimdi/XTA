@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Stažené hlasy",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Používat stažený hlas",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Předčítá staženým hlasem, pokud některý mluví jazykem článku; jinak použije modul níže.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Hlasy se stahují z GitHubu (k2-fsa/sherpa-onnx) jen tehdy, když klepnete na Stáhnout. Běží celé v tomto zařízení.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licence: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrola a rozbalování…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "V tomto zařízení · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Stažení se nezdařilo. Zkontrolujte připojení a zkuste to znovu.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Stažený soubor neodpovídal očekávanému a byl zahozen.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Stažený hlas se nepodařilo rozbalit.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Smazat {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Kdykoli si ho můžete stáhnout znovu.",
+  "@tts_offline_voice_delete_description": {}
 }

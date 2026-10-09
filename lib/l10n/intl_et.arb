@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Allalaaditud hääled",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Kasuta allalaaditud häält",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Loeb ette allalaaditud häälega, kui mõni neist räägib artikli keelt; muidu kasutab allolevat mootorit.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Hääled laaditakse GitHubist (k2-fsa/sherpa-onnx) alla ainult siis, kui puudutad nuppu Laadi alla. Need töötavad täielikult selles seadmes.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Litsents: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrollimine ja lahtipakkimine…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Selles seadmes · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Allalaadimine nurjus. Kontrolli ühendust ja proovi uuesti.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Allalaaditud fail ei vastanud oodatule ja visati ära.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Allalaaditud häält ei õnnestunud lahti pakkida.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Kas kustutada {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Saad selle igal ajal uuesti alla laadida.",
+  "@tts_offline_voice_delete_description": {}
 }

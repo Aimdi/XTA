@@ -143,7 +143,12 @@ class SpeechStore extends Store<SpeechPlayback> {
   }) async {
     for (var i = 0; i < chunks.length; i++) {
       if (generation != _generation) return true;
-      var outcome = await engine.say(chunks[i]);
+      final saying = engine.say(chunks[i]);
+      // After say, so the chunk being read is prepared before the next one.
+      if (engine is SpeechLookahead && i + 1 < chunks.length) {
+        (engine as SpeechLookahead).upcoming(chunks[i + 1]);
+      }
+      var outcome = await saying;
       if (outcome == UtteranceOutcome.failed &&
           i == 0 &&
           generation == _generation) {

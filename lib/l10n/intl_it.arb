@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Voci scaricate",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Usa una voce scaricata",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Legge con una voce scaricata quando ce n'è una nella lingua dell'articolo; altrimenti usa il motore qui sotto.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Le voci vengono scaricate da GitHub (k2-fsa/sherpa-onnx) solo quando tocchi Scarica. Funzionano interamente su questo dispositivo.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licenza: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Verifica ed estrazione in corso…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Su questo dispositivo · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Download non riuscito. Controlla la connessione e riprova.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Il file scaricato non corrisponde a quello previsto ed è stato eliminato.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Impossibile estrarre la voce scaricata.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Eliminare {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Puoi scaricarla di nuovo in qualsiasi momento.",
+  "@tts_offline_voice_delete_description": {}
 }

@@ -4,8 +4,10 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/speech/offline_voices_section.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_engines.dart';
+import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/urls.dart';
 
 TtsChoice readTtsChoice(BasePrefService prefs) => TtsChoice(
@@ -296,6 +298,8 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
         Expanded(
           child: ListView(
             children: [
+              if (_voiceStore(context) case final store?)
+                OfflineVoicesSection(store: store),
               _header(context, l10n.plugin_substack_tts_engine),
               RadioListTile<String?>(
                 value: null,
@@ -379,6 +383,15 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
           ),
       ],
     );
+  }
+
+  /// The downloadable voices, when the app provides them.
+  VoiceDownloadStore? _voiceStore(BuildContext context) {
+    try {
+      return context.read<VoiceDownloadStore>();
+    } on ProviderNotFoundException {
+      return null;
+    }
   }
 
   Widget _header(BuildContext context, String text) => Padding(

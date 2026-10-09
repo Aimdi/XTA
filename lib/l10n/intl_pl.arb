@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Pobrane głosy",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Używaj pobranego głosu",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Czyta pobranym głosem, gdy któryś mówi w języku artykułu; w przeciwnym razie używa mechanizmu poniżej.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Głosy są pobierane z GitHuba (k2-fsa/sherpa-onnx) tylko po dotknięciu Pobierz. Działają w całości na tym urządzeniu.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licencja: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Sprawdzanie i rozpakowywanie…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Na tym urządzeniu · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Pobieranie nie powiodło się. Sprawdź połączenie i spróbuj ponownie.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Pobrany plik nie zgadzał się z oczekiwanym i został odrzucony.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Nie udało się rozpakować pobranego głosu.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Usunąć {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Możesz go pobrać ponownie w dowolnym momencie.",
+  "@tts_offline_voice_delete_description": {}
 }

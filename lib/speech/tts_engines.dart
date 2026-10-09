@@ -203,3 +203,13 @@ abstract interface class SpeechEngine {
   /// Stops speaking; a pending [say] completes as cancelled.
   Future<void> stop();
 }
+
+/// An engine that does better when told what comes next.
+///
+/// An on-device voice synthesises audio before it can play it; knowing the
+/// next chunk while the current one plays lets it have that audio ready, so
+/// sentences follow each other without a pause.
+abstract interface class SpeechLookahead {
+  /// [chunk] will be handed to `say` after the current one.
+  void upcoming(String chunk);
+}

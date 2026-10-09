@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Спампаваныя галасы",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Выкарыстоўваць спампаваны голас",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Чытае спампаваным голасам, калі ён гаворыць на мове артыкула; інакш выкарыстоўвае рухавік ніжэй.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Галасы спампоўваюцца з GitHub (k2-fsa/sherpa-onnx), толькі калі вы націскаеце «Спампаваць». Яны працуюць цалкам на гэтай прыладзе.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Ліцэнзія: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Праверка і распакоўванне…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "На гэтай прыладзе · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Не ўдалося спампаваць. Праверце злучэнне і паспрабуйце яшчэ раз.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Спампаваны файл не супаў з чаканым і быў выдалены.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Не ўдалося распакаваць спампаваны голас.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Выдаліць {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Вы можаце спампаваць яго зноў у любы час.",
+  "@tts_offline_voice_delete_description": {}
 }

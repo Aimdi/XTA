@@ -229,6 +229,10 @@ const optionTtsVoiceName = 'tts.voice_name';
 const optionTtsVoiceLocale = 'tts.voice_locale';
 const optionTtsRate = 'tts.rate';
 
+/// Read with a downloaded on-device voice when one speaks the article's
+/// language (see `lib/speech/offline_speech_engine.dart`).
+const optionTtsOfflineVoice = 'tts.offline_voice';
+
 const optionPluginSubstackEnabled = 'plugin.substack.enabled';
 const optionPluginSubstackShowTab = 'plugin.substack.show_tab';
 const optionPluginSubstackPublications = 'plugin.substack.publications';

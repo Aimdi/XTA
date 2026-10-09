@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Загруженные голоса",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Использовать загруженный голос",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Читает загруженным голосом, если он говорит на языке статьи; иначе использует движок ниже.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Голоса загружаются с GitHub (k2-fsa/sherpa-onnx), только когда вы нажимаете «Скачать». Они работают полностью на этом устройстве.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Лицензия: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Проверка и распаковка…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "На этом устройстве · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Не удалось скачать. Проверьте подключение и повторите попытку.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Загруженный файл не совпал с ожидаемым и был удалён.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Не удалось распаковать загруженный голос.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Удалить {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Вы сможете скачать его снова в любой момент.",
+  "@tts_offline_voice_delete_description": {}
 }

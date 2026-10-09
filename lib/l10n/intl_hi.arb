@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "डाउनलोड की गई आवाज़ें",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "डाउनलोड की गई आवाज़ इस्तेमाल करें",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "अगर कोई डाउनलोड की गई आवाज़ लेख की भाषा बोलती है तो उसी से पढ़ता है; वरना नीचे दिया इंजन इस्तेमाल करता है।",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "आवाज़ें GitHub (k2-fsa/sherpa-onnx) से तभी डाउनलोड होती हैं जब आप डाउनलोड पर टैप करते हैं। ये पूरी तरह इसी डिवाइस पर चलती हैं।",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "लाइसेंस: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "जाँच और अनपैक किया जा रहा है…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "इस डिवाइस पर · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "डाउनलोड नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "डाउनलोड की गई फ़ाइल अपेक्षित फ़ाइल से मेल नहीं खाई, इसलिए हटा दी गई।",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "डाउनलोड की गई आवाज़ अनपैक नहीं हो सकी।",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} हटाएँ?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "आप इसे कभी भी फिर से डाउनलोड कर सकते हैं।",
+  "@tts_offline_voice_delete_description": {}
 }

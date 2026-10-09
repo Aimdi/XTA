@@ -4189,5 +4189,68 @@
         "type": "String"
       }
     }
+  },
+  "tts_offline_voices": "Downloaded voices",
+  "@tts_offline_voices": {
+    "description": "Section header in the read-aloud settings listing voices the app can download and run on the device."
+  },
+  "tts_offline_voices_use": "Use a downloaded voice",
+  "@tts_offline_voices_use": {
+    "description": "Switch: read aloud with a downloaded voice when one fits."
+  },
+  "tts_offline_voices_use_description": "Read with a downloaded voice when one speaks the article's language; otherwise use the engine below.",
+  "@tts_offline_voices_use_description": {
+    "description": "Subtitle of the switch. 'The engine below' is the list of Android speech engines further down the same screen."
+  },
+  "tts_offline_voices_note": "Voices are downloaded from GitHub (k2-fsa/sherpa-onnx) only when you tap Download. They run entirely on this device.",
+  "@tts_offline_voices_note": {
+    "description": "Note under the downloadable voices. GitHub and k2-fsa/sherpa-onnx are names; keep them as is."
+  },
+  "tts_offline_voice_licence": "License: {licence}",
+  "@tts_offline_voice_licence": {
+    "description": "Licence of a downloadable voice; licence is an SPDX id such as CC0-1.0, keep it as is.",
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Checking and unpacking…",
+  "@tts_offline_voice_installing": {
+    "description": "Status of a voice after download, while its checksum is verified and the archive unpacked."
+  },
+  "tts_offline_voice_ready": "On this device · {size}",
+  "@tts_offline_voice_ready": {
+    "description": "Status of an installed voice; size is a preformatted byte size such as 38.1 MiB (disk space it uses).",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "The download failed. Check your connection and try again.",
+  "@tts_offline_voice_failed_network": {
+    "description": "Status after a voice download failed."
+  },
+  "tts_offline_voice_failed_checksum": "The download did not match the expected file and was discarded.",
+  "@tts_offline_voice_failed_checksum": {
+    "description": "Status after a downloaded voice failed its SHA-256 check and was deleted."
+  },
+  "tts_offline_voice_failed_archive": "The downloaded voice could not be unpacked.",
+  "@tts_offline_voice_failed_archive": {
+    "description": "Status after a downloaded voice archive turned out damaged or incomplete."
+  },
+  "tts_offline_voice_delete_question": "Delete {name}?",
+  "@tts_offline_voice_delete_question": {
+    "description": "Dialog title before deleting a downloaded voice; name is the voice's proper name, e.g. Thorsten.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "You can download it again at any time.",
+  "@tts_offline_voice_delete_description": {
+    "description": "Dialog text before deleting a downloaded voice."
   }
 }

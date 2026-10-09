@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Завантажені голоси",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Використовувати завантажений голос",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Читає завантаженим голосом, якщо він говорить мовою статті; інакше використовує рушій нижче.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Голоси завантажуються з GitHub (k2-fsa/sherpa-onnx) лише тоді, коли ви натискаєте «Завантажити». Вони працюють повністю на цьому пристрої.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Ліцензія: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Перевірка й розпакування…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "На цьому пристрої · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Не вдалося завантажити. Перевірте з'єднання й спробуйте ще раз.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Завантажений файл не збігся з очікуваним і був видалений.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Не вдалося розпакувати завантажений голос.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Видалити {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Ви можете завантажити його знову будь-коли.",
+  "@tts_offline_voice_delete_description": {}
 }

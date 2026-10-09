@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "ダウンロードした音声",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "ダウンロードした音声を使う",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "記事の言語に合う音声がダウンロード済みならそれで読み上げ、なければ下のエンジンを使います。",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "音声は「ダウンロード」をタップしたときにだけ GitHub（k2-fsa/sherpa-onnx）から取得され、すべてこの端末上で動作します。",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "ライセンス: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "確認して展開しています…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "この端末上 · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "ダウンロードできませんでした。接続を確認して、もう一度お試しください。",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "ダウンロードしたファイルが想定と一致しなかったため、破棄しました。",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "ダウンロードした音声を展開できませんでした。",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} を削除しますか？",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "いつでも再ダウンロードできます。",
+  "@tts_offline_voice_delete_description": {}
 }

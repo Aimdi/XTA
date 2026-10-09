@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Deskargatutako ahotsak",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Erabili deskargatutako ahotsa",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Deskargatutako ahots batekin irakurtzen du artikuluaren hizkuntza hitz egiten badu; bestela, beheko motorra erabiltzen du.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Ahotsak GitHub-etik (k2-fsa/sherpa-onnx) deskargatzen dira, Deskargatu sakatzen duzunean bakarrik. Gailu honetan bertan exekutatzen dira osorik.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lizentzia: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Egiaztatzen eta deskonprimatzen…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Gailu honetan · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Ezin izan da deskargatu. Egiaztatu konexioa eta saiatu berriro.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Deskarga ez zetorren bat espero zen fitxategiarekin, eta baztertu egin da.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Ezin izan da deskargatutako ahotsa deskonprimatu.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} ezabatu?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Nahi duzunean deskarga dezakezu berriro.",
+  "@tts_offline_voice_delete_description": {}
 }

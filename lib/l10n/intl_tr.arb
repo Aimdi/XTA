@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "İndirilen sesler",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "İndirilen bir sesi kullan",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Makalenin dilini konuşan indirilmiş bir ses varsa onunla okur; yoksa aşağıdaki motoru kullanır.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Sesler yalnızca İndir'e dokunduğunuzda GitHub'dan (k2-fsa/sherpa-onnx) indirilir. Tamamen bu cihazda çalışırlar.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lisans: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Denetleniyor ve açılıyor…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Bu cihazda · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "İndirme başarısız oldu. Bağlantınızı kontrol edip yeniden deneyin.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "İndirilen dosya beklenen dosyayla eşleşmedi ve silindi.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "İndirilen ses açılamadı.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} silinsin mi?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "İstediğiniz zaman yeniden indirebilirsiniz.",
+  "@tts_offline_voice_delete_description": {}
 }

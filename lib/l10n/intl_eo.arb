@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Elŝutitaj voĉoj",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Uzi elŝutitan voĉon",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Laŭtlegas per elŝutita voĉo, kiam iu parolas la lingvon de la artikolo; alie per la suba motoro.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Voĉoj elŝutiĝas el GitHub (k2-fsa/sherpa-onnx) nur kiam vi tuŝas Elŝuti. Ili funkcias tute en ĉi tiu aparato.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Permesilo: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrolante kaj malpakante…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "En ĉi tiu aparato · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "La elŝuto malsukcesis. Kontrolu vian konekton kaj reprovu.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "La elŝutaĵo ne kongruis kun la atendita dosiero kaj estis forĵetita.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Ne eblis malpaki la elŝutitan voĉon.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Ĉu forigi {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Vi povas reelŝuti ĝin iam ajn.",
+  "@tts_offline_voice_delete_description": {}
 }

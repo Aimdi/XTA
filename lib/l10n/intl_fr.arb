@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Voix téléchargées",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Utiliser une voix téléchargée",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Lit avec une voix téléchargée lorsqu'elle parle la langue de l'article ; sinon, utilise le moteur ci-dessous.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Les voix sont téléchargées depuis GitHub (k2-fsa/sherpa-onnx) uniquement lorsque vous appuyez sur Télécharger. Elles fonctionnent entièrement sur cet appareil.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licence : {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Vérification et décompression…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Sur cet appareil · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Le téléchargement a échoué. Vérifiez votre connexion et réessayez.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Le fichier téléchargé ne correspond pas au fichier attendu et a été supprimé.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Impossible de décompresser la voix téléchargée.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Supprimer {name} ?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Vous pourrez la retélécharger à tout moment.",
+  "@tts_offline_voice_delete_description": {}
 }

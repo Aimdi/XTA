@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "已下載的語音",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "使用已下載的語音",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "如果有已下載的語音支援文章的語言，就用它朗讀；否則使用下方的引擎。",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "只有在你點按「下載」時，才會從 GitHub（k2-fsa/sherpa-onnx）下載語音。語音完全在這部裝置上執行。",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "授權條款：{licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "正在驗證並解壓縮…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "在這部裝置上 · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "下載失敗。請檢查網路連線後再試一次。",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "下載的檔案與預期不符，已捨棄。",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "無法解壓縮已下載的語音。",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "要刪除 {name} 嗎？",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "你隨時可以重新下載。",
+  "@tts_offline_voice_delete_description": {}
 }

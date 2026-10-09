@@ -116,6 +116,13 @@ dependencies:
   audio_session: ^0.2.4
   ffcache: ^1.1.0
   flutter_tts: ^4.2.5
+  # Offline read-aloud voices (docs/specs/downloadable-tts.md). Exact pin: the
+  # native libraries it ships (onnxruntime, espeak-ng — GPL-3.0) change with
+  # every release, so moving it needs an APK build and size check.
+  sherpa_onnx: 1.13.8
+  # tar.bz2 extraction of downloaded voices; already transitive, declared so
+  # the app's direct use is explicit.
+  archive: 4.0.9
   bip340: ^0.3.1
   bech32: ^0.2.2
 
@@ -150,6 +157,7 @@ flutter:
   assets:
     - assets/icon.png
     - assets/fonts/Inter-OFL.txt
+    - assets/licenses/espeak-ng.txt
 
   fonts:
     - family: Inter

@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Suara yang diunduh",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Gunakan suara yang diunduh",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Membaca dengan suara yang diunduh jika ada yang berbahasa sama dengan artikel; jika tidak, memakai mesin di bawah.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Suara diunduh dari GitHub (k2-fsa/sherpa-onnx) hanya saat Anda mengetuk Unduh. Suara berjalan sepenuhnya di perangkat ini.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lisensi: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Memeriksa dan mengekstrak…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Di perangkat ini · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Unduhan gagal. Periksa koneksi Anda lalu coba lagi.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Unduhan tidak cocok dengan file yang diharapkan dan telah dibuang.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Suara yang diunduh tidak dapat diekstrak.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Hapus {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Anda dapat mengunduhnya lagi kapan saja.",
+  "@tts_offline_voice_delete_description": {}
 }

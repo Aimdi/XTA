@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Gedownloade stemmen",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Gedownloade stem gebruiken",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Leest voor met een gedownloade stem als die de taal van het artikel spreekt; anders met de engine hieronder.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Stemmen worden pas van GitHub (k2-fsa/sherpa-onnx) gedownload als je op Downloaden tikt. Ze draaien volledig op dit apparaat.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licentie: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Controleren en uitpakken…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Op dit apparaat · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Downloaden mislukt. Controleer je verbinding en probeer het opnieuw.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "De download kwam niet overeen met het verwachte bestand en is verwijderd.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "De gedownloade stem kon niet worden uitgepakt.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} verwijderen?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Je kunt hem altijd opnieuw downloaden.",
+  "@tts_offline_voice_delete_description": {}
 }

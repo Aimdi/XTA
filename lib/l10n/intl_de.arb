@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Heruntergeladene Stimmen",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Heruntergeladene Stimme verwenden",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Liest mit einer heruntergeladenen Stimme vor, wenn eine die Sprache des Artikels spricht – sonst mit der Engine weiter unten.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Stimmen werden erst geladen, wenn du auf „Herunterladen“ tippst, und kommen von GitHub (k2-fsa/sherpa-onnx). Sie laufen vollständig auf diesem Gerät.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lizenz: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Wird geprüft und entpackt …",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Auf diesem Gerät · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Der Download ist fehlgeschlagen. Prüfe deine Verbindung und versuche es erneut.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Der Download entsprach nicht der erwarteten Datei und wurde verworfen.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Die heruntergeladene Stimme konnte nicht entpackt werden.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} löschen?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Du kannst sie jederzeit erneut herunterladen.",
+  "@tts_offline_voice_delete_description": {}
 }

@@ -136,8 +136,10 @@ import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 import 'package:xta/plugins/substack/podcast_store.dart';
+import 'package:xta/speech/offline_speech_setup.dart';
 import 'package:xta/speech/speech_bar.dart';
 import 'package:xta/speech/speech_store.dart';
+import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
 
 Future checkForUpdates(BuildContext context) async {
@@ -449,6 +451,12 @@ Future<void> main() async {
     yield LicenseEntryWithLineBreaks(const ['Inter'], license);
   });
 
+  // sherpa-onnx (on-device voices) links espeak-ng, which is GPL-3.0-or-later.
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('assets/licenses/espeak-ng.txt');
+    yield LicenseEntryWithLineBreaks(const ['espeak-ng'], license);
+  });
+
   // Neither belongs in front of the first frame. MediaKit is dlopen'ing
   // libmpv — it is initialised in the post-frame callback below. The audio
   // service is an Android service bind nothing on the launch path reads:
@@ -578,6 +586,7 @@ Future<void> main() async {
       optionTtsVoiceName: '',
       optionTtsVoiceLocale: '',
       optionTtsRate: 0.45,
+      optionTtsOfflineVoice: true,
       optionPluginSubstackEnabled: false,
       optionPluginSubstackShowTab: true,
       optionPluginSubstackPublications: '[]',
@@ -778,7 +787,10 @@ Future<void> main() async {
     );
     final stocksWatchlist = StocksWatchlistStore();
     final tickerQuotes = TickerQuoteCache();
-    final speech = SpeechStore();
+    final voices = VoiceDownloadStore();
+    final speech = SpeechStore(
+      preferred: [createOfflineSpeechEngine(voices, prefService)],
+    );
     final podcast = PodcastStore(prefs: prefService);
     final substackClient = SubstackClient();
     final substackPublications = SubstackPublicationsStore(prefService);
@@ -982,6 +994,7 @@ Future<void> main() async {
                 Provider(create: (_) => stocksWatchlist),
                 Provider(create: (_) => tickerQuotes),
                 Provider(create: (_) => speech),
+                Provider(create: (_) => voices),
                 Provider(create: (_) => CombinedGroupsStore()),
                 Provider(
                   create: (_) => FeedTabStore(

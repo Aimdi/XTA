@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Spampavanyja halasy",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Vykarystoŭvać spampavany hołas",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Čytaje spampavanym hołasam, kali jon havoryć na movie artykuła; inakš vykarystoŭvaje ruchavik nižej.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Hałasy spampoŭvajucca z GitHub (k2-fsa/sherpa-onnx), tolki kali vy naciskajecie «Sćahnuć». Jany pracujuć całkam na hetaj pryładzie.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licenzija: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Pravierka i raspakoŭvańnie…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Na hetaj pryładzie · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Nie ŭdałosia spampavać. Praviercie złučeńnie i pasprabujcie jašče raz.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Spampavany fajł nie supaŭ z čakanym i byŭ vydaleny.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Nie ŭdałosia raspakavać spampavany hołas.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Vydalić {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Vy možacie spampavać jaho znoŭ u luby čas.",
+  "@tts_offline_voice_delete_description": {}
 }

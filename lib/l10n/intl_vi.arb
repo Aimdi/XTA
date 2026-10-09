@@ -3883,5 +3883,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "Giọng đã tải xuống",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Dùng giọng đã tải xuống",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Đọc bằng giọng đã tải xuống khi có giọng nói đúng ngôn ngữ của bài viết; nếu không, dùng công cụ bên dưới.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Giọng chỉ được tải từ GitHub (k2-fsa/sherpa-onnx) khi bạn nhấn Tải xuống. Giọng chạy hoàn toàn trên thiết bị này.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Giấy phép: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Đang kiểm tra và giải nén…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Trên thiết bị này · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Tải xuống không thành công. Hãy kiểm tra kết nối rồi thử lại.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Tệp tải xuống không khớp với tệp mong đợi nên đã bị xóa.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Không thể giải nén giọng đã tải xuống.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Xóa {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Bạn có thể tải lại bất cứ lúc nào.",
+  "@tts_offline_voice_delete_description": {}
 }

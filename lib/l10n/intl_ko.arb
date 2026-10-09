@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "다운로드한 음성",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "다운로드한 음성 사용",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "기사 언어에 맞는 다운로드한 음성이 있으면 그 음성으로 읽고, 없으면 아래 엔진을 사용합니다.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "음성은 다운로드를 탭할 때만 GitHub(k2-fsa/sherpa-onnx)에서 받아오며, 모두 이 기기에서 실행됩니다.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "라이선스: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "확인하고 압축을 푸는 중…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "이 기기에 저장됨 · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "다운로드하지 못했습니다. 연결을 확인한 뒤 다시 시도하세요.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "다운로드한 파일이 예상한 파일과 달라 삭제했습니다.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "다운로드한 음성의 압축을 풀지 못했습니다.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name}을(를) 삭제할까요?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "언제든지 다시 다운로드할 수 있습니다.",
+  "@tts_offline_voice_delete_description": {}
 }

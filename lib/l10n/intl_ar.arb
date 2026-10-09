@@ -3886,5 +3886,47 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tts_offline_voices": "الأصوات المحمّلة",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "استخدام صوت محمّل",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "يقرأ بصوت محمّل عندما يتحدث أحدها لغة المقال، وإلا فيستخدم المحرك أدناه.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "لا تُحمَّل الأصوات من GitHub (k2-fsa/sherpa-onnx) إلا عند النقر على «تحميل». وتعمل بالكامل على هذا الجهاز.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "الترخيص: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "جارٍ التحقق وفك الضغط…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "على هذا الجهاز · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "تعذّر التحميل. تحقق من اتصالك وحاول مرة أخرى.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "لم يطابق الملف المحمّل الملف المتوقع، فتم حذفه.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "تعذّر فك ضغط الصوت المحمّل.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "حذف {name}؟",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "يمكنك تحميله مرة أخرى في أي وقت.",
+  "@tts_offline_voice_delete_description": {}
 }
