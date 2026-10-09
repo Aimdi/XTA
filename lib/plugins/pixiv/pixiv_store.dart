@@ -2,8 +2,10 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
+typedef PixivPageLoader<T> = Future<PixivPage<T>> Function({String? nextUrl});
+typedef PixivListFilter<T> = List<T> Function(List<T> items);
 typedef PixivIllustPageLoader = Future<PixivIllustPage> Function({String? nextUrl});
-typedef PixivIllustListFilter = List<PixivIllust> Function(List<PixivIllust> illusts);
+typedef PixivIllustListFilter = PixivListFilter<PixivIllust>;
 
 /// How many consecutive fully-filtered pages to skip before giving up.
 ///
@@ -11,15 +13,19 @@ typedef PixivIllustListFilter = List<PixivIllust> Function(List<PixivIllust> ill
 /// without advancing, the grid shows empty and never scrolls into `loadMore`.
 const pixivEmptyPageAdvanceLimit = 5;
 
-/// Paginated illust list — following, ranking, bookmarks, search, related.
-class PixivIllustListStore extends Store<List<PixivIllust>> {
-  PixivIllustPageLoader _loader;
-  PixivIllustListFilter? filter;
+/// Any paged Pixiv list — works, creators, novels, comments — kept in order
+/// without duplicates as `next_url` pages arrive.
+class PixivPagedListStore<T> extends Store<List<T>> {
+  PixivPageLoader<T> _loader;
+  PixivListFilter<T>? filter;
+
+  /// What makes two items the same entry when pages overlap.
+  final Object Function(T item) keyOf;
 
   String? _nextUrl;
   bool _loadingMore = false;
 
-  PixivIllustListStore(this._loader, {this.filter}) : super(const []);
+  PixivPagedListStore(this._loader, {required this.keyOf, this.filter}) : super(const []);
 
   bool get hasMore => _nextUrl != null && _nextUrl!.isNotEmpty;
   bool get loadingMore => _loadingMore;
@@ -28,7 +34,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
   ///
   /// The clear is the point: leaving the old grid in state let a failed
   /// refresh on the new mode show the old mode's illusts under the new label.
-  void useLoader(PixivIllustPageLoader loader) {
+  void useLoader(PixivPageLoader<T> loader) {
     _loader = loader;
     _nextUrl = null;
     update(const []);
@@ -41,7 +47,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
       try {
         final page = await _loadVisiblePage();
         _nextUrl = page.nextUrl;
-        update(page.illusts);
+        update(page.items);
       } catch (_) {
         // Keep the healthy grid — soft refresh must never blank or stick.
         update(state);
@@ -52,7 +58,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
     await execute(() async {
       final page = await _loadVisiblePage();
       _nextUrl = page.nextUrl;
-      return page.illusts;
+      return page.items;
     });
   }
 
@@ -65,7 +71,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
     try {
       final page = await _loadVisiblePage(nextUrl: _nextUrl);
       _nextUrl = page.nextUrl;
-      update(mergePixivIllusts(state, page.illusts));
+      update(mergePixivPage(state, page.items, keyOf));
     } catch (e) {
       // Keep a healthy grid — only first-page failures become full errors.
       if (state.isEmpty) {
@@ -81,40 +87,52 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
     }
   }
 
-  /// Fetches until a page has visible illusts, or pagination ends.
-  Future<PixivIllustPage> _loadVisiblePage({String? nextUrl}) async {
+  /// Fetches until a page has visible items, or pagination ends.
+  Future<PixivPage<T>> _loadVisiblePage({String? nextUrl}) async {
     var cursor = nextUrl;
     for (var attempt = 0; attempt < pixivEmptyPageAdvanceLimit; attempt++) {
       final page = cursor == null || cursor.isEmpty ? await _loader() : await _loader(nextUrl: cursor);
-      final visible = _applyFilter(page.illusts);
+      final visible = _applyFilter(page.items);
       final exhausted = page.nextUrl == null || page.nextUrl!.isEmpty;
       if (visible.isNotEmpty || exhausted) {
-        return PixivIllustPage(illusts: visible, nextUrl: page.nextUrl);
+        return PixivPage(visible, nextUrl: page.nextUrl);
       }
       cursor = page.nextUrl;
     }
 
     final page = await _loader(nextUrl: cursor);
-    return PixivIllustPage(illusts: _applyFilter(page.illusts), nextUrl: page.nextUrl);
+    return PixivPage(_applyFilter(page.items), nextUrl: page.nextUrl);
   }
 
-  List<PixivIllust> _applyFilter(List<PixivIllust> illusts) {
-    return filter == null ? illusts : filter!(illusts);
+  List<T> _applyFilter(List<T> items) {
+    return filter == null ? items : filter!(items);
   }
 }
 
-/// Append [incoming] skipping ids already in [existing].
-List<PixivIllust> mergePixivIllusts(List<PixivIllust> existing, List<PixivIllust> incoming) {
+/// Paginated illust list — following, ranking, bookmarks, search, related.
+class PixivIllustListStore extends PixivPagedListStore<PixivIllust> {
+  PixivIllustListStore(PixivIllustPageLoader loader, {PixivIllustListFilter? filter})
+    : super(loader, keyOf: _illustId, filter: filter);
+}
+
+int _illustId(PixivIllust illust) => illust.id;
+
+/// Append [incoming] skipping keys already in [existing].
+List<T> mergePixivPage<T>(List<T> existing, List<T> incoming, Object Function(T item) keyOf) {
   if (incoming.isEmpty) {
     return existing;
   }
-  final seen = {for (final illust in existing) illust.id};
+  final seen = {for (final item in existing) keyOf(item)};
   return [
     ...existing,
-    for (final illust in incoming)
-      if (seen.add(illust.id)) illust,
+    for (final item in incoming)
+      if (seen.add(keyOf(item))) item,
   ];
 }
+
+/// Append [incoming] skipping ids already in [existing].
+List<PixivIllust> mergePixivIllusts(List<PixivIllust> existing, List<PixivIllust> incoming) =>
+    mergePixivPage(existing, incoming, _illustId);
 
 /// Following-timeline store kept for the plugin home tab and uninstall wipe.
 class PixivFeedStore extends PixivIllustListStore {

@@ -602,9 +602,12 @@ Future<void> main() async {
       optionPluginPixivAccessExpiresAt: '',
       optionPluginPixivShowR18: false,
       optionPluginPixivUserId: 0,
+      optionPluginPixivIsPremium: false,
       optionPluginPixivMutedAuthors: '[]',
       optionPluginPixivMutedTags: '[]',
       optionPluginPixivMutedIllusts: '[]',
+      optionPluginPixivMutedComments: '[]',
+      optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
       optionPluginBooruEnabled: false,
@@ -819,7 +822,6 @@ Future<void> main() async {
     );
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
-    final pixivSearchHistory = PixivSearchHistoryStore(prefService);
     final pixivBookmarks = PixivBookmarkStore();
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final booruClient = BooruClient(prefService);
@@ -900,7 +902,6 @@ Future<void> main() async {
           stocksWatchlist.load(),
         if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
           pixivMute.load(),
-          pixivSearchHistory.load(),
         ],
         if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
           booruTags.load(),
@@ -1045,7 +1046,6 @@ Future<void> main() async {
                 Provider(create: (_) => mastodonFederated),
                 Provider(create: (_) => pixivClient),
                 Provider(create: (_) => pixivMute),
-                Provider(create: (_) => pixivSearchHistory),
                 Provider(create: (_) => pixivBookmarks),
                 Provider(create: (_) => pixivFeed),
                 Provider(create: (_) => booruClient),

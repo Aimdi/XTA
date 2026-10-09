@@ -12,6 +12,7 @@ import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
@@ -46,15 +47,6 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
   void dispose() { _profile.destroy(); _works.destroy(); super.dispose(); }
 
   Future<void> _load() async { await Future.wait([_profile.load(), _works.refresh()]); }
-
-  Future<void> _toggleFollow() async {
-    final l10n = L10n.of(context);
-    try { await _profile.toggleFollow(); }
-    catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(pixivErrorMessage(l10n, error))));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +169,9 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   ],
                   const SizedBox(height: 14),
                   Text(
-                    '${compactCount(user.illustsCount)} ${l10n.tweets} · ${compactCount(user.followersCount)} ${l10n.followers}',
+                    '${compactCount(user.worksCount)} ${l10n.plugin_pixiv_works} · '
+                    '${compactCount(user.followingCount)} ${l10n.following} · '
+                    '${compactCount(user.mypixivCount)} ${l10n.plugin_pixiv_mypixiv}',
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 12),
@@ -188,19 +182,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: FilledButton.tonalIcon(
-                      onPressed: _profile.followBusy ? null : _toggleFollow,
-                      icon: Icon(
-                        user.isFollowed
-                            ? Icons.person_remove_outlined
-                            : Icons.person_add_alt_1_outlined,
-                      ),
-                      label: Text(
-                        user.isFollowed
-                            ? l10n.plugin_pixiv_unfollow
-                            : l10n.plugin_pixiv_follow,
-                      ),
-                    ),
+                    child: PixivFollowButton(user: user, onChanged: _profile.setFollowed),
                   ),
                 ],
               ),
@@ -214,7 +196,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
               crossAxisSpacing: 4,
               childCount: _works.state.length,
               itemBuilder: (context, index) =>
-                  PixivIllustTile(illust: _works.state[index]),
+                  PixivIllustTile(illust: _works.state[index], siblings: _works.state, index: index),
             ),
           ),
           if (_works.loadingMore)

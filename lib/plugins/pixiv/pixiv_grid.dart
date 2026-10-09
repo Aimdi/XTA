@@ -1,24 +1,25 @@
-import 'package:extended_image/extended_image.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
-import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_gallery_layout.dart';
-import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/ui/empty_pane.dart';
+import 'package:xta/ui/errors.dart';
 
-/// Stable Hero tag from a grid tile into the illust viewer.
-String pixivIllustHeroTag(int id) => 'pixiv-illust-$id';
+export 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 
 /// Pixez-style staggered gallery of illust thumbnails.
 class PixivIllustGrid extends StatelessWidget {
@@ -28,6 +29,9 @@ class PixivIllustGrid extends StatelessWidget {
   final bool loadingMore;
   final EdgeInsetsGeometry padding;
 
+  /// Slivers scrolled above the works, such as a carousel or a header row.
+  final List<Widget> leadingSlivers;
+
   const PixivIllustGrid({
     super.key,
     required this.illusts,
@@ -35,6 +39,7 @@ class PixivIllustGrid extends StatelessWidget {
     this.onRefresh,
     this.loadingMore = false,
     this.padding = const EdgeInsets.all(4),
+    this.leadingSlivers = const [],
   });
 
   @override
@@ -60,6 +65,7 @@ class PixivIllustGrid extends StatelessWidget {
       scrollCacheExtent: const ScrollCacheExtent.pixels(1200),
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
+        ...leadingSlivers,
         SliverPadding(
           padding: padding,
           sliver: SliverMasonryGrid.count(
@@ -67,7 +73,8 @@ class PixivIllustGrid extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
-            itemBuilder: (context, index) => PixivIllustTile(illust: visibleIllusts[index]),
+            itemBuilder: (context, index) =>
+                PixivIllustTile(illust: visibleIllusts[index], siblings: visibleIllusts, index: index),
           ),
         ),
         if (loadingMore)
@@ -87,155 +94,122 @@ class PixivIllustGrid extends StatelessWidget {
   }
 }
 
-/// One masonry cell — image first, title and bookmark count under it.
-class PixivIllustTile extends StatelessWidget {
-  final PixivIllust illust;
+/// A paged works list as a section shows it: skeleton first, the grid kept
+/// through soft refreshes and failed appends, a retry when empty or failed.
+class PixivIllustFeed extends StatelessWidget {
+  final PixivIllustListStore store;
+  final String emptyMessage;
+  final ScrollController? scrollController;
+  final List<Widget> leadingSlivers;
 
-  const PixivIllustTile({super.key, required this.illust});
+  const PixivIllustFeed({
+    super.key,
+    required this.store,
+    required this.emptyMessage,
+    this.scrollController,
+    this.leadingSlivers = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = L10n.of(context);
-    final ratio = illust.aspectRatio.clamp(0.45, 1.6);
+    return ScopedBuilder<PixivIllustListStore, List<PixivIllust>>(
+      store: store,
+      onLoading: (context) {
+        // Soft refresh keeps prior tiles; only the first load blanks the tab.
+        if (store.state.isNotEmpty) {
+          return _list(context, store.state);
+        }
+        return const PluginGridSkeleton(columns: 2);
+      },
+      onError: (context, error) {
+        if (store.state.isNotEmpty) {
+          return _list(context, store.state);
+        }
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: FullPageErrorWidget(
+            error: error,
+            stackTrace: null,
+            prefix: pixivErrorMessage(l10n, error ?? Exception()),
+            onRetry: store.refresh,
+          ),
+        );
+      },
+      onState: (context, illusts) => illusts.isEmpty ? _empty(l10n) : _list(context, illusts),
+    );
+  }
 
-    return Material(
-      color: theme.scaffoldBackgroundColor,
-      borderRadius: BorderRadius.circular(8),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onLongPress: () => showPixivPostActions(context, illust),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust))),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AspectRatio(
-              aspectRatio: ratio,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Hero(
-                    tag: pixivIllustHeroTag(illust.id),
-                    child: RepaintBoundary(
-                      child: PixivNetworkImage(
-                        url: illust.thumbnailUrl,
-                        fit: BoxFit.cover,
-                        loadStateChanged: (state) {
-                          if (state.extendedImageLoadState == LoadState.failed) {
-                            return ColoredBox(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
-                            );
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ),
-                  if (illust.pageCount > 1)
-                    Positioned(
-                      top: 6,
-                      right: 6,
-                      child: _chip(context, Icons.collections_outlined, '${illust.pageCount}'),
-                    ),
-                  if (illust.isUgoira)
-                    Positioned(
-                      top: 6,
-                      left: 6,
-                      child: _chip(context, Icons.play_circle_outline, l10n.plugin_pixiv_ugoira),
-                    ),
-                  if (illust.isR18 || illust.isAi)
-                    Positioned(
-                      bottom: 6,
-                      left: 6,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 4,
-                        children: [
-                          if (illust.isR18) _chip(context, Icons.eighteen_up_rating_outlined, l10n.plugin_pixiv_r18),
-                          if (illust.isAi) _chip(context, Icons.auto_awesome_outlined, l10n.plugin_pixiv_ai),
-                        ],
-                      ),
-                    ),
-                  Positioned(right: 0, bottom: 0, child: PixivBookmarkButton(illust: illust, compact: true)),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (illust.title.isNotEmpty)
-                    Text(
-                      illust.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, height: 1.2),
-                    ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          illust.userName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-                      ScopedBuilder<PixivBookmarkStore, Map<int, bool>>(
-                        store: context.read<PixivBookmarkStore>(),
-                        distinct: (_) => context.read<PixivBookmarkStore>().isBookmarked(illust),
-                        onState: (context, _) {
-                          final bookmarks = context.read<PixivBookmarkStore>();
-                          final bookmarked = bookmarks.isBookmarked(illust);
-                          return Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                bookmarked ? Icons.favorite : Icons.favorite_border,
-                                size: 12,
-                                color: bookmarked ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                compactCount(bookmarks.bookmarkCount(illust)),
-                                style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+  /// Refreshable even when empty: re-selecting the tab does not reload, so a
+  /// transient empty page used to strand the reader with no gesture that asks again.
+  Widget _empty(L10n l10n) => EmptyPane(
+    icon: Icons.photo_outlined,
+    message: emptyMessage,
+    onRefresh: store.refresh,
+    action: FilledButton.icon(onPressed: store.refresh, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+  );
+
+  Widget _list(BuildContext context, List<PixivIllust> illusts) {
+    return _ThumbPrefetch(
+      illusts: illusts,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (n) {
+          // Prefetch the next API page well before the footer — Pixez-style.
+          if (n.metrics.pixels > n.metrics.maxScrollExtent - 1400) {
+            store.loadMore();
+          }
+          return false;
+        },
+        child: PixivIllustGrid(
+          illusts: illusts,
+          scrollController: scrollController,
+          padding: pluginFeedPadding(context, extra: const EdgeInsets.all(4)),
+          onRefresh: store.refresh,
+          loadingMore: store.loadingMore,
+          leadingSlivers: leadingSlivers,
         ),
       ),
     );
   }
+}
 
-  Widget _chip(BuildContext context, IconData icon, String label) {
-    return DecoratedBox(
-      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.55), borderRadius: BorderRadius.circular(4)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 12, color: Colors.white),
-            const SizedBox(width: 3),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
-    );
+/// Prefetches thumbs only when the list grows — not on every mute/loading tick.
+class _ThumbPrefetch extends StatefulWidget {
+  final List<PixivIllust> illusts;
+  final Widget child;
+
+  const _ThumbPrefetch({required this.illusts, required this.child});
+
+  @override
+  State<_ThumbPrefetch> createState() => _ThumbPrefetchState();
+}
+
+class _ThumbPrefetchState extends State<_ThumbPrefetch> {
+  var _lastCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _maybePrefetch());
   }
+
+  @override
+  void didUpdateWidget(covariant _ThumbPrefetch oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.illusts.length != oldWidget.illusts.length) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _maybePrefetch());
+    }
+  }
+
+  void _maybePrefetch() {
+    if (!mounted || widget.illusts.length <= _lastCount) {
+      return;
+    }
+    final from = _lastCount;
+    _lastCount = widget.illusts.length;
+    unawaited(prefetchPixivThumbs(context, widget.illusts.skip(from)));
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

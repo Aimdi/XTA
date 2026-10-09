@@ -5,31 +5,13 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 class PixivUserStore extends Store<PixivUser?> {
   final PixivClient client;
   final int userId;
-  bool followBusy = false;
   PixivUserStore(this.client, this.userId) : super(null);
 
   Future<void> load() => execute(() => client.userDetail(userId));
 
-  Future<void> toggleFollow() async {
+  /// Keeps the profile in step after its follow button changed the follow.
+  void setFollowed(bool followed) {
     final user = state;
-    if (user == null || followBusy) return;
-    followBusy = true;
-    update(user, force: true);
-    try {
-      if (user.isFollowed) {
-        await client.unfollowUser(user.id);
-      } else {
-        await client.followUser(user.id);
-      }
-      update(
-        user.copyWith(
-          isFollowed: !user.isFollowed,
-          followersCount: (user.followersCount + (user.isFollowed ? -1 : 1)).clamp(0, 1 << 30),
-        ),
-      );
-    } finally {
-      followBusy = false;
-      update(state, force: true);
-    }
+    if (user != null) update(user.copyWith(isFollowed: followed));
   }
 }
