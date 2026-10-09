@@ -323,6 +323,7 @@ class _TweetVideoState extends State<TweetVideo> {
     );
 
     final key = _cacheKey;
+    final keyedToThisState = widget.tweetId == null;
     final pool = _pool;
     PooledVideo pooled;
     if (key == null || pool == null) {
@@ -352,6 +353,8 @@ class _TweetVideoState extends State<TweetVideo> {
       }
       if (!mounted || epoch != _acquireEpoch) {
         pool.release(key, acquisition: future);
+        // Nothing can ask for this State's own key once it is gone.
+        if (!mounted && keyedToThisState) pool.discardIfUnused(key, future);
         if (_ownsPool) pool.releaseUnused();
         return pooled;
       }
@@ -936,6 +939,16 @@ class _TweetVideoState extends State<TweetVideo> {
           pool?.release(key, acquisition: _poolAcquisition);
           if (_ownsPool) pool?.releaseUnused();
         });
+      }
+      // A player keyed to this State alone can never be re-attached once the
+      // State is gone. Left cached, it kept its decoder and buffers until the
+      // pool happened to need the room.
+      final acquisition = _poolAcquisition;
+      if (widget.tweetId == null && key != null && acquisition != null) {
+        final pool = _pool;
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => pool?.discardIfUnused(key, acquisition),
+        );
       }
     }
     super.dispose();

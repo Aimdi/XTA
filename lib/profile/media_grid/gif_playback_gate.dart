@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/tweet/video_controller_pool.dart';
 
 /// Caps how many profile-grid GIFs decode at once.
 ///
@@ -10,6 +13,19 @@ import 'package:flutter/foundation.dart';
 class GifPlaybackGate extends ChangeNotifier {
   final int maxConcurrent;
   GifPlaybackGate({this.maxConcurrent = 5});
+
+  /// Grants no more GIFs than the shared video pool can host: past that, the
+  /// extra cells only waited on a full pool, retrying it, while the player
+  /// went to whichever cell asked first rather than the most visible one.
+  factory GifPlaybackGate.sizedToPool(BuildContext context) {
+    try {
+      return GifPlaybackGate(
+        maxConcurrent: context.read<VideoControllerPool>().maxSize,
+      );
+    } on ProviderNotFoundException {
+      return GifPlaybackGate();
+    }
+  }
 
   final Map<Object, double> _fractions = {};
   Set<Object> _granted = <Object>{};

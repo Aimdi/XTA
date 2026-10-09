@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:xta/constants.dart';
@@ -131,6 +132,8 @@ class VideoControllerPool {
   final Map<String, Set<Object>> _visibleTokens = {};
   VideoControllerPool({this.maxSize = kVideoPoolSize});
   bool contains(String key) => _entries.containsKey(key);
+  @visibleForTesting
+  Iterable<String> get cachedKeys => _entries.keys;
   PooledVideo? peek(String key) => _entries[key]?.value;
 
   void markVisible(String key, Object token) {
