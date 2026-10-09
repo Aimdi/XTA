@@ -106,12 +106,65 @@ class EhGalleryPage {
   });
 }
 
+/// A tag namespace, in the order the site lists them on a gallery.
+enum EhNamespace {
+  language,
+  parody,
+  character,
+  group,
+  artist,
+  cosplayer,
+  male,
+  female,
+  mixed,
+  other,
+  reclass,
+  temp;
+
+  static EhNamespace? tryParse(String? raw) => EhNamespace.values
+      .where((ns) => ns.name == raw?.trim().toLowerCase())
+      .firstOrNull;
+}
+
+/// One gallery tag, `namespace:name` on the site.
+class EhTag {
+  /// Null for a tag the site lists without a namespace.
+  final EhNamespace? namespace;
+  final String name;
+
+  const EhTag(this.namespace, this.name);
+
+  factory EhTag.parse(String raw) {
+    final colon = raw.indexOf(':');
+    final namespace = colon > 0
+        ? EhNamespace.tryParse(raw.substring(0, colon))
+        : null;
+    final name = namespace == null ? raw : raw.substring(colon + 1);
+    return EhTag(namespace, name.trim());
+  }
+
+  String get raw => namespace == null ? name : '${namespace!.name}:$name';
+
+  /// The exact-match search the site runs for this tag: `female:"big breasts$"`.
+  String get query =>
+      namespace == null ? '"$name\$"' : '${namespace!.name}:"$name\$"';
+}
+
 class EhGalleryDetail extends EhGallery {
   final List<EhPreview> previews;
   final List<EhComment> comments;
   final int? fileSizeBytes;
   final int previewSheetIndex;
   final int previewSheetCount;
+
+  /// Tags the site shows dashed: few votes, not yet settled.
+  final Set<String> weakTags;
+  final String? language;
+
+  /// The gallery is a translation (the site's TR mark).
+  final bool translated;
+  final int? favoritedCount;
+  final int? ratingCount;
 
   const EhGalleryDetail({
     required super.gid,
@@ -130,6 +183,11 @@ class EhGalleryDetail extends EhGallery {
     this.fileSizeBytes,
     this.previewSheetIndex = 0,
     this.previewSheetCount = 1,
+    this.weakTags = const {},
+    this.language,
+    this.translated = false,
+    this.favoritedCount,
+    this.ratingCount,
   });
 }
 

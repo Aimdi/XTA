@@ -137,11 +137,8 @@ EhGalleryDetail? parseEhGalleryDetail(
         dotAll: true,
       ).firstMatch(html)?.group(1);
 
-  final tags = [
-    for (final m in RegExp(r'id="td_([^"]+)"').allMatches(html))
-      _decode(m.group(1)!.replaceAll('+', ' ')),
-  ];
-
+  final tags = parseEhDetailTags(html);
+  final facts = parseEhDetailFacts(html);
   final previews = parseEhPreviewSheet(html);
   final sheetMeta = parseEhPreviewSheetMeta(html);
 
@@ -156,13 +153,100 @@ EhGalleryDetail? parseEhGalleryDetail(
     postedAt: posted,
     pageCount: pageCount,
     rating: rating,
-    tags: tags,
+    tags: [for (final tag in tags) tag.raw],
+    weakTags: {
+      for (final tag in tags)
+        if (tag.weak) tag.raw,
+    },
     previews: previews,
     comments: parseEhComments(html),
     previewSheetIndex: sheetMeta.index,
     previewSheetCount: sheetMeta.count,
+    language: facts.language,
+    translated: facts.translated,
+    fileSizeBytes: facts.fileSizeBytes,
+    favoritedCount: facts.favoritedCount,
+    ratingCount: int.tryParse(
+      RegExp(r'id="rating_count"[^>]*>(\d+)<').firstMatch(html)?.group(1) ?? '',
+    ),
   );
 }
+
+final _tagCell = RegExp(
+  r'<div[^>]*\bid="td_([^"]+)"[^>]*>(.*?)</div>',
+  dotAll: true,
+);
+final _tagClass = RegExp(r'class="(gt[lw]?)"');
+final _tagText = RegExp(r'<a[^>]*>([^<]+)</a>');
+
+/// A gallery's tags as listed on its page. Element ids write spaces as
+/// underscores, so the name comes from the link text when there is one;
+/// dashed (`gtl`, `gtw`) tags are the ones not yet settled by votes.
+List<({String raw, bool weak})> parseEhDetailTags(String html) => [
+  for (final cell in _tagCell.allMatches(html)) _detailTag(cell),
+];
+
+({String raw, bool weak}) _detailTag(RegExpMatch cell) {
+  final id = _decode(cell.group(1)!.replaceAll('+', ' '));
+  final colon = id.indexOf(':');
+  final namespace = colon > 0 ? id.substring(0, colon + 1) : '';
+  final text = _tagText.firstMatch(cell.group(2) ?? '')?.group(1);
+  final name = text == null
+      ? id.substring(namespace.length).replaceAll('_', ' ')
+      : _decode(text);
+  final kind = _tagClass.firstMatch(cell.group(0)!)?.group(1);
+  return (raw: '$namespace$name', weak: kind == 'gtl' || kind == 'gtw');
+}
+
+final _factRow = RegExp(
+  r'class="gdt1">([^<]+)</td>\s*<td class="gdt2"[^>]*>(.*?)</td>',
+  dotAll: true,
+);
+
+/// The detail table: language (and whether it is a translation), file size
+/// and how often the gallery was favorited.
+({String? language, bool translated, int? fileSizeBytes, int? favoritedCount})
+parseEhDetailFacts(String html) {
+  final rows = {
+    for (final row in _factRow.allMatches(html))
+      _decode(row.group(1)!).replaceAll(':', '').toLowerCase(): row.group(2)!,
+  };
+  final language = rows['language'];
+  return (
+    language: language == null
+        ? null
+        : _nonEmpty(
+            _stripHtml(language).replaceAll(RegExp(r'\b(TR|RW)\b'), ''),
+          ),
+    translated: language != null && RegExp(r'>\s*TR\s*<').hasMatch(language),
+    fileSizeBytes: ehParseFileSize(_stripHtml(rows['file size'] ?? '')),
+    favoritedCount: ehParseFavorited(_stripHtml(rows['favorited'] ?? '')),
+  );
+}
+
+String? _nonEmpty(String value) => value.trim().isEmpty ? null : value.trim();
+
+const _sizeUnits = {
+  'B': 1,
+  'KiB': 1024,
+  'MiB': 1024 * 1024,
+  'GiB': 1024 * 1024 * 1024,
+};
+
+/// `96.57 MiB` → bytes.
+int? ehParseFileSize(String raw) {
+  final match = RegExp(r'([\d.]+)\s*(B|KiB|MiB|GiB)').firstMatch(raw);
+  final value = double.tryParse(match?.group(1) ?? '');
+  final unit = _sizeUnits[match?.group(2)];
+  return value == null || unit == null ? null : (value * unit).round();
+}
+
+/// `Never`, `Once` or `123 times`.
+int? ehParseFavorited(String raw) => switch (raw.trim().toLowerCase()) {
+  'never' => 0,
+  'once' => 1,
+  final text => int.tryParse(RegExp(r'\d+').firstMatch(text)?.group(0) ?? ''),
+};
 
 /// Preview tiles from one gallery HTML sheet (`?p=N`).
 List<EhPreview> parseEhPreviewSheet(String html) {
