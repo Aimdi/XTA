@@ -18,14 +18,18 @@ import 'package:xta/ui/errors.dart';
 
 class EhReaderScreen extends StatefulWidget {
   final EhGallery gallery;
-  final EhPreview initialPreview;
+
+  /// 1-based page to open at.
+  final int initialPage;
+
+  /// Page tokens already known from the gallery's preview sheets.
   final List<EhPreview> previews;
 
   const EhReaderScreen({
     super.key,
     required this.gallery,
-    required this.initialPreview,
-    required this.previews,
+    required this.initialPage,
+    this.previews = const [],
   });
 
   @override
@@ -44,8 +48,11 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
   @override
   void initState() {
     super.initState();
-    _current = widget.initialPreview;
     _previews = List.of(widget.previews);
+    final listed = _previews
+        .where((p) => p.page == widget.initialPage)
+        .firstOrNull;
+    _current = listed ?? EhPreview(pageToken: '', page: widget.initialPage);
     _keepAwake =
         PrefService.of(
           context,
@@ -53,7 +60,13 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         ).get<bool>(optionPluginEhKeepScreenOn) !=
         false;
     if (_keepAwake) unawaited(WakelockPlus.enable());
-    _load();
+    if (listed != null) {
+      _load();
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _jumpTo(widget.initialPage);
+      });
+    }
   }
 
   @override

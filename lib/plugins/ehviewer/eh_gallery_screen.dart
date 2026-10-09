@@ -102,7 +102,7 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
       MaterialPageRoute(
         builder: (_) => EhReaderScreen(
           gallery: gallery,
-          initialPreview: preview,
+          initialPage: preview.page,
           previews: List.of(_previews),
         ),
       ),
