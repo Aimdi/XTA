@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Razmyvać sumnieŭnyja i adviertyja minijaciury",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Adkryty dopis pakazvajecca biez razmyccia",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Ačyscić tehi",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Kamientaryi",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Skapijavana ŭ bufier abmienu",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Skapijavać spasyłku",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Skapijavać teh",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Skapijavać tehi",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Zmianić jak tekst",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Za hetu datu niama papularnych dopisaŭ",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Vykliučyć z biahučaha pošuku",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Vykliučyć",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Backoŭskija i daččynyja dopisy",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} karystalnik dadaŭ u abranaje} few{{count} karystalniki dadali ŭ abranaje} many{{count} karystalnikaŭ dadali ŭ abranaje} other{{count} karystalnika dadali ŭ abranaje}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Padpisacca na teh",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Adkryć na ŭvieś ekran",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Słupki sietki",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Pa šyryni ekrana",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Schavać dopisy z hetym teham",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,12 +1490,24 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Jašče ad {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Niekalki tehaŭ u adnym zapisie chavajuć tolki dopisy, dzie jość usie jany. Taksama pracujuć -tag i rating:e",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Kamientaryjaŭ pakul niama",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1466,10 +1516,36 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_order_score": "Najvyšejšaja acenka",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Aryhinały ŭ poŭnaekrannym režymie",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Poŭnaekranny režym zahružaje fajł u poŭnym pamiery zamiest pamienšanaj kopii sajta. Raschoduje bolš trafiku",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_pick_date": "Vybierycie datu",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Dzień",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Raniej",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Pazniej",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Miesiac",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Na hetym sajcie niama spisa papularnych, tamu pakazany dopisy z najvyšejšaj acenkaj",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Tydzień",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Apublikavana {date}",
+  "@plugin_booru_posted_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1510,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Šukać hety teh",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Vyhlad",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Pakazać usie",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1526,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Imia dla pakazu",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Mienšyja minijaciury",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Zahružaje ŭ sietku maleńkija prev’ju z sajta. Chutčej i z mienšym trafikam, ale mienš vyrazna",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Naciśnicie na teh, kab šukać, padpisacca, schavać ci pračytać jaho viki",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Mastak",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Piersanaž",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Kapirajt",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1540,6 +1634,10 @@
       }
     }
   },
+  "plugin_booru_tag_meta": "Mietadanyja",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_species": "Vid",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1548,6 +1646,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tehi",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1566,12 +1666,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Zviestki pad minijaciurami",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Sajt, pieršyja tehi i acenka pad kožnym dopisam u sietcy",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Adpisacca ad teha",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Bolš nie chavać hety teh",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Vydalić z zachavanych pošukaŭ",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Zahružana karystalnikam {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} za, {down} suprać",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Viki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "U hetaha teha niama staronki ŭ viki",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Pakazvajecca apošni atrymany spis",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Nie ŭdalosia atrymać spis plahinaŭ",
