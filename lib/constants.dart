@@ -26,6 +26,9 @@ const optionSeededStripPlugins = 'home.seeded_strip_plugins';
 /// Plugin ids used most recently on the home strip, newest first.
 const optionHomeRecentNetworks = 'home.recent_networks';
 
+/// Options-sheet entries the reader pinned to a plugin's top bar, in pin order.
+String pluginTopBarPinsKey(String pluginId) => 'home.top_bar_pins.$pluginId';
+
 /// Login accounts excluded from the merged For you timeline (JSON string list).
 /// Empty means every saved account participates. New accounts stay included
 /// until the reader turns them off.

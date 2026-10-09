@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Skjuler verk som skaperne har merket som KI-genererte. Dine egne bokmerker vises alltid.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "KI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fest til topplinjen",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Festede elementer vises ved siden av seksjonene når linjen har plass. Alt blir også værende i denne menyen.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Ingen",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Trykk lenge på ett for å bare ha det på.",
+  "@home_feed_only_hint": {}
 }

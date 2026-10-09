@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "उन कृतियों को छिपाता है जिन्हें उनके रचनाकारों ने AI से बना बताया है। आपके अपने बुकमार्क हमेशा दिखते रहते हैं।",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "ऊपरी बार में पिन करें",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "जब भी बार में जगह हो, पिन की गई चीज़ें सेक्शन के बगल में दिखती हैं। सब कुछ इस मेन्यू में भी रहता है।",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "कोई नहीं",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "किसी एक को देर तक दबाएँ, ताकि सिर्फ़ वही चालू रहे।",
+  "@home_feed_only_hint": {}
 }

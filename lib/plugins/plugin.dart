@@ -109,6 +109,7 @@ abstract class XtaPlugin {
 
     await removeFromStringListPref(prefs, optionHomeFeedStripPlugins, id);
     await removeFromStringListPref(prefs, optionSeededStripPlugins, id);
+    await prefs.remove(pluginTopBarPinsKey(id));
 
     final tab = homeTabPrefKey;
     if (tab != null) {

@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Verbergt werken die makers als met AI gegenereerd hebben gemarkeerd. Je eigen bladwijzers blijven altijd zichtbaar.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Vastzetten in bovenbalk",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Vastgezette items staan naast de secties zodra de balk ruimte heeft. Alles blijft ook in dit menu staan.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Geen",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Houd er een ingedrukt om alleen die aan te laten.",
+  "@home_feed_only_hint": {}
 }

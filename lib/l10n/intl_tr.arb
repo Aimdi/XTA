@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Yaratıcılarının yapay zekâ ile üretildi olarak işaretlediği eserleri gizler. Kendi yer imlerin her zaman görünür kalır.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "YZ",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Üst çubuğa sabitle",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Sabitlenen öğeler, çubukta yer olduğunda bölümlerin yanında görünür. Hepsi bu menüde de kalır.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Hiçbiri",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Yalnızca birini açık bırakmak için ona uzun basın.",
+  "@home_feed_only_hint": {}
 }

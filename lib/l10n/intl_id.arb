@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Menyembunyikan karya yang ditandai pembuatnya sebagai buatan AI. Penanda Anda sendiri selalu tetap terlihat.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Sematkan di bilah atas",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Item yang disematkan muncul di samping bagian setiap kali bilah punya ruang. Semuanya tetap ada di menu ini juga.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Tidak ada",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Tekan lama salah satu untuk hanya menyalakan yang itu.",
+  "@home_feed_only_hint": {}
 }

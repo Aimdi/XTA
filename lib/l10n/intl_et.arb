@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Peidab teosed, mille autorid on märkinud tehisintellekti loodud teosteks. Sinu järjehoidjad jäävad alati nähtavaks.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "TI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Kinnita ülaribale",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Kinnitatud kirjed on jaotiste kõrval alati, kui ribal on ruumi. Kõik jääb ka sellesse menüüsse alles.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Mitte ükski",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Vajuta pikalt, et jätta sisse ainult see.",
+  "@home_feed_only_hint": {}
 }

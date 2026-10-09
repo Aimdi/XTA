@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "يُخفي الأعمال التي وسمها أصحابها بأنها مولّدة بالذكاء الاصطناعي. تبقى إشاراتك ظاهرة دائمًا.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "ذكاء اصطناعي",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "التثبيت في الشريط العلوي",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "تظهر العناصر المثبتة بجوار الأقسام كلما اتسع الشريط لها، وتبقى كلها في هذه القائمة أيضًا.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "لا شيء",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "اضغط مطولًا على عنصر لإبقائه وحده مفعّلًا.",
+  "@home_feed_only_hint": {}
 }

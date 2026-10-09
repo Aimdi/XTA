@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "隐藏作者标注为 AI 生成的作品。你自己的收藏始终可见。",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "固定到顶栏",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "顶栏有空间时，已固定的项目会显示在分区旁边。所有项目也仍保留在此菜单中。",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "全不选",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "长按某一项即可只保留它开启。",
+  "@home_feed_only_hint": {}
 }

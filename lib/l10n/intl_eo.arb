@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Kaŝas verkojn, kiujn iliaj kreintoj markis kiel AI-generitajn. Viaj propraj legosignoj ĉiam restas videblaj.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fiksi al la supra breto",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Fiksitaj eroj aperas apud la sekcioj kiam la breto havas lokon. Ĉio restas ankaŭ en ĉi tiu menuo.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Neniu",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Longe premu eron por lasi nur ĝin ŝaltita.",
+  "@home_feed_only_hint": {}
 }

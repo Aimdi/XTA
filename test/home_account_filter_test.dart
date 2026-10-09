@@ -176,10 +176,7 @@ void _toggleTests() {
     await tester.pump();
 
     expect(find.text('At least one account has to stay on'), findsOneWidget);
-    expect(
-      tester.widget<SwitchListTile>(find.byType(SwitchListTile)).onChanged,
-      isNull,
-    );
+    expect(tester.widget<Checkbox>(find.byType(Checkbox)).onChanged, isNull);
   });
 
   testWidgets('a spare account can be excluded from Following and For you', (
@@ -198,8 +195,8 @@ void _toggleTests() {
     );
     await tester.pump();
 
-    expect(find.text('Include in Following and For you'), findsOneWidget);
-    await tester.tap(find.byType(SwitchListTile));
+    expect(tester.widget<Checkbox>(find.byType(Checkbox)).value, isTrue);
+    await tester.tap(find.text('spare'));
     await tester.pump();
     expect(enabled, isFalse);
   });

@@ -3763,5 +3763,13 @@
   "plugin_pixiv_hide_ai_description": "Ẩn các tác phẩm được tác giả đánh dấu là do AI tạo. Dấu trang của bạn luôn hiển thị.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Ghim lên thanh trên cùng",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Mục đã ghim hiện cạnh các phần khi thanh còn chỗ. Mọi thứ vẫn nằm trong menu này.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Không chọn",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Nhấn giữ một mục để chỉ bật mục đó.",
+  "@home_feed_only_hint": {}
 }

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/plugins/plugin_top_bar_pins.dart';
+import 'package:xta/utils/pref_lists.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_compact_header.dart';
@@ -194,6 +199,135 @@ void main() {
     await tester.tap(find.text('Mark all read'));
     await tester.pumpAndSettle();
     expect(calls.last, 'read');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await store.destroy();
+  });
+
+  testWidgets('entries pinned from the options sheet join the top bar and persist', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final store = PluginHomeDockStore();
+    final prefs = PrefServiceCache();
+    final pins = PluginTopBarPinsStore(prefs);
+    final calls = <String>[];
+    store.publish(
+      'rss',
+      'navigation',
+      Object(),
+      PluginDockContent(
+        tabs: [
+          for (final label in ['Explore', 'Home', 'Local', 'Federated'])
+            PluginHomeTab(icon: Icons.circle_outlined, label: label, selected: label == 'Home', onTap: () {}),
+        ],
+        actions: [
+          IconButton(tooltip: 'Search', icon: const Icon(Icons.search), onPressed: () => calls.add('search')),
+          PluginHomeMenu(
+            onSelected: calls.add,
+            itemBuilder: (_) => [
+              const PopupMenuItem(value: 'saved', child: Text('Saved')),
+              const PopupMenuItem(
+                value: 'refresh',
+                child: ListTile(leading: Icon(Icons.refresh), title: Text('Refresh')),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(
+      _app(
+        Provider<PluginTopBarPinsStore>.value(
+          value: pins,
+          child: PluginHomeDockScope(
+            store: store,
+            source: 'rss',
+            enabled: true,
+            compact: true,
+            openClientLabel: '',
+            onOpenClient: null,
+            child: PluginCompactHeader(plugin: RssPlugin(), store: store, onPickSource: () {}),
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(const ValueKey('top-bar-pin-menu:saved')), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const ValueKey('top-bar-pins')));
+    await tester.tap(find.byKey(const ValueKey('top-bar-pins')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('top-bar-pin-option-menu:saved')));
+    await tester.tap(find.byKey(const ValueKey('top-bar-pin-option-menu:refresh')));
+    await tester.pumpAndSettle();
+    expect(stringListPref(prefs, pluginTopBarPinsKey('rss')), ['menu:saved', 'menu:refresh']);
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('top-bar-pin-menu:saved')));
+    await tester.tap(find.byKey(const ValueKey('top-bar-pin-menu:refresh')));
+    expect(calls, ['saved', 'refresh']);
+    expect(find.byTooltip('Search'), findsOneWidget);
+    expect(tester.getSize(find.byKey(const ValueKey('top-bar-pin-menu:refresh'))), const Size(48, 48));
+    expect(PluginTopBarPinsStore(prefs).pinned('rss'), ['menu:saved', 'menu:refresh']);
+
+    await pins.toggle('rss', 'menu:saved');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('top-bar-pin-menu:saved')), findsNothing);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await store.destroy();
+  });
+
+  testWidgets('pins that do not fit stay in the sheet instead of crowding the bar', (tester) async {
+    tester.view.physicalSize = const Size(320, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final store = PluginHomeDockStore();
+    final prefs = PrefServiceCache();
+    final ids = [for (var i = 0; i < 8; i++) 'action-$i'];
+    await prefs.set(pluginTopBarPinsKey('rss'), ids);
+    store.publish(
+      'rss',
+      'navigation',
+      Object(),
+      PluginDockContent(
+        tabs: [PluginHomeTab(icon: Icons.home_outlined, label: 'Home', selected: true, onTap: () {})],
+        actions: [
+          for (final id in ids)
+            IconButton(key: ValueKey(id), tooltip: id, icon: const Icon(Icons.star_border), onPressed: () {}),
+        ],
+      ),
+    );
+    await tester.pumpWidget(
+      _app(
+        Provider<PluginTopBarPinsStore>.value(
+          value: PluginTopBarPinsStore(prefs),
+          child: PluginHomeDockScope(
+            store: store,
+            source: 'rss',
+            enabled: true,
+            compact: true,
+            openClientLabel: '',
+            onOpenClient: null,
+            child: PluginCompactHeader(plugin: RssPlugin(), store: store, onPickSource: () {}),
+          ),
+        ),
+      ),
+    );
+    final shown = ids.where((id) => find.byKey(ValueKey('top-bar-pin-$id')).evaluate().isNotEmpty).toList();
+    // The first action is already the bar's primary button, so it is never repeated as a pin.
+    expect(find.byKey(const ValueKey('top-bar-pin-action-0')), findsNothing);
+    expect(shown, isNotEmpty);
+    expect(shown, ids.skip(1).take(shown.length));
+    expect(shown.length, lessThan(ids.length));
+    expect(find.byKey(const ValueKey('home-plugin-options')).hitTestable(), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await store.destroy();

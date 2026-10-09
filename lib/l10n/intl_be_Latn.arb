@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Chavaje pracy, jakija aŭtary paznačyli jak stvoranyja ŠI. Ułasnyja zakladki zaŭsiody zastajucca bačnymi.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "ŠI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Zamacavać na vierchniaj paneli",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Zamacavanyja punkty źjaŭliajucca pobač z razdziełami, kali na paneli chapaje miesca. Usie jany zastajucca i ŭ hetym mieniu.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Ničoha",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Doŭha nacisnicie na punkt, kab pakinuć ŭklučanym tolki jaho.",
+  "@home_feed_only_hint": {}
 }

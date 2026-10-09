@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Приховує роботи, які автори позначили як створені ШІ. Ваші закладки завжди залишаються видимими.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "ШІ",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Закріпити на верхній панелі",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Закріплені пункти з'являються поруч із розділами, коли на панелі є місце. Усе залишається і в цьому меню.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Нічого",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Довге натискання залишить увімкненим лише цей пункт.",
+  "@home_feed_only_hint": {}
 }

@@ -3987,5 +3987,21 @@
   "plugin_pixiv_hide_ai_description": "Leaves out works their creators marked as AI-generated. Your own bookmarks always stay visible.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Pin to top bar",
+  "@plugin_top_bar_pins": {
+    "description": "Options-sheet entry and sheet title in a source's top bar: choose which entries also appear as buttons in that bar."
+  },
+  "plugin_top_bar_pins_hint": "Pinned entries sit next to the sections whenever the bar has room. Everything stays in this menu too.",
+  "@plugin_top_bar_pins_hint": {
+    "description": "Shown under 'Pin to top bar': pinned entries only appear when the bar has room, and they stay in the menu."
+  },
+  "home_feed_select_none": "None",
+  "@home_feed_select_none": {
+    "description": "Button in the Home feed account/group filter that turns every account or every group off at once (counterpart of 'All')."
+  },
+  "home_feed_only_hint": "Long-press one to keep only it on.",
+  "@home_feed_only_hint": {
+    "description": "Hint in the Home feed account/group filter: long-pressing a row turns that one on and all others off."
+  }
 }

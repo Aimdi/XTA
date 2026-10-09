@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Oculta las obras que sus autores marcaron como generadas con IA. Tus marcadores siempre siguen visibles.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fijar en la barra superior",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Los elementos fijados aparecen junto a las secciones siempre que haya espacio en la barra. Todo sigue también en este menú.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Ninguno",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Mantén pulsado uno para dejar solo ese activado.",
+  "@home_feed_only_hint": {}
 }

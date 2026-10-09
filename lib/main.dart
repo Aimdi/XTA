@@ -90,6 +90,7 @@ import 'package:xta/saved/saved_folders_screen.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/plugins/plugin_top_bar_pins.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/search/search_model.dart';
 import 'package:xta/search/search_scope.dart';
@@ -1000,6 +1001,7 @@ Future<void> main() async {
                   dispose: (_, store) => store.destroy(),
                 ),
                 Provider(create: (_) => NetworkRecentsStore(prefService)),
+                Provider(create: (_) => PluginTopBarPinsStore(prefService)),
                 Provider(create: (_) => HomeAccountFilterStore(prefService)),
                 Provider(create: (_) => HomeGroupFilterStore(prefService)),
                 Provider(create: (_) => ChromeAvatarStore(prefService)),

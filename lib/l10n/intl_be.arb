@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Хавае працы, якія аўтары пазначылі як створаныя ШІ. Уласныя закладкі заўсёды застаюцца бачнымі.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "ШІ",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Замацаваць на верхняй панэлі",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Замацаваныя пункты з'яўляюцца побач з раздзеламі, калі на панэлі хапае месца. Усе яны застаюцца і ў гэтым меню.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Нічога",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Доўга націсніце на пункт, каб пакінуць уключаным толькі яго.",
+  "@home_feed_only_hint": {}
 }

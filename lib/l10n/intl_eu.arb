@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Egileek AAk sortutzat markatutako lanak ezkutatzen ditu. Zure laster-markak beti ikusgai geratzen dira.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AA",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Ainguratu goiko barran",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Ainguratutako elementuak atalen ondoan agertzen dira barran lekua dagoenean. Dena menu honetan ere geratzen da.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Bat ere ez",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Sakatu luze bat hori bakarrik aktibo uzteko.",
+  "@home_feed_only_hint": {}
 }

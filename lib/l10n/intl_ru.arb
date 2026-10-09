@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Скрывает работы, которые авторы отметили как созданные ИИ. Ваши закладки всегда остаются видимыми.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "ИИ",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Закрепить на верхней панели",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Закреплённые пункты появляются рядом с разделами, когда на панели есть место. Всё остаётся и в этом меню.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Ничего",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Долгое нажатие оставит включённым только этот пункт.",
+  "@home_feed_only_hint": {}
 }

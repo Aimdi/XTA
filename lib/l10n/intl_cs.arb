@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Skryje díla, která autoři označili jako vytvořená AI. Vaše vlastní záložky zůstávají vždy viditelné.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Připnout na horní lištu",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Připnuté položky se zobrazí vedle sekcí, kdykoli je na liště místo. Vše zůstává i v této nabídce.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Nic",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Dlouhým stisknutím položky necháte zapnutou jen ji.",
+  "@home_feed_only_hint": {}
 }

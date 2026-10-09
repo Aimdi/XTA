@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Ascunde lucrările pe care autorii le-au marcat ca generate cu IA. Semnele tale de carte rămân mereu vizibile.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fixează în bara de sus",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Elementele fixate apar lângă secțiuni ori de câte ori bara are loc. Totul rămâne și în acest meniu.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Niciunul",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Apasă lung pe unul ca să rămână activ doar acela.",
+  "@home_feed_only_hint": {}
 }

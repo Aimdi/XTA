@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Amaga les obres que els autors han marcat com a generades amb IA. Els teus marcadors sempre es mostren.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fixa a la barra superior",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Els elements fixats apareixen al costat de les seccions sempre que hi hagi espai a la barra. Tot continua també en aquest menú.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Cap",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Mantén premut un element per deixar només aquest activat.",
+  "@home_feed_only_hint": {}
 }

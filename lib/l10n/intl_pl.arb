@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Ukrywa prace, które autorzy oznaczyli jako wygenerowane przez AI. Twoje zakładki zawsze pozostają widoczne.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Przypnij do górnego paska",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Przypięte pozycje pojawiają się obok sekcji, gdy na pasku jest miejsce. Wszystko zostaje też w tym menu.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Żadne",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Przytrzymaj pozycję, aby zostawić włączoną tylko ją.",
+  "@home_feed_only_hint": {}
 }

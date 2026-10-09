@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "작성자가 AI 생성으로 표시한 작품을 숨깁니다. 내 북마크는 항상 표시됩니다.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "상단 바에 고정",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "고정한 항목은 바에 공간이 있을 때 섹션 옆에 표시됩니다. 모든 항목은 이 메뉴에도 그대로 남습니다.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "없음",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "길게 누르면 그 항목만 켜 둡니다.",
+  "@home_feed_only_hint": {}
 }

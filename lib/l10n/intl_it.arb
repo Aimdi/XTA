@@ -3766,5 +3766,13 @@
   "plugin_pixiv_hide_ai_description": "Nasconde le opere che gli autori hanno segnalato come generate con l’IA. I tuoi segnalibri restano sempre visibili.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "IA",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fissa nella barra in alto",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Gli elementi fissati compaiono accanto alle sezioni quando la barra ha spazio. Tutto resta anche in questo menu.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Nessuno",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Tieni premuto un elemento per lasciare attivo solo quello.",
+  "@home_feed_only_hint": {}
 }
