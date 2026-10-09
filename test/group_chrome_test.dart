@@ -121,4 +121,41 @@ void main() {
       }
     },
   );
+
+  testWidgets('while Discover is open only its chip shows, and its close returns to the feed', (tester) async {
+    var closed = 0;
+    await tester.pumpWidget(
+      _app(
+        GroupFeedControlBar(
+          group: _group(custom: true),
+          mediaOnly: true,
+          discovery: true,
+          onOrderSelected: (_) {},
+          onMediaToggle: () {},
+          onCustomSettings: () {},
+          onDiscoveryClosed: () => closed++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Discover'), findsOneWidget);
+    for (final hidden in ['Recent', 'Popular', 'Custom', 'Media']) {
+      expect(find.text(hidden), findsNothing);
+    }
+    final chip = tester.widget<FilterChip>(find.byType(FilterChip));
+    expect(chip.selected, isTrue);
+    expect(tester.getSize(find.byType(FilterChip)).height, greaterThanOrEqualTo(kTweetTouchTarget));
+    await tester.tap(find.byTooltip('Close'));
+    expect(closed, 1);
+  });
+
+  test('picking Discover, or the order a group already has, saves nothing', () {
+    expect(groupOrderNeedsSave(_group(custom: true), 2), isFalse);
+    expect(groupOrderNeedsSave(_group(custom: true), 3), isFalse);
+    expect(groupOrderNeedsSave(_group(custom: true), 0), isTrue);
+    expect(groupOrderNeedsSave(_group(popular: true), 1), isFalse);
+    expect(groupOrderNeedsSave(_group(popular: true), 2), isTrue);
+    expect(groupOrderNeedsSave(_group(), 0), isFalse);
+  });
 }

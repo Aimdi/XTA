@@ -192,6 +192,14 @@ class BlueskyClient {
     return [for (final actor in json['actors'].list) BlueskyProfile.fromJson(actor.raw)];
   }
 
+  /// Accounts the AppView relates to [actor] — the "similar accounts" a profile
+  /// shows. Guest-readable; an AppView without a suggestions service answers
+  /// an empty list rather than an error.
+  Future<List<BlueskyProfile>> getSuggestedFollowsByActor(String actor) async {
+    final json = await _get(_uri('/xrpc/app.bsky.graph.getSuggestedFollowsByActor', {'actor': actor}));
+    return [for (final suggestion in json['suggestions'].list) BlueskyProfile.fromJson(suggestion.raw)];
+  }
+
   /// Posts matching [q] via the public AppView search index.
   Future<BlueskyFeedPage> searchPosts(
     String q, {

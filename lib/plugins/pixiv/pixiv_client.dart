@@ -478,6 +478,18 @@ class PixivClient {
     return (users: parsePixivUserList(json), nextUrl: root['next_url'].string);
   }
 
+  /// Creators Pixiv relates to [seedUserId], each with a few preview works —
+  /// the "similar users" strip under a profile.
+  ///
+  /// `seed_user_id` stays the last parameter: Pixiv warns clients to put it at the end.
+  Future<List<PixivUserPreview>> relatedUsers(int seedUserId) async {
+    final json = await _apiGet('/v1/user/related', {
+      'filter': 'for_android',
+      'seed_user_id': '$seedUserId',
+    });
+    return parsePixivUserPreviews(json);
+  }
+
   /// Daily / weekly / monthly ranking — Pixez's discovery surface.
   ///
   /// This is the popular board. Pixiv has no `/v1/ranking/illust`.

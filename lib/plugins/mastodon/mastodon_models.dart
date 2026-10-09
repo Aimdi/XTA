@@ -158,6 +158,8 @@ class MastodonQuotedPost {
   final List<String?> imageAlts;
   final List<String?> imageDownloadUrls;
   final List<bool> imageIsVideo;
+  final String? avatarUrl;
+  final DateTime? publishedAt;
 
   const MastodonQuotedPost({
     required this.id,
@@ -172,6 +174,8 @@ class MastodonQuotedPost {
     this.imageAlts = const [],
     this.imageDownloadUrls = const [],
     this.imageIsVideo = const [],
+    this.avatarUrl,
+    this.publishedAt,
   });
 
   MastodonPost get asPost => MastodonPost(
@@ -187,6 +191,8 @@ class MastodonQuotedPost {
     imageAlts: imageAlts,
     imageDownloadUrls: imageDownloadUrls,
     imageIsVideo: imageIsVideo,
+    avatarUrl: avatarUrl,
+    publishedAt: publishedAt,
   );
 }
 
@@ -759,6 +765,8 @@ MastodonQuotedPost? mastodonQuoteOf(Json status, {String? homeDomain}) {
     imageAlts: post.imageAlts,
     imageDownloadUrls: post.imageDownloadUrls,
     imageIsVideo: post.imageIsVideo,
+    avatarUrl: post.avatarUrl,
+    publishedAt: post.publishedAt,
   );
 }
 
@@ -885,6 +893,8 @@ MastodonQuotedPost? _misskeyQuote(Json note, {required String instance}) {
     sensitive: post.sensitive,
     url: post.url,
     images: post.images,
+    avatarUrl: post.avatarUrl,
+    publishedAt: post.publishedAt,
   );
 }
 

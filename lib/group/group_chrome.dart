@@ -38,6 +38,9 @@ class GroupFeedControlBar extends StatelessWidget
   final VoidCallback onCustomSettings;
   final bool discovery;
 
+  /// Closes Discover and returns to the feed, writing nothing to the group.
+  final VoidCallback? onDiscoveryClosed;
+
   const GroupFeedControlBar({
     super.key,
     required this.group,
@@ -46,16 +49,16 @@ class GroupFeedControlBar extends StatelessWidget
     required this.onMediaToggle,
     required this.onCustomSettings,
     this.discovery = false,
+    this.onDiscoveryClosed,
   });
 
   @override
   Size get preferredSize => const Size.fromHeight(kGroupControlBarHeight);
 
-  int get _order => discovery ? 3 : (group.custom ? 2 : (group.popular ? 1 : 0));
+  int get _order => groupFeedOrder(group);
 
   @override
   Widget build(BuildContext context) {
-    final filters = groupActiveFilterCount(group);
     final background =
         XLookTokens.maybeOf(context)?.background ??
         Theme.of(context).scaffoldBackgroundColor;
@@ -69,7 +72,28 @@ class GroupFeedControlBar extends StatelessWidget
           padding: const EdgeInsets.symmetric(
             horizontal: kTweetHorizontalPadding,
           ),
-          children: [
+          // Discover is its own view: while it is open the feed's order and
+          // filter chips are gone, so nothing there can be mistaken for its state.
+          children: discovery ? _discoveryChips(context) : _feedChips(context),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _discoveryChips(BuildContext context) => [
+    _GroupChoice(
+      label: L10n.of(context).discover,
+      icon: Icons.explore,
+      selected: true,
+      onSelected: () {},
+      onDeleted: onDiscoveryClosed,
+      deleteTooltip: L10n.of(context).close,
+    ),
+  ];
+
+  List<Widget> _feedChips(BuildContext context) {
+    final filters = groupActiveFilterCount(group);
+    return [
             _GroupChoice(
               label: L10n.of(context).recent,
               selected: _order == 0,
@@ -94,7 +118,7 @@ class GroupFeedControlBar extends StatelessWidget
             _GroupChoice(
               label: L10n.of(context).discover,
               icon: Icons.explore_outlined,
-              selected: discovery,
+              selected: false,
               onSelected: () => onOrderSelected(3),
             ),
             const SizedBox(width: kTweetSpace2),
@@ -116,12 +140,17 @@ class GroupFeedControlBar extends StatelessWidget
                 onSelected: onCustomSettings,
               ),
             ],
-          ],
-        ),
-      ),
-    );
+    ];
   }
 }
+
+/// The feed order a group is saved with: 0 recent, 1 popular, 2 custom.
+int groupFeedOrder(SubscriptionGroupGet group) =>
+    group.custom ? 2 : (group.popular ? 1 : 0);
+
+/// Whether picking [order] saves anything: Discover (3) is a view rather than
+/// an order, and the order the group already has needs no write.
+bool groupOrderNeedsSave(SubscriptionGroupGet group, int order) => order != 3 && order != groupFeedOrder(group);
 
 class _GroupChoice extends StatelessWidget {
   final String label;
@@ -129,6 +158,8 @@ class _GroupChoice extends StatelessWidget {
   final bool selected;
   final int badgeCount;
   final VoidCallback onSelected;
+  final VoidCallback? onDeleted;
+  final String? deleteTooltip;
 
   const _GroupChoice({
     required this.label,
@@ -136,6 +167,8 @@ class _GroupChoice extends StatelessWidget {
     required this.onSelected,
     this.icon,
     this.badgeCount = 0,
+    this.onDeleted,
+    this.deleteTooltip,
   });
 
   @override
@@ -144,6 +177,8 @@ class _GroupChoice extends StatelessWidget {
       selected: selected,
       showCheckmark: icon == null,
       avatar: icon == null ? null : Icon(icon, size: kTweetActionIconSize),
+      onDeleted: onDeleted,
+      deleteButtonTooltipMessage: deleteTooltip,
       label: Text(badgeCount > 0 ? '$label ($badgeCount)' : label),
       labelStyle: tweetMetadataStyle(context).copyWith(
         color: selected

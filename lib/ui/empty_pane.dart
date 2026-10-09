@@ -11,6 +11,10 @@ class EmptyPane extends StatelessWidget {
   final ScrollController? scrollController;
   final Future<void> Function()? onRefresh;
 
+  /// How far [leading] sits in from the sides; the icon and sentence keep
+  /// their own 32 dp whatever this is, so a full-width header passes zero.
+  final double leadingInset;
+
   const EmptyPane({
     super.key,
     required this.icon,
@@ -19,6 +23,7 @@ class EmptyPane extends StatelessWidget {
     this.leading,
     this.scrollController,
     this.onRefresh,
+    this.leadingInset = 32,
   });
 
   @override
@@ -32,22 +37,29 @@ class EmptyPane extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: pluginFeedPadding(
         context,
-      ).add(EdgeInsets.fromLTRB(32, leading != null ? 16 : 72, 32, 32)),
+      ).add(EdgeInsets.fromLTRB(leadingInset, leading != null ? 16 : 72, leadingInset, 32)),
       children: [
         ?leading,
-        Icon(icon, size: 52, color: theme.colorScheme.outline),
-        const SizedBox(height: 16),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium!.copyWith(
-            fontWeight: FontWeight.w700,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32 - leadingInset),
+          child: Column(
+            children: [
+              Icon(icon, size: 52, color: theme.colorScheme.outline),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium!.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (action != null) ...[
+                const SizedBox(height: 24),
+                Center(child: action!),
+              ],
+            ],
           ),
         ),
-        if (action != null) ...[
-          const SizedBox(height: 24),
-          Center(child: action!),
-        ],
       ],
     );
 

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed.dart';
 import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_cache.dart';
+import 'package:xta/group/feed_chunk_plan.dart';
 import 'package:xta/group/feed_session_cache.dart';
-import 'package:xta/group/feed_chunk_hash.dart';
-import 'package:xta/group/group_members.dart';
 import 'package:xta/group/group_chrome.dart';
 import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_discovery.dart';
 import 'package:xta/group/group_discovery_screen.dart';
 import 'package:xta/group/group_feed_title.dart';
+import 'package:xta/group/group_view_store.dart';
 import 'package:xta/utils/ai_client.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
@@ -24,10 +23,9 @@ import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/utils/iterables.dart';
-import 'package:quiver/iterables.dart';
 
 export 'package:xta/group/feed_chunk_hash.dart' show feedChunkSize;
+export 'package:xta/group/feed_chunk_plan.dart' show SubscriptionGroupFeedChunk;
 
 class GroupScreenArguments {
   final String id;
@@ -227,52 +225,19 @@ class _SubscriptionGroupScreenContentState
         if (widget.id == '-1' && _excludedProfiles == null) {
           return _loadingView();
         }
-        // A group leaves each filter unset (null) to follow the global default.
-        final prefs = PrefService.of(context, listen: false);
-        final includeReplies =
-            group.includeReplies ??
-            prefs.get<bool>(optionGlobalIncludeReplies) ??
-            true;
-        final includeRetweets =
-            group.includeRetweets ??
-            prefs.get<bool>(optionGlobalIncludeRetweets) ??
-            true;
-
-        // Split the users into chunks, oldest first, to prevent thrashing of all groups when a new user is added
-        final excluded = _excludedProfiles ?? const <String>{};
-        final filteredUsers = group.id == '-1'
-            ? group.subscriptions.where(
-                (elm) => subscriptionAllowedInFollowing(elm, excluded),
-              )
-            : group.subscriptions;
-        final members = filteredUsers
-            .sorted((a, b) => a.createdAt.compareTo(b.createdAt))
-            .toList();
-
-        // Members belonging to a plugin are not searched on X: each source has
-        // its own pagination, and leaving one in a search query puts a dangling
-        // `OR` in it — or worse, searches `from:flutter` and paints an empty
-        // tweet where a Reddit card should be.
-        final split = splitGroupMembers(members);
-        final pluginMembers = split.pluginMembers;
-        final users = split.xMembers;
-
-        var chunks = partition(users, feedChunkSize)
-            .map(
-              (e) => SubscriptionGroupFeedChunk(
-                e,
-                includeReplies,
-                includeRetweets,
-              ),
-            )
-            .toList();
+        // The same flags, order and chunks Discover and the unread dots use.
+        final plan = planGroupFeed(
+          group,
+          prefs: PrefService.of(context, listen: false),
+          excludedProfiles: _excludedProfiles ?? const <String>{},
+        );
 
         return SubscriptionGroupFeed(
           group: group,
-          chunks: chunks,
-          pluginMembers: pluginMembers,
-          includeReplies: includeReplies,
-          includeRetweets: includeRetweets,
+          chunks: plan.chunks,
+          pluginMembers: plan.split.pluginMembers,
+          includeReplies: plan.includeReplies,
+          includeRetweets: plan.includeRetweets,
           mediaOnly: widget.mediaOnly,
           cacheKey: widget.cacheKey,
           initialPreview: _preview?.chains,
@@ -281,24 +246,6 @@ class _SubscriptionGroupScreenContentState
       },
     );
   }
-}
-
-class SubscriptionGroupFeedChunk {
-  final List<Subscription> users;
-  final bool includeReplies;
-  final bool includeRetweets;
-
-  SubscriptionGroupFeedChunk(
-    this.users,
-    this.includeReplies,
-    this.includeRetweets,
-  );
-
-  String get hash => feedChunkHash(
-    users.map((e) => e.id).toList(),
-    includeReplies: includeReplies,
-    includeRetweets: includeRetweets,
-  );
 }
 
 class SubscriptionGroupScreen extends StatefulWidget {
@@ -314,6 +261,9 @@ class SubscriptionGroupScreen extends StatefulWidget {
   /// already uses its own feed-tab dropdown there.
   final ValueChanged<SubscriptionGroup>? onSwitchGroup;
 
+  /// The store behind the inline Discover view; tests hand in a canned one.
+  final GroupDiscoveryStore Function() createDiscoveryStore;
+
   const SubscriptionGroupScreen({
     super.key,
     required this.scrollController,
@@ -322,6 +272,7 @@ class SubscriptionGroupScreen extends StatefulWidget {
     this.actions,
     this.cacheKey,
     this.onSwitchGroup,
+    this.createDiscoveryStore = GroupDiscoveryStore.new,
   });
 
   @override
@@ -330,12 +281,15 @@ class SubscriptionGroupScreen extends StatefulWidget {
 }
 
 class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
-  bool _mediaOnly = false;
+  late final GroupMediaModeStore _media;
   final _discovery = GroupDiscoveryModeStore();
+  late final _discoveryStore = widget.createDiscoveryStore();
 
   @override
   void dispose() {
     _discovery.destroy();
+    _discoveryStore.destroy();
+    _media.destroy();
     super.dispose();
   }
 
@@ -345,29 +299,83 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
     // Restore the filter together with the cached feed it was applied to, so a
     // re-pushed route never shows filtered tweets under an unfiltered toggle.
     final cacheKey = widget.cacheKey;
-    if (cacheKey != null) {
-      _mediaOnly = context.read<FeedSessionCache>().readMediaOnly(cacheKey);
-    }
+    _media = GroupMediaModeStore(
+      cacheKey != null && context.read<FeedSessionCache>().readMediaOnly(cacheKey),
+    );
   }
 
   void _toggleMediaOnly() {
-    _discovery.select(false);
-    setState(() => _mediaOnly = !_mediaOnly);
+    _media.toggle();
     final cacheKey = widget.cacheKey;
     if (cacheKey != null) {
-      context.read<FeedSessionCache>().saveMediaOnly(cacheKey, _mediaOnly);
+      context.read<FeedSessionCache>().saveMediaOnly(cacheKey, _media.state);
     }
   }
 
+  /// Opening Discover, or picking the order the group already has, writes nothing.
   Future<void> _selectOrder(GroupModel model, int order) async {
-    _discovery.select(order == 3);
-    if (order == 3) return;
+    if (order == 3) return _openDiscovery();
+    _discovery.select(false);
+    if (!groupOrderNeedsSave(model.state, order)) return;
     if (order == 2) {
       await model.toggleSubscriptionGroupCustom(true);
     } else {
       await model.toggleSubscriptionGroupPopular(order == 1);
     }
   }
+
+  Future<void> _reloadDiscovery(BuildContext context) async {
+    final group = context.read<GroupModel>().state;
+    if (group.id.isNotEmpty) await loadGroupDiscovery(context, _discoveryStore, group);
+  }
+
+  /// The feed may have scrolled the shell's header away; Discover does not
+  /// drive that scroll, so it is brought back or the pane's top hides under it.
+  void _openDiscovery() {
+    _discovery.select(true);
+    if (widget.scrollController.hasClients) widget.scrollController.jumpTo(0);
+  }
+
+  /// The sparkle opens the inline Discover and asks the reader's AI to order it;
+  /// a load that is still running applies the ranking once it finishes.
+  void _rerankDiscovery(BuildContext context) {
+    _openDiscovery();
+    _discoveryStore.rerankWithAi(AiConfig.fromPrefs(PrefService.of(context, listen: false)));
+  }
+
+  Widget? _aiAction(BuildContext context) {
+    if (!AiConfig.fromPrefs(PrefService.of(context)).isConfigured) return null;
+    return IconButton(
+      tooltip: L10n.of(context).group_discovery_ai,
+      icon: const Icon(Icons.auto_awesome),
+      onPressed: () => _rerankDiscovery(context),
+    );
+  }
+
+  List<Widget> _discoveryActions(BuildContext context) => [
+    ?_aiAction(context),
+    IconButton(
+      tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+      icon: const Icon(Icons.refresh),
+      onPressed: () => _reloadDiscovery(context),
+    ),
+    ...widget.actions ?? const [],
+  ];
+
+  List<Widget> _feedActions(BuildContext context) => [
+    ?_aiAction(context),
+    ...defaultGroupActions(
+      context,
+      model: context.read<GroupModel>(),
+      // A Home destination already scrolls to the top when reselected.
+      // Keep the explicit action only on the pushed Group route.
+      scrollToTopController: widget.onSwitchGroup == null
+          ? null
+          : widget.scrollController,
+      showSettings: false,
+      extra: widget.actions ?? const [],
+    ),
+  ];
 
   void _openCustomSettings(BuildContext context, GroupModel model) {
     Navigator.push(
@@ -388,18 +396,36 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
             ? const SizedBox(height: kGroupControlBarHeight)
             : ScopedBuilder<GroupDiscoveryModeStore, int>(
                 store: _discovery,
-                onState: (_, _) => GroupFeedControlBar(
-                group: group,
-                discovery: _discovery.selected,
-                mediaOnly: _mediaOnly,
-                onOrderSelected: (order) => _selectOrder(model, order),
-                onMediaToggle: _toggleMediaOnly,
-                onCustomSettings: () => _openCustomSettings(context, model),
+                onState: (_, _) => ScopedBuilder<GroupMediaModeStore, bool>(
+                  store: _media,
+                  onState: (_, mediaOnly) => GroupFeedControlBar(
+                    group: group,
+                    discovery: _discovery.selected,
+                    mediaOnly: mediaOnly,
+                    onOrderSelected: (order) => _selectOrder(model, order),
+                    onMediaToggle: _toggleMediaOnly,
+                    onCustomSettings: () => _openCustomSettings(context, model),
+                    onDiscoveryClosed: () => _discovery.select(false),
+                  ),
                 ),
               ),
       ),
     );
   }
+
+  Widget _feed(BuildContext context) => ScopedBuilder<GroupMediaModeStore, bool>(
+    store: _media,
+    onState: (_, mediaOnly) => SubscriptionGroupScreenContent(
+      id: widget.id, cacheKey: widget.cacheKey, mediaOnly: mediaOnly,
+    ),
+  );
+
+  Widget _discoveryPane(BuildContext context) => ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+    store: context.read<GroupModel>(),
+    onState: (_, group) => group.id.isEmpty
+      ? const SizedBox.shrink()
+      : GroupDiscoveryPane(group: group, store: _discoveryStore),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -412,51 +438,39 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
         groupId: widget.id,
         onSwitch: widget.onSwitchGroup,
       ),
+      // Back closes Discover first; only the feed itself leaves the group.
       bodyBuilder: (context) => ScopedBuilder<GroupDiscoveryModeStore, int>(
         store: _discovery,
-        onState: (_, _) => IndexedStack(
-          index: _discovery.selected ? 1 : 0,
-          children: [
-            HeroMode(enabled: !_discovery.selected, child: TickerMode(
-              enabled: !_discovery.selected,
-              child: SubscriptionGroupScreenContent(
-                id: widget.id, cacheKey: widget.cacheKey, mediaOnly: _mediaOnly,
-              ),
-            )),
-            HeroMode(enabled: _discovery.selected, child: TickerMode(
-              enabled: _discovery.selected,
-              child: _discovery.opened
-                ? ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-                    store: context.read<GroupModel>(),
-                    onState: (_, group) => group.id.isEmpty
-                      ? const SizedBox.shrink()
-                      : GroupDiscoveryPane(group: group),
-                  )
-                : const SizedBox.shrink(),
-              ),
-            ),
-          ],
+        onState: (_, _) => PopScope(
+          canPop: !_discovery.selected,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) _discovery.select(false);
+          },
+          child: IndexedStack(
+            index: _discovery.selected ? 1 : 0,
+            children: [
+              HeroMode(enabled: !_discovery.selected, child: TickerMode(
+                enabled: !_discovery.selected,
+                child: _feed(context),
+              )),
+              HeroMode(enabled: _discovery.selected, child: TickerMode(
+                enabled: _discovery.selected,
+                child: _discovery.opened ? _discoveryPane(context) : const SizedBox.shrink(),
+              )),
+            ],
+          ),
         ),
       ),
       bottomBuilder: _controls,
+      // Feed-only actions (search loaded posts, filters, scroll to top) would
+      // act on the hidden feed while Discover is open, so they step aside with it.
       actionsBuilder: (context) => [
-        if (AiConfig.fromPrefs(PrefService.of(context)).isConfigured)
-          IconButton(
-            tooltip: L10n.of(context).group_discovery_ai,
-            icon: const Icon(Icons.auto_awesome),
-            onPressed: () => openGroupDiscovery(context,
-              id: widget.id, name: widget.name, useAi: true),
+        ScopedBuilder<GroupDiscoveryModeStore, int>(
+          store: _discovery,
+          onState: (context, _) => Row(
+            mainAxisSize: MainAxisSize.min,
+            children: _discovery.selected ? _discoveryActions(context) : _feedActions(context),
           ),
-        ...defaultGroupActions(
-          context,
-          model: context.read<GroupModel>(),
-          // A Home destination already scrolls to the top when reselected.
-          // Keep the explicit action only on the pushed Group route.
-          scrollToTopController: widget.onSwitchGroup == null
-              ? null
-              : widget.scrollController,
-          showSettings: false,
-          extra: widget.actions ?? const [],
         ),
       ],
     );

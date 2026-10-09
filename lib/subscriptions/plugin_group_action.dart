@@ -8,16 +8,20 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
 
 /// The picker commits the local subscription only after the reader saves.
+///
+/// [preselected] ticks groups beyond the ones the account is already in — the
+/// group a suggestion was found for, say.
 Future<void> editPluginAccountGroups(
   BuildContext context, {
   required Subscription subscription,
   required Future<void> Function() ensureFollowed,
+  List<String>? preselected,
 }) async {
   final groups = context.read<GroupsModel>();
   final subscriptions = context.read<SubscriptionsModel>();
   try {
     await groups.reloadGroups(notifyReload: false);
-    final selected = await groups.listGroupsForUser(subscription.id);
+    final selected = preselected ?? await groups.listGroupsForUser(subscription.id);
     if (!context.mounted) return;
     final chosen = await showGroupMembershipSheet(context, groups: groups.state, selected: selected);
     if (chosen == null) return;
