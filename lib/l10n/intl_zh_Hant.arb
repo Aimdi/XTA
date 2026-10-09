@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "從主動態消息中隱藏",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "捲動時隱藏底部列",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "隱藏回覆",
   "@hide_replies": {},
   "hide_replies_description": "不在你的資訊流中顯示該使用者對他人的回覆。他自己的討論串仍會保留。",

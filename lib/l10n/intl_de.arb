@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Aus dem Hauptfeed ausblenden",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Leiste unten beim Scrollen ausblenden",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Antworten ausblenden",
   "@hide_replies": {},
   "hide_replies_description": "Antworten dieses Nutzers an andere nicht in deinen Feeds anzeigen. Eigene Threads bleiben.",

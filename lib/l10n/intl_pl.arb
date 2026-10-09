@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Ukryj z głównego kanału",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Ukrywaj dolny pasek podczas przewijania",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Ukryj odpowiedzi",
   "@hide_replies": {},
   "hide_replies_description": "Nie pokazuj w kanałach odpowiedzi tego użytkownika do innych osób. Jego własne wątki zostają.",

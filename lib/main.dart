@@ -670,6 +670,7 @@ Future<void> main() async {
       optionThemeTrueBlack: true,
       optionThemeTrueBlackTweetCards: true,
       optionShowNavigationLabels: false,
+      optionHideNavigationOnScroll: true,
       optionTweetsHideSensitive: true,
       optionAlwaysShowSensitiveMedia: false,
       optionSavedShowAllTab: true,

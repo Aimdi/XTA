@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Skryć z hałoŭnaj stryczki",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Chavać nižniuju paneĺ pry prahortcy",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Schavać adkazy",
   "@hide_replies": {},
   "hide_replies_description": "Nie pakazvać u vašych lentach adkazy hetaha karystalnika inšym ludziam. Ułasnyja łancužki zastajucca.",

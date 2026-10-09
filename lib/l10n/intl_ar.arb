@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "إخفاء من الخلاصة الرئيسية",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "إخفاء الشريط السفلي أثناء التمرير",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "إخفاء الردود",
   "@hide_replies": {},
   "hide_replies_description": "عدم إظهار ردود هذا المستخدم على الآخرين في تغذياتك. سلاسله الخاصة تبقى.",

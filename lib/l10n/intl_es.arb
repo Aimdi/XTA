@@ -729,6 +729,8 @@
   "@hide": {},
   "hide_from_main_feed": "Ocultar del feed principal",
   "@hide_from_main_feed": {},
+  "hide_navigation_on_scroll": "Ocultar la barra inferior al desplazarse",
+  "@hide_navigation_on_scroll": {},
   "hide_replies": "Ocultar respuestas",
   "@hide_replies": {},
   "hide_replies_description": "No mostrar en tus feeds las respuestas de este usuario a otras personas. Sus propios hilos se mantienen.",
