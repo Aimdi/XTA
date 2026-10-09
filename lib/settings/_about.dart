@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/intro/intro_gate.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:pref/pref.dart';
 
@@ -121,6 +122,12 @@ class SettingsAboutFragment extends StatelessWidget {
                 ),
               ),
             )),
+      ),
+      PrefLabel(
+        leading: const Icon(Icons.replay),
+        title: Text(L10n.of(context).intro_show_again),
+        subtitle: Text(L10n.of(context).intro_show_again_description),
+        onTap: () => showIntroAgain(context),
       ),
     ]);
   }

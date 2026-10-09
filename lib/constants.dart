@@ -431,6 +431,9 @@ const optionUpdateCheckReset = 'should_check_for_updates.reset';
 // upstream teskann/XTA, whose versions this fork never matches.
 const githubRepo = 'Aimdi/XTA';
 const optionConfirmClose = 'confirm_close';
+
+/// Whether the first-launch cards have been seen; false only on a fresh install.
+const optionIntroSeen = 'intro.seen';
 const optionOpenLinksInEmbeddedBrowser = 'open_links_in_embedded_browser';
 
 /// Package name of the browser external links are handed to. Empty means

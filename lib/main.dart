@@ -1,4 +1,8 @@
+import 'package:xta/intro/intro_gate.dart';
+import 'package:xta/intro/intro_screen.dart';
+import 'package:xta/intro/intro_store.dart';
 import 'package:xta/tweet/video_memory_observer.dart';
+import 'package:xta/ui/confirm_close.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
 import 'package:xta/ui/snack_bar_policy.dart';
@@ -454,6 +458,7 @@ Future<void> main() async {
   final firstLaunch = prefService.getKeys().isEmpty;
   await prefService.setDefaultValues(
     {
+      ...introLaunchDefaults(firstLaunch: firstLaunch),
       optionConfirmClose: true,
       optionDisableAnimations: false,
       optionGestureDoubleTapLike: false,
@@ -986,6 +991,10 @@ Future<void> main() async {
                 Provider(create: (_) => DiscoverQueryStore()),
                 Provider(create: (_) => FeedStripStore(prefService)),
                 Provider(
+                  create: (_) => IntroStore(prefService),
+                  dispose: (_, store) => store.destroy(),
+                ),
+                Provider(
                   create: (_) => AltMicrobloggingStore(prefService),
                   dispose: (_, store) => store.destroy(),
                 ),
@@ -1299,6 +1308,8 @@ class _FritterAppState extends State<FritterApp> {
                   pageTransitions,
                 ),
                 themeMode: xLookThemeModeFor(_xLookBackground),
+                // A look picked on the intro's card must land at once under "Remove animations".
+                themeAnimationDuration: _disableAnimations ? Duration.zero : kThemeAnimationDuration,
                 initialRoute: '/',
                 routes: {
                   routeHome: (context) => const DefaultPage(),
@@ -1318,7 +1329,11 @@ class _FritterAppState extends State<FritterApp> {
                   routeDeck: (context) => const DeckScreen(),
                 },
                 builder: (context, child) {
-                  if (_checkUpdates && !_updateDialogShown) {
+                  // Neither dialog belongs over the first-launch cards.
+                  final introSeen = PrefService.of(context, listen: false)
+                          .get<bool>(optionIntroSeen) ==
+                      true;
+                  if (_checkUpdates && !_updateDialogShown && introSeen) {
                     _updateDialogShown = true;
                     // Use navigatorKey's context for showDialog
                     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1329,14 +1344,18 @@ class _FritterAppState extends State<FritterApp> {
                     });
                   }
 
+                  // On a fresh install the intro's account card takes this
+                  // dialog's place, and a later rebuild must not bring it back.
                   if (!_accountDialogShown) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _accountDialogShown = true;
-                      final navigatorContext = _navigatorKey.currentContext;
-                      if (navigatorContext != null) {
-                        checkForAccounts(navigatorContext);
-                      }
-                    });
+                    _accountDialogShown = true;
+                    if (introSeen) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        final navigatorContext = _navigatorKey.currentContext;
+                        if (navigatorContext != null) {
+                          checkForAccounts(navigatorContext);
+                        }
+                      });
+                    }
                   }
 
                   // Replace the default red screen of death with a slightly friendlier one
@@ -1538,39 +1557,19 @@ class _DefaultPageState extends State<DefaultPage> {
       );
     }
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        var prefService = PrefService.of(context);
-        if (!prefService.get(optionConfirmClose)) {
-          SystemNavigator.pop();
-          return;
-        }
-
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (c) => AlertDialog(
-            title: Text(L10n.current.are_you_sure),
-            content: Text(L10n.current.confirm_close_fritter),
-            actions: [
-              TextButton(
-                child: Text(L10n.current.no),
-                onPressed: () => Navigator.pop(c, false),
-              ),
-              TextButton(
-                child: Text(L10n.current.yes),
-                onPressed: () => Navigator.pop(c, true),
-              ),
-            ],
-          ),
-        );
-
-        if (confirmed == true && context.mounted) {
-          SystemNavigator.pop();
-        }
-      },
-      child: const HomeScreen(),
+    // The cards replace Home until they have been seen; the intro handles its
+    // own Back, so only Home asks before closing here.
+    return IntroGate(
+      store: context.read<IntroStore>(),
+      home: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          await confirmCloseApp(context);
+        },
+        child: const HomeScreen(),
+      ),
+      intro: const IntroScreen(),
     );
   }
 
