@@ -59,11 +59,12 @@ comments:
 
 - a 36 px avatar inside a 48 dp target that opens the author's profile;
 - *Name · To someone · when*, the name set apart;
-- the text with emoji, inside a `SelectionArea`, so Copy and Android's
-  process-text actions (installed translators) appear when text is selected —
-  no server translation is called;
+- the text with emoji, inside a `SelectionArea`, so Copy, Share and
+  Android's process-text actions (installed translators) appear when text is
+  selected; no server translation is called;
 - the sticker;
-- *View replies* when `has_replies` is set;
+- *View replies* when `has_replies` is set, a text button so a long
+  translation wraps at large text;
 - a 48 dp menu offering *Mute this comment* and *Mute {author}*.
 
 Pull to refresh reloads; the list asks for the next page near its end, and a
@@ -93,8 +94,10 @@ Muted comments are listed, and can be unmuted, on the mute settings page.
 Comments that link anywhere other than Pixiv's own sites (pixiv.net,
 pixiv.me, pximg.net, pixivision.net, fanbox.cc, booth.pm) are collapsed
 behind *Hidden: links outside Pixiv* with a *Show* button
-(`pixivTextLinksOutside`). That replaces matching a list of known spam
-domains, which would need upkeep. What was shown stays shown for the visit.
+(`pixivTextLinksOutside`). A link counts when it has a scheme, or is a bare
+`www.` followed by a dotted host, so the Japanese laugh "www" is not taken
+for one. That replaces matching a list of known spam domains, which would
+need upkeep. What was shown stays shown while the screen is open.
 
 Report is not offered: XTA does not write reports to Pixiv.
 
