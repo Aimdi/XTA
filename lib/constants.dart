@@ -415,6 +415,9 @@ const optionPluginPixivDownloadIndex = 'plugin.pixiv.download_index';
 /// The ranking boards pinned as chips, a JSON list of Pixiv mode names.
 const optionPluginPixivRankingModes = 'plugin.pixiv.ranking_modes';
 
+/// The novel ranking boards pinned as chips, in the same shape.
+const optionPluginPixivNovelRankingModes = 'plugin.pixiv.novel_ranking_modes';
+
 /// The search filters the reader chose to remember, as JSON; empty for none.
 const optionPluginPixivSearchFilters = 'plugin.pixiv.search_filters';
 

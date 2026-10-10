@@ -27,20 +27,19 @@ Future<void> openPixivSeries(BuildContext context, int seriesId, {VoidCallback? 
 /// A series' header and whether its watchlist change is still on its way.
 typedef PixivSeriesView = ({PixivIllustSeries? series, bool busy});
 
-/// A series' header, learnt from whichever page of its works arrives, and its
-/// place on the reader's watchlist.
-class PixivSeriesStore extends Store<PixivSeriesView> {
-  final PixivDiscoveryApi api;
-  final int seriesId;
+/// A series' header, learnt from whichever page of it arrives, and its place
+/// on the reader's watchlist. Illustration and novel series say how [S] is
+/// read and written.
+abstract class PixivWatchedSeriesStore<S> extends Store<({S? series, bool busy})> {
+  PixivWatchedSeriesStore() : super((series: null, busy: false));
 
-  PixivSeriesStore(this.api, this.seriesId) : super((series: null, busy: false));
+  bool isWatched(S series);
+  S withWatched(S series, bool watched);
+  Future<void> writeWatched(S series, bool watched);
 
-  /// One page of the series' works; the header it carries replaces the shown one.
-  Future<PixivPage<PixivIllust>> loadPage({String? nextUrl}) async {
-    final page = await api.illustSeries(seriesId, nextUrl: nextUrl);
-    final series = page.series;
+  /// Shows the header a page carried, unless a watchlist change is on its way.
+  void show(S? series) {
     if (series != null && !state.busy) update((series: series, busy: false));
-    return page.works;
   }
 
   /// Adds the series to the watchlist or takes it off; a failure leaves it as
@@ -48,16 +47,58 @@ class PixivSeriesStore extends Store<PixivSeriesView> {
   Future<void> toggleWatchlist() async {
     final series = state.series;
     if (series == null || state.busy) return;
-    final adding = !series.watchlistAdded;
+    final adding = !isWatched(series);
     update((series: series, busy: true));
     try {
-      await (adding ? api.addToWatchlist(series.id) : api.removeFromWatchlist(series.id));
-      update((series: series.copyWith(watchlistAdded: adding), busy: false));
+      await writeWatched(series, adding);
+      update((series: withWatched(series, adding), busy: false));
     } catch (_) {
       update((series: series, busy: false));
       rethrow;
     }
   }
+}
+
+/// The watchlist toggle of a series page: [onChanged] after it lands, the
+/// reason in a snack bar when it fails.
+Future<void> togglePixivSeriesWatchlist(
+  BuildContext context,
+  PixivWatchedSeriesStore<Object> store, {
+  VoidCallback? onChanged,
+}) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final l10n = L10n.of(context);
+  try {
+    await store.toggleWatchlist();
+    onChanged?.call();
+  } catch (error) {
+    messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
+  }
+}
+
+/// An illustration or manga series' header and watchlist place.
+class PixivSeriesStore extends PixivWatchedSeriesStore<PixivIllustSeries> {
+  final PixivDiscoveryApi api;
+  final int seriesId;
+
+  PixivSeriesStore(this.api, this.seriesId);
+
+  /// One page of the series' works; the header it carries replaces the shown one.
+  Future<PixivPage<PixivIllust>> loadPage({String? nextUrl}) async {
+    final page = await api.illustSeries(seriesId, nextUrl: nextUrl);
+    show(page.series);
+    return page.works;
+  }
+
+  @override
+  bool isWatched(PixivIllustSeries series) => series.watchlistAdded;
+
+  @override
+  PixivIllustSeries withWatched(PixivIllustSeries series, bool watched) => series.copyWith(watchlistAdded: watched);
+
+  @override
+  Future<void> writeWatched(PixivIllustSeries series, bool watched) =>
+      watched ? api.addToWatchlist(series.id) : api.removeFromWatchlist(series.id);
 }
 
 /// One series: cover, title, author, caption, size, a watchlist toggle and its works.
@@ -90,16 +131,7 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
     super.dispose();
   }
 
-  Future<void> _toggleWatchlist() async {
-    final messenger = ScaffoldMessenger.of(context);
-    final l10n = L10n.of(context);
-    try {
-      await _series.toggleWatchlist();
-      widget.onWatchlistChanged?.call();
-    } catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
-    }
-  }
+  Future<void> _toggleWatchlist() => togglePixivSeriesWatchlist(context, _series, onChanged: widget.onWatchlistChanged);
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +222,7 @@ class PixivSeriesHeader extends StatelessWidget {
         style: muted,
       ),
       if (series.caption.isNotEmpty) SelectableText(series.caption, style: theme.textTheme.bodyMedium),
-      _watchlistButton(l10n),
+      PixivWatchlistButton(added: series.watchlistAdded, busy: busy, onPressed: onToggleWatchlist),
     ];
   }
 
@@ -202,16 +234,26 @@ class PixivSeriesHeader extends StatelessWidget {
     style: Theme.of(context).textTheme.titleSmall,
     borderRadius: BorderRadius.circular(8),
   );
+}
 
-  Widget _watchlistButton(L10n l10n) {
-    final added = series.watchlistAdded;
+/// Add to watchlist or Remove from watchlist, with a spinner while the change is on its way.
+class PixivWatchlistButton extends StatelessWidget {
+  final bool added;
+  final bool busy;
+  final VoidCallback onPressed;
+
+  const PixivWatchlistButton({super.key, required this.added, required this.busy, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
     final icon = busy
         ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
         : Icon(added ? Icons.bookmark_remove_outlined : Icons.bookmark_add_outlined);
     return FilledButton.tonalIcon(
       key: const ValueKey('pixiv-series-watchlist'),
       style: FilledButton.styleFrom(minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension)),
-      onPressed: busy ? null : onToggleWatchlist,
+      onPressed: busy ? null : onPressed,
       icon: icon,
       label: Text(added ? l10n.plugin_pixiv_watchlist_remove : l10n.plugin_pixiv_watchlist_add),
     );

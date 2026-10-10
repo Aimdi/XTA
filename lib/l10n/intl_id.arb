@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Belum ada manga rekomendasi — tarik untuk menyegarkan",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Beralih ke ilustrasi",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Beralih ke novel",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Tentang",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Akun",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Bisukan karya ini",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Bisukan novel ini",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Novel",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Pengaturan bisu",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Masuk ke Pixiv untuk melihat mengikuti, peringkat, dan penanda",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Tandai secara pribadi",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Novel yang kamu tandai secara publik muncul di sini",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Novel yang kamu tandai secara pribadi muncul di sini",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Bab {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, other{{shown} bab}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, other{{shown} karakter}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Novel baru dari kreator yang kamu ikuti muncul di sini",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Tidak ada novel di peringkat sekarang",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Tidak ada novel rekomendasi saat ini — tarik untuk menyegarkan",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Seri novel",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Tamat",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Tidak ada bab di seri ini yang bisa kamu lihat",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Berlanjut",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Mulai dari #1",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Seri novel yang kamu tambahkan ke daftar pantau muncul di sini",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Tidak dapat membuka tautan Pixiv itu",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Buka tautan pixiv di XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Nama panggilan",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Belum ada penanda novel publik",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Novel",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Akun Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Kembali ke hari ini",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Harian",

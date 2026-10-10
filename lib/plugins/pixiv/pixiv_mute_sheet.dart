@@ -18,14 +18,17 @@ Future<bool> confirmPixivMute(BuildContext context, PixivMuteChoice choice) asyn
 
 /// What a work offers to mute: its author, the work itself and each tag.
 List<PixivMuteChoice> pixivMuteChoices(L10n l10n, PixivIllust illust) => [
-  (
-    icon: Icons.person_off_outlined,
-    label: l10n.plugin_pixiv_mute_author,
-    mute: (store) => store.muteAuthor(illust.userId, name: illust.userName),
-  ),
+  pixivAuthorMuteChoice(l10n, illust.userId, illust.userName),
   (icon: Icons.hide_image_outlined, label: l10n.plugin_pixiv_mute_illust, mute: (store) => store.muteIllust(illust.id)),
   for (final tag in illust.tags) pixivTagMuteChoice(l10n, tag),
 ];
+
+/// Muting a creator of works or novels, keeping their name for the mute list.
+PixivMuteChoice pixivAuthorMuteChoice(L10n l10n, int userId, String name) => (
+  icon: Icons.person_off_outlined,
+  label: l10n.plugin_pixiv_mute_author,
+  mute: (store) => store.muteAuthor(userId, name: name),
+);
 
 PixivMuteChoice pixivTagMuteChoice(L10n l10n, PixivTag tag) => (
   icon: Icons.label_off_outlined,

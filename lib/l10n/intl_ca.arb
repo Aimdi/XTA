@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Ara mateix no hi ha manga recomanat — estira per actualitzar",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Canvia a il·lustracions",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Canvia a novel·les",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Quant a",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Compte",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Silencia aquesta obra",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Silencia aquesta novel·la",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Novel·les",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Configuració del silenci",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Inicieu la sessió a Pixiv per veure el seguiment, el rànquing i els marcadors",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Desa com a marcador privat",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Aquí apareixen les novel·les que desis com a marcadors públics",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Aquí apareixen les novel·les que desis com a marcadors privats",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Núm. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} capítol} other{{shown} capítols}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} caràcter} other{{shown} caràcters}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Aquí apareixen les novel·les noves dels creadors que segueixes",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Ara mateix no hi ha novel·les al rànquing",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Ara mateix no hi ha novel·les recomanades — estira per actualitzar",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Sèrie de novel·les",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Completada",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "No hi ha cap capítol visible en aquesta sèrie",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "En curs",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Comença pel primer",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Aquí apareixen les sèries de novel·les que afegeixis a la llista de seguiment",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "No s'ha pogut obrir aquest enllaç de Pixiv",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Obre els enllaços de pixiv a XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Sobrenom",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Encara no hi ha novel·les als marcadors públics",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Novel·les",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Compte de Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Torna a avui",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Diari",

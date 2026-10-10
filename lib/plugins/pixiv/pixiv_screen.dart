@@ -10,9 +10,13 @@ import 'package:xta/plugins/pixiv/pixiv_bookmark_tag_picker.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorites_section.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_home_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_home.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_session.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_section.dart';
@@ -30,10 +34,11 @@ import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
-/// Flare-style Pixiv home: Home / Rankings / Favorites / Search / More.
+/// Flare-style Pixiv home: Home / Rankings / Favorites / Search / More, over
+/// illustrations or, in Novel mode, novels.
 ///
-/// This shell owns the session stores and the section switch; each section
-/// lives in its own file.
+/// This shell owns the session stores, the section switch and the mode; each
+/// section lives in its own file.
 class PixivScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -74,6 +79,7 @@ class _PixivScreenState extends State<PixivScreen> {
   late final PixivRankingPinsStore _rankingPins;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
+  late final PixivNovelSession _novels;
 
   /// The account the lists were loaded for; another one empties them.
   late final PixivSessionAccountStore _account;
@@ -81,6 +87,8 @@ class _PixivScreenState extends State<PixivScreen> {
   final _rankingScroll = ScrollController();
   final _favoritesScroll = ScrollController();
   final _moreScroll = ScrollController();
+  final _novelRankingScroll = ScrollController();
+  final _novelFavoritesScroll = ScrollController();
   PixivViewState get _state => _view.state;
 
   @override
@@ -115,13 +123,21 @@ class _PixivScreenState extends State<PixivScreen> {
         filter: mute.filter,
       ),
     );
+    _novels = PixivNovelSession.obtain(
+      _session.obtain,
+      view: view,
+      api: PixivNovelApi.of(context),
+      client: client,
+      mute: mute,
+      prefs: prefs,
+    );
     _watchAccount(prefs);
   }
 
   /// Empties every session list when the reader signs out or switches account,
   /// including while this screen was away and the session kept its lists.
   void _watchAccount(BasePrefService prefs) {
-    final lists = [..._home.all, _ranking, _bookmarks];
+    final lists = [..._home.all, _ranking, _bookmarks, ..._novels.all];
     _account = _session.obtain(
       'account',
       () => PixivSessionAccountStore(
@@ -165,7 +181,14 @@ class _PixivScreenState extends State<PixivScreen> {
   @override
   void dispose() {
     if (_state.signingIn) _view.select(_state.copyWith(signingIn: false));
-    for (final controller in [_recommendedScroll, _rankingScroll, _favoritesScroll, _moreScroll]) {
+    for (final controller in [
+      _recommendedScroll,
+      _rankingScroll,
+      _favoritesScroll,
+      _moreScroll,
+      _novelRankingScroll,
+      _novelFavoritesScroll,
+    ]) {
       controller.dispose();
     }
     _session.dispose();
@@ -175,7 +198,9 @@ class _PixivScreenState extends State<PixivScreen> {
   /// The list the reader sees in [section] now; Search keeps its own lists
   /// and is reached through the route's primary controller.
   ScrollController? _scrollControllerFor(int section) => switch (section) {
-    0 when _state.homeSource == PixivHomeSource.following => widget.scrollController,
+    0 when _state.novelMode || _state.homeSource == PixivHomeSource.following => widget.scrollController,
+    1 when _state.novelMode => _novelRankingScroll,
+    2 when _state.novelMode => _novelFavoritesScroll,
     0 => _recommendedScroll,
     1 => _rankingScroll,
     2 => _favoritesScroll,
@@ -203,6 +228,7 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   List<PixivPagedListStore<Object>> _storesFor(int section) => switch (section) {
+    _ when _state.novelMode => _novels.storesFor(section),
     0 => _home.storesFor(_state.homeSource),
     1 => [_ranking],
     2 => [_bookmarks],
@@ -223,6 +249,12 @@ class _PixivScreenState extends State<PixivScreen> {
     }
     _view.select(_state.copyWith(section: index));
     _ensureTabLoaded(index);
+  }
+
+  /// Switches the sections between illustrations and novels; each mode keeps its own lists and choices.
+  void _changeMode(PixivContentMode mode) {
+    _view.select(_state.copyWith(mode: mode));
+    _ensureTabLoaded(_state.section);
   }
 
   void _selectHomeSource(PixivHomeSource source) {
@@ -268,20 +300,24 @@ class _PixivScreenState extends State<PixivScreen> {
   /// Runs after any build that finds the shown board without its chip:
   /// unpinned, or hidden by Show R-18 going off from whichever settings entry.
   void _scheduleRankingSync() {
-    if (_rankingMode == _state.rankingMode) return;
+    if (_rankingMode == _state.rankingMode && !_novels.rankingBehind) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _syncRankingMode();
     });
   }
 
-  /// Moves to the first chip and drops the old board's works; they reload now
-  /// if Rankings is on screen, else when it is next opened.
+  /// Moves to the first chip and drops the old board's works or novels; they
+  /// reload now if Rankings is on screen, else when it is next opened.
   void _syncRankingMode() {
     final mode = _rankingMode;
-    if (mode == _state.rankingMode) return;
-    _view.select(_state.copyWith(rankingMode: mode));
-    _useRankingLoader();
-    if (_state.section == 1) _ensureTabLoaded(1);
+    final illustMoved = mode != _state.rankingMode;
+    if (illustMoved) {
+      _view.select(_state.copyWith(rankingMode: mode));
+      _useRankingLoader();
+    }
+    final novelMoved = _novels.syncRankingMode();
+    final shownMoved = _state.novelMode ? novelMoved : illustMoved;
+    if (shownMoved && _state.section == 1) _ensureTabLoaded(1);
   }
 
   Future<void> _editRankingModes() {
@@ -338,12 +374,16 @@ class _PixivScreenState extends State<PixivScreen> {
         store: _view,
         onState: (context, state) => Column(
           children: [
-            PixivHomeChrome(index: state.section, onSelect: _selectTab),
+            PixivHomeChrome(index: state.section, onSelect: _selectTab, mode: state.mode, onMode: _changeMode),
             const Divider(height: 1),
             Expanded(
               child: !hasToken && state.section != 4
                   ? PixivSignInBody(signingIn: state.signingIn, onSignIn: _signIn)
-                  : PluginLazyTabs(onSelected: _selectTab, index: state.section, children: _sections(state)),
+                  : PluginLazyTabs(
+                      onSelected: _selectTab,
+                      index: state.section,
+                      children: state.novelMode ? _novelSections(state) : _sections(state),
+                    ),
             ),
           ],
         ),
@@ -372,8 +412,11 @@ class _PixivScreenState extends State<PixivScreen> {
           onMode: _changeRankingMode,
           onEditModes: _editRankingModes,
           onDate: _changeRankingDate,
-          store: _ranking,
-          scrollController: _rankingScroll,
+          feed: PixivIllustFeed(
+            store: _ranking,
+            emptyMessage: L10n.of(context).plugin_pixiv_ranking_empty,
+            scrollController: _rankingScroll,
+          ),
         );
       },
     ),
@@ -387,6 +430,30 @@ class _PixivScreenState extends State<PixivScreen> {
     (_) => const PixivSearchScreen(embedded: true),
     (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll),
   ];
+
+  /// Novel mode's sections; Search and More are the illustration ones until novel search lands.
+  List<WidgetBuilder> _novelSections(PixivViewState state) => [
+    (_) => PixivNovelHomeSection(
+      session: _novels,
+      view: state.novel,
+      onReselect: _scrollToTop,
+      scrollController: widget.scrollController,
+    ),
+    (_) => PixivNovelRankingSection(
+      session: _novels,
+      view: state.novel,
+      onReselect: _scrollToTop,
+      onPinsChanged: _scheduleRankingSync,
+      scrollController: _novelRankingScroll,
+    ),
+    (_) => PixivNovelFavoritesSection(
+      session: _novels,
+      view: state.novel,
+      onReselect: _scrollToTop,
+      scrollController: _novelFavoritesScroll,
+    ),
+    ..._sections(state).skip(3),
+  ];
 }
 
 /// Icon tabs matching Flare's Home / Rankings / Favorites / Search / More,
@@ -395,7 +462,19 @@ class PixivHomeChrome extends StatelessWidget {
   final int index;
   final ValueChanged<int> onSelect;
 
-  const PixivHomeChrome({super.key, required this.index, required this.onSelect});
+  /// Whether the sections show illustrations or novels.
+  final PixivContentMode mode;
+
+  /// Switches [mode]; without it there is no mode button.
+  final ValueChanged<PixivContentMode>? onMode;
+
+  const PixivHomeChrome({
+    super.key,
+    required this.index,
+    required this.onSelect,
+    this.mode = PixivContentMode.illust,
+    this.onMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -404,6 +483,7 @@ class PixivHomeChrome extends StatelessWidget {
       title: l10n.plugin_pixiv_title,
       mark: pluginMark(PixivPlugin(), size: 24),
       accent: const Color(0xFF0096FA),
+      actions: [if (onMode case final onMode?) _modeButton(context, onMode)],
       tabs: [
         PluginHomeTab(icon: Icons.home_outlined, label: l10n.home, selected: index == 0, onTap: () => onSelect(0)),
         PluginHomeTab(
@@ -426,6 +506,20 @@ class PixivHomeChrome extends StatelessWidget {
           onTap: () => onSelect(4),
         ),
       ],
+    );
+  }
+
+  /// One 48 dp button naming the mode it switches to, so the five tabs keep
+  /// their room and Home's dock can list it in its sheet. Lit while novels show.
+  IconButton _modeButton(BuildContext context, ValueChanged<PixivContentMode> onMode) {
+    final l10n = L10n.of(context);
+    final novels = mode == PixivContentMode.novel;
+    return IconButton(
+      key: const ValueKey('pixiv-mode-toggle'),
+      tooltip: novels ? l10n.plugin_pixiv_mode_illusts : l10n.plugin_pixiv_mode_novels,
+      color: novels ? Theme.of(context).colorScheme.primary : null,
+      icon: Icon(novels ? Icons.image_outlined : Icons.menu_book_outlined),
+      onPressed: () => onMode(novels ? PixivContentMode.illust : PixivContentMode.novel),
     );
   }
 }

@@ -66,6 +66,7 @@ class PixivWatchlistFeed extends StatefulWidget {
   final String emptyMessage;
   final PixivWatchlistAction onOpen;
   final PixivWatchlistAction onViewLatest;
+  final ScrollController? scrollController;
 
   const PixivWatchlistFeed({
     super.key,
@@ -73,6 +74,7 @@ class PixivWatchlistFeed extends StatefulWidget {
     required this.emptyMessage,
     required this.onOpen,
     required this.onViewLatest,
+    this.scrollController,
   });
 
   @override
@@ -97,6 +99,7 @@ class _PixivWatchlistFeedState extends State<PixivWatchlistFeed> {
       emptyIcon: Icons.bookmarks_outlined,
       placeholder: const PluginFeedSkeleton(count: 4),
       padding: const EdgeInsets.symmetric(vertical: 4),
+      scrollController: widget.scrollController,
       sliver: (context, items) => SliverList.separated(
         itemCount: items.length,
         separatorBuilder: (_, _) => const Divider(height: 1),

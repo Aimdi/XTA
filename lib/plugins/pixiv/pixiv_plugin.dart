@@ -162,6 +162,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivFolderR18, false);
     await prefs.set(optionPluginPixivDownloadIndex, '[]');
     await prefs.set(optionPluginPixivRankingModes, jsonEncode(pixivDefaultRankingPins));
+    await prefs.set(optionPluginPixivNovelRankingModes, jsonEncode(pixivDefaultNovelRankingPins));
     await prefs.set(optionPluginPixivSearchFilters, '');
     await prefs.set(optionPluginPixivFavoriteTags, '[]');
     final database = await Repository.writable();

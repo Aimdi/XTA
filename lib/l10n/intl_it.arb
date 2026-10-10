@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Nessun manga consigliato al momento — scorri per aggiornare",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Passa alle illustrazioni",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Passa ai romanzi",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Informazioni",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Account",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Silenzia quest’opera",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Silenzia questo romanzo",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Romanzi",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Impostazioni di silenziamento",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Accedi a Pixiv per vedere seguiti, classifiche e segnalibri",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Salva nei segnalibri privati",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Qui compaiono i romanzi che salvi nei segnalibri pubblici",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Qui compaiono i romanzi che salvi nei segnalibri privati",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "N. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} capitolo} other{{shown} capitoli}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} carattere} other{{shown} caratteri}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Qui compaiono i nuovi romanzi dei creatori che segui",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Nessun romanzo in classifica al momento",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Nessun romanzo consigliato al momento — scorri per aggiornare",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Serie di romanzi",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Completata",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Nessun capitolo visibile in questa serie",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "In corso",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Inizia dal primo",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Qui compaiono le serie di romanzi che aggiungi alle serie seguite",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Impossibile aprire quel link Pixiv",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Apri i link di pixiv in XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Soprannome",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Ancora nessun romanzo nei segnalibri pubblici",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romanzi",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Account Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Torna a oggi",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Giornaliera",

@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Пока нет рекомендованной манги — потяните, чтобы обновить",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Перейти к иллюстрациям",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Перейти к романам",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "О приложении",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Аккаунт",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Скрыть эту работу",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Скрыть этот роман",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Новеллы",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Настройки скрытия",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Войдите в Pixiv, чтобы смотреть ленту, рейтинг и закладки",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Добавить в приватные закладки",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Здесь появятся романы, добавленные в публичные закладки",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Здесь появятся романы, добавленные в приватные закладки",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "№ {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} глава} few{{shown} главы} many{{shown} глав} other{{shown} главы}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} знак} few{{shown} знака} many{{shown} знаков} other{{shown} знака}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Здесь появятся новые романы авторов, на которых вы подписаны",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Сейчас в рейтинге нет романов",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Пока нет рекомендованных романов — потяните, чтобы обновить",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Серия романов",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Завершена",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "В этой серии нет доступных вам глав",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Продолжается",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Начать с первой",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Здесь появятся серии романов, добавленные в список отслеживания",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Не удалось открыть эту ссылку Pixiv",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Открывать ссылки pixiv в XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Никнейм",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Публичных закладок на романы пока нет",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Романы",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Аккаунт Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Вернуться к сегодняшнему дню",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Дневной",

@@ -28,6 +28,10 @@ List<String> pixivAutoBookmarkTags(PixivIllust illust) => [
     if (!_popularityTag.hasMatch(tag.name)) tag.name,
 ];
 
+/// The visibility a bookmark made without the editor gets, for works and novels alike.
+String pixivDefaultBookmarkRestrict(BasePrefService prefs) =>
+    prefs.get<bool>(optionPluginPixivDefaultPrivateBookmark) == true ? 'private' : 'public';
+
 PixivUser _authorOf(PixivIllust illust) => PixivUser(
   id: illust.userId,
   name: illust.userName,
@@ -70,7 +74,7 @@ class PixivBookmarkActions {
   bool _on(String pref) => prefs.get<bool>(pref) == true;
 
   /// The visibility a bookmark made without the editor gets.
-  String get defaultRestrict => _on(optionPluginPixivDefaultPrivateBookmark) ? 'private' : 'public';
+  String get defaultRestrict => pixivDefaultBookmarkRestrict(prefs);
 
   /// The work's bookmark as Pixiv has it now. A card loaded before the work
   /// was bookmarked or removed elsewhere is brought in line, so the heart, the
@@ -148,9 +152,12 @@ class PixivBookmarkFeedback {
       haptics = PixivHaptics.of(context),
       prefs = PrefService.of(context, listen: false);
 
+  /// The light buzz of a bookmark write that landed.
+  void landed() => haptics.play(prefs, PixivHaptic.light);
+
   /// A light buzz, and the author's name when the bookmark also followed them.
   void succeeded(PixivIllust illust, PixivBookmarkOutcome outcome) {
-    haptics.play(prefs, PixivHaptic.light);
+    landed();
     if (outcome.followedAuthor && messenger.mounted) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.plugin_pixiv_bookmark_followed_author(illust.userName))));
     }

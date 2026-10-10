@@ -22,7 +22,10 @@ class PixivSeriesLink extends StatelessWidget {
   final PixivSeriesRef series;
   final bool dense;
 
-  const PixivSeriesLink({super.key, required this.series, this.dense = false});
+  /// Opens the series; an illustration or manga series when null.
+  final Future<void> Function(BuildContext context, int seriesId)? onOpen;
+
+  const PixivSeriesLink({super.key, required this.series, this.dense = false, this.onOpen});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,7 @@ class PixivSeriesLink extends StatelessWidget {
     return InkWell(
       key: ValueKey('pixiv-series-link-${series.id}'),
       borderRadius: BorderRadius.circular(6),
-      onTap: () => openPixivSeries(context, series.id),
+      onTap: () => (onOpen ?? openPixivSeries)(context, series.id),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
         child: Row(

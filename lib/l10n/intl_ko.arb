@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "지금은 추천 만화가 없습니다 — 당겨서 새로고침",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "일러스트로 전환",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "소설로 전환",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "정보",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "계정",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "이 작품 뮤트",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "이 소설 뮤트",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "소설",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "뮤트 설정",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Pixiv에 로그인하여 팔로잉, 랭킹, 북마크를 보세요",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "비공개로 북마크",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "공개로 북마크한 소설이 여기에 표시됩니다",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "비공개로 북마크한 소설이 여기에 표시됩니다",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "{order}화",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, other{{shown}화}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, other{{shown}자}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "팔로우한 크리에이터의 새 소설이 여기에 표시됩니다",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "지금 랭킹 소설이 없습니다",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "지금은 추천 소설이 없습니다 — 당겨서 새로고침",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "소설 시리즈",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "완결",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "이 시리즈에 볼 수 있는 회차가 없습니다",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "연재 중",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "1화부터 보기",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "관심 목록에 추가한 소설 시리즈가 여기에 표시됩니다",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "해당 Pixiv 링크를 열 수 없습니다",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "XTA에서 pixiv 링크 열기",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "닉네임",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "아직 공개 소설 북마크가 없습니다",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "소설",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Pawoo 계정",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "오늘로 돌아가기",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "일간",

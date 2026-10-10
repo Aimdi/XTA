@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Teď žádná doporučená manga — potáhněte pro obnovení",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Přepnout na ilustrace",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Přepnout na romány",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "O aplikaci",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Účet",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Ztlumit toto dílo",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Ztlumit tento román",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Romány",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Nastavení ztlumení",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Přihlaste se k Pixivu a prohlížejte sledování, žebříčky a záložky",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Uložit do soukromých záložek",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Zde se objeví romány, které si veřejně uložíte do záložek",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Zde se objeví romány, které si soukromě uložíte do záložek",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Č. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} kapitola} few{{shown} kapitoly} many{{shown} kapitoly} other{{shown} kapitol}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} znak} few{{shown} znaky} many{{shown} znaku} other{{shown} znaků}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Zde se objeví nové romány od autorů, které sledujete",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "V žebříčku teď nejsou žádné romány",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Teď žádné doporučené romány — potáhněte pro obnovení",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Série románů",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Dokončená",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "V této sérii nejsou žádné kapitoly, které můžete vidět",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Pokračuje",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Začít od prvního",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Zde se objeví série románů, které přidáte do sledovaných",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Tento odkaz Pixiv se nepodařilo otevřít",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Otevírat odkazy pixiv v XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Přezdívka",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Zatím žádné veřejné záložky románů",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romány",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Účet Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Zpět na dnešek",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Denní",

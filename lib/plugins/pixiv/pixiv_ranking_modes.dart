@@ -51,7 +51,27 @@ const pixivDefaultRankingPins = [
   'day_manga',
 ];
 
-bool pixivRankingModeIsAi(String id) => pixivIllustRankingModes.any((mode) => mode.id == id && mode.ai);
+/// Every novel board, in chip order. The AI boards are weekly ones, the only
+/// AI novel boards Pixiv has, so the illustration labels name them.
+final pixivNovelRankingModes = <PixivRankingMode>[
+  PixivRankingMode('day', (l10n) => l10n.plugin_pixiv_ranking_day),
+  PixivRankingMode('week', (l10n) => l10n.plugin_pixiv_ranking_week),
+  PixivRankingMode('day_male', (l10n) => l10n.plugin_pixiv_ranking_day_male),
+  PixivRankingMode('day_female', (l10n) => l10n.plugin_pixiv_ranking_day_female),
+  PixivRankingMode('week_ai', (l10n) => l10n.plugin_pixiv_ranking_day_ai, ai: true),
+  PixivRankingMode('day_r18', (l10n) => l10n.plugin_pixiv_ranking_day_r18, r18: true),
+  PixivRankingMode('week_ai_r18', (l10n) => l10n.plugin_pixiv_ranking_day_r18_ai, r18: true, ai: true),
+  PixivRankingMode('week_r18', (l10n) => l10n.plugin_pixiv_ranking_week_r18, r18: true),
+  PixivRankingMode('week_r18g', (l10n) => l10n.plugin_pixiv_ranking_week_r18g, r18: true),
+];
+
+/// The novel boards pinned until the reader picks their own: every board
+/// Show R-18 does not gate.
+const pixivDefaultNovelRankingPins = ['day', 'week', 'day_male', 'day_female', 'week_ai'];
+
+/// Whether [id] names an AI board of [table], the illustration boards unless told.
+bool pixivRankingModeIsAi(String id, [List<PixivRankingMode>? table]) =>
+    (table ?? pixivIllustRankingModes).any((mode) => mode.id == id && mode.ai);
 
 /// The boards a reader may pin: R-18 boards only while Show R-18 is on.
 List<PixivRankingMode> pixivRankingModesOffered(List<PixivRankingMode> table, {required bool showR18}) =>
@@ -119,7 +139,7 @@ class PixivRankingPinsStore extends Store<List<String>> {
 }
 
 /// The pinned boards as choice chips, then an Edit chip. Novel rankings use
-/// the same row over their own table.
+/// the same row over [pixivNovelRankingModes].
 class PixivRankingModeChips extends StatelessWidget {
   final List<PixivRankingMode> modes;
   final String selected;
