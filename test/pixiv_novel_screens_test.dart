@@ -329,7 +329,7 @@ void main() {
           PixivWatchlistSeries(id: 78, title: 'Winter', userId: 42, userName: 'Mika'),
         ],
         series: {null: _seriesPage()},
-      );
+      )..details = {12: pixivNovel(id: 12, title: 'Autumn')};
       await pumpScreen(tester, api);
       await _tap(tester, find.byTooltip('Switch to novels'));
       await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-watchlist')));

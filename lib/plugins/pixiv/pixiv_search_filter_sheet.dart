@@ -13,6 +13,8 @@ String pixivSearchTargetLabel(L10n l10n, PixivSearchTarget target) => switch (ta
   PixivSearchTarget.partialTags => l10n.plugin_pixiv_search_target_partial,
   PixivSearchTarget.exactTags => l10n.plugin_pixiv_search_target_exact,
   PixivSearchTarget.titleCaption => l10n.plugin_pixiv_search_target_title,
+  PixivSearchTarget.text => l10n.plugin_pixiv_search_target_text,
+  PixivSearchTarget.keyword => l10n.plugin_pixiv_search_target_keyword,
 };
 
 String pixivSearchSortLabel(L10n l10n, PixivSearchSort sort) => switch (sort) {
@@ -54,11 +56,12 @@ String pixivBookmarkRangeLabel(BuildContext context, PixivBookmarkRange range) {
 }
 
 /// The bar over search results: the filter sheet, posting dates, popularity
-/// and, for Premium, a bookmark-count bracket. Each control is tinted while
-/// it narrows the search.
+/// and, for Premium searching works, a bookmark-count bracket. Each control is
+/// tinted while it narrows the search.
 class PixivSearchFilterBar extends StatelessWidget {
   final PixivSearchFilter filter;
   final bool isPremium;
+  final PixivSearchKind kind;
 
   /// False while the results cannot be narrowed by date, which hides the menu.
   final bool datesApply;
@@ -74,6 +77,7 @@ class PixivSearchFilterBar extends StatelessWidget {
     required this.isPremium,
     required this.onChanged,
     required this.onOpenSheet,
+    this.kind = PixivSearchKind.works,
     this.datesApply = true,
     this.base = const PixivSearchFilter(),
   });
@@ -96,7 +100,7 @@ class PixivSearchFilterBar extends StatelessWidget {
           ),
           if (datesApply) _dateMenu(context, l10n),
           _popularityMenu(context, l10n),
-          if (isPremium) _bookmarksMenu(context, l10n),
+          if (isPremium && kind.isWorks) _bookmarksMenu(context, l10n),
         ],
       ),
     );
@@ -239,32 +243,33 @@ class _FilterButton extends StatelessWidget {
   }
 }
 
-/// The sheet behind Filters: where to look, the order, AI works, ugoira, and
-/// whether to keep the choices. [targets] lets novel search offer its own.
+/// The sheet behind Filters: where to look, the order, AI works, ugoira for
+/// works, and whether to keep the choices. Each [kind] offers its own places
+/// to look and orders.
 Future<PixivFilterChoice?> showPixivSearchFilterSheet(
   BuildContext context, {
   required PixivSearchFilter filter,
   required bool remembered,
   required bool isPremium,
-  List<PixivSearchTarget> targets = pixivIllustSearchTargets,
+  PixivSearchKind kind = PixivSearchKind.works,
 }) => showModalBottomSheet<PixivFilterChoice>(
   context: context,
   isScrollControlled: true,
   showDragHandle: true,
   builder: (_) =>
-      PixivSearchFilterSheet(initial: (filter: filter, remember: remembered), isPremium: isPremium, targets: targets),
+      PixivSearchFilterSheet(initial: (filter: filter, remember: remembered), isPremium: isPremium, kind: kind),
 );
 
 class PixivSearchFilterSheet extends StatefulWidget {
   final PixivFilterChoice initial;
   final bool isPremium;
-  final List<PixivSearchTarget> targets;
+  final PixivSearchKind kind;
 
   const PixivSearchFilterSheet({
     super.key,
     required this.initial,
     required this.isPremium,
-    this.targets = pixivIllustSearchTargets,
+    this.kind = PixivSearchKind.works,
   });
 
   @override
@@ -300,21 +305,27 @@ class _PixivSearchFilterSheetState extends State<PixivSearchFilterSheet> {
   List<Widget> _sections(BuildContext context, PixivFilterChoice draft) {
     final l10n = L10n.of(context);
     final filter = draft.filter;
+    final kind = widget.kind;
+    final sorts = pixivSearchSorts(isPremium: widget.isPremium, kind: kind);
     return [
       Text(l10n.plugin_pixiv_search_filters_title, style: Theme.of(context).textTheme.titleLarge),
       _heading(context, l10n.plugin_pixiv_search_target),
-      _choices(widget.targets, filter.target, (t) => pixivSearchTargetLabel(l10n, t), (t) {
+      _choices(kind.targets, filter.target, (t) => pixivSearchTargetLabel(l10n, t), (t) {
         _edit(filter.copyWith(target: t));
       }),
       _heading(context, l10n.plugin_pixiv_search_sort),
-      _choices(pixivSearchSorts(isPremium: widget.isPremium), filter.sort, (s) => pixivSearchSortLabel(l10n, s), (s) {
-        _edit(filter.copyWith(sort: s));
-      }),
-      if (!widget.isPremium) _note(context, l10n.plugin_pixiv_search_premium_note),
-      _heading(context, l10n.plugin_pixiv_ugoira),
-      _choices(PixivUgoiraFilter.values, filter.ugoira, (u) => pixivUgoiraFilterLabel(l10n, u), (u) {
-        _edit(filter.copyWith(ugoira: u));
-      }),
+      _choices(sorts, filter.sort, (s) => pixivSearchSortLabel(l10n, s), (s) => _edit(filter.copyWith(sort: s))),
+      if (!widget.isPremium)
+        _note(
+          context,
+          kind.isWorks ? l10n.plugin_pixiv_search_premium_note : l10n.plugin_pixiv_novel_search_premium_note,
+        ),
+      if (kind.isWorks) ...[
+        _heading(context, l10n.plugin_pixiv_ugoira),
+        _choices(PixivUgoiraFilter.values, filter.ugoira, (u) => pixivUgoiraFilterLabel(l10n, u), (u) {
+          _edit(filter.copyWith(ugoira: u));
+        }),
+      ],
       const SizedBox(height: 8),
       SwitchListTile(
         contentPadding: EdgeInsets.zero,

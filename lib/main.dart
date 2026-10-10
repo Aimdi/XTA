@@ -72,6 +72,7 @@ import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -623,6 +624,8 @@ Future<void> main() async {
       optionPluginPixivRankingModes: jsonEncode(pixivDefaultRankingPins),
       optionPluginPixivNovelRankingModes: jsonEncode(pixivDefaultNovelRankingPins),
       optionPluginPixivSearchFilters: '',
+      optionPluginPixivNovelSearchFilters: '',
+      optionPluginPixivNovelSearchHistory: '[]',
       optionPluginPixivFavoriteTags: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
       optionPluginPixivAccounts: '[]',
@@ -858,6 +861,7 @@ Future<void> main() async {
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistory(prefService);
+    final pixivNovelSearchHistory = PixivNovelSearchHistory(prefService);
     final pixivFavoriteTags = PixivFavoriteTagsStore(prefService);
     final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
@@ -865,6 +869,7 @@ Future<void> main() async {
     final pixivDownloads = PixivDownloadIndex(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final pixivHistory = PixivHistoryStore();
+    final pixivNovelHistory = PixivNovelHistoryStore();
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
     final booruMute = BooruMuteStore(prefService);
@@ -1088,6 +1093,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivClient),
                 Provider(create: (_) => pixivMute),
                 Provider(create: (_) => pixivSearchHistory),
+                Provider(create: (_) => pixivNovelSearchHistory),
                 Provider(create: (_) => pixivFavoriteTags),
                 Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
@@ -1095,6 +1101,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivDownloads),
                 Provider(create: (_) => pixivFeed),
                 Provider(create: (_) => pixivHistory),
+                Provider(create: (_) => pixivNovelHistory),
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),
                 Provider(create: (_) => booruMute),

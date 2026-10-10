@@ -524,25 +524,11 @@ class PixivClient {
   }
 
   /// What Pixiv is drawing right now — each tag ships a representative illust.
-  Future<List<PixivTrendTag>> trendingTags() async {
-    final json = await getJson('/v1/trending-tags/illust', query: {
-      'filter': 'for_android',
-    });
-    final r18 = showR18;
-    final ai = !hideAi;
-    return [
-      for (final entry in Json(json)['trend_tags'].list)
-        if (entry['tag'].string case final String name when name.isNotEmpty)
-          PixivTrendTag(
-            name: name,
-            translatedName: entry['translated_name'].string,
-            illust: switch (pixivIllustFromJson(entry['illust'].raw)) {
-              final illust? when pixivContentAllowed(illust, includeR18: r18, includeAi: ai) => illust,
-              _ => null,
-            },
-          ),
-    ];
-  }
+  Future<List<PixivTrendTag>> trendingTags() async => parsePixivTrendTags(
+    await getJson('/v1/trending-tags/illust', query: {'filter': 'for_android'}),
+    includeR18: showR18,
+    includeAi: !hideAi,
+  );
 
   /// One free page of the most popular results for [word] — the community's
   /// answer to `popular_desc` being Premium-only.

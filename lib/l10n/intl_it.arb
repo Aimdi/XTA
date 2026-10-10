@@ -2576,6 +2576,12 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Nessuna opera della cronologia corrisponde",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_empty": "I romanzi che apri compaiono qui. La cronologia resta su questo dispositivo.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtra per titolo o autore",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Nessun romanzo della cronologia corrisponde",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Metti in pausa la cronologia",
   "@plugin_pixiv_history_pause": {},
   "plugin_pixiv_history_pause_description": "Quando è attivo, le opere aperte non vengono aggiunte alla cronologia",
@@ -2749,6 +2755,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Nessun romanzo consigliato al momento — scorri per aggiornare",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Tag di romanzi, titoli o utenti",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "L’ordinamento per popolarità richiede Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Cerca romanzi o utenti",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Serie di romanzi",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Completata",
@@ -2833,6 +2845,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romanzi",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Ancora nessun romanzo",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Account Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Membro Premium",
@@ -3078,6 +3092,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Apri romanzo #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Apri serie di romanzi #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Apri articolo di Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3160,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tag (esatto)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Tag, titolo, didascalia",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Tag (parziale)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Testo del romanzo",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Titolo/didascalia",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Tutte le opere",

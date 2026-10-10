@@ -421,6 +421,10 @@ const optionPluginPixivNovelRankingModes = 'plugin.pixiv.novel_ranking_modes';
 /// The search filters the reader chose to remember, as JSON; empty for none.
 const optionPluginPixivSearchFilters = 'plugin.pixiv.search_filters';
 
+/// Novel search's own remembered filters and recent searches, in the same shapes.
+const optionPluginPixivNovelSearchFilters = 'plugin.pixiv.novel_search_filters';
+const optionPluginPixivNovelSearchHistory = 'plugin.pixiv.novel_search_history';
+
 /// Tags pinned as saved searches, in the reader's order, as JSON.
 const optionPluginPixivFavoriteTags = 'plugin.pixiv.favorite_tags';
 

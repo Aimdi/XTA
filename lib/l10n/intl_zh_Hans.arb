@@ -2576,6 +2576,12 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "历史中没有匹配的作品",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_empty": "打开过的小说会显示在这里。历史只保存在这台设备上。",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "按标题或作者筛选",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "历史中没有匹配的小说",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "暂停记录浏览历史",
   "@plugin_pixiv_history_pause": {},
   "plugin_pixiv_history_pause_description": "开启时，打开的作品不会加入历史",
@@ -2749,6 +2755,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "暂时没有推荐小说 — 下拉刷新",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "小说标签、标题或用户",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "按热门排序需要 Pixiv 高级会员。",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "搜索小说或用户",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "小说系列",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "已完结",
@@ -2833,6 +2845,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "小说",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "暂无小说",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Pawoo 账号",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "高级会员",
@@ -3078,6 +3092,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "打开小说 #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "打开小说系列 #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "打开 Pixivision 特辑 #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3160,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "标签（完全匹配）",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "标签、标题、说明",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "标签（部分匹配）",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "正文",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "标题/说明",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "全部作品",

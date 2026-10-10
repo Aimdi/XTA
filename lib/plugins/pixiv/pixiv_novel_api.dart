@@ -9,9 +9,9 @@ import 'package:xta/utils/json.dart';
 
 typedef PixivNovelPage = PixivPage<PixivNovel>;
 
-/// The novel side of Pixiv: feeds, rankings, bookmarks, series and the
-/// watchlist. Bookmarks and the watchlist are the only writes. Built on
-/// [PixivClient]'s public transport.
+/// The novel side of Pixiv: feeds, rankings, bookmarks, series, the
+/// watchlist, search and a creator's novels. Bookmarks and the watchlist are
+/// the only writes. Built on [PixivClient]'s public transport.
 class PixivNovelApi {
   final PixivClient client;
 
@@ -90,6 +90,31 @@ class PixivNovelApi {
 
   Future<void> removeFromWatchlist(int seriesId) =>
       client.postForm('/v1/watchlist/novel/delete', {'series_id': '$seriesId'});
+
+  /// One novel's card fields; a [PixivException] when Pixiv no longer has it.
+  Future<PixivNovel> detail(int novelId) async {
+    final json = await client.getJson('/v2/novel/detail', query: {'novel_id': '$novelId'});
+    return pixivNovelFromJson(Json(json)['novel'].raw) ??
+        (throw PixivException(PixivErrorKind.notFound, 'novel $novelId'));
+  }
+
+  /// One page of `/v1/search/novel` for a query from `pixivSearchQuery` with
+  /// the novel kind. [includeAi] follows the search's own AI choice.
+  Future<PixivNovelPage> search(Map<String, String> query, {String? nextUrl, bool? includeAi}) async =>
+      novelPageFrom(await _page('/v1/search/novel', query, nextUrl), includeAi: includeAi);
+
+  /// The tags trending among novels, each over the picture Pixiv chose for it.
+  Future<List<PixivTrendTag>> trendingTags() async => parsePixivTrendTags(
+    await client.getJson('/v1/trending-tags/novel', query: const {'filter': 'for_android'}),
+    includeR18: client.showR18,
+    includeAi: !client.hideAi,
+  );
+
+  /// [userId]'s own novels. The reader's own keep R-18 and AI novels.
+  Future<PixivNovelPage> userNovels(int userId, {String? nextUrl}) async => novelPageFrom(
+    await _page('/v1/user/novels', {'user_id': '$userId', 'filter': 'for_android'}, nextUrl),
+    ownList: userId == client.storedUserId,
+  );
 
   /// One page of a series; chapters the reader's filters hide are left out but counted.
   Future<PixivNovelSeriesPage> series(int seriesId, {String? nextUrl}) async =>

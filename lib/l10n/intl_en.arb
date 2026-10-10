@@ -2730,6 +2730,12 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "No work in the history matches",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_empty": "Novels you open appear here. The history stays on this device.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filter by title or author",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "No novel in the history matches",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Pause viewing history",
   "@plugin_pixiv_history_pause": {},
   "plugin_pixiv_history_pause_description": "While on, opened works are not added to the history",
@@ -2909,6 +2915,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "No recommended novels right now — pull to refresh",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Novel tags, titles or users",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Sorting by popularity needs Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Search for novels or users",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Novel series",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Completed",
@@ -3002,6 +3014,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Novels",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "No novels yet",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Pawoo account",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Premium member",
@@ -3261,6 +3275,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Open novel #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Open novel series #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Open Pixivision article #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "description": "Shortcut shown when the search text is a number: open the Pixivision article with that id.",
@@ -3317,8 +3347,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tags (exact)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Tags, title, caption",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Tags (partial)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Body text",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Title/caption",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "All works",

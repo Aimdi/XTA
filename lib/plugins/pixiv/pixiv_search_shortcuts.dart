@@ -42,22 +42,29 @@ Future<void> openPixivLinkOrSay(BuildContext context, PixivLinkRef link) async {
   }
 }
 
-/// What covers the results while the reader types: the id shortcuts for a
+/// What covers the results while the reader types: the id [shortcuts] for a
 /// number, then tags completing the word being typed. A tap on a tag hands it
 /// to [onPick]; a long press copies it.
 class PixivSearchPicker extends StatelessWidget {
   final int? numericId;
   final List<PixivTrendTag> suggestions;
   final ValueChanged<PixivTrendTag> onPick;
+  final List<PixivNumericShortcut> shortcuts;
 
-  const PixivSearchPicker({super.key, required this.numericId, required this.suggestions, required this.onPick});
+  const PixivSearchPicker({
+    super.key,
+    required this.numericId,
+    required this.suggestions,
+    required this.onPick,
+    this.shortcuts = pixivNumericShortcuts,
+  });
 
   @override
   Widget build(BuildContext context) {
     final id = numericId;
     return ListView(
       children: [
-        if (id != null) ...[for (final shortcut in pixivNumericShortcuts) shortcut(context, id), const Divider()],
+        if (id != null) ...[for (final shortcut in shortcuts) shortcut(context, id), const Divider()],
         for (final tag in suggestions)
           ListTile(
             leading: const Icon(Icons.tag),

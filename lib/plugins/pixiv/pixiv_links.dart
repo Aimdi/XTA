@@ -34,8 +34,8 @@ class PixivShortLinkRef extends PixivLinkRef {
   Uri get uri => Uri.https('pixiv.me', '/$name');
 }
 
-/// A page that also lives on the web: it knows the address to share or hand
-/// the browser, which is where the ones without a screen in XTA open.
+/// A page that also lives on the web: it knows the address to share, or to
+/// hand the browser when XTA cannot show it.
 sealed class PixivWebPageLinkRef extends PixivLinkRef {
   const PixivWebPageLinkRef();
 

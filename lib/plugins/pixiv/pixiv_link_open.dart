@@ -11,6 +11,8 @@ import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_gate.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -67,11 +69,11 @@ Future<void> openPixivIllustFromList(
 Future<void> openPixivUser(BuildContext context, int userId) =>
     Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivUserScreen(userId: userId)));
 
-/// Opens what a Pixiv link or ID names. False when the work could not be
-/// fetched, so the caller can fall back to the browser or say so.
+/// Opens what a Pixiv link or ID names. False when the work or novel could
+/// not be fetched, so the caller can fall back to the browser or say so.
 ///
-/// Series and pixivision articles open on their own screens; novels and novel
-/// series open in the browser until XTA has screens for them.
+/// Series, novel series and pixivision articles open on their own screens;
+/// novels go through [openPixivNovelById], like every other way into one.
 Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
   switch (ref) {
     case PixivUserLinkRef(:final id):
@@ -87,11 +89,13 @@ Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
     case PixivSeriesLinkRef(:final id, :final webUrl):
       await openPixivSeries(context, id, webUrl: webUrl);
       return true;
+    case PixivNovelLinkRef(:final id):
+      return openPixivNovelById(context, id);
+    case PixivNovelSeriesLinkRef(:final id):
+      await openPixivNovelSeries(context, id);
+      return true;
     case PixivisionLinkRef(:final id, :final webUrl):
       await openPixivisionArticle(context, id, webUrl: webUrl);
-      return true;
-    case PixivWebPageLinkRef(:final webUrl):
-      await openUri(context, webUrl);
       return true;
   }
 }

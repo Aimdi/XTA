@@ -11,18 +11,19 @@ import 'package:xta/plugins/pixiv/pixiv_search_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
-/// The works a search found, under the filter bar. A reader without Premium
-/// who sorts by popularity gets Pixiv's free preview with a note saying so,
-/// and no date menu, since the preview takes no dates; date-sorted results
-/// get the preview as a strip on top.
-class PixivSearchWorks extends StatelessWidget {
+/// The filter bar over a search's results, its Filters button opening the
+/// sheet for the search's kind. A works search without Premium sorted by
+/// popularity shows Pixiv's free preview, which takes no dates, so the date
+/// menu goes.
+class PixivSearchFilterHeader extends StatelessWidget {
   final PixivSearchStore store;
   final PixivSearchState state;
 
-  const PixivSearchWorks({super.key, required this.store, required this.state});
+  const PixivSearchFilterHeader({super.key, required this.store, required this.state});
 
   Future<void> _openSheet(BuildContext context) async {
     final choice = await showPixivSearchFilterSheet(
@@ -30,23 +31,38 @@ class PixivSearchWorks extends StatelessWidget {
       filter: state.filter,
       remembered: state.remembered,
       isPremium: state.isPremium,
+      kind: store.kind,
     );
     if (choice != null) await store.applyFilter(choice.filter, remember: choice.remember);
   }
+
+  @override
+  Widget build(BuildContext context) => PixivSearchFilterBar(
+    filter: state.filter,
+    base: pixivFreshFilter(store.prefs),
+    isPremium: state.isPremium,
+    kind: store.kind,
+    datesApply: !state.previewMode,
+    onChanged: store.applyFilter,
+    onOpenSheet: () => _openSheet(context),
+  );
+}
+
+/// The works a search found, under the filter bar. A reader without Premium
+/// who sorts by popularity gets Pixiv's free preview with a note saying so;
+/// date-sorted results get the preview as a strip on top.
+class PixivSearchWorks extends StatelessWidget {
+  final PixivSearchStore store;
+  final PixivSearchState state;
+
+  const PixivSearchWorks({super.key, required this.store, required this.state});
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return Column(
       children: [
-        PixivSearchFilterBar(
-          filter: state.filter,
-          base: pixivFreshFilter(store.prefs),
-          isPremium: state.isPremium,
-          datesApply: !state.previewMode,
-          onChanged: store.applyFilter,
-          onOpenSheet: () => _openSheet(context),
-        ),
+        PixivSearchFilterHeader(store: store, state: state),
         Expanded(
           child: PixivIllustFeed(
             store: store.results,
@@ -142,12 +158,13 @@ class PixivPopularStrip extends StatelessWidget {
   );
 }
 
-/// Creators a search found, each with recent works and a follow button,
-/// loading the next page well before the end.
+/// Creators a search found, each with recent works (or, for a novel search,
+/// novels) and a follow button, loading the next page well before the end.
 class PixivSearchUsers extends StatelessWidget {
   final PixivPagedListStore<PixivUserPreview> store;
+  final PixivContentMode previews;
 
-  const PixivSearchUsers({super.key, required this.store});
+  const PixivSearchUsers({super.key, required this.store, this.previews = PixivContentMode.illust});
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +207,11 @@ class PixivSearchUsers extends StatelessWidget {
         itemCount: users.length + (store.loadingMore ? 1 : 0),
         separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, index) => index < users.length
-            ? PixivUserPreviewCard(key: ValueKey('pixiv-search-user-${users[index].user.id}'), preview: users[index])
+            ? PixivUserPreviewCard(
+                key: ValueKey('pixiv-search-user-${users[index].user.id}'),
+                preview: users[index],
+                previews: previews,
+              )
             : const Padding(
                 padding: EdgeInsets.all(16),
                 child: Center(child: CircularProgressIndicator()),
