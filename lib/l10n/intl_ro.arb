@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Șterge căutările recente",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Ștergi toate căutările recente?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Nu există căutări recente",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Arată mai puțin",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Sortarea de la cele mai vechi și după popularitatea la bărbați sau femei necesită Pixiv Premium. Fără el, „Populare” arată previzualizarea gratuită Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Datele de publicare nu restrâng previzualizarea.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Aceasta este previzualizarea gratuită a lucrărilor populare de pe Pixiv. Sortarea tuturor rezultatelor după popularitate necesită Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Căutați ilustrații sau utilizatori",

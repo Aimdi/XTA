@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_fetch_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
@@ -52,16 +53,6 @@ class PixivSauceNaoStore extends Store<List<PixivSauceMatch>?> {
   }
 
   Future<void> _search(Uint8List image) => execute(() async => api.search(await prepare(image)));
-}
-
-/// One match's work as Pixiv describes it, fetched when its row first shows.
-class PixivIllustPreviewStore extends Store<PixivIllust?> {
-  final PixivClient client;
-  final int illustId;
-
-  PixivIllustPreviewStore(this.client, this.illustId) : super(null);
-
-  Future<void> load() => execute(() => client.illustDetail(illustId));
 }
 
 class PixivSauceNaoSheet extends StatefulWidget {
@@ -211,12 +202,14 @@ class _PixivSauceRow extends StatefulWidget {
 }
 
 class _PixivSauceRowState extends State<_PixivSauceRow> {
-  late final PixivIllustPreviewStore _preview;
+  /// The match's work as Pixiv describes it, fetched when the row first shows.
+  late final PixivFetchStore<PixivIllust?> _preview;
 
   @override
   void initState() {
     super.initState();
-    _preview = PixivIllustPreviewStore(context.read<PixivClient>(), widget.match.illustId)..load();
+    final client = context.read<PixivClient>();
+    _preview = PixivFetchStore<PixivIllust?>(() => client.illustDetail(widget.match.illustId), null)..load();
   }
 
   @override
@@ -235,7 +228,7 @@ class _PixivSauceRowState extends State<_PixivSauceRow> {
   }
 
   @override
-  Widget build(BuildContext context) => ScopedBuilder<PixivIllustPreviewStore, PixivIllust?>(
+  Widget build(BuildContext context) => ScopedBuilder<PixivFetchStore<PixivIllust?>, PixivIllust?>(
     store: _preview,
     onLoading: (context) => _row(context, null),
     onError: (context, error) => _row(context, null, error: error),

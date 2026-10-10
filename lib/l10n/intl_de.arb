@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Letzte Suchen löschen",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Alle letzten Suchen löschen?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Keine letzten Suchen",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Weniger anzeigen",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Älteste zuerst und Beliebtheit bei Männern oder Frauen erfordern Pixiv Premium. Ohne Premium zeigt „Beliebt“ die kostenlose Vorschau von Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Das Veröffentlichungsdatum schränkt die Vorschau nicht ein.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Das ist die kostenlose Beliebt-Vorschau von Pixiv. Alle Ergebnisse nach Beliebtheit zu sortieren erfordert Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Illustrierungen oder Nutzer suchen",

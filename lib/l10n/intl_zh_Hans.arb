@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "清除最近搜索",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "要清除全部最近搜索吗？",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "没有最近搜索",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "收起",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "按最旧排序以及按男性或女性热门排序需要 Pixiv 高级会员。没有高级会员时，“热门”会显示 Pixiv 的免费预览。",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "投稿日期不会筛选预览。",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "这是 Pixiv 的免费热门预览。要按热度排序全部结果，需要 Pixiv 高级会员。",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "搜索插画或用户",

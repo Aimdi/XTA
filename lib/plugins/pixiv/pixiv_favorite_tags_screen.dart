@@ -3,20 +3,23 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_tags.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_results.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/reader_tab_view.dart';
 import 'package:xta/utils/reader_value_store.dart';
 
 /// Favourite tags as saved searches: a tab per tag, each a full search under
-/// the remembered filter, and an edit mode to reorder and remove them.
+/// the remembered filter, and an edit mode to reorder and remove them. The
+/// list is the app's one [PixivFavoriteTagsStore], so a tag pinned from a work
+/// opened here shows as a tab on the way back.
 class PixivFavoriteTagsScreen extends StatefulWidget {
   const PixivFavoriteTagsScreen({super.key});
 
@@ -31,12 +34,14 @@ class _PixivFavoriteTagsScreenState extends State<PixivFavoriteTagsScreen> {
   @override
   void initState() {
     super.initState();
-    _tags = PixivFavoriteTagsStore(PrefService.of(context, listen: false));
+    _tags = context.read<PixivFavoriteTagsStore>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _tags.load();
+    });
   }
 
   @override
   void dispose() {
-    _tags.destroy();
     _editing.destroy();
     super.dispose();
   }
@@ -122,7 +127,7 @@ class _PixivFavoriteTagsScreenState extends State<PixivFavoriteTagsScreen> {
     return Dismissible(
       key: ValueKey('pixiv-favorite-${tag.name}'),
       direction: DismissDirection.endToStart,
-      confirmDismiss: (_) => confirmPixivAction(context, l10n.plugin_pixiv_search_favorite_remove),
+      confirmDismiss: (_) => _confirmRemoval(context),
       onDismissed: (_) => _tags.remove(tag.name),
       background: Container(
         alignment: AlignmentDirectional.centerEnd,
@@ -150,10 +155,13 @@ class _PixivFavoriteTagsScreenState extends State<PixivFavoriteTagsScreen> {
     );
   }
 
+  Future<bool> _confirmRemoval(BuildContext context) {
+    final remove = L10n.of(context).plugin_pixiv_search_favorite_remove;
+    return confirmPixivAction(context, remove, remove);
+  }
+
   Future<void> _confirmRemove(BuildContext context, PixivTag tag) async {
-    if (await confirmPixivAction(context, L10n.of(context).plugin_pixiv_search_favorite_remove)) {
-      await _tags.remove(tag.name);
-    }
+    if (await _confirmRemoval(context)) await _tags.remove(tag.name);
   }
 }
 
@@ -197,6 +205,10 @@ class _PixivFavoriteTagTabState extends State<_PixivFavoriteTagTab> with Automat
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return PixivIllustFeed(store: _search.results, emptyMessage: L10n.of(context).plugin_pixiv_search_empty);
+    return PixivIllustFeed(
+      store: _search.results,
+      emptyMessage: L10n.of(context).plugin_pixiv_search_empty,
+      leadingSlivers: [if (_search.state.previewMode) const SliverToBoxAdapter(child: PixivSearchPreviewNote())],
+    );
   }
 }

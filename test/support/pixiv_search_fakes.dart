@@ -2,6 +2,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
@@ -21,6 +22,9 @@ class FakePixivSearchApi extends PixivSearchApi {
   /// Thrown by the trending call while set, to fail that landing list alone.
   Object? trendingError;
 
+  /// Handed back as every works page's `next_url` while set.
+  String? worksNextUrl;
+
   FakePixivSearchApi({
     PixivClient? client,
     this.premium = false,
@@ -39,9 +43,13 @@ class FakePixivSearchApi extends PixivSearchApi {
 
   @override
   Future<PixivIllustPage> illusts(Map<String, String> query, {String? nextUrl, bool? includeAi}) async {
-    calls.add('illusts:${query['word']}');
-    queries.add(query);
-    return PixivIllustPage(illusts: works);
+    if (nextUrl != null) {
+      calls.add('illusts-next');
+    } else {
+      calls.add('illusts:${query['word']}');
+      queries.add(query);
+    }
+    return PixivIllustPage(illusts: works, nextUrl: worksNextUrl);
   }
 
   @override
@@ -81,3 +89,10 @@ class FakePixivSearchApi extends PixivSearchApi {
     return suggestions[word] ?? const [];
   }
 }
+
+/// The app's one favourite-tags list, as main.dart provides it, over the
+/// harness's prefs.
+SingleChildWidget pixivFavoriteTagsProvider() => Provider<PixivFavoriteTagsStore>(
+  create: (context) => PixivFavoriteTagsStore(PrefService.of(context, listen: false)),
+  dispose: (_, store) => store.destroy(),
+);

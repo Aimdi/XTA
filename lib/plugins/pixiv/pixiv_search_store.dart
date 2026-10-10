@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_fetch_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
@@ -51,6 +52,10 @@ class PixivSearchState {
 
   bool get showsPopularStrip => !filter.sort.byPopularity && popular.isNotEmpty;
 
+  /// What the popular strip's works depend on; null while popularity already
+  /// sorts the grid and the strip is not drawn.
+  Object? get popularStripKey => filter.sort.byPopularity ? null : (word, filter.target, filter.hideAi, filter.ugoira);
+
   int? get numericId => pixivNumericQuery(typed);
 
   /// Suggestions or id shortcuts cover the results while the reader edits.
@@ -77,16 +82,6 @@ class PixivSearchState {
     popular: popular ?? this.popular,
     historyExpanded: historyExpanded ?? this.historyExpanded,
   );
-}
-
-/// One list the search landing loads on its own, failing and retrying apart
-/// from the rest of the page.
-class PixivLandingStore<T> extends Store<List<T>> {
-  final Future<List<T>> Function() _fetch;
-
-  PixivLandingStore(this._fetch) : super(const []);
-
-  Future<void> load() => execute(_fetch);
 }
 
 /// Trending tags as the reader's mutes leave them: muted tags go, and a tag
@@ -118,8 +113,10 @@ class PixivSearchStore extends Store<PixivSearchState> {
     keyOf: (preview) => preview.user.id,
     filter: _visibleUsers,
   );
-  late final trending = PixivLandingStore<PixivTrendTag>(api.trendingTags);
-  late final creators = PixivLandingStore<PixivUser>(api.recommendedUsers);
+
+  /// The landing's lists, each loading, failing and retrying on its own.
+  late final trending = PixivFetchStore<List<PixivTrendTag>>(api.trendingTags, const []);
+  late final creators = PixivFetchStore<List<PixivUser>>(api.recommendedUsers, const []);
 
   Timer? _suggestTimer;
   var _closed = false;
@@ -194,20 +191,26 @@ class PixivSearchStore extends Store<PixivSearchState> {
     _suggestTimer?.cancel();
     update(state.copyWith(word: word, typed: word, suggestions: const [], popular: const []));
     if (!illustsOnly) await history?.remember(word);
-    if (!_closed) await _run();
+    if (_closed) return;
+    if (!illustsOnly) _loadUsers(word);
+    await _loadWorks(strip: true);
   }
 
-  /// Runs the current search again, as a retry does.
-  Future<void> rerun() => state.searched ? _run() : Future.value();
+  /// Creators depend on the words alone, so filter changes leave them be.
+  void _loadUsers(String word) {
+    users.useLoader(({nextUrl}) => api.users(word, nextUrl: nextUrl));
+    users.setLoading(true);
+    unawaited(users.refresh());
+  }
 
-  Future<void> _run() async {
+  /// Fetches the works under the current filter, and the popular strip too
+  /// when [strip] says what it shows has changed. The grid shows its loading
+  /// state at once rather than a moment of "no results".
+  Future<void> _loadWorks({required bool strip}) async {
     final search = state;
     results.useLoader(_worksLoader(search));
-    if (!illustsOnly) {
-      users.useLoader(({nextUrl}) => api.users(search.word, nextUrl: nextUrl));
-      unawaited(users.refresh());
-      unawaited(_loadPopularStrip(search));
-    }
+    results.setLoading(true);
+    if (strip && !illustsOnly) unawaited(_loadPopularStrip(search));
     await results.refresh();
   }
 
@@ -215,17 +218,19 @@ class PixivSearchStore extends Store<PixivSearchState> {
     final filter = search.filter;
     final includeAi = !filter.hideAi;
     if (search.previewMode) {
-      return ({nextUrl}) => api.popularPreview(search.word, filter.target, nextUrl: nextUrl, includeAi: includeAi);
+      final word = pixivSearchWord(search.word, filter.usersIri);
+      return ({nextUrl}) => api.popularPreview(word, filter.target, nextUrl: nextUrl, includeAi: includeAi);
     }
     final query = pixivSearchQuery(filter, search.word, now: clock());
     return ({nextUrl}) => api.illusts(query, nextUrl: nextUrl, includeAi: includeAi);
   }
 
   Future<void> _loadPopularStrip(PixivSearchState search) async {
-    if (search.filter.sort.byPopularity) return;
+    final key = search.popularStripKey;
+    if (key == null) return;
     try {
       final page = await api.popularPreview(search.word, search.filter.target, includeAi: !search.filter.hideAi);
-      if (_closed || state.word != search.word || state.filter != search.filter) return;
+      if (_closed || state.popularStripKey != key) return;
       update(state.copyWith(popular: _visibleWorks(page.illusts)));
     } catch (_) {
       // Garnish over the grid; the grid itself is the answer.
@@ -233,12 +238,13 @@ class PixivSearchStore extends Store<PixivSearchState> {
   }
 
   /// Uses [filter] from now on, kept for later searches when [remember] says
-  /// so (unchanged when null), and runs the current search under it.
+  /// so (unchanged when null), and fetches the current search's works under it.
   Future<void> applyFilter(PixivSearchFilter filter, {bool? remember}) async {
-    final keep = remember ?? state.remembered;
-    update(state.copyWith(filter: filter, remembered: keep, popular: const []));
-    await savePixivSearchFilter(prefs, keep ? filter : null);
-    if (!_closed) await rerun();
+    final next = state.copyWith(filter: filter, remembered: remember ?? state.remembered);
+    final strip = next.popularStripKey != state.popularStripKey;
+    update(strip ? next.copyWith(popular: const []) : next);
+    await savePixivSearchFilter(prefs, next.remembered ? filter : null);
+    if (!_closed && state.searched) await _loadWorks(strip: strip);
   }
 
   /// Trending tags and suggested creators, each on its own; [force] reloads

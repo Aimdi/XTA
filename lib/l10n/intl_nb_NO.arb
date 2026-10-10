@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Tøm nylige søk",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Vil du tømme alle nylige søk?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Ingen nylige søk",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Vis færre",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Eldste først og popularitet blant menn eller kvinner krever Pixiv Premium. Uten det viser «Populære» Pixivs gratis forhåndsvisning.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Publiseringsdatoer avgrenser ikke forhåndsvisningen.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Dette er Pixivs gratis forhåndsvisning av populære verk. Å sortere alle treff etter popularitet krever Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Søk etter illustrasjoner eller brukere",

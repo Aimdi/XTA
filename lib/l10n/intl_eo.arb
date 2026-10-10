@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Forigi lastatempajn serĉojn",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Ĉu forigi ĉiujn lastatempajn serĉojn?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Neniuj lastatempaj serĉoj",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Montri malpli",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Ordigo de la plej malnovaj kaj laŭ populareco ĉe viroj aŭ virinoj bezonas Pixiv Premium. Sen ĝi, «Popularaj» montras la senpagan antaŭrigardon de Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "La afiŝdatoj ne limigas la antaŭrigardon.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Ĉi tio estas la senpaga antaŭrigardo de popularaj verkoj de Pixiv. Ordigi ĉiujn rezultojn laŭ populareco bezonas Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Serĉu ilustraĵojn aŭ uzantojn",

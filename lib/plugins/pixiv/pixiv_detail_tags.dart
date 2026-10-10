@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -60,65 +60,75 @@ TextSpan pixivTagSpan(BuildContext context, PixivTag tag) {
 enum _PixivTagAction { mute, favorite, copy }
 
 /// What a long-pressed tag offers: mute it, pin it to (or drop it from) the
-/// favourite tags, or copy it.
+/// favourite tags, or copy it. A confirmed mute leaves the work's screen, as
+/// the Mute sheet does, since the muted tag now hides the work.
 Future<void> showPixivTagSheet(BuildContext context, PixivTag tag) async {
-  final l10n = L10n.of(context);
-  final favorite = readPixivFavoriteTags(
-    PrefService.of(context, listen: false),
-  ).any((kept) => pixivSameTag(kept.name, tag.name));
+  final favorites = context.read<PixivFavoriteTagsStore>();
+  final navigator = Navigator.of(context);
+  final favorite = favorites.contains(tag.name);
   final action = await showModalBottomSheet<_PixivTagAction>(
     context: context,
     showDragHandle: true,
-    builder: (sheetContext) => SafeArea(
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          ListTile(title: Text.rich(pixivTagSpan(sheetContext, tag))),
-          const Divider(height: 1),
-          _sheetEntry(
-            sheetContext,
-            _PixivTagAction.mute,
-            Icons.label_off_outlined,
-            l10n.plugin_pixiv_mute_tag(tag.displayName),
-          ),
-          _sheetEntry(
-            sheetContext,
-            _PixivTagAction.favorite,
-            favorite ? Icons.star : Icons.star_border,
-            favorite ? l10n.plugin_pixiv_search_favorite_remove : l10n.plugin_pixiv_search_favorite_add,
-          ),
-          _sheetEntry(sheetContext, _PixivTagAction.copy, Icons.copy_outlined, l10n.plugin_pixiv_search_tag_copy),
-        ],
-      ),
-    ),
+    builder: (_) => _PixivTagSheet(tag: tag, favorite: favorite),
   );
   if (action == null || !context.mounted) return;
   switch (action) {
     case _PixivTagAction.mute:
-      await confirmPixivMute(context, pixivTagMuteChoice(l10n, tag));
+      final muted = await confirmPixivMute(context, pixivTagMuteChoice(L10n.of(context), tag));
+      if (muted && context.mounted) navigator.pop();
     case _PixivTagAction.favorite:
-      await _toggleFavorite(context, tag, favorite: favorite);
+      await _toggleFavorite(context, favorites, tag, favorite: favorite);
     case _PixivTagAction.copy:
       await copyPixivTag(context, tag.name);
   }
 }
 
-Widget _sheetEntry(BuildContext context, _PixivTagAction action, IconData icon, String label) => ListTile(
-  key: ValueKey('pixiv-tag-action-${action.name}'),
-  leading: Icon(icon),
-  title: Text(label),
-  onTap: () => Navigator.pop(context, action),
-);
+/// The tag with its translation over the actions it offers.
+class _PixivTagSheet extends StatelessWidget {
+  final PixivTag tag;
+  final bool favorite;
 
-Future<void> _toggleFavorite(BuildContext context, PixivTag tag, {required bool favorite}) async {
+  const _PixivTagSheet({required this.tag, required this.favorite});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          ListTile(title: Text.rich(pixivTagSpan(context, tag))),
+          const Divider(height: 1),
+          _entry(context, _PixivTagAction.mute, Icons.label_off_outlined, l10n.plugin_pixiv_mute_tag(tag.displayName)),
+          _entry(
+            context,
+            _PixivTagAction.favorite,
+            favorite ? Icons.star : Icons.star_border,
+            favorite ? l10n.plugin_pixiv_search_favorite_remove : l10n.plugin_pixiv_search_favorite_add,
+          ),
+          _entry(context, _PixivTagAction.copy, Icons.copy_outlined, l10n.plugin_pixiv_search_tag_copy),
+        ],
+      ),
+    );
+  }
+
+  Widget _entry(BuildContext context, _PixivTagAction action, IconData icon, String label) => ListTile(
+    key: ValueKey('pixiv-tag-action-${action.name}'),
+    leading: Icon(icon),
+    title: Text(label),
+    onTap: () => Navigator.pop(context, action),
+  );
+}
+
+Future<void> _toggleFavorite(
+  BuildContext context,
+  PixivFavoriteTagsStore favorites,
+  PixivTag tag, {
+  required bool favorite,
+}) async {
   final l10n = L10n.of(context);
   final messenger = ScaffoldMessenger.of(context);
-  final store = PixivFavoriteTagsStore(PrefService.of(context, listen: false));
-  try {
-    await (favorite ? store.remove(tag.name) : store.add(tag));
-  } finally {
-    await store.destroy();
-  }
+  await (favorite ? favorites.remove(tag.name) : favorites.add(tag));
   final said = favorite ? l10n.plugin_pixiv_search_favorite_removed : l10n.plugin_pixiv_search_favorite_added;
   messenger.showSnackBar(SnackBar(content: Text(said)));
 }

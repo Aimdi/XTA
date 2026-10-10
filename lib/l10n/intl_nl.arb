@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Recente zoekopdrachten wissen",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Alle recente zoekopdrachten wissen?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Geen recente zoekopdrachten",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Minder tonen",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Oudste eerst en populariteit bij mannen of vrouwen vereisen Pixiv Premium. Zonder Premium toont ‘Populair’ de gratis preview van Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Plaatsingsdatums beperken de preview niet.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Dit is de gratis populair-preview van Pixiv. Alle resultaten op populariteit sorteren vereist Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Zoek illustraties of gebruikers",

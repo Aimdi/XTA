@@ -86,6 +86,29 @@ void main() {
     expect(store.state.showsPopularStrip, isFalse);
   });
 
+  test('the free preview still takes the popularity tag', () async {
+    final store = build();
+    await store.applyFilter(const PixivSearchFilter(sort: PixivSearchSort.popular).withUsersIri(1000));
+    await store.search('miku');
+
+    expect(api.calls, contains('preview:miku 1000users入り'));
+    expect(store.state.filter.usersIri, 1000);
+  });
+
+  test('a filter change fetches the works again, not the creators; the strip only when it changes', () async {
+    final store = build();
+    await store.search('miku');
+    api.calls.clear();
+
+    await store.applyFilter(store.state.filter.withDates(PixivDatePreset.week));
+    expect(api.calls, ['illusts:miku']);
+    expect(ids(store.state.popular), [9], reason: 'dates do not change the strip');
+
+    api.calls.clear();
+    await store.applyFilter(store.state.filter.copyWith(target: PixivSearchTarget.exactTags));
+    expect(api.calls, unorderedEquals(['illusts:miku', 'preview:miku']));
+  });
+
   test('popular with Premium asks the real search for popular_desc', () async {
     api.premium = true;
     final store = build();

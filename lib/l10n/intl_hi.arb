@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "हाल की खोजें साफ़ करें",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "सभी हाल की खोजें साफ़ करें?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "कोई हाल की खोज नहीं",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "कम दिखाएँ",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "सबसे पुराने पहले और पुरुषों या महिलाओं में लोकप्रियता के क्रम के लिए Pixiv Premium चाहिए। इसके बिना \"लोकप्रिय\" Pixiv का मुफ़्त प्रीव्यू दिखाता है।",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "पोस्ट करने की तारीखें प्रीव्यू को सीमित नहीं करतीं।",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "यह Pixiv का मुफ़्त लोकप्रिय प्रीव्यू है। सभी नतीजों को लोकप्रियता से क्रमबद्ध करने के लिए Pixiv Premium चाहिए।",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "चित्र या उपयोगकर्ता खोजें",

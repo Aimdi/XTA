@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "مسح عمليات البحث الأخيرة",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "هل تريد مسح كل عمليات البحث الأخيرة؟",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "لا توجد عمليات بحث أخيرة",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "عرض أقل",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "يتطلب الترتيب من الأقدم والترتيب حسب الشعبية لدى الرجال أو النساء اشتراك Pixiv Premium. بدونه يعرض خيار «الأكثر شعبية» المعاينة المجانية من Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "لا يُضيّق تاريخ النشر نطاق المعاينة.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "هذه معاينة Pixiv المجانية للأعمال الرائجة. يتطلب ترتيب كل النتائج حسب الشعبية اشتراك Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "ابحث عن رسوم أو مستخدمين",

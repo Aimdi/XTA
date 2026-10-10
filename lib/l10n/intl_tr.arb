@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Son aramaları temizle",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Tüm son aramalar temizlensin mi?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Son arama yok",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Daha az göster",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Eskiden yeniye sıralama ve erkekler ya da kadınlar arasındaki popülerliğe göre sıralama Pixiv Premium gerektirir. Premium olmadan “Popüler”, Pixiv’in ücretsiz önizlemesini gösterir.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Yayın tarihleri önizlemeyi daraltmaz.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Bu, Pixiv’in ücretsiz popüler önizlemesidir. Tüm sonuçları popülerliğe göre sıralamak için Pixiv Premium gerekir.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "İllüstrasyon veya kullanıcı arayın",

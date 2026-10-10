@@ -15,8 +15,9 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
 /// The works a search found, under the filter bar. A reader without Premium
-/// who sorts by popularity gets Pixiv's free preview with a note saying so;
-/// date-sorted results get the preview as a strip on top.
+/// who sorts by popularity gets Pixiv's free preview with a note saying so,
+/// and no date menu, since the preview takes no dates; date-sorted results
+/// get the preview as a strip on top.
 class PixivSearchWorks extends StatelessWidget {
   final PixivSearchStore store;
   final PixivSearchState state;
@@ -42,6 +43,7 @@ class PixivSearchWorks extends StatelessWidget {
           filter: state.filter,
           base: pixivFreshFilter(store.prefs),
           isPremium: state.isPremium,
+          datesApply: !state.previewMode,
           onChanged: store.applyFilter,
           onOpenSheet: () => _openSheet(context),
         ),
@@ -50,8 +52,7 @@ class PixivSearchWorks extends StatelessWidget {
             store: store.results,
             emptyMessage: l10n.plugin_pixiv_search_empty,
             leadingSlivers: [
-              if (state.previewMode)
-                SliverToBoxAdapter(child: _PixivPreviewNote(text: l10n.plugin_pixiv_search_preview_note)),
+              if (state.previewMode) const SliverToBoxAdapter(child: PixivSearchPreviewNote()),
               if (state.showsPopularStrip) SliverToBoxAdapter(child: PixivPopularStrip(illusts: state.popular)),
             ],
           ),
@@ -61,14 +62,16 @@ class PixivSearchWorks extends StatelessWidget {
   }
 }
 
-class _PixivPreviewNote extends StatelessWidget {
-  final String text;
-
-  const _PixivPreviewNote({required this.text});
+/// Says the grid is Pixiv's free popular preview, and that posting dates do
+/// not narrow it.
+class PixivSearchPreviewNote extends StatelessWidget {
+  const PixivSearchPreviewNote({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
     final theme = Theme.of(context);
+    final style = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
       child: Row(
@@ -77,7 +80,13 @@ class _PixivPreviewNote extends StatelessWidget {
           Icon(Icons.workspace_premium_outlined, size: 18, color: theme.colorScheme.primary),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(text, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.plugin_pixiv_search_preview_note, style: style),
+                Text(l10n.plugin_pixiv_search_preview_dates, style: style),
+              ],
+            ),
           ),
         ],
       ),
@@ -103,35 +112,34 @@ class PixivPopularStrip extends StatelessWidget {
         ),
         SizedBox(
           height: 110,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            itemCount: illusts.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 6),
-            itemBuilder: (context, index) => Semantics(
-              button: true,
-              label: illusts[index].title,
-              child: InkWell(
-                onTap: () => openPixivIllustFromList(context, illusts, index),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: SizedBox(
-                    width: 110,
-                    child: PixivNetworkImage(
-                      url: illusts[index].thumbnailUrl,
-                      fit: BoxFit.cover,
-                      cacheWidth: cacheWidth,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Sideways scrolling here must not reach the grid's load-more listener.
+          child: NotificationListener<ScrollNotification>(onNotification: (_) => true, child: _thumbs(cacheWidth)),
         ),
         const SizedBox(height: 8),
       ],
     );
   }
+
+  Widget _thumbs(int cacheWidth) => ListView.separated(
+    scrollDirection: Axis.horizontal,
+    padding: const EdgeInsets.symmetric(horizontal: 8),
+    itemCount: illusts.length,
+    separatorBuilder: (_, _) => const SizedBox(width: 6),
+    itemBuilder: (context, index) => Semantics(
+      button: true,
+      label: illusts[index].title,
+      child: InkWell(
+        onTap: () => openPixivIllustFromList(context, illusts, index),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            width: 110,
+            child: PixivNetworkImage(url: illusts[index].thumbnailUrl, fit: BoxFit.cover, cacheWidth: cacheWidth),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Creators a search found, each with recent works and a follow button,

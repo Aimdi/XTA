@@ -3,10 +3,11 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
+import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
+import 'package:xta/plugins/pixiv/pixiv_fetch_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -129,7 +130,7 @@ class _PixivSearchHistory extends StatelessWidget {
             key: const ValueKey('pixiv-search-history-clear'),
             onPressed: () => _clear(context),
             icon: const Icon(Icons.delete_outline),
-            label: Text(l10n.clear_recent_searches),
+            label: Text(l10n.plugin_pixiv_search_history_clear),
           ),
         ],
       ],
@@ -137,7 +138,14 @@ class _PixivSearchHistory extends StatelessWidget {
   }
 
   Future<void> _clear(BuildContext context) async {
-    if (await confirmPixivAction(context, L10n.of(context).clear_recent_searches)) await onClear();
+    final l10n = L10n.of(context);
+    if (await confirmPixivAction(
+      context,
+      l10n.plugin_pixiv_search_history_clear_question,
+      l10n.plugin_pixiv_search_history_clear,
+    )) {
+      await onClear();
+    }
   }
 }
 
@@ -145,14 +153,14 @@ class _PixivSearchHistory extends StatelessWidget {
 /// the rest of the landing as it is. An empty answer shows nothing.
 class _PixivLandingSection<T> extends StatelessWidget {
   final String title;
-  final PixivLandingStore<T> store;
+  final PixivFetchStore<List<T>> store;
   final double height;
   final Widget Function(BuildContext context, List<T> items) builder;
 
   const _PixivLandingSection({required this.title, required this.store, required this.height, required this.builder});
 
   @override
-  Widget build(BuildContext context) => ScopedBuilder<PixivLandingStore<T>, List<T>>(
+  Widget build(BuildContext context) => ScopedBuilder<PixivFetchStore<List<T>>, List<T>>(
     store: store,
     onLoading: (context) => store.state.isEmpty
         ? _framed(

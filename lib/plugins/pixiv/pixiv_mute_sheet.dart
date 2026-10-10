@@ -1,31 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 
 /// Something the reader can mute, worded as the action it takes.
 typedef PixivMuteChoice = ({IconData icon, String label, Future<void> Function(PixivMuteStore store) mute});
 
-/// Asks before [action]; true once the reader agreed and [context] is still mounted.
-Future<bool> confirmPixivAction(BuildContext context, String action) async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(action),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(L10n.of(dialogContext).cancel)),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(action)),
-      ],
-    ),
-  );
-  return confirmed == true && context.mounted;
-}
-
 /// Asks before muting; true once [choice] was muted.
 Future<bool> confirmPixivMute(BuildContext context, PixivMuteChoice choice) async {
   final store = context.read<PixivMuteStore>();
-  if (!await confirmPixivAction(context, choice.label)) return false;
+  if (!await confirmPixivAction(context, choice.label, choice.label) || !context.mounted) return false;
   await choice.mute(store);
   return true;
 }

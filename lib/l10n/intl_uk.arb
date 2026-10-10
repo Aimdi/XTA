@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Очистити нещодавні пошуки",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Очистити всі нещодавні пошуки?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Немає нещодавніх пошуків",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Показати менше",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Сортування від найстаріших і за популярністю серед чоловіків або жінок потребує Pixiv Premium. Без нього «Популярні» показують безкоштовний попередній перегляд Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Дата публікації не звужує попередній перегляд.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Це безкоштовний попередній перегляд популярного від Pixiv. Щоб сортувати всі результати за популярністю, потрібен Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Шукайте ілюстрації або користувачів",

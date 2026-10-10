@@ -2448,6 +2448,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Xóa tìm kiếm gần đây",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Xóa tất cả tìm kiếm gần đây?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Chưa có tìm kiếm gần đây",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Thu gọn",
@@ -2476,6 +2480,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Sắp xếp cũ nhất trước và phổ biến với nam hoặc nữ cần Pixiv Premium. Nếu không có, \"Phổ biến\" sẽ hiển thị bản xem trước miễn phí của Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Ngày đăng không thu hẹp bản xem trước.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Đây là bản xem trước miễn phí các tác phẩm phổ biến của Pixiv. Sắp xếp toàn bộ kết quả theo độ phổ biến cần Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Tìm minh họa hoặc người dùng",

@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Kustuta hiljutised otsingud",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Kas kustutada kõik hiljutised otsingud?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Hiljutisi otsinguid pole",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Näita vähem",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Vanimad eespool ning populaarsus meeste või naiste seas nõuavad Pixiv Premiumit. Ilma selleta näitab „Populaarsed” Pixivi tasuta eelvaadet.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Postitamise kuupäevad eelvaadet ei kitsenda.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "See on Pixivi tasuta populaarsete teoste eelvaade. Kõigi tulemuste sortimiseks populaarsuse järgi on vaja Pixiv Premiumit.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Otsi illustratsioone või kasutajaid",

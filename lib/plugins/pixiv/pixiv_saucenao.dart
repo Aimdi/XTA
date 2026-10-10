@@ -135,7 +135,10 @@ Future<Uint8List> pixivSauceImage(Uint8List bytes, {int maxWidth = 1000}) async 
 class PixivSauceNaoApi {
   final http.Client httpClient;
 
-  const PixivSauceNaoApi(this.httpClient);
+  /// How long the whole exchange may take, upload included.
+  final Duration timeout;
+
+  const PixivSauceNaoApi(this.httpClient, {this.timeout = const Duration(seconds: 45)});
 
   static final endpoint = Uri.parse('https://saucenao.com/search.php');
 
@@ -148,7 +151,7 @@ class PixivSauceNaoApi {
       ..files.add(http.MultipartFile.fromBytes('file', png, filename: 'image.png'));
     final http.Response response;
     try {
-      response = await http.Response.fromStream(await httpClient.send(request)).timeout(const Duration(seconds: 45));
+      response = await _send(request).timeout(timeout);
     } catch (e) {
       throw PixivException(PixivErrorKind.network, 'saucenao: $e');
     }
@@ -158,4 +161,7 @@ class PixivSauceNaoApi {
     }
     return parsePixivSauceNao(utf8.decode(response.bodyBytes, allowMalformed: true));
   }
+
+  Future<http.Response> _send(http.BaseRequest request) async =>
+      http.Response.fromStream(await httpClient.send(request));
 }

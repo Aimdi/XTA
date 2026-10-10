@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Vymazat nedávná hledání",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Vymazat všechna nedávná hledání?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Žádná nedávná hledání",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Zobrazit méně",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Řazení od nejstarších a podle obliby u mužů nebo žen vyžaduje Pixiv Premium. Bez něj volba Populární zobrazí bezplatný náhled Pixivu.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Datum zveřejnění náhled nezužuje.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Toto je bezplatný náhled populárních děl od Pixivu. Řazení všech výsledků podle popularity vyžaduje Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Hledejte ilustrace nebo uživatele",

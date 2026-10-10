@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Ačyscić niadaŭnija pošuki",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Ačyscić usie niadaŭnija pošuki?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Niama niadaŭnich pošukaŭ",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Pakazać mienš",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Sartavannie ad starych i pa papuliarnasci siarod mužčyn abo žančyn patrabuje Pixiv Premium. Biez jaho «Papuliarnyja» pakazvajuć biasplatny papiaredni prahlad Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Data publikacyi nie zvužaje papiaredni prahlad.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Heta biasplatny papiaredni prahlad papuliarnaha ad Pixiv. Kab sartavać usie vyniki pa papuliarnasci, patrebny Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Šukajcie iliustracyi ci karystal'nikaŭ",

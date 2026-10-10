@@ -65,6 +65,7 @@ import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -827,6 +828,7 @@ Future<void> main() async {
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistory(prefService);
+    final pixivFavoriteTags = PixivFavoriteTagsStore(prefService);
     final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
@@ -1053,6 +1055,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivClient),
                 Provider(create: (_) => pixivMute),
                 Provider(create: (_) => pixivSearchHistory),
+                Provider(create: (_) => pixivFavoriteTags),
                 Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
                 Provider(create: (_) => pixivFeed),

@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Hapus pencarian terbaru",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Hapus semua pencarian terbaru?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Belum ada pencarian terbaru",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Tampilkan lebih sedikit",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Urutan terlama dan popularitas di kalangan pria atau wanita memerlukan Pixiv Premium. Tanpanya, \"Populer\" menampilkan pratinjau gratis dari Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Tanggal unggah tidak menyaring pratinjau.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Ini adalah pratinjau populer gratis dari Pixiv. Mengurutkan semua hasil berdasarkan popularitas memerlukan Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Cari ilustrasi atau pengguna",

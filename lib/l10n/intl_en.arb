@@ -2570,6 +2570,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Clear recent searches",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Clear all recent searches?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "No recent searches",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Show fewer",
@@ -2602,6 +2606,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Oldest first and popularity with men or women need Pixiv Premium. Without it, Popular shows Pixiv's free preview.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Posting dates do not narrow the preview.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "This is Pixiv's free popular preview. Sorting every result by popularity needs Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Search for illustrations or users",

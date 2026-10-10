@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,9 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_saucenao.dart';
 import 'package:xta/plugins/pixiv/pixiv_saucenao_sheet.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_results.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/ui/empty_pane.dart';
 
 import 'support/pixiv_reader_harness.dart';
 import 'support/pixiv_search_fakes.dart';
@@ -42,6 +45,22 @@ void _captureClipboard(WidgetTester tester, void Function(String? text) onCopy) 
     return null;
   });
   addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+}
+
+/// Opens a work's tags over the current screen, as a work's detail does.
+Future<void> _openWork(WidgetTester tester, List<PixivTag> tags) async {
+  unawaited(
+    tester
+        .state<NavigatorState>(find.byType(Navigator))
+        .push(
+          MaterialPageRoute<void>(
+            builder: (_) => Scaffold(
+              body: Center(child: PixivDetailTags(tags: tags)),
+            ),
+          ),
+        ),
+  );
+  await settlePixiv(tester);
 }
 
 Future<void> _applyFromSheet(WidgetTester tester, List<String> choices) async {
@@ -109,6 +128,46 @@ void main() {
       expect(find.text('Most popular'), findsNothing);
       expect(find.byKey(const ValueKey('pixiv-search-bookmarks')), findsNothing);
       expect(api.calls.last, 'preview:miku');
+
+      expect(find.byKey(const ValueKey('pixiv-search-date')), findsNothing, reason: 'the preview takes no dates');
+      expect(find.text('Posting dates do not narrow the preview.'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('pixiv-search-popularity')));
+      await settlePixiv(tester);
+      await tester.tap(find.text('Bookmarked by 1,000+').last);
+      await settlePixiv(tester);
+      expect(api.calls.last, 'preview:miku 1000users入り');
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a filter change shows the loading grid at once and leaves the creators be', (tester) async {
+      final api = _api();
+      await pumpPixiv(tester, const PixivSearchScreen(initialQuery: 'miku'), extraProviders: [api.provider]);
+      final creatorSearches = api.calls.where((call) => call.startsWith('users:')).length;
+
+      await tester.tap(find.byKey(const ValueKey('pixiv-search-date')));
+      await settlePixiv(tester);
+      await tester.tap(find.text('Past week').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 10));
+      expect(find.byType(EmptyPane), findsNothing, reason: 'no flash of "no results" before the new page');
+
+      await settlePixiv(tester);
+      expect(api.queries.last['start_date'], isNotNull);
+      expect(api.calls.where((call) => call.startsWith('users:')), hasLength(creatorSearches));
+      expect(find.text('Found'), findsWidgets);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('scrolling the popular strip sideways loads no more works', (tester) async {
+      final api = _api()
+        ..preview = [for (var id = 20; id < 28; id++) pixivWork(id: id, type: 'illust')]
+        ..worksNextUrl = 'https://app-api.pixiv.net/v1/search/illust?offset=30';
+      await pumpPixiv(tester, const PixivSearchScreen(initialQuery: 'miku'), extraProviders: [api.provider]);
+      expect(find.text('Most popular'), findsOneWidget);
+
+      await tester.drag(find.byType(PixivPopularStrip), const Offset(-300, 0));
+      await settlePixiv(tester);
+      expect(api.calls, isNot(contains('illusts-next')));
       await disposePixiv(tester);
     });
 
@@ -161,6 +220,16 @@ void main() {
   });
 
   group('the search field', () {
+    testWidgets('a number handed in offers its shortcuts instead of searching it', (tester) async {
+      final api = _api();
+      await pumpPixiv(tester, const PixivSearchScreen(initialQuery: '12345'), extraProviders: [api.provider]);
+
+      expect(find.byKey(const ValueKey('pixiv-open-artwork-12345')), findsOneWidget);
+      expect(find.byKey(const ValueKey('pixiv-open-user-12345')), findsOneWidget);
+      expect(api.calls.where((call) => call.startsWith('illusts')), isEmpty);
+      await disposePixiv(tester);
+    });
+
     testWidgets('a number offers to open it as an artwork or a user instead of opening it', (tester) async {
       await pumpPixiv(tester, const PixivSearchScreen(), extraProviders: [_api().provider]);
       await tester.enterText(find.byKey(const ValueKey('pixiv-search-field')), '12345');
@@ -189,6 +258,31 @@ void main() {
       await settlePixiv(tester);
       expect(find.byType(PixivIllustScreen), findsOneWidget);
       await disposePixiv(tester);
+    });
+
+    testWidgets('paste puts plain text at the cursor', (tester) async {
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.getData') return {'text': '鏡音リン'};
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+      await pumpPixiv(tester, const PixivSearchScreen(), extraProviders: [_api().provider]);
+      final field = find.byKey(const ValueKey('pixiv-search-field'));
+      await tester.enterText(field, 'miku ');
+
+      await tester.tap(find.byTooltip('Paste'));
+      await settlePixiv(tester);
+      expect(tester.widget<TextField>(field).controller!.text, 'miku 鏡音リン');
+      expect(find.byType(PixivIllustScreen), findsNothing);
+      await disposePixiv(tester);
+    });
+
+    test('pasting replaces the selection, or adds to the end without one', () {
+      const selected = TextEditingValue(text: 'miku len', selection: TextSelection(baseOffset: 5, extentOffset: 8));
+      final pasted = pixivPastedInto(selected, 'rin');
+      expect((pasted.text, pasted.selection.baseOffset), ('miku rin', 8));
+      expect(pixivPastedInto(const TextEditingValue(text: 'miku '), 'rin').text, 'miku rin');
     });
 
     testWidgets('a suggestion completes the last word; a long press copies it', (tester) async {
@@ -236,6 +330,7 @@ void main() {
 
       await tester.tap(find.byKey(const ValueKey('pixiv-search-history-clear')));
       await settlePixiv(tester);
+      expect(find.text('Clear all recent searches?'), findsOneWidget);
       await tester.tap(find.widgetWithText(FilledButton, 'Clear recent searches'));
       await settlePixiv(tester);
       expect(find.text('No recent searches'), findsOneWidget);
@@ -288,14 +383,16 @@ void main() {
 
   group('tags on a work', () {
     const tag = PixivTag(name: 'オリジナル', translatedName: 'original');
-    Widget host() => const Scaffold(
-      body: Center(child: PixivDetailTags(tags: [tag])),
-    );
 
     testWidgets('a long press offers mute, favourite and copy', (tester) async {
       String? copied;
       _captureClipboard(tester, (text) => copied = text);
-      final harness = await pumpPixiv(tester, host());
+      final harness = await pumpPixiv(
+        tester,
+        const Scaffold(body: SizedBox()),
+        extraProviders: [pixivFavoriteTagsProvider()],
+      );
+      await _openWork(tester, [tag]);
       final chip = find.byKey(const ValueKey('pixiv-tag-オリジナル'));
 
       await tester.longPress(chip);
@@ -320,7 +417,8 @@ void main() {
       await settlePixiv(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Mute tag "original"'));
       await settlePixiv(tester);
-      final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivDetailTags)), listen: false);
+      expect(find.byType(PixivDetailTags), findsNothing, reason: 'the muted work is left, as the Mute sheet does');
+      final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(Scaffold)), listen: false);
       expect(mute.state.tags, {'オリジナル'});
       await disposePixiv(tester);
     });
@@ -335,7 +433,7 @@ void main() {
         client: _seeded({
           optionPluginPixivFavoriteTags: jsonEncode(['風景', 'cat']),
         }),
-        extraProviders: [api.provider],
+        extraProviders: [api.provider, pixivFavoriteTagsProvider()],
       );
       expect(find.widgetWithText(Tab, '#風景'), findsOneWidget);
       expect(find.widgetWithText(Tab, '#cat'), findsOneWidget);
@@ -355,8 +453,56 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('a tag pinned from a work opened here gets its tab, and later edits keep it', (tester) async {
+      final harness = await pumpPixiv(
+        tester,
+        const PixivFavoriteTagsScreen(),
+        client: _seeded({
+          optionPluginPixivFavoriteTags: jsonEncode(['a', 'b']),
+        }),
+        extraProviders: [_api().provider, pixivFavoriteTagsProvider()],
+      );
+      await _openWork(tester, [const PixivTag(name: 'c')]);
+      await tester.longPress(find.byKey(const ValueKey('pixiv-tag-c')));
+      await settlePixiv(tester);
+      await tester.tap(find.byKey(const ValueKey('pixiv-tag-action-favorite')));
+      await settlePixiv(tester);
+      tester.state<NavigatorState>(find.byType(Navigator)).pop();
+      await settlePixiv(tester);
+      expect(find.widgetWithText(Tab, '#c'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('pixiv-favorite-tags-edit')));
+      await settlePixiv(tester);
+      await tester.tap(find.byTooltip('Remove from favorite tags').first);
+      await settlePixiv(tester);
+      await tester.tap(find.widgetWithText(FilledButton, 'Remove from favorite tags'));
+      await settlePixiv(tester);
+      expect(readPixivFavoriteTags(harness.prefs).map((tag) => tag.name), ['b', 'c']);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a remembered Popular without Premium says its tabs show the preview', (tester) async {
+      final api = _api();
+      await pumpPixiv(
+        tester,
+        const PixivFavoriteTagsScreen(),
+        client: _seeded({
+          optionPluginPixivFavoriteTags: jsonEncode(['cat']),
+          optionPluginPixivSearchFilters: jsonEncode({'sort': 'popular_desc'}),
+        }),
+        extraProviders: [api.provider, pixivFavoriteTagsProvider()],
+      );
+      expect(api.calls, contains('preview:cat'));
+      expect(find.textContaining("Pixiv's free popular preview"), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
     testWidgets('with none saved, says how to add one', (tester) async {
-      await pumpPixiv(tester, const PixivFavoriteTagsScreen(), extraProviders: [_api().provider]);
+      await pumpPixiv(
+        tester,
+        const PixivFavoriteTagsScreen(),
+        extraProviders: [_api().provider, pixivFavoriteTagsProvider()],
+      );
       expect(find.textContaining('Long-press a tag'), findsOneWidget);
       await disposePixiv(tester);
     });

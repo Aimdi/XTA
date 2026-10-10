@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Cancella ricerche recenti",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Cancellare tutte le ricerche recenti?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Nessuna ricerca recente",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Mostra meno",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "L’ordinamento dal più vecchio e per popolarità tra uomini o donne richiede Pixiv Premium. Senza Premium, «Popolari» mostra l’anteprima gratuita di Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Le date di pubblicazione non filtrano l’anteprima.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Questa è l’anteprima gratuita dei popolari di Pixiv. Ordinare tutti i risultati per popolarità richiede Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Cerca illustrazioni o utenti",

@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "최근 검색 지우기",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "최근 검색을 모두 지울까요?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "최근 검색이 없습니다",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "간단히 보기",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "오래된순과 남성·여성 인기순 정렬에는 pixiv 프리미엄이 필요합니다. 프리미엄이 없으면 '인기순'은 Pixiv의 무료 미리보기를 보여 줍니다.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "게시 날짜는 미리보기에 적용되지 않습니다.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Pixiv의 무료 인기 미리보기입니다. 모든 결과를 인기순으로 정렬하려면 pixiv 프리미엄이 필요합니다.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "일러스트나 사용자를 검색하세요",

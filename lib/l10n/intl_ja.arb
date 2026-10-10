@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "最近の検索を消去",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "最近の検索をすべて消去しますか？",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "最近の検索はありません",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "表示を減らす",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "古い順と、男性・女性に人気の順にはpixivプレミアムが必要です。プレミアムでない場合、「人気順」ではPixivの無料プレビューを表示します。",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "投稿日はプレビューには反映されません。",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Pixivの無料の人気プレビューです。すべての結果を人気順に並べるにはpixivプレミアムが必要です。",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "イラストやユーザーを検索",

@@ -59,6 +59,9 @@ String pixivBookmarkRangeLabel(BuildContext context, PixivBookmarkRange range) {
 class PixivSearchFilterBar extends StatelessWidget {
   final PixivSearchFilter filter;
   final bool isPremium;
+
+  /// False while the results cannot be narrowed by date, which hides the menu.
+  final bool datesApply;
   final ValueChanged<PixivSearchFilter> onChanged;
   final VoidCallback onOpenSheet;
 
@@ -71,6 +74,7 @@ class PixivSearchFilterBar extends StatelessWidget {
     required this.isPremium,
     required this.onChanged,
     required this.onOpenSheet,
+    this.datesApply = true,
     this.base = const PixivSearchFilter(),
   });
 
@@ -90,7 +94,7 @@ class PixivSearchFilterBar extends StatelessWidget {
             active: filter.sheetDiffersFrom(base),
             onPressed: onOpenSheet,
           ),
-          _dateMenu(context, l10n),
+          if (datesApply) _dateMenu(context, l10n),
           _popularityMenu(context, l10n),
           if (isPremium) _bookmarksMenu(context, l10n),
         ],

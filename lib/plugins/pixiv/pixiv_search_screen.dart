@@ -28,6 +28,19 @@ class PixivSearchHistory extends PluginSearchHistoryStore {
     : super(prefs, optionPluginPixivSearchHistory, identity: (query) => query.toLowerCase());
 }
 
+/// [value] with [pasted] in place of its selection, or after its text when
+/// it has none, and the cursor right after the pasted text.
+TextEditingValue pixivPastedInto(TextEditingValue value, String pasted) {
+  final length = value.text.length;
+  final selection = value.selection;
+  final start = selection.isValid ? selection.start.clamp(0, length) : length;
+  final end = selection.isValid ? selection.end.clamp(start, length) : length;
+  return TextEditingValue(
+    text: value.text.replaceRange(start, end, pasted),
+    selection: TextSelection.collapsed(offset: start + pasted.length),
+  );
+}
+
 /// Tag / keyword / user search — Pixez's second home. Its state lives in a
 /// [PixivSearchStore]; this widget owns the text field and the tabs.
 class PixivSearchScreen extends StatefulWidget {
@@ -61,9 +74,20 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _history.load();
-      final searching = (widget.initialQuery ?? '').trim().isNotEmpty;
-      unawaited(searching ? _submit() : _store.loadLanding());
+      _start((widget.initialQuery ?? '').trim());
     });
+  }
+
+  /// A query handed in is searched, except a bare number: that offers its id
+  /// shortcuts, with the landing behind them, since it most likely names a
+  /// work or a creator.
+  void _start(String query) {
+    if (query.isNotEmpty && pixivNumericQuery(query) == null) {
+      unawaited(_submit());
+      return;
+    }
+    if (query.isNotEmpty) _store.type(query);
+    unawaited(_store.loadLanding());
   }
 
   @override
@@ -99,14 +123,18 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     if (text == tag.name) FocusScope.of(context).unfocus();
   }
 
-  /// Puts the clipboard in the field and opens it at once when it names a
-  /// Pixiv work or creator.
+  /// Pastes the clipboard at the cursor. A Pixiv link or id takes the whole
+  /// field instead, so a bare id keeps its shortcuts, and opens at once.
   Future<void> _paste() async {
-    final text = (await Clipboard.getData(Clipboard.kTextPlain))?.text?.trim() ?? '';
-    if (text.isEmpty || !mounted) return;
-    _show(text);
-    _store.type(text);
-    final link = parsePixivLink(text);
+    final pasted = (await Clipboard.getData(Clipboard.kTextPlain))?.text?.trim() ?? '';
+    if (pasted.isEmpty || !mounted) return;
+    final link = parsePixivLink(pasted);
+    if (link == null) {
+      _query.value = pixivPastedInto(_query.value, pasted);
+    } else {
+      _show(pasted);
+    }
+    _store.type(_query.text);
     if (link != null) await openPixivLinkOrSay(context, link);
   }
 

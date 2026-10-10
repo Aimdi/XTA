@@ -11,14 +11,16 @@ parameters exist; the code is written fresh.
 |---|---|
 | `pixiv_search_filters.dart` | Pure pieces: `PixivSearchTarget`, `PixivSearchSort` (with its Premium flag), `PixivDatePreset` and `pixivPresetRange`, users入り thresholds, Premium bookmark brackets, `PixivUgoiraFilter`, the immutable `PixivSearchFilter` (JSON, `forAccount`), `pixivSearchQuery`, `pixivPopularPreviewQuery`, last-word editing and `pixivNumericQuery` |
 | `pixiv_search_api.dart` | `PixivSearchApi` over the client transport: illust search, user search with previews, the popular preview (paged), trending tags, suggested creators, autocomplete. `PixivSearchApi.of(context)` prefers a provided fake |
-| `pixiv_search_store.dart` | `PixivSearchStore` and its immutable `PixivSearchState`; `PixivLandingStore` for each landing list; `pixivVisibleTrendTags` |
+| `pixiv_search_store.dart` | `PixivSearchStore` and its immutable `PixivSearchState`; `pixivVisibleTrendTags` |
+| `pixiv_fetch_store.dart` | `PixivFetchStore<T>`, a one-call fetch with its own loading, error and retry (each landing list, each SauceNAO row's work) |
+| `pixiv_confirm.dart` | `confirmPixivAction`, the shared question-and-action dialog |
 | `pixiv_search_screen.dart` | The field, tabs and body switch; the app-wide `PixivSearchHistory` |
 | `pixiv_search_landing.dart` | Recent searches, suggested creators, trending tags |
-| `pixiv_search_results.dart` | Works under the filter bar, the popular strip and note, creator cards |
+| `pixiv_search_results.dart` | Works under the filter bar, the popular strip, `PixivSearchPreviewNote`, creator cards |
 | `pixiv_search_filter_sheet.dart` | `PixivSearchFilterBar`, `showPixivSearchFilterSheet` and the label helpers |
 | `pixiv_search_shortcuts.dart` | `pixivNumericShortcuts` (the list of id shortcut builders) and the picker over the results |
 | `pixiv_detail_tags.dart` | Tag chips on a work and the long-press tag sheet |
-| `pixiv_favorite_tags_store.dart`, `pixiv_favorite_tags_screen.dart` | Favourite tags |
+| `pixiv_favorite_tags_store.dart`, `pixiv_favorite_tags_screen.dart` | Favourite tags; one `PixivFavoriteTagsStore` is provided app-wide in `main.dart` |
 | `pixiv_saucenao.dart`, `pixiv_saucenao_sheet.dart` | SauceNAO parsing, upload and sheet |
 | `lib/plugins/plugin_query_words.dart` | Word splitting shared with booru tag search |
 
@@ -33,13 +35,16 @@ strip and whether recent searches are unfolded. It owns:
   page filters to nothing;
 - `users`, a `PixivPagedListStore<PixivUserPreview>` keyed by user id, leaving
   out muted creators;
-- `trending` and `creators`, each a `PixivLandingStore` with its own loading,
+- `trending` and `creators`, each a `PixivFetchStore` with its own loading,
   error and retry.
 
 Every search and filter change installs a fresh loader (`useLoader`), so a slow
-page for an older query never lands in the new list. With `illustsOnly` the
-store fetches works only and keeps no history, which is how a favourite tag's
-tab uses it.
+page for an older query never lands in the new list, and puts the grid in its
+loading state at once, so no "no results" flashes before the new page. A new
+word fetches works, creators and the popular strip; a filter change fetches
+the works only, and the strip only when what it shows changes (target, Hide AI,
+ugoira, or a sort that brings it back). With `illustsOnly` the store fetches
+works only and keeps no history, which is how a favourite tag's tab uses it.
 
 ## Filters
 
@@ -60,8 +65,11 @@ tab uses it.
 - **Premium:** `isPremium` comes from the stored token response. Without it a
   remembered Premium order falls back to newest and the bookmark bracket goes.
   Popular without Premium fills the grid from `/v1/search/popular-preview/illust`
-  with a note that full popular sorting needs Premium; date sorts show one page
-  of that preview as a strip above the grid.
+  with a note that full popular sorting needs Premium. The preview takes the
+  users入り word but no dates, so the date menu is hidden there and the note
+  says dates do not narrow it; a favourite tag's tab under such a remembered
+  filter shows the same note. Date sorts show one page of that preview as a
+  strip above the grid; scrolling the strip sideways never pages the grid.
 - **AI:** `search_ai_type=1` hides AI works, `0` includes them; a new filter
   starts from the plugin's Hide AI setting, and the page filter follows the
   search's choice.
@@ -78,11 +86,14 @@ tab uses it.
   searches the raw text.
 - A query of digits shows the tiles from `pixivNumericShortcuts` (Open artwork,
   Open user) above the suggestions instead of opening anything. Enter searches
-  the number as a keyword. A later feature adds its tile to that list.
+  the number as a keyword. A later feature adds its tile to that list. A
+  screen opened with a bare number (from XTA's global search or a shared id)
+  shows those tiles, with the landing loaded behind them, instead of
+  searching the digits.
 - Links still go through `parsePixivLink` and `openPixivLinkRef`.
-- Paste puts the clipboard in the field and opens it at once when it is a
-  Pixiv link or id (a bare id opens as an artwork; the shortcuts stay in the
-  field for opening it as a user).
+- Paste puts plain text at the cursor, replacing any selection. A Pixiv link
+  or id takes the whole field instead and opens at once (a bare id opens as an
+  artwork; the shortcuts stay in the field for opening it as a user).
 
 ## Landing
 
@@ -96,8 +107,9 @@ it. Muted tags leave the grid and a muted picture leaves its tag bare.
 ## Tags on a work
 
 A tap searches the tag. A long press opens a sheet titled with the tag and its
-translation: mute (with the usual confirmation), add to or remove from
-favourite tags, and copy (with a snackbar).
+translation: mute (with the usual confirmation, then leaving the work's
+screen as the Mute sheet does), add to or remove from favourite tags, and copy
+(with a snackbar).
 
 ## Favourite tags
 
@@ -107,7 +119,10 @@ without regard to case. The settings backup carries it like other preferences.
 The screen (More → Favorite tags) has a scrollable tab per tag, each a search
 under the remembered filter, kept alive while switching tabs. Edit mode
 reorders by drag handle and removes by swipe or the delete button, both after a
-confirmation.
+confirmation. The screen and the tag sheet share the app's one store, so a tag
+pinned from a work opened from a tab shows as a tab on the way back, and a
+later edit cannot write an older list over it. Removing the plugin's data
+reloads it with the other Pixiv lists.
 
 ## SauceNAO
 
@@ -121,7 +136,8 @@ or `ext_urls`) when it is JSON, else as the HTML page (`.result` blocks with
 `illust_id=`). Each Pixiv work appears once, with similarity, title and
 artist; its thumbnail loads through `/v1/illust/detail` when the row shows,
 respecting mutes, Show R-18 and Hide AI, and a refused token shows a sign-in
-hint instead. A tap opens the work.
+hint instead. A tap opens the work. The whole exchange, upload included, times
+out after 45 seconds as a network error with Retry.
 
 ## Endpoints
 

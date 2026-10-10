@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Garbitu azken bilaketak",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Azken bilaketa guztiak garbitu?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Ez dago azken bilaketarik",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Erakutsi gutxiago",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Zaharrenak lehenik ordenatzeko eta gizonen edo emakumeen arteko ospearen arabera ordenatzeko Pixiv Premium behar da. Hura gabe, «Ospetsuak» aukerak Pixiv-en doako aurrebista erakusten du.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Argitaratze-datek ez dute aurrebista murrizten.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "Hau Pixiv-en lan ospetsuen doako aurrebista da. Emaitza guztiak ospearen arabera ordenatzeko Pixiv Premium behar da.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Bilatu ilustrazioak edo erabiltzaileak",

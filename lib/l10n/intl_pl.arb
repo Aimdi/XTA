@@ -2451,6 +2451,10 @@
       }
     }
   },
+  "plugin_pixiv_search_history_clear": "Wyczyść ostatnie wyszukiwania",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Wyczyścić wszystkie ostatnie wyszukiwania?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Brak ostatnich wyszukiwań",
   "@plugin_pixiv_search_history_empty": {},
   "plugin_pixiv_search_history_fewer": "Pokaż mniej",
@@ -2479,6 +2483,8 @@
   "@plugin_pixiv_search_popularity_any": {},
   "plugin_pixiv_search_premium_note": "Sortowanie od najstarszych i według popularności wśród mężczyzn lub kobiet wymaga Pixiv Premium. Bez niego opcja „Popularne” pokazuje bezpłatny podgląd Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Daty publikacji nie zawężają podglądu.",
+  "@plugin_pixiv_search_preview_dates": {},
   "plugin_pixiv_search_preview_note": "To bezpłatny podgląd popularnych dzieł z Pixiv. Sortowanie wszystkich wyników według popularności wymaga Pixiv Premium.",
   "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Szukaj ilustracji lub użytkowników",

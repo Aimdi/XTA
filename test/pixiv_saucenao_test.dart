@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -135,6 +136,17 @@ void main() {
       final offline = PixivSauceNaoApi(MockClient((_) async => throw http.ClientException('offline')));
       await expectLater(
         offline.search(Uint8List(4)),
+        throwsA(isA<PixivException>().having((e) => e.kind, 'kind', PixivErrorKind.network)),
+      );
+    });
+
+    test('an upload that never gets an answer times out as a network error', () async {
+      final stalled = PixivSauceNaoApi(
+        MockClient((_) => Completer<http.Response>().future),
+        timeout: const Duration(milliseconds: 20),
+      );
+      await expectLater(
+        stalled.search(Uint8List(4)),
         throwsA(isA<PixivException>().having((e) => e.kind, 'kind', PixivErrorKind.network)),
       );
     });

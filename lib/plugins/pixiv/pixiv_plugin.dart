@@ -14,6 +14,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -152,5 +153,6 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     context.read<PixivBookmarkStore>().update(const {});
     context.read<PixivFollowStore>().clear();
     context.read<PixivSearchHistory>().load();
+    context.read<PixivFavoriteTagsStore>().load();
   }
 }
