@@ -18,6 +18,7 @@ PixivNovel pixivNovel({
   int textLength = 12345,
   bool bookmarked = false,
   int bookmarks = 10,
+  int comments = 0,
   int xRestrict = 0,
   bool ai = false,
 }) => PixivNovel(
@@ -30,6 +31,7 @@ PixivNovel pixivNovel({
   textLength: textLength,
   isBookmarked: bookmarked,
   totalBookmarks: bookmarks,
+  totalComments: comments,
   xRestrict: xRestrict,
   isAi: ai,
 );
@@ -42,6 +44,18 @@ class FakePixivNovelApi extends PixivNovelApi {
   List<PixivNovel> rankingNovels;
   List<PixivNovel> bookmarkNovels;
   List<PixivWatchlistSeries> watchlistSeries;
+  List<PixivNovel> searchNovels;
+  List<PixivNovel> userNovelList;
+  List<PixivTrendTag> trending;
+
+  /// Novels [detail] knows by id; any other id is not found.
+  Map<int, PixivNovel> details;
+
+  /// The queries [search] was asked, first pages only.
+  final queries = <Map<String, String>>[];
+
+  /// The AI choice each [search] was handed.
+  final searchAiChoices = <bool?>[];
 
   /// Series pages by the `nextUrl` that asks for them; null is the first.
   Map<String?, PixivNovelSeriesPage> seriesPages;
@@ -60,6 +74,10 @@ class FakePixivNovelApi extends PixivNovelApi {
     this.bookmarkNovels = const [],
     this.watchlistSeries = const [],
     this.seriesPages = const {},
+    this.searchNovels = const [],
+    this.userNovelList = const [],
+    this.trending = const [],
+    this.details = const {},
   });
 
   List<SingleChildWidget> get providers => [
@@ -127,5 +145,34 @@ class FakePixivNovelApi extends PixivNovelApi {
     final page = seriesPages[nextUrl];
     if (page == null) throw PixivException(PixivErrorKind.notFound, 'series $seriesId');
     return page;
+  }
+
+  @override
+  Future<PixivNovel> detail(int novelId) async {
+    calls.add('detail:$novelId');
+    return details[novelId] ?? (throw PixivException(PixivErrorKind.notFound, 'novel $novelId'));
+  }
+
+  @override
+  Future<PixivNovelPage> search(Map<String, String> query, {String? nextUrl, bool? includeAi}) async {
+    calls.add('search:${query['word']}');
+    queries.add(query);
+    searchAiChoices.add(includeAi);
+    return PixivPage([
+      for (final novel in searchNovels)
+        if (includeAi != false || !novel.isAi) novel,
+    ]);
+  }
+
+  @override
+  Future<List<PixivTrendTag>> trendingTags() async {
+    calls.add('trending');
+    return trending;
+  }
+
+  @override
+  Future<PixivNovelPage> userNovels(int userId, {String? nextUrl}) async {
+    calls.add('userNovels:$userId');
+    return PixivPage(userNovelList);
   }
 }

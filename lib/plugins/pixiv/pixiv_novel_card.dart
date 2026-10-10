@@ -24,13 +24,16 @@ class PixivNovelCard extends StatelessWidget {
   /// Off where the list is the series itself.
   final bool showSeries;
 
-  const PixivNovelCard({super.key, required this.novel, this.order, this.showSeries = true});
+  /// What a long press does instead of opening the actions, such as forgetting a history entry.
+  final VoidCallback? onLongPress;
+
+  const PixivNovelCard({super.key, required this.novel, this.order, this.showSeries = true, this.onLongPress});
 
   @override
   Widget build(BuildContext context) => InkWell(
     key: ValueKey('pixiv-novel-${novel.id}'),
     onTap: () => openPixivNovel(context, novel),
-    onLongPress: () => showPixivNovelActions(context, novel),
+    onLongPress: onLongPress ?? () => showPixivNovelActions(context, novel),
     child: Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 4, 12),
       child: Row(
@@ -94,7 +97,8 @@ class PixivNovelCard extends StatelessWidget {
       runSpacing: 2,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text(l10n.plugin_pixiv_novel_characters(novel.textLength, compactCount(novel.textLength)), style: muted),
+        if (novel.textLength > 0)
+          Text(l10n.plugin_pixiv_novel_characters(novel.textLength, compactCount(novel.textLength)), style: muted),
         if (novel.isR18) PixivNovelRating(label: novel.isR18G ? l10n.plugin_pixiv_r18g : l10n.plugin_pixiv_r18),
         if (ai) PixivNovelRating(label: l10n.plugin_pixiv_ai, ai: true),
       ],

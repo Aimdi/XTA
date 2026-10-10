@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Geçmişi temizle",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Tüm geçmiş temizlensin mi?",
+  "plugin_pixiv_history_clear_question": "İllüstrasyon geçmişi temizlensin mi?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "Açtığınız eserler burada görünür. Geçmiş bu cihazda kalır.",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Geçmişte eşleşen eser yok",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Roman geçmişi temizlensin mi?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Açtığınız romanlar burada görünür. Geçmiş bu cihazda kalır.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Başlığa veya yazara göre filtrele",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Geçmişte eşleşen roman yok",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Geçmişi duraklat",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Açıkken, açılan eserler geçmişe eklenmez",
+  "plugin_pixiv_history_pause_description": "Açıkken, açılan eserler ve romanlar geçmişe eklenmez",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "“{title}” geçmişten kaldırılsın mı?",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Şu an önerilen roman yok — yenilemek için çekin",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Roman etiketleri, başlıklar veya kullanıcılar",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Popülerliğe göre sıralama Pixiv Premium gerektirir.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Roman veya kullanıcı arayın",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Roman serisi",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Tamamlandı",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romanlar",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Henüz roman yok",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Pawoo hesabı",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Premium üye",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "#{id} romanını aç",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "#{id} roman serisini aç",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "#{id} Pixivision makalesini aç",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiketler (tam)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Etiketler, başlık, açıklama",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Etiketler (kısmi)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Metin gövdesi",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Başlık/açıklama",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Tüm eserler",

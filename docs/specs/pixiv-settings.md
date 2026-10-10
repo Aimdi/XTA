@@ -19,8 +19,10 @@ plugin as a whole is described in `pixiv-plugin.md`.
 
 - Opened works are kept **on the device only**: a JSON list in
   `LocalJsonStore` under `pixiv-history:illusts` (the app's reader-state
-  folder). Settings backups and exports never read it. Novels get their own
-  key (`PixivHistoryStore(key: …)`).
+  folder). Settings backups and exports never read it. Novels have their own
+  file under `pixiv-history:novels` (`PixivNovelHistoryStore`, B2c), shown
+  behind the history screen's Illustrations / Novels switch; see
+  `pixiv-novels.md`.
 - Each entry is `{id, title, userId, userName, thumbUrl, tags, viewedAt,
   width, height, bookmarks, bookmarked}`; newest first, one entry per work
   (reopening moves it to the top), at most 500. Tags are kept so a muted tag
@@ -29,8 +31,9 @@ plugin as a whole is described in `pixiv-plugin.md`.
 - A visit is recorded in `pixivIllustRoute` (`pixiv_link_open.dart`) once the
   work's detail has loaded — not while it waits behind the mute notice, and
   not for a work Pixiv no longer has.
-- `plugin.pixiv.history_paused` stops recording. The history screen (More →
-  Viewing history, or Settings) is the shared `PixivIllustGrid` (mute filter
+- `plugin.pixiv.history_paused` stops recording works and novels alike. The
+  history screen (More → Viewing history, on the kind the sections show, or
+  Settings) is the shared `PixivIllustGrid` (mute filter
   off, long press forgets a work) under a header with the title/artist filter
   and the pause switch, all in one scroll view so large text never squeezes
   the works out. Forgetting a work and Clear history both ask first.
@@ -128,8 +131,9 @@ the work and artist links, and a reset.
 A pixiv.me link is resolved with one request that does not follow the
 redirect; only a pixiv.net `Location` is trusted, else it opens in the
 browser. Series open on the series screen and pixivision articles on the
-article screen (see `pixiv-discovery.md`); novels and novel series open in the
-browser until their screens exist. `plugin_url.dart` lets pixiv.net, pixiv.me,
+article screen (see `pixiv-discovery.md`); novel series open on the novel
+series screen, and a novel opens once Pixiv has handed over its card, joining
+the novel history (B2c, see `pixiv-novels.md`). `plugin_url.dart` lets pixiv.net, pixiv.me,
 pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 
 ## Opening links from other apps

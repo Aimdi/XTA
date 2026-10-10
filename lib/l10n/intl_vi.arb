@@ -2565,7 +2565,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Xóa lịch sử",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Xóa toàn bộ lịch sử xem?",
+  "plugin_pixiv_history_clear_question": "Xóa lịch sử xem tranh minh họa?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "Tác phẩm bạn mở sẽ xuất hiện ở đây. Lịch sử chỉ lưu trên thiết bị này.",
   "@plugin_pixiv_history_empty": {},
@@ -2573,9 +2573,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Không có tác phẩm nào trong lịch sử khớp",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Xóa lịch sử xem tiểu thuyết?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Tiểu thuyết bạn mở sẽ xuất hiện ở đây. Lịch sử chỉ lưu trên thiết bị này.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Lọc theo tiêu đề hoặc tác giả",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Không có tiểu thuyết nào trong lịch sử khớp",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Tạm dừng lịch sử xem",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Khi bật, tác phẩm đã mở sẽ không được thêm vào lịch sử",
+  "plugin_pixiv_history_pause_description": "Khi bật, tác phẩm và tiểu thuyết đã mở sẽ không được thêm vào lịch sử",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "Xóa “{title}” khỏi lịch sử?",
   "@plugin_pixiv_history_remove_question": {
@@ -2746,6 +2754,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Hiện không có tiểu thuyết đề xuất — kéo để làm mới",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Thẻ tiểu thuyết, tiêu đề hoặc người dùng",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Sắp xếp theo độ phổ biến cần Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Tìm tiểu thuyết hoặc người dùng",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Bộ tiểu thuyết",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Đã hoàn thành",
@@ -2830,6 +2844,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Tiểu thuyết",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Chưa có tiểu thuyết nào",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Tài khoản Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Thành viên Premium",
@@ -3075,6 +3091,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Mở tiểu thuyết #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Mở bộ tiểu thuyết #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Mở bài viết Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3127,8 +3159,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Thẻ (chính xác)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Thẻ, tiêu đề, chú thích",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Thẻ (một phần)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Nội dung",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Tiêu đề/chú thích",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Mọi tác phẩm",

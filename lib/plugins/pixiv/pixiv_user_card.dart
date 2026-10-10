@@ -12,8 +12,13 @@ import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
+import 'package:xta/utils/json.dart';
 
 const pixivPreviewWorks = 3;
 
@@ -40,6 +45,19 @@ List<PixivIllust> pixivVisiblePreviewWorks(
 }) => mute
     .filter(works)
     .where((work) => pixivContentAllowed(work, includeR18: showR18, includeAi: !hideAi))
+    .take(pixivPreviewWorks)
+    .toList();
+
+/// The novels a preview row may show, picked the way [pixivVisiblePreviewWorks]
+/// picks works; entries that do not parse are skipped.
+List<PixivNovel> pixivVisiblePreviewNovels(
+  List<Json> novels, {
+  required PixivMuteState mute,
+  required bool showR18,
+  required bool hideAi,
+}) => mute
+    .filterNovels([for (final item in novels) ?pixivNovelFromJson(item.raw)])
+    .where((novel) => pixivNovelAllowed(novel, includeR18: showR18, includeAi: !hideAi))
     .take(pixivPreviewWorks)
     .toList();
 
@@ -213,7 +231,17 @@ class PixivUserPreviewCard extends StatelessWidget {
   /// Icon buttons beside the follow button, such as Add to group.
   final List<Widget> actions;
 
-  const PixivUserPreviewCard({super.key, required this.preview, this.onFollowChanged, this.actions = const []});
+  /// Novel covers with their titles in novel contexts, when the creator has
+  /// novels to show; works otherwise.
+  final PixivContentMode previews;
+
+  const PixivUserPreviewCard({
+    super.key,
+    required this.preview,
+    this.onFollowChanged,
+    this.actions = const [],
+    this.previews = PixivContentMode.illust,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -246,7 +274,7 @@ class PixivUserPreviewCard extends StatelessWidget {
               ),
               ScopedBuilder<PixivMuteStore, PixivMuteState>(
                 store: context.read<PixivMuteStore>(),
-                onState: (context, mute) => _works(context, _visibleWorks(context, mute)),
+                onState: _previewRow,
               ),
             ],
           ),
@@ -255,25 +283,35 @@ class PixivUserPreviewCard extends StatelessWidget {
     );
   }
 
-  List<PixivIllust> _visibleWorks(BuildContext context, PixivMuteState mute) {
+  Widget _previewRow(BuildContext context, PixivMuteState mute) {
     final client = context.read<PixivClient>();
-    return pixivVisiblePreviewWorks(preview.illusts, mute: mute, showR18: client.showR18, hideAi: client.hideAi);
+    if (previews == PixivContentMode.novel) {
+      final novels = pixivVisiblePreviewNovels(
+        preview.novels,
+        mute: mute,
+        showR18: client.showR18,
+        hideAi: client.hideAi,
+      );
+      if (novels.isNotEmpty) return _row([for (final novel in novels) _PreviewNovel(novel: novel)]);
+    }
+    final works = pixivVisiblePreviewWorks(preview.illusts, mute: mute, showR18: client.showR18, hideAi: client.hideAi);
+    return _row([
+      for (var index = 0; index < works.length; index++)
+        AspectRatio(aspectRatio: 1, child: _work(context, works, index)),
+    ]);
   }
 
-  Widget _works(BuildContext context, List<PixivIllust> works) {
-    if (works.isEmpty) return const SizedBox.shrink();
+  /// [cells] side by side in [pixivPreviewWorks] equal columns; nothing when there are none.
+  Widget _row(List<Widget> cells) {
+    if (cells.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Row(
         spacing: 4,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (var index = 0; index < pixivPreviewWorks; index++)
-            Expanded(
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: index < works.length ? _work(context, works, index) : const SizedBox.shrink(),
-              ),
-            ),
+            Expanded(child: index < cells.length ? cells[index] : const SizedBox.shrink()),
         ],
       ),
     );
@@ -298,6 +336,46 @@ class PixivUserPreviewCard extends StatelessWidget {
             Material(
               type: MaterialType.transparency,
               child: InkWell(key: ValueKey('pixiv-user-card-work-${work.id}'), onTap: open),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One of a creator's novels in their card: the cover over its title. A tap opens the novel.
+class _PreviewNovel extends StatelessWidget {
+  final PixivNovel novel;
+
+  const _PreviewNovel({required this.novel});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    void open() => openPixivNovel(context, novel);
+    return Semantics(
+      container: true,
+      button: true,
+      label: novel.title,
+      onTap: open,
+      excludeSemantics: true,
+      child: InkWell(
+        key: ValueKey('pixiv-user-card-novel-${novel.id}'),
+        borderRadius: BorderRadius.circular(8),
+        onTap: open,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 4,
+          children: [
+            LayoutBuilder(
+              builder: (context, size) => PixivNovelCover(url: novel.coverUrl, width: size.maxWidth),
+            ),
+            Text(
+              novel.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),

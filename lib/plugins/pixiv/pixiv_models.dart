@@ -519,6 +519,22 @@ class PixivTrendTag {
   const PixivTrendTag({required this.name, this.translatedName, this.illust});
 }
 
+/// `trend_tags` of a trending payload, for works or novels alike: entries
+/// without a name are skipped, and a picture the reader's Show R-18 and Hide
+/// AI choices keep out leaves its tag bare.
+List<PixivTrendTag> parsePixivTrendTags(Object? json, {required bool includeR18, required bool includeAi}) => [
+  for (final entry in Json(json)['trend_tags'].list)
+    if (entry['tag'].string case final String name when name.isNotEmpty)
+      PixivTrendTag(
+        name: name,
+        translatedName: entry['translated_name'].string,
+        illust: switch (pixivIllustFromJson(entry['illust'].raw)) {
+          final illust? when pixivContentAllowed(illust, includeR18: includeR18, includeAi: includeAi) => illust,
+          _ => null,
+        },
+      ),
+];
+
 /// Related works for an R-18 seed are themselves R-18. Hiding them left one
 /// SFW leftover under "Similar works" — the reader opened the R-18 illust
 /// on purpose (bookmarks keep those even when the home feed hides them).

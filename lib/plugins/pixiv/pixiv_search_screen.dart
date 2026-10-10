@@ -10,6 +10,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_saucenao_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
@@ -17,6 +19,7 @@ import 'package:xta/plugins/pixiv/pixiv_search_landing.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_results.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_shortcuts.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/ui/reader_tab_view.dart';
 
@@ -42,12 +45,15 @@ TextEditingValue pixivPastedInto(TextEditingValue value, String pasted) {
 }
 
 /// Tag / keyword / user search — Pixez's second home. Its state lives in a
-/// [PixivSearchStore]; this widget owns the text field and the tabs.
+/// [PixivSearchStore]; this widget owns the text field and the tabs. Of
+/// [kind] novels it searches novels, with their own history, landing and id
+/// shortcuts.
 class PixivSearchScreen extends StatefulWidget {
   final String? initialQuery;
   final bool embedded;
+  final PixivSearchKind kind;
 
-  const PixivSearchScreen({super.key, this.initialQuery, this.embedded = false});
+  const PixivSearchScreen({super.key, this.initialQuery, this.embedded = false, this.kind = PixivSearchKind.works});
 
   @override
   State<PixivSearchScreen> createState() => _PixivSearchScreenState();
@@ -64,9 +70,12 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     super.initState();
     _query = TextEditingController(text: widget.initialQuery ?? '');
     _tabs = TabController(length: 2, vsync: this);
-    _history = context.read<PixivSearchHistory>();
+    final works = _works;
+    _history = works ? context.read<PixivSearchHistory>() : context.read<PixivNovelSearchHistory>();
     _store = PixivSearchStore(
       api: PixivSearchApi.of(context),
+      novelApi: works ? null : PixivNovelApi.of(context),
+      kind: widget.kind,
       prefs: PrefService.of(context, listen: false),
       mute: context.read<PixivMuteStore>(),
       history: _history,
@@ -89,6 +98,11 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     if (query.isNotEmpty) _store.type(query);
     unawaited(_store.loadLanding());
   }
+
+  bool get _works => widget.kind.isWorks;
+
+  /// What a pasted [text] opens: a bare number is a work, or in novel search a novel.
+  PixivLinkRef? _linkOf(String text) => _works ? parsePixivLink(text) : pixivNovelSearchLink(text);
 
   @override
   void dispose() {
@@ -128,7 +142,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
   Future<void> _paste() async {
     final pasted = (await Clipboard.getData(Clipboard.kTextPlain))?.text?.trim() ?? '';
     if (pasted.isEmpty || !mounted) return;
-    final link = parsePixivLink(pasted);
+    final link = _linkOf(pasted);
     if (link == null) {
       _query.value = pixivPastedInto(_query.value, pasted);
     } else {
@@ -174,7 +188,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     return TabBar(
       controller: _tabs,
       tabs: [
-        Tab(text: l10n.plugin_pixiv_tab_illusts),
+        Tab(text: _works ? l10n.plugin_pixiv_tab_illusts : l10n.plugin_pixiv_profile_novels),
         Tab(text: l10n.plugin_pixiv_tab_users),
       ],
     );
@@ -188,7 +202,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
       textInputAction: TextInputAction.search,
       autofocus: !widget.embedded && (widget.initialQuery ?? '').isEmpty,
       decoration: InputDecoration(
-        hintText: l10n.plugin_pixiv_search_hint,
+        hintText: _works ? l10n.plugin_pixiv_search_hint : l10n.plugin_pixiv_novel_search_hint,
         border: InputBorder.none,
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
@@ -198,11 +212,12 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
               onPressed: _paste,
               icon: const Icon(Icons.content_paste),
             ),
-            IconButton(
-              tooltip: l10n.plugin_pixiv_saucenao_title,
-              onPressed: () => showPixivSauceNaoSheet(context),
-              icon: const Icon(Icons.image_search),
-            ),
+            if (_works)
+              IconButton(
+                tooltip: l10n.plugin_pixiv_saucenao_title,
+                onPressed: () => showPixivSauceNaoSheet(context),
+                icon: const Icon(Icons.image_search),
+              ),
             IconButton(tooltip: l10n.search, onPressed: _submit, icon: const Icon(Icons.search)),
           ],
         ),
@@ -214,7 +229,12 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
 
   Widget _body(PixivSearchState state) {
     if (state.picking) {
-      return PixivSearchPicker(numericId: state.numericId, suggestions: state.suggestions, onPick: _pick);
+      return PixivSearchPicker(
+        numericId: state.numericId,
+        suggestions: state.suggestions,
+        onPick: _pick,
+        shortcuts: _works ? pixivNumericShortcuts : pixivNovelNumericShortcuts,
+      );
     }
     if (!state.searched) {
       return PixivSearchLanding(
@@ -227,8 +247,8 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     return ReaderTabView(
       controller: _tabs,
       children: [
-        PixivSearchWorks(store: _store, state: state),
-        PixivSearchUsers(store: _store.users),
+        if (_works) PixivSearchWorks(store: _store, state: state) else PixivSearchNovels(store: _store, state: state),
+        PixivSearchUsers(store: _store.users, previews: _works ? PixivContentMode.illust : PixivContentMode.novel),
       ],
     );
   }

@@ -85,8 +85,7 @@ itself, so a dropped connection is not asked again on every scroll.
 the same way. A thread with nothing in it says *No replies yet*.
 
 **Novels.** `PixivCommentTarget.novel(id)` gives the same screen over the
-novel endpoints. The novel reader adds its button with the novel batches,
-using `PixivCommentsLink` or `openPixivComments`.
+novel endpoints, opened from a novel's long press and, with B2b, the reader.
 
 ## Mutes and spam
 
@@ -120,4 +119,5 @@ Report is not offered: XTA does not write reports to Pixiv.
 - **Artwork detail.** `PixivCommentsLink` (`pixiv_detail_comments.dart`) under
   the tags: *View comments (N)* from the work's `total_comments`, or *View
   comments* when the work arrived without a count.
-- **Novels.** Wired by the novel reader batch, with the same link.
+- **Novels.** A novel card's long press offers *View comments (N)*
+  (`pixivNovelCommentsEntry`, B2c); the reader adds its own with B2b.

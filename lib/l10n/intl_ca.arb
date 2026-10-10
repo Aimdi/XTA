@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Esborra l'historial",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Vols esborrar tot l'historial?",
+  "plugin_pixiv_history_clear_question": "Vols esborrar l'historial d'il·lustracions?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "Les obres que obris apareixen aquí. L'historial es queda en aquest dispositiu.",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Cap obra de l'historial coincideix",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Vols esborrar l'historial de novel·les?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Les novel·les que obris apareixen aquí. L'historial es queda en aquest dispositiu.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtra per títol o autor",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Cap novel·la de l'historial coincideix",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Posa en pausa l'historial",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Mentre estigui activat, les obres obertes no s'afegeixen a l'historial",
+  "plugin_pixiv_history_pause_description": "Mentre estigui activat, les obres i novel·les obertes no s'afegeixen a l'historial",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "Vols treure «{title}» de l'historial?",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Ara mateix no hi ha novel·les recomanades — estira per actualitzar",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Etiquetes de novel·les, títols o usuaris",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Ordenar per popularitat requereix Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Cerqueu novel·les o usuaris",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Sèrie de novel·les",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Completada",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Novel·les",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Encara no hi ha novel·les",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Compte de Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Membre Premium",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Obre la novel·la #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Obre la sèrie de novel·les #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Obre l’article de Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiquetes (exacte)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Etiquetes, títol, descripció",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Etiquetes (parcial)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Text del cos",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Títol/descripció",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Totes les obres",

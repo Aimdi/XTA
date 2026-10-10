@@ -329,7 +329,7 @@ void main() {
           PixivWatchlistSeries(id: 78, title: 'Winter', userId: 42, userName: 'Mika'),
         ],
         series: {null: _seriesPage()},
-      );
+      )..details = {12: pixivNovel(id: 12, title: 'Autumn')};
       await pumpScreen(tester, api);
       await _tap(tester, find.byTooltip('Switch to novels'));
       await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-watchlist')));
@@ -341,6 +341,25 @@ void main() {
       await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-78')));
       expect(find.byType(PixivNovelSeriesScreen), findsOneWidget);
       expect(api.calls.last, 'series:78:null');
+      await disposePixiv(tester);
+    });
+
+    testWidgets('View latest says so when Pixiv no longer has the chapter', (tester) async {
+      final launched = _recordLaunches();
+      final api = _novelApi(
+        watchlist: const [
+          PixivWatchlistSeries(id: 77, title: 'Seasons', userId: 42, userName: 'Mika', latestContentId: 12),
+        ],
+      );
+      await pumpScreen(tester, api);
+      await _tap(tester, find.byTooltip('Switch to novels'));
+      await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-watchlist')));
+
+      await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-77')));
+      expect(api.calls.last, 'detail:12');
+      expect(find.text('Could not open that Pixiv link'), findsOneWidget);
+      expect(launched, isEmpty);
+      expect(find.byType(PixivNovelSeriesScreen), findsNothing);
       await disposePixiv(tester);
     });
 

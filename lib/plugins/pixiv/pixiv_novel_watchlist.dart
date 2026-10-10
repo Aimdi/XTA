@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
-import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_shortcuts.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_watchlist.dart';
 
 PixivWatchlistStore pixivNovelWatchlistStore(PixivNovelApi api) =>
     PixivPagedListStore(({nextUrl}) => api.watchlist(nextUrl: nextUrl), keyOf: (series) => series.id);
 
-/// Opens the newest chapter of a watched novel series, or the series when
-/// Pixiv named none.
+/// Opens the newest chapter of a watched novel series, saying so when Pixiv
+/// no longer has it, or the series when Pixiv named none.
 Future<void> openPixivNovelWatchlistLatest(BuildContext context, PixivWatchlistSeries series) {
   final id = series.latestContentId;
-  return id == null ? openPixivNovelSeries(context, series.id) : openPixivNovelById(context, id);
+  return id == null ? openPixivNovelSeries(context, series.id) : openPixivLinkOrSay(context, PixivNovelLinkRef(id));
 }
 
 /// Home's Watchlist in Novel mode: the novel series the reader watches. A

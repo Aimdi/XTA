@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 
 Map<String, Object?> _novel(int id, {int xRestrict = 0, int aiType = 1}) => {
   'id': id,
@@ -206,6 +207,121 @@ void main() {
       expect(requests.last.url.queryParameters['last_order'], '2');
       expect([for (final chapter in page.chapters) chapter.novel.id], [1]);
       expect((page.listed, page.first?.id, page.latest?.id), (2, 1, null));
+    });
+  });
+
+  group('search', () {
+    test('sends the word, place to look, order and dates to /v1/search/novel, then follows next_url', () async {
+      final (api, requests) = _api(answer: (_) => _list(next: 'https://app-api.pixiv.net/v1/search/novel?offset=30'));
+      final filter = const PixivSearchFilter(
+        target: PixivSearchTarget.text,
+        sort: PixivSearchSort.oldest,
+      ).withDates(PixivDatePreset.week).withUsersIri(1000);
+      final query = pixivSearchQuery(filter, 'letters', now: DateTime(2026, 10, 10), kind: PixivSearchKind.novels);
+      final page = await api.search(query);
+      await api.search(query, nextUrl: page.nextUrl);
+
+      expect(requests.first.url.path, '/v1/search/novel');
+      expect(requests.first.url.queryParameters, {
+        'word': 'letters 1000users入り',
+        'search_target': 'text',
+        'sort': 'date_asc',
+        'start_date': '2026-10-03',
+        'end_date': '2026-10-10',
+        'merge_plain_keyword_results': 'true',
+        'filter': 'for_android',
+      });
+      expect(requests.last.url.toString(), 'https://app-api.pixiv.net/v1/search/novel?offset=30');
+      expect(_ids(page), [1, 3]);
+    });
+
+    test('the search\'s own AI choice decides, not the feeds\'', () async {
+      final (api, _) = _api(hideAi: true);
+      expect(_ids(await api.search(const {'word': 'a'}, includeAi: true)), [1, 3]);
+      expect(_ids(await api.search(const {'word': 'a'}, includeAi: false)), [1]);
+    });
+  });
+
+  group('trending tags', () {
+    test('read the novel tags with their pictures, leaving a filtered picture out', () async {
+      final (api, requests) = _api(
+        answer: (_) => {
+          'trend_tags': [
+            {
+              'tag': '恋愛',
+              'translated_name': 'romance',
+              'illust': {
+                'id': 5,
+                'title': 'Cover',
+                'image_urls': {'square_medium': 'https://i.pximg.net/c/5.jpg'},
+              },
+            },
+            {
+              'tag': '異世界',
+              'illust': {
+                'id': 6,
+                'x_restrict': 1,
+                'image_urls': {'square_medium': 'https://i.pximg.net/c/6.jpg'},
+              },
+            },
+            {'tag': ''},
+            'junk',
+          ],
+        },
+      );
+      final tags = await api.trendingTags();
+
+      expect(requests.single.url.path, '/v1/trending-tags/novel');
+      expect(requests.single.url.queryParameters, {'filter': 'for_android'});
+      expect(
+        [for (final tag in tags) (tag.name, tag.translatedName, tag.illust?.id)],
+        [('恋愛', 'romance', 5), ('異世界', null, null)],
+      );
+    });
+
+    test('a reshaped answer is an empty list', () async {
+      final (api, _) = _api(answer: (_) => {'trend_tags': 'none'});
+      expect(await api.trendingTags(), isEmpty);
+    });
+  });
+
+  group('a creator\'s novels', () {
+    test('ask by user id with the Android filter; the reader\'s own keep R-18 and AI novels', () async {
+      final (api, requests) = _api(hideAi: true);
+      final theirs = await api.userNovels(5);
+      final own = await api.userNovels(77);
+
+      expect(requests.first.url.path, '/v1/user/novels');
+      expect(requests.first.url.queryParameters, {'user_id': '5', 'filter': 'for_android'});
+      expect(_ids(theirs), [1]);
+      expect(_ids(own), [1, 2, 3]);
+    });
+  });
+
+  group('detail', () {
+    test('reads the novel by id', () async {
+      final (api, requests) = _api(answer: (_) => {'novel': _novel(31)});
+      final novel = await api.detail(31);
+
+      expect(requests.single.url.path, '/v2/novel/detail');
+      expect(requests.single.url.queryParameters, {'novel_id': '31'});
+      expect((novel.id, novel.title, novel.user.name), (31, 'Novel 31', 'A'));
+    });
+
+    test('a withheld or missing novel is not found rather than a throw from parsing', () async {
+      for (final body in [
+        {
+          'novel': {..._novel(31), 'visible': false},
+        },
+        {'novel': 'gone'},
+        const <String, Object?>{},
+      ]) {
+        final (api, _) = _api(answer: (_) => body);
+        await expectLater(
+          api.detail(31),
+          throwsA(isA<PixivException>().having((error) => error.kind, 'kind', PixivErrorKind.notFound)),
+        );
+      }
     });
   });
 }

@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Limpar histórico",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Limpar todo o histórico?",
+  "plugin_pixiv_history_clear_question": "Limpar o histórico de ilustrações?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "As obras que abrir aparecem aqui. O histórico fica neste dispositivo.",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Nenhuma obra do histórico corresponde",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Limpar o histórico de romances?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Os romances que abrir aparecem aqui. O histórico fica neste dispositivo.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtrar por título ou autor",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Nenhum romance do histórico corresponde",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Pausar o histórico",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Enquanto estiver ativo, as obras abertas não são adicionadas ao histórico",
+  "plugin_pixiv_history_pause_description": "Enquanto estiver ativo, as obras e os romances abertos não são adicionados ao histórico",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "Remover «{title}» do histórico?",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Sem romances recomendados de momento — puxe para atualizar",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Etiquetas de romances, títulos ou utilizadores",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Ordenar por popularidade requer o Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Pesquise romances ou utilizadores",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Série de romances",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Concluída",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romances",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Ainda não há romances",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Conta Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Membro Premium",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Abrir romance #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Abrir série de romances #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Abrir artigo da Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiquetas (exata)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Etiquetas, título, legenda",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Etiquetas (parcial)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Texto do corpo",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Título/legenda",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Todas as obras",

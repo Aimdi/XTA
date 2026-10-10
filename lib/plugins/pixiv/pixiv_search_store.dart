@@ -8,6 +8,9 @@ import 'package:xta/plugins/pixiv/pixiv_fetch_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -97,9 +100,12 @@ List<PixivTrendTag> pixivVisibleTrendTags(List<PixivTrendTag> tags, PixivMuteSta
 
 /// A Pixiv search: the field, its suggestions, the filter and the results.
 /// With [illustsOnly] it only fetches works and keeps no history, as a
-/// favourite tag's tab needs.
+/// favourite tag's tab needs. Of [kind] novels it finds novels through
+/// [novelApi] instead of works, and its landing has no suggested creators.
 class PixivSearchStore extends Store<PixivSearchState> {
   final PixivSearchApi api;
+  final PixivNovelApi? novelApi;
+  final PixivSearchKind kind;
   final BasePrefService prefs;
   final PixivMuteStore mute;
   final PluginSearchHistoryStore? history;
@@ -108,6 +114,7 @@ class PixivSearchStore extends Store<PixivSearchState> {
   final DateTime Function() clock;
 
   late final results = PixivIllustListStore(_nothing, filter: _visibleWorks);
+  late final novels = PixivNovelListStore(_noNovels, filter: mute.filterNovels);
   late final users = PixivPagedListStore<PixivUserPreview>(
     _noUsers,
     keyOf: (preview) => preview.user.id,
@@ -115,7 +122,10 @@ class PixivSearchStore extends Store<PixivSearchState> {
   );
 
   /// The landing's lists, each loading, failing and retrying on its own.
-  late final trending = PixivFetchStore<List<PixivTrendTag>>(api.trendingTags, const []);
+  late final trending = PixivFetchStore<List<PixivTrendTag>>(
+    kind.isWorks ? api.trendingTags : novelApi!.trendingTags,
+    const [],
+  );
   late final creators = PixivFetchStore<List<PixivUser>>(api.recommendedUsers, const []);
 
   Timer? _suggestTimer;
@@ -125,20 +135,25 @@ class PixivSearchStore extends Store<PixivSearchState> {
     required this.api,
     required this.prefs,
     required this.mute,
+    this.novelApi,
+    this.kind = PixivSearchKind.works,
     this.history,
     this.illustsOnly = false,
     this.debounce = const Duration(milliseconds: 300),
     DateTime Function()? clock,
-  }) : clock = clock ?? DateTime.now,
+  }) : assert(kind == PixivSearchKind.works || novelApi != null, 'novel search needs the novel API'),
+       clock = clock ?? DateTime.now,
        super(
          PixivSearchState(
-           filter: pixivStartingFilter(prefs, isPremium: api.isPremium),
-           remembered: readPixivSearchFilter(prefs) != null,
+           filter: pixivStartingFilter(prefs, isPremium: api.isPremium, kind: kind),
+           remembered: readPixivSearchFilter(prefs, kind: kind) != null,
            isPremium: api.isPremium,
          ),
        );
 
   static Future<PixivIllustPage> _nothing({String? nextUrl}) async => const PixivIllustPage(illusts: []);
+
+  static Future<PixivNovelPage> _noNovels({String? nextUrl}) async => const PixivPage([]);
 
   static Future<PixivPage<PixivUserPreview>> _noUsers({String? nextUrl}) async => const PixivPage([]);
 
@@ -193,7 +208,7 @@ class PixivSearchStore extends Store<PixivSearchState> {
     if (!illustsOnly) await history?.remember(word);
     if (_closed) return;
     if (!illustsOnly) _loadUsers(word);
-    await _loadWorks(strip: true);
+    await _loadResults(strip: true);
   }
 
   /// Creators depend on the words alone, so filter changes leave them be.
@@ -203,15 +218,27 @@ class PixivSearchStore extends Store<PixivSearchState> {
     unawaited(users.refresh());
   }
 
-  /// Fetches the works under the current filter, and the popular strip too
-  /// when [strip] says what it shows has changed. The grid shows its loading
-  /// state at once rather than a moment of "no results".
-  Future<void> _loadWorks({required bool strip}) async {
+  /// Fetches the works or novels under the current filter, and the popular
+  /// strip too when [strip] says what it shows has changed.
+  Future<void> _loadResults({required bool strip}) async {
     final search = state;
-    results.useLoader(_worksLoader(search));
-    results.setLoading(true);
+    if (!kind.isWorks) return _reload(novels, _novelLoader(search));
     if (strip && !illustsOnly) unawaited(_loadPopularStrip(search));
-    await results.refresh();
+    await _reload(results, _worksLoader(search));
+  }
+
+  /// Puts [list] in its loading state at once, rather than a moment of "no
+  /// results", and fetches its first page from [loader].
+  Future<void> _reload<T>(PixivPagedListStore<T> list, PixivPageLoader<T> loader) async {
+    list.useLoader(loader);
+    list.setLoading(true);
+    await list.refresh();
+  }
+
+  PixivPageLoader<PixivNovel> _novelLoader(PixivSearchState search) {
+    final query = pixivSearchQuery(search.filter, search.word, now: clock(), kind: kind);
+    final includeAi = !search.filter.hideAi;
+    return ({nextUrl}) => novelApi!.search(query, nextUrl: nextUrl, includeAi: includeAi);
   }
 
   PixivIllustPageLoader _worksLoader(PixivSearchState search) {
@@ -243,16 +270,16 @@ class PixivSearchStore extends Store<PixivSearchState> {
     final next = state.copyWith(filter: filter, remembered: remember ?? state.remembered);
     final strip = next.popularStripKey != state.popularStripKey;
     update(strip ? next.copyWith(popular: const []) : next);
-    await savePixivSearchFilter(prefs, next.remembered ? filter : null);
-    if (!_closed && state.searched) await _loadWorks(strip: strip);
+    await savePixivSearchFilter(prefs, next.remembered ? filter : null, kind: kind);
+    if (!_closed && state.searched) await _loadResults(strip: strip);
   }
 
-  /// Trending tags and suggested creators, each on its own; [force] reloads
-  /// lists that already loaded, as pull-to-refresh does.
+  /// Trending tags and, for works, suggested creators, each on its own;
+  /// [force] reloads lists that already loaded, as pull-to-refresh does.
   Future<void> loadLanding({bool force = false}) async {
     await Future.wait([
       if (force || trending.state.isEmpty) trending.load(),
-      if (force || creators.state.isEmpty) creators.load(),
+      if (kind.isWorks && (force || creators.state.isEmpty)) creators.load(),
     ]);
   }
 
@@ -262,7 +289,8 @@ class PixivSearchStore extends Store<PixivSearchState> {
   Future<void> destroy() async {
     _closed = true;
     _suggestTimer?.cancel();
-    await Future.wait([results.destroy(), users.destroy(), trending.destroy(), creators.destroy()]);
+    final PixivPagedListStore<Object> found = kind.isWorks ? results : novels;
+    await Future.wait([found.destroy(), users.destroy(), trending.destroy(), creators.destroy()]);
     await super.destroy();
   }
 }

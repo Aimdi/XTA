@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Șterge istoricul",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Ștergi tot istoricul?",
+  "plugin_pixiv_history_clear_question": "Ștergi istoricul ilustrațiilor?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "Lucrările pe care le deschizi apar aici. Istoricul rămâne pe acest dispozitiv.",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Nicio lucrare din istoric nu se potrivește",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Ștergi istoricul romanelor?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Romanele pe care le deschizi apar aici. Istoricul rămâne pe acest dispozitiv.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtrează după titlu sau autor",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Niciun roman din istoric nu se potrivește",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Întrerupe istoricul",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Cât timp e activat, lucrările deschise nu sunt adăugate în istoric",
+  "plugin_pixiv_history_pause_description": "Cât timp e activat, lucrările și romanele deschise nu sunt adăugate în istoric",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "Elimini „{title}” din istoric?",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Niciun roman recomandat acum — trage pentru a reîmprospăta",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Etichete de romane, titluri sau utilizatori",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Sortarea după popularitate necesită Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Căutați romane sau utilizatori",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Serie de romane",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Încheiată",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romane",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Încă nu există romane",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Cont Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Membru Premium",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Deschide romanul #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Deschide seria de romane #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Deschide articolul Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etichete (exact)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Etichete, titlu, descriere",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Etichete (parțial)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Textul romanului",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Titlu/descriere",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Toate lucrările",

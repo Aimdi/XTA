@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
 import 'package:xta/plugins/pixiv/pixiv_loads.dart';
@@ -17,7 +16,6 @@ import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
-import 'package:xta/utils/urls.dart';
 
 /// Opens a novel series by its id. [onWatchlistChanged] runs after the reader
 /// adds it to or removes it from the watchlist there.
@@ -134,7 +132,9 @@ class _PixivNovelSeriesScreenState extends State<PixivNovelSeriesScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          actions: [if (view.series case final info?) ..._actions(l10n, info.series)],
+          // The address is known from the id, so a series Pixiv cannot hand
+          // over still offers its page.
+          actions: pixivSeriesPageActions(context, pixivNovelSeriesUrl(widget.seriesId)),
         ),
         // The header sits outside the chapter list, so it and its watchlist
         // toggle stay when every chapter is filtered out or a page fails.
@@ -167,19 +167,6 @@ class _PixivNovelSeriesScreenState extends State<PixivNovelSeriesScreen> {
       card: (chapter) => PixivNovelCard(novel: chapter.novel, order: chapter.order, showSeries: false),
     ),
   );
-
-  List<Widget> _actions(L10n l10n, PixivNovelSeries series) => [
-    IconButton(
-      tooltip: l10n.share_link,
-      icon: const Icon(Icons.share_outlined),
-      onPressed: () => SharePlus.instance.share(ShareParams(text: series.url)),
-    ),
-    IconButton(
-      tooltip: l10n.plugin_pixiv_open_on_pixiv,
-      icon: const Icon(Icons.open_in_new),
-      onPressed: () => openUri(context, series.url),
-    ),
-  ];
 }
 
 PixivNovel _novelOf(PixivNovelChapter chapter) => chapter.novel;

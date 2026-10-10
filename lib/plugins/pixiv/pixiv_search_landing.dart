@@ -14,7 +14,8 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
 
 /// Search before anything is searched: recent searches, suggested creators
-/// and trending tags. Pulling down reloads the last two, each on its own.
+/// (for works) and trending tags. Pulling down reloads the last two, each on
+/// its own. Novel search keeps its own recent searches and trending tags.
 class PixivSearchLanding extends StatelessWidget {
   final PixivSearchStore store;
   final PluginSearchHistoryStore history;
@@ -32,13 +33,17 @@ class PixivSearchLanding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final works = store.kind.isWorks;
     return RefreshIndicator(
       onRefresh: () => store.loadLanding(force: true),
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
-          Text(l10n.plugin_pixiv_search_prompt, textAlign: TextAlign.center),
+          Text(
+            works ? l10n.plugin_pixiv_search_prompt : l10n.plugin_pixiv_novel_search_prompt,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 24),
           ScopedBuilder<PluginSearchHistoryStore, List<String>>(
             store: history,
@@ -51,12 +56,13 @@ class PixivSearchLanding extends StatelessWidget {
               onToggle: store.toggleHistory,
             ),
           ),
-          _PixivLandingSection<PixivUser>(
-            title: l10n.plugin_pixiv_recommended_users,
-            store: store.creators,
-            height: 88,
-            builder: (context, users) => _PixivCreatorStrip(users: users),
-          ),
+          if (works)
+            _PixivLandingSection<PixivUser>(
+              title: l10n.plugin_pixiv_recommended_users,
+              store: store.creators,
+              height: 88,
+              builder: (context, users) => _PixivCreatorStrip(users: users),
+            ),
           _PixivLandingSection<PixivTrendTag>(
             title: l10n.plugin_pixiv_trending_title,
             store: store.trending,

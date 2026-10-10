@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "履歴を消去",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "閲覧履歴をすべて消去しますか？",
+  "plugin_pixiv_history_clear_question": "イラストの閲覧履歴を消去しますか？",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "開いた作品がここに表示されます。履歴はこの端末にだけ保存されます。",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "一致する作品は履歴にありません",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "小説の閲覧履歴を消去しますか？",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "開いた小説がここに表示されます。履歴はこの端末にだけ保存されます。",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "タイトルや作者で絞り込む",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "一致する小説は履歴にありません",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "閲覧履歴を一時停止",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "オンの間は、開いた作品を履歴に追加しません",
+  "plugin_pixiv_history_pause_description": "オンの間は、開いた作品や小説を履歴に追加しません",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "「{title}」を履歴から削除しますか？",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "いまおすすめの小説はありません — 引っ張って更新",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "小説のタグ・タイトル・ユーザー",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "人気順の並べ替えにはpixivプレミアムが必要です。",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "小説やユーザーを検索",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "小説シリーズ",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "完結",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "小説",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "まだ小説がありません",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Pawooアカウント",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "プレミアム会員",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "小説 #{id} を開く",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "小説シリーズ #{id} を開く",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Pixivision の記事 #{id} を開く",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "タグ（完全一致）",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "タグ・タイトル・キャプション",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "タグ（部分一致）",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "本文",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "タイトル/キャプション",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "すべての作品",

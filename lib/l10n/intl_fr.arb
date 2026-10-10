@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Effacer l’historique",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Effacer tout l’historique ?",
+  "plugin_pixiv_history_clear_question": "Effacer l’historique des illustrations ?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "Les œuvres ouvertes apparaissent ici. L’historique reste sur cet appareil.",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "Aucune œuvre de l’historique ne correspond",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Effacer l’historique des romans ?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Les romans ouverts apparaissent ici. L’historique reste sur cet appareil.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtrer par titre ou auteur",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Aucun roman de l’historique ne correspond",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Mettre l’historique en pause",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Tant que c’est activé, les œuvres ouvertes ne sont pas ajoutées à l’historique",
+  "plugin_pixiv_history_pause_description": "Tant que c’est activé, les œuvres et romans ouverts ne sont pas ajoutés à l’historique",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "Retirer « {title} » de l’historique ?",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Aucun roman recommandé pour le moment — tirez pour actualiser",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Tags de romans, titres ou utilisateurs",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Le tri par popularité nécessite Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Recherchez des romans ou des utilisateurs",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Série de romans",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Terminée",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romans",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Aucun roman pour l’instant",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Compte Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Membre Premium",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Ouvrir le roman #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Ouvrir la série de romans #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Ouvrir l’article Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tags (exact)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Tags, titre, légende",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Tags (partiel)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Texte du roman",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Titre/légende",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Toutes les œuvres",

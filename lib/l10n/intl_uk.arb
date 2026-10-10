@@ -2568,7 +2568,7 @@
   "@plugin_pixiv_history": {},
   "plugin_pixiv_history_clear": "Очистити історію",
   "@plugin_pixiv_history_clear": {},
-  "plugin_pixiv_history_clear_question": "Очистити всю історію переглядів?",
+  "plugin_pixiv_history_clear_question": "Очистити історію ілюстрацій?",
   "@plugin_pixiv_history_clear_question": {},
   "plugin_pixiv_history_empty": "Тут з’являються відкриті роботи. Історія зберігається лише на цьому пристрої.",
   "@plugin_pixiv_history_empty": {},
@@ -2576,9 +2576,17 @@
   "@plugin_pixiv_history_filter_hint": {},
   "plugin_pixiv_history_no_match": "В історії немає відповідних робіт",
   "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Очистити історію романів?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Тут з’являються відкриті романи. Історія зберігається лише на цьому пристрої.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Фільтр за назвою або автором",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "В історії немає відповідних романів",
+  "@plugin_pixiv_history_novels_no_match": {},
   "plugin_pixiv_history_pause": "Призупинити історію переглядів",
   "@plugin_pixiv_history_pause": {},
-  "plugin_pixiv_history_pause_description": "Поки увімкнено, відкриті роботи не додаються до історії",
+  "plugin_pixiv_history_pause_description": "Поки увімкнено, відкриті роботи й романи не додаються до історії",
   "@plugin_pixiv_history_pause_description": {},
   "plugin_pixiv_history_remove_question": "Видалити «{title}» з історії?",
   "@plugin_pixiv_history_remove_question": {
@@ -2749,6 +2757,12 @@
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Поки немає рекомендованих романів — потягніть, щоб оновити",
   "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Теги романів, назви або користувачі",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Сортування за популярністю потребує Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Шукайте романи або користувачів",
+  "@plugin_pixiv_novel_search_prompt": {},
   "plugin_pixiv_novel_series": "Серія романів",
   "@plugin_pixiv_novel_series": {},
   "plugin_pixiv_novel_series_concluded": "Завершена",
@@ -2833,6 +2847,8 @@
   "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Романи",
   "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Поки немає романів",
+  "@plugin_pixiv_profile_novels_empty": {},
   "plugin_pixiv_profile_pawoo": "Акаунт Pawoo",
   "@plugin_pixiv_profile_pawoo": {},
   "plugin_pixiv_profile_premium": "Учасник Premium",
@@ -3078,6 +3094,22 @@
       }
     }
   },
+  "plugin_pixiv_search_open_novel": "Відкрити роман #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Відкрити серію романів #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_pixivision": "Відкрити статтю Pixivision #{id}",
   "@plugin_pixiv_search_open_pixivision": {
     "placeholders": {
@@ -3130,8 +3162,12 @@
   "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Теги (точно)",
   "@plugin_pixiv_search_target_exact": {},
+  "plugin_pixiv_search_target_keyword": "Теги, назва, опис",
+  "@plugin_pixiv_search_target_keyword": {},
   "plugin_pixiv_search_target_partial": "Теги (частково)",
   "@plugin_pixiv_search_target_partial": {},
+  "plugin_pixiv_search_target_text": "Текст твору",
+  "@plugin_pixiv_search_target_text": {},
   "plugin_pixiv_search_target_title": "Назва/опис",
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_search_ugoira_all": "Усі роботи",

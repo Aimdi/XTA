@@ -16,6 +16,7 @@ import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_home.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_session.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
@@ -428,13 +429,13 @@ class _PixivScreenState extends State<PixivScreen> {
       scrollController: _favoritesScroll,
     ),
     (_) => const PixivSearchScreen(embedded: true),
-    (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll),
+    (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll, mode: state.mode),
   ];
 
-  /// Novel mode's sections; Search and More are the illustration ones until novel search lands.
+  /// Novel mode's sections; More is the one the illustrations have.
   List<WidgetBuilder> _novelSections(PixivViewState state) => [
     for (final body in _novelBodies(state)) (context) => _novelStorage(body(context)),
-    ..._sections(state).skip(3),
+    ..._sections(state).skip(4),
   ];
 
   /// Lists under the section's storage key share their saved offsets, so each
@@ -463,6 +464,7 @@ class _PixivScreenState extends State<PixivScreen> {
       onReselect: _scrollToTop,
       scrollController: _novelFavoritesScroll,
     ),
+    (_) => const PixivNovelSearchScreen(embedded: true),
   ];
 }
 

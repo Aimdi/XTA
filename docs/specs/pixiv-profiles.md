@@ -48,12 +48,13 @@ dropped. A missing or reshaped payload parses to empty fields, never a throw.
   list) and the bio as plain text until the caption renderer lands.
 - **Tabs** from the `pixivProfileTabs` registry (`pixiv_user_tabs.dart`): Works
   (Illustrations / Manga switch when the creator has both, starting on
-  whichever there is more of), Bookmarks (public bookmarks), Following (the
-  user list) and Info. `PixivUserScreen(initialTab: id)` opens on a tab by id.
-  A feature adds its own tab as a `PixivProfileTab` with `offeredFor`, which
-  is how the Novels tab is meant to arrive (shown when the creator has novels
-  or on the reader's own profile); each tab keeps its list while another is
-  shown.
+  whichever there is more of), Novels (B2c: the creator's novels or their
+  novel bookmarks, offered when they have novels or on the reader's own
+  profile; see `pixiv-novels.md`), Bookmarks (public bookmarks, illustrations
+  or novels), Following (the user list) and Info.
+  `PixivUserScreen(initialTab: id)` opens on a tab by id. A feature adds its
+  own tab as a `PixivProfileTab` with `offeredFor`; each tab keeps its list
+  while another is shown, and a tab with a switch is a `PixivSwitchedList`.
 - **Info** (`pixiv_user_info.dart`): a two-column table built by the pure
   `pixivProfileInfoRows`. The user ID copies, Following and Followers open
   the lists, links open the way the reader opens links, and empty or private

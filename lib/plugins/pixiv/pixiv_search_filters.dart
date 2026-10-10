@@ -15,36 +15,87 @@ import 'package:xta/utils/json.dart';
 enum PixivSearchTarget {
   partialTags('partial_match_for_tags'),
   exactTags('exact_match_for_tags'),
-  titleCaption('title_and_caption');
+  titleCaption('title_and_caption'),
+
+  /// A novel's body text.
+  text('text'),
+
+  /// A novel's tags, title and caption together.
+  keyword('keyword');
 
   final String api;
 
   const PixivSearchTarget(this.api);
 }
 
-const pixivIllustSearchTargets = PixivSearchTarget.values;
+const pixivIllustSearchTargets = [
+  PixivSearchTarget.partialTags,
+  PixivSearchTarget.exactTags,
+  PixivSearchTarget.titleCaption,
+];
+
+const pixivNovelSearchTargets = [
+  PixivSearchTarget.partialTags,
+  PixivSearchTarget.exactTags,
+  PixivSearchTarget.text,
+  PixivSearchTarget.keyword,
+];
 
 enum PixivSearchSort {
   newest('date_desc'),
-  oldest('date_asc', premium: true),
+  oldest('date_asc'),
   popular('popular_desc'),
-  popularMale('popular_male_desc', premium: true),
-  popularFemale('popular_female_desc', premium: true);
+  popularMale('popular_male_desc'),
+  popularFemale('popular_female_desc');
 
   final String api;
 
-  /// Pixiv refuses this order to an account without Premium.
-  final bool premium;
-
-  const PixivSearchSort(this.api, {this.premium = false});
+  const PixivSearchSort(this.api);
 
   bool get byPopularity => this != newest && this != oldest;
 }
 
+/// What a search looks for. Works and novels each have their own places to
+/// look, their own orders (Pixiv keeps different ones for Premium) and their
+/// own remembered filter.
+enum PixivSearchKind {
+  works(
+    targets: pixivIllustSearchTargets,
+    sorts: PixivSearchSort.values,
+    premiumSorts: {PixivSearchSort.oldest, PixivSearchSort.popularMale, PixivSearchSort.popularFemale},
+    filterPref: optionPluginPixivSearchFilters,
+  ),
+  novels(
+    targets: pixivNovelSearchTargets,
+    sorts: [PixivSearchSort.newest, PixivSearchSort.oldest, PixivSearchSort.popular],
+    premiumSorts: {PixivSearchSort.popular},
+    filterPref: optionPluginPixivNovelSearchFilters,
+  );
+
+  final List<PixivSearchTarget> targets;
+  final List<PixivSearchSort> sorts;
+
+  /// Orders Pixiv refuses to an account without Premium.
+  final Set<PixivSearchSort> premiumSorts;
+
+  /// Where a remembered filter is kept.
+  final String filterPref;
+
+  const PixivSearchKind({
+    required this.targets,
+    required this.sorts,
+    required this.premiumSorts,
+    required this.filterPref,
+  });
+
+  /// Only works come as ugoira, take bookmark brackets and have a free popular preview.
+  bool get isWorks => this == works;
+}
+
 /// The orders worth offering: Pixiv answers the Premium ones only to Premium.
-List<PixivSearchSort> pixivSearchSorts({required bool isPremium}) => [
-  for (final sort in PixivSearchSort.values)
-    if (isPremium || !sort.premium) sort,
+List<PixivSearchSort> pixivSearchSorts({required bool isPremium, PixivSearchKind kind = PixivSearchKind.works}) => [
+  for (final sort in kind.sorts)
+    if (isPremium || !kind.premiumSorts.contains(sort)) sort,
 ];
 
 enum PixivUgoiraFilter { all, only, none }
@@ -208,10 +259,19 @@ class PixivSearchFilter {
     ugoira: ugoira ?? this.ugoira,
   );
 
-  /// What the account may send: without Premium a Premium order falls back to
-  /// newest and the bookmark bracket goes.
-  PixivSearchFilter forAccount({required bool isPremium}) =>
-      isPremium ? this : _copy(sort: sort.premium ? PixivSearchSort.newest : sort, bookmarks: null);
+  /// What the account may send for [kind]: a place to look or an order the
+  /// kind does not have goes back to the first one, without Premium a Premium
+  /// order falls back to newest and the bookmark bracket goes, and novels take
+  /// no bracket and no ugoira choice.
+  PixivSearchFilter forAccount({required bool isPremium, PixivSearchKind kind = PixivSearchKind.works}) {
+    final usable = pixivSearchSorts(isPremium: isPremium, kind: kind);
+    return _copy(
+      target: kind.targets.contains(target) ? target : kind.targets.first,
+      sort: usable.contains(sort) ? sort : PixivSearchSort.newest,
+      bookmarks: isPremium && kind.isWorks ? bookmarks : null,
+      ugoira: kind.isWorks ? ugoira : PixivUgoiraFilter.all,
+    );
+  }
 
   /// Whether the filter sheet's own choices differ from [base].
   bool sheetDiffersFrom(PixivSearchFilter base) =>
@@ -274,12 +334,13 @@ T? _named<T>(List<T> values, String? raw, String Function(T value) name) {
   return null;
 }
 
-/// The filter the reader asked to keep, or null when they keep none.
+/// The filter the reader asked to keep for [kind], or null when they keep none.
 PixivSearchFilter? readPixivSearchFilter(
   BasePrefService prefs, {
   PixivSearchFilter fallback = const PixivSearchFilter(),
+  PixivSearchKind kind = PixivSearchKind.works,
 }) {
-  final raw = prefs.get<String>(optionPluginPixivSearchFilters) ?? '';
+  final raw = prefs.get<String>(kind.filterPref) ?? '';
   if (raw.trim().isEmpty) return null;
   try {
     return PixivSearchFilter.fromJson(jsonDecode(raw), fallback: fallback);
@@ -288,19 +349,28 @@ PixivSearchFilter? readPixivSearchFilter(
   }
 }
 
-/// Keeps [filter] for later searches, or forgets the kept one when null.
-Future<void> savePixivSearchFilter(BasePrefService prefs, PixivSearchFilter? filter) async {
-  await prefs.set(optionPluginPixivSearchFilters, filter == null ? '' : jsonEncode(filter.toJson()));
+/// Keeps [filter] for later searches of [kind], or forgets the kept one when null.
+Future<void> savePixivSearchFilter(
+  BasePrefService prefs,
+  PixivSearchFilter? filter, {
+  PixivSearchKind kind = PixivSearchKind.works,
+}) async {
+  await prefs.set(kind.filterPref, filter == null ? '' : jsonEncode(filter.toJson()));
 }
 
 /// A filter nobody has touched: it hides AI works exactly when the feeds do.
 PixivSearchFilter pixivFreshFilter(BasePrefService prefs) =>
     PixivSearchFilter(hideAi: prefs.get<bool>(optionPluginPixivHideAi) == true);
 
-/// Where a new search starts: the remembered filter, else a fresh one.
-PixivSearchFilter pixivStartingFilter(BasePrefService prefs, {required bool isPremium}) {
+/// Where a new search of [kind] starts: the remembered filter, else a fresh one.
+PixivSearchFilter pixivStartingFilter(
+  BasePrefService prefs, {
+  required bool isPremium,
+  PixivSearchKind kind = PixivSearchKind.works,
+}) {
   final fresh = pixivFreshFilter(prefs);
-  return (readPixivSearchFilter(prefs, fallback: fresh) ?? fresh).forAccount(isPremium: isPremium);
+  final kept = readPixivSearchFilter(prefs, fallback: fresh, kind: kind);
+  return (kept ?? fresh).forAccount(isPremium: isPremium, kind: kind);
 }
 
 /// The words sent to Pixiv. The popularity tag goes on here and nowhere else,
@@ -308,15 +378,22 @@ PixivSearchFilter pixivStartingFilter(BasePrefService prefs, {required bool isPr
 String pixivSearchWord(String word, int? usersIri) =>
     usersIri == null ? word.trim() : '${word.trim()} ${usersIri}users入り';
 
-/// The `/v1/search/illust` query for [word] under [filter], dates as of [now].
-Map<String, String> pixivSearchQuery(PixivSearchFilter filter, String word, {required DateTime now}) {
+/// The `/v1/search/illust` query, or with [kind] novels the `/v1/search/novel`
+/// one, for [word] under [filter], dates as of [now]. Novel search takes no
+/// AI or bookmark parameters; Hide AI applies to its pages on the device.
+Map<String, String> pixivSearchQuery(
+  PixivSearchFilter filter,
+  String word, {
+  required DateTime now,
+  PixivSearchKind kind = PixivSearchKind.works,
+}) {
   final range = pixivPresetRange(filter.datePreset, now, custom: filter.customRange);
-  final bookmarks = filter.bookmarks;
+  final bookmarks = kind.isWorks ? filter.bookmarks : null;
   return {
     'word': pixivSearchWord(word, filter.usersIri),
     'search_target': filter.target.api,
     'sort': filter.sort.api,
-    'search_ai_type': filter.hideAi ? '1' : '0',
+    if (kind.isWorks) 'search_ai_type': filter.hideAi ? '1' : '0',
     if (range != null) 'start_date': pixivSearchDate(range.start),
     if (range != null) 'end_date': pixivSearchDate(range.end),
     if (bookmarks != null) 'bookmark_num_min': '${bookmarks.min}',
