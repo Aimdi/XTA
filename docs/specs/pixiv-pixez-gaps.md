@@ -27,7 +27,7 @@ once those are in.
 | B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Planned |
 | B2b | Novels: reader | Planned |
 | B2c | Novels: search, profiles, history, deep links | Planned |
-| B3 | Comments (reading only) | Planned |
+| B3 | Comments (reading only) | Built |
 | B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Planned |
 | B5a | Profiles and follows | Planned |
 | B5b | Bookmarks and bookmark organisation | Planned |
@@ -88,11 +88,13 @@ menu, copy and favourite; favourite tags; SauceNAO reverse image search.
   history); profile Novels tab and novel author cards; novel reading history;
   novel deep links.
 
-### B3 — comments (reading only)
+### B3 — comments (reading only) (built)
 
 Artwork comments; reply threads; Pixiv emoji and stickers; comment mute and
 spam handling; selectable comment text with Translate; novel comments and
-replies.
+replies. Described in `pixiv-comments.md`. The novel reader's comments button
+arrives with the novel batches through `PixivCommentTarget.novel`; Report is
+not offered.
 
 ### B4 — discovery
 

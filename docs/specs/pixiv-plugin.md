@@ -75,7 +75,8 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), mute review (authors, tags, works, comments, novels) |
 | Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`) |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
-| Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
+| Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags, View comments), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
+| Comments | Read-only artwork and novel comments with reply threads, Pixiv emoji and stickers, selectable text, comment and author mutes and collapsed outside links; no composer. See `pixiv-comments.md` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
 | Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
 | Profile | User detail with works (illustrations + manga), following and My pixiv counts as plural phrases, public follow, works grid |
@@ -116,6 +117,8 @@ its illust case.
 | Illust detail | `GET /v1/illust/detail` |
 | Ugoira metadata | `GET /v1/ugoira/metadata` |
 | Related | `GET /v2/illust/related` |
+| Comments | `GET /v3/illust/comments`, `GET /v3/novel/comments` |
+| Comment replies | `GET /v2/illust/comment/replies`, `GET /v2/novel/comment/replies` |
 | User detail | `GET /v1/user/detail` |
 | User illusts | `GET /v1/user/illusts` |
 | Following users | `GET /v1/user/following` |
@@ -126,6 +129,6 @@ its illust case.
 
 ## Not yet
 
-What remains against PixEz — novels, comments, Pixivision, series and
+What remains against PixEz — novels, Pixivision, series and
 watchlists, richer search and bookmarks, viewing history, multiple accounts and
 more — is planned batch by batch in `pixiv-pixez-gaps.md`.
