@@ -21,10 +21,10 @@ All of them live in `PixivSocialApi` (`pixiv_social_api.dart`), read through
 | (writes) | `POST /v1/user/follow/add` (`restrict`), `POST /v1/user/follow/delete` | Through `PixivFollowStore` |
 
 `PixivClient.userDetail`, `followedUsers` and `PixivUserPage` are gone, since
-these calls replace them. `PixivClient.userIllusts` (illustrations only) still
-serves the detail's More by strip and group posts; folding it into `userWorks`
-is left for the wave-1 merge, because those callers and their tests belong to
-other batches.
+these calls replace them. `/v1/user/illusts` has one request,
+`PixivClient.userIllusts(userId, type:, ownList:)`: `userWorks` hands it the
+type and whether the list is the reader's own, and the detail's More by strip
+and group posts call it for illustrations under the reader's filters.
 
 ## Model
 

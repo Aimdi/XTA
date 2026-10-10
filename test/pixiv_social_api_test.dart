@@ -127,6 +127,20 @@ void main() {
       expect(fixture.requests.single.url.queryParameters['type'], 'illust');
       expect(page.items.map((illust) => illust.id), [1, 2]);
     });
+
+    test('is the same request the More by strip and group posts make through the client', () async {
+      final fixture = _apiAnswering(
+        (_) => {
+          'illusts': [_illust(1), _illust(2, r18: true)],
+        },
+        ownId: 9,
+      );
+      await fixture.api.userWorks(9, PixivWorkType.illust);
+      final strip = await fixture.api.client.userIllusts(9);
+      expect(fixture.requests.map((request) => request.url), hasLength(2));
+      expect(fixture.requests.last.url, fixture.requests.first.url);
+      expect(strip.items.map((illust) => illust.id), [1], reason: 'only a profile keeps the reader\'s own R-18 works');
+    });
   });
 
   test('userBookmarks sends the user, restrict and tag', () async {

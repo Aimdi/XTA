@@ -36,14 +36,8 @@ class PixivSocialApi {
   }
 
   /// One kind of [userId]'s works; the reader's own keep everything they posted.
-  Future<PixivIllustPage> userWorks(int userId, PixivWorkType type, {String? nextUrl}) async {
-    final json = await _firstOrNext('/v1/user/illusts', {
-      'user_id': '$userId',
-      'type': type.name,
-      'filter': 'for_android',
-    }, nextUrl);
-    return client.illustPageFrom(json, ownList: _isSelf(userId));
-  }
+  Future<PixivIllustPage> userWorks(int userId, PixivWorkType type, {String? nextUrl}) =>
+      client.userIllusts(userId, type: type, ownList: _isSelf(userId), nextUrl: nextUrl);
 
   /// [userId]'s bookmarks; someone else's follow the reader's R-18 and AI choices.
   Future<PixivIllustPage> userBookmarks(int userId, {String restrict = 'public', String? tag, String? nextUrl}) async {

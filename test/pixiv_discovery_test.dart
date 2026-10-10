@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 
 Map<String, Object?> _illustJson(int id) => {
   'id': id,
@@ -53,10 +54,10 @@ void main() {
         };
       });
 
-      await client.ranking(mode: 'day', date: '2026-08-01');
+      await PixivDiscoveryApi(client).ranking('day', date: '2026-08-01');
       expect(asked!.queryParameters['date'], '2026-08-01');
 
-      await client.ranking(mode: 'day');
+      await PixivDiscoveryApi(client).ranking('day');
       expect(asked!.queryParameters.containsKey('date'), isFalse);
     });
   });
