@@ -378,6 +378,12 @@ const optionPluginPixivMutedNovels = 'plugin.pixiv.muted_novels';
 const optionPluginPixivGroupSubscriptions = 'plugin.pixiv.group_subscriptions';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
 
+/// The search filters the reader chose to remember, as JSON; empty for none.
+const optionPluginPixivSearchFilters = 'plugin.pixiv.search_filters';
+
+/// Tags pinned as saved searches, in the reader's order, as JSON.
+const optionPluginPixivFavoriteTags = 'plugin.pixiv.favorite_tags';
+
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
 const optionPluginBooruShowTab = 'plugin.booru.show_tab';

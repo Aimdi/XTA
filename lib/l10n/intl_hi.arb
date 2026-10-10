@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "दिखाएँ",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "दूसरी इमेज चुनें",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "इस इमेज से मेल खाता कोई Pixiv काम नहीं मिला",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO इस इमेज से खोज नहीं कर सका",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "इमेज चुनें",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "प्रीव्यू देखने के लिए Pixiv में फिर से साइन इन करें",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "आपकी चुनी हुई इमेज मिलते-जुलते Pixiv काम खोजने के लिए saucenao.com पर अपलोड की जाती है।",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO पर खोज रहे हैं…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} मिलान",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "इमेज से खोजें",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "बुकमार्क की संख्या",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "कितने भी बुकमार्क",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ बुकमार्क",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} बुकमार्क",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "तारीख",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "कभी भी",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "अपनी तारीखें…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "पिछला दिन",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "पिछले 6 महीने",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "पिछला महीना",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "पिछला हफ़्ता",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "पिछला साल",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "कोई परिणाम नहीं",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "पसंदीदा टैग में जोड़ें",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "पसंदीदा टैग में जोड़ा गया",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "पसंदीदा टैग से हटाएँ",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "पसंदीदा टैग से हटाया गया",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "पसंदीदा टैग",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "बदलाव पूरा करें",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "पसंदीदा टैग बदलें",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "टैग को खिसकाने के लिए खींचें। हटाने के लिए उसे किनारे की ओर स्वाइप करें।",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "अभी कोई पसंदीदा टैग नहीं है। जोड़ने के लिए किसी काम के टैग को देर तक दबाएँ।",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "खोज फ़िल्टर",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "टैग, शीर्षक या उपयोगकर्ता",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "हाल की खोजें",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "सभी दिखाएँ ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "कोई हाल की खोज नहीं",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "कम दिखाएँ",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "काम #{id} खोलें",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "उपयोगकर्ता #{id} खोलें",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "पेस्ट करें",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "लोकप्रियता",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "कोई भी लोकप्रियता",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "सबसे पुराने पहले और पुरुषों या महिलाओं में लोकप्रियता के क्रम के लिए Pixiv Premium चाहिए। इसके बिना \"लोकप्रिय\" Pixiv का मुफ़्त प्रीव्यू दिखाता है।",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "यह Pixiv का मुफ़्त लोकप्रिय प्रीव्यू है। सभी नतीजों को लोकप्रियता से क्रमबद्ध करने के लिए Pixiv Premium चाहिए।",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "चित्र या उपयोगकर्ता खोजें",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "ये फ़िल्टर याद रखें",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "क्रम",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "नवीनतम",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "सबसे पुराने",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "लोकप्रिय",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "महिलाओं में लोकप्रिय",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "पुरुषों में लोकप्रिय",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "टैग कॉपी किया गया",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "टैग कॉपी करें",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "कहाँ खोजें",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "टैग (सटीक)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "टैग (आंशिक)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "शीर्षक/कैप्शन",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "सभी काम",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "बिना ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "सिर्फ़ ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ लोगों ने बुकमार्क किया",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: फ़ॉलोइंग, रैंकिंग, आपके सार्वजनिक बुकमार्क और खोज। ब्राउज़र में Pixiv खाते से साइन इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। यहाँ से Pixiv पर कुछ पोस्ट, बुकमार्क या फ़ॉलो नहीं होता।",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 कृतियाँ दिखाएँ",

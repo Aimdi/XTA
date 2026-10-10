@@ -611,6 +611,8 @@ Future<void> main() async {
       optionPluginPixivMutedComments: '[]',
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginPixivSearchFilters: '',
+      optionPluginPixivFavoriteTags: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,

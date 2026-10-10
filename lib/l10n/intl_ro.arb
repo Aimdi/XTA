@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Afișează",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Alege altă imagine",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Nicio lucrare Pixiv nu se potrivește cu această imagine",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO nu a putut căuta această imagine",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Alege o imagine",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Conectează-te din nou la Pixiv pentru a vedea previzualizările",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Imaginea aleasă este încărcată pe saucenao.com pentru a găsi lucrări Pixiv potrivite.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Se caută pe SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Asemănare {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Caută după imagine",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Număr de semne de carte",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Orice număr de semne de carte",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ semne de carte",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} semne de carte",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Dată",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Oricând",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Date personalizate…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Ultima zi",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Ultimele 6 luni",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Ultima lună",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Ultima săptămână",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Ultimul an",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Niciun rezultat",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Adaugă la etichetele preferate",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Adăugată la etichetele preferate",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Elimină din etichetele preferate",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Eliminată din etichetele preferate",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Etichete preferate",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Termină editarea",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Editează etichetele preferate",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Trage o etichetă pentru a o muta. Glisează-o lateral pentru a o elimina.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Nu ai încă etichete preferate. Apasă lung pe eticheta unei lucrări pentru a o adăuga.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filtre de căutare",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Etichete, titluri sau utilizatori",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Căutări recente",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Arată tot ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Nu există căutări recente",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Arată mai puțin",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Deschide lucrarea #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Deschide utilizatorul #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Lipește",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularitate",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Orice popularitate",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Sortarea de la cele mai vechi și după popularitatea la bărbați sau femei necesită Pixiv Premium. Fără el, „Populare” arată previzualizarea gratuită Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Aceasta este previzualizarea gratuită a lucrărilor populare de pe Pixiv. Sortarea tuturor rezultatelor după popularitate necesită Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Căutați ilustrații sau utilizatori",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Ține minte aceste filtre",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sortează după",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Cele mai noi",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Cele mai vechi",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populare",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Populare la femei",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populare la bărbați",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Eticheta a fost copiată",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Copiază eticheta",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Caută în",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etichete (exact)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Etichete (parțial)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titlu/descriere",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Toate lucrările",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Fără ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Doar ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Salvată de {count}+ utilizatori",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Acest plugin privat citește Pixiv ca o galerie: urmăriți, clasamente, semnele dvs. publice și căutarea. Atingeți Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. De aici nu se publică, marchează sau urmărește nimic pe Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Afișează lucrări R-18",

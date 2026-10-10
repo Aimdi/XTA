@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "إظهار",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "اختر صورة أخرى",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "لا توجد أعمال على Pixiv تطابق هذه الصورة",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "تعذّر على SauceNAO البحث عن هذه الصورة",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "اختر صورة",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "سجّل الدخول إلى Pixiv مجددًا لعرض المعاينات",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "تُرفع الصورة التي تختارها إلى saucenao.com للبحث عن أعمال مطابقة على Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "جارٍ البحث في SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "تشابه {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "البحث بالصورة",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "عدد الإشارات",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "أي عدد من الإشارات",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ إشارة",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} إشارة",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "التاريخ",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "أي وقت",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "تواريخ مخصّصة…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "آخر يوم",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "آخر 6 أشهر",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "آخر شهر",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "آخر أسبوع",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "آخر سنة",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "لا نتائج",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "إضافة إلى الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "أُضيف إلى الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "إزالة من الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "أُزيل من الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "إنهاء التعديل",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "تعديل الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "اسحب وسمًا لنقله، واسحبه جانبًا لإزالته.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "لا توجد وسوم مفضلة بعد. اضغط مطولًا على وسم في أي عمل لإضافته.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "عوامل تصفية البحث",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "وسوم أو عناوين أو مستخدمون",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "عمليات البحث الأخيرة",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "عرض الكل ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "لا توجد عمليات بحث أخيرة",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "عرض أقل",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "فتح العمل #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "فتح المستخدم #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "لصق",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "الشعبية",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "أي شعبية",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "يتطلب الترتيب من الأقدم والترتيب حسب الشعبية لدى الرجال أو النساء اشتراك Pixiv Premium. بدونه يعرض خيار «الأكثر شعبية» المعاينة المجانية من Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "هذه معاينة Pixiv المجانية للأعمال الرائجة. يتطلب ترتيب كل النتائج حسب الشعبية اشتراك Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "ابحث عن رسوم أو مستخدمين",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "تذكّر عوامل التصفية هذه",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "الترتيب حسب",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "الأحدث",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "الأقدم",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "الأكثر شعبية",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "الأكثر شعبية لدى النساء",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "الأكثر شعبية لدى الرجال",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "نُسخ الوسم",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "نسخ الوسم",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "البحث في",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "وسوم (مطابق)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "وسوم (جزئي)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "العنوان/الوصف",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "كل الأعمال",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "بدون Ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Ugoira فقط",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "أضافه {count}+ إلى إشاراتهم",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "هذه الإضافة الخاصة تقرأ Pixiv كمعرض: المتابعة والترتيب وإشاراتك العامة والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُنشَر شيء ولا تُضاف إشارات ولا متابعات على Pixiv من هنا.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "إظهار أعمال R-18",

@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "顯示",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "選擇其他圖片",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "沒有與這張圖片相符的 Pixiv 作品",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO 無法搜尋這張圖片",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "選擇圖片",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "重新登入 Pixiv 即可查看預覽",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "你選擇的圖片會上傳到 saucenao.com，用來尋找相符的 Pixiv 作品。",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "正在 SauceNAO 上搜尋…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "相似度 {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "以圖搜尋",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "收藏數",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "不限收藏數",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min} 以上收藏",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} 收藏",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "日期",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "不限時間",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "自訂日期…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "過去一天",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "過去 6 個月",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "過去一個月",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "過去一週",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "過去一年",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "沒有結果",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "加入喜愛的標籤",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "已加入喜愛的標籤",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "從喜愛的標籤中移除",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "已從喜愛的標籤中移除",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "喜愛的標籤",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "完成編輯",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "編輯喜愛的標籤",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "拖曳標籤可調整順序，往旁邊滑動即可移除。",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "還沒有喜愛的標籤。長按作品上的標籤即可加入。",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "搜尋篩選",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "標籤、標題或使用者",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "最近搜尋",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "顯示全部（{count}）",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "沒有最近搜尋",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "收合",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "開啟作品 #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "開啟使用者 #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "貼上",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "熱門程度",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "不限熱門程度",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "依最舊排序以及依男性或女性熱門排序需要 Pixiv 高級會員。沒有高級會員時，「熱門」會顯示 Pixiv 的免費預覽。",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "這是 Pixiv 的免費熱門預覽。若要依熱門程度排序所有結果，需要 Pixiv 高級會員。",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "搜尋插畫或使用者",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "記住這些篩選條件",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "排序方式",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "最新",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "最舊",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "熱門",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "女性熱門",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "男性熱門",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "已複製標籤",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "複製標籤",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "搜尋範圍",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "標籤（完全符合）",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "標籤（部分符合）",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "標題/說明",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "所有作品",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "不含動圖",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "僅動圖",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ 人收藏",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "此私有外掛像圖庫應用程式一樣閱讀 Pixiv：追蹤、排行榜、公開收藏與搜尋。點登入以在瀏覽器中用 Pixiv 帳號登入，或在下方貼上重新整理權杖。此處不會在 Pixiv 發文、收藏或追蹤。",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "顯示 R-18 作品",

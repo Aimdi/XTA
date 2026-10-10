@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Pokaż",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Wybierz inny obraz",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Żadne dzieło z Pixiv nie pasuje do tego obrazu",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO nie mógł wyszukać tego obrazu",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Wybierz obraz",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Zaloguj się ponownie do Pixiv, aby zobaczyć podglądy",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Wybrany obraz jest przesyłany do saucenao.com, aby znaleźć pasujące dzieła z Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Wyszukiwanie w SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Podobieństwo {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Szukaj obrazem",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Liczba zakładek",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Dowolna liczba zakładek",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ zakładek",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} zakładek",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Data",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Dowolny czas",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Własne daty…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Ostatni dzień",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Ostatnie 6 miesięcy",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Ostatni miesiąc",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Ostatni tydzień",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Ostatni rok",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Brak wyników",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Dodaj do ulubionych tagów",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Dodano do ulubionych tagów",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Usuń z ulubionych tagów",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Usunięto z ulubionych tagów",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Ulubione tagi",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Zakończ edycję",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Edytuj ulubione tagi",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Przeciągnij tag, aby go przenieść. Przesuń go w bok, aby go usunąć.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Nie masz jeszcze ulubionych tagów. Przytrzymaj tag przy dziele, aby go dodać.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filtry wyszukiwania",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Tagi, tytuły lub użytkownicy",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Ostatnie wyszukiwania",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Pokaż wszystkie ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Brak ostatnich wyszukiwań",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Pokaż mniej",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Otwórz dzieło #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Otwórz użytkownika #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Wklej",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularność",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Dowolna popularność",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Sortowanie od najstarszych i według popularności wśród mężczyzn lub kobiet wymaga Pixiv Premium. Bez niego opcja „Popularne” pokazuje bezpłatny podgląd Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "To bezpłatny podgląd popularnych dzieł z Pixiv. Sortowanie wszystkich wyników według popularności wymaga Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Szukaj ilustracji lub użytkowników",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Zapamiętaj te filtry",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sortuj według",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Najnowsze",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Najstarsze",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Popularne",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Popularne wśród kobiet",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Popularne wśród mężczyzn",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Skopiowano tag",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopiuj tag",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Szukaj w",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tagi (dokładnie)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Tagi (częściowo)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tytuł/opis",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Wszystkie dzieła",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Bez ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Tylko ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "W zakładkach u {count}+ osób",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Ta prywatna wtyczka czyta Pixiv jak galerię: obserwowani, rankingi, twoje publiczne zakładki i wyszukiwanie. Dotknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Stąd nic nie jest publikowane, dodawane do zakładek ani obserwowane na Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Pokazuj prace R-18",

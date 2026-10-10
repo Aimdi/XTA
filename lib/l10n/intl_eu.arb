@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Erakutsi",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Aukeratu beste irudi bat",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Ez dago irudi honekin bat datorren Pixiv lanik",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO-k ezin izan du irudi hau bilatu",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Aukeratu irudi bat",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Hasi saioa berriro Pixiv-en aurrebistak ikusteko",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Aukeratzen duzun irudia saucenao.com-era igotzen da, bat datozen Pixiv lanak bilatzeko.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO-n bilatzen…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} antzekoa",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Bilatu irudiaren bidez",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Laster-marka kopurua",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Edozein laster-marka kopuru",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ laster-marka",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} laster-marka",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Data",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Edozein unetan",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Data pertsonalizatuak…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Azken eguna",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Azken 6 hilabeteak",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Azken hilabetea",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Azken astea",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Azken urtea",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Ez dago emaitzarik",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Gehitu etiketa gogokoetara",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Etiketa gogokoetara gehitu da",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Kendu etiketa gogokoetatik",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Etiketa gogokoetatik kendu da",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Etiketa gogokoak",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Amaitu editatzen",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Editatu etiketa gogokoak",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Arrastatu etiketa bat hura mugitzeko. Irristatu alde batera kentzeko.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Oraindik ez dago etiketa gogokorik. Sakatu luze lan bateko etiketa bat gehitzeko.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Bilaketa-iragazkiak",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Etiketak, izenburuak edo erabiltzaileak",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Azken bilaketak",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Erakutsi guztiak ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Ez dago azken bilaketarik",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Erakutsi gutxiago",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Ireki #{id} lana",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Ireki #{id} erabiltzailea",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Itsatsi",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Ospea",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Edozein ospe",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Zaharrenak lehenik ordenatzeko eta gizonen edo emakumeen arteko ospearen arabera ordenatzeko Pixiv Premium behar da. Hura gabe, «Ospetsuak» aukerak Pixiv-en doako aurrebista erakusten du.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Hau Pixiv-en lan ospetsuen doako aurrebista da. Emaitza guztiak ospearen arabera ordenatzeko Pixiv Premium behar da.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Bilatu ilustrazioak edo erabiltzaileak",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Gogoratu iragazki hauek",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Ordenatu honen arabera",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Berrienak",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Zaharrenak",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Ospetsuak",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Emakumeen artean ospetsuak",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Gizonen artean ospetsuak",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etiketa kopiatu da",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopiatu etiketa",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Bilatu hemen",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiketak (zehatza)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Etiketak (partziala)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Izenburua/deskribapena",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Lan guztiak",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Ugoirarik gabe",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Ugoira soilik",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ laster-markatan",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Plugin pribatu honek Pixiv galeria gisa irakurtzen du: jarraipena, sailkapenak, zure laster-marka publikoak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Hemendik ez da ezer argitaratzen, markatzen edo jarraitzen Pixiv-en.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Erakutsi R-18 lanak",

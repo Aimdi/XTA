@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "표시",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "다른 이미지 선택",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "이 이미지와 일치하는 Pixiv 작품이 없습니다",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO에서 이 이미지를 검색하지 못했습니다",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "이미지 선택",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "미리보기를 보려면 Pixiv에 다시 로그인하세요",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "선택한 이미지는 일치하는 Pixiv 작품을 찾기 위해 saucenao.com에 업로드됩니다.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO에서 검색 중…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "유사도 {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "이미지로 검색",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "북마크 수",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "북마크 수 제한 없음",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "북마크 {min}개 이상",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "북마크 {min}~{max}개",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "날짜",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "전체 기간",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "기간 직접 지정…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "지난 1일",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "지난 6개월",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "지난 1개월",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} ~ {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "지난 1주",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "지난 1년",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "결과 없음",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "즐겨찾는 태그에 추가",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "즐겨찾는 태그에 추가했습니다",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "즐겨찾는 태그에서 삭제",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "즐겨찾는 태그에서 삭제했습니다",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "즐겨찾는 태그",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "편집 완료",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "즐겨찾는 태그 편집",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "태그를 끌어서 옮기고, 옆으로 밀어서 삭제하세요.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "아직 즐겨찾는 태그가 없습니다. 작품의 태그를 길게 눌러 추가하세요.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "검색 필터",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "태그, 제목 또는 사용자",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "최근 검색",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "모두 보기({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "최근 검색이 없습니다",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "간단히 보기",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "작품 #{id} 열기",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "사용자 #{id} 열기",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "붙여넣기",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "인기도",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "인기도 제한 없음",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "오래된순과 남성·여성 인기순 정렬에는 pixiv 프리미엄이 필요합니다. 프리미엄이 없으면 '인기순'은 Pixiv의 무료 미리보기를 보여 줍니다.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Pixiv의 무료 인기 미리보기입니다. 모든 결과를 인기순으로 정렬하려면 pixiv 프리미엄이 필요합니다.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "일러스트나 사용자를 검색하세요",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "이 필터 기억하기",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "정렬",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "최신순",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "오래된순",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "인기순",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "여성 인기순",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "남성 인기순",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "태그를 복사했습니다",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "태그 복사",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "검색 대상",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "태그(완전 일치)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "태그(부분 일치)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "제목/캡션",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "모든 작품",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "우고이라 제외",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "우고이라만",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}명 이상 북마크",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "이 비공개 플러그인은 갤러리 앱처럼 Pixiv를 읽습니다. 팔로잉, 랭킹, 공개 북마크, 검색. 로그인으로 브라우저에서 Pixiv에 접속하거나 아래에 리프레시 토큰을 붙여 넣으세요. 여기서는 Pixiv에 게시·북마크·팔로우하지 않습니다.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 작품 표시",

@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Göster",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Başka bir görsel seç",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Bu görselle eşleşen Pixiv eseri yok",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO bu görselle arama yapamadı",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Görsel seç",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Önizlemeleri görmek için Pixiv’e yeniden giriş yapın",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Seçtiğiniz görsel, eşleşen Pixiv eserlerini bulmak için saucenao.com’a yüklenir.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO’da aranıyor…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} benzerlik",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Görselle ara",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Yer imi sayısı",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Herhangi bir yer imi sayısı",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ yer imi",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} yer imi",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Tarih",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Herhangi bir zaman",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Özel tarihler…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Son gün",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Son 6 ay",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Son ay",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Son hafta",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Son yıl",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Sonuç yok",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Favori etiketlere ekle",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Favori etiketlere eklendi",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Favori etiketlerden kaldır",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Favori etiketlerden kaldırıldı",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Favori etiketler",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Düzenlemeyi bitir",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Favori etiketleri düzenle",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Taşımak için bir etiketi sürükleyin. Kaldırmak için yana kaydırın.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Henüz favori etiket yok. Eklemek için bir eserdeki etikete uzun basın.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Arama filtreleri",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Etiketler, başlıklar veya kullanıcılar",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Son aramalar",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Tümünü göster ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Son arama yok",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Daha az göster",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "#{id} eserini aç",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "#{id} kullanıcısını aç",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Yapıştır",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popülerlik",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Herhangi bir popülerlik",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Eskiden yeniye sıralama ve erkekler ya da kadınlar arasındaki popülerliğe göre sıralama Pixiv Premium gerektirir. Premium olmadan “Popüler”, Pixiv’in ücretsiz önizlemesini gösterir.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Bu, Pixiv’in ücretsiz popüler önizlemesidir. Tüm sonuçları popülerliğe göre sıralamak için Pixiv Premium gerekir.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "İllüstrasyon veya kullanıcı arayın",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Bu filtreleri hatırla",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sıralama",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "En yeni",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "En eski",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Popüler",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Kadınlar arasında popüler",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Erkekler arasında popüler",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etiket kopyalandı",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Etiketi kopyala",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Arama yeri",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiketler (tam)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Etiketler (kısmi)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Başlık/açıklama",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Tüm eserler",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Ugoira hariç",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Yalnızca ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ kişi yer imlerine ekledi",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri gibi okur: takip, sıralamalar, herkese açık yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Buradan Pixiv’de hiçbir şey gönderilmez, yer imine eklenmez veya takip edilmez.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 eserleri göster",

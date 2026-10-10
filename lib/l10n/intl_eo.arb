@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Montri",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Elekti alian bildon",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Neniu verko de Pixiv kongruas kun ĉi tiu bildo",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO ne povis serĉi per ĉi tiu bildo",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Elekti bildon",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Ensalutu denove al Pixiv por vidi antaŭrigardojn",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "La elektita bildo estas alŝutata al saucenao.com por trovi kongruajn verkojn de Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Serĉante ĉe SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} simila",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Serĉi per bildo",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Nombro de legosignoj",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Ajna nombro de legosignoj",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ legosignoj",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} legosignoj",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Dato",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Iam ajn",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Propraj datoj…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Lasta tago",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Lastaj 6 monatoj",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Lasta monato",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Lasta semajno",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Lasta jaro",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Neniuj rezultoj",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Aldoni al ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Aldonita al ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Forigi el ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Forigita el ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Fini redaktadon",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Redakti ŝatatajn etikedojn",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Trenu etikedon por movi ĝin. Ŝovu ĝin flanken por forigi ĝin.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Ankoraŭ neniuj ŝatataj etikedoj. Longe premu etikedon de verko por aldoni ĝin.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Serĉaj filtriloj",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Etikedoj, titoloj aŭ uzantoj",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Lastatempaj serĉoj",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Montri ĉiujn ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Neniuj lastatempaj serĉoj",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Montri malpli",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Malfermi verkon #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Malfermi uzanton #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Alglui",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Populareco",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Ajna populareco",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Ordigo de la plej malnovaj kaj laŭ populareco ĉe viroj aŭ virinoj bezonas Pixiv Premium. Sen ĝi, «Popularaj» montras la senpagan antaŭrigardon de Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Ĉi tio estas la senpaga antaŭrigardo de popularaj verkoj de Pixiv. Ordigi ĉiujn rezultojn laŭ populareco bezonas Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Serĉu ilustraĵojn aŭ uzantojn",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Memori ĉi tiujn filtrilojn",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Ordigi laŭ",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Plej novaj",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Plej malnovaj",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Popularaj",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Popularaj ĉe virinoj",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Popularaj ĉe viroj",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etikedo kopiita",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopii etikedon",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Serĉi en",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etikedoj (ekzakte)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Etikedoj (parte)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titolo/priskribo",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Ĉiuj verkoj",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Sen ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Nur ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Legosignita de {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: sekvado, rangigoj, viaj publikaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refresĥĵetonon sube. De ĉi tie nenio estas afiŝita, legosignita aŭ sekvata sur Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Montri R-18 verkojn",

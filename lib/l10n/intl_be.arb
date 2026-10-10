@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Паказаць",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Выбраць іншы відарыс",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Няма твораў Pixiv, падобных да гэтага відарыса",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO не змог шукаць па гэтым відарысе",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Выбраць відарыс",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Увайдзіце ў Pixiv зноў, каб бачыць мініяцюры",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Выбраны відарыс запампоўваецца на saucenao.com, каб знайсці падобныя творы на Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Пошук у SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Падабенства {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Пошук па відарысе",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Колькасць закладак",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Любая колькасць закладак",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ закладак",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} закладак",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Дата",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "За ўвесь час",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Свае даты…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "За апошні дзень",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "За апошнія 6 месяцаў",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "За апошні месяц",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "За апошні тыдзень",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "За апошні год",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Нічога не знойдзена",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Дадаць у абраныя тэгі",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Дададзена ў абраныя тэгі",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Прыбраць з абраных тэгаў",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Прыбрана з абраных тэгаў",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Абраныя тэгі",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Скончыць рэдагаванне",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Рэдагаваць абраныя тэгі",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Перацягніце тэг, каб перамясціць яго. Змахніце яго ўбок, каб прыбраць.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Абраных тэгаў пакуль няма. Доўга націсніце на тэг у творы, каб дадаць яго.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Фільтры пошуку",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Тэгі, назвы ці карыстальнікі",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Нядаўнія пошукі",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Паказаць усе ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Няма нядаўніх пошукаў",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Паказаць менш",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Адкрыць твор #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Адкрыць карыстальніка #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Уставіць",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Папулярнасць",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Любая папулярнасць",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Сартаванне ад старых і па папулярнасці сярод мужчын або жанчын патрабуе Pixiv Premium. Без яго «Папулярныя» паказваюць бясплатны папярэдні прагляд Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Гэта бясплатны папярэдні прагляд папулярнага ад Pixiv. Каб сартаваць усе вынікі па папулярнасці, патрэбны Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Шукайце ілюстрацыі ці карыстальнікаў",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Запомніць гэтыя фільтры",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Сартаванне",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Найноўшыя",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Найстарэйшыя",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Папулярныя",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Папулярныя сярод жанчын",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Папулярныя сярод мужчын",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Тэг скапіяваны",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Скапіяваць тэг",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Дзе шукаць",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Тэгі (дакладна)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Тэгі (часткова)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Назва/апісанне",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Усе творы",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Без ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Толькі ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "У закладках у {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Гэты прыватны плагін чытае Pixiv як галерэю: стужка, рэйтынгі, вашы публічныя закладкі і пошук. Націсніце «Увайсці», каб увайсці ў Pixiv у браўзеры, або ўстаўце refresh-токен ніжэй. Адсюль нічога не публікуецца, не дадаецца ў закладкі і не падпісваецца на Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Паказваць працы R-18",

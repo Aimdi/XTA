@@ -138,6 +138,8 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivMutedComments, '[]');
     await prefs.set(optionPluginPixivMutedNovels, '[]');
     await prefs.set(optionPluginPixivSearchHistory, '[]');
+    await prefs.set(optionPluginPixivSearchFilters, '');
+    await prefs.set(optionPluginPixivFavoriteTags, '[]');
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
       where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);

@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Zobrazit",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Vybrat jiný obrázek",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Tomuto obrázku neodpovídají žádná díla z Pixivu",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO nedokázal tento obrázek vyhledat",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Vybrat obrázek",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Pro zobrazení náhledů se znovu přihlaste k Pixivu",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Vybraný obrázek se nahraje na saucenao.com, aby se našla odpovídající díla z Pixivu.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Hledání na SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Podobnost {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Hledat podle obrázku",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Počet záložek",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Libovolný počet záložek",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ záložek",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} záložek",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Datum",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Kdykoli",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Vlastní data…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Poslední den",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Posledních 6 měsíců",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Poslední měsíc",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Poslední týden",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Poslední rok",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Žádné výsledky",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Přidat do oblíbených štítků",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Přidáno do oblíbených štítků",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Odebrat z oblíbených štítků",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Odebráno z oblíbených štítků",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Oblíbené štítky",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Dokončit úpravy",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Upravit oblíbené štítky",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Štítek přesunete přetažením. Odstraníte ho přejetím do strany.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Zatím nemáte žádné oblíbené štítky. Přidáte je dlouhým stisknutím štítku u díla.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filtry hledání",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Tagy, názvy nebo uživatelé",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Nedávná hledání",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Zobrazit vše ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Žádná nedávná hledání",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Zobrazit méně",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Otevřít dílo #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Otevřít uživatele #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Vložit",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularita",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Libovolná popularita",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Řazení od nejstarších a podle obliby u mužů nebo žen vyžaduje Pixiv Premium. Bez něj volba Populární zobrazí bezplatný náhled Pixivu.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Toto je bezplatný náhled populárních děl od Pixivu. Řazení všech výsledků podle popularity vyžaduje Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Hledejte ilustrace nebo uživatele",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Zapamatovat tyto filtry",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Řadit podle",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Nejnovější",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Nejstarší",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populární",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Oblíbené u žen",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Oblíbené u mužů",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Štítek zkopírován",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopírovat štítek",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Hledat v",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Štítky (přesně)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Štítky (částečně)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Název/popisek",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Všechna díla",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Bez ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Jen ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "V záložkách u {count}+ lidí",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Tento soukromý plugin čte Pixiv jako galerii: sledování, žebříčky, vaše veřejné záložky a vyhledávání. Klepněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Odtud se na Pixivu nic nepublikuje, nepřidává do záložek ani nesleduje.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Zobrazit díla R-18",

@@ -7,20 +7,25 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 /// Something the reader can mute, worded as the action it takes.
 typedef PixivMuteChoice = ({IconData icon, String label, Future<void> Function(PixivMuteStore store) mute});
 
-/// Asks before muting; true once [choice] was muted.
-Future<bool> confirmPixivMute(BuildContext context, PixivMuteChoice choice) async {
-  final store = context.read<PixivMuteStore>();
+/// Asks before [action]; true once the reader agreed and [context] is still mounted.
+Future<bool> confirmPixivAction(BuildContext context, String action) async {
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text(choice.label),
+      title: Text(action),
       actions: [
         TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(L10n.of(dialogContext).cancel)),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(choice.label)),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(action)),
       ],
     ),
   );
-  if (confirmed != true || !context.mounted) return false;
+  return confirmed == true && context.mounted;
+}
+
+/// Asks before muting; true once [choice] was muted.
+Future<bool> confirmPixivMute(BuildContext context, PixivMuteChoice choice) async {
+  final store = context.read<PixivMuteStore>();
+  if (!await confirmPixivAction(context, choice.label)) return false;
   await choice.mute(store);
   return true;
 }
@@ -33,13 +38,14 @@ List<PixivMuteChoice> pixivMuteChoices(L10n l10n, PixivIllust illust) => [
     mute: (store) => store.muteAuthor(illust.userId),
   ),
   (icon: Icons.hide_image_outlined, label: l10n.plugin_pixiv_mute_illust, mute: (store) => store.muteIllust(illust.id)),
-  for (final tag in illust.tags)
-    (
-      icon: Icons.label_off_outlined,
-      label: l10n.plugin_pixiv_mute_tag(tag.displayName),
-      mute: (store) => store.muteTag(tag.name),
-    ),
+  for (final tag in illust.tags) pixivTagMuteChoice(l10n, tag),
 ];
+
+PixivMuteChoice pixivTagMuteChoice(L10n l10n, PixivTag tag) => (
+  icon: Icons.label_off_outlined,
+  label: l10n.plugin_pixiv_mute_tag(tag.displayName),
+  mute: (store) => store.muteTag(tag.name),
+);
 
 /// Offers [pixivMuteChoices] and, once one is confirmed, leaves the work's
 /// screen, since whatever was muted now hides it.

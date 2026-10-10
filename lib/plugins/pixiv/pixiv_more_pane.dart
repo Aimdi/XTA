@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
@@ -92,6 +93,11 @@ class _PixivMorePaneState extends State<PixivMorePane> {
         leading: const Icon(Icons.history),
         title: Text(l10n.plugin_pixiv_search_history),
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PixivSearchScreen())),
+      ),
+      ListTile(
+        leading: const Icon(Icons.label_outline),
+        title: Text(l10n.plugin_pixiv_search_favorite_tags),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PixivFavoriteTagsScreen())),
       ),
       ListTile(leading: const Icon(Icons.tune), title: Text(l10n.plugin_pixiv_more_preferences), onTap: _openSettings),
       ListTile(

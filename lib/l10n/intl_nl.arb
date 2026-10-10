@@ -2343,26 +2343,186 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Tonen",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Kies een andere afbeelding",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Geen Pixiv-werken komen overeen met deze afbeelding",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO kon niet zoeken met deze afbeelding",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Kies een afbeelding",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Log opnieuw in bij Pixiv om voorbeelden te zien",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "De gekozen afbeelding wordt geüpload naar saucenao.com om bijpassende Pixiv-werken te vinden.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Zoeken op SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} gelijkenis",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Zoeken met afbeelding",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_search_bookmarks": "Aantal bladwijzers",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Elk aantal bladwijzers",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ bladwijzers",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} bladwijzers",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Datum",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Altijd",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Eigen datums…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Afgelopen dag",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Afgelopen 6 maanden",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Afgelopen maand",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Afgelopen week",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Afgelopen jaar",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Geen resultaten",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Toevoegen aan favoriete tags",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Toegevoegd aan favoriete tags",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Verwijderen uit favoriete tags",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Verwijderd uit favoriete tags",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Favoriete tags",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Klaar met bewerken",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Favoriete tags bewerken",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Sleep een tag om hem te verplaatsen. Veeg hem opzij om hem te verwijderen.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Nog geen favoriete tags. Houd een tag van een werk ingedrukt om hem toe te voegen.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Zoekfilters",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Tags, titels of gebruikers",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Recente zoekopdrachten",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Alles tonen ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_search_history_empty": "Geen recente zoekopdrachten",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Minder tonen",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Werk #{id} openen",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Gebruiker #{id} openen",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Plakken",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Populariteit",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Elke populariteit",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Oudste eerst en populariteit bij mannen of vrouwen vereisen Pixiv Premium. Zonder Premium toont ‘Populair’ de gratis preview van Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_note": "Dit is de gratis populair-preview van Pixiv. Alle resultaten op populariteit sorteren vereist Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Zoek illustraties of gebruikers",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Deze filters onthouden",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sorteren op",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Nieuwste",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Oudste",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populair",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Populair bij vrouwen",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populair bij mannen",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Tag gekopieerd",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Tag kopiëren",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Zoeken in",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tags (exact)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Tags (gedeeltelijk)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titel/bijschrift",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Alle werken",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Zonder ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Alleen ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Door {count}+ bewaard",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Deze privéplug-in leest Pixiv als een galerij-app: volgend, ranglijsten, je openbare bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Hier vanuit wordt niets op Pixiv gepost, gebookmarkt of gevolgd.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18-werken tonen",
