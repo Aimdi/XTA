@@ -112,19 +112,42 @@ class PixivCommentText extends StatelessWidget {
     child: Semantics(
       label: emoji.code,
       image: true,
-      child: IconTheme.merge(
-        data: const IconThemeData(size: pixivEmojiSize),
-        child: SizedBox.square(
-          dimension: pixivEmojiSize,
-          child: PixivNetworkImage(
-            url: emoji.url,
-            fit: BoxFit.contain,
-            cacheWidth: pixels,
-            cacheHeight: pixels,
-            loadStateChanged: (state) => pixivTileLoadState(context, state),
-          ),
+      child: SizedBox.square(
+        dimension: pixivEmojiSize,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            IconTheme.merge(
+              data: const IconThemeData(size: pixivEmojiSize),
+              child: PixivNetworkImage(
+                url: emoji.url,
+                fit: BoxFit.contain,
+                cacheWidth: pixels,
+                cacheHeight: pixels,
+                loadStateChanged: (state) => pixivTileLoadState(context, state),
+              ),
+            ),
+            _SelectableCode(emoji.code),
+          ],
         ),
       ),
+    ),
+  );
+}
+
+/// The emoji's code as clear text stretched over the image. An image alone
+/// is a gap in a selection, so Copy, Share and Translate would drop it; this
+/// way they carry `(heart)` and the selection highlight covers the emoji.
+class _SelectableCode extends StatelessWidget {
+  final String code;
+
+  const _SelectableCode(this.code);
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: FittedBox(
+      fit: BoxFit.fill,
+      child: Text(code, maxLines: 1, softWrap: false, style: const TextStyle(color: Color(0x00000000))),
     ),
   );
 }

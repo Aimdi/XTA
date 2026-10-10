@@ -115,18 +115,35 @@ PixivCommentPage parsePixivCommentPage(Object? json) {
 /// Pixiv's own sites; a link to any of them is a reader pointing at a work.
 const _pixivHosts = {'pixiv.net', 'pixiv.me', 'pximg.net', 'pixivision.net', 'fanbox.cc', 'booth.pm'};
 
-/// A link written with its scheme, or a bare `www.` address. The bare form
-/// needs a dotted host after it: "www" is also how Japanese comments laugh.
-final _link = RegExp(r'https?://([^\s/?#<>"\\]*)|\bwww\.([a-z0-9\-]+(?:\.[a-z0-9\-]+)+)', caseSensitive: false);
+/// A link with its scheme, a bare `www.` address, or a bare `host.tld/`;
+/// groups 1 to 3 hold the host part of each. The `www.` form needs a dotted
+/// host after it: "www" is also how Japanese comments laugh. The bare form
+/// needs the slash, so a sentence like "pixiv.netで見ました" is not a link.
+final _link = RegExp(
+  r'https?://([^\s/?#<>"\\]*)'
+  r'|\bwww\.([a-z0-9\-]+(?:\.[a-z0-9\-]+)+[^\s/?#<>"\\]*)'
+  r'|(?<![a-z0-9.\-/])([a-z0-9\-]+(?:\.[a-z0-9\-]+)*\.[a-z]{2,})(?=/)',
+  caseSensitive: false,
+);
 final _asciiHost = RegExp(r'^[a-z0-9.\-]*');
+
+/// A dot a browser reads into a host (plain, full-width or percent-encoded)
+/// followed by another label.
+final _hostGoesOn = RegExp(r'(?:[.\u3002\uff0e\uff61]|%2e)[\p{L}\p{N}]', unicode: true);
 
 /// Whether [text] links anywhere other than Pixiv's own sites. Collapsing
 /// those is the spam guard: no list of bad domains to keep current.
 bool pixivTextLinksOutside(String text) =>
-    _link.allMatches(text).any((match) => !_isPixivHost(match.group(1) ?? match.group(2) ?? ''));
+    _link.allMatches(text).any((match) => !_isPixivHost(match.group(1) ?? match.group(2) ?? match.group(3) ?? ''));
 
-bool _isPixivHost(String raw) {
-  final host = (_asciiHost.stringMatch(raw.toLowerCase()) ?? '').replaceFirst(RegExp(r'^www\.'), '');
-  final bare = host.replaceFirst(RegExp(r'\.+$'), '');
+/// A browser goes to what follows the last `@` (`pixiv.net@evil.example` is
+/// evil.example), and a dot after the plain ASCII start carries the host on to
+/// another domain (`pixiv.net。evil.example`). A sentence glued to a host
+/// without such a dot, as Japanese comments write, does not.
+bool _isPixivHost(String authority) {
+  final host = authority.substring(authority.lastIndexOf('@') + 1).toLowerCase();
+  final ascii = _asciiHost.stringMatch(host) ?? '';
+  if (_hostGoesOn.hasMatch(host.substring(ascii.isEmpty ? 0 : ascii.length - 1))) return false;
+  final bare = ascii.replaceFirst(RegExp(r'^www\.'), '').replaceFirst(RegExp(r'\.+$'), '');
   return bare.isNotEmpty && _pixivHosts.any((own) => bare == own || bare.endsWith('.$own'));
 }

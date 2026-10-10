@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_comment_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_comments_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
@@ -143,10 +144,48 @@ void main() {
       expect(store.triple.error, isNotNull);
 
       await store.refresh();
+      expect(store.moreError, isNull);
       await store.loadMore();
       expect(store.triple.error, isNull);
       expect(_ids(store.state), [1]);
       expect(store.hasMore, isTrue);
+      expect(store.moreError, isA<PixivException>());
+    });
+
+    test('a later page that failed is announced, and clears once one arrives', () async {
+      final api = FakePixivCommentsApi({
+        FakePixivCommentsApi.commentsKey(_work): [
+          PixivCommentPage([pixivTestComment(1)], nextUrl: 'next-1'),
+          null,
+          PixivCommentPage([pixivTestComment(2)]),
+        ],
+      });
+      final store = PixivCommentsStore(api, _work);
+      addTearDown(store.destroy);
+      await store.refresh();
+
+      final announced = <bool>[];
+      final stop = store.observer(onState: (_) => announced.add(store.loadingMore));
+      addTearDown(stop);
+      await store.loadMore();
+      expect(announced, [true, false]);
+      expect(store.moreError, isNotNull);
+
+      final retry = store.loadMore();
+      expect(store.moreError, isNull, reason: 'no failure is shown while the retry runs');
+      await retry;
+      expect(store.moreError, isNull);
+      expect(_ids(store.state), [1, 2]);
+    });
+
+    test('the first load counts as loading from the start, not as an empty list', () async {
+      final store = PixivCommentsStore(FakePixivCommentsApi({}), _work);
+      addTearDown(store.destroy);
+      final loading = store.refresh();
+      expect(store.isLoading, isTrue);
+      await loading;
+      expect(store.isLoading, isFalse);
+      expect(store.state, isEmpty);
     });
   });
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_comment_emoji.dart';
@@ -11,6 +12,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/plugin_comment_bubble.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 import 'support/pixiv_comments_fake.dart';
 import 'support/pixiv_reader_harness.dart';
@@ -22,7 +24,9 @@ Finder _image(String url) => find.byWidgetPredicate((widget) => widget is PixivN
 
 Finder _comment(int id) => find.byKey(ValueKey('pixiv-comment-$id'));
 
-Future<FakePixivCommentsApi> _pumpComments(
+/// A screen with one button that opens [target]'s comments, tapped and left
+/// before the comments arrive.
+Future<FakePixivCommentsApi> _openComments(
   WidgetTester tester,
   Map<String, List<PixivCommentPage?>> pages, {
   PixivCommentTarget target = _work,
@@ -41,8 +45,38 @@ Future<FakePixivCommentsApi> _pumpComments(
     extraProviders: [Provider<PixivCommentsApi>.value(value: api)],
   );
   await tester.tap(find.text('comments'));
+  return api;
+}
+
+Future<FakePixivCommentsApi> _pumpComments(
+  WidgetTester tester,
+  Map<String, List<PixivCommentPage?>> pages, {
+  PixivCommentTarget target = _work,
+  double textScale = 1,
+}) async {
+  final api = await _openComments(tester, pages, target: target, textScale: textScale);
   await settlePixiv(tester);
   return api;
+}
+
+/// Pumps the first frames of a screen opening, checking [finder] in none of them.
+Future<void> _neverDuringOpening(WidgetTester tester, Finder finder) async {
+  for (var frame = 0; frame < 8; frame++) {
+    await tester.pump(const Duration(milliseconds: 16));
+    expect(finder, findsNothing, reason: 'frame $frame');
+  }
+}
+
+/// Records what the app puts on the clipboard.
+List<String?> _clipboard(WidgetTester tester) {
+  final copied = <String?>[];
+  final messenger = tester.binding.defaultBinaryMessenger;
+  messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+    if (call.method == 'Clipboard.setData') copied.add((call.arguments as Map)['text'] as String?);
+    return null;
+  });
+  addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+  return copied;
 }
 
 Map<String, List<PixivCommentPage?>> _firstPage(List<PixivComment> comments, {String? nextUrl}) => {
@@ -156,6 +190,36 @@ void main() {
     await disposePixiv(tester);
   });
 
+  testWidgets('a comment shown past its link note stays shown in its thread', (tester) async {
+    await _pumpComments(tester, {
+      ..._firstPage([pixivTestComment(1, text: 'Prints at https://shop.example/x', hasReplies: true)]),
+      FakePixivCommentsApi.repliesKey(_work, 1): [
+        PixivCommentPage([pixivTestComment(10, text: 'Thanks')]),
+      ],
+    });
+    await tester.tap(find.text('Show'));
+    await settlePixiv(tester);
+    await tester.tap(find.text('View replies'));
+    await settlePixiv(tester);
+
+    expect(find.text('Replies'), findsOneWidget);
+    expect(find.textContaining('Prints at'), findsOneWidget);
+    expect(find.text('Hidden: links outside Pixiv'), findsNothing);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('copying a comment keeps its emoji as their codes', (tester) async {
+    final copied = _clipboard(tester);
+    await _pumpComments(tester, _firstPage([pixivTestComment(1, text: 'Lovely (heart) colours (star)')]));
+    final text = tester.element(find.descendant(of: _comment(1), matching: find.byType(PixivCommentText)));
+    Actions.invoke(text, const SelectAllTextIntent(SelectionChangedCause.keyboard));
+    await tester.pump();
+    Actions.invoke(text, CopySelectionTextIntent.copy);
+    await tester.pump();
+    expect(copied, ['Lovely (heart) colours (star)']);
+    await disposePixiv(tester);
+  });
+
   testWidgets('muting a comment asks first and hides it', (tester) async {
     await _pumpComments(tester, _firstPage([pixivTestComment(1, text: 'Spam'), pixivTestComment(2, text: 'Kind')]));
 
@@ -206,6 +270,85 @@ void main() {
     expect(find.text('Comments'), findsOneWidget);
     expect(_comment(1), findsNothing);
     expect(_comment(2), findsOneWidget);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('opening shows the skeleton, never a passing "No comments yet" or "No replies yet"', (tester) async {
+    await _openComments(tester, {
+      ..._firstPage([pixivTestComment(1, text: 'Hello', hasReplies: true)]),
+      FakePixivCommentsApi.repliesKey(_work, 1): [
+        PixivCommentPage([pixivTestComment(10, text: 'Hi back')]),
+      ],
+    });
+    await _neverDuringOpening(tester, find.text('No comments yet'));
+    await settlePixiv(tester);
+    expect(find.textContaining('Hello'), findsOneWidget);
+
+    await tester.tap(find.text('View replies'));
+    await _neverDuringOpening(tester, find.text('No replies yet'));
+    await settlePixiv(tester);
+    expect(find.textContaining('Hi back'), findsOneWidget);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('a later page that fails keeps the comments and offers Retry instead of a spinner', (tester) async {
+    final api = await _pumpComments(tester, {
+      FakePixivCommentsApi.commentsKey(_work): [
+        PixivCommentPage([pixivTestComment(1)], nextUrl: 'next-1'),
+        null,
+        PixivCommentPage([pixivTestComment(2)]),
+      ],
+    });
+    expect(api.calls, ['illust:120@first', 'illust:120@next-1']);
+    expect(_comment(1), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.text('Could not reach Pixiv'), findsOneWidget);
+
+    await tester.drag(find.byType(FeedListView), const Offset(0, -200));
+    await settlePixiv(tester);
+    expect(api.calls, hasLength(2), reason: 'scrolling does not retry by itself');
+
+    await tester.tap(find.text('Retry'));
+    await settlePixiv(tester);
+    expect(api.calls.last, 'illust:120@next-1');
+    expect(_comment(1), findsOneWidget);
+    expect(_comment(2), findsOneWidget);
+    expect(find.text('Retry'), findsNothing);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('scrolling toward the end of a long page asks for the next', (tester) async {
+    final api = await _pumpComments(tester, {
+      FakePixivCommentsApi.commentsKey(_work): [
+        PixivCommentPage([for (var id = 1; id <= 40; id++) pixivTestComment(id)], nextUrl: 'next-1'),
+        PixivCommentPage([pixivTestComment(41, text: 'The last one')]),
+      ],
+    });
+    expect(api.calls, ['illust:120@first']);
+
+    final position = tester.state<ScrollableState>(find.byType(Scrollable).last).position;
+    position.jumpTo(position.maxScrollExtent - 700);
+    await settlePixiv(tester);
+    expect(api.calls, ['illust:120@first', 'illust:120@next-1']);
+    await tester.drag(find.byType(FeedListView), const Offset(0, -2000));
+    await settlePixiv(tester);
+    expect(find.textContaining('The last one'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('pulling down reloads the comments', (tester) async {
+    final api = await _pumpComments(tester, {
+      FakePixivCommentsApi.commentsKey(_work): [
+        PixivCommentPage([pixivTestComment(1, text: 'Before')]),
+        PixivCommentPage([pixivTestComment(2, text: 'After')]),
+      ],
+    });
+    await tester.fling(find.byType(FeedListView), const Offset(0, 400), 1000);
+    await settlePixiv(tester);
+    expect(api.calls, ['illust:120@first', 'illust:120@first']);
+    expect(_comment(2), findsOneWidget);
+    expect(_comment(1), findsNothing);
     await disposePixiv(tester);
   });
 
@@ -286,6 +429,10 @@ void main() {
     );
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    expect(
+      tester.getSemantics(find.descendant(of: _comment(1), matching: find.bySemanticsLabel('Mika'))),
+      isSemantics(label: 'Mika', isButton: true, hasTapAction: true),
+    );
     semantics.dispose();
     await disposePixiv(tester);
   });

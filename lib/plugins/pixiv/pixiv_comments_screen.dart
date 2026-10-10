@@ -17,14 +17,19 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
-/// Opens [target]'s comments, or the replies under [parent].
-Future<void> openPixivComments(BuildContext context, PixivCommentTarget target, {PixivComment? parent}) =>
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (_) => PixivCommentsScreen(target: target, parent: parent),
-      ),
-    );
+/// Opens [target]'s comments, or the replies under [parent]. [revealed] are
+/// the comments the reader already showed past their outside-link note.
+Future<void> openPixivComments(
+  BuildContext context,
+  PixivCommentTarget target, {
+  PixivComment? parent,
+  Set<int> revealed = const {},
+}) => Navigator.push(
+  context,
+  MaterialPageRoute<void>(
+    builder: (_) => PixivCommentsScreen(target: target, parent: parent, revealed: revealed),
+  ),
+);
 
 /// How close to the end of the list the next page is asked for.
 const _loadMoreReach = 800.0;
@@ -37,7 +42,11 @@ class PixivCommentsScreen extends StatefulWidget {
   /// Set for a reply thread: the comment shown above its replies.
   final PixivComment? parent;
 
-  const PixivCommentsScreen({super.key, required this.target, this.parent});
+  /// Comments shown past their outside-link note before this screen opened,
+  /// so a thread opened from a shown comment keeps it shown.
+  final Set<int> revealed;
+
+  const PixivCommentsScreen({super.key, required this.target, this.parent, this.revealed = const {}});
 
   @override
   State<PixivCommentsScreen> createState() => _PixivCommentsScreenState();
@@ -46,7 +55,7 @@ class PixivCommentsScreen extends StatefulWidget {
 class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
   late final PixivCommentsStore _comments;
   late final PixivMuteStore _mutes;
-  final _revealed = PluginViewStore<Set<int>>(const {});
+  late final PluginViewStore<Set<int>> _revealed;
 
   /// Loads still landing; the stores are destroyed only once they have.
   Future<void> _settled = Future.value();
@@ -55,6 +64,7 @@ class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
   void initState() {
     super.initState();
     _mutes = context.read<PixivMuteStore>();
+    _revealed = PluginViewStore<Set<int>>(widget.revealed);
     _comments = PixivCommentsStore(
       PixivCommentsApi.of(context),
       widget.target,
@@ -84,6 +94,12 @@ class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
 
   void _loadMore() {
     if (_comments.hasMore && !_comments.loadingMore) _track(_comments.loadMore());
+  }
+
+  /// After a failed page only Retry asks again, so scrolling at the end does
+  /// not keep hitting a connection that is down.
+  void _nearEnd() {
+    if (_comments.moreError == null) _loadMore();
   }
 
   /// Muting the comment a thread hangs off, or its author, leaves the thread.
@@ -137,13 +153,13 @@ class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
       if (parent != null) (context) => _tile(parent, revealed, depth: 0, pinned: true),
       for (final comment in comments) (context) => _tile(comment, revealed, depth: parent == null ? 0 : 1),
       if (parent != null && comments.isEmpty && !_comments.hasMore) _noReplies,
-      if (_comments.hasMore) (context) => _PageTail(onShown: _loadMore),
+      if (_comments.hasMore) _tail,
     ];
     return RefreshIndicator(
       onRefresh: _refresh,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
-          if (notification.metrics.extentAfter < _loadMoreReach) _loadMore();
+          if (notification.metrics.extentAfter < _loadMoreReach) _nearEnd();
           return false;
         },
         child: FeedListView(
@@ -165,8 +181,15 @@ class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
     onMute: _mute,
     onViewReplies: pinned || !comment.hasReplies
         ? null
-        : () => openPixivComments(context, widget.target, parent: comment),
+        : () => openPixivComments(context, widget.target, parent: comment, revealed: revealed),
   );
+
+  /// The row under the last comment while more pages remain.
+  Widget _tail(BuildContext context) => switch (_comments.moreError) {
+    final error? => _PageFailed(message: pixivErrorMessage(L10n.of(context), error), onRetry: _loadMore),
+    null when _comments.loadingMore => const _PageSpinner(),
+    null => _PageTail(onShown: _loadMore),
+  };
 
   Widget _noReplies(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(32, 24, 32, 24),
@@ -178,8 +201,8 @@ class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
   );
 }
 
-/// The list's last row while more pages remain: asks for the next one as soon
-/// as it is built, so a short first page still fills the screen.
+/// The list's last row while more pages remain and none has failed: asks for
+/// the next one as soon as it is built, so a short first page still fills the screen.
 class _PageTail extends StatefulWidget {
   final VoidCallback onShown;
 
@@ -199,8 +222,45 @@ class _PageTailState extends State<_PageTail> {
   }
 
   @override
+  Widget build(BuildContext context) => const _PageSpinner();
+}
+
+class _PageSpinner extends StatelessWidget {
+  const _PageSpinner();
+
+  @override
   Widget build(BuildContext context) => const Padding(
     padding: EdgeInsets.all(16),
     child: Center(child: CircularProgressIndicator()),
   );
+}
+
+/// A later page that failed: what went wrong and Retry, under the comments
+/// that did load.
+class _PageFailed extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _PageFailed({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        children: [
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry)),
+        ],
+      ),
+    );
+  }
 }

@@ -81,13 +81,15 @@ class PixivCommentTile extends StatelessWidget {
     final user = comment.user;
     final name = pixivCommentAuthorName(user) ?? L10n.of(context).plugin_pixiv_comment_unknown_user;
     final avatar = PixivAvatar(userId: user?.id ?? 0, name: name, url: user?.avatarUrl, size: _avatarSize);
+    final open = user == null ? null : () => openPixivUser(context, user.id);
     return Semantics(
       container: true,
       button: user != null,
       label: name,
+      onTap: open,
       excludeSemantics: true,
       child: InkResponse(
-        onTap: user == null ? null : () => openPixivUser(context, user.id),
+        onTap: open,
         radius: kMinInteractiveDimension / 2,
         child: SizedBox.square(
           dimension: kMinInteractiveDimension,

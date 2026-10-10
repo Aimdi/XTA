@@ -144,6 +144,12 @@ void main() {
         'すごいwwww.最高',
         '草www.かわいい',
         'awww. so cute',
+        'https://www.pixiv.net/artworks/1で見ました。ありがとう',
+        'Found it on https://www.pixiv.net. Lovely',
+        'https://pixiv.netで見つけた',
+        'pixiv.net/artworks/1 is the source',
+        'www.pixiv.net で見た',
+        'and/or 60km/h Ver.2/3 1.5/2',
       ]) {
         expect(pixivTextLinksOutside(text), isFalse, reason: text);
       }
@@ -159,6 +165,15 @@ void main() {
         'https://notpixiv.net/a',
         'https://例え.jp/x',
         'Nice! https://www.pixiv.net/artworks/1 and also http://spam.example',
+        'Free https://www.pixiv.net@evil.example/x',
+        'Free https://pixiv.net%2F@evil.example/x',
+        'Free www.pixiv.net@evil.example',
+        'https://pixiv.net。evil.example/x',
+        'https://pixiv.net%2Eevil.example',
+        'https://pixiv.net.みんな/x',
+        'Free bit.ly/abc',
+        'evil.example/x',
+        'pixiv.net@evil.example/x',
       ]) {
         expect(pixivTextLinksOutside(text), isTrue, reason: text);
       }
