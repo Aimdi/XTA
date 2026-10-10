@@ -633,6 +633,7 @@ Future<void> main() async {
       optionPluginEhSearchHistory: '[]',
       optionPluginEhPreferJapanese: true,
       optionPluginEhKeepScreenOn: true,
+      optionPluginEhReadingMode: 'leftToRight',
       optionPluginTiktokEnabled: false,
       optionPluginTiktokShowTab: true,
       optionPluginTiktokCookies: '',

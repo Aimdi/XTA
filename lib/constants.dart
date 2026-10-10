@@ -403,6 +403,7 @@ const optionPluginEhCategories = 'plugin.ehviewer.categories';
 const optionPluginEhSearchHistory = 'plugin.ehviewer.search_history';
 const optionPluginEhPreferJapanese = 'plugin.ehviewer.prefer_japanese';
 const optionPluginEhKeepScreenOn = 'plugin.ehviewer.keep_screen_on';
+const optionPluginEhReadingMode = 'plugin.ehviewer.reading_mode';
 
 const pluginIdTiktok = 'tiktok';
 const optionPluginTiktokEnabled = 'plugin.tiktok.enabled';

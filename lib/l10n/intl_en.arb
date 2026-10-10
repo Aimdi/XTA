@@ -2140,6 +2140,34 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "This page's image did not load",
+  "@plugin_eh_reader_image_failed": {
+    "description": "Reader page error: the gallery page was found, but its picture failed to download"
+  },
+  "plugin_eh_reader_mode": "Reading mode",
+  "@plugin_eh_reader_mode": {
+    "description": "Title of the setting and the reader sheet that pick how pages are laid out"
+  },
+  "plugin_eh_reader_mode_ltr": "Left to right",
+  "@plugin_eh_reader_mode_ltr": {
+    "description": "Reading mode: one page at a time, the next page is to the right"
+  },
+  "plugin_eh_reader_mode_rtl": "Right to left (manga)",
+  "@plugin_eh_reader_mode_rtl": {
+    "description": "Reading mode: one page at a time, the next page is to the left, as in Japanese manga"
+  },
+  "plugin_eh_reader_mode_vertical": "Vertical scroll (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {
+    "description": "Reading mode: all pages in one continuous top-to-bottom scroll, as in webtoons"
+  },
+  "plugin_eh_reader_open_original": "Open original",
+  "@plugin_eh_reader_open_original": {
+    "description": "Page action: open the full-size original image file in the browser"
+  },
+  "plugin_eh_reader_try_another_server": "Try another server",
+  "@plugin_eh_reader_try_another_server": {
+    "description": "Button on a page whose image failed: ask the site for the same image from a different image server"
+  },
   "plugin_eh_reload_image": "Reload image",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

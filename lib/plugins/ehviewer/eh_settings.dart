@@ -9,6 +9,8 @@ import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
+import 'package:xta/plugins/ehviewer/eh_reader_sheets.dart';
+import 'package:xta/plugins/ehviewer/eh_reader_store.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -138,6 +140,17 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
             title: Text(l10n.plugin_eh_prefer_japanese),
             subtitle: Text(l10n.plugin_eh_prefer_japanese_description),
             pref: optionPluginEhPreferJapanese,
+          ),
+          PrefDropdown<String>(
+            title: Text(l10n.plugin_eh_reader_mode),
+            pref: optionPluginEhReadingMode,
+            items: [
+              for (final mode in EhReadingMode.values)
+                DropdownMenuItem(
+                  value: mode.name,
+                  child: Text(ehReadingModeLabel(l10n, mode)),
+                ),
+            ],
           ),
           PrefSwitch(
             title: Text(l10n.plugin_eh_keep_screen_on),
