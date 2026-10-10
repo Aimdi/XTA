@@ -68,7 +68,7 @@ class PixivCommentTile extends StatelessWidget {
             children: [
               Padding(padding: const EdgeInsets.only(top: 4), child: _header(context, colors)),
               ..._body(context, colors),
-              if (onViewReplies != null) _repliesChip(context),
+              if (onViewReplies != null) _repliesButton(context, colors),
             ],
           ),
         ),
@@ -157,29 +157,47 @@ class PixivCommentTile extends StatelessWidget {
     );
   }
 
+  /// The note and Show sit side by side while they fit; with large text Show
+  /// moves under the note instead of squeezing it into a column of word scraps.
   Widget _hiddenLink(BuildContext context, CommentBubbleColors colors) {
     final l10n = L10n.of(context);
-    return Row(
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
       children: [
-        Icon(Icons.link_off, size: 16, color: colors.muted),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            l10n.plugin_pixiv_comment_hidden_link,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(color: colors.muted, fontStyle: FontStyle.italic),
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.link_off, size: 16, color: colors.muted),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                l10n.plugin_pixiv_comment_hidden_link,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall!.copyWith(color: colors.muted, fontStyle: FontStyle.italic),
+              ),
+            ),
+          ],
         ),
-        TextButton(onPressed: onReveal, child: Text(l10n.plugin_pixiv_comment_show)),
+        TextButton(
+          onPressed: onReveal,
+          style: TextButton.styleFrom(foregroundColor: colors.accent),
+          child: Text(l10n.plugin_pixiv_comment_show),
+        ),
       ],
     );
   }
 
-  Widget _repliesChip(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 4),
-    child: ActionChip(
-      avatar: const Icon(Icons.forum_outlined, size: 18),
-      label: Text(L10n.of(context).plugin_pixiv_comment_view_replies),
+  /// A text button rather than a chip, so a long translation wraps at large
+  /// text instead of being clipped.
+  Widget _repliesButton(BuildContext context, CommentBubbleColors colors) => Padding(
+    padding: const EdgeInsets.only(top: 2),
+    child: TextButton.icon(
       onPressed: onViewReplies,
+      style: TextButton.styleFrom(foregroundColor: colors.accent, padding: const EdgeInsets.symmetric(horizontal: 8)),
+      icon: const Icon(Icons.forum_outlined, size: 18),
+      label: Text(L10n.of(context).plugin_pixiv_comment_view_replies),
     ),
   );
 
