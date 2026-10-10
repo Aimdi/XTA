@@ -28,6 +28,10 @@ List<String> pixivAutoBookmarkTags(PixivIllust illust) => [
     if (!_popularityTag.hasMatch(tag.name)) tag.name,
 ];
 
+/// The visibility a bookmark made without the editor gets, for works and novels alike.
+String pixivDefaultBookmarkRestrict(BasePrefService prefs) =>
+    prefs.get<bool>(optionPluginPixivDefaultPrivateBookmark) == true ? 'private' : 'public';
+
 PixivUser _authorOf(PixivIllust illust) => PixivUser(
   id: illust.userId,
   name: illust.userName,
@@ -70,7 +74,7 @@ class PixivBookmarkActions {
   bool _on(String pref) => prefs.get<bool>(pref) == true;
 
   /// The visibility a bookmark made without the editor gets.
-  String get defaultRestrict => _on(optionPluginPixivDefaultPrivateBookmark) ? 'private' : 'public';
+  String get defaultRestrict => pixivDefaultBookmarkRestrict(prefs);
 
   /// The work's bookmark as Pixiv has it now. A card loaded before the work
   /// was bookmarked or removed elsewhere is brought in line, so the heart, the
@@ -148,9 +152,12 @@ class PixivBookmarkFeedback {
       haptics = PixivHaptics.of(context),
       prefs = PrefService.of(context, listen: false);
 
+  /// The light buzz of a bookmark write that landed.
+  void landed() => haptics.play(prefs, PixivHaptic.light);
+
   /// A light buzz, and the author's name when the bookmark also followed them.
   void succeeded(PixivIllust illust, PixivBookmarkOutcome outcome) {
-    haptics.play(prefs, PixivHaptic.light);
+    landed();
     if (outcome.followedAuthor && messenger.mounted) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.plugin_pixiv_bookmark_followed_author(illust.userName))));
     }
@@ -161,25 +168,37 @@ class PixivBookmarkFeedback {
   }
 }
 
-/// Runs one bookmark [write] for [illust] and tells the reader how it went.
-Future<void> runPixivBookmarkWrite(
+/// Runs one bookmark [write], of a work or a novel, and tells the reader how
+/// it went: [landed] with what the write left, the reason when it fails. A
+/// null outcome means nothing was written.
+Future<void> runPixivBookmarkWrite<O extends Object>(
   BuildContext context,
-  PixivIllust illust,
-  Future<PixivBookmarkOutcome?> Function(PixivBookmarkActions actions) write,
+  Future<O?> Function() write,
+  void Function(PixivBookmarkFeedback feedback, O outcome) landed,
 ) async {
   final feedback = PixivBookmarkFeedback.of(context);
   try {
-    final outcome = await write(PixivBookmarkActions.of(context));
-    if (outcome != null) feedback.succeeded(illust, outcome);
+    final outcome = await write();
+    if (outcome != null) landed(feedback, outcome);
   } catch (error) {
     feedback.failed(error);
   }
 }
 
+Future<void> _runWorkWrite(
+  BuildContext context,
+  PixivIllust illust,
+  Future<PixivBookmarkOutcome?> Function(PixivBookmarkActions actions) write,
+) => runPixivBookmarkWrite(
+  context,
+  () => write(PixivBookmarkActions.of(context)),
+  (feedback, outcome) => feedback.succeeded(illust, outcome),
+);
+
 /// What the heart does on a tap.
 Future<void> togglePixivBookmark(BuildContext context, PixivIllust illust) =>
-    runPixivBookmarkWrite(context, illust, (actions) => actions.toggle(illust));
+    _runWorkWrite(context, illust, (actions) => actions.toggle(illust));
 
 /// Bookmarks [illust] after it was saved, when the reader asked for that.
 Future<void> bookmarkPixivAfterSave(BuildContext context, PixivIllust illust) =>
-    runPixivBookmarkWrite(context, illust, (actions) => actions.ensureBookmarked(illust));
+    _runWorkWrite(context, illust, (actions) => actions.ensureBookmarked(illust));

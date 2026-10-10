@@ -429,6 +429,10 @@ class PixivClient {
   /// The page a list's `next_url` points at.
   Future<Object?> getNextJson(String nextUrl) => getJson(nextUrl);
 
+  /// A list's first page from [path], or the page [nextUrl] points at when there is one.
+  Future<Object?> getPage(String path, {Map<String, String>? query, String? nextUrl}) =>
+      nextUrl == null || nextUrl.isEmpty ? getJson(path, query: query) : getNextJson(nextUrl);
+
   /// GETs a page Pixiv answers in HTML, such as a novel's webview text.
   Future<String> getText(String path, {Map<String, String>? query, bool auth = true}) async {
     final uri = _uri(path, query);

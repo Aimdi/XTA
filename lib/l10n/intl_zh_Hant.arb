@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "目前沒有推薦漫畫 — 下拉重新整理",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "切換到插畫",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "切換到小說",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "關於",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "帳號",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "封鎖此作品",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "封鎖此小說",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "小說",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "封鎖設定",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "登入 Pixiv 以瀏覽追蹤、排行榜與收藏",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "私密收藏",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "公開收藏的小說會顯示在這裡",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "私密收藏的小說會顯示在這裡",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "第 {order} 章",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, other{{shown} 章}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, other{{shown} 字}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "你追蹤的作者發布的新小說會顯示在這裡",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "目前沒有排行榜小說",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "目前沒有推薦小說 — 下拉重新整理",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "小說系列",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "已完結",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "此系列沒有你可以查看的章節",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "連載中",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "從第 1 章開始",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "加入追更清單的小說系列會顯示在這裡",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "無法開啟該 Pixiv 連結",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "在 XTA 中開啟 pixiv 連結",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "暱稱",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "尚無公開收藏的小說",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "小說",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Pawoo 帳號",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "回到今天",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "日榜",

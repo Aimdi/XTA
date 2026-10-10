@@ -71,10 +71,13 @@ Future<void> savePixivThenBookmark(BuildContext context, PixivIllust illust, Fut
   if (await save && context.mounted) await bookmarkPixivAfterSave(context, illust);
 }
 
-Future<void> copyPixivLink(BuildContext context, PixivIllust illust) async {
+Future<void> copyPixivLink(BuildContext context, PixivIllust illust) => copyPixivUrl(context, illust.url);
+
+/// Copies a Pixiv page's [url] and says so.
+Future<void> copyPixivUrl(BuildContext context, String url) async {
   final messenger = ScaffoldMessenger.of(context);
   final copied = L10n.of(context).plugin_pixiv_link_copied;
-  await Clipboard.setData(ClipboardData(text: illust.url));
+  await Clipboard.setData(ClipboardData(text: url));
   messenger.showSnackBar(SnackBar(content: Text(copied)));
 }
 

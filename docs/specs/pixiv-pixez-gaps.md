@@ -24,7 +24,7 @@ once those are in.
 |---|---|---|
 | B0 | Shared seams: transport, models, user card, file splits | Built |
 | B1 | Search: filters, shortcuts, favourite tags, SauceNAO | Built |
-| B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Planned |
+| B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Built |
 | B2b | Novels: reader | Planned |
 | B2c | Novels: search, profiles, history, deep links | Planned |
 | B3 | Comments (reading only) | Built |
@@ -85,10 +85,14 @@ tabbed screen with an edit mode; SauceNAO searches by image. Details in
 
 ### B2a–B2c — novels
 
-- **B2a:** novel section; recommended novels; novel list card; muting novels;
-  novel rankings with modes and date; new novels from followed authors; novel
-  bookmarks (own and others'); bookmark a novel; series watchlist and series
-  page.
+- **B2a (built):** Novel mode for Home, Rankings and Favorites behind one
+  mode button; recommended novels; novels from followed authors (public or
+  private); the novel card with its heart (long press bookmarks privately);
+  muting novels by author, tag, pattern or id; novel rankings with pins, R-18
+  gates and the archive date; own novel bookmarks and a profile's public ones;
+  the novel series page with the watchlist toggle; the novel watchlist.
+  Novels open in the browser until the reader lands. Details in
+  `pixiv-novels.md`.
 - **B2b:** reader loading (and open by ID); header; markup rendering; embedded
   illustrations and uploaded images; font size and spacing; reading position;
   selectable text with Translate; menu with author and previous / next

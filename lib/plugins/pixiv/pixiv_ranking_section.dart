@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 
 /// `YYYY-MM-DD` for the archive request, or null for today's board.
@@ -12,7 +10,8 @@ String? pixivRankingDateParam(DateTime? date) {
   return '${date.year}-${pad(date.month)}-${pad(date.day)}';
 }
 
-/// Rankings: the pinned boards as chips and a past day's board, over the ranked works.
+/// Rankings: the pinned boards as chips and a past day's board, over the
+/// ranked works or novels.
 class PixivRankingSection extends StatelessWidget {
   /// The pinned boards the reader may see, in chip order.
   final List<PixivRankingMode> modes;
@@ -23,8 +22,9 @@ class PixivRankingSection extends StatelessWidget {
 
   /// A picked day, or null to go back to today's board.
   final ValueChanged<DateTime?> onDate;
-  final PixivIllustListStore store;
-  final ScrollController? scrollController;
+
+  /// The ranked list under the controls.
+  final Widget feed;
 
   const PixivRankingSection({
     super.key,
@@ -34,8 +34,7 @@ class PixivRankingSection extends StatelessWidget {
     required this.onMode,
     required this.onEditModes,
     required this.onDate,
-    required this.store,
-    this.scrollController,
+    required this.feed,
   });
 
   @override
@@ -52,13 +51,7 @@ class PixivRankingSection extends StatelessWidget {
             const SizedBox(width: 4),
           ],
         ),
-        Expanded(
-          child: PixivIllustFeed(
-            store: store,
-            emptyMessage: l10n.plugin_pixiv_ranking_empty,
-            scrollController: scrollController,
-          ),
-        ),
+        Expanded(child: feed),
       ],
     );
   }

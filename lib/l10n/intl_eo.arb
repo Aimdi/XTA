@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Neniu rekomendita mangao nun — tiri por aktualigi",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Ŝanĝi al ilustraĵoj",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Ŝanĝi al romanoj",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Pri",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Silentigi ĉi tiun verkon",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Silentigi ĉi tiun romanon",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Romanoj",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Agordoj de silentigo",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Ensalutu al Pixiv por foliumi sekvadon, rangigon kaj legosignojn",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Legosigni private",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Ĉi tie aperas romanoj, kiujn vi publike legosignas",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Ĉi tie aperas romanoj, kiujn vi private legosignas",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "N-ro {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} ĉapitro} other{{shown} ĉapitroj}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} signo} other{{shown} signoj}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Ĉi tie aperas novaj romanoj de kreantoj, kiujn vi sekvas",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Neniuj rangigitaj romanoj nun",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Neniuj rekomenditaj romanoj nun — tiri por aktualigi",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Romana serio",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Finita",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Neniuj videblaj ĉapitroj en ĉi tiu serio",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Daŭranta",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Komenci de la unua",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Ĉi tie aperas la romanaj serioj, kiujn vi aldonas al via atentolisto",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Ne eblis malfermi tiun Pixiv-ligilon",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Malfermi pixiv-ligilojn en XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Kromnomo",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Ankoraŭ neniuj publikaj romanaj legosignoj",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Romanoj",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Pawoo-konto",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Reen al hodiaŭ",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Ĉiutaga",

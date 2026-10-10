@@ -8,6 +8,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/utils/json.dart';
@@ -138,10 +139,12 @@ class PixivAccountsStore extends Store<List<PixivAccount>> {
 VoidCallback pixivAccountDataForgetter(BuildContext context) {
   final feed = context.read<PixivFeedStore?>();
   final bookmarks = context.read<PixivBookmarkStore?>();
+  final novelBookmarks = context.read<PixivNovelBookmarkStore?>();
   final follows = context.read<PixivFollowStore?>();
   return () {
     feed?.clear();
     bookmarks?.update(const {});
+    novelBookmarks?.update(const {});
     follows?.clear();
   };
 }

@@ -65,6 +65,7 @@ import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
@@ -620,6 +621,7 @@ Future<void> main() async {
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
       optionPluginPixivRankingModes: jsonEncode(pixivDefaultRankingPins),
+      optionPluginPixivNovelRankingModes: jsonEncode(pixivDefaultNovelRankingPins),
       optionPluginPixivSearchFilters: '',
       optionPluginPixivFavoriteTags: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
@@ -859,6 +861,7 @@ Future<void> main() async {
     final pixivFavoriteTags = PixivFavoriteTagsStore(prefService);
     final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
+    final pixivNovelBookmarks = PixivNovelBookmarkStore();
     final pixivDownloads = PixivDownloadIndex(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final pixivHistory = PixivHistoryStore();
@@ -1088,6 +1091,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivFavoriteTags),
                 Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
+                Provider(create: (_) => pixivNovelBookmarks),
                 Provider(create: (_) => pixivDownloads),
                 Provider(create: (_) => pixivFeed),
                 Provider(create: (_) => pixivHistory),

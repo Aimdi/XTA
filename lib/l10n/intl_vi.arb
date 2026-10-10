@@ -2621,6 +2621,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Hiện không có manga gợi ý — kéo để làm mới",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Chuyển sang tranh minh họa",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Chuyển sang tiểu thuyết",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Giới thiệu",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Tài khoản",
@@ -2661,6 +2665,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Ẩn tác phẩm này",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Ẩn tiểu thuyết này",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Tiểu thuyết",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Cài đặt ẩn",
@@ -2698,6 +2704,60 @@
   },
   "plugin_pixiv_not_configured": "Đăng nhập Pixiv để xem đang theo dõi, xếp hạng và dấu trang",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Đánh dấu riêng tư",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Tiểu thuyết bạn đánh dấu công khai sẽ hiện ở đây",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Tiểu thuyết bạn đánh dấu riêng tư sẽ hiện ở đây",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Chương {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, other{{shown} chương}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, other{{shown} ký tự}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Tiểu thuyết mới từ những tác giả bạn theo dõi sẽ hiện ở đây",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Hiện không có tiểu thuyết xếp hạng",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Hiện không có tiểu thuyết đề xuất — kéo để làm mới",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Bộ tiểu thuyết",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Đã hoàn thành",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Loạt này không có chương nào bạn xem được",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Đang tiến hành",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Bắt đầu từ chương 1",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Các bộ tiểu thuyết bạn thêm vào truyện theo dõi sẽ hiện ở đây",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Không thể mở liên kết Pixiv đó",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Mở liên kết pixiv trong XTA",
@@ -2766,6 +2826,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Biệt danh",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Chưa có dấu trang tiểu thuyết công khai",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Tiểu thuyết",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Tài khoản Pawoo",
@@ -2806,6 +2868,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Quay lại hôm nay",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Hàng ngày",

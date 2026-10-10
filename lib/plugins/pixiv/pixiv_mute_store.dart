@@ -4,6 +4,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/utils/json.dart';
 
 /// The pattern inside a muted-tag entry written `r'pattern'`, or null for a
@@ -134,6 +135,23 @@ class PixivMuteState {
     ];
   }
 
+  /// Whether a muted author or tag, or the novel's own id, hides [novel].
+  bool hidesNovel(PixivNovel novel) =>
+      authorIds.contains(novel.user.id) || novelIds.contains(novel.id) || tagMatcher.match(novel.tags) != null;
+
+  List<PixivNovel> filterNovels(List<PixivNovel> novels) => filterNovelsOf(novels, (novel) => novel);
+
+  /// [items] without those whose novel ([novelOf]) the mutes hide, such as a series' chapters.
+  List<T> filterNovelsOf<T>(List<T> items, PixivNovel Function(T item) novelOf) {
+    if (isEmpty) {
+      return items;
+    }
+    return [
+      for (final item in items)
+        if (!hidesNovel(novelOf(item))) item,
+    ];
+  }
+
   PixivMuteState copyWith({
     Set<int>? authorIds,
     Map<int, String>? authorNames,
@@ -217,6 +235,8 @@ class PixivMuteStore extends Store<PixivMuteState> {
   bool isMuted(PixivIllust illust) => state.isMuted(illust);
 
   List<PixivIllust> filter(List<PixivIllust> illusts) => state.filter(illusts);
+
+  List<PixivNovel> filterNovels(List<PixivNovel> novels) => state.filterNovels(novels);
 
   Future<void> _write({
     Set<int>? authorIds,

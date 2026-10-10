@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Une honetan ez dago manga gomendaturik — tira freskatzeko",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Aldatu ilustrazioetara",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Aldatu eleberrietara",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Honi buruz",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Kontua",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Isilarazi lan hau",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Isilarazi eleberri hau",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Eleberriak",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Isilarazteko ezarpenak",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Hasi saioa Pixiv-en jarraipena, sailkapena eta laster-markak ikusteko",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Gorde laster-marka pribatu gisa",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Laster-marka publiko gisa gordetzen dituzun eleberriak hemen agertzen dira",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Laster-marka pribatu gisa gordetzen dituzun eleberriak hemen agertzen dira",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "{order}. zatia",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{kapitulu {shown}} other{{shown} kapitulu}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{karaktere {shown}} other{{shown} karaktere}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Jarraitzen dituzun sortzaileen eleberri berriak hemen agertzen dira",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Ez dago eleberririk sailkapenean orain",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Une honetan ez dago eleberri gomendaturik — tira freskatzeko",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Eleberri-seriea",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Amaituta",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Serie honetan ez dago ikus dezakezun kapitulurik",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Martxan",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Hasi lehenengotik",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Jarraipen-zerrendara gehitzen dituzun eleberri-serieak hemen agertzen dira",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Ezin izan da Pixiv esteka hori ireki",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Ireki pixiv estekak XTAn",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Ezizena",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Oraindik ez dago eleberrien laster-marka publikorik",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Eleberriak",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Pawoo kontua",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Itzuli gaurkora",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Egunekoa",

@@ -4,14 +4,16 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_loads.dart';
-import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_list.dart';
 import 'package:xta/plugins/pixiv/pixiv_segmented_switch.dart';
 import 'package:xta/plugins/pixiv/pixiv_social_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_info.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
 /// One tab of a profile. A feature adds its tab to [pixivProfileTabs] rather
@@ -62,13 +64,9 @@ List<PixivProfileTab> pixivProfileTabsFor(PixivProfileScope scope) => [
 PixivMuteState pixivMutesShowing(PixivMuteState mute, int creatorId) =>
     mute.authorIds.contains(creatorId) ? mute.copyWith(authorIds: {...mute.authorIds}..remove(creatorId)) : mute;
 
-class _PixivProfileFeedStore extends PixivIllustListStore with PixivTrackedPages<PixivIllust> {
-  _PixivProfileFeedStore(super.loader, {super.filter});
-}
-
 /// A works grid a profile tab owns: it loads when the tab is first shown and
 /// is let go with the tab.
-class PixivProfileFeed extends StatefulWidget {
+class PixivProfileFeed extends StatelessWidget {
   final PixivIllustPageLoader loader;
   final String emptyMessage;
 
@@ -77,31 +75,16 @@ class PixivProfileFeed extends StatefulWidget {
 
   const PixivProfileFeed({super.key, required this.loader, required this.emptyMessage, required this.creatorId});
 
-  @override
-  State<PixivProfileFeed> createState() => _PixivProfileFeedState();
-}
-
-class _PixivProfileFeedState extends State<PixivProfileFeed> {
-  late final _PixivProfileFeedStore _works;
-
-  PixivMuteState _mutes(PixivMuteState mute) => pixivMutesShowing(mute, widget.creatorId);
+  PixivMuteState _mutes(PixivMuteState mute) => pixivMutesShowing(mute, creatorId);
 
   @override
-  void initState() {
-    super.initState();
-    final mute = context.read<PixivMuteStore>();
-    _works = _PixivProfileFeedStore(widget.loader, filter: (illusts) => _mutes(mute.state).filter(illusts))..refresh();
-  }
-
-  @override
-  void dispose() {
-    _works.destroyWhenSettled();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) =>
-      PixivIllustFeed(store: _works, emptyMessage: widget.emptyMessage, mutes: _mutes);
+  Widget build(BuildContext context) => PixivOwnedFeed<PixivTrackedIllustStore>(
+    create: (context) {
+      final mute = context.read<PixivMuteStore>();
+      return PixivTrackedIllustStore(loader, filter: (illusts) => _mutes(mute.state).filter(illusts));
+    },
+    feed: (works) => PixivIllustFeed(store: works, emptyMessage: emptyMessage, mutes: _mutes),
+  );
 }
 
 /// The Works tab: illustrations or manga, starting on whichever the creator
@@ -158,20 +141,67 @@ class _PixivProfileWorksState extends State<PixivProfileWorks> {
   }
 }
 
-/// The Bookmarks tab: the creator's public bookmarks.
-class PixivProfileBookmarks extends StatelessWidget {
+/// The Bookmarks tab: the creator's public bookmarks, illustrations or novels.
+class PixivProfileBookmarks extends StatefulWidget {
   final int userId;
 
   const PixivProfileBookmarks({super.key, required this.userId});
 
   @override
+  State<PixivProfileBookmarks> createState() => _PixivProfileBookmarksState();
+}
+
+class _PixivProfileBookmarksState extends State<PixivProfileBookmarks> {
+  final _kind = PluginViewStore(PixivContentMode.illust);
+
+  @override
+  void dispose() {
+    _kind.destroy();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final api = PixivSocialApi.of(context);
-    return PixivProfileFeed(
-      creatorId: userId,
-      loader: ({nextUrl}) => api.userBookmarks(userId, nextUrl: nextUrl),
-      emptyMessage: L10n.of(context).plugin_pixiv_profile_bookmarks_empty,
+    final l10n = L10n.of(context);
+    return ScopedBuilder<PluginViewStore<PixivContentMode>, PixivContentMode>(
+      store: _kind,
+      onState: (context, kind) => Column(
+        children: [
+          PixivSegmentedSwitch<PixivContentMode>(
+            key: const ValueKey('pixiv-profile-bookmark-kind'),
+            values: PixivContentMode.values,
+            label: (value) => switch (value) {
+              PixivContentMode.illust => l10n.plugin_pixiv_profile_illusts,
+              PixivContentMode.novel => l10n.plugin_pixiv_profile_novels,
+            },
+            selected: kind,
+            onSelected: _kind.select,
+          ),
+          Expanded(
+            child: KeyedSubtree(key: ValueKey(kind), child: _list(context, kind)),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _list(BuildContext context, PixivContentMode kind) {
+    final userId = widget.userId;
+    final l10n = L10n.of(context);
+    final social = PixivSocialApi.of(context);
+    final novels = PixivNovelApi.of(context);
+    return switch (kind) {
+      PixivContentMode.illust => PixivProfileFeed(
+        creatorId: userId,
+        loader: ({nextUrl}) => social.userBookmarks(userId, nextUrl: nextUrl),
+        emptyMessage: l10n.plugin_pixiv_profile_bookmarks_empty,
+      ),
+      PixivContentMode.novel => PixivOwnedNovelFeed(
+        loader: ({nextUrl}) => novels.bookmarks(userId: userId, nextUrl: nextUrl),
+        emptyMessage: l10n.plugin_pixiv_profile_novel_bookmarks_empty,
+        mutes: (mute) => pixivMutesShowing(mute, userId),
+      ),
+    };
   }
 }
 

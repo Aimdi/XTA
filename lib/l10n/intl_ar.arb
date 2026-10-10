@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "لا مانجا مقترحة حالياً — اسحب للتحديث",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "التبديل إلى الرسوم التوضيحية",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "التبديل إلى الروايات",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "حول",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "الحساب",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "كتم هذا العمل",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "كتم هذه الرواية",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "الروايات",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "إعدادات الكتم",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "سجّل الدخول إلى Pixiv لتصفح المتابعة والترتيب والإشارات",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "إضافة إشارة مرجعية خاصة",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "تظهر هنا الروايات التي تضيف لها إشارة مرجعية عامة",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "تظهر هنا الروايات التي تضيف لها إشارة مرجعية خاصة",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "الفصل {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, zero{لا فصول} one{فصل واحد} two{فصلان} few{{shown} فصول} many{{shown} فصلًا} other{{shown} فصل}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, zero{لا أحرف} one{حرف واحد} two{حرفان} few{{shown} أحرف} many{{shown} حرفًا} other{{shown} حرف}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "تظهر هنا الروايات الجديدة من المبدعين الذين تتابعهم",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "لا روايات في الترتيب الآن",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "لا روايات موصى بها حالياً — اسحب للتحديث",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "سلسلة روايات",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "مكتملة",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "لا فصول يمكنك رؤيتها في هذه السلسلة",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "مستمرة",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "ابدأ من الفصل الأول",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "تظهر هنا سلاسل الروايات التي تضيفها إلى قائمة المتابعة",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "تعذر فتح رابط Pixiv هذا",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "فتح روابط pixiv في XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "الاسم المستعار",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "لا إشارات مرجعية عامة لروايات بعد",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "الروايات",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "حساب Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "العودة إلى اليوم",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "يومي",

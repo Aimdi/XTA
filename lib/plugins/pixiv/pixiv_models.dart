@@ -443,9 +443,10 @@ List<String> _pageUrlsOf(Json illust) {
   return single == null || single.isEmpty ? const [] : [single];
 }
 
-List<PixivTag> _tagsOf(Json illust) {
+/// A work's `tags`, illustration or novel; nameless entries are skipped.
+List<PixivTag> pixivTagsFromJson(Json tags) {
   return [
-    for (final tag in illust['tags'].list)
+    for (final tag in tags.list)
       if ((tag['name'].string ?? '').trim() case final name
           when name.isNotEmpty)
         PixivTag(
@@ -481,7 +482,7 @@ PixivIllust? pixivIllustFromJson(Object? json) {
     pageUrls: _pageUrlsOf(data),
     originalUrls: _originalUrlsOf(data),
     pageThumbUrls: _pageThumbUrlsOf(data),
-    tags: _tagsOf(data),
+    tags: pixivTagsFromJson(data['tags']),
     pageCount: data['page_count'].integer ?? 1,
     width: data['width'].integer ?? 0,
     height: data['height'].integer ?? 0,
@@ -498,11 +499,12 @@ PixivIllust? pixivIllustFromJson(Object? json) {
     isAi: data['illust_ai_type'].integer == 2,
     isBookmarked: data['is_bookmarked'].boolean == true,
     userIsFollowed: user['is_followed'].boolean == true,
-    series: _seriesOf(data['series']),
+    series: pixivSeriesRefFromJson(data['series']),
   );
 }
 
-PixivSeriesRef? _seriesOf(Json series) => switch (series['id'].integer) {
+/// A work's `series` object, or null when it names none.
+PixivSeriesRef? pixivSeriesRefFromJson(Json series) => switch (series['id'].integer) {
   final id? when id > 0 => PixivSeriesRef(id: id, title: series['title'].string?.trim() ?? ''),
   _ => null,
 };

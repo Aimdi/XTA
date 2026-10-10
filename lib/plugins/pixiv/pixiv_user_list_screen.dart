@@ -123,22 +123,15 @@ class _PixivUserListState extends State<PixivUserList> {
       if (_offersRestrict)
         ScopedBuilder<PluginViewStore<String>, String>(
           store: _restrict,
-          onState: (context, restrict) => _restrictSwitch(context, restrict),
+          onState: (context, restrict) => PixivFollowRestrictSwitch(
+            key: const ValueKey('pixiv-user-list-restrict'),
+            restrict: restrict,
+            onChanged: _useRestrict,
+          ),
         ),
       Expanded(child: _users(context)),
     ],
   );
-
-  Widget _restrictSwitch(BuildContext context, String restrict) {
-    final l10n = L10n.of(context);
-    return PixivSegmentedSwitch<String>(
-      key: const ValueKey('pixiv-user-list-restrict'),
-      values: const ['public', 'private'],
-      label: (value) => value == 'private' ? l10n.plugin_pixiv_follow_private : l10n.plugin_pixiv_follow_public,
-      selected: restrict,
-      onSelected: _useRestrict,
-    );
-  }
 
   Widget _users(BuildContext context) => ScopedBuilder<PixivUserListStore, List<PixivUserPreview>>(
     store: _store,

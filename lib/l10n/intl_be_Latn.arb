@@ -2624,6 +2624,10 @@
   "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_manga_empty": "Pakul niama rekamendavanaj manhi — paciahnicie, kab abnavić",
   "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Pierajsci da iliustracyj",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Pierajsci da ramanaŭ",
+  "@plugin_pixiv_mode_novels": {},
   "plugin_pixiv_more_about": "Pra prahramu",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Ulikovy zapis",
@@ -2664,6 +2668,8 @@
   "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Schavać hety tvor",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novel": "Schavać hety raman",
+  "@plugin_pixiv_mute_novel": {},
   "plugin_pixiv_mute_novels": "Ramany",
   "@plugin_pixiv_mute_novels": {},
   "plugin_pixiv_mute_settings": "Nalady chavannia",
@@ -2701,6 +2707,60 @@
   },
   "plugin_pixiv_not_configured": "Uvajdzicie ŭ Pixiv, kab hladzieć stužku, rejtynh i zakladki",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel_bookmark_private": "Dadać u pryvatnyja zakladki",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Tut zjaviacca ramany, jakija vy publična dadascie ŭ zakladki",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Tut zjaviacca ramany, jakija vy pryvatna dadascie ŭ zakladki",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "№ {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} razdziel} few{{shown} razdziely} many{{shown} razdzielaŭ} other{{shown} razdziela}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} znak} few{{shown} znaki} many{{shown} znakaŭ} other{{shown} znaka}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Tut zjaviacca novyja ramany aŭtaraŭ, na jakich vy padpisanyja",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_ranking_empty": "Zaraz u rejtynhu niama ramanaŭ",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Pakul niama rekamendavanych ramanaŭ — paciahnicie, kab abnavić",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_series": "Seryja ramanaŭ",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Zavieršanaja",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "U hetaj seryi niama dastupnych vam razdzielaŭ",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Praciahvajecca",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Pačać z peršaha",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_watchlist_empty": "Tut zjaviacca seryi ramanaŭ, jakija vy dadascie ŭ spis naziranja",
+  "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Nie ŭdalosia adkryć hetuju spasylku Pixiv",
   "@plugin_pixiv_open_link_failed": {},
   "plugin_pixiv_open_links_in_app": "Adkryvać spasyłki pixiv u XTA",
@@ -2769,6 +2829,8 @@
   "@plugin_pixiv_profile_mypixiv": {},
   "plugin_pixiv_profile_nickname": "Mianuška",
   "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Publičnych zakladak na ramany pakul niama",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
   "plugin_pixiv_profile_novels": "Ramany",
   "@plugin_pixiv_profile_novels": {},
   "plugin_pixiv_profile_pawoo": "Akaŭnt Pawoo",
@@ -2809,6 +2871,8 @@
   "@plugin_pixiv_quality_reader": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
   "plugin_pixiv_ranking_back_to_today": "Viarnucca da sionniašniaha dnia",
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Dzionny",
