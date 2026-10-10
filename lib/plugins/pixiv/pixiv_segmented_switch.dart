@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 
 /// A full-width choice between a few views of one list, such as
 /// Illustrations / Manga or Public / Private, above that list. Tapping the
@@ -61,6 +62,28 @@ class PixivFollowRestrictSwitch extends StatelessWidget {
       selected: restrict,
       onSelected: onChanged,
       onReselect: onReselect,
+    );
+  }
+}
+
+/// Illustrations or Novels, for the lists that hold both.
+class PixivContentModeSwitch extends StatelessWidget {
+  final PixivContentMode selected;
+  final ValueChanged<PixivContentMode> onSelected;
+
+  const PixivContentModeSwitch({super.key, required this.selected, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return PixivSegmentedSwitch<PixivContentMode>(
+      values: PixivContentMode.values,
+      label: (value) => switch (value) {
+        PixivContentMode.illust => l10n.plugin_pixiv_profile_illusts,
+        PixivContentMode.novel => l10n.plugin_pixiv_profile_novels,
+      },
+      selected: selected,
+      onSelected: onSelected,
     );
   }
 }

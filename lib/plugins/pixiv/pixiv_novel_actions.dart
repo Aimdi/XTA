@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_comment_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_comments_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
 
 /// Muting one novel by its id.
@@ -24,7 +27,18 @@ Future<void> showPixivNovelActions(BuildContext context, PixivNovel novel) => sh
   extras: pixivNovelActions(context, novel),
 );
 
-/// Bookmark, copy link, and muting the author or the novel.
+/// "View comments (N)", opening what readers wrote about [novel]; a novel
+/// listed without a count shows no number rather than a misleading zero.
+PluginPostExtraAction pixivNovelCommentsEntry(L10n l10n, PixivNovel novel) => PluginPostExtraAction(
+  id: 'pixiv-novel-comments',
+  icon: Icons.forum_outlined,
+  label: novel.totalComments > 0
+      ? l10n.plugin_pixiv_comments_view_count(compactCount(novel.totalComments))
+      : l10n.plugin_pixiv_comments_view,
+  run: (context) => openPixivComments(context, PixivCommentTarget.novel(novel.id)),
+);
+
+/// Bookmark, comments, copy link, and muting the author or the novel.
 List<PluginPostExtraAction> pixivNovelActions(BuildContext context, PixivNovel novel) {
   final l10n = L10n.of(context);
   final bookmarks = context.read<PixivNovelBookmarkStore?>();
@@ -36,6 +50,7 @@ List<PluginPostExtraAction> pixivNovelActions(BuildContext context, PixivNovel n
         bookmarked: bookmarks.isBookmarked(novel),
         toggle: (context) => togglePixivNovelBookmark(context, novel),
       ),
+    pixivNovelCommentsEntry(l10n, novel),
     pixivCopyLinkEntry(l10n, novel.url),
     if (context.read<PixivMuteStore?>() != null) ...[
       pixivMuteEntry('pixiv-mute-author', pixivAuthorMuteChoice(l10n, novel.user.id, novel.user.name)),

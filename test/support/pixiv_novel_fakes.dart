@@ -18,6 +18,7 @@ PixivNovel pixivNovel({
   int textLength = 12345,
   bool bookmarked = false,
   int bookmarks = 10,
+  int comments = 0,
   int xRestrict = 0,
   bool ai = false,
 }) => PixivNovel(
@@ -30,6 +31,7 @@ PixivNovel pixivNovel({
   textLength: textLength,
   isBookmarked: bookmarked,
   totalBookmarks: bookmarks,
+  totalComments: comments,
   xRestrict: xRestrict,
   isAi: ai,
 );
