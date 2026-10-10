@@ -88,7 +88,7 @@ class _PixivisionArticleScreenState extends State<PixivisionArticleScreen> {
     onState: (context, article) => _page(context, article, [if (article != null) ..._content(context, article)]),
   );
 
-  Widget _filler(Widget child) => SliverFillRemaining(hasScrollBody: false, child: child);
+  Widget _filler(Widget child) => SliverFillRemaining(child: child);
 
   Widget _page(BuildContext context, PixivisionArticle? article, List<Widget> body) {
     final title = article?.title.isNotEmpty == true

@@ -42,11 +42,12 @@ class PixivScreen extends StatefulWidget {
 /// The ranking board the view and the pins name when each page is asked for.
 PixivIllustPageLoader _rankingLoader(
   PixivDiscoveryApi api,
+  PixivClient client,
   PluginViewStore<PixivViewState> view,
   PixivRankingPinsStore pins,
 ) =>
     ({nextUrl}) => api.ranking(
-      pixivEffectiveRankingMode(view.state.rankingMode, _visibleRankingModes(pins, api.client)),
+      pixivEffectiveRankingMode(view.state.rankingMode, _visibleRankingModes(pins, client)),
       date: pixivRankingDateParam(view.state.rankingDate),
       nextUrl: nextUrl,
     );
@@ -75,37 +76,41 @@ class _PixivScreenState extends State<PixivScreen> {
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'pixiv');
+    _obtainStores();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _warmUp());
+  }
+
+  void _obtainStores() {
     final client = context.read<PixivClient>();
     final feed = context.read<PixivFeedStore>();
     final mute = context.read<PixivMuteStore>();
+    final prefs = PrefService.of(context, listen: false);
     final api = _api = PixivDiscoveryApi.of(context);
-    _view = _session.obtain(
+    final view = _view = _session.obtain(
       'view',
       () => PluginViewStore<PixivViewState>(const PixivViewState()),
       dispose: (view) => _endViewSession(view, feed, api),
     );
     _home = PixivHomeStores.obtain(_session, following: feed, client: client, api: api, mute: mute);
-    final prefs = PrefService.of(context, listen: false);
-    _rankingPins = _session.obtain('rankingPins', () => PixivRankingPinsStore(prefs));
-    final view = _view;
-    final pins = _rankingPins;
+    final pins = _rankingPins = _session.obtain('rankingPins', () => PixivRankingPinsStore(prefs));
     _ranking = _session.obtain(
       'ranking',
-      () => PixivIllustListStore(_rankingLoader(api, view, pins), filter: mute.filter),
+      () => PixivIllustListStore(_rankingLoader(api, client, view, pins), filter: mute.filter),
     );
     _bookmarks = _session.obtain(
       'bookmarks',
       () => PixivIllustListStore(_bookmarksLoader(_state.bookmarksRestrict), filter: mute.filter),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      await mute.load();
-      if (!mounted || !_hasToken) return;
-      // Warm the token once so the first feed call does not serialise behind
-      // a cold refresh, and concurrent tab loads share one in-flight refresh.
-      unawaited(context.read<PixivClient>().ensureAccessToken());
-      _ensureTabLoaded(_state.section);
-    });
+  }
+
+  Future<void> _warmUp() async {
+    if (!mounted) return;
+    await context.read<PixivMuteStore>().load();
+    if (!mounted || !_hasToken) return;
+    // Warm the token once so the first feed call does not serialise behind
+    // a cold refresh, and concurrent tab loads share one in-flight refresh.
+    unawaited(context.read<PixivClient>().ensureAccessToken());
+    _ensureTabLoaded(_state.section);
   }
 
   bool get _hasToken =>
@@ -162,12 +167,12 @@ class _PixivScreenState extends State<PixivScreen> {
     await _home.following.refresh();
   }
 
-  List<PixivRankingMode> get _rankingModes => _visibleRankingModes(_rankingPins, _api.client);
+  List<PixivRankingMode> get _rankingModes => _visibleRankingModes(_rankingPins, context.read<PixivClient>());
 
   String get _rankingMode => pixivEffectiveRankingMode(_state.rankingMode, _rankingModes);
 
   Future<void> _reloadRanking() async {
-    _ranking.useLoader(_rankingLoader(_api, _view, _rankingPins));
+    _ranking.useLoader(_rankingLoader(_api, context.read<PixivClient>(), _view, _rankingPins));
     await _ranking.refresh();
   }
 
@@ -184,7 +189,7 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   Future<void> _editRankingModes() async {
-    final offered = pixivRankingModesOffered(pixivIllustRankingModes, showR18: _api.client.showR18);
+    final offered = pixivRankingModesOffered(pixivIllustRankingModes, showR18: context.read<PixivClient>().showR18);
     await showPixivRankingModeSheet(context, pins: _rankingPins, offered: offered);
     if (mounted) _syncRankingMode();
   }

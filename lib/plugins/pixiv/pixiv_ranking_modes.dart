@@ -136,7 +136,9 @@ class PixivRankingModeChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    // Its own storage slot, so the board below does not open at this row's sideways offset.
     return PluginFilterRow(
+      key: const PageStorageKey<String>('pixiv-ranking-modes'),
       children: [
         for (final mode in modes)
           ChoiceChip(

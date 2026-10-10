@@ -92,9 +92,12 @@ class PixivHomeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    // Scrollables under one PageStorageKey share a saved offset: without keys
+    // of their own, a new feed opened at the chip row's sideways offset.
     return Column(
       children: [
         PluginFilterRow(
+          key: const PageStorageKey<String>('pixiv-home-sources'),
           children: [
             _chip(l10n.plugin_pixiv_tab_following, PixivHomeSource.following),
             if (source == PixivHomeSource.following)
@@ -109,7 +112,11 @@ class PixivHomeSection extends StatelessWidget {
             _chip(l10n.plugin_pixiv_tab_watchlist, PixivHomeSource.watchlist),
           ],
         ),
-        Expanded(child: _feed(l10n)),
+        // Keyed by source, each list also subscribes to its own store: a
+        // ScopedBuilder keeps the store it was first built with.
+        Expanded(
+          child: KeyedSubtree(key: PageStorageKey<PixivHomeSource>(source), child: _feed(l10n)),
+        ),
       ],
     );
   }

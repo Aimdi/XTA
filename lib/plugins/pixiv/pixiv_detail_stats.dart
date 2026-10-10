@@ -71,7 +71,9 @@ class PixivDetailStat extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: muted),
         const SizedBox(width: 4),
-        Flexible(child: Text(label, style: theme.textTheme.bodySmall!.copyWith(color: muted))),
+        Flexible(
+          child: Text(label, style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+        ),
       ],
     );
   }

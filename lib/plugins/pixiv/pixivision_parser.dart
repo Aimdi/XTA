@@ -119,15 +119,17 @@ List<PixivisionWork> _works(Element body) {
   ];
 }
 
-/// The smallest element around [link] that names both work [artworkId] and
-/// its artist, or null when the search would take in a second work first.
+/// The widest element around [link] that features no work but [artworkId],
+/// when it also links the artist; null for a work without one, which must
+/// not borrow a neighbour's.
 Element? _blockOf(Element link, int artworkId, Element body) {
-  for (Element? node = link; node != null && node != body.parent; node = node.parent) {
-    final links = node.querySelectorAll('a[href]');
-    if ({artworkId, for (final a in links) ?_artworkIdOf(a)}.length > 1) return null;
-    if (links.any((a) => _userIdOf(a) != null)) return node;
+  Element? block;
+  for (var node = link.parent; node != null && node != body.parent; node = node.parent) {
+    if ({artworkId, for (final a in node.querySelectorAll('a[href]')) ?_artworkIdOf(a)}.length > 1) break;
+    block = node;
   }
-  return null;
+  final linksArtist = block?.querySelectorAll('a[href]').any((a) => _userIdOf(a) != null) ?? false;
+  return linksArtist ? block : null;
 }
 
 PixivisionWork? _workIn(Element block, int artworkId) {
@@ -140,7 +142,7 @@ PixivisionWork? _workIn(Element block, int artworkId) {
   return PixivisionWork(
     artworkId: artworkId,
     userId: userId,
-    title: _firstText([block.querySelector('h3'), block.querySelector('h2'), ...artworkLinks]),
+    title: _firstText([...artworkLinks, block.querySelector('h3'), block.querySelector('h2')]),
     userName: _firstText([...userLinks, block.querySelector('p')]),
     imageUrl:
         _imageSource(artworkLinks.map((a) => a.querySelector('img')).nonNulls.firstOrNull) ??
