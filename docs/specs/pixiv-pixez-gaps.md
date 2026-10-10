@@ -32,7 +32,7 @@ once those are in.
 | B5a | Profiles and follows | Planned |
 | B5b | Bookmarks and bookmark organisation | Planned |
 | B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Planned |
-| B6b | Saving: naming, folders, index, multi-select, ugoira export | Planned |
+| B6b | Saving: naming, folders, index, multi-select, ugoira export | Built |
 | B7 | Settings, accounts, history, mute, links | Planned |
 
 ### B0 — shared seams (built)
@@ -123,11 +123,16 @@ column count; loading and failure states; share image and HD toggle in the
 viewer; swipe between artworks; side-by-side detail for landscape and
 tablets.
 
-### B6b — saving
+### B6b — saving (built)
 
-Ugoira export as GIF or ZIP; file-name template; per-artist and R-18
-subfolders; already-downloaded check and badge; pick pages to save; grid tile
-long-press actions; bookmark when downloading.
+Ugoira export as a GIF (per-frame delays, encoded off the UI thread with
+progress and Cancel) or the frame ZIP; a file-name template with insert chips
+and a preview; per-artist and R-18 subfolders through the app-wide download
+path and a find-or-create folder walk in `MainActivity`; a saved-pages index
+with a re-save question, a tile check and filled save buttons; picking pages
+to save in the overview; Download, Bookmark, Copy link and Mute on a tile's
+long-press; a simultaneous-downloads limit for the whole download queue.
+Bookmark-after-download moved to B5b. Details in `pixiv-downloads.md`.
 
 ### B7 — settings, accounts, history, mute, links
 

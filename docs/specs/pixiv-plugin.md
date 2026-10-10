@@ -72,11 +72,12 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 
 | Feature | Detail |
 |---|---|
-| Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), mute review (authors, tags, works, comments, novels) |
+| Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), downloads (file-name template, folders, saved pages), mute review (authors, tags, works, comments, novels) |
 | Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`) |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
+| Saving | File-name template, per-artist and R-18 subfolders, saved-pages index with tile check and re-save question, picking pages, ugoira GIF / ZIP export, tile long-press actions (`pixiv-downloads.md`) |
 | Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
 | Profile | User detail with works (illustrations + manga), following and My pixiv counts as plural phrases, public follow, works grid |
 | User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large. `onFollowChanged` lets a list update its copy |
@@ -115,6 +116,7 @@ its illust case.
 | Related users | `GET /v1/user/related` |
 | Illust detail | `GET /v1/illust/detail` |
 | Ugoira metadata | `GET /v1/ugoira/metadata` |
+| Ugoira frames | `GET zip_urls.medium` (image CDN, Pixiv Referer) |
 | Related | `GET /v2/illust/related` |
 | User detail | `GET /v1/user/detail` |
 | User illusts | `GET /v1/user/illusts` |
