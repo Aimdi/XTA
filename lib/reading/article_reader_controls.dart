@@ -63,12 +63,7 @@ class ArticleReaderControls extends StatelessWidget {
                   tooltip: l10n.article_reader_appearance,
                   icon: const Icon(Icons.text_fields),
                   onPressed: supportsAppearance
-                      ? () => showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          useSafeArea: true,
-                          builder: (_) => ArticleAppearanceSheet(store: store, onChanged: onAppearanceChanged),
-                        )
+                      ? () => showArticleAppearanceSheet(context, store, onChanged: onAppearanceChanged)
                       : null,
                 ),
                 IconButton(
@@ -85,6 +80,18 @@ class ArticleReaderControls extends StatelessWidget {
     },
   );
 }
+
+/// The text size and line spacing sliders, over the reader they change.
+Future<void> showArticleAppearanceSheet(
+  BuildContext context,
+  ArticleReadingStore store, {
+  required VoidCallback onChanged,
+}) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  builder: (_) => ArticleAppearanceSheet(store: store, onChanged: onChanged),
+);
 
 class ArticleAppearanceSheet extends StatelessWidget {
   final ArticleReadingStore store;

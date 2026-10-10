@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
 import 'package:xta/plugins/pixiv/pixiv_loads.dart';
@@ -14,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_paged_feed.dart';
 import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_share_link.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
@@ -169,11 +169,7 @@ class _PixivNovelSeriesScreenState extends State<PixivNovelSeriesScreen> {
   );
 
   List<Widget> _actions(L10n l10n, PixivNovelSeries series) => [
-    IconButton(
-      tooltip: l10n.share_link,
-      icon: const Icon(Icons.share_outlined),
-      onPressed: () => SharePlus.instance.share(ShareParams(text: series.url)),
-    ),
+    PixivShareLinkButton(url: series.url),
     IconButton(
       tooltip: l10n.plugin_pixiv_open_on_pixiv,
       icon: const Icon(Icons.open_in_new),

@@ -32,6 +32,12 @@ class PixivTag {
   }
 }
 
+/// A work's page on pixiv.net.
+String pixivArtworkUrl(int id) => 'https://www.pixiv.net/artworks/$id';
+
+/// A creator's profile on pixiv.net.
+String pixivUserUrl(int id) => 'https://www.pixiv.net/users/$id';
+
 /// The series a work belongs to, as its `series` object names it.
 class PixivSeriesRef {
   final int id;
@@ -144,8 +150,8 @@ class PixivIllust {
         series: series,
       );
 
-  String get url => 'https://www.pixiv.net/artworks/$id';
-  String get userUrl => 'https://www.pixiv.net/users/$userId';
+  String get url => pixivArtworkUrl(id);
+  String get userUrl => pixivUserUrl(userId);
 
   bool get isManga => pageCount > 1 || type == 'manga';
   bool get isUgoira => type == 'ugoira';

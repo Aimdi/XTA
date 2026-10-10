@@ -46,10 +46,16 @@ String pixivFileName(String template, PixivIllust illust, int page, {required St
   final values = {for (final token in PixivNameToken.values) token.token: token.valueFor(illust, page)};
   // One pass, so a title that itself reads "{user_id}" stays as written.
   final filled = template.replaceAllMapped(_token, (match) => values[match[0]] ?? match[0]!);
-  var stem = filled.replaceAll(_illegal, '_').replaceAll(RegExp(r'\s+'), ' ').trim();
-  stem = _fitBytes(stem, _maxStemBytes).replaceAll(RegExp(r'^[. ]+|[. ]+$'), '');
-  final safeStem = stem.isEmpty ? '${illust.id}_p$page' : stem;
-  return '$safeStem$extension';
+  final stem = pixivSafeFileStem(filled);
+  return '${stem.isEmpty ? '${illust.id}_p$page' : stem}$extension';
+}
+
+/// [value] as the part of a file name before its extension: characters no
+/// file system accepts become `_`, spaces fold, it fits Android's limit, and
+/// dots and spaces at either end go. Empty when nothing is left.
+String pixivSafeFileStem(String value) {
+  final stem = value.replaceAll(_illegal, '_').replaceAll(RegExp(r'\s+'), ' ').trim();
+  return _fitBytes(stem, _maxStemBytes).replaceAll(RegExp(r'^[. ]+|[. ]+$'), '');
 }
 
 /// The longest start of [value] whose UTF-8 form fits [limit] bytes, cut

@@ -171,7 +171,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivGroupSubscriptions, '[]');
   }
 
-  /// Also empties the viewing history: it lives in a file on the device, not
+  /// Also empties the viewing histories: they live in files on the device, not
   /// in the preferences the reset above clears.
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
@@ -179,6 +179,8 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     context.read<PixivSearchHistory>().load();
     context.read<PixivFavoriteTagsStore>().load();
     context.read<PixivDownloadIndex?>()?.update(const {});
+    final novelHistory = context.read<PixivNovelHistoryStore?>();
     await context.read<PixivHistoryStore?>()?.clear();
+    await novelHistory?.clear();
   }
 }

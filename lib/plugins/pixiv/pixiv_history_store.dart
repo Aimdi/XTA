@@ -6,11 +6,15 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/utils/json.dart';
 import 'package:xta/utils/local_json_store.dart';
 
 /// Where the opened illustrations are kept; novels get a key of their own.
 const pixivIllustHistoryKey = 'pixiv-history:illusts';
+
+/// Where the opened novels are kept.
+const pixivNovelHistoryKey = 'pixiv-history:novels';
 
 /// The most works a history keeps; the oldest fall off first.
 const pixivHistoryLimit = 500;
@@ -59,6 +63,19 @@ class PixivHistoryEntry {
     height: illust.height,
     bookmarks: illust.totalBookmarks,
     bookmarked: illust.isBookmarked,
+  );
+
+  /// A novel as its history row shows it: the cover stands in for the thumbnail.
+  factory PixivHistoryEntry.ofNovel(PixivNovel novel, DateTime viewedAt) => PixivHistoryEntry(
+    id: novel.id,
+    title: novel.title,
+    userId: novel.user.id,
+    userName: novel.user.name,
+    thumbUrl: novel.coverUrl ?? '',
+    tags: [for (final tag in novel.tags) tag.name],
+    viewedAt: viewedAt,
+    bookmarks: novel.totalBookmarks,
+    bookmarked: novel.isBookmarked,
   );
 
   /// A stored entry, or null when it lacks the id or the thumbnail to show it.
@@ -179,11 +196,23 @@ class PixivHistoryStore extends Store<List<PixivHistoryEntry>> {
   }
 }
 
+/// The novels opened on this device, in a file of their own; a type of its
+/// own too, so both histories can be provided side by side.
+class PixivNovelHistoryStore extends PixivHistoryStore {
+  PixivNovelHistoryStore({super.storage}) : super(key: pixivNovelHistoryKey);
+}
+
 /// Adds [illust] to the history unless the reader paused it or no history is
 /// provided (a test, or a screen outside the app).
-void recordPixivVisit(BuildContext context, PixivIllust illust) {
-  final history = context.read<PixivHistoryStore?>();
+void recordPixivVisit(BuildContext context, PixivIllust illust) =>
+    _record(context, context.read<PixivHistoryStore?>(), PixivHistoryEntry.of(illust, DateTime.now()));
+
+/// Adds [novel] to the novel history, under the same conditions as works.
+void recordPixivNovelVisit(BuildContext context, PixivNovel novel) =>
+    _record(context, context.read<PixivNovelHistoryStore?>(), PixivHistoryEntry.ofNovel(novel, DateTime.now()));
+
+void _record(BuildContext context, PixivHistoryStore? history, PixivHistoryEntry entry) {
   final paused = PrefService.of(context, listen: false).get<bool>(optionPluginPixivHistoryPaused) == true;
   if (history == null || paused) return;
-  unawaited(history.record(PixivHistoryEntry.of(illust, DateTime.now())));
+  unawaited(history.record(entry));
 }

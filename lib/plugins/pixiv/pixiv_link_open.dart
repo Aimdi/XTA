@@ -64,8 +64,13 @@ Future<void> openPixivIllustFromList(
   );
 }
 
-Future<void> openPixivUser(BuildContext context, int userId) =>
-    Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivUserScreen(userId: userId)));
+/// Opens a creator's profile, on the tab [initialTab] names when it has one.
+Future<void> openPixivUser(BuildContext context, int userId, {String? initialTab}) => Navigator.push(
+  context,
+  MaterialPageRoute<void>(
+    builder: (_) => PixivUserScreen(userId: userId, initialTab: initialTab),
+  ),
+);
 
 /// Opens what a Pixiv link or ID names. False when the work could not be
 /// fetched, so the caller can fall back to the browser or say so.

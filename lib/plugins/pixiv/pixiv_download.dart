@@ -28,6 +28,11 @@ PluginMediaItem pixivPageMedia(PixivIllust illust, int page, {String imageHost =
   downloadUrl: pixivImageUrl(illust.downloadUrlAt(page), imageHost),
 );
 
+/// Saves one Pixiv picture by its address, like any other plugin image: a
+/// profile picture, a header image, a picture in a novel.
+Future<void> savePixivImage(BuildContext context, String url) =>
+    downloadPluginMediaItem(context, PluginMediaItem(url: url), sourceName: pixivDownloadSource);
+
 /// [pages] of [illust] (every page by default) queued into [treeUri], named
 /// and foldered as [naming] says, fetched from [imageHost].
 List<DownloadRequest> pixivPageRequests(

@@ -8,13 +8,8 @@ import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
 import 'package:xta/plugins/plugin_counts.dart';
-import 'package:xta/plugins/plugin_post_media.dart';
 
 const _avatarSize = 72.0;
-
-/// Saves a profile picture or header image like any other plugin image.
-Future<void> savePixivProfileImage(BuildContext context, String url) =>
-    downloadPluginMediaItem(context, PluginMediaItem(url: url), sourceName: pixivDownloadSource);
 
 /// The top of a profile: header image, avatar, names, follow and group
 /// buttons, the counts and the bio.
@@ -168,7 +163,7 @@ class _Banner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final height = (MediaQuery.sizeOf(context).width / 3).clamp(120.0, 200.0);
-    void save() => savePixivProfileImage(context, url);
+    void save() => savePixivImage(context, url);
     return Semantics(
       image: true,
       onLongPress: save,
@@ -200,7 +195,7 @@ class _Avatar extends StatelessWidget {
     final url = profile.user.avatarUrl;
     if (url == null) return avatar;
     final label = L10n.of(context).plugin_pixiv_profile_save_avatar;
-    void save() => savePixivProfileImage(context, url);
+    void save() => savePixivImage(context, url);
     return Tooltip(
       message: label,
       child: Semantics(

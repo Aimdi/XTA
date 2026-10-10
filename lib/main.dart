@@ -865,6 +865,7 @@ Future<void> main() async {
     final pixivDownloads = PixivDownloadIndex(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final pixivHistory = PixivHistoryStore();
+    final pixivNovelHistory = PixivNovelHistoryStore();
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
     final booruMute = BooruMuteStore(prefService);
@@ -1095,6 +1096,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivDownloads),
                 Provider(create: (_) => pixivFeed),
                 Provider(create: (_) => pixivHistory),
+                Provider(create: (_) => pixivNovelHistory),
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),
                 Provider(create: (_) => booruMute),

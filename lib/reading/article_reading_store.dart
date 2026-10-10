@@ -150,31 +150,48 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
     try {
       final raw = jsonDecode(message);
       if (raw is! Map) return;
-      final point = ArticleReadPoint.parse(raw);
-      update(
-        ArticleReadingState(
-          fontSize: state.fontSize,
-          lineHeight: state.lineHeight,
-          point: ArticleReadPoint(
-            fraction: point.fraction,
-            paragraph: point.paragraph,
-            leading: point.leading,
-            completed: state.point.completed,
-            updatedAt: DateTime.now().millisecondsSinceEpoch,
-          ),
-          resumed: state.resumed && raw['interacted'] != true,
-        ),
+      receivePoint(
+        ArticleReadPoint.parse(raw),
+        interacted: raw['interacted'] == true,
+        userScrolled: raw['userScrolled'] == true,
+        atEnd: raw['atEnd'] == true,
       );
-      _schedule();
-      _checkCompletion(raw);
     } catch (_) {
       // Malformed web content cannot affect persisted reading state.
     }
   }
 
-  void _checkCompletion(Map<dynamic, dynamic> raw) {
+  /// Where a reader drawn in Flutter now stands; web readers report through
+  /// [receiveProgress]. [interacted] ends the "resumed" note, and a scroll by
+  /// the reader to the end may complete the article.
+  void receivePoint(
+    ArticleReadPoint point, {
+    bool interacted = false,
+    bool userScrolled = false,
+    bool atEnd = false,
+  }) {
+    if (_closed) return;
+    update(
+      ArticleReadingState(
+        fontSize: state.fontSize,
+        lineHeight: state.lineHeight,
+        point: ArticleReadPoint(
+          fraction: point.fraction,
+          paragraph: point.paragraph,
+          leading: point.leading,
+          completed: state.point.completed,
+          updatedAt: DateTime.now().millisecondsSinceEpoch,
+        ),
+        resumed: state.resumed && !interacted,
+      ),
+    );
+    _schedule();
+    _checkCompletion(userScrolled: userScrolled, atEnd: atEnd);
+  }
+
+  void _checkCompletion({required bool userScrolled, required bool atEnd}) {
     _endTimer?.cancel();
-    if (!allowAutomaticCompletion || raw['userScrolled'] != true || raw['atEnd'] != true || !activeTime.isRunning)
+    if (!allowAutomaticCompletion || !userScrolled || !atEnd || !activeTime.isRunning)
       return;
     final remaining = const Duration(seconds: 12) - activeTime.elapsed;
     if (remaining <= Duration.zero) {

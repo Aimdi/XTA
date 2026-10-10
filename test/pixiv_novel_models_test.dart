@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_parser.dart';
 
 import 'support/pixiv_novel_fakes.dart';
 
@@ -220,5 +223,95 @@ void main() {
       final kept = const PixivMuteState(authorIds: {9}).filterNovelsOf(chapters, (chapter) => chapter.novel);
       expect([for (final chapter in kept) chapter.order], [1]);
     });
+  });
+
+  group('a novel\'s webview content', () {
+    Map<String, Object?> contentJson() => {
+      'id': '41',
+      'title': ' Letters ',
+      'text': 'One\n[pixivimage:5-2]\n[uploadedimage:9]',
+      'seriesNavigation': {
+        'prevNovel': {'id': 40, 'viewable': true, 'contentOrder': '1', 'title': 'Before'},
+        'nextNovel': {'id': '42', 'viewable': false, 'contentOrder': '3', 'title': null},
+      },
+      'images': {
+        '9': {
+          'novelImageId': '9',
+          'urls': {
+            '240mw': 'https://i.pximg.net/novel/9_240.jpg',
+            '1200x1200': 'https://i.pximg.net/novel/9_1200.jpg',
+            'original': 'https://i.pximg.net/novel/9.png',
+          },
+        },
+        '10': {'urls': {}},
+      },
+      'illusts': {
+        '5-2': {
+          'illust': {
+            'images': {'small': 'https://i.pximg.net/s/5_p1.jpg', 'medium': 'https://i.pximg.net/m/5_p1.jpg'},
+          },
+        },
+        '6': {'illust': null},
+      },
+    };
+
+    test('carries the text, the chapters beside it and the pictures it names', () {
+      final content = pixivNovelContentFromJson(contentJson())!;
+      final blocks = parsePixivNovelMarkup(content.text);
+
+      expect(content.id, 41);
+      expect(content.title, 'Letters');
+      expect((content.previous?.id, content.previous?.viewable, content.previous?.order), (40, true, 1));
+      expect((content.next?.id, content.next?.viewable, content.next?.title), (42, false, ''));
+      expect(content.illust(blocks[1] as PixivNovelIllustBlock)?.url, 'https://i.pximg.net/m/5_p1.jpg');
+      final upload = content.upload(blocks[2] as PixivNovelUploadBlock)!;
+      expect((upload.url, upload.saveUrl), ('https://i.pximg.net/novel/9_1200.jpg', 'https://i.pximg.net/novel/9.png'));
+      expect(content.uploads.keys, ['9'], reason: 'pictures without an address are left out');
+      expect(content.illusts.keys, ['5-2']);
+    });
+
+    test('a first page may be filed under the bare work id', () {
+      final content = pixivNovelContentFromJson({
+        'text': '',
+        'illusts': {
+          '5': {
+            'illust': {
+              'images': {'original': 'https://i.pximg.net/o/5.png'},
+            },
+          },
+        },
+      })!;
+
+      expect(
+        content.illust(const PixivNovelIllustBlock(illustId: 5, page: 1, key: '5-1'))?.url,
+        'https://i.pximg.net/o/5.png',
+      );
+      expect(content.illust(const PixivNovelIllustBlock(illustId: 5, page: 2, key: '5-2')), isNull);
+    });
+
+    test('missing or reshaped parts are empty, and no text is no content', () {
+      final content = pixivNovelContentFromJson({
+        'text': 'Only text',
+        'seriesNavigation': 'none',
+        'images': ['not', 'a', 'map'],
+        'illusts': null,
+      })!;
+
+      expect((content.id, content.previous, content.next), (0, null, null));
+      expect(content.uploads, isEmpty);
+      expect(content.illusts, isEmpty);
+      expect(pixivNovelContentFromJson({'title': 'No text'}), isNull);
+      expect(pixivNovelContentFromJson(null), isNull);
+      expect(pixivNovelContentFromJson([1, 2]), isNull);
+    });
+  });
+
+  test('a novel joins the history under its cover', () {
+    final entry = PixivHistoryEntry.ofNovel(pixivNovel(id: 41, bookmarked: true), DateTime.utc(2026, 9, 1));
+
+    expect((entry.id, entry.title, entry.userName), (41, 'Autumn Letters', 'Mika'));
+    expect(entry.thumbUrl, contains('novel-cover-master'));
+    expect(entry.tags, ['秋']);
+    expect(entry.bookmarked, isTrue);
   });
 }
