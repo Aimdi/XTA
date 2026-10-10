@@ -2353,6 +2353,54 @@
   "@plugin_pixiv_columns_landscape": {},
   "plugin_pixiv_columns_portrait": "Rasterspalten im Hochformat",
   "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Ausgeblendet: Links außerhalb von Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Diesen Kommentar stummschalten",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "{name} stummschalten",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Kommentaroptionen",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Antwort an {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Anzeigen",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Sticker",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Unbekannter Nutzer",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Antworten anzeigen",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Noch keine Kommentare",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Noch keine Antworten",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Antworten",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Kommentare",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Kommentare anzeigen",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Kommentare anzeigen ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_copied": "Kopiert",
   "@plugin_pixiv_copied": {},
   "plugin_pixiv_copy_illust_id": "Werk-ID kopieren",

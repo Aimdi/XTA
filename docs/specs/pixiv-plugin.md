@@ -75,7 +75,8 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), viewing (image server, image sizes, columns, work layout, swipe between works, AI badge — `pixiv-viewing.md`), bookmarking (default visibility, auto-tag, follow / save after bookmarking, bookmark after saving, haptics), downloads (file-name template, folders, saved pages — `pixiv-downloads.md`), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` and `pixiv-bookmarks.md` |
 | Home | Shell (`pixiv_screen.dart`) over Home (Following with all / public / private, Recommended with Pixivision and suggested creators, Manga, Watchlist), Rankings (pinned board chips and archive date), Favorites (public / private bookmarks, all or one bookmark tag), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top; see `pixiv-discovery.md` |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
-| Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
+| Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags, View comments), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
+| Comments | Read-only artwork and novel comments with reply threads, Pixiv emoji and stickers, selectable text, comment and author mutes and collapsed outside links; no composer. See `pixiv-comments.md` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
 | Saving | File-name template, per-artist and R-18 subfolders, saved-pages index with tile check and re-save question, picking pages, ugoira GIF / ZIP export, tile long-press actions (`pixiv-downloads.md`) |
 | Search | Works and creators with a filter bar and sheet (target, sort, dates, users入り, Premium bookmark bracket, AI, ugoira, Remember), the free popular preview for non-Premium readers, last-word tag suggestions, id shortcuts, paste, trending tags and suggested creators with pull-to-refresh, favourite tags and SauceNAO. State in `PixivSearchStore`, endpoints in `pixiv_search_api.dart`; see `pixiv-search.md`. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
@@ -126,6 +127,8 @@ its illust case.
 | Ugoira metadata | `GET /v1/ugoira/metadata` |
 | Ugoira frames | `GET zip_urls.medium` (image CDN, Pixiv Referer) |
 | Related | `GET /v2/illust/related` |
+| Comments | `GET /v3/illust/comments`, `GET /v3/novel/comments` |
+| Comment replies | `GET /v2/illust/comment/replies`, `GET /v2/novel/comment/replies` |
 | User detail | `GET /v1/user/detail` |
 | User illusts | `GET /v1/user/illusts` (`type=illust` or `manga`) |
 | User bookmarks | `GET /v1/user/bookmarks/illust` (any user) |
@@ -146,6 +149,5 @@ watchlist and the walkthrough are listed in `pixiv-discovery.md`.
 
 ## Not yet
 
-What remains against PixEz — novels and the novel watchlist, comments, richer
-search and bookmarks and more — is planned batch by batch in
-`pixiv-pixez-gaps.md`.
+What remains against PixEz — novels and the novel watchlist, richer search
+and bookmarks and more — is planned batch by batch in `pixiv-pixez-gaps.md`.
