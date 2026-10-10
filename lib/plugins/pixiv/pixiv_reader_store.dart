@@ -7,9 +7,44 @@ class PixivReaderState {
   /// The page under the slider thumb while it is dragged.
   final int? scrubIndex;
 
-  const PixivReaderState({this.vertical = true, this.pageIndex = 0, this.scrubIndex});
+  /// Pages show their original files instead of the large ones, for this visit.
+  final bool hd;
+
+  /// The reader is magnified, so pages decode every pixel.
+  final bool zoomed;
+
+  /// Page images that finished loading, which can be shared from the image cache.
+  final Set<String> loaded;
+
+  const PixivReaderState({
+    this.vertical = true,
+    this.pageIndex = 0,
+    this.scrubIndex,
+    this.hd = false,
+    this.zoomed = false,
+    this.loaded = const {},
+  });
 
   int get shownIndex => scrubIndex ?? pageIndex;
+
+  /// Decode at full size rather than at the screen's width.
+  bool get fullResolution => hd || zoomed;
+
+  PixivReaderState copyWith({
+    bool? vertical,
+    int? pageIndex,
+    int? Function()? scrubIndex,
+    bool? hd,
+    bool? zoomed,
+    Set<String>? loaded,
+  }) => PixivReaderState(
+    vertical: vertical ?? this.vertical,
+    pageIndex: pageIndex ?? this.pageIndex,
+    scrubIndex: scrubIndex == null ? this.scrubIndex : scrubIndex(),
+    hd: hd ?? this.hd,
+    zoomed: zoomed ?? this.zoomed,
+    loaded: loaded ?? this.loaded,
+  );
 }
 
 class PixivReaderStore extends Store<PixivReaderState> {
@@ -19,8 +54,8 @@ class PixivReaderStore extends Store<PixivReaderState> {
   bool _restoringPosition = false;
   bool _closed = false;
 
-  PixivReaderStore({required this.pageCount, int initialPage = 0, bool vertical = true})
-    : super(PixivReaderState(vertical: vertical, pageIndex: _bounded(initialPage, pageCount)));
+  PixivReaderStore({required this.pageCount, int initialPage = 0, bool vertical = true, bool hd = false})
+    : super(PixivReaderState(vertical: vertical, pageIndex: _bounded(initialPage, pageCount), hd: hd));
 
   static int _bounded(int index, int count) => count <= 0 ? 0 : index.clamp(0, count - 1);
 
@@ -28,7 +63,7 @@ class PixivReaderStore extends Store<PixivReaderState> {
     if (_closed) return;
     final next = _bounded(index, pageCount);
     if (next == state.pageIndex) return;
-    update(PixivReaderState(vertical: state.vertical, pageIndex: next, scrubIndex: state.scrubIndex));
+    update(state.copyWith(pageIndex: next));
   }
 
   /// Follows the slider while dragging; null hands the counter back to the page.
@@ -36,13 +71,27 @@ class PixivReaderStore extends Store<PixivReaderState> {
     if (_closed) return;
     final next = index == null ? null : _bounded(index, pageCount);
     if (next == state.scrubIndex) return;
-    update(PixivReaderState(vertical: state.vertical, pageIndex: state.pageIndex, scrubIndex: next));
+    update(state.copyWith(scrubIndex: () => next));
   }
 
   void toggleDirection() {
     if (_closed) return;
     _visibleAreas.clear();
-    update(PixivReaderState(vertical: !state.vertical, pageIndex: state.pageIndex));
+    update(state.copyWith(vertical: !state.vertical, scrubIndex: () => null, zoomed: false));
+  }
+
+  /// Switches every page between its large and its original file.
+  void toggleHd() {
+    if (!_closed) update(state.copyWith(hd: !state.hd));
+  }
+
+  void setZoomed(bool zoomed) {
+    if (!_closed && zoomed != state.zoomed) update(state.copyWith(zoomed: zoomed));
+  }
+
+  /// [url] has loaded and is in the image cache.
+  void pageLoaded(String url) {
+    if (!_closed && !state.loaded.contains(url)) update(state.copyWith(loaded: {...state.loaded, url}));
   }
 
   void pageVisibility(int index, double area) {
@@ -75,8 +124,11 @@ class PixivReaderStore extends Store<PixivReaderState> {
     return true;
   }
 
+  /// A page turned by a swipe; the page left behind is no longer magnified.
   void observedPage(int index) {
-    if (!_restoringPosition) selectPage(index);
+    if (_restoringPosition) return;
+    if (!state.vertical) setZoomed(false);
+    selectPage(index);
   }
 
   @override

@@ -9,7 +9,11 @@ import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_surface.dart';
+import 'package:xta/plugins/pixiv/pixiv_quality.dart';
+import 'package:xta/plugins/pixiv/pixiv_reader_bar.dart';
 import 'package:xta/plugins/pixiv/pixiv_reader_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_share_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/pixiv/pixiv_zoomable.dart';
 import 'package:xta/ui/motion.dart';
 
@@ -30,6 +34,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> with PixivPageSur
     pageCount: _pages.length,
     initialPage: widget.initialPage,
     vertical: widget.vertical,
+    hd: pixivQuality(pixivPrefsOf(context), PixivQualitySlot.reader) == PixivImageQuality.original,
   );
   final _verticalController = AutoScrollController();
   Future<void> _restoreQueue = Future.value();
@@ -141,106 +146,113 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> with PixivPageSur
             ),
           ],
         ),
-        body: SafeArea(top: false, bottom: false, child: state.vertical ? _verticalPages() : _horizontalPages()),
-        bottomNavigationBar: _pages.length < 2 ? null : _pageBar(state),
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: state.vertical ? _verticalPages(state) : _horizontalPages(state),
+        ),
+        bottomNavigationBar: PixivReaderBar(
+          state: state,
+          pages: _pages.length,
+          onShare: state.loaded.contains(_urlAt(state.pageIndex, state)) ? () => _share(state) : null,
+          onToggleHd: _store.toggleHd,
+          onScrub: _store.scrub,
+          onJump: _jumpFromSlider,
+          onOverview: openPageOverview,
+        ),
       ),
     );
   }
 
-  Widget _pageBar(PixivReaderState state) => SafeArea(
-    top: false,
-    child: Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 12, 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: SizedBox(height: kMinInteractiveDimension, child: _pageSlider(state)),
-          ),
-          Tooltip(
-            message: L10n.of(context).plugin_pixiv_all_pages,
-            child: OutlinedButton.icon(
-              key: const ValueKey('pixiv-reader-counter'),
-              onPressed: openPageOverview,
-              icon: const Icon(Icons.grid_view_outlined, size: 18),
-              label: Text(L10n.of(context).plugin_pixiv_page_of(state.shownIndex + 1, _pages.length)),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+  /// The file page [index] shows: the original with HD on, else the large one.
+  String _urlAt(int index, PixivReaderState state) => state.hd ? widget.illust.downloadUrlAt(index) : _pages[index];
 
-  Widget _pageSlider(PixivReaderState state) {
-    final l10n = L10n.of(context);
-    final last = _pages.length - 1;
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(tickMarkShape: SliderTickMarkShape.noTickMark),
-      child: Slider(
-        key: const ValueKey('pixiv-reader-slider'),
-        value: state.shownIndex.toDouble(),
-        max: last.toDouble(),
-        divisions: last,
-        label: '${state.shownIndex + 1}',
-        semanticFormatterCallback: (value) => l10n.plugin_pixiv_current_page(value.round() + 1, _pages.length),
-        onChanged: (value) => _store.scrub(value.round()),
-        onChangeEnd: _jumpFromSlider,
-      ),
-    );
+  Future<void> _share(PixivReaderState state) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final failed = L10n.of(context).plugin_pixiv_share_image_failed;
+    final sharer = PixivImageSharer.of(context);
+    final page = state.pageIndex;
+    final url = pixivImageUrlFor(context, _urlAt(page, state));
+    if (!await sharer.share(widget.illust, page, url)) messenger.showSnackBar(SnackBar(content: Text(failed)));
   }
 
-  Widget _verticalPages() => ListView.builder(
-    key: const PageStorageKey('pixiv-continuous-reader'),
-    controller: _verticalController,
-    scrollCacheExtent: const ScrollCacheExtent.pixels(400),
-    addAutomaticKeepAlives: false,
-    itemCount: _pages.length,
-    itemBuilder: (context, index) => AutoScrollTag(
-      key: ValueKey('pixiv-reader-page-$index'),
+  Widget _verticalPages(PixivReaderState state) => PixivZoomable(
+    onZoomChanged: _store.setZoomed,
+    child: ListView.builder(
+      key: const PageStorageKey('pixiv-continuous-reader'),
       controller: _verticalController,
-      index: index,
-      child: VisibilityDetector(
-        key: ValueKey('pixiv-reader-visible-$index'),
-        onVisibilityChanged: (info) {
-          if (!mounted) return;
-          _store.pageVisibility(index, info.visibleBounds.width * info.visibleBounds.height);
-        },
-        child: GestureDetector(onLongPress: () => openPageActions(index), child: _pageImage(index, vertical: true)),
+      scrollCacheExtent: const ScrollCacheExtent.pixels(400),
+      addAutomaticKeepAlives: false,
+      itemCount: _pages.length,
+      itemBuilder: (context, index) => AutoScrollTag(
+        key: ValueKey('pixiv-reader-page-$index'),
+        controller: _verticalController,
+        index: index,
+        child: VisibilityDetector(
+          key: ValueKey('pixiv-reader-visible-$index'),
+          onVisibilityChanged: (info) {
+            if (!mounted) return;
+            _store.pageVisibility(index, info.visibleBounds.width * info.visibleBounds.height);
+          },
+          child: GestureDetector(
+            onLongPress: () => openPageActions(index),
+            child: _pageImage(index, state, vertical: true),
+          ),
+        ),
       ),
     ),
   );
 
-  Widget _horizontalPages() => PageView.builder(
+  Widget _horizontalPages(PixivReaderState state) => PageView.builder(
     controller: _horizontalController,
     itemCount: _pages.length,
     onPageChanged: _store.observedPage,
     itemBuilder: (context, index) => PixivZoomable(
       onLongPress: () => openPageActions(index),
-      child: Center(child: _pageImage(index, vertical: false)),
+      onZoomChanged: _store.setZoomed,
+      child: Center(child: _pageImage(index, state, vertical: false)),
     ),
   );
 
-  Widget _pageImage(int index, {required bool vertical}) => Semantics(
-    image: true,
-    label: L10n.of(context).plugin_pixiv_page_of(index + 1, _pages.length),
-    child: PixivNetworkImage(
-      url: _pages[index],
-      fit: vertical ? BoxFit.fitWidth : BoxFit.contain,
-      cacheWidth: (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil(),
-      loadStateChanged: (state) {
-        if (state.extendedImageLoadState == LoadState.completed) return null;
-        return AspectRatio(
-          aspectRatio: widget.illust.aspectRatio,
-          child: Center(
-            child: state.extendedImageLoadState == LoadState.failed
-                ? IconButton(
-                    tooltip: L10n.of(context).retry,
-                    onPressed: state.reLoadImage,
-                    icon: const Icon(Icons.refresh),
-                  )
-                : const CircularProgressIndicator(),
-          ),
-        );
-      },
-    ),
-  );
+  /// A page decoded at the screen's width, or whole once zoomed or with HD on; the decode
+  /// switch keeps the picture up, a different file starts over with its own progress.
+  Widget _pageImage(int index, PixivReaderState state, {required bool vertical}) {
+    final url = _urlAt(index, state);
+    return Semantics(
+      image: true,
+      label: L10n.of(context).plugin_pixiv_page_of(index + 1, _pages.length),
+      child: PixivNetworkImage(
+        key: ValueKey(url),
+        url: url,
+        fit: vertical ? BoxFit.fitWidth : BoxFit.contain,
+        cacheWidth: (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil(),
+        fullResolution: state.fullResolution,
+        gaplessPlayback: true,
+        handleLoadingProgress: true,
+        loadStateChanged: (image) => _pageState(image, url),
+      ),
+    );
+  }
+
+  Widget? _pageState(ExtendedImageState image, String url) {
+    if (image.extendedImageLoadState == LoadState.completed) {
+      if (!_store.state.loaded.contains(url)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _store.pageLoaded(url));
+      }
+      return null;
+    }
+    return AspectRatio(
+      aspectRatio: widget.illust.aspectRatio,
+      child: Center(
+        child: image.extendedImageLoadState == LoadState.failed
+            ? IconButton(
+                key: const ValueKey('pixiv-reader-retry'),
+                tooltip: L10n.of(context).retry,
+                onPressed: image.reLoadImage,
+                icon: const Icon(Icons.refresh),
+              )
+            : CircularProgressIndicator(value: pixivLoadProgress(image.loadingProgress)),
+      ),
+    );
+  }
 }

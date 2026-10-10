@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -7,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
+import 'package:xta/plugins/pixiv/pixiv_image_source.dart';
+import 'package:xta/plugins/pixiv/pixiv_lru_cache.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/utils/json.dart';
@@ -76,6 +79,9 @@ class PixivClient {
   /// Coalesces concurrent refresh calls — opening Following + Ranking used to
   /// stampede the token endpoint and stack several 15s timeouts.
   Future<PixivAuthUser>? _refreshInFlight;
+
+  /// The last few ugoira frame archives, so replaying or saving one does not fetch it again.
+  final _ugoiraArchives = PixivLruCache<String, Future<Uint8List>>(4);
 
   PixivClient(this.prefs, {http.Client? httpClient, DateTime Function()? clock, String Function()? locale})
     : httpClient = httpClient ?? http.Client(),
@@ -671,8 +677,19 @@ class PixivClient {
     return ugoira;
   }
 
-  /// An ugoira's frame archive; the image CDN only answers with Pixiv's Referer.
-  Future<Uint8List> ugoiraArchive(String url) async {
+  /// An ugoira's frame archive, from the image server the reader picked. A failed fetch
+  /// leaves the cache, so the next attempt goes to the network again.
+  Future<Uint8List> ugoiraArchive(String url) {
+    final cached = _ugoiraArchives[url];
+    if (cached != null) return cached;
+    final fetch = _fetchUgoiraArchive(pixivImageUrl(url, pixivImageHostSetting(prefs)));
+    _ugoiraArchives[url] = fetch;
+    unawaited(fetch.then<void>((_) {}, onError: (Object _) => _ugoiraArchives.removeIfHolds(url, fetch)));
+    return fetch;
+  }
+
+  /// Pixiv's image CDN only answers with Pixiv's Referer.
+  Future<Uint8List> _fetchUgoiraArchive(String url) async {
     final uri = Uri.parse(url);
     final http.Response response;
     try {

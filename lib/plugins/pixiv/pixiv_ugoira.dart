@@ -115,6 +115,9 @@ class PixivUgoiraStore extends Store<PixivUgoiraState> {
   var _run = 0;
   var _closed = false;
 
+  /// Playback the view stopped because it was covered, not the reader's pause.
+  var _held = false;
+
   PixivUgoiraStore({required this.metadata, required this.archive, PixivFrameDecoder? decode})
     : decode = decode ?? decodePixivFrame,
       super(const PixivUgoiraState());
@@ -123,15 +126,39 @@ class PixivUgoiraStore extends Store<PixivUgoiraState> {
 
   Future<void> play() async {
     if (_closed || playing || state.phase == PixivUgoiraPhase.loading) return;
+    _held = false;
     if (_frames.isEmpty && !await _loadFrames()) return;
+    if (_held) {
+      update(PixivUgoiraState(phase: PixivUgoiraPhase.paused, frame: state.frame));
+      return;
+    }
     update(PixivUgoiraState(phase: PixivUgoiraPhase.playing, frame: state.frame));
     unawaited(_loop(++_run));
   }
 
   void pause() {
+    _held = false;
+    _stop();
+  }
+
+  void _stop() {
     if (!playing) return;
     _run++;
     update(PixivUgoiraState(phase: PixivUgoiraPhase.paused, frame: state.frame));
+  }
+
+  /// Stops while the view is covered, remembering to go on when [resume]d.
+  void hold() {
+    if (!playing && state.phase != PixivUgoiraPhase.loading) return;
+    _held = true;
+    _stop();
+  }
+
+  /// Plays again what [hold] stopped; a reader's own pause stays paused.
+  void resume() {
+    if (!_held) return;
+    _held = false;
+    unawaited(play());
   }
 
   Future<bool> _loadFrames() async {

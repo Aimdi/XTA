@@ -6,16 +6,17 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/plugins/plugin_gallery_layout.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -32,6 +33,9 @@ class PixivIllustGrid extends StatelessWidget {
   /// Slivers scrolled above the works, such as a carousel or a header row.
   final List<Widget> leadingSlivers;
 
+  /// The store [illusts] come from, handed to tiles so a work opens among its neighbours.
+  final PixivIllustListStore? source;
+
   const PixivIllustGrid({
     super.key,
     required this.illusts,
@@ -40,19 +44,20 @@ class PixivIllustGrid extends StatelessWidget {
     this.loadingMore = false,
     this.padding = const EdgeInsets.all(4),
     this.leadingSlivers = const [],
+    this.source,
   });
 
   @override
   Widget build(BuildContext context) {
     // Plain ScopedBuilder (not .transition): mute changes must not animate the
     // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
-    return ScopedBuilder<PixivMuteStore, PixivMuteState>(
-      store: context.read<PixivMuteStore>(),
-      onState: (context, mute) => LayoutBuilder(
-        builder: (context, constraints) => _grid(
-          context,
-          mute.filter(illusts),
-          pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context)),
+    return PixivPrefsBuilder(
+      keys: pixivGridPrefKeys,
+      builder: (context) => ScopedBuilder<PixivMuteStore, PixivMuteState>(
+        store: context.read<PixivMuteStore>(),
+        onState: (context, mute) => LayoutBuilder(
+          builder: (context, constraints) =>
+              _grid(context, mute.filter(illusts), pixivGridColumnsFor(context, constraints.maxWidth)),
         ),
       ),
     );
@@ -74,7 +79,7 @@ class PixivIllustGrid extends StatelessWidget {
             crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
             itemBuilder: (context, index) =>
-                PixivIllustTile(illust: visibleIllusts[index], siblings: visibleIllusts, index: index),
+                PixivIllustTile(illust: visibleIllusts[index], siblings: visibleIllusts, index: index, source: source),
           ),
         ),
         if (loadingMore)
@@ -167,6 +172,7 @@ class PixivIllustFeed extends StatelessWidget {
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
           leadingSlivers: leadingSlivers,
+          source: store,
         ),
       ),
     );

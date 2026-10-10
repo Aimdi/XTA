@@ -24,6 +24,8 @@ class PixivPagedListStore<T> extends Store<List<T>> {
 
   String? _nextUrl;
   bool _loadingMore = false;
+  bool _loadMoreFailed = false;
+  Future<void>? _pendingMore;
 
   /// Bumped by every refresh and source swap; a page that lands for an older
   /// generation is dropped, so a slow page from the old ranking mode or a
@@ -34,6 +36,9 @@ class PixivPagedListStore<T> extends Store<List<T>> {
 
   bool get hasMore => _nextUrl != null && _nextUrl!.isNotEmpty;
   bool get loadingMore => _loadingMore;
+
+  /// Whether the last next page failed while the list kept what it had, so a pager can offer Retry.
+  bool get loadMoreFailed => _loadMoreFailed;
 
   /// Swap the source (e.g. ranking mode) and clear the list.
   ///
@@ -48,6 +53,7 @@ class PixivPagedListStore<T> extends Store<List<T>> {
 
   int _restart() {
     _loadingMore = false;
+    _loadMoreFailed = false;
     return ++_generation;
   }
 
@@ -77,12 +83,21 @@ class PixivPagedListStore<T> extends Store<List<T>> {
     });
   }
 
-  Future<void> loadMore() async {
-    if (_loadingMore || !hasMore) {
-      return;
+  /// The next page; while one is already loading, the same load, so every caller can wait for it.
+  Future<void> loadMore() {
+    if (_loadingMore) {
+      return _pendingMore ?? Future.value();
     }
+    if (!hasMore) {
+      return Future.value();
+    }
+    return _pendingMore = _loadNextPage();
+  }
+
+  Future<void> _loadNextPage() async {
     final generation = _generation;
     _loadingMore = true;
+    _loadMoreFailed = false;
     update(state);
     try {
       final page = await _loadVisiblePage(nextUrl: _nextUrl);
@@ -95,6 +110,7 @@ class PixivPagedListStore<T> extends Store<List<T>> {
       if (state.isEmpty) {
         setError(e);
       } else {
+        _loadMoreFailed = true;
         update(state);
       }
     } finally {

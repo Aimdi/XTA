@@ -1,12 +1,29 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_image_source.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_quality.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 
 /// How long a Pixiv CDN fetch may hang before the tile fails closed.
 ///
 /// Without a limit, ExtendedImage keeps the default spinner forever on a stalled
 /// `i.pximg.net` connection — which reads as "the plugin loads forever".
 const pixivImageTimeLimit = Duration(seconds: 12);
+
+/// [url] from the image server the reader picked in the settings above [context].
+String pixivImageUrlFor(BuildContext context, String url) =>
+    pixivImageUrl(url, pixivImageHostSetting(pixivPrefsOf(context)));
+
+/// The provider a Pixiv image loads through, for warming the cache ahead of a widget.
+ExtendedNetworkImageProvider pixivImageProvider(BuildContext context, String url) => ExtendedNetworkImageProvider(
+  pixivImageUrlFor(context, url),
+  headers: pixivImageHeaders,
+  cache: true,
+  timeLimit: pixivImageTimeLimit,
+  retries: 1,
+);
 
 /// Pixiv CDN image decoded at the size it is painted — Referer + cacheWidth.
 ///
@@ -20,6 +37,15 @@ class PixivNetworkImage extends StatelessWidget {
   final int? cacheHeight;
   final LoadStateChanged? loadStateChanged;
 
+  /// Decodes every pixel, for art the reader zooms into.
+  final bool fullResolution;
+
+  /// Keeps the current picture up while a new decode of it loads.
+  final bool gaplessPlayback;
+
+  /// Reports download progress to [loadStateChanged].
+  final bool handleLoadingProgress;
+
   const PixivNetworkImage({
     super.key,
     required this.url,
@@ -27,43 +53,40 @@ class PixivNetworkImage extends StatelessWidget {
     this.cacheWidth,
     this.cacheHeight,
     this.loadStateChanged,
+    this.fullResolution = false,
+    this.gaplessPlayback = false,
+    this.handleLoadingProgress = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (cacheWidth != null || cacheHeight != null) {
-      return ExtendedImage.network(
-        url,
-        fit: fit,
-        cache: true,
-        headers: pixivImageHeaders,
-        cacheWidth: cacheWidth,
-        cacheHeight: cacheHeight,
-        timeLimit: pixivImageTimeLimit,
-        retries: 1,
-        loadStateChanged: loadStateChanged,
-      );
+    final source = pixivImageUrlFor(context, url);
+    if (fullResolution || cacheWidth != null || cacheHeight != null) {
+      return _image(source, width: cacheWidth, height: cacheHeight);
     }
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxW = constraints.maxWidth;
-        final width = maxW.isFinite && maxW > 0
-            ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
-            : null;
-        return ExtendedImage.network(
-          url,
-          fit: fit,
-          cache: true,
-          headers: pixivImageHeaders,
-          cacheWidth: width,
-          timeLimit: pixivImageTimeLimit,
-          retries: 1,
-          loadStateChanged: loadStateChanged,
-        );
+        final width = maxW.isFinite && maxW > 0 ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil() : null;
+        return _image(source, width: width);
       },
     );
   }
+
+  Widget _image(String source, {int? width, int? height}) => ExtendedImage.network(
+    source,
+    fit: fit,
+    cache: true,
+    headers: pixivImageHeaders,
+    cacheWidth: fullResolution ? null : width,
+    cacheHeight: fullResolution ? null : height,
+    timeLimit: pixivImageTimeLimit,
+    retries: 1,
+    gaplessPlayback: gaplessPlayback,
+    handleLoadingProgress: handleLoadingProgress,
+    loadStateChanged: loadStateChanged,
+  );
 }
 
 /// Quiet thumbnail states: the tile's surface shows while loading, an icon marks a failure.
@@ -73,15 +96,37 @@ Widget? pixivTileLoadState(BuildContext context, ExtendedImageState state) => sw
   LoadState.completed => null,
 };
 
+/// A failed image becomes a button that fetches it again; other states keep their default.
+Widget? pixivRetryLoadState(ExtendedImageState state, {bool fill = true}) =>
+    state.extendedImageLoadState == LoadState.failed ? PixivImageRetry(onRetry: state.reLoadImage, fill: fill) : null;
+
+/// Where an image failed: a retry button, on the tile's surface when [fill] is set.
+class PixivImageRetry extends StatelessWidget {
+  final VoidCallback onRetry;
+  final bool fill;
+
+  const PixivImageRetry({super.key, required this.onRetry, this.fill = true});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final button = Center(
+      child: IconButton.filledTonal(
+        key: const ValueKey('pixiv-image-retry'),
+        tooltip: L10n.of(context).retry,
+        onPressed: onRetry,
+        icon: const Icon(Icons.refresh),
+      ),
+    );
+    return fill ? ColoredBox(color: scheme.surfaceContainerHighest, child: button) : button;
+  }
+}
+
 /// Warm disk cache for thumbs the masonry is about to show.
 ///
 /// Uses the same half-width [cacheWidth] as tiles so prefetch actually hits the
 /// decode cache, runs in parallel, and never waits on a hung CDN forever.
-Future<void> prefetchPixivThumbs(
-  BuildContext context,
-  Iterable<PixivIllust> illusts, {
-  int max = 12,
-}) async {
+Future<void> prefetchPixivThumbs(BuildContext context, Iterable<PixivIllust> illusts, {int max = 12}) async {
   if (!context.mounted) {
     return;
   }
@@ -89,23 +134,17 @@ Future<void> prefetchPixivThumbs(
   // Match masonry half-width decode so memory cache keys line up with tiles.
   final dpr = MediaQuery.devicePixelRatioOf(context);
   final cacheWidth = (MediaQuery.sizeOf(context).width / 2 * dpr).ceil();
-  final targets = illusts.take(max).toList(growable: false);
+  final quality = pixivQuality(pixivPrefsOf(context), PixivQualitySlot.feed);
+  final providers = [
+    for (final illust in illusts.take(max))
+      ResizeImage(pixivImageProvider(context, pixivTileUrl(illust, quality)), width: cacheWidth),
+  ];
 
   await Future.wait(
-    targets.map((illust) async {
+    providers.map((provider) async {
       if (!context.mounted) {
         return;
       }
-      final provider = ResizeImage(
-        ExtendedNetworkImageProvider(
-          illust.thumbnailUrl,
-          headers: pixivImageHeaders,
-          cache: true,
-          timeLimit: pixivImageTimeLimit,
-          retries: 1,
-        ),
-        width: cacheWidth,
-      );
       try {
         await precacheImage(provider, context).timeout(pixivImageTimeLimit);
       } catch (_) {}

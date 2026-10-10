@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -65,12 +66,15 @@ class PixivDetailRelated extends StatelessWidget {
       ),
       SliverPadding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
-        sliver: SliverMasonryGrid.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          childCount: works.length,
-          itemBuilder: (context, index) => PixivIllustTile(illust: works[index], siblings: works, index: index),
+        sliver: SliverLayoutBuilder(
+          builder: (context, constraints) => SliverMasonryGrid.count(
+            crossAxisCount: pixivGridColumnsFor(context, constraints.crossAxisExtent),
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            childCount: works.length,
+            itemBuilder: (context, index) =>
+                PixivIllustTile(illust: works[index], siblings: works, index: index, source: store),
+          ),
         ),
       ),
       if (store.loadingMore) _spinner(16),

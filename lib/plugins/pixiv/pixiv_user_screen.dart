@@ -9,6 +9,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -162,13 +163,15 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
-            sliver: SliverMasonryGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              childCount: _works.state.length,
-              itemBuilder: (context, index) =>
-                  PixivIllustTile(illust: _works.state[index], siblings: _works.state, index: index),
+            sliver: SliverLayoutBuilder(
+              builder: (context, constraints) => SliverMasonryGrid.count(
+                crossAxisCount: pixivGridColumnsFor(context, constraints.crossAxisExtent),
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                childCount: _works.state.length,
+                itemBuilder: (context, index) =>
+                    PixivIllustTile(illust: _works.state[index], siblings: _works.state, index: index, source: _works),
+              ),
             ),
           ),
           if (_works.loadingMore)

@@ -47,7 +47,16 @@ class PixivPrefSwitch extends StatefulWidget {
   final String title;
   final String subtitle;
 
-  const PixivPrefSwitch({super.key, required this.pref, required this.title, required this.subtitle});
+  /// What the switch shows while nothing is stored.
+  final bool defaultValue;
+
+  const PixivPrefSwitch({
+    super.key,
+    required this.pref,
+    required this.title,
+    required this.subtitle,
+    this.defaultValue = false,
+  });
 
   @override
   State<PixivPrefSwitch> createState() => _PixivPrefSwitchState();
@@ -76,9 +85,91 @@ class _PixivPrefSwitchState extends State<PixivPrefSwitch> {
         contentPadding: EdgeInsets.zero,
         title: Text(widget.title),
         subtitle: Text(widget.subtitle),
-        value: prefs.get<bool>(widget.pref) == true,
+        value: prefs.get<bool>(widget.pref) ?? widget.defaultValue,
         onChanged: (value) => _set(prefs, value),
       ),
+    );
+  }
+}
+
+/// One Pixiv preference picked from a few [options]: the current one under the [title],
+/// the rest in a dialog.
+class PixivPrefChoice<T extends Object> extends StatefulWidget {
+  final String pref;
+  final String title;
+
+  /// What is shown and kept while nothing usable is stored.
+  final T fallback;
+  final List<(T, String)> options;
+
+  const PixivPrefChoice({
+    super.key,
+    required this.pref,
+    required this.title,
+    required this.fallback,
+    required this.options,
+  });
+
+  @override
+  State<PixivPrefChoice<T>> createState() => _PixivPrefChoiceState<T>();
+}
+
+class _PixivPrefChoiceState<T extends Object> extends State<PixivPrefChoice<T>> {
+  final _revision = SettingsRevisionStore();
+
+  @override
+  void dispose() {
+    _revision.destroy();
+    super.dispose();
+  }
+
+  T _current(BasePrefService prefs) {
+    final stored = prefs.get<Object>(widget.pref);
+    return widget.options.map((option) => option.$1).where((value) => value == stored).firstOrNull ?? widget.fallback;
+  }
+
+  Future<void> _pick(BasePrefService prefs) async {
+    final current = _current(prefs);
+    final picked = await showDialog<T>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: Text(widget.title),
+        children: [
+          RadioGroup<T>(
+            groupValue: current,
+            onChanged: (value) => Navigator.pop(context, value),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final (value, label) in widget.options) RadioListTile<T>(value: value, title: Text(label)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    if (picked == null || picked == current) return;
+    await prefs.set<T>(widget.pref, picked);
+    _revision.refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final prefs = PrefService.of(context, listen: false);
+    return ScopedBuilder<SettingsRevisionStore, int>(
+      store: _revision,
+      onState: (context, _) {
+        final current = _current(prefs);
+        return ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(widget.title),
+          subtitle: Text(
+            widget.options.firstWhere((option) => option.$1 == current, orElse: () => widget.options.first).$2,
+          ),
+          trailing: const Icon(Icons.arrow_drop_down),
+          onTap: () => _pick(prefs),
+        );
+      },
     );
   }
 }

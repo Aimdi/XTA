@@ -1,13 +1,17 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_illust_pager.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_quality.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira_view.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/pixiv/pixiv_zoomable.dart';
 
-/// A work's pages side by side, framed to the art rather than the screen.
+/// A work's pages side by side, framed to the art rather than the screen, at the size the
+/// reader picked for work pages. Pushing past the first or last page tells a pager of works.
 class PixivDetailViewer extends StatelessWidget {
   final PixivIllust illust;
   final PageController controller;
@@ -17,6 +21,10 @@ class PixivDetailViewer extends StatelessWidget {
   final ValueChanged<int> onOpenPage;
   final ValueChanged<int> onPageActions;
 
+  /// Fills the space it is given, as the picture pane of a split detail, instead of
+  /// taking the art's height.
+  final bool expand;
+
   const PixivDetailViewer({
     super.key,
     required this.illust,
@@ -24,40 +32,66 @@ class PixivDetailViewer extends StatelessWidget {
     required this.onPageChanged,
     required this.onOpenPage,
     required this.onPageActions,
+    this.expand = false,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final pages = illust.viewerUrls;
-    final cacheWidth = (size.width * MediaQuery.devicePixelRatioOf(context)).ceil();
-    return SizedBox(
-      height: pixivDetailViewerHeight(
-        screenWidth: size.width,
-        screenHeight: size.height,
-        width: illust.width,
-        height: illust.height,
-      ),
-      child: PageView.builder(
-        controller: controller,
-        itemCount: pages.length,
-        onPageChanged: (index) {
-          onPageChanged(index);
-          _prefetch(context, pages, index + 1);
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final width = constraints.maxWidth.isFinite ? constraints.maxWidth : MediaQuery.sizeOf(context).width;
+      final prefs = pixivPrefsOf(context);
+      final quality = pixivQuality(prefs, PixivQualitySlot.detail);
+      final pages = [for (var i = 0; i < illust.viewerUrls.length; i++) pixivPageUrl(illust, i, quality)];
+      final poster = pixivTileUrl(illust, pixivQuality(prefs, PixivQualitySlot.feed));
+      final cacheWidth = (width * MediaQuery.devicePixelRatioOf(context)).ceil();
+      final pager = NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          pixivPageEdge(notification)?.dispatch(context);
+          return false;
         },
-        itemBuilder: (context, index) => _page(pages, index, cacheWidth),
-      ),
-    );
-  }
+        child: PageView.builder(
+          // Keeps the page when a rotation moves the viewer between the split and stacked layouts.
+          key: PageStorageKey('pixiv-detail-pages-${illust.id}'),
+          controller: controller,
+          itemCount: pages.length,
+          onPageChanged: (index) {
+            onPageChanged(index);
+            _prefetch(context, pages, index + 1);
+          },
+          itemBuilder: (context, index) => _page(pages, index, cacheWidth, poster),
+        ),
+      );
+      if (expand) return pager;
+      return SizedBox(height: _height(context, width), child: pager);
+    },
+  );
 
-  Widget _page(List<String> pages, int index, int cacheWidth) {
+  double _height(BuildContext context, double width) => pixivDetailViewerHeight(
+    screenWidth: width,
+    screenHeight: MediaQuery.sizeOf(context).height,
+    width: illust.width,
+    height: illust.height,
+  );
+
+  Widget _page(List<String> pages, int index, int cacheWidth, String poster) {
     final image = Stack(
       fit: StackFit.expand,
       alignment: Alignment.center,
       children: [
         // Instant paint from the grid thumb already on disk.
-        if (index == 0) PixivNetworkImage(url: illust.thumbnailUrl, fit: BoxFit.contain, cacheWidth: cacheWidth),
-        PixivNetworkImage(url: pages[index], fit: BoxFit.contain, cacheWidth: cacheWidth),
+        if (index == 0 && poster != pages[index])
+          PixivNetworkImage(
+            url: poster,
+            fit: BoxFit.contain,
+            cacheWidth: cacheWidth,
+            loadStateChanged: _quietUnlessLoaded,
+          ),
+        PixivNetworkImage(
+          url: pages[index],
+          fit: BoxFit.contain,
+          cacheWidth: cacheWidth,
+          loadStateChanged: (state) => pixivRetryLoadState(state, fill: false),
+        ),
       ],
     );
     final ugoira = index == 0 && illust.isUgoira;
@@ -74,10 +108,14 @@ class PixivDetailViewer extends StatelessWidget {
 
   void _prefetch(BuildContext context, List<String> pages, int index) {
     if (index < 0 || index >= pages.length || !context.mounted) return;
-    final provider = ExtendedNetworkImageProvider(pages[index], headers: pixivImageHeaders, cache: true);
-    precacheImage(provider, context, onError: (_, _) {});
+    precacheImage(pixivImageProvider(context, pages[index]), context, onError: (_, _) {});
   }
 }
+
+/// The poster under a page only shows once it has something to show; the page above it
+/// carries the spinner and the retry.
+Widget? _quietUnlessLoaded(ExtendedImageState state) =>
+    state.extendedImageLoadState == LoadState.completed ? null : const SizedBox.shrink();
 
 /// Page counter that opens every page, beside a quiet way into the reader.
 class PixivDetailPageBar extends StatelessWidget {
