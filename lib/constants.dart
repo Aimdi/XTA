@@ -412,6 +412,9 @@ const optionPluginPixivFolderPerArtist = 'plugin.pixiv.folder_per_artist';
 const optionPluginPixivFolderR18 = 'plugin.pixiv.folder_r18';
 const optionPluginPixivDownloadIndex = 'plugin.pixiv.download_index';
 
+/// The ranking boards pinned as chips, a JSON list of Pixiv mode names.
+const optionPluginPixivRankingModes = 'plugin.pixiv.ranking_modes';
+
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
 const optionPluginBooruShowTab = 'plugin.booru.show_tab';

@@ -2355,6 +2355,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Скопировано",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Скопировать ID работы",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Копировать сведения",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Копировать ссылку",
@@ -2489,6 +2491,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Публичные",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Все подписки",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Приватные подписки",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Публичные подписки",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} подписка} few{{shown} подписки} many{{shown} подписок} other{{shown} подписки}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2532,6 +2540,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID работы {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID работы скопирован",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Сервер изображений",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Адрес сервера",
@@ -2556,6 +2574,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Управление аккаунтом на pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Пока нет рекомендованной манги — потяните, чтобы обновить",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "О приложении",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Аккаунт",
@@ -2657,6 +2677,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Статьи Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Пока нет статей Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Работы в статье",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Самые популярные",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2739,12 +2765,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Дневной",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "ИИ",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Женский",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Мужской",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Манга",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 дневной",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 ИИ",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Изменить",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Закреплённые рейтинги показываются вкладками. Рейтинги R-18 доступны, пока включено «Показывать работы R-18».",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Вкладки рейтинга",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Сейчас в рейтинге ничего нет",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Месячный",
@@ -2757,6 +2795,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Оригинал",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 недельный",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G недельный",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Читать горизонтально",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Читать вертикально",
@@ -2765,12 +2807,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Рекомендуемые авторы",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Пока нет рекомендуемых авторов",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh-токен",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Длинный токен из OAuth-входа в Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Похожие работы",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} пкс",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Показать",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Сохранить снова",
@@ -2807,6 +2862,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Название/описание",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Показать все",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Снять все",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "Выбрать страницы",
@@ -2816,6 +2873,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Серия",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "В этой серии нет доступных вам работ",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Серия: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Следующая в серии",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "№ {order} из {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Предыдущая в серии",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Начата {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2871,6 +2963,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Иллюстрации",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Манга",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Ещё",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Рейтинг",
@@ -2879,6 +2973,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Пользователи",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Список отслеживания",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Проверить соединение",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Вход выполнен как {name}",
@@ -2942,6 +3038,26 @@
   },
   "plugin_pixiv_viewing_section": "Просмотр",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Войдите, чтобы открыть эту работу",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Популярное на Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Добавить в список отслеживания",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Здесь появятся серии манги, добавленные в список отслеживания",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Убрать из списка отслеживания",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Обновлено {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Открыть последнюю",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} работа} few{{shown} работы} many{{shown} работ} other{{shown} работы}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

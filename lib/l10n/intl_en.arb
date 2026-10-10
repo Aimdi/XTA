@@ -2484,6 +2484,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Copied",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Copy artwork ID",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Copy info",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Copy link",
@@ -2643,6 +2645,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Public",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "All followed creators",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Privately followed creators",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Publicly followed creators",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} following} other{{shown} following}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2686,6 +2694,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "Artwork ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Artwork ID copied",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Image server",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Server address",
@@ -2710,6 +2728,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Manage account on pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "No recommended manga right now — pull to refresh",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "About",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Account",
@@ -2826,6 +2846,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivision articles",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "No Pixivision articles right now",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Featured works",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Most popular",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2908,12 +2934,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Daily",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Female",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Male",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 daily",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Edit",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Pinned rankings show as tabs. R-18 rankings are offered while Show R-18 works is on.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Ranking tabs",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "No ranking works right now",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Monthly",
@@ -2926,6 +2964,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Original",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 weekly",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G weekly",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Read horizontally",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Read vertically",
@@ -2934,12 +2976,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Suggested creators",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "No suggested creators right now",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh token",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Long token from a Pixiv OAuth login",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Related works",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Reveal",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Save again",
@@ -2978,6 +3033,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Title/caption",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "See all",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "None",
   "@plugin_pixiv_select_none": {
     "description": "Toggle in the page overview that unticks every page (shown when all are ticked)"
@@ -2991,6 +3048,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Series",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "No works in this series you can see",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Series: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Next in series",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "#{order} of {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Previous in series",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Started {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -3046,6 +3138,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Illusts",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "More",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Ranking",
@@ -3054,6 +3148,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Users",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Watchlist",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Test connection",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Signed in as {name}",
@@ -3117,6 +3213,26 @@
   },
   "plugin_pixiv_viewing_section": "Viewing",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Sign in to open this work",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Popular on Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Add to watchlist",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Manga series you add to your watchlist show up here",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Remove from watchlist",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Updated {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "View latest",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} work} other{{shown} works}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

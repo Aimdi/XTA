@@ -12,6 +12,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
+import 'package:xta/plugins/pixiv/pixivision_list_screen.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
@@ -53,6 +54,13 @@ Future<void> _manageOnPixiv(BuildContext context) => openUri(context, 'https://w
 
 final pixivMoreEntries = <PixivMoreEntry>[
   PixivMoreEntry(id: 'history', icon: Icons.history, label: (l10n) => l10n.plugin_pixiv_history, open: _openHistory),
+  PixivMoreEntry(
+    id: 'pixivision',
+    icon: Icons.article_outlined,
+    label: (l10n) => l10n.plugin_pixiv_pixivision_articles,
+    open: openPixivisionList,
+    needsAccount: true,
+  ),
   PixivMoreEntry(
     id: 'downloads',
     icon: Icons.download_outlined,

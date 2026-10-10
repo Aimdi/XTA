@@ -70,6 +70,7 @@ import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
@@ -617,6 +618,7 @@ Future<void> main() async {
       optionPluginPixivMutedComments: '[]',
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginPixivRankingModes: jsonEncode(pixivDefaultRankingPins),
       optionPluginPixivGroupSubscriptions: '[]',
       optionPluginPixivAccounts: '[]',
       optionPluginPixivStartSection: 'home',

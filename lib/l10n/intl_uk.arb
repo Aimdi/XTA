@@ -2355,6 +2355,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Скопійовано",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Скопіювати ID роботи",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Копіювати відомості",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Копіювати посилання",
@@ -2489,6 +2491,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Публічні",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Усі підписки",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Приватні підписки",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Публічні підписки",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} підписка} few{{shown} підписки} many{{shown} підписок} other{{shown} підписки}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2532,6 +2540,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID роботи {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID роботи скопійовано",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Сервер зображень",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Адреса сервера",
@@ -2556,6 +2574,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Керувати обліковим записом на pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Поки немає рекомендованої манґи — потягніть, щоб оновити",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Про програму",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Обліковий запис",
@@ -2657,6 +2677,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Статті Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Поки немає статей Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Роботи в статті",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Найпопулярніші",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2739,12 +2765,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Денний",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "ШІ",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Жіночий",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Чоловічий",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Манґа",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 денний",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 ШІ",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Змінити",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Закріплені рейтинги показуються вкладками. Рейтинги R-18 доступні, поки ввімкнено «Показувати роботи R-18».",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Вкладки рейтингу",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Зараз у рейтингу нічого немає",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Місячний",
@@ -2757,6 +2795,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Оригінал",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 тижневий",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G тижневий",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Читати горизонтально",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Читати вертикально",
@@ -2765,12 +2807,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Рекомендовані автори",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Поки немає рекомендованих авторів",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh-токен",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Довгий токен з OAuth-входу в Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Схожі роботи",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} пкс",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Показати",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Зберегти знову",
@@ -2807,6 +2862,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Назва/опис",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Показати всі",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Зняти всі",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "Вибрати сторінки",
@@ -2816,6 +2873,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Серія",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "У цій серії немає доступних вам робіт",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Серія: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Наступна в серії",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "№ {order} з {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Попередня в серії",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Розпочато {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2871,6 +2963,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Ілюстрації",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Манґа",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Ще",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Рейтинг",
@@ -2879,6 +2973,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Користувачі",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Список відстеження",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Перевірити з’єднання",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Увійшли як {name}",
@@ -2942,6 +3038,26 @@
   },
   "plugin_pixiv_viewing_section": "Перегляд",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Увійдіть, щоб відкрити цю роботу",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Популярне на Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Додати до списку відстеження",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Тут з’являться серії манґи, додані до списку відстеження",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Прибрати зі списку відстеження",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Оновлено {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Відкрити останню",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} робота} few{{shown} роботи} many{{shown} робіт} other{{shown} роботи}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

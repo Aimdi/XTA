@@ -1,5 +1,5 @@
 /// Which list Home shows under its source chips.
-enum PixivHomeSource { following, recommended }
+enum PixivHomeSource { following, recommended, manga, watchlist }
 
 /// The sections the Pixiv screen can open on, as the start-section setting
 /// stores them, in tab order.

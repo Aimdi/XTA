@@ -73,7 +73,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Feature | Detail |
 |---|---|
 | Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), viewing (image server, image sizes, columns, work layout, swipe between works, AI badge — `pixiv-viewing.md`), bookmarking (default visibility, auto-tag, follow / save after bookmarking, bookmark after saving, haptics), downloads (file-name template, folders, saved pages — `pixiv-downloads.md`), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` and `pixiv-bookmarks.md` |
-| Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks, all or one bookmark tag), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top |
+| Home | Shell (`pixiv_screen.dart`) over Home (Following with all / public / private, Recommended with Pixivision and suggested creators, Manga, Watchlist), Rankings (pinned board chips and archive date), Favorites (public / private bookmarks, all or one bookmark tag), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top; see `pixiv-discovery.md` |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
@@ -140,8 +140,11 @@ its illust case.
 | AI display setting (read only) | `GET /v1/user/ai-show-settings` |
 | Short link | `GET https://pixiv.me/<name>` (redirect read, not followed) |
 
+Rankings, recommended manga and creators, Pixivision, series, the manga
+watchlist and the walkthrough are listed in `pixiv-discovery.md`.
+
 ## Not yet
 
-What remains against PixEz — novels, comments, Pixivision, series and
-watchlists, richer search and bookmarks and more — is planned batch by batch
-in `pixiv-pixez-gaps.md`.
+What remains against PixEz — novels and the novel watchlist, comments, richer
+search and bookmarks and more — is planned batch by batch in
+`pixiv-pixez-gaps.md`.

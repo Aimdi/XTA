@@ -2355,6 +2355,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Copiato",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Copia l’ID dell’opera",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Copia informazioni",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Copia link",
@@ -2489,6 +2491,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Pubblici",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Tutti i creatori seguiti",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Creatori seguiti in privato",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Creatori seguiti pubblicamente",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} seguito} other{{shown} seguiti}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2532,6 +2540,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID dell’opera {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID dell’opera copiato",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Server delle immagini",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Indirizzo del server",
@@ -2556,6 +2574,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Gestisci l’account su pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Nessun manga consigliato al momento — scorri per aggiornare",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Informazioni",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Account",
@@ -2657,6 +2677,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Articoli di Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Nessun articolo di Pixivision al momento",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Opere in evidenza",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "I più popolari",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2739,12 +2765,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Giornaliera",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "IA",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Femminile",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Maschile",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 giornaliera",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 IA",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Modifica",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Le classifiche fissate appaiono come schede. Le classifiche R-18 sono disponibili finché «Mostra opere R-18» è attivo.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Schede delle classifiche",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Nessuna opera in classifica al momento",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Mensile",
@@ -2757,6 +2795,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Originale",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 settimanale",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G settimanale",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Leggi in orizzontale",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Leggi in verticale",
@@ -2765,12 +2807,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Creatori consigliati",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Nessun creatore consigliato al momento",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh token",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Token lungo da un accesso OAuth a Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Opere correlate",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Mostra",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Salva di nuovo",
@@ -2807,6 +2862,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titolo/didascalia",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Mostra tutto",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Nessuna",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "Seleziona pagine",
@@ -2816,6 +2873,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Serie",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Nessuna opera visibile in questa serie",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Serie: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Successiva della serie",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "N. {order} di {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Precedente della serie",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Iniziata il {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2871,6 +2963,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Illustrazioni",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Altro",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Classifica",
@@ -2879,6 +2973,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Utenti",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Serie seguite",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Prova connessione",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Accesso effettuato come {name}",
@@ -2942,6 +3038,26 @@
   },
   "plugin_pixiv_viewing_section": "Visualizzazione",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Accedi per aprire questa opera",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Popolari su Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Aggiungi alle serie seguite",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Qui compaiono le serie manga che aggiungi alle serie seguite",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Rimuovi dalle serie seguite",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Aggiornata {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Mostra il più recente",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} opera} other{{shown} opere}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

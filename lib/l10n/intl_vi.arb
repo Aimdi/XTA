@@ -2352,6 +2352,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Đã sao chép",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Sao chép ID tác phẩm",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Sao chép thông tin",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Sao chép liên kết",
@@ -2486,6 +2488,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Công khai",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Mọi người sáng tạo đang theo dõi",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Người sáng tạo theo dõi riêng tư",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Người sáng tạo theo dõi công khai",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, other{{shown} đang theo dõi}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2529,6 +2537,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID tác phẩm {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Đã sao chép ID tác phẩm",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Máy chủ ảnh",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Địa chỉ máy chủ",
@@ -2553,6 +2571,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Quản lý tài khoản trên pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Hiện không có manga gợi ý — kéo để làm mới",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Giới thiệu",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Tài khoản",
@@ -2654,6 +2674,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Bài viết Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Hiện chưa có bài viết Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Tác phẩm được giới thiệu",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Phổ biến nhất",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2736,12 +2762,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Hàng ngày",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Nữ",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Nam",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 hàng ngày",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Chỉnh sửa",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Bảng xếp hạng đã ghim hiện thành thẻ. Bảng xếp hạng R-18 chỉ có khi bật “Hiện tác phẩm R-18”.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Thẻ bảng xếp hạng",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Hiện không có tác phẩm xếp hạng",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Hàng tháng",
@@ -2754,6 +2792,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Gốc",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 hàng tuần",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G hàng tuần",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Đọc ngang",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Đọc dọc",
@@ -2762,12 +2804,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Người sáng tạo gợi ý",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Hiện không có người sáng tạo gợi ý",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh token",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Token dài từ đăng nhập OAuth Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Tác phẩm liên quan",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Hiện",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Lưu lại",
@@ -2804,6 +2859,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tiêu đề/chú thích",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Xem tất cả",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Bỏ chọn",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "Chọn trang",
@@ -2813,6 +2870,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Loạt tác phẩm",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Loạt này không có tác phẩm nào bạn xem được",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Loạt: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Tác phẩm tiếp theo trong loạt",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Phần {order}/{total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Tác phẩm trước trong loạt",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Bắt đầu {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2868,6 +2960,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Minh họa",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Thêm",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Xếp hạng",
@@ -2876,6 +2970,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Người dùng",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Truyện theo dõi",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Kiểm tra kết nối",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Đã đăng nhập với tư cách {name}",
@@ -2939,6 +3035,26 @@
   },
   "plugin_pixiv_viewing_section": "Hiển thị",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Đăng nhập để mở tác phẩm này",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Phổ biến trên Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Thêm vào truyện theo dõi",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Các bộ manga bạn thêm vào truyện theo dõi sẽ hiện ở đây",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Bỏ khỏi truyện theo dõi",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Cập nhật {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Xem phần mới nhất",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, other{{shown} tác phẩm}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

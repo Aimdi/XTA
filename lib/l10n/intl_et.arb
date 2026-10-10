@@ -2355,6 +2355,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Kopeeritud",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Kopeeri teose ID",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Kopeeri info",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Kopeeri link",
@@ -2489,6 +2491,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Avalikud",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Kõik jälgitavad loojad",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Privaatselt jälgitavad loojad",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Avalikult jälgitavad loojad",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} jälgitav} other{{shown} jälgitavat}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2532,6 +2540,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "Teose ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Teose ID kopeeritud",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Piltide server",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Serveri aadress",
@@ -2556,6 +2574,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Halda kontot saidil pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Praegu soovitatud mangat pole — tõmba värskendamiseks",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Teave",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2657,6 +2677,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivisioni artiklid",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Praegu Pixivisioni artikleid pole",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Esiletõstetud teosed",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Kõige populaarsemad",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2739,12 +2765,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Päevane",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "TI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Naised",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Mehed",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 päevane",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 TI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Muuda",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Kinnitatud edetabelid on vahekaartidena. R-18 edetabelid on valikus, kui „Näita R-18 teoseid“ on sees.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Edetabelite vahekaardid",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Edetabelis pole praegu töid",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Kuine",
@@ -2757,6 +2795,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Originaal",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 nädalane",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G nädalane",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Loe horisontaalselt",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Loe vertikaalselt",
@@ -2765,12 +2807,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Soovitatud loojad",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Praegu soovitatud loojaid pole",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Värskendustoken",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Pikk token Pixivi OAuth sisselogimisest",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Seotud tööd",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Näita",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Salvesta uuesti",
@@ -2807,6 +2862,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Pealkiri/kirjeldus",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Näita kõiki",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Mitte ühtegi",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "Vali lehed",
@@ -2816,6 +2873,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Sari",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Selles sarjas pole teile nähtavaid teoseid",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Sari: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Järgmine sarjas",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr {order} / {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Eelmine sarjas",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Alustatud {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2871,6 +2963,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Illustratsioonid",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Veel",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Edetabel",
@@ -2879,6 +2973,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Kasutajad",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Jälgimisnimekiri",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Testi ühendust",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Sisse logitud kui {name}",
@@ -2942,6 +3038,26 @@
   },
   "plugin_pixiv_viewing_section": "Vaatamine",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Selle teose avamiseks logi sisse",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populaarne Pixivis",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Lisa jälgimisnimekirja",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Siin on mangasarjad, mille lisad jälgimisnimekirja",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Eemalda jälgimisnimekirjast",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Uuendatud {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Vaata uusimat",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} teos} other{{shown} teost}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

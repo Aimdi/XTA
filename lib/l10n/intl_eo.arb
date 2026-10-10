@@ -2355,6 +2355,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "Kopiite",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Kopii verkan ID",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "Kopii informojn",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "Kopii ligilon",
@@ -2489,6 +2491,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "Publikaj",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Ĉiuj sekvataj kreintoj",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Private sekvataj kreintoj",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Publike sekvataj kreintoj",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} abono} other{{shown} abonoj}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2532,6 +2540,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "Verka ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Verka ID kopiita",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "Bildservilo",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "Adreso de servilo",
@@ -2556,6 +2574,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "Administri konton ĉe pixiv.net",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Neniu rekomendita mangao nun — tiri por aktualigi",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Pri",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2657,6 +2677,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Artikoloj de Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Neniuj artikoloj de Pixivision nun",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Prezentitaj verkoj",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Plej popularaj",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "Premium",
@@ -2739,12 +2765,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Ĉiutaga",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Ina",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Vira",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Mangao",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 ĉiutaga",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Redakti",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Fiksitaj rangolistoj aperas kiel langetoj. R-18-rangolistoj estas proponataj dum „Montri R-18 verkojn“ estas ŝaltita.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Langetoj de rangolistoj",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Neniuj rangigaj verkoj nun",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Monata",
@@ -2757,6 +2795,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Originalo",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 ĉiusemajna",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G ĉiusemajna",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Legi horizontale",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Legi vertikale",
@@ -2765,12 +2807,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Proponitaj kreintoj",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Neniuj proponitaj kreintoj nun",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresha ĵetono",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Longa ĵetono el Pixiv-OAuth-ensaluto",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Rilataj verkoj",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Montri",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "Konservi denove",
@@ -2807,6 +2862,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titolo/priskribo",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Vidi ĉion",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Neniun",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "Elekti paĝojn",
@@ -2816,6 +2873,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Serio",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Neniuj videblaj verkoj en ĉi tiu serio",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Serio: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Sekva en la serio",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "N-ro {order} el {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Antaŭa en la serio",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Komencita je {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2871,6 +2963,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Ilustraĵoj",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Mangao",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Pli",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Rangigo",
@@ -2879,6 +2973,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Uzantoj",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Atentolisto",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Testi konekton",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Ensalutinta kiel {name}",
@@ -2942,6 +3038,26 @@
   },
   "plugin_pixiv_viewing_section": "Rigardado",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Ensalutu por malfermi ĉi tiun verkon",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Popularaj ĉe Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Aldoni al atentolisto",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Ĉi tie aperas la mangaaj serioj, kiujn vi aldonas al via atentolisto",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Forigi el atentolisto",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Ĝisdatigita {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Vidi la plej novan",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} verko} other{{shown} verkoj}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

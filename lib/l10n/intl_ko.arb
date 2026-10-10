@@ -2355,6 +2355,8 @@
   "@plugin_pixiv_columns_portrait": {},
   "plugin_pixiv_copied": "복사했습니다",
   "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "작품 ID 복사",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_copy_info": "정보 복사",
   "@plugin_pixiv_copy_info": {},
   "plugin_pixiv_copy_link": "링크 복사",
@@ -2489,6 +2491,12 @@
   "@plugin_pixiv_follow_privately_hint": {},
   "plugin_pixiv_follow_public": "공개",
   "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "팔로우한 모든 크리에이터",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "비공개 팔로우한 크리에이터",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "공개 팔로우한 크리에이터",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, other{팔로잉 {shown}}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2532,6 +2540,16 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "작품 ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "작품 ID를 복사했습니다",
+  "@plugin_pixiv_illust_id_copied": {},
   "plugin_pixiv_image_host": "이미지 서버",
   "@plugin_pixiv_image_host": {},
   "plugin_pixiv_image_host_address": "서버 주소",
@@ -2556,6 +2574,8 @@
   "@plugin_pixiv_link_copied": {},
   "plugin_pixiv_manage_account": "pixiv.net에서 계정 관리",
   "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "지금은 추천 만화가 없습니다 — 당겨서 새로고침",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "정보",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "계정",
@@ -2657,6 +2677,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivision 기사",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "지금은 Pixivision 기사가 없습니다",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "소개된 작품",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "인기순",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_premium": "프리미엄",
@@ -2739,12 +2765,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "일간",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI 생성",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "여성",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "남성",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "만화",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 일간",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI 생성",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "편집",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "고정한 랭킹이 탭으로 표시됩니다. R-18 랭킹은 ‘R-18 작품 표시’가 켜져 있을 때 선택할 수 있습니다.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "랭킹 탭",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "지금 랭킹 작품이 없습니다",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "월간",
@@ -2757,6 +2795,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "오리지널",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 주간",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G 주간",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "가로로 읽기",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "세로로 읽기",
@@ -2765,12 +2807,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "추천 크리에이터",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "지금은 추천 크리에이터가 없습니다",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "리프레시 토큰",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Pixiv OAuth 로그인에서 받은 긴 토큰",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "관련 작품",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height}픽셀",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "표시",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_save_again": "다시 저장",
@@ -2807,6 +2862,8 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "제목/캡션",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "모두 보기",
+  "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "선택 해제",
   "@plugin_pixiv_select_none": {},
   "plugin_pixiv_select_pages": "페이지 선택",
@@ -2816,6 +2873,41 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "시리즈",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "이 시리즈에 볼 수 있는 작품이 없습니다",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "시리즈: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "시리즈의 다음 작품",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "{total}개 중 {order}번째",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "시리즈의 이전 작품",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "{date} 시작",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -2871,6 +2963,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "일러스트",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "만화",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "더보기",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "랭킹",
@@ -2879,6 +2973,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "사용자",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "관심 목록",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "연결 테스트",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "{name}(으)로 로그인됨",
@@ -2942,6 +3038,26 @@
   },
   "plugin_pixiv_viewing_section": "보기",
   "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "이 작품을 열려면 로그인하세요",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Pixiv 인기 작품",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "관심 목록에 추가",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "관심 목록에 추가한 만화 시리즈가 여기에 표시됩니다",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "관심 목록에서 삭제",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "{when} 업데이트",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "최신화 보기",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, other{작품 {shown}}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
