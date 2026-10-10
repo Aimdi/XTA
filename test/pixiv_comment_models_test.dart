@@ -141,6 +141,9 @@ void main() {
         'Mirror https://i.pximg.net/img-original/1.png. Thanks',
         'Article: https://www.pixivision.net/en/a/1',
         'pixiv.netで見ました',
+        'すごいwwww.最高',
+        '草www.かわいい',
+        'awww. so cute',
       ]) {
         expect(pixivTextLinksOutside(text), isFalse, reason: text);
       }
@@ -150,6 +153,7 @@ void main() {
       for (final text in [
         'Free coins https://bit.ly/abc',
         'visit www.example.com now',
+        '見てwww.example.jp',
         'HTTP://EVIL.example/x',
         'https://pixiv.net.example.com/fake',
         'https://notpixiv.net/a',

@@ -161,6 +161,7 @@ class PixivCommentTile extends StatelessWidget {
   /// moves under the note instead of squeezing it into a column of word scraps.
   Widget _hiddenLink(BuildContext context, CommentBubbleColors colors) {
     final l10n = L10n.of(context);
+    final noteStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: colors.muted, fontStyle: FontStyle.italic);
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
@@ -170,14 +171,7 @@ class PixivCommentTile extends StatelessWidget {
           children: [
             Icon(Icons.link_off, size: 16, color: colors.muted),
             const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                l10n.plugin_pixiv_comment_hidden_link,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall!.copyWith(color: colors.muted, fontStyle: FontStyle.italic),
-              ),
-            ),
+            Flexible(child: Text(l10n.plugin_pixiv_comment_hidden_link, style: noteStyle)),
           ],
         ),
         TextButton(
