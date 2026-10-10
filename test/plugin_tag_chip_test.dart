@@ -50,4 +50,24 @@ void main() {
     await tester.longPress(find.byType(PluginTagChip));
     expect((taps, holds), (1, 1));
   });
+
+  testWidgets('a weak tag is dashed and unfilled, at full colour and touch target', (tester) async {
+    await _pump(tester, PluginTagChip(label: 'twin tails', kind: PluginTagKind.general, weak: true, onPressed: () {}));
+    final chip = tester.widget<ActionChip>(find.byType(ActionChip));
+    final scheme = Theme.of(tester.element(find.byType(ActionChip))).colorScheme;
+    final colour = pluginTagKindColor(PluginTagKind.general, scheme);
+
+    expect(chip.backgroundColor, Colors.transparent);
+    expect(chip.side?.color, colour);
+    expect(chip.shape.runtimeType, isNot(RoundedRectangleBorder));
+    // The chip re-applies its side through copyWith; the dashes must survive it.
+    expect(chip.shape!.copyWith(side: const BorderSide()).runtimeType, chip.shape.runtimeType);
+    Color? labelColour;
+    _paragraph(tester).text.visitChildren((span) {
+      if (span is TextSpan && span.text == 'twin tails') labelColour = span.style?.color;
+      return true;
+    });
+    expect(labelColour, colour);
+    expect(tester.getSize(find.byType(ActionChip)).height, greaterThanOrEqualTo(48));
+  });
 }

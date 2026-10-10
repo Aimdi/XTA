@@ -1916,6 +1916,137 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Show {count} comment} other{Show all {count} comments}}",
+  "@plugin_eh_gallery_all_comments": {
+    "description": "Button under the first few comments of an EH gallery; opens every comment in a sheet.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Score {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "description": "Read aloud for a gallery comment's vote score, e.g. \"Score +30\".",
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Continue from page {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "description": "Button that reopens an EH gallery at the page the reader last reached.",
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Copy tag",
+  "@plugin_eh_gallery_copy_tag": {
+    "description": "Screen reader hint for long-pressing a gallery tag, which copies it."
+  },
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Never favorited} one{Favorited once} other{Favorited {count} times}}",
+  "@plugin_eh_gallery_favorited": {
+    "description": "Read aloud for how many people on the site favorited the gallery.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "File size {size}",
+  "@plugin_eh_gallery_file_size": {
+    "description": "Read aloud for the gallery's total file size, e.g. \"File size 96.6 MB\".",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Language: {language}",
+  "@plugin_eh_gallery_language": {
+    "description": "Read aloud for the gallery's language as the site names it, e.g. \"Language: English\".",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Language: {language}, translated",
+  "@plugin_eh_gallery_language_translated": {
+    "description": "Read aloud for the gallery's language when the gallery is a translation into it.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} page} other{{count} pages}}",
+  "@plugin_eh_gallery_pages": {
+    "description": "How many pages an EH gallery has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Posted {date}",
+  "@plugin_eh_gallery_posted": {
+    "description": "Read aloud for the date the gallery was posted.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Rated {rating} out of 5 from {count} rating} other{Rated {rating} out of 5 from {count} ratings}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "description": "Read aloud for the gallery's average star rating and how many people rated it.",
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "description": "Shown beside the rating stars: the average, then how many ratings, e.g. \"4.62 (321)\".",
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "Copied {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "description": "Snackbar after long-pressing a gallery tag copied it, e.g. \"Copied female:big breasts\".",
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Uploader",
+  "@plugin_eh_gallery_uploader_comment": {
+    "description": "Badge on a gallery comment written by the gallery's uploader."
+  },
+  "plugin_eh_gallery_weak_tag": "{tag}, not yet confirmed",
+  "@plugin_eh_gallery_weak_tag": {
+    "description": "Read aloud for a gallery tag that has too few votes to be settled; the site shows it dashed.",
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Go",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",

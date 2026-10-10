@@ -33,7 +33,9 @@ final _previewAnchor = RegExp(
   r'(.*?)</a>',
   dotAll: true,
 );
-final _previewThumb = RegExp(r'url\(([^)]+)\)\s*(-?\d+)px');
+final _previewThumb = RegExp(r'url\(([^)]+)\)(?:\s*(-?\d+)(?:px)?)?');
+final _previewImg = RegExp(r'<img[^>]+src="([^"]+)"');
+final _previewSize = RegExp(r'(?:^|[\s;"])(width|height):\s*(\d+)px');
 final _previewSheetLink = RegExp(r'[?&]p=(\d+)');
 final _imgSrcAfterId = RegExp(r'<img[^>]+id="img"[^>]+src="([^"]+)"');
 final _imgSrcBeforeId = RegExp(r'<img[^>]+src="([^"]+)"[^>]+id="img"');
@@ -279,13 +281,22 @@ List<EhPreview> parseEhPreviewSheet(String html) {
   for (final m in _previewAnchor.allMatches(html)) {
     final page = int.tryParse(m.group(3) ?? '');
     if (page == null || !seenPages.add(page)) continue;
-    final thumb = _previewThumb.firstMatch(m.group(4) ?? '');
+    final tile = m.group(4) ?? '';
+    final thumb = _previewThumb.firstMatch(tile);
+    final size = {
+      for (final s in _previewSize.allMatches(tile))
+        s.group(1)!: double.parse(s.group(2)!),
+    };
     previews.add(
       EhPreview(
         pageToken: m.group(1)!,
         page: page,
-        thumbUrl: _decodeAttr(thumb?.group(1)),
+        thumbUrl: _decodeAttr(
+          thumb?.group(1) ?? _previewImg.firstMatch(tile)?.group(1),
+        ),
         thumbOffsetX: double.tryParse(thumb?.group(2) ?? ''),
+        thumbWidth: size['width'],
+        thumbHeight: size['height'],
       ),
     );
   }

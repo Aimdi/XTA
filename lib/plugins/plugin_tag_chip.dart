@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show NumberFormat;
 
 /// The kinds of tag image boards colour apart. A source without kinds leaves
 /// its tags unkinded (null), which reads neutral.
@@ -50,6 +50,10 @@ class PluginTagChip extends StatelessWidget {
   /// A small icon before the name, e.g. followed or hidden.
   final IconData? marker;
 
+  /// A tentative tag, e.g. one with too few votes: drawn with a dashed outline
+  /// and no fill, at full text contrast.
+  final bool weak;
+
   /// Read aloud instead of [label] and [detail], e.g. with the full count.
   final String? semanticsLabel;
   final String? longPressHint;
@@ -63,6 +67,7 @@ class PluginTagChip extends StatelessWidget {
     this.detail,
     this.kind,
     this.marker,
+    this.weak = false,
     this.semanticsLabel,
     this.longPressHint,
     this.onLongPress,
@@ -72,6 +77,7 @@ class PluginTagChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final palette = pluginTagPalette(kind, theme.colorScheme);
+    final radius = BorderRadius.circular(10);
     final chip = ActionChip(
       avatar: marker == null ? null : Icon(marker, size: 16, color: palette.text),
       label: Text.rich(
@@ -79,7 +85,7 @@ class PluginTagChip extends StatelessWidget {
           children: [
             TextSpan(
               text: label,
-              style: TextStyle(color: palette.text, fontWeight: FontWeight.w600),
+              style: TextStyle(color: palette.text, fontWeight: weak ? FontWeight.w400 : FontWeight.w600),
             ),
             if (detail != null)
               TextSpan(
@@ -98,9 +104,9 @@ class PluginTagChip extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      backgroundColor: palette.fill,
-      side: BorderSide(color: palette.border),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      backgroundColor: weak ? Colors.transparent : palette.fill,
+      side: BorderSide(color: weak ? palette.text : palette.border),
+      shape: weak ? _DashedChipBorder(borderRadius: radius) : RoundedRectangleBorder(borderRadius: radius),
       // Compact by padding, not density: a denser chip shrinks its tap target too.
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       visualDensity: VisualDensity.standard,
@@ -113,5 +119,35 @@ class PluginTagChip extends StatelessWidget {
       onLongPressHint: longPressHint,
       child: GestureDetector(onLongPress: longPress, child: chip),
     );
+  }
+}
+
+/// A rounded outline drawn in dashes, the way sites mark a tag as unsettled.
+class _DashedChipBorder extends RoundedRectangleBorder {
+  static const _dash = 4.0;
+  static const _gap = 3.0;
+
+  const _DashedChipBorder({super.side, super.borderRadius});
+
+  @override
+  _DashedChipBorder copyWith({BorderSide? side, BorderRadiusGeometry? borderRadius}) =>
+      _DashedChipBorder(side: side ?? this.side, borderRadius: borderRadius ?? this.borderRadius);
+
+  @override
+  _DashedChipBorder scale(double t) => _DashedChipBorder(side: side.scale(t), borderRadius: borderRadius * t);
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    if (side.style == BorderStyle.none || side.width <= 0) return;
+    final outline = borderRadius.resolve(textDirection).toRRect(rect).deflate(side.width / 2);
+    final paint = Paint()
+      ..color = side.color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = side.width;
+    for (final metric in (Path()..addRRect(outline)).computeMetrics()) {
+      for (var start = 0.0; start < metric.length; start += _dash + _gap) {
+        canvas.drawPath(metric.extractPath(start, start + _dash), paint);
+      }
+    }
   }
 }

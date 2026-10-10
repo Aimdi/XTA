@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+import 'dart:ui' as ui;
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -192,25 +195,7 @@ class EhGalleryTile extends StatelessWidget {
                       if (gallery.tagLanguage case final language?)
                         PositionedDirectional(start: 6, bottom: 6, child: _LanguageBadge(language: language)),
                       if (gallery.category != null)
-                        Positioned(
-                          left: 6,
-                          top: 6,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: ehCategoryColor(gallery.category!),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              child: Text(
-                                gallery.category!.label,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: ensureContrast(Colors.white, ehCategoryColor(gallery.category!)),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        Positioned(left: 6, top: 6, child: EhCategoryBadge(category: gallery.category!)),
                     ],
                   );
                 },
@@ -274,6 +259,28 @@ class _LanguageBadge extends StatelessWidget {
   }
 }
 
+/// The site's category label on its category colour.
+class EhCategoryBadge extends StatelessWidget {
+  final EhCategory category;
+
+  const EhCategoryBadge({super.key, required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = ehCategoryColor(category);
+    return DecoratedBox(
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: Text(
+          category.label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: ensureContrast(Colors.white, color)),
+        ),
+      ),
+    );
+  }
+}
+
 /// `★ 4.5 · 24 pages` on one line, so tiles keep their height.
 class _RatingAndPages extends StatelessWidget {
   final EhGallery gallery;
@@ -306,49 +313,77 @@ class _RatingAndPages extends StatelessWidget {
   }
 }
 
-/// Crops one tile out of EH's horizontal preview sprite sheet.
+/// EH preview tiles are this wide on their sprite sheet unless the site says otherwise.
+const ehPreviewTileWidth = 200.0;
+
+/// Where a page's tile sits on a preview sheet of [sheet] size, in sheet pixels.
+///
+/// A sheet holds a row of tiles, each [tileWidth] wide and up to the sheet's
+/// height; a lone thumbnail is a sheet of one.
+Rect ehSpriteSource(Size sheet, {required double offsetX, double tileWidth = ehPreviewTileWidth, double? tileHeight}) {
+  final left = math.min(offsetX.abs(), sheet.width);
+  return Rect.fromLTWH(
+    left,
+    0,
+    math.min(tileWidth, sheet.width - left),
+    math.min(tileHeight ?? sheet.height, sheet.height),
+  );
+}
+
+/// One page's tile cut from EH's preview sprite sheet and fitted whole into
+/// its box, so the crop holds at any tile width or aspect.
 class EhSpriteThumb extends StatelessWidget {
   final String url;
   final double offsetX;
   final double tileWidth;
+  final double? tileHeight;
 
-  const EhSpriteThumb({super.key, required this.url, required this.offsetX, this.tileWidth = 200});
+  const EhSpriteThumb({
+    super.key,
+    required this.url,
+    required this.offsetX,
+    this.tileWidth = ehPreviewTileWidth,
+    this.tileHeight,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final scale = constraints.maxWidth / tileWidth;
-        return ClipRect(
-          child: Transform.translate(
-            offset: Offset(-offsetX.abs() * scale, 0),
-            child: OverflowBox(
-              alignment: Alignment.topLeft,
-              maxWidth: double.infinity,
-              maxHeight: constraints.maxHeight,
-              child: ExtendedImage.network(
-                url,
-                height: constraints.maxHeight,
-                fit: BoxFit.fitHeight,
-                cache: true,
-                cacheHeight: constraints.maxHeight.isFinite && constraints.maxHeight > 0
-                    ? (constraints.maxHeight * MediaQuery.devicePixelRatioOf(context)).ceil()
-                    : null,
-                headers: _ehImageHeaders(context),
-                filterQuality: FilterQuality.medium,
-                timeLimit: ehImageTimeLimit,
-                retries: 1,
-                loadStateChanged: (state) {
-                  if (state.extendedImageLoadState == LoadState.failed) {
-                    return ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest);
-                  }
-                  return null;
-                },
-              ),
-            ),
-          ),
-        );
+    // Decoded at full size: tiles share one sheet, and a resized decode would
+    // no longer match the offsets the site gives in sheet pixels.
+    return ExtendedImage.network(
+      url,
+      cache: true,
+      headers: _ehImageHeaders(context),
+      timeLimit: ehImageTimeLimit,
+      retries: 1,
+      loadStateChanged: (state) {
+        if (state.extendedImageLoadState == LoadState.failed) {
+          return ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest);
+        }
+        final image = state.extendedImageInfo?.image;
+        if (state.extendedImageLoadState != LoadState.completed || image == null) return null;
+        final sheet = Size(image.width.toDouble(), image.height.toDouble());
+        final source = ehSpriteSource(sheet, offsetX: offsetX, tileWidth: tileWidth, tileHeight: tileHeight);
+        return SizedBox.expand(child: CustomPaint(painter: _EhSpritePainter(image, source)));
       },
     );
   }
+}
+
+class _EhSpritePainter extends CustomPainter {
+  final ui.Image image;
+  final Rect source;
+
+  const _EhSpritePainter(this.image, this.source);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (source.isEmpty || size.isEmpty) return;
+    final fitted = applyBoxFit(BoxFit.contain, source.size, size).destination;
+    final target = Alignment.center.inscribe(fitted, Offset.zero & size);
+    canvas.drawImageRect(image, source, target, Paint()..filterQuality = FilterQuality.medium);
+  }
+
+  @override
+  bool shouldRepaint(_EhSpritePainter oldDelegate) => oldDelegate.image != image || oldDelegate.source != source;
 }

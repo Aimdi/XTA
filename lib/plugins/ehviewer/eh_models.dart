@@ -256,11 +256,17 @@ class EhPreview {
   final String? thumbUrl;
   final double? thumbOffsetX;
 
+  /// The tile's size on its sprite sheet, as the site's inline style gives it.
+  final double? thumbWidth;
+  final double? thumbHeight;
+
   const EhPreview({
     required this.pageToken,
     required this.page,
     this.thumbUrl,
     this.thumbOffsetX,
+    this.thumbWidth,
+    this.thumbHeight,
   });
 }
 
