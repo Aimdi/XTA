@@ -129,6 +129,22 @@ void main() {
       expect(second.nextUrl, isNull);
     });
 
+    test('all tags follow next_url page after page, up to the page limit', () async {
+      final (client, requests) = _client((request) {
+        final offset = int.parse(request.url.queryParameters['offset'] ?? '0');
+        return {
+          'bookmark_tags': [
+            {'name': 'Tag$offset', 'count': 1},
+          ],
+          'next_url':
+              'https://app-api.pixiv.net/v1/user/bookmark-tags/illust?user_id=77&restrict=public&offset=${offset + 1}',
+        };
+      });
+      final tags = await PixivBookmarkApi(client).allTags(restrict: 'public', maxPages: 3);
+      expect(tags.map((tag) => tag.name), ['Tag0', 'Tag1', 'Tag2']);
+      expect(requests, hasLength(3));
+    });
+
     test('a reshaped tag list is an empty last page', () {
       final page = parsePixivBookmarkTags({'bookmark_tags': 'none', 'next_url': 3});
       expect(page.items, isEmpty);

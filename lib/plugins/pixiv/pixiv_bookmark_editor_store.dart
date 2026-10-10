@@ -122,7 +122,7 @@ class PixivBookmarkEditorStore extends Store<PixivBookmarkDraft> {
 
   Future<void> load() => _inFlight.track(
     execute(() async {
-      final detail = await actions.api.detail(illust.id);
+      final detail = await actions.detail(illust);
       return state.fromDetail(detail, defaultRestrict: actions.defaultRestrict, autoTags: actions.autoTags(illust));
     }),
   );
@@ -145,17 +145,18 @@ class PixivBookmarkEditorStore extends Store<PixivBookmarkDraft> {
   Future<void> _loadKnown() async {
     _knownAsked = true;
     try {
-      final pages = await Future.wait([
-        for (final restrict in ['public', 'private']) actions.api.tags(restrict: restrict),
+      final lists = await Future.wait([
+        for (final restrict in ['public', 'private']) actions.api.allTags(restrict: restrict),
       ]);
-      update(state.copyWith(known: mergePixivBookmarkTags(pages.map((page) => page.items))));
+      update(state.copyWith(known: mergePixivBookmarkTags(lists)));
     } catch (_) {
       _knownAsked = false;
     }
   }
 
-  /// Files the bookmark as drafted; the outcome once Pixiv took it, else null
-  /// with the error kept on the draft.
+  /// Files the bookmark as drafted: the outcome once Pixiv took it, null when
+  /// another write for the work was still running. A refusal is kept on the
+  /// draft and thrown, so it still reaches the reader if the sheet has gone.
   Future<PixivBookmarkOutcome?> save() =>
       _write(() => actions.bookmark(illust, restrict: state.restrict, tags: state.checkedTags));
 
@@ -171,9 +172,9 @@ class PixivBookmarkEditorStore extends Store<PixivBookmarkDraft> {
               update(state.copyWith(saving: false));
               return outcome;
             },
-            onError: (Object error) {
+            onError: (Object error, StackTrace stack) {
               update(state.copyWith(saving: false, saveError: error));
-              return null;
+              Error.throwWithStackTrace(error, stack);
             },
           ),
     );

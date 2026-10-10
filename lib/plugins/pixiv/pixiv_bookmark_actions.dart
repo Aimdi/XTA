@@ -72,6 +72,16 @@ class PixivBookmarkActions {
   /// The visibility a bookmark made without the editor gets.
   String get defaultRestrict => _on(optionPluginPixivDefaultPrivateBookmark) ? 'private' : 'public';
 
+  /// The work's bookmark as Pixiv has it now. A card loaded before the work
+  /// was bookmarked or removed elsewhere is brought in line, so the heart, the
+  /// count and whether the next write is a new bookmark follow Pixiv.
+  Future<PixivBookmarkDetail> detail(PixivIllust illust) async {
+    final detail = await api.detail(illust.id);
+    final stale = bookmarks.isBookmarked(illust) != detail.isBookmarked;
+    if (stale && !bookmarks.isBusy(illust.id)) bookmarks.mark(illust.id, detail.isBookmarked);
+    return detail;
+  }
+
   /// Bookmarks [illust] or re-files the bookmark it has. Tags from the editor
   /// win; without them the work's own tags go along when auto-tag is on. A new
   /// bookmark may also save the work (never when [fromSave]) and follow its author.

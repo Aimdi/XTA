@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_actions.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_editor_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
@@ -173,6 +177,42 @@ void main() {
       expect(await off.actions.ensureBookmarked(_work()), isNull);
       expect(await on.actions.ensureBookmarked(_work(bookmarked: true)), isNull);
       expect([...off.api.writes, ...on.api.writes], isEmpty);
+    });
+  });
+
+  group('the bookmark detail', () {
+    const bookmarkedElsewhere = PixivBookmarkDetail(isBookmarked: true, restrict: 'private');
+
+    test('brings a card that missed a bookmark made elsewhere in line', () async {
+      final fixture = _Fixture();
+      fixture.api.detailResult = bookmarkedElsewhere;
+      await fixture.actions.detail(_work());
+      expect(fixture.bookmarks.isBookmarked(_work()), isTrue);
+    });
+
+    test('leaves a write still on its way to set the heart', () async {
+      final fixture = _Fixture();
+      fixture.api.detailResult = bookmarkedElsewhere;
+      final held = Completer<void>();
+      final write = fixture.bookmarks.exclusive(7, () => held.future);
+      await fixture.actions.detail(_work());
+      expect(fixture.bookmarks.state[7], isNull);
+      held.complete();
+      await write;
+    });
+
+    test('so saving that bookmark in the editor is a re-file: no follow, no save', () async {
+      final fixture = _Fixture(
+        prefs: {optionPluginPixivFollowAfterBookmark: true, optionPluginPixivDownloadAfterBookmark: true},
+      );
+      fixture.api.detailResult = bookmarkedElsewhere;
+      final editor = PixivBookmarkEditorStore(fixture.actions, _work());
+      addTearDown(editor.destroy);
+      await editor.load();
+      expect(await editor.save(), (bookmarked: true, followedAuthor: false));
+      expect(fixture.api.writes, ['add:7:private:']);
+      expect(fixture.followCalls, isEmpty);
+      expect(fixture.downloads, isEmpty);
     });
   });
 

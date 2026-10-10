@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_editor.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_haptics.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
 /// Heart that bookmarks on Pixiv — same write as follow, not a local-only like.
@@ -43,7 +44,7 @@ class PixivBookmarkButton extends StatelessWidget {
         child: InkResponse(
           key: ValueKey('pixiv-bookmark-${illust.id}'),
           onTap: busy ? null : () => togglePixivBookmark(context, illust),
-          onLongPress: busy ? null : () => showPixivBookmarkEditor(context, illust),
+          onLongPress: busy ? null : () => _edit(context),
           radius: kMinInteractiveDimension / 2,
           child: SizedBox.square(
             dimension: kMinInteractiveDimension,
@@ -52,6 +53,11 @@ class PixivBookmarkButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _edit(BuildContext context) {
+    playPixivHaptic(context, PixivHaptic.medium);
+    showPixivBookmarkEditor(context, illust);
   }
 
   Widget _icon(BuildContext context, bool bookmarked, bool busy) {

@@ -15,6 +15,9 @@ typedef PixivBookmarkFilter = ({String restrict, String? tag});
 
 const _restricts = ['public', 'private'];
 
+/// How close to the end of the list the next page is asked for.
+const _pageOnExtent = 600.0;
+
 /// What a tag filter is called on its chip and in the picker.
 String pixivBookmarkTagLabel(L10n l10n, String? tag) => switch (tag) {
   null => l10n.plugin_pixiv_bookmark_tag_all,
@@ -89,52 +92,57 @@ class _PixivBookmarkTagPickerState extends State<PixivBookmarkTagPicker> {
     );
   }
 
-  Widget _sheet(BuildContext context, L10n l10n) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-        child: Text(l10n.plugin_pixiv_bookmark_tag_filter, style: Theme.of(context).textTheme.titleLarge),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: TextField(
-          key: const ValueKey('pixiv-bookmark-tag-search'),
-          controller: _field,
-          autocorrect: false,
-          textInputAction: TextInputAction.search,
-          decoration: InputDecoration(
-            hintText: l10n.plugin_pixiv_bookmark_tag_search,
-            prefixIcon: const Icon(Icons.search),
-          ),
-          onChanged: _query.select,
-          onSubmitted: (text) {
-            final tag = text.trim();
-            if (tag.isNotEmpty) _pick(_restricts[DefaultTabController.of(context).index], tag);
-          },
+  /// The title, field and tabs scroll away with the tags, so a short sheet
+  /// (landscape with the keyboard up, or large text) still fits them.
+  Widget _sheet(BuildContext context, L10n l10n) => NestedScrollView(
+    headerSliverBuilder: (_, _) => [
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Text(l10n.plugin_pixiv_bookmark_tag_filter, style: Theme.of(context).textTheme.titleLarge),
         ),
       ),
-      TabBar(
-        tabs: [
-          Tab(text: l10n.plugin_pixiv_bookmarks_public),
-          Tab(text: l10n.plugin_pixiv_bookmarks_private),
-        ],
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: TextField(
+            key: const ValueKey('pixiv-bookmark-tag-search'),
+            controller: _field,
+            autocorrect: false,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: l10n.plugin_pixiv_bookmark_tag_search,
+              prefixIcon: const Icon(Icons.search),
+            ),
+            onChanged: _query.select,
+            onSubmitted: (text) {
+              final tag = text.trim();
+              if (tag.isNotEmpty) _pick(_restricts[DefaultTabController.of(context).index], tag);
+            },
+          ),
+        ),
       ),
-      Expanded(
-        child: TabBarView(
-          children: [
-            for (final restrict in _restricts)
-              _PixivBookmarkTagTab(
-                store: _tags[restrict]!,
-                inFlight: _inFlight,
-                query: _query,
-                selected: widget.current.restrict == restrict ? widget.current.tag : '',
-                onPick: (tag) => _pick(restrict, tag),
-              ),
+      SliverToBoxAdapter(
+        child: TabBar(
+          tabs: [
+            Tab(text: l10n.plugin_pixiv_bookmarks_public),
+            Tab(text: l10n.plugin_pixiv_bookmarks_private),
           ],
         ),
       ),
     ],
+    body: TabBarView(
+      children: [
+        for (final restrict in _restricts)
+          _PixivBookmarkTagTab(
+            store: _tags[restrict]!,
+            inFlight: _inFlight,
+            query: _query,
+            selected: widget.current.restrict == restrict ? widget.current.tag : '',
+            onPick: (tag) => _pick(restrict, tag),
+          ),
+      ],
+    ),
   );
 }
 
@@ -162,19 +170,67 @@ class _PixivBookmarkTagTab extends StatefulWidget {
 }
 
 class _PixivBookmarkTagTabState extends State<_PixivBookmarkTagTab> {
+  late final void Function() _stopWatchingQuery;
+
+  /// The list as last laid out, to tell whether it fills the sheet.
+  ScrollMetrics? _metrics;
+
+  /// The search and list length the tab last asked for a page at by itself.
+  (String, int)? _askedAt;
+
   PixivPagedListStore<PixivBookmarkTag> get _store => widget.store;
 
   /// Shows the spinner from the start, so an empty list is never mistaken
   /// for a reader without tags while the first page is on its way.
-  Future<void> _refresh() {
+  Future<void> _refresh() async {
     _store.setLoading(true);
-    return widget.inFlight.track(_store.refresh());
+    await widget.inFlight.track(_store.refresh());
+    await _pageOnWhileShort();
+  }
+
+  Future<void> _loadMore() async {
+    await widget.inFlight.track(_store.loadMore());
+    await _pageOnWhileShort();
+  }
+
+  /// Tags that do not fill the sheet never scroll, nor do a search's few
+  /// matches, so the tab asks for pages itself until the list fills or the
+  /// search has its matches. A page that brings nothing (it failed) stops it
+  /// until the reader types or scrolls again.
+  Future<void> _pageOnWhileShort() async {
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || !_store.hasMore || _store.loadingMore) return;
+    final query = widget.query.state.trim();
+    final tags = _store.state;
+    final short = query.isEmpty
+        ? (_metrics?.extentAfter ?? 0) < _pageOnExtent
+        : pixivBookmarkTagMatches(tags, query).length < pixivTagSuggestionLimit;
+    if (!short || _askedAt == (query, tags.length)) return;
+    _askedAt = (query, tags.length);
+    await _loadMore();
+  }
+
+  bool _onScroll(ScrollMetrics metrics) {
+    _metrics = metrics;
+    if (metrics.extentAfter < _pageOnExtent) _loadMore();
+    return false;
   }
 
   @override
   void initState() {
     super.initState();
-    if (_store.state.isEmpty && !_store.isLoading) _refresh();
+    _stopWatchingQuery = widget.query.observer(onState: (_) => _pageOnWhileShort());
+    if (_store.state.isEmpty && !_store.isLoading) {
+      _refresh();
+    } else {
+      _pageOnWhileShort();
+    }
+  }
+
+  @override
+  void dispose() {
+    _stopWatchingQuery();
+    super.dispose();
   }
 
   @override
@@ -194,13 +250,15 @@ class _PixivBookmarkTagTabState extends State<_PixivBookmarkTagTab> {
     List<PixivBookmarkTag> tags, {
     bool loading = false,
     Object? error,
-  }) => NotificationListener<ScrollNotification>(
-    onNotification: (notification) {
-      if (notification.metrics.extentAfter < 600) widget.inFlight.track(_store.loadMore());
-      return false;
-    },
-    child: ListView(
-      children: query.isEmpty ? _browse(context, tags, loading: loading, error: error) : _search(context, query, tags),
+  }) => NotificationListener<ScrollMetricsNotification>(
+    onNotification: (notification) => _onScroll(notification.metrics),
+    child: NotificationListener<ScrollNotification>(
+      onNotification: (notification) => _onScroll(notification.metrics),
+      child: ListView(
+        children: query.isEmpty
+            ? _browse(context, tags, loading: loading, error: error)
+            : _search(context, query, tags),
+      ),
     ),
   );
 

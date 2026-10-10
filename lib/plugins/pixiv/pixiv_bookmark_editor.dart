@@ -6,26 +6,23 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_editor_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_haptics.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
 /// Opens the bookmark editor for [illust]: visibility, tags and removal.
-/// What it saves is reported once the sheet has closed.
 Future<void> showPixivBookmarkEditor(BuildContext context, PixivIllust illust) async {
-  playPixivHaptic(context, PixivHaptic.medium);
   final feedback = PixivBookmarkFeedback.of(context);
   final store = PixivBookmarkEditorStore(PixivBookmarkActions.of(context), illust);
-  final outcome = await showModalBottomSheet<PixivBookmarkOutcome>(
+  await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
     useSafeArea: true,
-    builder: (_) => PixivBookmarkEditor(store: store),
+    builder: (_) => PixivBookmarkEditor(store: store, feedback: feedback),
   );
   unawaited(store.close());
-  if (outcome != null) feedback.succeeded(illust, outcome);
 }
 
 /// The editor sheet: a Private switch, the tag checklist with select-all and
@@ -33,7 +30,10 @@ Future<void> showPixivBookmarkEditor(BuildContext context, PixivIllust illust) a
 class PixivBookmarkEditor extends StatefulWidget {
   final PixivBookmarkEditorStore store;
 
-  const PixivBookmarkEditor({super.key, required this.store});
+  /// Hears every write that lands, also one the sheet was dragged away from.
+  final PixivBookmarkFeedback feedback;
+
+  const PixivBookmarkEditor({super.key, required this.store, required this.feedback});
 
   @override
   State<PixivBookmarkEditor> createState() => _PixivBookmarkEditorState();
@@ -61,22 +61,41 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
     _field.clear();
   }
 
+  /// A tag still in the field goes along, as it would after Done.
+  void _save() {
+    if (_field.text.trim().isNotEmpty) _add(_field.text);
+    _finish(_store.save);
+  }
+
+  /// Reports through the feedback rather than the sheet's result: a drag
+  /// closes the sheet even mid-write, and the reader still hears how it went.
   Future<void> _finish(Future<PixivBookmarkOutcome?> Function() write) async {
     final navigator = Navigator.of(context);
-    final outcome = await write();
-    if (outcome != null && mounted) navigator.pop(outcome);
+    final feedback = widget.feedback;
+    final illust = _store.illust;
+    try {
+      final outcome = await write();
+      if (outcome == null) return;
+      feedback.succeeded(illust, outcome);
+      if (mounted) navigator.pop();
+    } catch (error) {
+      if (!mounted) feedback.failed(error);
+    }
   }
 
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-    child: ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.85),
-      child: ScopedBuilder<PixivBookmarkEditorStore, PixivBookmarkDraft>(
-        store: _store,
-        onState: (context, draft) => draft.loaded ? _editor(context, draft) : const _SheetMessage.loading(),
-        onLoading: (_) => const _SheetMessage.loading(),
-        onError: (context, error) => _loadFailed(context, error as Object),
+    child: SafeArea(
+      top: false,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.85),
+        child: ScopedBuilder<PixivBookmarkEditorStore, PixivBookmarkDraft>(
+          store: _store,
+          onState: (context, draft) => draft.loaded ? _whileFree(draft) : const _SheetMessage.loading(),
+          onLoading: (_) => const _SheetMessage.loading(),
+          onError: (context, error) => _loadFailed(context, error as Object),
+        ),
       ),
     ),
   );
@@ -95,44 +114,91 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
     );
   }
 
-  /// Everything but the buttons scrolls, so large text and an open keyboard
-  /// never push Save off the sheet.
-  Widget _editor(BuildContext context, PixivBookmarkDraft draft) {
+  /// Save and Remove wait while any write for this work runs, the heart's
+  /// included, since a second write would be skipped. While the editor's own
+  /// write runs, back and a tap outside leave the sheet open.
+  Widget _whileFree(PixivBookmarkDraft draft) {
+    final bookmarks = _store.actions.bookmarks;
+    final id = _store.illust.id;
+    return ScopedBuilder<PixivBookmarkStore, Map<int, bool>>(
+      store: bookmarks,
+      distinct: (_) => bookmarks.isBusy(id),
+      onState: (context, _) => PopScope(
+        canPop: !draft.saving,
+        child: _editor(context, draft, writing: draft.saving || bookmarks.isBusy(id)),
+      ),
+    );
+  }
+
+  /// The list scrolls and the buttons stay under it, yet take at most half
+  /// the sheet: with large text and the keyboard up they scroll rather than
+  /// overflow.
+  Widget _editor(BuildContext context, PixivBookmarkDraft draft, {required bool writing}) {
     final l10n = L10n.of(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (draft.saving) const LinearProgressIndicator(),
-        Flexible(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                child: Text(
-                  draft.isBookmarked ? l10n.plugin_pixiv_bookmark_edit : l10n.plugin_pixiv_bookmark_add,
-                  style: Theme.of(context).textTheme.titleLarge,
+    return LayoutBuilder(
+      builder: (context, constraints) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (writing) const LinearProgressIndicator(),
+          Flexible(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                _title(context, draft, writing: writing),
+                SwitchListTile(
+                  key: const ValueKey('pixiv-bookmark-editor-private'),
+                  secondary: const Icon(Icons.lock_outline),
+                  title: Text(l10n.plugin_pixiv_bookmark_private),
+                  subtitle: Text(l10n.plugin_pixiv_bookmark_private_hint),
+                  value: draft.isPrivate,
+                  onChanged: draft.saving ? null : _store.setPrivate,
                 ),
-              ),
-              SwitchListTile(
-                key: const ValueKey('pixiv-bookmark-editor-private'),
-                secondary: const Icon(Icons.lock_outline),
-                title: Text(l10n.plugin_pixiv_bookmark_private),
-                subtitle: Text(l10n.plugin_pixiv_bookmark_private_hint),
-                value: draft.isPrivate,
-                onChanged: draft.saving ? null : _store.setPrivate,
-              ),
-              _tagsHeader(context, draft),
-              _tagField(l10n, draft),
-              for (final tag in draft.suggestions) _suggestion(tag),
-              ..._checklist(context, draft),
-            ],
+                _tagsHeader(context, draft),
+                _tagField(l10n, draft),
+                for (final tag in draft.suggestions) _suggestion(tag),
+                ..._checklist(context, draft),
+              ],
+            ),
           ),
-        ),
-        if (draft.saveError case final Object error) _saveFailed(context, error),
-        _buttons(l10n, draft),
-      ],
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: constraints.maxHeight / 2),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (draft.saveError case final Object error) _saveFailed(context, error),
+                  _buttons(l10n, draft, writing: writing),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _title(BuildContext context, PixivBookmarkDraft draft, {required bool writing}) {
+    final l10n = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 8, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              draft.isBookmarked ? l10n.plugin_pixiv_bookmark_edit : l10n.plugin_pixiv_bookmark_add,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          if (draft.isBookmarked)
+            IconButton(
+              key: const ValueKey('pixiv-bookmark-editor-remove'),
+              tooltip: l10n.plugin_pixiv_unbookmark,
+              icon: const Icon(Icons.heart_broken_outlined),
+              onPressed: writing ? null : () => _finish(_store.remove),
+            ),
+        ],
+      ),
     );
   }
 
@@ -212,7 +278,7 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
     ),
   );
 
-  Widget _buttons(L10n l10n, PixivBookmarkDraft draft) => Padding(
+  Widget _buttons(L10n l10n, PixivBookmarkDraft draft, {required bool writing}) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
     child: OverflowBar(
       alignment: MainAxisAlignment.end,
@@ -220,16 +286,10 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
       spacing: 8,
       overflowSpacing: 4,
       children: [
-        if (draft.isBookmarked)
-          TextButton(
-            key: const ValueKey('pixiv-bookmark-editor-remove'),
-            onPressed: draft.saving ? null : () => _finish(_store.remove),
-            child: Text(l10n.plugin_pixiv_unbookmark),
-          ),
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        TextButton(onPressed: draft.saving ? null : () => Navigator.pop(context), child: Text(l10n.cancel)),
         FilledButton(
           key: const ValueKey('pixiv-bookmark-editor-save'),
-          onPressed: draft.saving ? null : () => _finish(_store.save),
+          onPressed: writing ? null : _save,
           child: Text(draft.isBookmarked ? l10n.save : l10n.plugin_pixiv_bookmark),
         ),
       ],
@@ -237,7 +297,8 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
   );
 }
 
-/// One centred message or spinner, tall enough not to jump the sheet.
+/// One centred message or spinner, tall enough not to jump the sheet, and
+/// scrolling when the sheet is shorter than that.
 class _SheetMessage extends StatelessWidget {
   final Widget child;
 
@@ -246,10 +307,12 @@ class _SheetMessage extends StatelessWidget {
   const _SheetMessage.loading() : child = const CircularProgressIndicator();
 
   @override
-  Widget build(BuildContext context) => ConstrainedBox(
-    constraints: const BoxConstraints(minHeight: 200),
-    child: Center(
-      child: Padding(padding: const EdgeInsets.all(24), child: child),
+  Widget build(BuildContext context) => SingleChildScrollView(
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 200),
+      child: Center(
+        child: Padding(padding: const EdgeInsets.all(24), child: child),
+      ),
     ),
   );
 }

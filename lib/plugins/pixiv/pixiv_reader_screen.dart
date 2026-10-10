@@ -136,7 +136,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> with PixivPageSur
             IconButton(
               key: const ValueKey('pixiv-reader-more'),
               tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-              onPressed: () => openPageActions(state.pageIndex),
+              onPressed: () => showPageActions(state.pageIndex),
               icon: const Icon(Icons.more_vert),
             ),
           ],

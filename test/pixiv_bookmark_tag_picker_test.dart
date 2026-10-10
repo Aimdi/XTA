@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,6 +67,18 @@ Future<List<PixivBookmarkFilter?>> _openPicker(
 }
 
 Finder _pick(String? tag) => find.byKey(ValueKey('pixiv-bookmark-tag-pick-${tag ?? ''}'));
+
+/// A reader with a full first page of public tags and [later] on the next.
+FakePixivBookmarkApi _paged({List<PixivBookmarkTag> later = const [(name: 'Zeta', count: 1)]}) => FakePixivBookmarkApi(
+  tagPages: {
+    'public': [
+      [for (var i = 0; i < 30; i++) (name: 'Tag$i', count: i)],
+      later,
+    ],
+  },
+);
+
+int _pagesAsked(FakePixivBookmarkApi api) => api.calls.where((call) => call == 'tags:public:1').length;
 
 void main() {
   group('tag picker', () {
@@ -140,6 +154,106 @@ void main() {
       await tester.tap(_pick(null));
       await settlePixiv(tester);
       expect(picked, [(restrict: 'public', tag: null)]);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('landscape with large text and the keyboard up does not overflow', (tester) async {
+      final api = _api();
+      await pumpPixiv(
+        tester,
+        _PickerHost(current: (restrict: 'public', tag: null), onPicked: (_) {}),
+        size: const Size(640, 360),
+        textScale: 2,
+        extraProviders: [api.provider],
+      );
+      await tester.tap(find.text('pick'));
+      await settlePixiv(tester);
+      await tester.showKeyboard(find.byKey(const ValueKey('pixiv-bookmark-tag-search')));
+      tester.view.viewInsets = const FakeViewPadding(bottom: 200);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.enterText(find.byKey(const ValueKey('pixiv-bookmark-tag-search')), 'cat');
+      await settlePixiv(tester);
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('scrolling pages on through next_url', (tester) async {
+      final api = _paged();
+      await _openPicker(tester, api);
+      expect(api.calls, ['tags:public']);
+
+      await tester.drag(_pick('Tag2'), const Offset(0, -1500));
+      await settlePixiv(tester);
+      expect(api.calls, ['tags:public', 'tags:public:1']);
+      await tester.drag(_pick('Tag25'), const Offset(0, -600));
+      await settlePixiv(tester);
+      expect(_pick('Zeta'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a first page that does not fill the sheet asks for the next by itself', (tester) async {
+      final api = FakePixivBookmarkApi(
+        tagPages: {
+          'public': [
+            [(name: 'Favs', count: 3)],
+            [(name: 'Zeta', count: 1)],
+          ],
+        },
+      );
+      await _openPicker(tester, api);
+      expect(api.calls, ['tags:public', 'tags:public:1']);
+      expect(_pick('Zeta'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a search pages on until it finds what is typed', (tester) async {
+      final api = _paged();
+      await _openPicker(tester, api);
+      await tester.enterText(find.byKey(const ValueKey('pixiv-bookmark-tag-search')), 'zeta');
+      await settlePixiv(tester);
+      expect(api.calls, contains('tags:public:1'));
+      expect(_pick('Zeta'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a page that fails stops a search from asking until the next keystroke', (tester) async {
+      final api = _paged()..failingTagPages.add(1);
+      await _openPicker(tester, api);
+      final search = find.byKey(const ValueKey('pixiv-bookmark-tag-search'));
+      await tester.enterText(search, 'zeta');
+      await settlePixiv(tester);
+      final asked = _pagesAsked(api);
+      expect(asked, greaterThan(0));
+
+      await tester.pump(const Duration(seconds: 5));
+      expect(_pagesAsked(api), asked);
+      await tester.enterText(search, 'zet');
+      await settlePixiv(tester);
+      expect(_pagesAsked(api), greaterThan(asked));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('closing it while the tags load throws nothing', (tester) async {
+      final api = _api()..tagsGate = Completer<void>();
+      await pumpPixiv(
+        tester,
+        _PickerHost(current: (restrict: 'public', tag: null), onPicked: (_) {}),
+        extraProviders: [api.provider],
+      );
+      await tester.tap(find.text('pick'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(api.calls, ['tags:public']);
+      // Twice: the test binding drops the first tap on a barrier that has just come up.
+      for (var i = 0; i < 2; i++) {
+        await tester.tapAt(const Offset(200, 20));
+        await tester.pump(const Duration(seconds: 1));
+      }
+      expect(find.byType(BottomSheet), findsNothing);
+
+      api.tagsGate!.complete();
+      await settlePixiv(tester);
+      expect(tester.takeException(), isNull);
       await disposePixiv(tester);
     });
 

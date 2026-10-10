@@ -31,8 +31,14 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
     }
   }
 
-  Future<void> openPageActions(int page) async {
+  /// The page sheet a long press on [page] opens, with a firmer buzz.
+  Future<void> openPageActions(int page) {
     playPixivHaptic(context, PixivHaptic.medium);
+    return showPageActions(page);
+  }
+
+  /// The page sheet a button opens, without the long press's buzz.
+  Future<void> showPageActions(int page) async {
     final action = await showPixivPageActions(context, illust: pageIllust, page: page);
     if (mounted && action != null) await runPageAction(action, page);
   }

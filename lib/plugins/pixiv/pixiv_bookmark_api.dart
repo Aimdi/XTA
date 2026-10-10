@@ -48,9 +48,20 @@ PixivPage<PixivBookmarkTag> parsePixivBookmarkTags(Object? json) {
   ], nextUrl: root['next_url'].string);
 }
 
+/// How many of the reader's tags a tag field suggests at once.
+const pixivTagSuggestionLimit = 8;
+
+/// How many pages of the reader's tags the bookmark editor reads to suggest
+/// from: enough for a large collection without walking thousands of tags.
+const pixivKnownTagPageLimit = 10;
+
 /// Up to [limit] of [tags] whose name contains [query], ignoring case: the
 /// suggestions under a tag field.
-List<PixivBookmarkTag> pixivBookmarkTagMatches(Iterable<PixivBookmarkTag> tags, String query, {int limit = 8}) {
+List<PixivBookmarkTag> pixivBookmarkTagMatches(
+  Iterable<PixivBookmarkTag> tags,
+  String query, {
+  int limit = pixivTagSuggestionLimit,
+}) {
   final needle = query.trim().toLowerCase();
   if (needle.isEmpty) return const [];
   return tags.where((tag) => tag.name.toLowerCase().contains(needle)).take(limit).toList();
@@ -99,5 +110,17 @@ class PixivBookmarkApi {
       query: {'user_id': '$userId', 'restrict': restrict},
     );
     return parsePixivBookmarkTags(json);
+  }
+
+  /// The reader's [restrict] tags, following `next_url` for up to [maxPages] pages.
+  Future<List<PixivBookmarkTag>> allTags({
+    required String restrict,
+    int maxPages = pixivKnownTagPageLimit,
+    String? nextUrl,
+  }) async {
+    final page = await tags(restrict: restrict, nextUrl: nextUrl);
+    final next = page.nextUrl;
+    if (next == null || next.isEmpty || maxPages <= 1) return page.items;
+    return [...page.items, ...await allTags(restrict: restrict, maxPages: maxPages - 1, nextUrl: next)];
   }
 }

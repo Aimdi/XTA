@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -27,20 +29,29 @@ PixivBookmarkDetail _detail({
 );
 
 final _heart = find.byKey(const ValueKey('pixiv-bookmark-120'));
+final _save = find.byKey(const ValueKey('pixiv-bookmark-editor-save'));
+final _remove = find.byKey(const ValueKey('pixiv-bookmark-editor-remove'));
+final _field = find.byKey(const ValueKey('pixiv-bookmark-editor-field'));
 
+/// A tile on a screen that, like a feed, does not shrink for the keyboard.
 Future<PixivHarness> _pumpTile(
   WidgetTester tester,
   FakePixivBookmarkApi api, {
   Map<String, Object> prefs = const {},
   List<SingleChildWidget> extra = const [],
+  Size size = const Size(390, 844),
+  double textScale = 1,
 }) => pumpPixiv(
   tester,
   Scaffold(
-    body: Align(
-      alignment: Alignment.topLeft,
-      child: SizedBox(
-        width: 220,
-        child: PixivIllustTile(illust: pixivWork(pages: 1, tags: _workTags)),
+    resizeToAvoidBottomInset: false,
+    body: SingleChildScrollView(
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: SizedBox(
+          width: 220,
+          child: PixivIllustTile(illust: pixivWork(pages: 1, tags: _workTags)),
+        ),
       ),
     ),
   ),
@@ -50,16 +61,47 @@ Future<PixivHarness> _pumpTile(
     }
     return FakePixivClient(cache);
   },
+  size: size,
+  textScale: textScale,
   extraProviders: [api.provider, ...extra],
 );
 
 Future<void> _openEditor(WidgetTester tester) async {
+  await tester.ensureVisible(_heart);
   await tester.longPress(_heart);
   await settlePixiv(tester);
 }
 
 PixivBookmarkStore _bookmarks(WidgetTester tester) =>
     Provider.of<PixivBookmarkStore>(tester.element(find.byType(PixivIllustTile)), listen: false);
+
+/// Records buzzes, each a second after the last so none is held back.
+(PixivHaptics, List<PixivHaptic>) _recordHaptics() {
+  var now = DateTime(2026);
+  final played = <PixivHaptic>[];
+  final haptics = PixivHaptics(
+    clock: () => now = now.add(const Duration(seconds: 1)),
+    play: (kind) async => played.add(kind),
+  );
+  return (haptics, played);
+}
+
+/// Taps the dimmed screen above the sheet, beside the tile. Twice, since the
+/// test binding drops the first tap on a barrier that has just come up.
+Future<void> _tapOutside(WidgetTester tester) async {
+  for (var i = 0; i < 2; i++) {
+    await tester.tapAt(const Offset(370, 20));
+    await tester.pump(const Duration(milliseconds: 500));
+  }
+}
+
+/// Drags the sheet away by its handle.
+Future<void> _dragAway(WidgetTester tester) async {
+  final sheet = tester.getRect(find.byType(BottomSheet));
+  await tester.flingFrom(Offset(sheet.center.dx, sheet.top + 12), const Offset(0, 600), 2000);
+  await tester.pump();
+  await tester.pump(const Duration(seconds: 1));
+}
 
 void main() {
   group('draft', () {
@@ -213,37 +255,181 @@ void main() {
 
     testWidgets('large text on a small screen keeps every control reachable', (tester) async {
       final api = FakePixivBookmarkApi(detailResult: _detail());
-      await pumpPixiv(
-        tester,
-        Scaffold(
-          body: Align(
-            alignment: Alignment.topLeft,
-            child: SizedBox(
-              width: 220,
-              child: PixivIllustTile(illust: pixivWork(pages: 1, tags: _workTags)),
-            ),
-          ),
-        ),
-        size: const Size(320, 568),
-        textScale: 2,
-        extraProviders: [api.provider],
-      );
+      await _pumpTile(tester, api, size: const Size(320, 568), textScale: 2);
       await _openEditor(tester);
       expect(tester.takeException(), isNull);
-      await tester.tap(find.byKey(const ValueKey('pixiv-bookmark-editor-save')));
+      await tester.tap(_save);
       await settlePixiv(tester);
       expect(api.writes, ['add:120:public:']);
       await disposePixiv(tester);
     });
 
-    testWidgets('Edit bookmark in the detail menu opens the editor', (tester) async {
+    testWidgets('landscape with large text and the keyboard up does not overflow', (tester) async {
+      final api = FakePixivBookmarkApi(
+        detailResult: _detail(bookmarked: true, tags: const [(name: 'Favs', checked: true)]),
+      )..failWrite = pixivNetworkFailure();
+      await _pumpTile(tester, api, size: const Size(640, 360), textScale: 2);
+      await _openEditor(tester);
+      await tester.ensureVisible(_save);
+      await tester.tap(_save);
+      await settlePixiv(tester);
+      expect(find.text('Could not reach Pixiv'), findsOneWidget);
+
+      tester.view.viewInsets = const FakeViewPadding(bottom: 200);
+      addTearDown(tester.view.resetViewInsets);
+      await settlePixiv(tester);
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('the buttons stay above the navigation bar', (tester) async {
+      tester.view.padding = const FakeViewPadding(bottom: 48);
+      tester.view.viewPadding = const FakeViewPadding(bottom: 48);
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      await _pumpTile(tester, FakePixivBookmarkApi(detailResult: _detail()));
+      await _openEditor(tester);
+      expect(tester.getRect(_save).bottom, lessThanOrEqualTo(844 - 48));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('Save takes a tag still in the field', (tester) async {
+      final api = FakePixivBookmarkApi(detailResult: _detail(tags: const []));
+      await _pumpTile(tester, api);
+      await _openEditor(tester);
+      await tester.enterText(_field, 'typed');
+      await tester.tap(_save);
+      await settlePixiv(tester);
+      expect(api.writes, ['add:120:public:typed']);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('typing suggests the reader\'s tags from later pages too', (tester) async {
+      final api = FakePixivBookmarkApi(
+        detailResult: _detail(),
+        tagPages: {
+          'public': [
+            [(name: 'Cat', count: 4)],
+            [(name: 'Zeta', count: 2)],
+          ],
+        },
+      );
+      await _pumpTile(tester, api);
+      await _openEditor(tester);
+      await tester.enterText(_field, 'zet');
+      await settlePixiv(tester);
+      expect(api.calls, contains('tags:public:1'));
+      expect(find.byKey(const ValueKey('pixiv-bookmark-suggestion-Zeta')), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a card that missed a bookmark made elsewhere shows it once the editor loads', (tester) async {
+      final api = FakePixivBookmarkApi(detailResult: _detail(bookmarked: true));
+      await _pumpTile(tester, api);
+      await _openEditor(tester);
+      expect(find.text('Edit bookmark'), findsOneWidget);
+      expect(_bookmarks(tester).state[120], isTrue);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('Save and Remove wait while another write for the work runs', (tester) async {
+      final api = FakePixivBookmarkApi(detailResult: _detail(bookmarked: true));
+      await _pumpTile(tester, api);
+      await _openEditor(tester);
+      final held = Completer<void>();
+      unawaited(_bookmarks(tester).exclusive(120, () => held.future));
+      await tester.pump();
+      expect(tester.widget<FilledButton>(_save).onPressed, isNull);
+      expect(tester.widget<IconButton>(_remove).onPressed, isNull);
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+
+      held.complete();
+      await settlePixiv(tester);
+      expect(tester.widget<FilledButton>(_save).onPressed, isNotNull);
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('while it saves the sheet stays put, and a failure after a drag away is still told', (tester) async {
+      final api = FakePixivBookmarkApi(detailResult: _detail())..writeGate = Completer<void>();
+      await _pumpTile(tester, api);
+      await _openEditor(tester);
+      await tester.tap(_save);
+      await tester.pump();
+      expect(tester.widget<TextButton>(find.widgetWithText(TextButton, 'Cancel')).onPressed, isNull);
+      await _tapOutside(tester);
+      await tester.binding.handlePopRoute();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Add bookmark'), findsOneWidget);
+
+      await _dragAway(tester);
+      expect(find.text('Add bookmark'), findsNothing);
+      api.failWrite = pixivNetworkFailure();
+      api.writeGate!.complete();
+      await settlePixiv(tester);
+      expect(find.text('Could not reach Pixiv'), findsOneWidget);
+      expect(_bookmarks(tester).state[120], isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a save that lands after a drag away still buzzes and names the author followed', (tester) async {
+      final (haptics, played) = _recordHaptics();
+      final api = FakePixivBookmarkApi(detailResult: _detail())..writeGate = Completer<void>();
+      await _pumpTile(
+        tester,
+        api,
+        prefs: {optionPluginPixivFollowAfterBookmark: true, optionPluginPixivHaptics: true},
+        extra: [Provider<PixivHaptics>.value(value: haptics)],
+      );
+      await _openEditor(tester);
+      await tester.tap(_save);
+      await tester.pump();
+      await _dragAway(tester);
+
+      api.writeGate!.complete();
+      await settlePixiv(tester);
+      expect(api.writes, ['add:120:public:']);
+      expect(find.text('Followed Mika'), findsOneWidget);
+      expect(played, [PixivHaptic.medium, PixivHaptic.light]);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('closing it while the bookmark detail loads throws nothing', (tester) async {
+      final api = FakePixivBookmarkApi(detailResult: _detail())..detailGate = Completer<void>();
+      await _pumpTile(tester, api);
+      await tester.longPress(_heart);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(api.calls, ['detail:120']);
+      await _tapOutside(tester);
+      expect(find.byType(BottomSheet), findsNothing);
+
+      api.detailGate!.complete();
+      await settlePixiv(tester);
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('Edit bookmark in the detail menu opens the editor without a long press\'s buzz', (tester) async {
+      final (haptics, played) = _recordHaptics();
       final api = FakePixivBookmarkApi(detailResult: _detail());
-      await pumpPixiv(tester, PixivIllustScreen(illust: pixivWork()), extraProviders: [api.provider]);
+      await pumpPixiv(
+        tester,
+        PixivIllustScreen(illust: pixivWork()),
+        client: (cache) {
+          cache.set(optionPluginPixivHaptics, true);
+          return FakePixivClient(cache);
+        },
+        extraProviders: [
+          api.provider,
+          Provider<PixivHaptics>.value(value: haptics),
+        ],
+      );
       await tester.tap(find.byKey(const ValueKey('pixiv-illust-menu')));
       await settlePixiv(tester);
       await tester.tap(find.byKey(const ValueKey('pixiv-illust-menu-bookmark')));
       await settlePixiv(tester);
       expect(find.text('Add bookmark'), findsOneWidget);
+      expect(played, isEmpty);
       await disposePixiv(tester);
     });
   });
@@ -262,12 +448,7 @@ void main() {
     });
 
     testWidgets('a tap bookmarks with the defaults and buzzes lightly; a long press buzzes firmer', (tester) async {
-      var now = DateTime(2026);
-      final played = <PixivHaptic>[];
-      final haptics = PixivHaptics(
-        clock: () => now = now.add(const Duration(seconds: 1)),
-        play: (kind) async => played.add(kind),
-      );
+      final (haptics, played) = _recordHaptics();
       final api = FakePixivBookmarkApi(detailResult: _detail());
       await _pumpTile(
         tester,
