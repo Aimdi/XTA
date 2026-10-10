@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Otwórz {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktywne konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Konto Pixiv: prace wygenerowane przez AI",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Nie udało się odczytać tego ustawienia z Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Częściowo ukryte",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Sprawdzanie ustawienia Pixiv…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Pokazywane",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Usuń konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Usunąć {name} z tego urządzenia?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Zaawansowane: wklej refresh token",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Dodaj zakładkę",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publiczne",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Zmień na pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Skopiowano",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopiuj informacje",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Szablon „Kopiuj informacje”",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Link do pracy",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Tytuł: {title}\nAutor: {artist}\nID pracy: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Co „Kopiuj informacje” umieszcza w schowku. Symbole zastępcze są zamieniane na dane pracy.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Wstaw",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Przywróć domyślny",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Link do autora",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Prywatny czytnik Pixiv — obserwowani, rankingi, zakładki i wyszukiwanie. Bez publikowania",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "W feedzie obserwowanych nic jeszcze nie ma",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Historia przeglądania",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Wyczyść historię",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Wyczyścić całą historię przeglądania?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Otwarte prace pojawiają się tutaj. Historia zostaje na tym urządzeniu.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtruj po tytule lub autorze",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Żadna praca w historii nie pasuje",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Wstrzymaj historię przeglądania",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Gdy jest włączone, otwierane prace nie trafiają do historii",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Usunąć „{title}” z historii?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Skopiowano informacje",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Zarządzaj kontem na pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "O aplikacji",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Wycisz autora",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Komentarze",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Wyciszono jej autora: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Pokaż tym razem",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Wyciszono jej tag {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Ta praca jest wyciszona",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Wyciszono tę pracę.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Wycisz tę pracę",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Powieści",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Ustawienia wyciszania",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Wycisz tag „{tag}”",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Wycisz tag",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Wpisz r'wzorzec', aby wyciszyć każdy tag pasujący do wyrażenia regularnego. Wzorce widzą też wszystkie tagi pracy połączone jako #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tag do wyciszenia",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Ten wzorzec nie jest poprawnym wyrażeniem regularnym",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tagi",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Autorzy",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Prace",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Brak wyciszonych elementów Pixiv",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Wyciszone elementy Pixiv",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Nie udało się otworzyć tego linku Pixiv",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Otwieraj linki pixiv w XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Na stronie Androida „Otwieraj domyślnie” dodaj pixiv.net i pixiv.me jako obsługiwane linki",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Otwórz na Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Najpopularniejsze",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Wróć do dzisiaj",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Wyloguj się",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Wylogować konto {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Wylogować się z Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Zalogowano jako {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv otwiera się na",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Przełącz konto",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Zakładki",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Ulubione",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Cofnij wyciszenie",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Cofnąć wyciszenie: {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} praca} few{{shown} prace} many{{shown} prac} other{{shown} pracy}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

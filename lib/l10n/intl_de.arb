@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "{plugin} öffnen",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktives Konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-Konto: KI-generierte Werke",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Diese Einstellung konnte nicht von Pixiv gelesen werden",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Teilweise ausgeblendet",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Deine Pixiv-Einstellung wird geprüft …",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Angezeigt",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Konto entfernen",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} von diesem Gerät entfernen?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Erweitert: Refresh-Token einfügen",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Lesezeichen",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Öffentlich",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Auf pixiv.net ändern",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopiert",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Infos kopieren",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Vorlage für „Infos kopieren“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Werk-Link",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titel: {title}\nKünstler: {artist}\nWerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Was „Infos kopieren“ in die Zwischenablage legt. Platzhalter werden durch die Angaben des Werks ersetzt.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Einfügen",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Auf Standard zurücksetzen",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Künstler-Link",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Privater Pixiv-Reader — Folge-Feed, Ranking, Lesezeichen und Suche. Kein Posten",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Noch nichts im Following-Feed",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Verlauf",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Verlauf löschen",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Den gesamten Verlauf löschen?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Geöffnete Werke erscheinen hier. Der Verlauf bleibt auf diesem Gerät.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Nach Titel oder Künstler filtern",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Kein Werk im Verlauf passt",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Verlauf pausieren",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Solange aktiv, werden geöffnete Werke nicht in den Verlauf aufgenommen",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "„{title}“ aus dem Verlauf entfernen?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Infos kopiert",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Konto auf pixiv.net verwalten",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Über",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Autor stummschalten",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Kommentare",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Du hast den Künstler stummgeschaltet: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Diesmal anzeigen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Du hast den Tag {tag} stummgeschaltet.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dieses Werk ist stummgeschaltet",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Du hast dieses Werk stummgeschaltet.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Dieses Werk stummschalten",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romane",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Stummschalt-Einstellungen",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Tag „{tag}“ stummschalten",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Tag stummschalten",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Schreibe r'Muster', um jeden Tag stummzuschalten, auf den ein regulärer Ausdruck passt. Muster sehen auch alle Tags eines Werks verbunden als #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tag zum Stummschalten",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dieses Muster ist kein gültiger regulärer Ausdruck",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tags",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Künstler",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Werke",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Keine stummgeschalteten Pixiv-Elemente",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Stummgeschaltete Pixiv-Elemente",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Dieser Pixiv-Link konnte nicht geöffnet werden",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Pixiv-Links in XTA öffnen",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Füge auf Androids Seite „Standardmäßig öffnen“ pixiv.net und pixiv.me als unterstützte Links hinzu",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Auf Pixiv öffnen",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Am beliebtesten",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Zurück zu heute",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Abmelden",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Von {name} abmelden?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Von Pixiv abmelden?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Angemeldet als {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv startet mit",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Konto wechseln",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Lesezeichen",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favoriten",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Stummschaltung aufheben",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Stummschaltung für {name} aufheben?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} Werk} other{{shown} Werke}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

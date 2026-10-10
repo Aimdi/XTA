@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Адкрыць {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Актыўны ўліковы запіс",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Уліковы запіс Pixiv: творы, створаныя ШІ",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Не ўдалося прачытаць гэту наладу з Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Часткова схаваныя",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Правяраем вашу наладу Pixiv…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Паказваюцца",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Выдаліць уліковы запіс",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Выдаліць {name} з гэтай прылады?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Дадаткова: уставіць refresh-токен",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "У закладкі",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Публічныя",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Змяніць на pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Скапіявана",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Капіяваць звесткі",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Шаблон «Капіяваць звесткі»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Спасылка на твор",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Назва: {title}\nАўтар: {artist}\nID твора: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Што «Капіяваць звесткі» кладзе ў буфер абмену. Запаўняльнікі замяняюцца звесткамі твора.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Уставіць",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Скінуць да прадвызначанага",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Спасылка на аўтара",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Прыватны чытач Pixiv — стужка, рэйтынг, закладкі і пошук. Без публікацый",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "У стужцы падпісак пакуль нічога няма",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Гісторыя праглядаў",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Ачысціць гісторыю",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Ачысціць усю гісторыю праглядаў?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Тут з’яўляюцца адкрытыя творы. Гісторыя захоўваецца толькі на гэтай прыладзе.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Фільтр па назве або аўтары",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "У гісторыі няма адпаведных твораў",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Прыпыніць гісторыю праглядаў",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Пакуль уключана, адкрытыя творы не дадаюцца ў гісторыю",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Выдаліць «{title}» з гісторыі?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Звесткі скапіяваны",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Кіраваць уліковым запісам на pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Пра праграму",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Уліковы запіс",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Схаваць аўтара",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Каментарыі",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Вы схавалі яго аўтара, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Паказаць гэты раз",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Вы схавалі яго тэг {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Гэты твор схаваны",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Вы схавалі гэты твор.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Схаваць гэты твор",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Раманы",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Налады хавання",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Схаваць тэг \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Схаваць тэг",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Напішыце r'шаблон', каб хаваць кожны тэг, які адпавядае рэгулярнаму выразу. Шаблоны таксама бачаць усе тэгі твора, злучаныя як #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Тэг, які трэба схаваць",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Гэты шаблон не з’яўляецца правільным рэгулярным выразам",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Тэгі",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Аўтары",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Творы",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Няма схаваных элементаў Pixiv",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Схаваныя элементы Pixiv",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Не ўдалося адкрыць гэтую спасылку Pixiv",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Адкрываць спасылкі pixiv у XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "На старонцы Android «Адкрываць па змаўчанні» дадайце pixiv.net і pixiv.me як падтрымліваемыя спасылкі",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Адкрыць на Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Самае папулярнае",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Вярнуцца да сённяшняга дня",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Выйсці",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Выйсці з уліковага запісу {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Выйсці з Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Увайшлі як {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv адкрываецца на",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Змяніць уліковы запіс",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Закладкі",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Абранае",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Паказваць зноў",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Больш не хаваць {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} праца} few{{shown} працы} many{{shown} прац} other{{shown} працы}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

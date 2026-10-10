@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Ava {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktiivne konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixivi konto: tehisintellekti loodud teosed",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Seda seadet ei õnnestunud Pixivist lugeda",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Osaliselt peidetud",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontrollin sinu Pixivi seadet…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Näidatakse",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Eemalda konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Kas eemaldada {name} sellest seadmest?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Täpsem: kleebi värskendustoken",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Järjehoidja",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Avalikud",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Muuda saidil pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopeeritud",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopeeri info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "„Kopeeri info” mall",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Teose link",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Pealkiri: {title}\nKunstnik: {artist}\nTeose ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Mida „Kopeeri info” lõikelauale paneb. Kohatäited asendatakse teose andmetega.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Lisa",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Lähtesta vaikeväärtusele",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Kunstniku link",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Privaatne Pixivi lugeja — jälgimine, edetabel, järjehoidjad ja otsing. Ilma postitamiseta",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Jälgimisvoos pole veel midagi",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Ajalugu",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Tühjenda ajalugu",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Kas tühjendada kogu ajalugu?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Avatud teosed ilmuvad siia. Ajalugu jääb sellesse seadmesse.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtreeri pealkirja või kunstniku järgi",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Ükski ajaloo teos ei sobi",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Peata ajalugu",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Kui see on sees, ei lisata avatud teoseid ajalukku",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Kas eemaldada „{title}” ajaloost?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Info kopeeritud",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Halda kontot saidil pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Teave",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Vaigista autor",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Kommentaarid",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Sa vaigistasid selle kunstniku, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Näita seekord",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Sa vaigistasid selle sildi {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "See teos on vaigistatud",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Sa vaigistasid selle teose.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Vaigista see teos",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romaanid",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Vaigistuse seaded",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Vaigista silt \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Vaigista silt",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Kirjuta r'muster', et vaigistada iga silt, millele regulaaravaldis sobib. Mustrid näevad ka teose kõiki silte ühendatuna kujul #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Vaigistatav silt",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "See muster ei ole kehtiv regulaaravaldis",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Sildid",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kunstnikud",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Teosed",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Vaigistatud Pixivi üksusi pole",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Vaigistatud Pixivi üksused",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Seda Pixivi linki ei saanud avada",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Ava pixivi lingid XTA-s",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Lisa Androidi lehel „Ava vaikimisi” pixiv.net ja pixiv.me toetatud linkidena",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Ava Pixivis",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Kõige populaarsemad",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Tagasi tänasesse",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Logi välja",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Kas logida {name} välja?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Kas logida Pixivist välja?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Sisse logitud kasutajana {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv avaneb jaotisega",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Vaheta kontot",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Järjehoidjad",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Lemmikud",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Tühista vaigistus",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Kas tühistada {name} vaigistus?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} teos} other{{shown} teost}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

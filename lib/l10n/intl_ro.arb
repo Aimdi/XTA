@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Deschide {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Cont activ",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Cont Pixiv: lucrări generate cu IA",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Setarea nu a putut fi citită de la Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Parțial ascunse",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Se verifică setarea ta Pixiv…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Afișate",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Elimină contul",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Elimini {name} de pe acest dispozitiv?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Avansat: lipește token de reînnoire",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Semn de carte",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publice",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Schimbă pe pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Copiat",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Copiază informațiile",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Șablon pentru „Copiază informațiile”",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Linkul lucrării",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titlu: {title}\nArtist: {artist}\nID lucrare: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Ce pune „Copiază informațiile” în clipboard. Substituenții sunt înlocuiți cu detaliile lucrării.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Inserează",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Revino la implicit",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Linkul artistului",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Cititor Pixiv privat — urmăriți, clasamente, semne de carte și căutare. Fără publicare",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Nimic încă în fluxul de urmăriri",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Istoric",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Șterge istoricul",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Ștergi tot istoricul?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Lucrările pe care le deschizi apar aici. Istoricul rămâne pe acest dispozitiv.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrează după titlu sau artist",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Nicio lucrare din istoric nu se potrivește",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Întrerupe istoricul",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Cât timp e activat, lucrările deschise nu sunt adăugate în istoric",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Elimini „{title}” din istoric?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informații copiate",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Gestionează contul pe pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Despre",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Cont",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Ascunde autorul",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Comentarii",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Ai ascuns artistul ei, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Arată de data aceasta",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Ai ascuns eticheta ei {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Această lucrare este ascunsă",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Ai ascuns această lucrare.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Ascunde această lucrare",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romane",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Setări de ascundere",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Ascunde eticheta „{tag}”",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Ascunde eticheta",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Scrie r'tipar' pentru a ascunde fiecare etichetă potrivită de o expresie regulată. Tiparele văd și toate etichetele unei lucrări unite ca #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Etichetă de ascuns",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Acest tipar nu este o expresie regulată validă",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etichete",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artiști",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Lucrări",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Nu există elemente Pixiv ascunse",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Elemente Pixiv ascunse",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Nu s-a putut deschide acel link Pixiv",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Deschide linkurile pixiv în XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "În pagina Android „Deschide în mod prestabilit”, adaugă pixiv.net și pixiv.me ca linkuri acceptate",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Deschide pe Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Cele mai populare",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Înapoi la ziua de azi",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Deconectare",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Deconectezi {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Te deconectezi de la Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Conectat ca {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv se deschide la",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Schimbă contul",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Semne de carte",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favorite",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Anulează ascunderea",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Anulezi ascunderea pentru {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} lucrare} few{{shown} lucrări} other{{shown} de lucrări}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

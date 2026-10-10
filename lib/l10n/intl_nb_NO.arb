@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Åpne {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktiv konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-konto: KI-genererte verk",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Kunne ikke lese denne innstillingen fra Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Delvis skjult",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Sjekker Pixiv-innstillingen din …",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Vises",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Fjern konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Fjerne {name} fra denne enheten?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Avansert: lim inn oppfriskningstoken",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Bokmerke",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Offentlige",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Endre på pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopiert",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopier info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Mal for «Kopier info»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Lenke til verket",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Tittel: {title}\nKunstner: {artist}\nVerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Det «Kopier info» legger på utklippstavlen. Plassholderne erstattes med verkets detaljer.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Sett inn",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Tilbakestill til standard",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Lenke til kunstneren",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Privat Pixiv-leser — følging, rangering, bokmerker og søk. Uten posting",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Ingenting i følgefeeden ennå",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Historikk",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Tøm historikk",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Tømme hele historikken?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Verk du åpner vises her. Historikken blir på denne enheten.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrer etter tittel eller kunstner",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Ingen verk i historikken passer",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Sett historikken på pause",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Når dette er på, legges åpnede verk ikke til i historikken",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Fjerne «{title}» fra historikken?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Info kopiert",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Administrer kontoen på pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Om",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Demp forfatter",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Kommentarer",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Du har dempet kunstneren, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Vis denne gangen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Du har dempet taggen {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dette verket er dempet",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Du har dempet dette verket.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Demp dette verket",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romaner",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Innstillinger for demping",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Demp taggen «{tag}»",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Demp tagg",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Skriv r'mønster' for å dempe alle tagger et regulært uttrykk treffer. Mønstre ser også alle taggene til et verk satt sammen som #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tagg som skal dempes",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dette mønsteret er ikke et gyldig regulært uttrykk",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tagger",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kunstnere",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Verk",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Ingen dempede Pixiv-elementer",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Dempede Pixiv-elementer",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Kunne ikke åpne denne Pixiv-lenken",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Åpne pixiv-lenker i XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "På Android-siden «Åpne som standard» legger du til pixiv.net og pixiv.me som støttede lenker",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Åpne på Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Mest populære",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Tilbake til i dag",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Logg ut",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Logge ut av {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Logge ut av Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Innlogget som {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv åpner på",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Bytt konto",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Bokmerker",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favoritter",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Opphev demping",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Oppheve demping av {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} verk} other{{shown} verk}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

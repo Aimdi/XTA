@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Buka {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Akun aktif",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Akun Pixiv: karya buatan AI",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Tidak dapat membaca pengaturan ini dari Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Sebagian disembunyikan",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Memeriksa pengaturan Pixiv Anda…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Ditampilkan",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Hapus akun",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Hapus {name} dari perangkat ini?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Lanjutan: tempel refresh token",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Markah",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publik",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Ubah di pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Disalin",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Salin info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Templat “Salin info”",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Tautan karya",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Judul: {title}\nKreator: {artist}\nID karya: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Apa yang dimasukkan “Salin info” ke papan klip. Penanda diganti dengan detail karya.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Sisipkan",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Kembalikan ke bawaan",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Tautan kreator",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Pembaca Pixiv pribadi — mengikuti, peringkat, penanda, dan pencarian. Tanpa posting",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Belum ada apa pun di feed mengikuti",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Riwayat",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Hapus riwayat",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Hapus seluruh riwayat?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Karya yang Anda buka muncul di sini. Riwayat tetap di perangkat ini.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Saring menurut judul atau kreator",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Tidak ada karya di riwayat yang cocok",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Jeda riwayat",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Selama aktif, karya yang dibuka tidak ditambahkan ke riwayat",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Hapus “{title}” dari riwayat?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Info disalin",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Kelola akun di pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Tentang",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Akun",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Bisukan kreator",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Komentar",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Anda membisukan kreatornya, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Tampilkan kali ini",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Anda membisukan tagnya {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Karya ini dibisukan",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Anda membisukan karya ini.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Bisukan karya ini",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Novel",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Pengaturan bisu",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Bisukan tag \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Bisukan tag",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Tulis r'pola' untuk membisukan setiap tag yang cocok dengan ekspresi reguler. Pola juga melihat semua tag sebuah karya yang digabung sebagai #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tag yang akan dibisukan",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Pola ini bukan ekspresi reguler yang valid",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tag",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kreator",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Karya",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Tidak ada item Pixiv yang dibisukan",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Item Pixiv yang dibisukan",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Tidak dapat membuka tautan Pixiv itu",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Buka tautan pixiv di XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Di halaman Android “Buka secara default”, tambahkan pixiv.net dan pixiv.me sebagai tautan yang didukung",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Buka di Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Paling populer",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Kembali ke hari ini",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Keluar",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Keluar dari {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Keluar dari Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Masuk sebagai {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv dibuka di",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Ganti akun",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Penanda",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favorit",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Batal bisukan",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Batal bisukan {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, other{{shown} karya}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

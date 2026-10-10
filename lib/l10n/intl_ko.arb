@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "{plugin} 열기",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "사용 중인 계정",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv 계정: AI 생성 작품",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Pixiv에서 이 설정을 읽지 못했습니다",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "일부 숨김",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Pixiv 설정을 확인하는 중…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "표시",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "계정 삭제",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name}을(를) 이 기기에서 삭제할까요?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "고급: 리프레시 토큰 붙여넣기",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "북마크",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "공개",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "pixiv.net에서 변경",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "복사했습니다",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "정보 복사",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "‘정보 복사’ 템플릿",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "작품 링크",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "제목: {title}\n작가: {artist}\n작품 ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "‘정보 복사’가 클립보드에 넣는 내용입니다. 자리표시자는 작품 정보로 바뀝니다.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "삽입",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "기본값으로 재설정",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "작가 링크",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "비공개 Pixiv 리더 — 팔로잉, 랭킹, 북마크, 검색. 게시 없음",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "팔로잉 피드에 아직 아무것도 없습니다",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "열람 기록",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "기록 지우기",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "열람 기록을 모두 지울까요?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "연 작품이 여기에 표시됩니다. 기록은 이 기기에만 남습니다.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "제목이나 작가로 필터링",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "기록에 일치하는 작품이 없습니다",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "열람 기록 일시 중지",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "켜져 있는 동안 연 작품은 기록에 추가되지 않습니다",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "“{title}”을(를) 기록에서 삭제할까요?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "정보를 복사했습니다",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "pixiv.net에서 계정 관리",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "정보",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "계정",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "작가 뮤트",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "댓글",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "이 작품의 작가 {name}을(를) 뮤트했습니다.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "이번만 보기",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "이 작품의 태그 {tag}을(를) 뮤트했습니다.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "뮤트한 작품입니다",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "이 작품을 뮤트했습니다.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "이 작품 뮤트",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "소설",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "뮤트 설정",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "태그 \"{tag}\" 뮤트",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "태그 뮤트",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "r'패턴'을 쓰면 정규식과 일치하는 모든 태그를 뮤트합니다. 패턴은 작품의 모든 태그를 #tag1#tag2처럼 이어 붙인 문자열에도 적용됩니다.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "뮤트할 태그",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "올바른 정규식이 아닙니다",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "태그",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "작가",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "작품",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "뮤트한 Pixiv 항목이 없습니다",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "뮤트한 Pixiv 항목",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "해당 Pixiv 링크를 열 수 없습니다",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "XTA에서 pixiv 링크 열기",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Android의 ‘기본으로 열기’ 페이지에서 pixiv.net과 pixiv.me를 지원되는 링크로 추가하세요",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Pixiv에서 열기",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "인기순",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "프리미엄",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "오늘로 돌아가기",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "로그아웃",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "{name}에서 로그아웃할까요?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv에서 로그아웃할까요?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "{name}(으)로 로그인됨",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv 시작 화면",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "계정 전환",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "북마크",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "즐겨찾기",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "뮤트 해제",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "{name} 뮤트를 해제할까요?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, other{작품 {shown}}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

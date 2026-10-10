@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Malfermi {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktiva konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-konto: AI-generitaj verkoj",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Ne eblis legi ĉi tiun agordon el Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Parte kaŝitaj",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontrolante vian Pixiv-agordon…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Montrataj",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Forigi konton",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Ĉu forigi {name} el ĉi tiu aparato?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Altnivela: alglui refreshan ĵetonon",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Legosigno",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publikaj",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Ŝanĝi ĉe pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopiite",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopii informojn",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Ŝablono de „Kopii informojn“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Ligilo al la verko",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titolo: {title}\nArtisto: {artist}\nVerko-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Kion „Kopii informojn“ metas en la tondujon. Lokokupiloj anstataŭiĝas per la detaloj de la verko.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Enmeti",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Restarigi la defaŭlton",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Ligilo al la artisto",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Privata Pixiv-legilo — sekvado, rangigo, legosignoj kaj serĉo. Sen afiŝado",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Ankoraŭ nenio en la sekva fluo",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Historio",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Forviŝi historion",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Ĉu forviŝi la tutan historion?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Verkoj, kiujn vi malfermas, aperas ĉi tie. La historio restas en ĉi tiu aparato.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtri laŭ titolo aŭ artisto",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Neniu verko en la historio kongruas",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Paŭzigi la historion",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Dum ŝaltita, malfermitaj verkoj ne aldoniĝas al la historio",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Ĉu forigi „{title}“ el la historio?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informoj kopiitaj",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Administri konton ĉe pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Pri",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Silentigi aŭtoron",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Komentoj",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Vi silentigis ĝian artiston, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Montri ĉi-foje",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Vi silentigis ĝian etikedon {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Ĉi tiu verko estas silentigita",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Vi silentigis ĉi tiun verkon.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Silentigi ĉi tiun verkon",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romanoj",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Agordoj de silentigo",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Silentigi etikedon \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Silentigi etikedon",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Skribu r'ŝablono' por silentigi ĉiun etikedon, kiun regula esprimo kongruas. Ŝablonoj ankaŭ vidas ĉiujn etikedojn de verko kunigitajn kiel #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Silentigota etikedo",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Ĉi tiu ŝablono ne estas valida regula esprimo",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etikedoj",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artistoj",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Verkoj",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Neniuj silentigitaj Pixiv-eroj",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Silentigitaj Pixiv-eroj",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Ne eblis malfermi tiun Pixiv-ligilon",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Malfermi pixiv-ligilojn en XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "En la Android-paĝo „Malfermi defaŭlte“, aldonu pixiv.net kaj pixiv.me kiel subtenatajn ligilojn",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Malfermi ĉe Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Plej popularaj",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Reen al hodiaŭ",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Elsaluti",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Ĉu elsaluti el {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Ĉu elsaluti el Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Ensalutita kiel {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv malfermiĝas ĉe",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Ŝanĝi konton",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Legosignoj",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favoritoj",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Malsilentigi",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Ĉu malsilentigi {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} verko} other{{shown} verkoj}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

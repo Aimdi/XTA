@@ -60,18 +60,30 @@ String? pixivCaptionHref(String? raw) {
   }
 }
 
-/// The creator's caption under a work: selectable, with Pixiv links opening
-/// in XTA and others where [openLink] sends them.
-class PixivDetailCaption extends StatefulWidget {
+/// The creator's caption under a work.
+class PixivDetailCaption extends StatelessWidget {
   final PixivIllust illust;
 
   const PixivDetailCaption({super.key, required this.illust});
 
   @override
-  State<PixivDetailCaption> createState() => _PixivDetailCaptionState();
+  Widget build(BuildContext context) => PixivHtmlText(html: illust.captionHtml, plainText: illust.caption);
 }
 
-class _PixivDetailCaptionState extends State<PixivDetailCaption> {
+/// Pixiv's HTML text — a work's caption, a profile's bio, a novel's caption —
+/// selectable, with Pixiv links opening in XTA and others where [openLink]
+/// sends them. [plainText] stands in when there is no HTML.
+class PixivHtmlText extends StatefulWidget {
+  final String html;
+  final String plainText;
+
+  const PixivHtmlText({super.key, required this.html, this.plainText = ''});
+
+  @override
+  State<PixivHtmlText> createState() => _PixivHtmlTextState();
+}
+
+class _PixivHtmlTextState extends State<PixivHtmlText> {
   final _recognizers = <TapGestureRecognizer>[];
 
   @override
@@ -87,10 +99,8 @@ class _PixivDetailCaptionState extends State<PixivDetailCaption> {
     _recognizers.clear();
   }
 
-  List<PixivCaptionPart> get _parts {
-    final html = widget.illust.captionHtml;
-    return html.isEmpty ? [PixivCaptionPart(widget.illust.caption)] : pixivCaptionParts(html);
-  }
+  List<PixivCaptionPart> get _parts =>
+      widget.html.isEmpty ? [PixivCaptionPart(widget.plainText)] : pixivCaptionParts(widget.html);
 
   Future<void> _open(String href) async {
     final ref = parsePixivLink(href);

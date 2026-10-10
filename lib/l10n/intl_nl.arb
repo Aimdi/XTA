@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "{plugin} openen",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Actief account",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-account: met AI gegenereerde werken",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Deze instelling kon niet bij Pixiv worden gelezen",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Deels verborgen",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Je Pixiv-instelling wordt gecontroleerd…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Getoond",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Account verwijderen",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} van dit apparaat verwijderen?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Geavanceerd: refresh-token plakken",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Bladwijzer",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Openbaar",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Wijzigen op pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Gekopieerd",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Info kopiëren",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Sjabloon voor ‘Info kopiëren’",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Link naar werk",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titel: {title}\nMaker: {artist}\nWerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Wat ‘Info kopiëren’ op het klembord zet. Plaatshouders worden vervangen door de gegevens van het werk.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Invoegen",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Standaard herstellen",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Link naar maker",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Privé Pixiv-lezer — volgend, ranglijst, bladwijzers en zoeken. Zonder posten",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Nog niets in je volgfeed",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Geschiedenis",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Geschiedenis wissen",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "De hele geschiedenis wissen?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Werken die je opent verschijnen hier. De geschiedenis blijft op dit apparaat.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filteren op titel of maker",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Geen werk in de geschiedenis komt overeen",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Geschiedenis pauzeren",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Zolang dit aan staat, worden geopende werken niet aan de geschiedenis toegevoegd",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "‘{title}’ uit de geschiedenis verwijderen?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Info gekopieerd",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Account beheren op pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Over",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Account",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Maker dempen",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Reacties",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Je hebt de maker gedempt: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Deze keer tonen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Je hebt de tag {tag} gedempt.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dit werk is gedempt",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Je hebt dit werk gedempt.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Dit werk dempen",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romans",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Instellingen voor dempen",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Tag \"{tag}\" dempen",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Tag dempen",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Schrijf r'patroon' om elke tag te dempen waar een reguliere expressie op past. Patronen zien ook alle tags van een werk samengevoegd als #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tag om te dempen",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dit patroon is geen geldige reguliere expressie",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tags",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Makers",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Werken",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Geen gedempte Pixiv-items",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Gedempte Pixiv-items",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Kan die Pixiv-link niet openen",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Pixiv-links openen in XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Voeg op de Android-pagina ‘Standaard openen’ pixiv.net en pixiv.me toe als ondersteunde links",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Openen op Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Populairst",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Terug naar vandaag",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Afmelden",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "{name} afmelden?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Afmelden bij Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Aangemeld als {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv opent op",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Ander account",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Bladwijzers",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favorieten",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Dempen opheffen",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "{name} niet meer dempen?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} werk} other{{shown} werken}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

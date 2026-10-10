@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "打开{plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "当前账号",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv 账号：AI 生成作品",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "无法从 Pixiv 读取此设置",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "部分隐藏",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "正在检查你的 Pixiv 设置…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "显示",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "移除账号",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "从此设备移除 {name}？",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "高级：粘贴刷新令牌",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "收藏",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "公开",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "在 pixiv.net 更改",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "已复制",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "复制作品信息",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "“复制作品信息”模板",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "作品链接",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "标题：{title}\n画师：{artist}\n作品 ID：{work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "“复制作品信息”放入剪贴板的内容。占位符会替换为作品的信息。",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "插入",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "恢复默认",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "画师链接",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "私有 Pixiv 阅读器 — 关注、排行榜、收藏与搜索。不发帖",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "关注动态里还没有内容",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "浏览历史",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "清除历史",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "清除全部浏览历史？",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "打开过的作品会显示在这里。历史只保存在这台设备上。",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "按标题或画师筛选",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "历史中没有匹配的作品",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "暂停记录浏览历史",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "开启时，打开的作品不会加入历史",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "从历史中移除“{title}”？",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "已复制作品信息",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "在 pixiv.net 管理账号",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "关于",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "账号",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "屏蔽作者",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "评论",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "你屏蔽了它的画师 {name}。",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "本次显示",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "你屏蔽了它的标签 {tag}。",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "此作品已屏蔽",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "你屏蔽了此作品。",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "屏蔽此作品",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "小说",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "屏蔽设置",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "屏蔽标签“{tag}”",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "屏蔽标签",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "写成 r'规则' 即可屏蔽所有与该正则表达式匹配的标签。规则还会检查作品全部标签连接成的 #tag1#tag2。",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "要屏蔽的标签",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "该规则不是有效的正则表达式",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "标签",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "画师",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "作品",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "没有已屏蔽的 Pixiv 项目",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "已屏蔽的 Pixiv 项目",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "无法打开该 Pixiv 链接",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "在 XTA 中打开 pixiv 链接",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "在 Android 的“默认打开”页面中，将 pixiv.net 和 pixiv.me 添加为支持的链接",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "在 Pixiv 打开",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "最受欢迎",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "高级会员",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "回到今天",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "退出登录",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "退出 {name} 的登录？",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "退出 Pixiv 登录？",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "已登录为 {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv 启动页",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "切换账号",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "收藏",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "收藏",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "取消屏蔽",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "取消屏蔽 {name}？",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, other{{shown} 件作品}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

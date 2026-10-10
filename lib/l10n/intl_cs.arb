@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Otevřít {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktivní účet",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Účet Pixiv: díla vytvořená AI",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Toto nastavení se z Pixivu nepodařilo načíst",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Částečně skryta",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontroluje se vaše nastavení Pixivu…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Zobrazena",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Odebrat účet",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Odebrat {name} z tohoto zařízení?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Pokročilé: vložit refresh token",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Přidat záložku",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Veřejné",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Změnit na pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Zkopírováno",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopírovat informace",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Šablona pro „Kopírovat informace“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Odkaz na dílo",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Název: {title}\nUmělec: {artist}\nID díla: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Co „Kopírovat informace“ vloží do schránky. Zástupné symboly se nahradí údaji díla.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Vložit",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Obnovit výchozí",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Odkaz na umělce",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Soukromá čtečka Pixivu — sledování, žebříčky, záložky a vyhledávání. Bez publikování",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Ve feedu sledování zatím nic není",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Historie prohlížení",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Vymazat historii",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Vymazat celou historii prohlížení?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Otevřená díla se zobrazí zde. Historie zůstává v tomto zařízení.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrovat podle názvu nebo umělce",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Žádné dílo v historii neodpovídá",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Pozastavit historii prohlížení",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Když je zapnuto, otevřená díla se do historie nepřidávají",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Odebrat „{title}“ z historie?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informace zkopírovány",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Spravovat účet na pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "O aplikaci",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Účet",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Ztlumit autora",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Komentáře",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Ztlumili jste jeho umělce, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Tentokrát zobrazit",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Ztlumili jste jeho štítek {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Toto dílo je ztlumené",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Ztlumili jste toto dílo.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Ztlumit toto dílo",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romány",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Nastavení ztlumení",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Ztlumit štítek „{tag}“",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Ztlumit štítek",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Napište r'vzor' a ztlumíte každý štítek, kterému odpovídá regulární výraz. Vzory vidí také všechny štítky díla spojené jako #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Štítek ke ztlumení",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Tento vzor není platný regulární výraz",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Štítky",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Umělci",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Díla",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Žádné ztlumené položky Pixiv",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Ztlumené položky Pixiv",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Tento odkaz Pixiv se nepodařilo otevřít",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Otevírat odkazy pixiv v XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Na stránce Androidu „Otevírat ve výchozím nastavení“ přidejte pixiv.net a pixiv.me jako podporované odkazy",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Otevřít na Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Nejoblíbenější",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Zpět na dnešek",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Odhlásit se",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Odhlásit účet {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Odhlásit se z Pixivu?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Přihlášen jako {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv se otevře na",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Přepnout účet",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Záložky",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Oblíbené",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Zrušit ztlumení",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Zrušit ztlumení {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} dílo} few{{shown} díla} many{{shown} díla} other{{shown} děl}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

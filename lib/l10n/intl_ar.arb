@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "فتح {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "الحساب النشط",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "حساب Pixiv: الأعمال المولّدة بالذكاء الاصطناعي",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "تعذّرت قراءة هذا الإعداد من Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "مخفية جزئيًا",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "جارٍ التحقق من إعداد Pixiv لديك…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "معروضة",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "إزالة الحساب",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "هل تريد إزالة {name} من هذا الجهاز؟",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "متقدم: الصق رمز التحديث",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "إضافة إلى الإشارات",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "عام",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "التغيير على pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "تم النسخ",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "نسخ المعلومات",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "قالب «نسخ المعلومات»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "رابط العمل",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "العنوان: {title}\nالفنان: {artist}\nمعرّف العمل: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "ما يضعه «نسخ المعلومات» في الحافظة. تُستبدل العناصر النائبة بتفاصيل العمل.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "إدراج",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "استعادة الافتراضي",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "رابط الفنان",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "قارئ Pixiv خاص — المتابعة والترتيب والإشارات والبحث. بلا نشر",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "لا شيء في خلاصة المتابعة بعد",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "سجل المشاهدة",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "مسح السجل",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "هل تريد مسح سجل المشاهدة كله؟",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "تظهر هنا الأعمال التي تفتحها. يبقى السجل على هذا الجهاز.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "التصفية حسب العنوان أو الفنان",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "لا يوجد عمل في السجل يطابق",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "إيقاف سجل المشاهدة مؤقتًا",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "أثناء التفعيل، لا تُضاف الأعمال المفتوحة إلى السجل",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "هل تريد إزالة «{title}» من السجل؟",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "تم نسخ المعلومات",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "إدارة الحساب على pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "حول",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "الحساب",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "كتم المؤلف",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "التعليقات",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "لقد كتمت فنانه، {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "اعرضه هذه المرة",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "لقد كتمت وسمه {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "هذا العمل مكتوم",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "لقد كتمت هذا العمل.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "كتم هذا العمل",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "الروايات",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "إعدادات الكتم",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "كتم الوسم \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "كتم الوسم",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "اكتب r'نمط' لكتم كل وسم يطابقه تعبير نمطي. ترى الأنماط أيضًا كل وسوم العمل مجموعة بالشكل #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "وسم لكتمه",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "هذا النمط ليس تعبيرًا نمطيًا صالحًا",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "الوسوم",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "الفنانون",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "الأعمال",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "لا توجد عناصر Pixiv مكتومة",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "عناصر Pixiv المكتومة",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "تعذر فتح رابط Pixiv هذا",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "فتح روابط pixiv في XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "في صفحة «الفتح تلقائيًا» في Android، أضف pixiv.net وpixiv.me كروابط مدعومة",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "فتح على Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "الأكثر شعبية",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "العودة إلى اليوم",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "تسجيل الخروج",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "هل تريد تسجيل خروج {name}؟",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "هل تريد تسجيل الخروج من Pixiv؟",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "تم تسجيل الدخول باسم {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "يفتح Pixiv على",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "تبديل الحساب",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "الإشارات",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "المفضلة",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "إلغاء الكتم",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "هل تريد إلغاء كتم {name}؟",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, zero{لا أعمال} one{عمل واحد} two{عملان} few{{shown} أعمال} many{{shown} عملًا} other{{shown} عمل}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

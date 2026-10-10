@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Obre {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Compte actiu",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Compte de Pixiv: obres generades amb IA",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "No s'ha pogut llegir aquesta configuració de Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Parcialment amagades",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "S'està comprovant la teva configuració de Pixiv…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Es mostren",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Treu el compte",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Vols treure {name} d'aquest dispositiu?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Avançat: enganxa el testimoni d’actualització",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Marcador",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Públics",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Canvia-ho a pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Copiat",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Copia la informació",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Plantilla de «Copia la informació»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Enllaç de l'obra",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Títol: {title}\nArtista: {artist}\nID de l'obra: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Què posa «Copia la informació» al porta-retalls. Els marcadors se substitueixen per les dades de l'obra.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Insereix",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Restableix el valor per defecte",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Enllaç de l'artista",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Lector privat de Pixiv: seguiment, rànquing, marcadors i cerca. Sense publicar",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Encara no hi ha res al fil de seguiments",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Historial",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Esborra l'historial",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Vols esborrar tot l'historial?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Les obres que obris apareixen aquí. L'historial es queda en aquest dispositiu.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtra per títol o artista",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Cap obra de l'historial coincideix",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Posa en pausa l'historial",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Mentre estigui activat, les obres obertes no s'afegeixen a l'historial",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Vols treure «{title}» de l'historial?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informació copiada",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Gestiona el compte a pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Quant a",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Compte",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Silencia l'autor",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Comentaris",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Has silenciat el seu artista, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Mostra-la aquesta vegada",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Has silenciat la seva etiqueta {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Aquesta obra està silenciada",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Has silenciat aquesta obra.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Silencia aquesta obra",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Novel·les",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Configuració del silenci",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Silencia l'etiqueta \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Silencia l'etiqueta",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Escriu r'patró' per silenciar cada etiqueta que coincideixi amb una expressió regular. Els patrons també veuen totes les etiquetes d'una obra unides com #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Etiqueta per silenciar",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Aquest patró no és una expressió regular vàlida",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etiquetes",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artistes",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Obres",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "No hi ha elements de Pixiv silenciats",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Elements de Pixiv silenciats",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "No s'ha pogut obrir aquest enllaç de Pixiv",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Obre els enllaços de pixiv a XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "A la pàgina «Obre de manera predeterminada» d'Android, afegeix pixiv.net i pixiv.me com a enllaços compatibles",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Obre a Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Els més populars",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Torna a avui",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Tanca sessió",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Vols tancar la sessió de {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Vols tancar la sessió de Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Sessió iniciada com a {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Obre Pixiv a",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Canvia de compte",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Marcadors",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Preferits",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Deixa de silenciar",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Vols deixar de silenciar {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} obra} other{{shown} obres}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

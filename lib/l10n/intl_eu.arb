@@ -2215,6 +2215,28 @@
   "@plugin_open": {},
   "plugin_open_client": "Ireki {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Kontu aktiboa",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv kontua: AAk sortutako lanak",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Ezin izan da ezarpen hau Pixiv-etik irakurri",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Partzialki ezkutatuta",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Zure Pixiv ezarpena egiaztatzen…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Erakusten dira",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Kendu kontua",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} gailu honetatik kendu nahi duzu?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Aurreratua: itsatsi freskatze-tokena",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Laster-marka",
@@ -2229,6 +2251,38 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publikoak",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Aldatu pixiv.net-en",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopiatu da",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopiatu informazioa",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "«Kopiatu informazioa» txantiloia",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Lanaren esteka",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Izenburua: {title}\nArtista: {artist}\nLanaren IDa: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "«Kopiatu informazioa»k arbelean jartzen duena. Leku-markak lanaren datuekin ordezten dira.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Txertatu",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Berrezarri lehenetsia",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Artistaren esteka",
+  "@plugin_pixiv_copy_template_user_url": {},
   "plugin_pixiv_description": "Pixiv irakurle pribatua — jarraipena, sailkapena, laster-markak eta bilaketa. Argitaratu gabe",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Oraindik ez dago ezer jarraipen-jarioan",
@@ -2256,6 +2310,34 @@
       }
     }
   },
+  "plugin_pixiv_history": "Historia",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Garbitu historia",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Historia osoa garbitu nahi duzu?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Irekitzen dituzun lanak hemen agertzen dira. Historia gailu honetan geratzen da.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Iragazi izenburuaren edo artistaren arabera",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Historiako lanik ez dator bat",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Pausatu historia",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Aktibatuta dagoen bitartean, irekitako lanak ez dira historiara gehitzen",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "«{title}» historiatik kendu nahi duzu?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informazioa kopiatu da",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Kudeatu kontua pixiv.net-en",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Honi buruz",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Kontua",
@@ -2266,10 +2348,52 @@
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Isilarazi egilea",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Iruzkinak",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Haren artista isilarazi duzu: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Erakutsi oraingoan",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Haren {tag} etiketa isilarazi duzu.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Lan hau isilarazita dago",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Lan hau isilarazi duzu.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Isilarazi lan hau",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Eleberriak",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Isilarazteko ezarpenak",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Isilarazi \"{tag}\" etiketa",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Isilarazi etiketa",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Idatzi r'eredua' adierazpen erregular batekin bat datozen etiketa guztiak isilarazteko. Ereduek lan baten etiketa guztiak ere ikusten dituzte, #tag1#tag2 gisa elkartuta.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Isilarazteko etiketa",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Eredu hau ez da adierazpen erregular baliozkoa",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etiketak",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artistak",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Lanak",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Ez dago isilarazitako Pixiv elementurik",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Isilarazitako Pixiv elementuak",
@@ -2289,6 +2413,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Ezin izan da Pixiv esteka hori ireki",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Ireki pixiv estekak XTAn",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Androideko «Ireki modu lehenetsian» orrian, gehitu pixiv.net eta pixiv.me esteka onartu gisa",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Ireki Pixiven",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2303,6 +2431,8 @@
   },
   "plugin_pixiv_popular_title": "Ezagunenak",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_r18": "R-18",
   "@plugin_pixiv_r18": {},
   "plugin_pixiv_ranking_back_to_today": "Itzuli gaurkora",
@@ -2375,6 +2505,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Itxi saioa",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "{name} kontuaren saioa itxi nahi duzu?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv-eko saioa itxi nahi duzu?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Saioa hasita {name} gisa",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2383,6 +2523,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv hemen irekitzen da",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Aldatu kontua",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Laster-markak",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Gogokoak",
@@ -2421,6 +2565,14 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Kendu isilaraztea",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "{name} isilarazteari utzi nahi diozu?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{lan {shown}} other{{shown} lan}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
