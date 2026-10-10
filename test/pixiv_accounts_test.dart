@@ -83,10 +83,14 @@ class _AccountScreenClient extends FakePixivClient {
   Future<PixivAuthUser> verify() async => throw PixivException(PixivErrorKind.network, 'offline');
 
   @override
-  Future<PixivIllustPage> bookmarks({required int userId, String restrict = 'public', String? nextUrl}) async =>
-      PixivIllustPage(
-        illusts: [pixivWork(id: userId * 100, pages: 1, title: 'Work of $userId')],
-      );
+  Future<PixivIllustPage> bookmarks({
+    required int userId,
+    String restrict = 'public',
+    String? tag,
+    String? nextUrl,
+  }) async => PixivIllustPage(
+    illusts: [pixivWork(id: userId * 100, pages: 1, title: 'Work of $userId')],
+  );
 }
 
 void main() {

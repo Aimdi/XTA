@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_tag_picker.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorites_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_home_section.dart';
@@ -80,7 +81,10 @@ class _PixivScreenState extends State<PixivScreen> {
     );
     _bookmarks = _session.obtain(
       'bookmarks',
-      () => PixivIllustListStore(_bookmarksLoader(_state.bookmarksRestrict), filter: mute.filter),
+      () => PixivIllustListStore(
+        _bookmarksLoader(_state.bookmarksRestrict, tag: _state.bookmarkTag),
+        filter: mute.filter,
+      ),
     );
     _forgetOtherAccount();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -100,13 +104,13 @@ class _PixivScreenState extends State<PixivScreen> {
   bool get _hasToken =>
       (PrefService.of(context, listen: false).get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
 
-  PixivIllustPageLoader _bookmarksLoader(String restrict) {
+  PixivIllustPageLoader _bookmarksLoader(String restrict, {String? tag}) {
     final client = context.read<PixivClient>();
     return ({nextUrl}) async {
       // Prefer the stored id — verify() always hits the token endpoint and made
       // the Bookmarks tab feel like it loaded forever on every open.
       final userId = await client.ensureUserId();
-      return client.bookmarks(userId: userId, restrict: restrict, nextUrl: nextUrl);
+      return client.bookmarks(userId: userId, restrict: restrict, tag: tag, nextUrl: nextUrl);
     };
   }
 
@@ -222,13 +226,19 @@ class _PixivScreenState extends State<PixivScreen> {
     await _reloadRanking();
   }
 
-  Future<void> _changeBookmarksRestrict(String restrict) async {
-    if (restrict == _state.bookmarksRestrict) {
+  Future<void> _filterBookmarks(PixivBookmarkFilter filter) async {
+    if (filter.restrict == _state.bookmarksRestrict && filter.tag == _state.bookmarkTag) {
       await _scrollToTop();
       return;
     }
-    _view.select(_state.copyWith(bookmarksRestrict: restrict));
-    _bookmarks.useLoader(_bookmarksLoader(restrict));
+    _view.select(
+      _state.copyWith(
+        bookmarksRestrict: filter.restrict,
+        bookmarkTag: filter.tag,
+        clearBookmarkTag: filter.tag == null,
+      ),
+    );
+    _bookmarks.useLoader(_bookmarksLoader(filter.restrict, tag: filter.tag));
     await _bookmarks.refresh();
   }
 
@@ -245,7 +255,7 @@ class _PixivScreenState extends State<PixivScreen> {
   @override
   Widget build(BuildContext context) {
     if (_view.restore(context, 'pixiv')) {
-      _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict));
+      _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict, tag: _state.bookmarkTag));
     }
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
@@ -289,7 +299,8 @@ class _PixivScreenState extends State<PixivScreen> {
     ),
     (_) => PixivFavoritesSection(
       restrict: state.bookmarksRestrict,
-      onRestrict: _changeBookmarksRestrict,
+      tag: state.bookmarkTag,
+      onFilter: _filterBookmarks,
       store: _bookmarks,
       scrollController: _favoritesScroll,
     ),

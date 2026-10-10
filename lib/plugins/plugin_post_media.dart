@@ -411,16 +411,17 @@ String pluginMediaFileName(PluginMediaItem item, String sourceName) {
   return base.isEmpty ? '$safeSource-media' : '$safeSource-$base';
 }
 
-Future<void> downloadPluginMediaItem(
+/// True once the file is saved.
+Future<bool> downloadPluginMediaItem(
   BuildContext context,
   PluginMediaItem item, {
   String sourceName = 'xta',
 }) async {
-  if (!context.mounted || item.isVideo) return;
+  if (!context.mounted || item.isVideo) return false;
   final uri = Uri.tryParse(item.resolvedDownloadUrl);
-  if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http')) return;
+  if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http')) return false;
 
-  await downloadUriToPickedFile(
+  return downloadUriToPickedFile(
     context,
     uri,
     pluginMediaFileName(item, sourceName),

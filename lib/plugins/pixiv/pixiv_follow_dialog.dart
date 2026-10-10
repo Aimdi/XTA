@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_haptics.dart';
 import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -50,6 +51,7 @@ Future<void> editPixivFollow(BuildContext context, PixivUser user, {ValueChanged
     final followed = decision.follow
         ? await follows.follow(user, restrict: decision.restrict)
         : await follows.unfollow(user);
+    if (context.mounted) playPixivHaptic(context, PixivHaptic.light);
     onChanged?.call(followed);
   } catch (error) {
     messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));

@@ -59,7 +59,8 @@ Future<void> autoDownloadTweetPhotos({
   messenger.showSnackBar(SnackBar(content: Text(L10n.current.downloads_batch_result(result.saved, result.total))));
 }
 
-Future<void> downloadUriToPickedFile(BuildContext context, Uri uri, String fileName,
+/// True once the file is saved.
+Future<bool> downloadUriToPickedFile(BuildContext context, Uri uri, String fileName,
     {required BasePrefService prefs, required Function() onStart, required Function() onSuccess}) async {
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
@@ -69,18 +70,21 @@ Future<void> downloadUriToPickedFile(BuildContext context, Uri uri, String fileN
     final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
     final result = await DownloadStore.shared.enqueue(uri: uri, fileName: fileName,
       treeUri: downloadType == optionDownloadTypeAsk || treeUri.isEmpty ? null : treeUri);
+    final saved = result.status == DownloadStatus.completed;
     if (messenger.mounted) messenger.hideCurrentSnackBar();
-    if (!context.mounted) return;
-    if (result.status == DownloadStatus.completed) {
+    if (!context.mounted) return saved;
+    if (saved) {
       onSuccess();
     } else if (result.status == DownloadStatus.failed) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_retry_hint)));
     }
+    return saved;
   } catch (_) {
     if (messenger.mounted) {
       messenger.hideCurrentSnackBar();
       messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_failed)));
     }
+    return false;
   }
 }
 

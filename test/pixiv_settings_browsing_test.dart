@@ -233,6 +233,10 @@ class _ScreenClient extends FakePixivClient {
   Future<PixivAuthUser> verify() async => const PixivAuthUser(id: 1, name: 'Mika', account: 'mika');
 
   @override
-  Future<PixivIllustPage> bookmarks({required int userId, String restrict = 'public', String? nextUrl}) async =>
-      const PixivIllustPage(illusts: []);
+  Future<PixivIllustPage> bookmarks({
+    required int userId,
+    String restrict = 'public',
+    String? tag,
+    String? nextUrl,
+  }) async => const PixivIllustPage(illusts: []);
 }

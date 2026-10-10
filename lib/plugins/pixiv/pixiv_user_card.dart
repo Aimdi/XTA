@@ -7,6 +7,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_follow_dialog.dart';
+import 'package:xta/plugins/pixiv/pixiv_haptics.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -78,7 +79,9 @@ class PixivFollowButton extends StatelessWidget {
     final changed = onChanged;
     try {
       final followed = await context.read<PixivFollowStore>().toggle(user);
-      if (context.mounted) changed?.call(followed);
+      if (!context.mounted) return;
+      playPixivHaptic(context, PixivHaptic.light);
+      changed?.call(followed);
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
     }

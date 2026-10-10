@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
-import 'package:xta/plugins/pixiv/pixiv_bookmark_folder_sheet.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_editor.dart';
 import 'package:xta/plugins/pixiv/pixiv_copy_info.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
@@ -39,8 +39,7 @@ bool _manyPages(PixivIllust illust) => illust.viewerUrls.length > 1;
 Future<void> _downloadAll(PixivPageSurface surface) =>
     surface.runPageAction(PixivPageAction.downloadAll, surface.currentPage);
 
-Future<void> _bookmarkIntoFolder(PixivPageSurface surface) =>
-    bookmarkPixivIllustIntoFolder(surface.context, surface.pageIllust);
+Future<void> _editBookmark(PixivPageSurface surface) => showPixivBookmarkEditor(surface.context, surface.pageIllust);
 
 Future<void> _copyLink(PixivPageSurface surface) =>
     surface.runPageAction(PixivPageAction.copyLink, surface.currentPage);
@@ -62,10 +61,10 @@ final pixivDetailMenuEntries = <PixivDetailMenuEntry>[
     offeredFor: _manyPages,
   ),
   PixivDetailMenuEntry(
-    id: 'folder',
-    icon: Icons.create_new_folder_outlined,
-    label: (l10n) => l10n.plugin_pixiv_bookmark_folder,
-    run: _bookmarkIntoFolder,
+    id: 'bookmark',
+    icon: Icons.edit_outlined,
+    label: (l10n) => l10n.plugin_pixiv_bookmark_edit,
+    run: _editBookmark,
   ),
   PixivDetailMenuEntry(id: 'copyLink', icon: Icons.link, label: (l10n) => l10n.plugin_pixiv_copy_link, run: _copyLink),
   PixivDetailMenuEntry(

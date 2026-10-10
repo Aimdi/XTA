@@ -72,8 +72,8 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 
 | Feature | Detail |
 |---|---|
-| Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` |
-| Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top |
+| Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), bookmarking (default visibility, auto-tag, follow / save after bookmarking, bookmark after saving, haptics), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` and `pixiv-bookmarks.md` |
+| Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks, all or one bookmark tag), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
@@ -82,6 +82,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Follow lists | `PixivUserListScreen`: whom anyone follows or who follows them, as preview cards; your own following list switches public / private |
 | User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large (`PixivFollowHeader`, also on profiles and the work's author row). A long press opens the follow dialog to follow privately. `onFollowChanged` lets a list update its copy |
 | Follow state | One app-wide `PixivFollowStore` (`pixiv_user_store.dart`): the follows changed this session and the ones in flight, read by every follow button, so a follow survives list rebuilds and recycled rows and shows the same on cards and profiles. Signing out or uninstalling clears it |
+| Bookmarks | One write path (`PixivBookmarkActions`) for the heart, the bookmark editor (long press on a heart, or Edit bookmark in the detail menu) and bookmark-after-save, with a Bookmarking settings section; Favorites filters by bookmark tag. See `pixiv-bookmarks.md` |
 | Avatars | `PixivAvatar` (`pixiv_avatar.dart`): the round avatar, decoded at its painted size, or initials when Pixiv sends none |
 | Local mute | Authors (with names), tag names and `r'pattern'` rules, work ids, comment ids and novel ids in prefs; works are filtered from every grid, and a muted work opened directly waits behind a notice |
 | Viewing history | On the device only (`LocalJsonStore`), newest first, 500 works, filter, pause, clear |
@@ -110,7 +111,7 @@ its illust case.
 | Recommended | `GET /v1/illust/recommended` |
 | Ranking | `GET /v1/illust/ranking?mode=&date=` |
 | Bookmarks | `GET /v1/user/bookmarks/illust` |
-| Bookmark folders | `GET /v1/user/bookmark-tags/illust` |
+| Bookmark tags | `GET /v1/user/bookmark-tags/illust` |
 | Trending tags | `GET /v1/trending-tags/illust` |
 | Popular preview | `GET /v1/search/popular-preview/illust` |
 | Autocomplete | `GET /v2/search/autocomplete` |
@@ -131,6 +132,7 @@ its illust case.
 | Follow delete | `POST /v1/user/follow/delete` |
 | Bookmark add | `POST /v2/illust/bookmark/add` |
 | Bookmark delete | `POST /v1/illust/bookmark/delete` |
+| Bookmark detail | `GET /v2/illust/bookmark/detail` |
 | AI display setting (read only) | `GET /v1/user/ai-show-settings` |
 | Short link | `GET https://pixiv.me/<name>` (redirect read, not followed) |
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
@@ -37,10 +38,8 @@ String pixivPageActionLabel(L10n l10n, PixivPageAction action, {bool readVertica
 /// Runs the actions every Pixiv page surface shares; false leaves the rest to the screen.
 Future<bool> runPixivPageAction(BuildContext context, PixivPageAction action, PixivIllust illust, int page) async {
   switch (action) {
-    case PixivPageAction.downloadPage:
-      await PixivDownloader.of(context).savePage(context, illust, page);
-    case PixivPageAction.downloadAll:
-      await downloadAllPixivPages(context, illust);
+    case PixivPageAction.downloadPage || PixivPageAction.downloadAll:
+      await _save(context, illust, page, all: action == PixivPageAction.downloadAll);
     case PixivPageAction.copyLink:
       await copyPixivLink(context, illust);
     case PixivPageAction.more:
@@ -49,6 +48,15 @@ Future<bool> runPixivPageAction(BuildContext context, PixivPageAction action, Pi
       return false;
   }
   return true;
+}
+
+/// Saves one page or all of them, then bookmarks the work if the reader asked
+/// for bookmark-after-save.
+Future<void> _save(BuildContext context, PixivIllust illust, int page, {required bool all}) async {
+  final saved = all
+      ? await downloadAllPixivPages(context, illust)
+      : await PixivDownloader.of(context).savePage(context, illust, page);
+  if (saved && context.mounted) await bookmarkPixivAfterSave(context, illust);
 }
 
 Future<void> copyPixivLink(BuildContext context, PixivIllust illust) async {

@@ -35,8 +35,9 @@ class PixivDownloader {
 
   static PixivDownloader of(BuildContext context) => context.read<PixivDownloader?>() ?? const PixivDownloader();
 
-  /// One page, with the same prompts and messages as any other plugin image.
-  Future<void> savePage(BuildContext context, PixivIllust illust, int page) =>
+  /// One page, with the same prompts and messages as any other plugin image;
+  /// true once it is saved.
+  Future<bool> savePage(BuildContext context, PixivIllust illust, int page) =>
       downloadPluginMediaItem(context, pixivPageMedia(illust, page), sourceName: pixivDownloadSource);
 
   /// One page of a batch; true once the file is saved.
@@ -117,13 +118,14 @@ class PixivDownloadStore extends Store<PixivDownloadProgress> {
   }
 }
 
-/// Saves every page of [illust], showing progress with a cancel button.
-Future<void> downloadAllPixivPages(BuildContext context, PixivIllust illust) async {
+/// Saves every page of [illust], showing progress with a cancel button; true
+/// once at least one page is saved.
+Future<bool> downloadAllPixivPages(BuildContext context, PixivIllust illust) async {
   final downloader = PixivDownloader.of(context);
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
   final folder = await downloader.batchFolder(PrefService.of(context, listen: false));
-  if (folder == null || !messenger.mounted) return;
+  if (folder == null || !messenger.mounted) return false;
   final requests = pixivPageRequests(illust, folder);
   final store = PixivDownloadStore(save: downloader.save, cancelActive: downloader.cancel, total: requests.length);
   messenger
@@ -132,9 +134,11 @@ Future<void> downloadAllPixivPages(BuildContext context, PixivIllust illust) asy
   final progress = messenger.showSnackBar(pixivDownloadSnackBar(store));
   final result = await store.run(requests);
   unawaited(progress.closed.whenComplete(store.destroy));
-  if (!messenger.mounted) return;
-  messenger.hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
-  messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_batch_result(result.saved, result.total))));
+  if (messenger.mounted) {
+    messenger.hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
+    messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_batch_result(result.saved, result.total))));
+  }
+  return result.saved > 0;
 }
 
 SnackBar pixivDownloadSnackBar(PixivDownloadStore store) => WorkingSnackBar(

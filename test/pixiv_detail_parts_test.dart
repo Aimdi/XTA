@@ -56,7 +56,7 @@ void main() {
       for (final entry in pixivDetailMenuEntries)
         if (tester.any(find.byKey(ValueKey('pixiv-illust-menu-${entry.id}')))) entry.id,
     ];
-    expect(offered, ['folder', 'copyLink', 'copyInfo', 'open', 'mute', 'more']);
+    expect(offered, ['bookmark', 'copyLink', 'copyInfo', 'open', 'mute', 'more']);
     await disposePixiv(tester);
   });
 

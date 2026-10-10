@@ -12,6 +12,7 @@ plugin as a whole is described in `pixiv-plugin.md`.
 | Account | `pixiv_settings_account.dart` | Stored accounts (switch, remove), Add account, Sign out, refresh-token paste and test |
 | Content | `pixiv_settings_content.dart` | Show R-18, Hide AI, and the account's own AI setting read from Pixiv |
 | Browsing | `pixiv_settings_browsing.dart` | Start section, viewing history and its pause switch, Copy info template, "Open pixiv links in XTA" (Android) |
+| Bookmarking | `pixiv_settings_bookmarks.dart` | Default visibility, auto-tag, follow / save after bookmarking, bookmark after saving, haptics (B5b, see `pixiv-bookmarks.md`) |
 | Mute | `pixiv_settings_mute.dart` | Tags (typed, with patterns), artists, works, comments, novels |
 
 ## Viewing history
@@ -155,8 +156,8 @@ and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
   and Sign out. A batch adds its line to `pixivMoreEntries`.
 - `plugin.pixiv.start_section` (`home`, `ranking`, `favorites`, `search`)
   picks the section the Pixiv screen opens on.
-- Tapping the section, Home source, Favorites visibility or ranking mode
-  already shown scrolls that list to the top. Embedded in Home, the More list
+- Tapping the section, Home source, Favorites filter (visibility and bookmark
+  tag) or ranking mode already shown scrolls that list to the top. Embedded in Home, the More list
   scrolls with Home's controller, so tapping More again works there too.
 
 ## Preferences added
