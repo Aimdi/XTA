@@ -225,41 +225,38 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
     );
   }
 
+  /// Cancel and All take their labels' width and Save the rest; large text stacks them full width.
   Widget _selectionBar(BuildContext context, PixivPageSelection selection) {
     final l10n = L10n.of(context);
     final count = selection.pages.length;
     final stacked = _stacked(context);
-    const tall = Size(0, kMinInteractiveDimension);
+    final style = OutlinedButton.styleFrom(
+      minimumSize: const Size(0, kMinInteractiveDimension),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+    );
     return _bar(
       context,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       direction: stacked ? Axis.vertical : Axis.horizontal,
-      spacing: stacked ? 8 : 12,
+      spacing: 8,
       children: [
-        Flexible(
-          fit: stacked ? FlexFit.loose : FlexFit.tight,
-          child: OutlinedButton(
-            key: const ValueKey('pixiv-overview-select-cancel'),
-            style: OutlinedButton.styleFrom(minimumSize: tall),
-            onPressed: _selection.stop,
-            child: Text(l10n.cancel),
-          ),
+        OutlinedButton(
+          key: const ValueKey('pixiv-overview-select-cancel'),
+          style: style,
+          onPressed: _selection.stop,
+          child: Text(l10n.cancel),
+        ),
+        OutlinedButton(
+          key: const ValueKey('pixiv-overview-select-all'),
+          style: style,
+          onPressed: _selection.toggleAll,
+          child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
         ),
         Flexible(
-          fit: stacked ? FlexFit.loose : FlexFit.tight,
-          child: OutlinedButton(
-            key: const ValueKey('pixiv-overview-select-all'),
-            style: OutlinedButton.styleFrom(minimumSize: tall),
-            onPressed: _selection.toggleAll,
-            child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
-          ),
-        ),
-        Flexible(
-          flex: 2,
           fit: stacked ? FlexFit.loose : FlexFit.tight,
           child: FilledButton.icon(
             key: const ValueKey('pixiv-overview-save-selected'),
-            style: FilledButton.styleFrom(minimumSize: tall),
+            style: FilledButton.styleFrom(minimumSize: const Size(0, kMinInteractiveDimension)),
             onPressed: count == 0 ? null : () => Navigator.pop(context, PixivPageChoice.save(selection.ordered)),
             icon: const Icon(Icons.download_outlined),
             label: Text(l10n.plugin_pixiv_save_pages(count), textAlign: TextAlign.center),
