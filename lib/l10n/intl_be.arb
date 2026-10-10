@@ -2707,6 +2707,10 @@
   },
   "plugin_pixiv_not_configured": "Увайдзіце ў Pixiv, каб глядзець стужку, рэйтынг і закладкі",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Раман",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Раманы аўтара",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Дадаць у прыватныя закладкі",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Тут з’явяцца раманы, якія вы публічна дадасце ў закладкі",
@@ -2743,8 +2747,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Экспартаваць як тэкст",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Не ўдалося экспартаваць раман",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "З разметкай Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Тэкст роўна так, як яго захоўвае Pixiv, з тэгамі накшталт [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Просты тэкст",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Без разметкі Pixiv, рубі запісваецца як аснова(рубі)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Захавана: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Тут з’явяцца новыя раманы аўтараў, на якіх вы падпісаныя",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Малюнак у рамане",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Адкрыць працу",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Захаваць малюнак",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Глядзець на ўвесь экран",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Перайсці на старонку {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Пакінуць Pixiv, каб адкрыць {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Адкрыць спасылку",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Наступны раздзел",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Старонка {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Папярэдні раздзел",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Зараз у рэйтынгу няма раманаў",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Пакуль няма рэкамендаваных раманаў — пацягніце, каб абнавіць",
@@ -2759,6 +2821,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Пачаць з першага",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Падзяліцца спасылкай на профіль",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Падзяліцца спасылкай на серыю",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Тут з’явяцца серыі раманаў, якія вы дадасце ў спіс назірання",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Не ўдалося адкрыць гэтую спасылку Pixiv",

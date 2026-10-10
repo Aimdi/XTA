@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
-import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_reader_screen.dart';
 
-/// Every way into a novel. It opens the way a novel link does, which is the
-/// browser until the novel reader routes those links.
-Future<void> openPixivNovel(BuildContext context, PixivNovel novel) => openPixivNovelById(context, novel.id);
+/// Every way into a novel: its reader, showing what the opener already has.
+Future<void> openPixivNovel(BuildContext context, PixivNovel novel) =>
+    Navigator.push(context, pixivNovelReaderRoute(novel.id, novel: novel));
 
-Future<void> openPixivNovelById(BuildContext context, int id) => openPixivLinkRef(context, PixivNovelLinkRef(id));
+/// A novel known by its id alone; the reader fetches its detail.
+Future<void> openPixivNovelById(BuildContext context, int id) => Navigator.push(context, pixivNovelReaderRoute(id));

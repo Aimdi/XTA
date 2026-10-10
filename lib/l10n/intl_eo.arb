@@ -2707,6 +2707,10 @@
   },
   "plugin_pixiv_not_configured": "Ensalutu al Pixiv por foliumi sekvadon, rangigon kaj legosignojn",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Romano",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Vidi ties romanojn",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Legosigni private",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Ĉi tie aperas romanoj, kiujn vi publike legosignas",
@@ -2743,8 +2747,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Eksporti kiel tekston",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Ne eblis eksporti la romanon",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Kun la marklingvo de Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "La teksto ĝuste kiel Pixiv konservas ĝin, kun etikedoj kiel [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Simpla teksto",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Sen la marklingvo de Pixiv; rubeo skribita kiel bazo(rubeo)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Konservita: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Ĉi tie aperas novaj romanoj de kreantoj, kiujn vi sekvas",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Bildo en la romano",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Malfermi la verkon",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Konservi la bildon",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Vidi tutekrane",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Iri al paĝo {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Ĉu forlasi Pixiv por malfermi {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Malfermi ligilon",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Sekva ĉapitro",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Paĝo {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Antaŭa ĉapitro",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Neniuj rangigitaj romanoj nun",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Neniuj rekomenditaj romanoj nun — tiri por aktualigi",
@@ -2759,6 +2821,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Komenci de la unua",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Kunhavigi ligilon al la profilo",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Kunhavigi ligilon al la serio",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Ĉi tie aperas la romanaj serioj, kiujn vi aldonas al via atentolisto",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Ne eblis malfermi tiun Pixiv-ligilon",

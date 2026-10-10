@@ -2707,6 +2707,10 @@
   },
   "plugin_pixiv_not_configured": "Pixiv에 로그인하여 팔로잉, 랭킹, 북마크를 보세요",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "소설",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "작가의 소설 보기",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "비공개로 북마크",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "공개로 북마크한 소설이 여기에 표시됩니다",
@@ -2743,8 +2747,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "텍스트로 내보내기",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "소설을 내보내지 못했습니다",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixiv 태그 포함",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Pixiv에 저장된 그대로의 본문([newpage] 같은 태그 포함)",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "일반 텍스트",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Pixiv 태그를 빼고, 루비는 '본문(루비)' 형태로 씁니다",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} 저장됨",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "팔로우한 크리에이터의 새 소설이 여기에 표시됩니다",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "소설 속 이미지",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "작품 열기",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "이미지 저장",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "전체 화면으로 보기",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "{page}페이지로 이동",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Pixiv를 벗어나 {url}을(를) 열까요?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "링크 열기",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "다음 화",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "{page}페이지",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "이전 화",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "지금 랭킹 소설이 없습니다",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "지금은 추천 소설이 없습니다 — 당겨서 새로고침",
@@ -2759,6 +2821,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "1화부터 보기",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "프로필 링크 공유",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "시리즈 링크 공유",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "관심 목록에 추가한 소설 시리즈가 여기에 표시됩니다",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "해당 Pixiv 링크를 열 수 없습니다",

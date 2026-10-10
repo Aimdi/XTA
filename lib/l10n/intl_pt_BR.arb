@@ -2707,6 +2707,10 @@
   },
   "plugin_pixiv_not_configured": "Entre no Pixiv para ver seguindo, ranking e favoritos",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Romance",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Ver os romances dessa pessoa",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Adicionar aos favoritos privados",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Os romances que você adicionar aos favoritos públicos aparecem aqui",
@@ -2743,8 +2747,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Exportar como texto",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Não foi possível exportar o romance",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Com a marcação do Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "O texto exatamente como o Pixiv o armazena, com tags como [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Texto simples",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Sem a marcação do Pixiv; o ruby escrito como base(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} salvo",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Os novos romances dos criadores que você segue aparecem aqui",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Imagem do romance",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Abrir a obra",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Salvar imagem",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Ver em tela cheia",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Ir para a página {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Sair do Pixiv para abrir {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Abrir link",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Próximo capítulo",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Página {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Capítulo anterior",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Nenhum romance no ranking agora",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Nenhum romance recomendado no momento — puxe para atualizar",
@@ -2759,6 +2821,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Começar pelo primeiro",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Compartilhar link do perfil",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Compartilhar link da série",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "As séries de romances que você adicionar à lista de acompanhamento aparecem aqui",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Não foi possível abrir esse link do Pixiv",

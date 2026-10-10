@@ -2707,6 +2707,10 @@
   },
   "plugin_pixiv_not_configured": "سجّل الدخول إلى Pixiv لتصفح المتابعة والترتيب والإشارات",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "رواية",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "عرض رواياته",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "إضافة إشارة مرجعية خاصة",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "تظهر هنا الروايات التي تضيف لها إشارة مرجعية عامة",
@@ -2743,8 +2747,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "تصدير كنص",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "تعذّر تصدير الرواية",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "مع تنسيق Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "النص كما يخزّنه Pixiv تمامًا، مع وسوم مثل [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "نص عادي",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "بلا تنسيق Pixiv، وتُكتب قراءة الروبي بين قوسين بعد النص",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "تم حفظ {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "تظهر هنا الروايات الجديدة من المبدعين الذين تتابعهم",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "صورة في الرواية",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "فتح العمل",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "حفظ الصورة",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "عرض بملء الشاشة",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "الانتقال إلى الصفحة {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "هل تريد مغادرة Pixiv لفتح {url}؟",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "فتح الرابط",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "الفصل التالي",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "الصفحة {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "الفصل السابق",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "لا روايات في الترتيب الآن",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "لا روايات موصى بها حالياً — اسحب للتحديث",
@@ -2759,6 +2821,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "ابدأ من الفصل الأول",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "مشاركة رابط الملف الشخصي",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "مشاركة رابط السلسلة",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "تظهر هنا سلاسل الروايات التي تضيفها إلى قائمة المتابعة",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "تعذر فتح رابط Pixiv هذا",

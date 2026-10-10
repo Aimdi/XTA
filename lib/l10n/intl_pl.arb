@@ -2707,6 +2707,10 @@
   },
   "plugin_pixiv_not_configured": "Zaloguj się do Pixiv, aby przeglądać obserwowanych, rankingi i zakładki",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Powieść",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Zobacz powieści tej osoby",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Dodaj do prywatnych zakładek",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Tu pojawią się powieści dodane do publicznych zakładek",
@@ -2743,8 +2747,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Eksportuj jako tekst",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Nie udało się wyeksportować powieści",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Ze znacznikami Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Tekst dokładnie tak, jak przechowuje go Pixiv, ze znacznikami takimi jak [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Zwykły tekst",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Bez znaczników Pixiv, ruby zapisane jako podstawa(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Zapisano {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Tu pojawią się nowe powieści obserwowanych twórców",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Obraz w powieści",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Otwórz pracę",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Zapisz obraz",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Pokaż na pełnym ekranie",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Przejdź do strony {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Opuścić Pixiv, aby otworzyć {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Otwórz link",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Następny rozdział",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Strona {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Poprzedni rozdział",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Brak powieści w rankingu",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Brak polecanych powieści — przeciągnij, by odświeżyć",
@@ -2759,6 +2821,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Zacznij od pierwszego",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Udostępnij link do profilu",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Udostępnij link do serii",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Tu pojawią się serie powieści dodane do listy obserwowanych",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Nie udało się otworzyć tego linku Pixiv",
