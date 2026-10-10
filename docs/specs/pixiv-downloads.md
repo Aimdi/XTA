@@ -34,8 +34,10 @@ follow-up such as bookmark-after-save (batch B5b) hooks in one place.
 - Tokens are filled in one pass, so a title that reads `{user_id}` stays as
   written; unknown `{…}` stays literal.
 - Control characters and `/ \ : * ? " < > |` become `_`; runs of white space
-  collapse; outer dots and spaces go; the stem is cut at 180 characters; an
-  empty stem falls back to `<id>_p<page>`.
+  collapse; outer dots and spaces go; the stem is cut to 180 UTF-8 bytes
+  between whole characters (Android allows 255 bytes for a name, and adds
+  ` (1)` when a name is taken), so a CJK or emoji title is never cut mid-way;
+  an empty stem falls back to `<id>_p<page>`.
 - The original file's extension is kept (`.jpg` when the URL has none). Ugoira
   exports use page 0 and `.gif` / `.zip`.
 - A template without `{part}` is never used: the editor will not save it, and
@@ -61,15 +63,23 @@ App-wide plumbing:
 - `DownloadRequest` and `DownloadEntry` carry an optional `subfolder`, kept in
   download history as `folder`. `safeDownloadFolder` cleans it on the way in
   and when history is read: `\` becomes `/`, characters no file system takes
-  become `_`, `.`, `..`, empty parts and trailing dots or spaces go, at most four
-  levels of 120 characters.
-- `DownloadDirectory.save` / `saveFile` pass `subfolder` to the platform only
-  when there is one.
+  become `_`, `.`, `..`, empty parts and leading or trailing dots and spaces go
+  (a leading dot would hide the folder from the gallery), at most four levels
+  of 120 characters.
+- `DownloadDirectory.saveFile` passes `subfolder` to the platform only when
+  there is one. The byte-array `DownloadDirectory.save` is unchanged and takes
+  no subfolder: it runs on the Android main thread, so nothing Pixiv saves
+  goes through it.
 - `MainActivity.downloadDestination` walks the levels from the picked tree:
   each is looked up among the children (`DocumentsContract`, case-insensitive,
   directories only) and created with `MIME_TYPE_DIR` when missing. The lookup
   and creation share one lock, so two downloads into a new folder create it
   once. A lost grant still reports `PERMISSION_LOST`.
+- `saveFileToDownloadDirectory` copies only files staged by the app. It used to
+  accept the cache folder alone, while resumable downloads stage in
+  `files/xta-download-staging` (so a partial file survives a cache clear), which
+  made every *Save to directory* download fail with `INVALID_SOURCE`; it now
+  accepts both.
 
 ### Manual check (native)
 
@@ -83,6 +93,8 @@ The tree code needs a device; there is no Android test harness in the repo.
    another work by the same artist: the same folder is reused, no `(1)` copy.
 5. With *Separate folder for R-18* on, an R-18 work lands in
    `R-18/<name>_<id>/`.
+6. *Save as GIF* on an ugoira lands in the same artist folder, and the app
+   stays responsive while it is written.
 
 ## Saved-pages index
 
@@ -90,16 +102,21 @@ The tree code needs a device; there is no Android test harness in the repo.
 in `main.dart`) of `<illustId>_p<page>` keys in `plugin.pixiv.download_index`
 (JSON list, oldest first, capped at 5000; a re-saved page moves to the end).
 It is a normal preference, so settings backups carry it, and plugin reset
-clears it.
+clears it. The store listens to that preference, so a restored backup or a
+reset shows at once, and `record` builds on the stored list rather than its
+own copy, so the next save never drops what a restore brought back.
 
 - A page is recorded when its save completes: one page after
   `PixivDownloader.savePage` reports success, a batch for the requests that
   saved, an ugoira export as page 0.
 - Before saving, `choosePixivPagesToSave` asks when any chosen page is in the
-  index: *Save again*, *Only new pages* (when some are new) or Cancel.
+  index: *Save again*, *Only new pages* (when some are new) or Cancel. Ugoira
+  exports ask the same about page 0, so a second GIF is never encoded without
+  asking.
 - `PixivDownloadedBadge` (in `pixiv_downloaded_badge.dart`, placed by
-  `pixiv_illust_tile.dart` beside the heart) shows a check once any page of the
-  work is saved; its screen-reader label is *Saved on this device*.
+  `pixiv_illust_tile.dart` above the heart, clear of the R-18 and AI labels on
+  a narrow tile) shows a check once any page of the work is saved; its
+  screen-reader label is *Saved on this device*.
 - `PixivSavePageButton` is the detail and reader download button; it shows a
   filled icon and *Saved – download again* for a saved page and follows the
   page on screen.
@@ -116,7 +133,9 @@ readers hear checked / not checked), a long-press still opens the page, the
 header reads *n pages selected* as a live region, and the bar holds Cancel,
 All / None and *Save n pages* (disabled at zero). Saving returns the ticked
 pages in reading order; one page goes the single-page way. Large text stacks
-the bar full width.
+both bars full width, two actions to a row when the sheet is at least 480dp
+wide, and the bar never takes more than 40% of the screen height (the rest
+scrolls), so a landscape phone at 2x text keeps room for the pages.
 
 ## Ugoira export
 
@@ -133,10 +152,14 @@ the bar full width.
   already had), each frame keeping its own delay in hundredths of a second
   (rounded, at least 2). Encoding runs on a background isolate
   (`PixivGifEncoder`) that reports each frame and is killed on Cancel.
-- The file is written with `DownloadDirectory.save` into the download folder
-  (or one asked for), named by the template, in the work's subfolder.
+- The file is written into the download folder (or one asked for), named by
+  the template, in the work's subfolder, through `DownloadTransfer.saveBytes`:
+  the bytes are staged in the app cache and copied by
+  `DownloadDirectory.saveFile` on a background thread, never sent whole
+  through the platform channel.
 - A snackbar shows *Fetching frames…*, *Encoding frame x of n…* with the slow
-  note, then *Saving…*; Cancel works until saving starts. The result is
+  note, then *Saving…*; Cancel works until saving starts, and while fetching
+  it ends the export at once (a late response is ignored). The result is
   *Animation saved as GIF*, *Frames saved as ZIP*, *Cancelled* or *Could not
   save the animation*.
 
@@ -157,10 +180,18 @@ that screen already offers them.
 each one that ends starts the next. `setConcurrency` clamps to 1–4 and starts
 queued work at once when raised; lowering it stops nothing that runs. A store
 built in code runs one at a time; the app's shared store takes
-`download.concurrency` (default 2), set at launch and from Settings → Media →
-Download handling → *Simultaneous downloads*. Pixiv batches use the same
-number for their own window, so *Downloading page x of n* and Cancel cover
-every page in flight.
+`download.concurrency` (default 2), set at launch, from Settings → Media →
+Download handling → *Simultaneous downloads*, and whenever the preference
+changes (a restored backup included). Pixiv batches use the same number for
+their own window, so *Downloading page x of n* and Cancel cover every page in
+flight.
+
+Downloads without a folder (*Always ask*) fetch side by side but open the
+system save dialog one at a time: `flutter_file_dialog` keeps one pending
+dialog and fails a second call with `already_active`. `DownloadTransfer`
+queues the dialog step; a download waiting its turn stays *Downloading* (so it
+can still be cancelled, and then never opens a dialog), and turns *Choose
+location* when its dialog opens.
 
 ## Preferences
 

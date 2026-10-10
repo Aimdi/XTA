@@ -74,6 +74,29 @@ void main() {
     expect(store.get<String>(optionPluginPixivDownloadIndex), '[]');
   });
 
+  test('a restored backup shows at once, and the next save keeps what it brought back', () async {
+    final store = prefs('["1_p0"]');
+    final index = PixivDownloadIndex(store);
+    addTearDown(index.destroy);
+
+    await store.fromMap({optionPluginPixivDownloadIndex: '["1_p0","500_p0","500_p1"]'});
+    expect(index.isSaved(500, 1), isTrue);
+
+    await index.record(42, [0]);
+    expect(jsonDecode(store.get<String>(optionPluginPixivDownloadIndex)!), ['1_p0', '500_p0', '500_p1', '42_p0']);
+  });
+
+  test('a reset of the setting empties the index, and a closed index stops following it', () async {
+    final store = prefs('["1_p0"]');
+    final index = PixivDownloadIndex(store);
+    await store.set(optionPluginPixivDownloadIndex, '[]');
+    expect(index.state, isEmpty);
+
+    await index.destroy();
+    await store.set(optionPluginPixivDownloadIndex, '["2_p0"]');
+    expect(index.state, isEmpty);
+  });
+
   test('cappedPixivIndex folds repeats and keeps the newest', () {
     expect(cappedPixivIndex(['a', 'b', 'a']), {'a', 'b'});
     final many = [for (var i = 0; i < pixivDownloadIndexCap + 3; i++) '${i}_p0'];

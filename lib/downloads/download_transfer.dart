@@ -6,6 +6,7 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/utils/download_directory.dart';
 
@@ -63,9 +64,11 @@ class DownloadTransfer {
        temporaryDirectory = temporaryDirectory ?? getApplicationSupportDirectory,
        save = save ?? _save;
 
+  static const _stagingFolder = 'xta-download-staging';
+
   static Future<void> clearInterruptedFiles() async {
     final root = await getApplicationSupportDirectory();
-    final directory = Directory(p.join(root.path, 'xta-download-staging'));
+    final directory = Directory(p.join(root.path, _stagingFolder));
     if (!await directory.exists()) return;
     final cutoff = DateTime.now().subtract(const Duration(days: 7));
     await for (final file in directory.list()) {
@@ -75,8 +78,35 @@ class DownloadTransfer {
 
   static Future<void> discardEntry(DownloadEntry entry) async {
     final root = await getApplicationSupportDirectory();
-    final path = p.join(root.path, 'xta-download-staging', '${safeDownloadName(entry.id)}.part');
+    final path = p.join(root.path, _stagingFolder, '${safeDownloadName(entry.id)}.part');
     for (final file in [File(path), File('$path.json'), File('$path.json.tmp')]) {
+      if (await file.exists()) await file.delete();
+    }
+  }
+
+  /// Saves [bytes] made on the device, such as an encoded animation, into
+  /// [treeUri] the way a download is saved: staged as a file and copied off
+  /// the UI thread, never sent whole through the platform channel. Nothing
+  /// resumes these, so they stage in the cache.
+  static Future<String?> saveBytes({
+    required String treeUri,
+    required String fileName,
+    required List<int> bytes,
+    String? subfolder,
+  }) async {
+    final id = const Uuid().v4();
+    final root = await getTemporaryDirectory();
+    final directory = await Directory(p.join(root.path, _stagingFolder)).create(recursive: true);
+    final file = await File(p.join(directory.path, '$id.part')).writeAsBytes(bytes, flush: true);
+    try {
+      return await DownloadDirectory.saveFile(
+        treeUri: treeUri,
+        fileName: fileName,
+        sourcePath: file.path,
+        operationId: id,
+        subfolder: subfolder,
+      );
+    } finally {
       if (await file.exists()) await file.delete();
     }
   }
@@ -89,7 +119,7 @@ class DownloadTransfer {
   ) async {
     final root = await temporaryDirectory();
     cancellation.check();
-    final directory = await Directory(p.join(root.path, 'xta-download-staging')).create(recursive: true);
+    final directory = await Directory(p.join(root.path, _stagingFolder)).create(recursive: true);
     final file = File(p.join(directory.path, '${safeDownloadName(entry.id)}.part'));
     final metadata = File('${file.path}.json');
     final client = clientFactory();
@@ -98,8 +128,7 @@ class DownloadTransfer {
     try {
       await _receive(client, entry.uri, file, metadata, cancellation, progress);
       cancellation.check();
-      phase(entry.treeUri == null ? DownloadStatus.choosingLocation : DownloadStatus.saving);
-      final destination = await save(entry, file, cancellation);
+      final destination = await _place(entry, file, cancellation, phase);
       cancellation.check();
       finished = true;
       return destination;
@@ -108,6 +137,37 @@ class DownloadTransfer {
       if (finished || cancellation.cancelled || await _validator(entry.uri, file, metadata) == null) {
         await _discard(file, metadata);
       }
+    }
+  }
+
+  /// Hands the staged [file] to [save]. Without a folder that opens the system
+  /// save dialog, which takes one request at a time: a second one while it is
+  /// open fails, so downloads running side by side wait their turn for it.
+  Future<String?> _place(DownloadEntry entry, File file, DownloadCancellation cancellation, DownloadPhase phase) {
+    Future<String?> open() {
+      phase(entry.treeUri == null ? DownloadStatus.choosingLocation : DownloadStatus.saving);
+      return save(entry, file, cancellation);
+    }
+
+    return entry.treeUri == null ? _oneDialogAtATime(cancellation, open) : open();
+  }
+
+  static Future<void> _dialogFree = Future.value();
+
+  /// Runs [open] once every earlier dialog has closed; a download cancelled
+  /// while it waits gives up its turn without opening one.
+  static Future<T> _oneDialogAtATime<T>(DownloadCancellation cancellation, Future<T> Function() open) async {
+    final previous = _dialogFree;
+    final closed = Completer<void>();
+    _dialogFree = previous.then((_) => closed.future);
+    final cancelled = Completer<void>();
+    cancellation.onCancel(cancelled.complete);
+    try {
+      await Future.any([previous, cancelled.future]);
+      cancellation.check();
+      return await open();
+    } finally {
+      closed.complete();
     }
   }
 

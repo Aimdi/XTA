@@ -710,7 +710,11 @@ Future<void> main() async {
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
 
   CrashReporter.install(prefService);
-  DownloadStore.shared.setConcurrency(prefService.get<int>(optionDownloadConcurrency) ?? downloadConcurrencyDefault);
+  // A restored backup changes the setting too, so the queue follows the setting itself.
+  void applyDownloadConcurrency() =>
+      DownloadStore.shared.setConcurrency(prefService.get<int>(optionDownloadConcurrency) ?? downloadConcurrencyDefault);
+  applyDownloadConcurrency();
+  prefService.addKeyListener(optionDownloadConcurrency, applyDownloadConcurrency);
 
   // Apply the last known query ids before the first request goes out; the
   // network refresh runs unawaited so a slow or blocked fetch never delays

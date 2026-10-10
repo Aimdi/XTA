@@ -15,19 +15,39 @@ import 'package:xta/ui/snack_bar_policy.dart';
 
 /// Saves [illust]'s animation as a GIF, or its frame archive as a ZIP, into
 /// the download folder under the file-name template, with progress and Cancel
-/// in a snackbar. True once the file is saved.
+/// in a snackbar, asking first when the work is saved already. True once the
+/// file is saved.
 Future<bool> savePixivUgoira(BuildContext context, PixivIllust illust, PixivUgoiraFormat format) async {
-  final downloader = PixivDownloader.of(context);
-  final encoder = PixivGifEncoder.of(context);
-  final client = context.read<PixivClient>();
+  final chosen = await choosePixivPagesToSave(context, illust, const [0]);
+  if (chosen.isEmpty || !context.mounted) return false;
+  final exporter = _exporter(context, illust, format);
   final index = PixivDownloadIndex.maybeOf(context);
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
-  final prefs = PrefService.of(context, listen: false);
-  final folder = await downloader.batchFolder(prefs);
+  final folder = await PixivDownloader.of(context).batchFolder(PrefService.of(context, listen: false));
   if (folder == null || !messenger.mounted) return false;
-  final naming = PixivSaveNaming.of(prefs);
-  final store = PixivUgoiraExportStore(
+  final store = exporter(folder);
+  final bar = showPixivWorkingSnackBar(messenger, _progressSnackBar(store));
+  final saved = await store.run(format);
+  unawaited(bar.closed.whenComplete(store.destroy));
+  // The export stands for the work's first page, as Pixiv names it.
+  if (saved) await index?.record(illust.id, const [0]);
+  if (messenger.mounted) _report(messenger, _resultMessage(l10n, store.state.phase, format));
+  return saved;
+}
+
+/// The export of [illust] into a folder, with everything it needs read while
+/// [context] is still on screen.
+PixivUgoiraExportStore Function(String folder) _exporter(
+  BuildContext context,
+  PixivIllust illust,
+  PixivUgoiraFormat format,
+) {
+  final downloader = PixivDownloader.of(context);
+  final encoder = PixivGifEncoder.of(context);
+  final client = context.read<PixivClient>();
+  final naming = PixivSaveNaming.of(PrefService.of(context, listen: false));
+  return (folder) => PixivUgoiraExportStore(
     load: () => loadPixivUgoiraSource(client, illust.id),
     encodeGif: encoder.encode,
     save: (bytes) => downloader.saveBytes(
@@ -37,13 +57,6 @@ Future<bool> savePixivUgoira(BuildContext context, PixivIllust illust, PixivUgoi
       bytes: bytes,
     ),
   );
-  final bar = showPixivWorkingSnackBar(messenger, _progressSnackBar(store));
-  final saved = await store.run(format);
-  unawaited(bar.closed.whenComplete(store.destroy));
-  // The export stands for the work's first page, as Pixiv names it.
-  if (saved) await index?.record(illust.id, const [0]);
-  if (messenger.mounted) _report(messenger, _resultMessage(l10n, store.state.phase, format));
-  return saved;
 }
 
 void _report(ScaffoldMessengerState messenger, String message) {

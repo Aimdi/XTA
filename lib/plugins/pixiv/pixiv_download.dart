@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/downloads/download_store.dart';
+import 'package:xta/downloads/download_transfer.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
@@ -82,7 +83,7 @@ class PixivDownloader {
     String? subfolder,
   }) async {
     try {
-      final saved = await DownloadDirectory.save(
+      final saved = await DownloadTransfer.saveBytes(
         treeUri: treeUri,
         fileName: fileName,
         bytes: bytes,

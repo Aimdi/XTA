@@ -54,8 +54,8 @@ class PixivIllustTile extends StatelessWidget {
                     child: RepaintBoundary(child: _image(theme)),
                   ),
                   PixivTileBadges(illust: illust),
-                  // Beside the heart, clear of the R-18 and AI labels on the left.
-                  Positioned(right: 44, bottom: 9, child: PixivDownloadedBadge(illust: illust)),
+                  // Above the heart, so the R-18 and AI labels keep the bottom row on a narrow tile.
+                  Positioned(right: 9, bottom: 48, child: PixivDownloadedBadge(illust: illust)),
                   Positioned(right: 0, bottom: 0, child: PixivBookmarkButton(illust: illust, compact: true)),
                 ],
               ),

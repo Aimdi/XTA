@@ -123,10 +123,11 @@ String? safeDownloadFolder(String value) {
   return parts.isEmpty ? null : parts.join('/');
 }
 
-// Trailing dots and spaces are dropped as some card file systems refuse them.
+// Trailing dots and spaces are dropped as some card file systems refuse them,
+// and leading ones because Android hides a dot folder from the gallery.
 String _folderPart(String part) {
   final short = part.length > 120 ? part.substring(0, 120) : part;
-  return short.trim().replaceFirst(RegExp(r'[. ]+$'), '');
+  return short.replaceAll(RegExp(r'^[.\s]+|[.\s]+$'), '');
 }
 
 Uri originalDownloadUri(Uri uri) {

@@ -151,7 +151,11 @@ class PixivUgoiraExportStore extends Store<PixivExportProgress> {
   /// True once the file is saved.
   Future<bool> run(PixivUgoiraFormat format) async {
     try {
-      final source = await load();
+      // Cancel ends the wait at once; a late response is then ignored.
+      final source = await Future.any([
+        load(),
+        _cancel.future.then<PixivUgoiraSource>((_) => throw const PixivExportCancelled()),
+      ]);
       if (_cancelled) throw const PixivExportCancelled();
       final bytes = format == PixivUgoiraFormat.zip ? source.archive : await _encode(source.frames);
       if (_cancelled) throw const PixivExportCancelled();

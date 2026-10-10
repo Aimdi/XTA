@@ -113,9 +113,10 @@ void main() {
       handler = (_) => 'content://provider/document/1';
       await DownloadDirectory.saveFile(treeUri: 'content://provider/tree/x', fileName: 'a.png',
         sourcePath: '/cache/xta-download-staging/a.part', operationId: 'a', subfolder: 'R-18/../Mika_42/');
-      await DownloadDirectory.save(treeUri: 'content://provider/tree/x', fileName: 'b.gif',
-        bytes: Uint8List(1), subfolder: ' / ');
-      await DownloadDirectory.save(treeUri: 'content://provider/tree/x', fileName: 'c.gif', bytes: Uint8List(1));
+      await DownloadDirectory.saveFile(treeUri: 'content://provider/tree/x', fileName: 'b.gif',
+        sourcePath: '/cache/xta-download-staging/b.part', operationId: 'b', subfolder: ' / ');
+      await DownloadDirectory.saveFile(treeUri: 'content://provider/tree/x', fileName: 'c.gif',
+        sourcePath: '/cache/xta-download-staging/c.part', operationId: 'c');
       expect((calls[0].arguments as Map)['subfolder'], 'R-18/Mika_42');
       expect((calls[1].arguments as Map).containsKey('subfolder'), isFalse);
       expect((calls[2].arguments as Map).containsKey('subfolder'), isFalse);

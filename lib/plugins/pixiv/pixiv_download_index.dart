@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -37,11 +38,14 @@ Set<String> cappedPixivIndex(Iterable<String> keys) {
 }
 
 /// The Pixiv pages saved on this device, so a tile can show it and a second
-/// save can ask first. Kept in settings, so a backup carries it.
+/// save can ask first. Kept in settings, so a backup carries it; it follows
+/// the setting, so a restore or a reset shows at once.
 class PixivDownloadIndex extends Store<Set<String>> {
   final BasePrefService prefs;
 
-  PixivDownloadIndex(this.prefs) : super(readPixivDownloadIndex(prefs));
+  PixivDownloadIndex(this.prefs) : super(readPixivDownloadIndex(prefs)) {
+    prefs.addKeyListener(optionPluginPixivDownloadIndex, load);
+  }
 
   /// The app's index, or null where none is provided.
   static PixivDownloadIndex? maybeOf(BuildContext context) => context.read<PixivDownloadIndex?>();
@@ -57,11 +61,19 @@ class PixivDownloadIndex extends Store<Set<String>> {
   /// How many pages of [illust] are saved.
   int savedCount(PixivIllust illust) => savedAmong(illust, Iterable.generate(illust.viewerUrls.length)).length;
 
-  /// Remembers [pages] of [illustId] as saved now, newest last.
+  /// Reads the stored index again.
+  void load() {
+    final stored = readPixivDownloadIndex(prefs);
+    if (!setEquals(stored, state)) update(Set.unmodifiable(stored));
+  }
+
+  /// Remembers [pages] of [illustId] as saved now, newest last. It builds on
+  /// the stored list, so pages a restore brought back are kept.
   Future<void> record(int illustId, Iterable<int> pages) async {
     final added = [for (final page in pages) pixivPageKey(illustId, page)];
     if (added.isEmpty) return;
-    final next = cappedPixivIndex([...state.where((key) => !added.contains(key)), ...added]);
+    final stored = readPixivDownloadIndex(prefs);
+    final next = cappedPixivIndex([...stored.where((key) => !added.contains(key)), ...added]);
     update(Set.unmodifiable(next));
     await prefs.set(optionPluginPixivDownloadIndex, jsonEncode(next.toList()));
   }
@@ -69,5 +81,11 @@ class PixivDownloadIndex extends Store<Set<String>> {
   Future<void> clear() async {
     update(const <String>{});
     await prefs.set(optionPluginPixivDownloadIndex, '[]');
+  }
+
+  @override
+  Future<void> destroy() async {
+    prefs.removeKeyListener(optionPluginPixivDownloadIndex, load);
+    await super.destroy();
   }
 }

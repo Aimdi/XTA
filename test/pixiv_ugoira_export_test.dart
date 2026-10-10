@@ -204,6 +204,28 @@ void main() {
       expect(store.state.phase, PixivExportPhase.cancelled);
     });
 
+    test('cancel while fetching ends the export at once and ignores the late response', () async {
+      final response = Completer<PixivUgoiraSource>();
+      var saves = 0;
+      final store = PixivUgoiraExportStore(
+        load: () => response.future,
+        encodeGif: _FakeGifEncoder().encode,
+        save: (_) async => ++saves > 0,
+      );
+      addTearDown(store.destroy);
+
+      final run = store.run(PixivUgoiraFormat.zip);
+      await pumpEventQueue();
+      store.cancel();
+
+      expect(await run, isFalse, reason: 'returns without waiting for the archive');
+      expect(store.state.phase, PixivExportPhase.cancelled);
+      response.complete(_source());
+      await pumpEventQueue();
+      expect(saves, 0);
+      expect(store.state.phase, PixivExportPhase.cancelled);
+    });
+
     test('a failed fetch or a refused write ends as failed', () async {
       final fetch = PixivUgoiraExportStore(
         load: () async => throw StateError('offline'),
@@ -277,6 +299,24 @@ void main() {
       expect(harness.downloader.files.single.fileName, '120_p0.gif');
       expect(harness.downloader.files.single.bytes, [71, 73, 70]);
       expect(find.text('Animation saved as GIF'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('exporting a work saved before asks first, and Cancel saves nothing', (tester) async {
+      final harness = await pumpUgoira(tester);
+      await harness.downloads.record(120, const [0]);
+
+      await _saveFromPageSheet(tester, 'saveGif');
+      expect(find.text('Already saved'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await settlePixiv(tester);
+      expect(harness.downloader.files, isEmpty);
+      expect(harness.client.calls.where((call) => call.startsWith('ugoira')), isEmpty);
+
+      await _saveFromPageSheet(tester, 'saveZip');
+      await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
+      await settlePixiv(tester);
+      expect(harness.downloader.files.single.fileName, '120_p0.zip');
       await disposePixiv(tester);
     });
 

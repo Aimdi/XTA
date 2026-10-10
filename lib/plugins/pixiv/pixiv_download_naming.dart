@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -32,7 +34,9 @@ extension PixivNameTokenText on PixivNameToken {
 
 bool pixivTemplateHasPart(String template) => template.contains(pixivPartToken);
 
-const _maxStem = 180;
+/// Android allows 255 bytes for a name; this leaves room for the extension and
+/// the " (1)" it adds when the name is taken.
+const _maxStemBytes = 180;
 final _illegal = RegExp(r'[\x00-\x1f/\\:*?"<>|]');
 final _token = RegExp(r'\{[a-z_]+\}');
 
@@ -43,10 +47,22 @@ String pixivFileName(String template, PixivIllust illust, int page, {required St
   // One pass, so a title that itself reads "{user_id}" stays as written.
   final filled = template.replaceAllMapped(_token, (match) => values[match[0]] ?? match[0]!);
   var stem = filled.replaceAll(_illegal, '_').replaceAll(RegExp(r'\s+'), ' ').trim();
-  stem = stem.length > _maxStem ? stem.substring(0, _maxStem).trim() : stem;
-  stem = stem.replaceAll(RegExp(r'^[. ]+|[. ]+$'), '');
+  stem = _fitBytes(stem, _maxStemBytes).replaceAll(RegExp(r'^[. ]+|[. ]+$'), '');
   final safeStem = stem.isEmpty ? '${illust.id}_p$page' : stem;
   return '$safeStem$extension';
+}
+
+/// The longest start of [value] whose UTF-8 form fits [limit] bytes, cut
+/// between characters so no emoji is split in half.
+String _fitBytes(String value, int limit) {
+  var used = 0;
+  final kept = StringBuffer();
+  for (final rune in value.runes) {
+    used += utf8.encode(String.fromCharCode(rune)).length;
+    if (used > limit) break;
+    kept.writeCharCode(rune);
+  }
+  return kept.toString();
 }
 
 /// The extension of the file at [url], `.jpg` when it has none.

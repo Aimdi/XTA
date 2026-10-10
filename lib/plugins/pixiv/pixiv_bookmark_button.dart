@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 
 /// Heart that bookmarks on Pixiv — same write as follow, not a local-only like.
 class PixivBookmarkButton extends StatefulWidget {
@@ -29,18 +28,8 @@ class _PixivBookmarkButtonState extends State<PixivBookmarkButton> {
     if (_busy) {
       return;
     }
-    final l10n = L10n.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final client = context.read<PixivClient>();
-    final store = context.read<PixivBookmarkStore>();
     setState(() => _busy = true);
-    try {
-      await store.toggle(client, widget.illust);
-    } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(pixivErrorMessage(l10n, e))),
-      );
-    }
+    await togglePixivBookmark(context, widget.illust);
     if (mounted) {
       setState(() => _busy = false);
     }

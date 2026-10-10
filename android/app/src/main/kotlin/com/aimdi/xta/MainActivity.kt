@@ -205,7 +205,6 @@ class MainActivity : AudioServiceActivity() {
         val fileName = call.argument<String>("fileName")
         val bytes = call.argument<ByteArray>("bytes")
         val mimeType = call.argument<String>("mimeType") ?: "application/octet-stream"
-        val subfolder = call.argument<String>("subfolder")
 
         if (treeUri.isNullOrEmpty() || fileName.isNullOrEmpty() || bytes == null) {
             result.error("INVALID_ARGUMENT", "treeUri, fileName and bytes are required", null)
@@ -213,7 +212,9 @@ class MainActivity : AudioServiceActivity() {
         }
 
         try {
-            val directory = downloadDestination(Uri.parse(treeUri), subfolder)
+            val tree = Uri.parse(treeUri)
+            val documentId = DocumentsContract.getTreeDocumentId(tree)
+            val directory = DocumentsContract.buildDocumentUriUsingTree(tree, documentId)
 
             // Android renames rather than overwrites when the name is taken.
             val file = DocumentsContract.createDocument(contentResolver, directory, mimeType, fileName)
@@ -250,8 +251,12 @@ class MainActivity : AudioServiceActivity() {
             return
         }
         val source = File(sourcePath).canonicalFile
-        if (!source.path.startsWith(cacheDir.canonicalPath + File.separator) || !source.isFile) {
-            result.error("INVALID_SOURCE", "Expected a staged file in app cache", null)
+        // Downloads stage under files/ so a partial one survives a cache clear
+        // and can resume; files made on the device stage in the cache.
+        val stagingRoots = listOf(cacheDir, File(filesDir, "xta-download-staging"))
+            .map { it.canonicalPath + File.separator }
+        if (stagingRoots.none { source.path.startsWith(it) } || !source.isFile) {
+            result.error("INVALID_SOURCE", "Expected a staged file in app storage", null)
             return
         }
         val cancelled = AtomicBoolean(false)

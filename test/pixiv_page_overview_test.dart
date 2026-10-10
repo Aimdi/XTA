@@ -125,6 +125,28 @@ void main() {
     });
   }
 
+  for (final size in [const Size(568, 320), const Size(640, 360)]) {
+    testWidgets('a landscape phone at twice the text size keeps room for pages ($size)', (tester) async {
+      await pumpPixiv(tester, PixivReaderScreen(illust: pixivWork(pages: 25)), size: size, textScale: 2);
+      await _openFromCounter(tester, 'pixiv-reader-counter');
+
+      final grid = tester.getSize(find.byType(CustomScrollView)).height;
+      final bar = find.ancestor(
+        of: find.byKey(const ValueKey('pixiv-overview-downloadPage')),
+        matching: find.byType(Scrollable),
+      );
+      expect(grid, greaterThan(tester.getSize(bar).height), reason: 'the pages get more of the sheet than the actions');
+      expect(
+        tester.getTopLeft(find.byKey(const ValueKey('pixiv-overview-downloadAll'))).dy,
+        tester.getTopLeft(find.byKey(const ValueKey('pixiv-overview-downloadPage'))).dy,
+        reason: 'two actions to a row on a wide sheet',
+      );
+      await tester.dragUntilVisible(find.byKey(const ValueKey('pixiv-overview-direction')), bar, const Offset(0, -40));
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+  }
+
   testWidgets('the detail page counter opens the overview and a thumbnail turns the viewer', (tester) async {
     await pumpPixiv(tester, PixivIllustScreen(illust: pixivWork()));
     expect(find.text('1 / 8'), findsOneWidget);

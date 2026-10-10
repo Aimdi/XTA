@@ -31,24 +31,23 @@ class DownloadDirectory {
     return granted ?? false;
   }
 
-  /// Writes [bytes] into the chosen folder, or into [subfolder] inside it
-  /// (made when missing, reused after). Returns the saved document's URI.
+  /// Writes [bytes] into the chosen folder. Returns the saved document's URI.
   static Future<String?> save({
     required String treeUri,
     required String fileName,
     required Uint8List bytes,
-    String? subfolder,
   }) async {
     return _channel.invokeMethod<String>('saveToDownloadDirectory', {
       'treeUri': treeUri,
       'fileName': fileName,
       'mimeType': mimeTypeFor(fileName),
       'bytes': bytes,
-      ..._subfolderArgument(subfolder),
     });
   }
 
-  /// Copies a staged file without sending its contents through the platform channel.
+  /// Copies a staged file without sending its contents through the platform
+  /// channel, into [subfolder] inside the chosen folder when there is one
+  /// (made when missing, reused after).
   static Future<String?> saveFile({required String treeUri, required String fileName,
       required String sourcePath, required String operationId, String? subfolder}) =>
     _channel.invokeMethod<String>('saveFileToDownloadDirectory', {

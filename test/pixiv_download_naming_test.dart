@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -52,6 +54,14 @@ void main() {
       expect(long, '${'x' * 180}.png');
     });
 
+    test('a long name is cut to a byte budget between whole characters', () {
+      final cjk = pixivFileName('{title}', _work(title: '桜' * 100), 0, extension: '.png');
+      expect(cjk, '${'桜' * 60}.png', reason: 'three bytes each, 180 bytes in all');
+      expect(utf8.encode(cjk).length, lessThan(255));
+      final emoji = pixivFileName('{title}', _work(title: '😀' * 50), 0, extension: '.png');
+      expect(emoji, '${'😀' * 45}.png', reason: 'never half an emoji');
+    });
+
     test('a name that ends up empty falls back to the work and page', () {
       expect(pixivFileName('{title}', _work(title: '...'), 2, extension: '.jpg'), '120_p2.jpg');
     });
@@ -97,7 +107,13 @@ void main() {
       expect(r18Only.subfolder(_work()), isNull);
       expect(r18Only.subfolder(_work(r18: true)), 'R-18');
       final perArtist = PixivSaveNaming.of(prefs({optionPluginPixivFolderPerArtist: true}));
-      expect(perArtist.subfolder(_work(userName: '../evil/..')), '.._evil_.._42');
+      expect(perArtist.subfolder(_work(userName: '../evil/..')), '_evil_.._42');
+    });
+
+    test('an artist folder never starts with a dot, which Android would hide from the gallery', () {
+      final perArtist = PixivSaveNaming.of(prefs({optionPluginPixivFolderPerArtist: true}));
+      expect(perArtist.subfolder(_work(userName: '.mika')), 'mika_42');
+      expect(perArtist.subfolder(_work(userName: ' . mika')), 'mika_42');
     });
 
     test('nothing set means no subfolder', () {

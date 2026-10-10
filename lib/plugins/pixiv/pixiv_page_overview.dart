@@ -11,6 +11,12 @@ const _spacing = 10.0;
 const _maxTile = 132.0;
 const _radius = 12.0;
 
+/// At large text the action bar stays under this share of the screen height.
+const _stackedShare = 0.4;
+
+/// A large-text action bar this wide puts two actions on each row.
+const _twoPerRowWidth = 480.0;
+
 /// Columns for a sheet [width] wide: never fewer than three thumbnails a row.
 int pixivOverviewColumns(double width) => ((width - 2 * _gutter + _spacing) / (_maxTile + _spacing)).ceil().clamp(3, 8);
 
@@ -68,6 +74,7 @@ class PixivPageOverview extends StatefulWidget {
 
 class _PixivPageOverviewState extends State<PixivPageOverview> {
   final _scroll = ScrollController();
+  final _barScroll = ScrollController();
   final _header = GlobalKey();
   late final _selection = PixivPageSelectionStore(_pages.length);
 
@@ -84,6 +91,7 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
   @override
   void dispose() {
     _scroll.dispose();
+    _barScroll.dispose();
     _selection.destroy();
     super.dispose();
   }
@@ -202,26 +210,28 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
       PixivPageAction.direction,
     ];
     final stacked = _stacked(context);
+    final items = [
+      for (final action in actions)
+        PixivSheetAction(
+          key: ValueKey('pixiv-overview-${action.name}'),
+          icon: pixivPageActionIcon(action, readVertically: widget.readVertically),
+          label: pixivPageActionLabel(L10n.of(context), action, readVertically: widget.readVertically),
+          inline: stacked,
+          // Picking happens right here; every other action closes the sheet first.
+          onTap: action == PixivPageAction.selectPages
+              ? _selection.start
+              : () => Navigator.pop(context, PixivPageChoice.action(action)),
+        ),
+    ];
     return _bar(
       context,
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-      direction: stacked ? Axis.vertical : Axis.horizontal,
-      children: [
-        for (final action in actions)
-          Flexible(
-            fit: stacked ? FlexFit.loose : FlexFit.tight,
-            child: PixivSheetAction(
-              key: ValueKey('pixiv-overview-${action.name}'),
-              icon: pixivPageActionIcon(action, readVertically: widget.readVertically),
-              label: pixivPageActionLabel(L10n.of(context), action, readVertically: widget.readVertically),
-              inline: stacked,
-              // Picking happens right here; every other action closes the sheet first.
-              onTap: action == PixivPageAction.selectPages
-                  ? _selection.start
-                  : () => Navigator.pop(context, PixivPageChoice.action(action)),
+      child: stacked
+          ? _stackedRows(context, items)
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [for (final item in items) Expanded(child: item)],
             ),
-          ),
-      ],
     );
   }
 
@@ -229,65 +239,80 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
   Widget _selectionBar(BuildContext context, PixivPageSelection selection) {
     final l10n = L10n.of(context);
     final count = selection.pages.length;
-    final stacked = _stacked(context);
     final style = OutlinedButton.styleFrom(
       minimumSize: const Size(0, kMinInteractiveDimension),
       padding: const EdgeInsets.symmetric(horizontal: 12),
     );
+    final cancel = OutlinedButton(
+      key: const ValueKey('pixiv-overview-select-cancel'),
+      style: style,
+      onPressed: _selection.stop,
+      child: Text(l10n.cancel),
+    );
+    final all = OutlinedButton(
+      key: const ValueKey('pixiv-overview-select-all'),
+      style: style,
+      onPressed: _selection.toggleAll,
+      child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
+    );
+    final save = FilledButton.icon(
+      key: const ValueKey('pixiv-overview-save-selected'),
+      style: FilledButton.styleFrom(minimumSize: const Size(0, kMinInteractiveDimension)),
+      onPressed: count == 0 ? null : () => Navigator.pop(context, PixivPageChoice.save(selection.ordered)),
+      icon: const Icon(Icons.download_outlined),
+      label: Text(l10n.plugin_pixiv_save_pages(count), textAlign: TextAlign.center),
+    );
     return _bar(
       context,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      direction: stacked ? Axis.vertical : Axis.horizontal,
-      spacing: 8,
-      children: [
-        OutlinedButton(
-          key: const ValueKey('pixiv-overview-select-cancel'),
-          style: style,
-          onPressed: _selection.stop,
-          child: Text(l10n.cancel),
-        ),
-        OutlinedButton(
-          key: const ValueKey('pixiv-overview-select-all'),
-          style: style,
-          onPressed: _selection.toggleAll,
-          child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
-        ),
-        Flexible(
-          fit: stacked ? FlexFit.loose : FlexFit.tight,
-          child: FilledButton.icon(
-            key: const ValueKey('pixiv-overview-save-selected'),
-            style: FilledButton.styleFrom(minimumSize: const Size(0, kMinInteractiveDimension)),
-            onPressed: count == 0 ? null : () => Navigator.pop(context, PixivPageChoice.save(selection.ordered)),
-            icon: const Icon(Icons.download_outlined),
-            label: Text(l10n.plugin_pixiv_save_pages(count), textAlign: TextAlign.center),
-          ),
-        ),
-      ],
+      child: _stacked(context)
+          ? _stackedRows(context, [cancel, all, save], spacing: 8)
+          : Row(
+              spacing: 8,
+              children: [
+                cancel,
+                all,
+                Expanded(child: save),
+              ],
+            ),
     );
   }
 
-  Widget _bar(
-    BuildContext context, {
-    required EdgeInsets padding,
-    required Axis direction,
-    required List<Widget> children,
-    double spacing = 0,
-  }) => DecoratedBox(
+  /// Full-width rows, two to a row on a wide sheet. The bar never takes more
+  /// than [_stackedShare] of the screen, so the pages keep room in landscape;
+  /// what does not fit scrolls.
+  Widget _stackedRows(BuildContext context, List<Widget> items, {double spacing = 0}) => LayoutBuilder(
+    builder: (context, constraints) {
+      final perRow = constraints.maxWidth >= _twoPerRowWidth ? 2 : 1;
+      final rows = [
+        for (var start = 0; start < items.length; start += perRow)
+          Row(
+            spacing: spacing,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [for (final item in items.skip(start).take(perRow)) Expanded(child: item)],
+          ),
+      ];
+      return ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * _stackedShare),
+        child: Scrollbar(
+          controller: _barScroll,
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            controller: _barScroll,
+            child: Column(mainAxisSize: MainAxisSize.min, spacing: spacing, children: rows),
+          ),
+        ),
+      );
+    },
+  );
+
+  Widget _bar(BuildContext context, {required EdgeInsets padding, required Widget child}) => DecoratedBox(
     decoration: BoxDecoration(
       border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
     ),
     child: SafeArea(
       top: false,
-      child: Padding(
-        padding: padding,
-        child: Flex(
-          direction: direction,
-          mainAxisSize: MainAxisSize.min,
-          spacing: spacing,
-          crossAxisAlignment: direction == Axis.vertical ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
-          children: children,
-        ),
-      ),
+      child: Padding(padding: padding, child: child),
     ),
   );
 }

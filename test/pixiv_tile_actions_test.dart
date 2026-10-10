@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
@@ -26,6 +27,29 @@ Future<void> _longPressTile(WidgetTester tester) async {
 Future<void> _pick(WidgetTester tester, String id) async {
   await tester.tap(find.byKey(ValueKey('plugin-post-action-$id')));
   await settlePixiv(tester);
+}
+
+/// A one-page work wearing both bottom labels.
+PixivIllust _labelledWork() {
+  final work = pixivWork(pages: 1);
+  return PixivIllust(
+    id: work.id,
+    title: work.title,
+    caption: '',
+    type: 'illust',
+    thumbnailUrl: work.thumbnailUrl,
+    pageUrls: work.pageUrls,
+    originalUrls: work.originalUrls,
+    pageThumbUrls: work.pageThumbUrls,
+    pageCount: 1,
+    width: work.width,
+    height: work.height,
+    userId: work.userId,
+    userName: work.userName,
+    userAccount: work.userAccount,
+    isR18: true,
+    isAi: true,
+  );
 }
 
 T _read<T>(WidgetTester tester) => Provider.of<T>(tester.element(find.byType(PixivIllustTile)), listen: false);
@@ -151,4 +175,31 @@ void main() {
       await disposePixiv(tester);
     });
   });
+
+  for (final textScale in [1.0, 1.3, 2.0]) {
+    testWidgets('on a narrow tile the saved mark clears the R-18 and AI labels and the heart (x$textScale)', (
+      tester,
+    ) async {
+      final harness = await pumpPixiv(
+        tester,
+        Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(width: 152, child: PixivIllustTile(illust: _labelledWork())),
+          ),
+        ),
+        textScale: textScale,
+      );
+      await harness.downloads.record(120, const [0]);
+      await tester.pump();
+
+      final badge = tester.getRect(find.byKey(const ValueKey('pixiv-downloaded-120')));
+      for (final label in ['R-18', 'AI']) {
+        expect(badge.overlaps(tester.getRect(find.text(label))), isFalse, reason: label);
+      }
+      expect(badge.overlaps(tester.getRect(find.byType(PixivBookmarkButton))), isFalse);
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+  }
 }

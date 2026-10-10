@@ -54,6 +54,51 @@ Future<List<Future<DownloadEntry>>> _enqueue(DownloadStore store, List<String> n
   return pending;
 }
 
+/// Waits on real I/O (staging files) until [done], or gives up after a second.
+Future<void> _until(bool Function() done) async {
+  for (var i = 0; i < 200 && !done(); i++) {
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+  }
+}
+
+/// Real transfers whose save step stands in for the system save dialog, which
+/// takes one request at a time; [overlaps] counts any second one opened.
+class _AskMode {
+  final dialogs = <String, Completer<String?>>{};
+  final _open = <String>{};
+  var overlaps = 0;
+  late final DownloadStore store;
+
+  _AskMode(Directory directory) {
+    final transfer = DownloadTransfer(
+      clientFactory: () => MockClient((_) async => http.Response.bytes([1, 2, 3], 200)),
+      temporaryDirectory: () async => directory,
+      save: (entry, file, token) async {
+        if (_open.isNotEmpty) overlaps++;
+        _open.add(entry.fileName);
+        try {
+          return await (dialogs[entry.fileName] = Completer<String?>()).future;
+        } finally {
+          _open.remove(entry.fileName);
+        }
+      },
+    );
+    store = DownloadStore(history: _MemoryHistory(), runner: transfer.call)..setConcurrency(downloadConcurrencyDefault);
+  }
+
+  DownloadEntry entry(String name) => store.state.entries.singleWhere((entry) => entry.fileName == name);
+
+  /// The download that reached the dialog first, and the one left waiting.
+  Future<(String, String)> firstOpen() async {
+    await _until(() => dialogs.isNotEmpty);
+    // Give the other download time to finish fetching and reach the dialog too.
+    await _until(() => store.state.entries.every((entry) => entry.received == 3));
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final first = dialogs.keys.single;
+    return (first, first == 'a.jpg' ? 'b.jpg' : 'a.jpg');
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -106,6 +151,43 @@ void main() {
       expect(runner.started, ['a', 'b', 'c', 'd']);
     });
 
+    test('downloads without a folder fetch side by side but open the save dialog one at a time', () async {
+      final directory = await Directory.systemTemp.createTemp('xta-ask-mode');
+      addTearDown(() => directory.delete(recursive: true));
+      final ask = _AskMode(directory);
+      addTearDown(ask.store.destroy);
+
+      final pending = await _enqueue(ask.store, ['a.jpg', 'b.jpg']);
+      final (first, waiting) = await ask.firstOpen();
+      expect(ask.entry(waiting).status, DownloadStatus.downloading, reason: 'fetched, waiting for the dialog');
+      expect(ask.entry(waiting).canCancel, isTrue);
+
+      ask.dialogs[first]!.complete('content://provider/document/$first');
+      await _until(() => ask.dialogs.length == 2);
+      ask.dialogs[waiting]!.complete('content://provider/document/$waiting');
+
+      expect([for (final entry in pending) (await entry).status], [DownloadStatus.completed, DownloadStatus.completed]);
+      expect(ask.overlaps, 0);
+    });
+
+    test('a download cancelled while it waits for the dialog never opens one', () async {
+      final directory = await Directory.systemTemp.createTemp('xta-ask-cancel');
+      addTearDown(() => directory.delete(recursive: true));
+      final ask = _AskMode(directory);
+      addTearDown(ask.store.destroy);
+
+      final pending = await _enqueue(ask.store, ['a.jpg', 'b.jpg']);
+      final (first, waiting) = await ask.firstOpen();
+      await ask.store.cancel(ask.entry(waiting).id);
+      ask.dialogs[first]!.complete('content://provider/document/$first');
+      await ask.store.flush();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      final statuses = {for (final entry in pending) (await entry).fileName: (await entry).status};
+      expect(statuses, {first: DownloadStatus.completed, waiting: DownloadStatus.cancelled});
+      expect(ask.dialogs.keys, [first]);
+    });
+
     test('the limit stays within the offered choices', () {
       final store = DownloadStore(history: _MemoryHistory(), runner: _GatedRunner().call);
       addTearDown(store.destroy);
@@ -152,6 +234,7 @@ void main() {
       expect(safeDownloadFolder('R-18/Mika_42'), 'R-18/Mika_42');
       expect(safeDownloadFolder(r'..\..\R-18/./Mika:42/'), 'R-18/Mika_42');
       expect(safeDownloadFolder(' name. /  '), 'name');
+      expect(safeDownloadFolder('.hidden/ .mika_42'), 'hidden/mika_42');
       expect(safeDownloadFolder('/../.'), isNull);
       expect(safeDownloadFolder('a/b/c/d/e/f'), 'a/b/c/d');
       expect(safeDownloadFolder('x' * 300), 'x' * 120);
@@ -193,6 +276,40 @@ void main() {
       ]);
       expect(batch.saved, 2);
       expect(seen, ['Mika_42/R-18', null]);
+    });
+
+    test('bytes made on the device are staged and copied, never sent through the channel', () async {
+      final directory = await Directory.systemTemp.createTemp('xta-staged-bytes');
+      addTearDown(() => directory.delete(recursive: true));
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      const pathProvider = MethodChannel('plugins.flutter.io/path_provider');
+      messenger.setMockMethodCallHandler(pathProvider, (_) async => directory.path);
+      addTearDown(() => messenger.setMockMethodCallHandler(pathProvider, null));
+      const channel = MethodChannel('browser_resolver');
+      final calls = <MethodCall>[];
+      List<int>? staged;
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call);
+        staged = await File((call.arguments as Map)['sourcePath'] as String).readAsBytes();
+        return 'content://provider/document/7';
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+      final saved = await DownloadTransfer.saveBytes(
+        treeUri: 'content://tree/x',
+        fileName: '120_p0.gif',
+        bytes: [71, 73, 70],
+        subfolder: 'R-18/Mika_42',
+      );
+
+      expect(saved, 'content://provider/document/7');
+      final args = calls.single.arguments as Map;
+      expect(calls.single.method, 'saveFileToDownloadDirectory');
+      expect(args['subfolder'], 'R-18/Mika_42');
+      expect(args['mimeType'], 'image/gif');
+      expect(args.containsKey('bytes'), isFalse);
+      expect(staged, [71, 73, 70]);
+      expect(File(args['sourcePath'] as String).existsSync(), isFalse, reason: 'the staged copy is removed');
     });
 
     test('the transfer hands the subfolder to the platform save', () async {
