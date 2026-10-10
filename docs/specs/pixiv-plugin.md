@@ -91,7 +91,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Accounts | Several accounts in a secret pref; switching clears the access token and what was loaded |
 | Links | Every Pixiv link form, `pixiv://`, i.pximg.net files and pixiv.me short links; pixiv links shared to XTA or opened by default |
 | Group Discover | Related creators (`/v1/user/related`), cached unfiltered for 10 minutes; each is shown through a preview work that passes mute, Show R-18 and Hide AI as they are at read time |
-| Novels | A mode button beside the tabs turns Home (Recommended, Following public / private, Watchlist), Rankings (novel boards, pins, archive date) and Favorites (own novel bookmarks) to novels; novel cards with a heart (long press bookmarks privately) and mutes; novel series pages with the watchlist toggle; a profile's public novel bookmarks. See `pixiv-novels.md` |
+| Novels | A mode button beside the tabs turns Home (Recommended, Following public / private, Watchlist), Rankings (novel boards, pins, archive date) and Favorites (own novel bookmarks) to novels; novel cards with a heart (long press bookmarks privately) and mutes; novel series pages with the watchlist toggle; a profile's public novel bookmarks; the novel reader (Pixiv markup, pictures, shared text size and reading position, chapters, export, share). See `pixiv-novels.md` |
 
 Every way into a work goes through `pixiv_link_open.dart`: `openPixivLinkRef`
 for links (used by `plugin_links.dart`), `openPixivIllust` and
@@ -144,6 +144,7 @@ its illust case.
 | AI display setting (read only) | `GET /v1/user/ai-show-settings` |
 | Short link | `GET https://pixiv.me/<name>` (redirect read, not followed) |
 | Novel feeds, rankings, bookmarks, series, watchlist | `/v1/novel/recommended`, `/v1/novel/follow`, `/v1/novel/ranking`, `/v1/user/bookmarks/novel`, `/v2/novel/bookmark/add`, `/v1/novel/bookmark/delete`, `/v2/novel/series`, `/v1/watchlist/novel` (+ `add` / `delete`); see `pixiv-novels.md` |
+| Novel text and detail | `/webview/v2/novel` (HTML with the novel object), `/v2/novel/detail`; see `pixiv-novels.md` |
 | SauceNAO (not Pixiv) | `POST https://saucenao.com/search.php` |
 
 Rankings, recommended manga and creators, Pixivision, series, the manga
@@ -151,5 +152,5 @@ watchlist and the walkthrough are listed in `pixiv-discovery.md`.
 
 ## Not yet
 
-What remains against PixEz — the novel reader, novel search, history and
+What remains against PixEz — novel search, the novel history screen, novel
 links, and more — is planned batch by batch in `pixiv-pixez-gaps.md`.

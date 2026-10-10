@@ -1,9 +1,9 @@
-# Pixiv — novels (batch B2a)
+# Pixiv — novels (batches B2a and B2b)
 
-The novel side of the private Pixiv plugin, first part: Novel mode for the
-five sections, the novel feeds, rankings, bookmarks, series pages and the
-novel watchlist. The reader (B2b) and novel search, the profile Novels tab,
-history and deep links (B2c) build on it. Part of the PixEz parity plan
+The novel side of the private Pixiv plugin: Novel mode for the five
+sections, the novel feeds, rankings, bookmarks, series pages and the novel
+watchlist (B2a), and the reader (B2b). Novel search, the profile Novels tab,
+the novel history screen and deep links (B2c) build on them. Part of the PixEz parity plan
 (`pixiv-pixez-gaps.md`); the plugin as a whole is described in
 `pixiv-plugin.md`.
 
@@ -29,6 +29,8 @@ Every call lives in `PixivNovelApi` (`pixiv_novel_api.dart`) over
 | `watchlist` | `GET /v1/watchlist/novel` | Same row shape as the manga watchlist |
 | `addToWatchlist` / `removeFromWatchlist` | `POST /v1/watchlist/novel/add\|delete` form `series_id` | |
 | `series` | `GET /v2/novel/series?series_id=` | Header, first and newest chapter, chapters, `next_url` |
+| `detail` | `GET /v2/novel/detail?novel_id=` | A novel opened by its id alone; withheld is not found |
+| `content` | `GET /webview/v2/novel?id=` (HTML) | The object after `novel:` in the page: text, series neighbours, pictures |
 
 Next pages follow `next_url` through `PixivClient.getPage`, the one-line
 first-or-next helper the discovery API and the client can fold their own
@@ -123,9 +125,9 @@ rankings do.
   (`showPixivPageSheet`, `pixivBookmarkEntry`, `pixivCopyLinkEntry`,
   `pixivMuteEntry` in `pixiv_post_actions.dart`).
 - Opening a novel goes through `openPixivNovel` / `openPixivNovelById`
-  (`pixiv_novel_open.dart`), which open it the way a novel link does: the
-  browser until B2b's reader routes those links. The reader batch swaps these
-  two functions and nothing else changes.
+  (`pixiv_novel_open.dart`), which push the reader (`pixivNovelReaderRoute`):
+  a card hands over the novel it shows, an id alone makes the reader fetch
+  the detail too.
 
 ## Bookmarking a novel
 
@@ -182,21 +184,137 @@ the creator's public novel bookmarks under the reader's filters, with the
 creator's own author mute lifted as the works lists do. The Novels tab of a
 creator's own novels is B2c's.
 
-## Preferences added
+## Preferences and files added
 
 | Key | Default | Backed up |
 |---|---|---|
 | `plugin.pixiv.novel_ranking_modes` | `["day","week","day_male","day_female"]` | Yes (reset with the plugin) |
+| `pixiv-history:novels` (a JSON file, not a preference) | empty | No (emptied with the plugin's data) |
+
+The reader adds no preference of its own: appearance and places are the
+shared `reading.appearance.v1` and `reading.articles.v1`.
+
+## The reader (B2b)
+
+`PixivNovelReaderScreen` (`pixiv_novel_reader_screen.dart`) is the one way
+into a novel's text.
+
+### Loading
+
+- `loadPixivNovelReading` (`pixiv_novel_reader_store.dart`) asks for the
+  text and, for a novel opened by its id, the detail at once; the first
+  failure is what the reader reports, with `FullPageErrorWidget` and Retry.
+  The state is a `PixivFetchStore<PixivNovelReading?>`, let go once its load
+  settles (`PixivLoads`).
+- The webview page writes the novel as a JavaScript object after `novel:`.
+  `pixivNovelObjectSources` (`pixiv_novel_parser.dart`) cuts each `{…}` after
+  a `novel:` at its balancing brace, skipping braces and escaped quotes inside
+  strings, and `pixivNovelJsonFromHtml` takes the first that decodes to an
+  object. No regex. `PixivNovelContent` (`pixiv_novel_content.dart`) reads it
+  with `Json`: the text, `seriesNavigation` (previous and next, with
+  `viewable`, `contentOrder` and title), `images` (uploaded pictures by id:
+  `1200x1200`, else `480mw`, `original`, `240mw`, `128x128`; `original` is
+  saved) and `illusts` (works by `ID` or `ID-N`: `medium`, else `original`,
+  `small`). The header's other fields come from the novel object the list
+  sent or the detail, so the webview's rating, tags and caption are not read.
+- Pages over 20,000 characters are decoded and tokenized in a background
+  isolate (`pixivNovelParse`).
+- The first time a novel loads it joins the novel history
+  (`recordPixivNovelVisit`), unless the history is paused.
+
+### Markup
+
+`parsePixivNovelMarkup` is pure and never throws. Every line is a block, so
+blank lines stay as the author left them; a block tag sharing a line with
+text splits it, and space beside a block tag is dropped.
+
+| Markup | Block or span | Drawn as |
+|---|---|---|
+| `[newpage]` | `PixivNovelPageBreak(n)`, numbered from 2 | A rule with "Page n" |
+| `[chapter:…]` | `PixivNovelHeading` (ruby inside kept) | A larger bold heading |
+| `[[rb:base > ruby]]` (half- or full-width arrow) | `PixivNovelRuby` | The ruby in half-size type over its base, on the line's baseline |
+| `[[jumpuri:label > url]]` (http or https) | `PixivNovelLink` | A link; Pixiv addresses open in XTA (`openPixivHref`), others after "Leave Pixiv to open …?" |
+| `[jump:N]` | `PixivNovelPageJump` | "Go to page N", scrolling to that page; literal when the page does not exist (PixEz keeps it literal) |
+| `[pixivimage:ID]`, `[pixivimage:ID-N]` | `PixivNovelIllustBlock` (page N from 1) | The work's picture; a tap opens the work, a long press saves |
+| `[uploadedimage:ID]` | `PixivNovelUploadBlock` | The picture; a tap opens it full screen, a long press saves |
+
+Anything else, or a tag written wrong, stays as text. A work the page carried
+no picture of is fetched once (`/v1/illust/detail` through
+`PixivEmbeddedWorksStore`), and its page N is shown. Pictures use
+`PixivNetworkImage`, so the image server setting and the Referer apply, and
+saves go through `savePixivImage` (the download path every plugin image
+takes). `pixivNovelPlainText` is the same blocks without markup: ruby as
+`base(ruby)`, links as `label (url)`, a page break as a blank line, pictures
+and page jumps left out.
+
+### Header and footer
+
+Cover, title, the author (opens the profile), the series link (opens the
+novel series page), bookmarks (following the session's heart), views, date,
+length, R-18 / R-18G and AI labels, tags (a tap searches, a long press offers
+Mute, Favourite or Copy, the works' own sheet), the caption with its links
+(`PixivHtmlText`) and *View comments (N)* opening `PixivCommentsScreen` for
+`PixivCommentTarget.novel`. After the text come *View comments* again and the
+previous and next chapters, each named (title, else `#n`) and off when Pixiv
+says the reader cannot open it; opening one replaces the reader.
+
+### Appearance and place
+
+The reader reuses the article readers' `ArticleReadingStore` and
+`ArticleReaderControls` / `ArticleAppearanceSheet` (`lib/reading/`): text
+size 16–28 and line spacing 1.4–2.2, shared with the RSS and Substack
+readers; the app theme and true black apply. The text runs at most 680 dp
+wide. The place reached is kept under `pixiv-novel:<id>` in the shared
+journal as a block and the offset of its top, so it survives a change of
+text size, and only while *Remember reading position* is on. A Flutter
+reader reports through the new `ArticleReadingStore.receivePoint` (the web
+readers keep `receiveProgress`, which now goes through it).
+`PixivNovelScrollPosition` reads the first block showing from the
+`AutoScrollController`'s tags and puts a place back by landing near its
+fraction first, then scrolling the block to its offset. A new size keeps the
+passage being read at the top. Reaching the end after reading 12 seconds
+marks the novel finished, as articles are.
+
+### Text and menu
+
+- The body sits in a `SelectionArea`, so Copy and Android's text actions
+  (translators included) are in the selection toolbar; the caption is
+  selectable on its own.
+- The bar shows the title over the exact character count; it grows with
+  large text. Beside it are the heart (tap: default visibility; long press:
+  privately) and the menu.
+- The menu: the author (opens the profile on its Novels tab, id
+  `pixivNovelReaderAuthorTab` = `novels`, the first tab until that tab
+  exists) with a button sharing the profile link; previous and next chapter;
+  Reading appearance; Export as text; Share link; Share series link (in a
+  series); Open on Pixiv. Shares are anchored to the menu button
+  (`sharePositionOrigin`); the series page's share button
+  (`PixivShareLinkButton`) is anchored to itself.
+- Export asks for plain text or the text with Pixiv's markup and saves
+  `<title>.txt` through the system save dialog (`PixivNovelExporter`, swapped
+  in tests). The title loses what no file system accepts through the same
+  `pixivSafeFileStem` the download names use; an empty one becomes
+  `pixiv-novel-<id>.txt`.
+
+### Not built
+
+- PixEz's scroll-offset bookmark toggle: the shared journal remembers every
+  novel's place on its own.
+- A muted novel opened by its id is shown, as from a watchlist row; muted
+  novels never reach a list, and B2c's deep links can put a notice in front.
 
 ## For the batches that follow
 
-- B2b: replace `openPixivNovel` / `openPixivNovelById` with the reader; the
-  card, series page and watchlist already call them.
 - B2c: novel search fills Search in Novel mode (`_novelSections` in
   `pixiv_screen.dart` reuses the illustration Search until then); novel deep
-  links route `PixivNovelLinkRef` and `PixivNovelSeriesLinkRef` to the reader
-  and `openPixivNovelSeries`; the profile Novels tab can use
-  `PixivOwnedNovelFeed`.
+  links route `PixivNovelLinkRef` and `PixivNovelSeriesLinkRef` to
+  `openPixivNovelById` and `openPixivNovelSeries` (a `[[jumpuri:]]` to a novel
+  then opens in the reader too); the profile Novels tab can use
+  `PixivOwnedNovelFeed` and should take the id `novels`
+  (`pixivNovelReaderAuthorTab`). Novel visits are already recorded in
+  `PixivNovelHistoryStore` (`pixiv-history:novels`, provided in `main.dart`,
+  emptied with the plugin's data); its entries carry the cover as
+  `thumbUrl`, and a reader opened from history takes the id alone.
 
 ## Tests
 
@@ -213,3 +331,18 @@ R-18 boards, an account switch emptying and reloading the novel lists, the
 card, its heart and long press, large text, the series page, the profile
 switch) and `pixiv_home_chrome_test.dart` (the mode button keeping the five
 icon tabs at 320 and 360 dp).
+
+For the reader: `pixiv_novel_parser_test.dart` (the object after `novel:`
+with braces, quotes and escapes in strings, a `novel:` that opens no object,
+broken pages; every tag, both arrows, unknown and malformed markup, page
+numbers, plain text, the background parse), `pixiv_novel_api_test.dart`
+(detail and content requests, a withheld novel, a page without the object),
+`pixiv_novel_models_test.dart` (full, missing and reshaped webview content,
+the history entry) and `pixiv_novel_reader_test.dart` (header and blocks, a
+card opening the reader, opening by id with the history, paused history,
+error and retry, selection, the appearance sheet, chapters off when not
+viewable and replacing the reader, the menu, comments above and below,
+page jumps, the outside-link confirm and a Pixiv link opening in XTA,
+pictures fetched, opened and saved, export names and both formats, shares
+anchored to the button on the reader and the series page, the author row's
+tab, the place kept and restored, positions off, large text at 320 dp).

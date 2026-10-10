@@ -19,8 +19,10 @@ plugin as a whole is described in `pixiv-plugin.md`.
 
 - Opened works are kept **on the device only**: a JSON list in
   `LocalJsonStore` under `pixiv-history:illusts` (the app's reader-state
-  folder). Settings backups and exports never read it. Novels get their own
-  key (`PixivHistoryStore(key: …)`).
+  folder). Settings backups and exports never read it. Opened novels go to
+  their own file, `pixiv-history:novels` (`PixivNovelHistoryStore`, recorded
+  by the novel reader, entries with the cover as `thumbUrl`; see
+  `pixiv-novels.md`).
 - Each entry is `{id, title, userId, userName, thumbUrl, tags, viewedAt,
   width, height, bookmarks, bookmarked}`; newest first, one entry per work
   (reopening moves it to the top), at most 500. Tags are kept so a muted tag
