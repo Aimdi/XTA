@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Gjør tvilsomme og eksplisitte miniatyrbilder uskarpe",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Innlegget vises skarpt når du åpner det",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Fjern tagger",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Kommentarer",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Kopiert til utklippstavlen",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Kopier lenke",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Kopier taggen",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Kopier tagger",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Rediger som tekst",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Ingen populære innlegg for denne datoen",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Utelat fra nåværende søk",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Utelat",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Foreldre- og barneinnlegg",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} favoritt} other{{count} favoritter}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Følg taggen",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Åpne i fullskjerm",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Kolonner i rutenettet",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Tilpass skjermen",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Skjul innlegg med denne taggen",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Mer fra {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Flere tagger i én oppføring skjuler bare innlegg som har alle sammen. -tag og rating:e fungerer også",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Ingen kommentarer ennå",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Høyest poengsum",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Originalfiler i fullskjerm",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Fullskjerm laster filen i full størrelse i stedet for vertens nedskalerte versjon. Bruker mer data",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Velg en dato",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Dag",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Tidligere",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Senere",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Måned",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Dette nettstedet har ingen populærliste, så innleggene med høyest poengsum vises",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Uke",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Publisert {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Søk etter denne taggen",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Visning",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Se alle",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Visningsnavn",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Mindre miniatyrbilder",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Laster vertens små forhåndsvisninger i rutenettet. Raskere og bruker mindre data, men er mer uskarpe",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Trykk på en tagg for å søke etter den, følge den, skjule den eller lese wikien",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Kunstner",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Karakter",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Serie",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Sorter tagger",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Mest brukt",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Å",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Art",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tagger",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Detaljer under miniatyrbildene",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Vert, de første taggene og poengsum under hvert innlegg i rutenettet",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Slutt å følge taggen",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Slutt å skjule denne taggen",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Fjern fra lagrede søk",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Lastet opp av {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} oppstemmer, {down} nedstemmer",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Denne taggen har ingen wikiside",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Viser den siste listen som kom inn",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Klarte ikke å hente listen over programtillegg",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Kommentarer",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Fortsett",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Vis {count} kommentar} other{Vis alle {count} kommentarer}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Poeng {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Fortsett fra side {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Kopier taggen",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Ingen favoritter} one{{count} favoritt} other{{count} favoritter}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Filstørrelse {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Språk: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Språk: {language}, oversatt",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} side} other{{count} sider}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Publisert {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Vurdering {rating} av 5, basert på {count} stemme} other{Vurdering {rating} av 5, basert på {count} stemmer}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} kopiert",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Opplaster",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, ikke bekreftet ennå",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Gå",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minste vurdering",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Kunstner",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Karakter",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Kvinne",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Gruppe",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Språk",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Mann",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Blandet",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Annet",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodi",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Omklassifisering",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Midlertidig",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Bildet på denne siden ble ikke lastet inn",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Lesemodus",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Venstre til høyre",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Høyre til venstre (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Loddrett rulling (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Åpne original",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Prøv en annen server",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Last inn bildet på nytt",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Bokmerke",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Bokmerkemappe",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Ingen offentlige bokmerker på denne kontoen ennå",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Private",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tittel/bildetekst",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Denne private utvidelsen leser Pixiv som et galleri: følging, rangeringer, dine offentlige bokmerker og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Herfra blir ingenting postet, bokmerket eller fulgt på Pixiv.",
+  "plugin_pixiv_settings_intro": "Denne private utvidelsen leser Pixiv som en galleriapp: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Bare bokmerkene, følgingene og endringene i følgelisten som du selv gjør, sendes til Pixiv-kontoen din. Herfra blir ingenting noen gang postet, kommentert eller rapportert.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Vis R-18-verk",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "Skjuler verk som skaperne har merket som KI-genererte. Dine egne bokmerker vises alltid.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "KI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fest til topplinjen",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Festede elementer vises ved siden av seksjonene når linjen har plass. Alt blir også værende i denne menyen.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Ingen",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Trykk lenge på ett for å bare ha det på.",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Fulgt av {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Fulgt av {first} og {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Fulgt av {first}, {second} og {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Fulgt av {first}, {second} og 1 annet av abonnementene dine} other{Fulgt av {first}, {second} og {count} andre av abonnementene dine}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Følgere blant abonnementene dine",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Basert på de nyeste kontoene som det eneste abonnementet ditt følger, slik appen har lest dem. Andre kan også følge denne kontoen.} other{Basert på de nyeste kontoene som {checked} av dine {total} abonnementer følger, slik appen har lest dem. Andre kan også følge denne kontoen.}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "Verifisert konto",
+  "@verified_account": {},
+  "verified_organization": "Verifisert organisasjon",
+  "@verified_organization": {},
+  "verified_government": "Verifisert myndighetskonto",
+  "@verified_government": {},
+  "affiliated_with": "Tilknyttet {name}",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} visning} other{{views} visninger}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "Flere valg",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Kopier lenke",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Lenke kopiert",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Last inn siden på nytt",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Tilbake til innlegget",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Sikker tilkobling",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Tilkoblingen er ikke sikker",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Liker: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Svar: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Delinger: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "Sortering",
+  "@sort_order": {},
+  "sort_relevant": "Mest relevante",
+  "@sort_relevant": {},
+  "sort_oldest": "Eldste",
+  "@sort_oldest": {},
+  "sort_most_liked": "Flest liker-klikk",
+  "@sort_most_liked": {},
+  "sort_top": "Populære",
+  "@sort_top": {},
+  "sort_most_followers": "Flest følgere",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "Åpning",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "Forrige slutt",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "Markedet er åpent",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "Markedet er stengt",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "Kunne ikke laste inn markedsdata",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "Markedsverdi",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "Likviditet",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "Volum 24 t",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "Endring {hours} t",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "Kontraktadressen er kopiert",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "Fant ingen token med denne kontraktadressen",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "Ta med innlegg med {cashtag}",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "Innlegg søkes opp med denne kontraktadressen eller {cashtag}. Andre tokener kan bruke samme symbol.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Lagre i bakgrunnen",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Lagrer uten å spørre: bilder i Pictures/XTA, videoer i Movies/XTA og andre filer i Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Lagret i {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "Nedlastede stemmer",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Bruk en nedlastet stemme",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Leser med en nedlastet stemme når en av dem snakker artikkelens språk; ellers brukes motoren nedenfor.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Stemmer lastes ned fra GitHub (k2-fsa/sherpa-onnx) bare når du trykker på Last ned. De kjører helt på denne enheten.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lisens: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrollerer og pakker ut …",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "På denne enheten · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Nedlastingen mislyktes. Sjekk tilkoblingen og prøv igjen.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Nedlastingen samsvarte ikke med den forventede filen og ble forkastet.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Kunne ikke pakke ut den nedlastede stemmen.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Vil du slette {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Du kan laste den ned igjen når som helst.",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Åpne på web.archive.org",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Bare betalende abonnenter av @{screenName} på X kan lese resten",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Denne tweeten er bare for forfatterens betalende abonnenter på X.",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Aktiv konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-konto: KI-genererte verk",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Kunne ikke lese denne innstillingen fra Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Delvis skjult",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Sjekker Pixiv-innstillingen din …",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Vises",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Fjern konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Fjerne {name} fra denne enheten?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "Vis KI-merke",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "Merker verk som skaperne har oppgitt som KI-genererte i rutenett.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Allerede lagret",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Denne siden er allerede lagret. Vil du lagre den på nytt?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} av {total} sider er allerede lagret.} other{{saved} av {total} sider er allerede lagret.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Legg til bokmerke",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Legg til bokmerke ved lagring",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Når du lagrer et verk fra siden, får det også et bokmerke hvis det ikke har ett ennå.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Merk bokmerker automatisk",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Bokmerker du lager uten redigeringsvinduet får verkets egne tagger, uten populæritetstagger som 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Fjern alle",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Private bokmerker som standard",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Bokmerker du lager uten redigeringsvinduet er private. I redigeringsvinduet kan du fortsatt gjøre et offentlig.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Rediger bokmerke",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Følg når du legger til bokmerke",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Et nytt bokmerke følger også kunstneren offentlig hvis du ikke følger vedkommende ennå.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Du følger nå {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Privat bokmerke",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Bare du kan se det",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Lagre når du legger til bokmerke",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Et nytt bokmerke lagrer også alle sidene i verket.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Velg alle",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Bokmerker",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Legg til tagg",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Alle",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Vis alle bokmerker",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Ingen bokmerker med denne taggen",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Filtrer etter tagg",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Legg til en tagg",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Finn eller skriv en tagg",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Uten kategori",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "Bruk «{tag}»",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Tagger",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Ingen tagger ennå. Legg til dine egne ovenfor.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Ingen bokmerketagger her ennå",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Endre på pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Automatisk",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Rutenettkolonner i liggende format",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Rutenettkolonner i stående format",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Skjult: lenker utenfor Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Demp denne kommentaren",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "Demp {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Kommentaralternativer",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Svar til {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Vis",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Klistremerke",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Ukjent bruker",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Vis svar",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Ingen kommentarer ennå",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Ingen svar ennå",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Svar",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Kommentarer",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Vis kommentarer",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Vis kommentarer ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Kopiert",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Kopier verk-ID",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Kopier info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Mal for «Kopier info»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Lenke til verket",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Tittel: {title}\nKunstner: {artist}\nVerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Det «Kopier info» legger på utklippstavlen. Plassholderne erstattes med verkets detaljer.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Sett inn",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Tilbakestill til standard",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Lenke til kunstneren",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Oppsett for verk",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Side om side på brede skjermer",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Bilder ved siden av detaljene",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Bilder over detaljene",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Samtidige nedlastinger",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Hvor mange filer som lastes ned samtidig",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Lagrede sider",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Ingen sider husket ennå} one{1 side husket} other{{count} sider husket}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Lagrede verk får en hake, og du blir spurt før en side lagres for andre gang",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Glem",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Vil du glemme hvilke sider som er lagret? Selve filene blir liggende på enheten.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Lagret – last ned på nytt",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Nedlastinger",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Filnavn",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Trykk på en opplysning for å sette den inn ved markøren. Hver fil beholder sin egen filtype.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Ta med {token} så hver side av et verk får sitt eget navn",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Forhåndsvisning: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Tilbakestill",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Verk-ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Sidenummer",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Tittel",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Kunstner-ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Kunstnernavn",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Mappe per kunstner",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Legger verkene til hver kunstner i en mappe med kunstnerens navn i nedlastingsmappen",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Egen mappe for R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Legger R-18-verk i en «R-18»-mappe i nedlastingsmappen",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Private",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Følg privat",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Bare du ser at du følger",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Offentlige",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Alle skapere du følger",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Skapere du følger privat",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Skapere du følger offentlig",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{følger {shown}} other{følger {shown}}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Haptisk tilbakemelding",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "En kort vibrasjon når du legger til bokmerke eller trykker lenge.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Historikk",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Tøm historikk",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Tømme illustrasjonshistorikken?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Verk du åpner vises her. Historikken blir på denne enheten.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrer etter tittel eller kunstner",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Ingen verk i historikken passer",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Tømme romanhistorikken?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Romaner du åpner vises her. Historikken blir på denne enheten.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtrer etter tittel eller forfatter",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Ingen romaner i historikken passer",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Sett historikken på pause",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Når dette er på, legges åpnede verk og romaner ikke til i historikken",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Fjerne «{title}» fra historikken?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Verk-ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Verk-ID kopiert",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Bildeserver",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Serveradresse",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Din egen server",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Hvor bildene av verkene lastes fra. Et speil hjelper der Pixivs bildeserver er treg eller blokkert.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "For eksempel img.example.com eller https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Skriv inn en gyldig adresse uten mellomrom, for eksempel img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Offentlig speil",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Pixivs egen server",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Et speil eller din egen server ser hvert bilde du åpner, også R-18-bilder, og IP-adressen din.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Tilbakestill til standard",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Info kopiert",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Administrer kontoen på pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Ingen anbefalt manga akkurat nå — dra for å oppdatere",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Bytt til illustrasjoner",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Bytt til romaner",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Kommentarer",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Du har dempet kunstneren, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Vis denne gangen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Du har dempet taggen {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dette verket er dempet",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Du har dempet dette verket.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Demp denne romanen",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romaner",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Innstillinger for demping",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Demp tagg",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Skriv r'mønster' for å dempe alle tagger et regulært uttrykk treffer. Mønstre ser også alle taggene til et verk satt sammen som #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tagg som skal dempes",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dette mønsteret er ikke et gyldig regulært uttrykk",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tagger",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kunstnere",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Verk",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixiv-venn} other{{shown} My pixiv-venner}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Roman",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Se romanene deres",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Bokmerk privat",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Romaner du bokmerker offentlig, vises her",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Romaner du bokmerker privat, vises her",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Nr. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} kapittel} other{{shown} kapitler}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} tegn} other{{shown} tegn}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Eksporter som tekst",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Kunne ikke eksportere romanen",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Med Pixiv-markering",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Teksten nøyaktig slik Pixiv lagrer den, med koder som [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Ren tekst",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Uten Pixiv-markering, ruby skrevet som grunnord(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Lagret {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Nye romaner fra skapere du følger, vises her",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Bilde i romanen",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Åpne verket",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Lagre bildet",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Vis i fullskjerm",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Gå til side {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Forlate Pixiv for å åpne {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Åpne lenken",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Neste kapittel",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Side {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Forrige kapittel",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Ingen romaner på rangeringen akkurat nå",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Ingen anbefalte romaner akkurat nå — dra for å oppdatere",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Romantagger, titler eller brukere",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Sortering etter popularitet krever Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Søk etter romaner eller brukere",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Romanserie",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Fullført",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Ingen kapitler i denne serien som du kan se",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Pågående",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Start fra nr. 1",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Del profillenke",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Del lenke til serien",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Romanserier du legger til i følgelisten, vises her",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Åpne pixiv-lenker i XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "På Android-siden «Åpne som standard» legger du til pixiv.net og pixiv.me som støttede lenker",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Originalkvalitet",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Kunne ikke laste inn flere verk",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Ingen flere verk",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivision-artikler",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Ingen Pixivision-artikler akkurat nå",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Utvalgte verk",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Bursdag",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Ingen offentlige bokmerker ennå",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Kopier profilinfo",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Følgere",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Ingen følgere å vise",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Følger",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Følger ingen ennå",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Kjønn",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Bruker-ID kopiert",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Illustrasjoner",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Info",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profilinfo kopiert",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Yrke",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Du har dempet denne skaperen",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My pixiv-venner",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Kallenavn",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Ingen offentlige romanbokmerker ennå",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romaner",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Ingen romaner ennå",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo-konto",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium-medlem",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Offentlige bokmerker",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Region",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Lagre profilbilde",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Lagre toppbilde",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Vis likevel",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X-konto",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Bruker-ID",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Nettsted",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Verk",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Ingen verk her ennå",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Sider i verket",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Bilder i rutenettet",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Stor",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Middels",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Originalstørrelse",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Sider i fullskjerm",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "KI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 daglig",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 KI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Rediger",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Festede rangeringer vises som faner. R-18-rangeringer tilbys så lenge «Vis R-18-verk» er på.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Rangeringsfaner",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 ukentlig",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G ukentlig",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Ingen foreslåtte skapere akkurat nå",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Velg et annet bilde",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Ingen Pixiv-verk samsvarer med dette bildet",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO kunne ikke søke etter dette bildet",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Velg et bilde",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Logg på Pixiv igjen for å se forhåndsvisninger",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Bildet du velger, lastes opp til saucenao.com for å finne samsvarende Pixiv-verk.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Søker i SauceNAO …",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} likhet",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Søk med bilde",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Lagre på nytt",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Bare nye sider",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Lagre 1 side} other{Lagre {count} sider}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Lagret på denne enheten",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Antall bokmerker",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Hvilket som helst antall bokmerker",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ bokmerker",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} bokmerker",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Dato",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Når som helst",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Egne datoer …",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Siste døgn",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Siste 6 måneder",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Siste måned",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Siste uke",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Siste år",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Legg til i favorittagger",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Lagt til i favorittagger",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Fjern fra favorittagger",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Fjernet fra favorittagger",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Favorittagger",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Ferdig med redigering",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Rediger favorittagger",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Dra en tagg for å flytte den. Sveip den til siden for å fjerne den.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Ingen favorittagger ennå. Trykk lenge på en tagg på et verk for å legge den til.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Søkefiltre",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Vis alle ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Tøm nylige søk",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Vil du tømme alle nylige søk?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Vis færre",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Åpne verk #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Åpne roman #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Åpne romanserie #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Åpne Pixivision-artikkel #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Åpne bruker #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Lim inn",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularitet",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Hvilken som helst popularitet",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Popularitet blant menn eller kvinner krever Pixiv Premium. Uten det viser «Populære» Pixivs gratis forhåndsvisning.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Publiseringsdatoer avgrenser ikke forhåndsvisningen.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Dette er Pixivs gratis forhåndsvisning av populære verk. Å sortere alle treff etter popularitet krever Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Husk disse filtrene",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sorter etter",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Eldste",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Populære blant kvinner",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populære blant menn",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Taggen er kopiert",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopier taggen",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Søk i",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Tagger, tittel, bildetekst",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Brødtekst",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Alle verk",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Uten ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Bare ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Bokmerket av {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Se alle",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Ingen",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Velg sider",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Ingen sider valgt} one{1 side valgt} other{{count} sider valgt}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Serie",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Ingen verk i denne serien som du kan se",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Serie: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Neste i serien",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr. {order} av {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Forrige i serien",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Startet {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Del bilde",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Kunne ikke dele dette bildet",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "Logge ut av {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Logge ut av Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Endre størrelse på bilder og detaljer",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv åpner på",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Sveip mellom verk",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Sveip sidelengs til neste verk i listen. I verk med flere sider sveiper du videre forbi første eller siste side.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Bytt konto",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Følgeliste",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Koder bilde {current} av {total} …",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Kunne ikke lagre animasjonen",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Henter bilder …",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Lagre som GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Lagre bildene som ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animasjonen er lagret som GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Bildene er lagret som ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Lagrer …",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodingen kan ta et minutt",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "Oppheve demping av {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Visning",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Logg inn for å åpne dette verket",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populært på Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Legg til i følgelisten",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Mangaserier du legger til i følgelisten, vises her",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Fjern fra følgelisten",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Oppdatert {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Se nyeste",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} verk} other{{shown} verk}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Forfatterens svar",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Skjul republiseringer",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Vis 1 svar til} other{Vis {count} svar til}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Vis 1 innlegg til i denne tråden} other{Vis {count} innlegg til i denne tråden}}",
+  "@plugin_threads_show_thread": {}
 }

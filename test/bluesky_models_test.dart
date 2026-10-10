@@ -548,4 +548,80 @@ void main() {
       expect(page.followers.single.handle, 'two.bsky.social');
     });
   });
+
+  group('video embeds', () {
+    const playlist =
+        'https://video.bsky.app/watch/did%3Aplc%3Aa/b/playlist.m3u8';
+
+    Map<String, Object?> postWith(Map<String, Object?> embed) => {
+      'uri': 'at://did:plc:a/app.bsky.feed.post/v',
+      'author': {'handle': 'alice.bsky.social'},
+      'record': {'text': 'Watch', 'createdAt': '2026-08-01T09:00:00.000Z'},
+      'embed': embed,
+    };
+
+    test('a video keeps its HLS playlist alongside the thumbnail', () {
+      final post = blueskyPostFromView(
+        postWith({
+          '\$type': 'app.bsky.embed.video#view',
+          'cid': 'b',
+          'playlist': playlist,
+          'thumbnail': 'https://video.bsky.app/watch/a/b/thumbnail.jpg',
+          'aspectRatio': {'width': 1080, 'height': 1920},
+        }),
+      )!;
+
+      final video = post.mediaItems.single;
+      expect(video.isPlayable, isTrue);
+      expect(video.isGif, isFalse);
+      expect(video.videoUrl, playlist);
+      expect(video.url, endsWith('thumbnail.jpg'));
+      expect(video.aspectRatio, closeTo(1080 / 1920, 0.001));
+    });
+
+    test('a video inside recordWithMedia plays, beside the quote', () {
+      final post = blueskyPostFromView(
+        postWith({
+          '\$type': 'app.bsky.embed.recordWithMedia#view',
+          'media': {
+            '\$type': 'app.bsky.embed.video#view',
+            'playlist': playlist,
+            'presentation': 'gif',
+            'thumbnail': 'https://example.org/gif-thumb.jpg',
+          },
+          'record': {
+            'record': {
+              '\$type': 'app.bsky.embed.record#viewRecord',
+              'uri': 'at://did:plc:b/app.bsky.feed.post/q',
+              'author': {'handle': 'bob.bsky.social'},
+              'value': {'text': 'Quoted'},
+            },
+          },
+        }),
+      )!;
+
+      expect(post.quotedPost?.text, 'Quoted');
+      final video = post.mediaItems.single;
+      expect(video.isPlayable, isTrue);
+      expect(video.isGif, isTrue);
+      expect(video.url, 'https://example.org/gif-thumb.jpg');
+    });
+
+    test('the playlist survives a liked-post snapshot', () {
+      final post = blueskyPostFromView(
+        postWith({
+          '\$type': 'app.bsky.embed.video#view',
+          'playlist': playlist,
+          'thumbnail': 'https://example.org/t.jpg',
+        }),
+      )!;
+
+      final restored = BlueskyPost.listFromPrefs(
+        BlueskyPost.listToPrefs([post]),
+      ).single;
+
+      expect(restored.mediaItems.single.videoUrl, playlist);
+      expect(restored.mediaItems.single.isPlayable, isTrue);
+    });
+  });
 }

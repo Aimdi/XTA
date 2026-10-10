@@ -61,7 +61,7 @@ void main() {
       post(uri: 'at://reply', publishedAt: DateTime.utc(2026, 8, 2), isReply: true),
     ];
 
-    expect(blueskyInterleavedItems(posts, includeReplies: false).map((e) => e.id), ['bluesky:at://own']);
+    expect(blueskyInterleavedItems(posts, kinds: (replies: false, reposts: true)).map((e) => e.id), ['bluesky:at://own']);
     expect(blueskyInterleavedItems(posts), hasLength(2));
   });
 }

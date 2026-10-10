@@ -7,8 +7,10 @@ import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_store.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/utils/urls.dart';
 
 class BlueskyThreadScreen extends StatefulWidget {
@@ -20,12 +22,14 @@ class BlueskyThreadScreen extends StatefulWidget {
 
 class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
   late final BlueskyThreadStore _store;
+  late final ConversationSortStore _sorts;
   final _scroll = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _store = BlueskyThreadStore(context.read<BlueskyClient>(), widget.post);
+    _sorts = context.read<ConversationSortStore>();
+    _store = BlueskyThreadStore(context.read<BlueskyClient>(), widget.post, order: _sorts.state.replies);
     _store.refresh();
   }
 
@@ -125,12 +129,10 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
     );
   }
 
-  String _orderLabel(L10n l10n, BlueskyReplyOrder order) => switch (order) {
-    BlueskyReplyOrder.original => l10n.bluesky_thread_sort_default,
-    BlueskyReplyOrder.newest => l10n.plugin_mastodon_order_newest,
-    BlueskyReplyOrder.oldest => l10n.plugin_mastodon_order_oldest,
-    BlueskyReplyOrder.popular => l10n.bluesky_thread_sort_popular,
-  };
+  void _selectOrder(ReplySort order) {
+    _sorts.selectReplies(order);
+    _store.selectOrder(order);
+  }
 
   Widget _controls(BuildContext context, BlueskyThreadState state) {
     final l10n = L10n.of(context);
@@ -153,30 +155,11 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
             selected: state.authorOnly,
             onSelected: (_) => _store.selectAuthor(true),
           ),
-          PopupMenuButton<BlueskyReplyOrder>(
+          ReplySortButton(
             key: const ValueKey('bluesky-thread-sort'),
-            tooltip: l10n.plugin_reddit_sort,
-            initialValue: state.order,
-            onSelected: _store.selectOrder,
-            itemBuilder: (context) => [
-              for (final order in BlueskyReplyOrder.values)
-                CheckedPopupMenuItem(
-                  value: order,
-                  checked: order == state.order,
-                  child: Text(_orderLabel(l10n, order)),
-                ),
-            ],
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.sort, size: 20),
-                  const SizedBox(width: 8),
-                  Flexible(child: Text(_orderLabel(l10n, state.order))),
-                ],
-              ),
-            ),
+            value: state.order,
+            options: blueskyReplySorts,
+            onSelected: _selectOrder,
           ),
         ],
       ),

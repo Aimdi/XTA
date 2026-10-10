@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/mastodon/mastodon_snapshot.dart';
 
 void main() {
   group('normaliseMastodonInstance', () {
@@ -572,6 +573,125 @@ void main() {
       expect(post.boosted, isFalse);
       expect(post.quote?.text, 'original');
       expect(post.quote?.acct, 'neo@misskey.io');
+    });
+  });
+
+  group('media attachments', () {
+    Map<String, Object?> status(List<Object?> attachments) => {
+      'id': '1',
+      'url': 'https://example.social/@a/1',
+      'content': '',
+      'account': {'acct': 'a', 'username': 'a'},
+      'media_attachments': attachments,
+    };
+
+    test('a video plays its MP4 with the preview as poster', () {
+      final post = mastodonPostFromStatus(
+        status([
+          {
+            'type': 'video',
+            'url': 'https://files.example/v.mp4',
+            'preview_url': 'https://files.example/v.png',
+            'description': 'A cat',
+            'meta': {
+              'original': {'width': 1280, 'height': 720},
+            },
+          },
+        ]),
+      )!;
+
+      final video = post.mediaItems.single;
+      expect(post.hasMedia, isTrue);
+      expect(video.isVideo, isTrue);
+      expect(video.isPlayable, isTrue);
+      expect(video.isGif, isFalse);
+      expect(video.videoUrl, 'https://files.example/v.mp4');
+      expect(video.url, 'https://files.example/v.png');
+      expect(video.alt, 'A cat');
+      expect(video.aspectRatio, closeTo(1280 / 720, 0.001));
+    });
+
+    test('gifv is a looping clip; pictures keep their preview', () {
+      final post = mastodonPostFromStatus(
+        status([
+          {
+            'type': 'image',
+            'url': 'https://files.example/i.jpg',
+            'preview_url': 'https://files.example/i_small.jpg',
+          },
+          {
+            'type': 'gifv',
+            'url': 'https://files.example/g.mp4',
+            'preview_url': 'https://files.example/g.png',
+            'meta': {
+              'original': {'aspect': 1.0},
+            },
+          },
+          {'type': 'audio', 'url': 'https://files.example/a.mp3'},
+        ]),
+      )!;
+
+      final media = post.mediaItems;
+      expect(media, hasLength(2));
+      expect(media.first.url, 'https://files.example/i_small.jpg');
+      expect(media.first.isPlayable, isFalse);
+      expect(media.last.isGif, isTrue);
+      expect(media.last.videoUrl, 'https://files.example/g.mp4');
+      expect(media.last.aspectRatio, 1.0);
+    });
+
+    test('remote_url stands in while the instance has not cached it', () {
+      final post = mastodonPostFromStatus(
+        status([
+          {
+            'type': 'video',
+            'preview_url': 'https://files.example/r.png',
+            'remote_url': 'https://remote.example/v.mp4',
+          },
+        ]),
+      )!;
+
+      expect(post.mediaItems.single.videoUrl, 'https://remote.example/v.mp4');
+    });
+
+    test('a quoted status keeps its video', () {
+      final post = mastodonPostFromStatus({
+        ...status(const []),
+        'content': '<p>look</p>',
+        'quote': {
+          'quoted_status': status([
+            {
+              'type': 'gifv',
+              'url': 'https://files.example/q.mp4',
+              'preview_url': 'https://files.example/q.png',
+            },
+          ]),
+        },
+      })!;
+
+      final video = post.quote!.asPost.mediaItems.single;
+      expect(video.isPlayable, isTrue);
+      expect(video.isGif, isTrue);
+    });
+
+    test('the GIF flag survives a saved snapshot', () {
+      final post = mastodonPostFromStatus(
+        status([
+          {
+            'type': 'gifv',
+            'url': 'https://files.example/g.mp4',
+            'preview_url': 'https://files.example/g.png',
+          },
+        ]),
+      )!;
+
+      final restored = mastodonPostFromSnapshot(mastodonPostSnapshot(post))!;
+
+      expect(restored.mediaItems.single.isGif, isTrue);
+      expect(
+        restored.mediaItems.single.videoUrl,
+        'https://files.example/g.mp4',
+      );
     });
   });
 }

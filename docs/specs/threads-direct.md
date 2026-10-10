@@ -99,7 +99,9 @@ can cost a Threads login.
 
 - In-app login WebView
 - Write actions to Meta (boost / remote like / follow)
-- Video carousel playback beyond image URLs already on cards
+
+Video playback, quotes, structured conversations, feed filters and the restart
+snapshot are covered in `threads-reader-upgrade.md`.
 
 ## Time-to-content (guest)
 

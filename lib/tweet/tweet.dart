@@ -17,8 +17,13 @@ import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/_card.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
+import 'package:xta/tweet/avatar_follow_badge.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/unified_card.dart';
 import 'package:xta/tweet/tweet_header.dart';
+import 'package:xta/tweet/tweet_post_menu.dart';
+import 'package:xta/tweet/unavailable_post.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
@@ -33,7 +38,7 @@ import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/translation.dart';
-import 'package:intl/intl.dart';
+import 'package:xta/utils/urls.dart' show parsePostLink;
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -79,11 +84,6 @@ class TweetTile extends StatefulWidget {
 class TweetTileState extends State<TweetTile> {
   static final log = Logger('TweetTile');
 
-  // Short K/M suffixes: locale-specific compact forms like "12 Tsd." or
-  // "1,2 Mio." eat the footer's width and push the trailing buttons away.
-  static final NumberFormat _numberFormat = NumberFormat.compact(
-    locale: 'en_US',
-  );
   static final RegExp _localeSeparator = RegExp(r'[-_]');
 
   late bool clickable;
@@ -207,6 +207,7 @@ class TweetTileState extends State<TweetTile> {
       context,
       tweetTextFinal,
       entitiesFinal,
+      hideGrokShareLinks: isGrokShareCard(actualTweet.card),
     );
     // A re-initialisation (element reused for another tweet) replaces the
     // lists; the old ones' recognizers go with them.
@@ -302,6 +303,7 @@ class TweetTileState extends State<TweetTile> {
         context,
         res.body['result']['text'],
         res.body['result']['entities'],
+        hideGrokShareLinks: isGrokShareCard(_displayedTweet.card),
       );
 
       // We cache the translated parts in a property in case the user swaps back and forth
@@ -411,6 +413,20 @@ class TweetTileState extends State<TweetTile> {
       icon: Icons.info_outline,
       message: text,
       onTap: onTap,
+    );
+  }
+
+  /// A quoted post X will not show. Its permalink still names the author,
+  /// which is what finding it in the Wayback Machine takes.
+  Widget _buildUnavailableQuote(TweetWithCard tweet) {
+    final permalink = Uri.tryParse(tweet.quotedStatusPermalink?.expanded ?? '');
+    final post = permalink == null ? null : parsePostLink(permalink);
+    return UnavailablePostTile(
+      message:
+          tweet.quotedStatusWithCard?.text ??
+          L10n.of(context).this_tweet_is_unavailable,
+      screenName: post?.screenName,
+      id: tweet.quotedStatusIdStr ?? post?.id,
     );
   }
 
@@ -539,9 +555,7 @@ class TweetTileState extends State<TweetTile> {
     var tweetText = tweet.fullText ?? tweet.text;
     if (tweetText == null) {
       return _buildErrorTweet(
-        L10n.of(
-          context,
-        ).the_tweet_did_not_contain_any_text_this_is_unexpected,
+        L10n.of(context).the_tweet_did_not_contain_any_text_this_is_unexpected,
       );
     }
 
@@ -573,7 +587,10 @@ class TweetTileState extends State<TweetTile> {
       Widget quotedContent;
       VoidCallback? quotedOnTap;
       var quotedContentOwnsSurface = false;
-      if (tweet.quotedStatusWithCard != null) {
+      if (tweet.quotedStatusWithCard?.isTombstone ?? false) {
+        quotedContent = _buildUnavailableQuote(tweet);
+        quotedContentOwnsSurface = true;
+      } else if (tweet.quotedStatusWithCard != null) {
         // Open the quoted post from the card chrome; its own text tap is off
         // (isQuotedTweet) so "show more" is not fighting an open-on-tap handler.
         final quoted = tweet.quotedStatusWithCard!;
@@ -662,7 +679,11 @@ class TweetTileState extends State<TweetTile> {
 
     final locale = _effectiveLocale();
 
-    // The post's top-right, next to the timestamp — not in the footer strip,
+    // The post a conversation screen was opened on gets X's time · date ·
+    // views line instead of a header timestamp and a views item in its footer.
+    final isFocal = _isFocal(context);
+
+    // The post's top-right, next to the ⋯ menu — not in the footer strip,
     // which is for engagement and was one control too wide on a phone. Only on
     // posts there is something to translate: X offers nothing on a post
     // already in your language, and a button on every card was chrome.
@@ -682,12 +703,23 @@ class TweetTileState extends State<TweetTile> {
             },
           );
 
+    // X keeps translate and the ⋯ menu side by side at the top-right. A quoted
+    // post has neither: tapping it opens the post, where both are.
+    final headerActions = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ?translateButton,
+        TweetPostMenuButton(tweet: tweet, shareBaseUrl: shareBaseUrl),
+      ],
+    );
+
     final footerBar = TweetFooterBar(
       tweet: tweet,
       tweetText: tweetText,
       shareBaseUrl: shareBaseUrl,
       locale: locale,
-      numberFormat: _numberFormat,
+      showViews: !isFocal,
       isArticle: tweet.article != null,
       onOpenTweet: () => onClickOpenTweet(tweet),
       onCaptureImage: captureWidget,
@@ -734,65 +766,16 @@ class TweetTileState extends State<TweetTile> {
             distinct: (_) => context.read<SubscriptionsModel>().state.any(
               (s) => s.id == tweet.user!.idStr,
             ),
-            onState: (_, subscriptions) {
-              final followed = subscriptions.any(
-                (s) => s.id == tweet.user!.idStr,
-              );
-              if (followed) {
-                return plainAvatar;
-              }
-              return Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  plainAvatar,
-                  PositionedDirectional(
-                    end: -4,
-                    bottom: -2,
-                    child: Semantics(
-                      button: true,
-                      label: L10n.of(context).subscribe,
-                      child: TooltipTheme(
-                        data: const TooltipThemeData(
-                          triggerMode: TooltipTriggerMode.manual,
-                        ),
-                        child: Tooltip(
-                          message: L10n.of(context).subscribe,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => _showSubscribeSheet(
-                              context,
-                              _subscriptionFor(tweet.user!),
-                            ),
-                            child: SizedBox.square(
-                              dimension: 32,
-                              child: Center(
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    color: tweetAccentColor(context),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: tweetSurfaceColor(context),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 14,
-                                    color: tweetOnAccentColor(context),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+            onState: (_, subscriptions) => AvatarFollowBadge(
+              avatar: plainAvatar,
+              avatarSize: avatarSize,
+              followed: subscriptions.any((s) => s.id == tweet.user!.idStr),
+              onFollow: () => context
+                  .read<SubscriptionsModel>()
+                  .toggleSubscribe(_subscriptionFor(tweet.user!), false),
+              onMore: () =>
+                  _showSubscribeSheet(context, _subscriptionFor(tweet.user!)),
+            ),
           );
 
     void onTapProfile() {
@@ -818,14 +801,15 @@ class TweetTileState extends State<TweetTile> {
       displayName: hideAuthorInformation ? null : tweet.user!.name,
       handle: hideAuthorInformation ? null : tweet.user!.screenName,
       verified: !hideAuthorInformation && (tweet.user!.verified ?? false),
-      timestamp: createdAt == null
+      verification: hideAuthorInformation ? null : tweet.user!.badges,
+      timestamp: createdAt == null || isFocal
           ? null
           : Timestamp(
               timestamp: createdAt,
               absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
               compact: !widget.tweetOpened,
             ),
-      trailing: isQuotedTweet ? null : translateButton,
+      trailing: isQuotedTweet ? null : headerActions,
       compact: isQuotedTweet,
     );
 
@@ -861,6 +845,8 @@ class TweetTileState extends State<TweetTile> {
       if (tweet.article == null) content,
       if (tweet.article == null)
         CashtagQuotesBar(symbols: tweetCashtags(tweet)),
+      if (tweet.isSubscriberPreview)
+        _SubscriberPreviewLine(screenName: tweet.user?.screenName),
       if (articleLink != null)
         ArticleLinkCard(
           url: articleLink,
@@ -876,6 +862,11 @@ class TweetTileState extends State<TweetTile> {
       if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
       birdwatchQuoted,
       article,
+      if (isFocal)
+        TweetFocalMetaLine(
+          createdAt: createdAt,
+          views: _hideCounts(prefs) ? null : tweet.viewCount,
+        ),
       // A quoted tweet shows no action bar: its reply/repost/like counts belong
       // to the quoted post, not to the one being read, and a second footer row
       // makes the card look like a separate timeline entry. Tapping the quote
@@ -897,20 +888,18 @@ class TweetTileState extends State<TweetTile> {
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   kTweetSpace3,
                   kTweetVerticalPadding,
-                  kTweetSpace2,
+                  0,
                   kTweetSpace1,
                 ),
                 child: TweetAuthorBlock(
-                  displayName: hideAuthorInformation
-                      ? null
-                      : tweet.user!.name,
-                  handle: hideAuthorInformation
-                      ? null
-                      : tweet.user!.screenName,
+                  displayName: hideAuthorInformation ? null : tweet.user!.name,
+                  handle: hideAuthorInformation ? null : tweet.user!.screenName,
                   verified:
-                      !hideAuthorInformation &&
-                      (tweet.user!.verified ?? false),
-                  timestamp: createdAt == null
+                      !hideAuthorInformation && (tweet.user!.verified ?? false),
+                  verification: hideAuthorInformation
+                      ? null
+                      : tweet.user!.badges,
+                  timestamp: createdAt == null || isFocal
                       ? null
                       : Timestamp(
                           timestamp: createdAt,
@@ -919,7 +908,7 @@ class TweetTileState extends State<TweetTile> {
                           ),
                           compact: !widget.tweetOpened,
                         ),
-                  trailing: translateButton,
+                  trailing: headerActions,
                 ),
               ),
               bodyChildren,
@@ -963,6 +952,16 @@ class TweetTileState extends State<TweetTile> {
       ),
     );
   }
+
+  bool _isFocal(BuildContext context) {
+    final focalId = FocalPostScope.idOf(context);
+    return !isQuotedTweet &&
+        focalId != null &&
+        (focalId == tweet.idStr || focalId == _displayedTweet.idStr);
+  }
+
+  static bool _hideCounts(BasePrefService prefs) =>
+      prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
   Widget _buildThreadBody(
     Widget avatar,
@@ -1102,6 +1101,28 @@ class _ReplyingToLine extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Says why a post its author reserves to paid subscribers stops short: X
+/// only sends its beginning.
+class _SubscriberPreviewLine extends StatelessWidget {
+  final String? screenName;
+
+  const _SubscriberPreviewLine({required this.screenName});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenName = this.screenName;
+    return TweetContextRow(
+      icon: Icons.lock_outline,
+      contentStart: kTweetHorizontalPadding,
+      label: Text(
+        screenName == null || screenName.isEmpty
+            ? L10n.of(context).subscribers_only_post_of_author
+            : L10n.of(context).subscribers_only_post(screenName),
       ),
     );
   }

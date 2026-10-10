@@ -28,7 +28,6 @@ class EmptyPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     // Home-strip plugins sit in NestedScrollView. The requested controller is
     // the *outer* one; attaching it here freezes, then crashes.
     final list = ListView(
@@ -42,28 +41,45 @@ class EmptyPane extends StatelessWidget {
         ?leading,
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 32 - leadingInset),
-          child: Column(
-            children: [
-              Icon(icon, size: 52, color: theme.colorScheme.outline),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              if (action != null) ...[
-                const SizedBox(height: 24),
-                Center(child: action!),
-              ],
-            ],
-          ),
+          child: EmptyMessage(icon: icon, message: message, action: action),
         ),
       ],
     );
 
     if (onRefresh == null) return list;
     return RefreshIndicator(onRefresh: onRefresh!, child: list);
+  }
+}
+
+/// [EmptyPane]'s icon, sentence and way out, for a list that already
+/// scrolls: a header above it keeps its place, and its state, as the list
+/// empties and fills.
+class EmptyMessage extends StatelessWidget {
+  final IconData icon;
+  final String message;
+  final Widget? action;
+
+  const EmptyMessage({super.key, required this.icon, required this.message, this.action});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Icon(icon, size: 52, color: theme.colorScheme.outline),
+        const SizedBox(height: 16),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium!.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (action != null) ...[
+          const SizedBox(height: 24),
+          Center(child: action!),
+        ],
+      ],
+    );
   }
 }

@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Malklarigi dubindajn kaj eksplicitajn miniaturojn",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Malfermita afiŝo montriĝas sen malklarigo",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Forigi etikedojn",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Komentoj",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Kopiita al la tondujo",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Kopii ligilon",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Kopii etikedon",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Kopii etikedojn",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Redakti kiel tekston",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Neniuj popularaj afiŝoj por ĉi tiu dato",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Ekskludi el la nuna serĉo",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Ekskludi",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Gepatra kaj idaj afiŝoj",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{1 favorito} other{{count} favoritoj}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Sekvi etikedon",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Malfermi en plena ekrano",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Kolumnoj de la krado",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Adapti al la ekrano",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Kaŝi afiŝojn kun ĉi tiu etikedo",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Pli de {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Pluraj etikedoj en unu ero kaŝas nur afiŝojn, kiuj havas ilin ĉiujn. Ankaŭ -tag kaj rating:e funkcias",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Ankoraŭ neniuj komentoj",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Plej alta poentaro",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Originalaj dosieroj en plena ekrano",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Plena ekrano ŝargas la plengrandan dosieron anstataŭ la malgrandigita versio de la retejo. Uzas pli da datumoj",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Elekti daton",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Tago",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Pli frue",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Pli malfrue",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Monato",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Ĉi tiu retejo ne havas liston de popularaj afiŝoj, do montriĝas tiuj kun la plej alta poentaro",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Semajno",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Afiŝita je {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Serĉi ĉi tiun etikedon",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Aspekto",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Vidi ĉiujn",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Montra nomo",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Pli malgrandaj miniaturoj",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Ŝargas la malgrandajn antaŭvidojn de la retejo en la krado. Pli rapide kaj ŝpare pri datumoj, sed malpli akre",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Tuŝu etikedon por serĉi, sekvi aŭ kaŝi ĝin, aŭ por legi ĝian vikion",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artisto",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Rolulo",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Kopirajto",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Ordigi etikedojn",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Plej uzataj",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Specio",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Etikedoj",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Detaloj sub miniaturoj",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Retejo, unuaj etikedoj kaj poentaro sub ĉiu afiŝo en la krado",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Malsekvi etikedon",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Ne plu kaŝi ĉi tiun etikedon",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Forigi el konservitaj serĉoj",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Alŝutita de {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} por, {down} kontraŭ",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Vikio",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Ĉi tiu etikedo ne havas vikipaĝon",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Montriĝas la lasta ricevita listo",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Ne eblis akiri la liston de kromprogramoj",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Komentoj",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Daŭrigi",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Montri {count} komenton} other{Montri ĉiujn {count} komentojn}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Poentaro {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Daŭrigi de paĝo {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Kopii etikedon",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Neniam aldonita al favoritoj} one{Aldonita al favoritoj unufoje} other{Aldonita al favoritoj {count} fojojn}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Dosiergrando: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Lingvo: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Lingvo: {language}, tradukita",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} paĝo} other{{count} paĝoj}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Afiŝita je {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Takso {rating} el 5 laŭ {count} voĉdono} other{Takso {rating} el 5 laŭ {count} voĉdonoj}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "Kopiita: {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Alŝutinto",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, ankoraŭ ne konfirmita",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Iri",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minimuma takso",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Artisto",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Rolulo",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Kostumludanto",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Ina",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Grupo",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Lingvo",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Vira",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Miksita",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Alia",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodio",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Reklasigo",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Provizora",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "La bildo de ĉi tiu paĝo ne ŝargiĝis",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Legoreĝimo",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "De maldekstre dekstren",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "De dekstre maldekstren (mangao)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Vertikala rulumado (retbildstrio)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Malfermi originalon",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Provi alian servilon",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Reŝargi bildon",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Legosigno",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Legosignilo-dosierujo",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Ankoraŭ neniuj publikaj legosignoj en ĉi tiu konto",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privataj",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titolo/priskribo",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: sekvado, rangigoj, viaj publikaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refresĥĵetonon sube. De ĉi tie nenio estas afiŝita, legosignita aŭ sekvata sur Pixiv.",
+  "plugin_pixiv_settings_intro": "Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: ilustraĵoj, mangaoj, romanoj, rangigoj, viaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refreŝigan ĵetonon sube. Al via Pixiv-konto iras nur la legosignoj, sekvoj kaj ŝanĝoj de la atentolisto, kiujn vi mem faras. De ĉi tie nenio iam estas afiŝita, komentita aŭ raportita.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Montri R-18 verkojn",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "Kaŝas verkojn, kiujn iliaj kreintoj markis kiel AI-generitajn. Viaj propraj legosignoj ĉiam restas videblaj.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Fiksi al la supra breto",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Fiksitaj eroj aperas apud la sekcioj kiam la breto havas lokon. Ĉio restas ankaŭ en ĉi tiu menuo.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Neniu",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Longe premu eron por lasi nur ĝin ŝaltita.",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Sekvata de {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Sekvata de {first} kaj {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Sekvata de {first}, {second} kaj {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Sekvata de {first}, {second} kaj 1 plia el viaj abonoj} other{Sekvata de {first}, {second} kaj {count} pliaj el viaj abonoj}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Sekvantoj el viaj abonoj",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Laŭ la plej freŝaj sekvoj, kiujn la apo legis por via sola abono. Ankaŭ aliaj eble sekvas ĉi tiun konton.} other{Laŭ la plej freŝaj sekvoj, kiujn la apo legis por {checked} el viaj {total} abonoj. Ankaŭ aliaj eble sekvas ĉi tiun konton.}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "Kontrolita konto",
+  "@verified_account": {},
+  "verified_organization": "Kontrolita organizo",
+  "@verified_organization": {},
+  "verified_government": "Kontrolita registara konto",
+  "@verified_government": {},
+  "affiliated_with": "Aligita al {name}",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} vido} other{{views} vidoj}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "Pliaj agoj",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Kopii ligilon",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Ligilo kopiita",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Reŝargi la paĝon",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Reen al la afiŝo",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Sekura konekto",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Nesekura konekto",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Ŝatoj: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Respondoj: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Diskonigoj: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "Ordo",
+  "@sort_order": {},
+  "sort_relevant": "Plej trafaj",
+  "@sort_relevant": {},
+  "sort_oldest": "Plej malnovaj",
+  "@sort_oldest": {},
+  "sort_most_liked": "Plej ŝatataj",
+  "@sort_most_liked": {},
+  "sort_top": "Plej popularaj",
+  "@sort_top": {},
+  "sort_most_followers": "Plej multe da sekvantoj",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "Malfermo",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "Antaŭa fermo",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "Merkato malfermita",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "Merkato fermita",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "Ne eblis ŝargi merkatajn datumojn",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "Merkata kapitaligo",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "Likvideco",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "Volumeno dum 24 h",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "Ŝanĝo dum {hours} h",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "Kontrakta adreso kopiita",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "Neniu ĵetono troviĝis por ĉi tiu kontrakta adreso",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "Inkluzivi afiŝojn kun {cashtag}",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "Afiŝoj estas serĉataj laŭ ĉi tiu kontrakta adreso aŭ {cashtag}. Aliaj ĵetonoj povas uzi la saman simbolon.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Konservi fone",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Konservas sen demandi: bildojn en Pictures/XTA, filmetojn en Movies/XTA, aliajn dosierojn en Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Konservita en {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "Elŝutitaj voĉoj",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Uzi elŝutitan voĉon",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Laŭtlegas per elŝutita voĉo, kiam iu parolas la lingvon de la artikolo; alie per la suba motoro.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Voĉoj elŝutiĝas el GitHub (k2-fsa/sherpa-onnx) nur kiam vi tuŝas Elŝuti. Ili funkcias tute en ĉi tiu aparato.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Permesilo: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrolante kaj malpakante…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "En ĉi tiu aparato · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "La elŝuto malsukcesis. Kontrolu vian konekton kaj reprovu.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "La elŝutaĵo ne kongruis kun la atendita dosiero kaj estis forĵetita.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Ne eblis malpaki la elŝutitan voĉon.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Ĉu forigi {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Vi povas reelŝuti ĝin iam ajn.",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Malfermi ĉe web.archive.org",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Nur pagantaj abonantoj de @{screenName} ĉe X povas legi la reston",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Tiu ĉi pepo estas nur por la pagantaj abonantoj de ĝia aŭtoro ĉe X.",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Aktiva konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-konto: AI-generitaj verkoj",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Ne eblis legi ĉi tiun agordon el Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Parte kaŝitaj",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontrolante vian Pixiv-agordon…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Montrataj",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Forigi konton",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Ĉu forigi {name} el ĉi tiu aparato?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "Montri AI-insignon",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "En kradoj markas verkojn, kiujn iliaj kreintoj indikis kiel AI-generitajn.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Jam konservita",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Ĉi tiu paĝo jam estas konservita. Ĉu konservi ĝin denove?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} el {total} paĝoj jam estas konservita.} other{{saved} el {total} paĝoj jam estas konservitaj.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Aldoni legosignon",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Aldoni legosignon dum konservado",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Konservi verkon el ĝia paĝo ankaŭ aldonas ĝin al legosignoj, se ĝi ankoraŭ ne estas tie.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Aŭtomate etikedi legosignojn",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Legosignoj, kiujn vi faras sen la redaktilo, ricevas la proprajn etikedojn de la verko, krom popularecaj etikedoj kiel 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Malelekti ĉiujn",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Privataj legosignoj defaŭlte",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Legosignoj, kiujn vi faras sen la redaktilo, estas privataj. En la redaktilo vi ankoraŭ povas publikigi iun ajn.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Redakti legosignon",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Sekvi dum aldono de legosigno",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Nova legosigno ankaŭ publike sekvas la artiston, se vi ankoraŭ ne sekvas lin.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Vi nun sekvas {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Privata legosigno",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Nur vi povas vidi ĝin",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Konservi dum aldono de legosigno",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Nova legosigno ankaŭ konservas ĉiujn paĝojn de la verko.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Elekti ĉiujn",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Legosignoj",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Aldoni etikedon",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Ĉiuj",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Montri ĉiujn legosignojn",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Neniuj legosignoj kun ĉi tiu etikedo",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Filtri laŭ etikedo",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Aldonu etikedon",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Trovu aŭ tajpu etikedon",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Senkategoriaj",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "Uzi „{tag}“",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Etikedoj",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Ankoraŭ neniuj etikedoj. Aldonu viajn supre.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Ĉi tie ankoraŭ ne estas legosignaj etikedoj",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Ŝanĝi ĉe pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Aŭtomate",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Kolumnoj de krado en pejzaĝa orientiĝo",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Kolumnoj de krado en portreta orientiĝo",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Kaŝita: ligiloj ekster Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Silentigi ĉi tiun komenton",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "Silentigi {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Opcioj de komento",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Respondo al {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Montri",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Glumarko",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Nekonata uzanto",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Montri respondojn",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Ankoraŭ neniuj komentoj",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Ankoraŭ neniuj respondoj",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Respondoj",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Komentoj",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Montri komentojn",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Montri komentojn ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Kopiite",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Kopii verkan ID",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Kopii informojn",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Ŝablono de „Kopii informojn“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Ligilo al la verko",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titolo: {title}\nArtisto: {artist}\nVerko-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Kion „Kopii informojn“ metas en la tondujon. Lokokupiloj anstataŭiĝas per la detaloj de la verko.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Enmeti",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Restarigi la defaŭlton",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Ligilo al la artisto",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Aranĝo de verko",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Flank-al-flanke sur larĝaj ekranoj",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Bildoj apud la detaloj",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Bildoj super la detaloj",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Samtempaj elŝutoj",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Kiom da dosieroj elŝutiĝas samtempe",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Konservitaj paĝoj",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Ankoraŭ neniu paĝo memorita} one{{count} paĝo memorita} other{{count} paĝoj memoritaj}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Konservitaj verkoj ricevas markon, kaj antaŭ ol konservi paĝon duan fojon, vi estas demandata",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Forgesi",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Ĉu forgesi, kiuj paĝoj estis konservitaj? La dosieroj mem restas en via aparato.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Konservita – elŝuti denove",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Elŝutoj",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Dosiernomo",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Tuŝetu detalon por enmeti ĝin ĉe la kursoro. Ĉiu dosiero konservas sian propran sufikson.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Enmetu {token}, por ke ĉiu paĝo de verko havu propran nomon",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Antaŭvido: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Restarigi",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Identigilo de verko",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Paĝnumero",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titolo",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Identigilo de artisto",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Nomo de artisto",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Dosierujo por ĉiu artisto",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Metas la verkojn de ĉiu artisto en dosierujon nomitan laŭ la artisto, ene de la elŝuta dosierujo",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Aparta dosierujo por R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Metas R-18-verkojn en dosierujon “R-18” ene de la elŝuta dosierujo",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Privataj",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Sekvi private",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Nur vi vidas, ke vi sekvas",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Publikaj",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Ĉiuj sekvataj kreintoj",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Private sekvataj kreintoj",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Publike sekvataj kreintoj",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} abono} other{{shown} abonoj}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Haptika reago",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Mallonga vibro kiam vi aldonas legosignon aŭ longe premas.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Historio",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Forviŝi historion",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Ĉu forviŝi la historion de ilustraĵoj?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Verkoj, kiujn vi malfermas, aperas ĉi tie. La historio restas en ĉi tiu aparato.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtri laŭ titolo aŭ artisto",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Neniu verko en la historio kongruas",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Ĉu forviŝi la historion de romanoj?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Romanoj, kiujn vi malfermas, aperas ĉi tie. La historio restas en ĉi tiu aparato.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtri laŭ titolo aŭ aŭtoro",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Neniu romano en la historio kongruas",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Paŭzigi la historion",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Dum ŝaltita, malfermitaj verkoj kaj romanoj ne aldoniĝas al la historio",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Ĉu forigi „{title}“ el la historio?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Verka ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Verka ID kopiita",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Bildservilo",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Adreso de servilo",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Via propra servilo",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "De kie la bildoj de verkoj ŝargiĝas. Spegulo helpas kie la bildservilo de Pixiv estas malrapida aŭ blokita.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Ekzemple img.example.com aŭ https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Enigu validan adreson sen spacetoj, ekzemple img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Publika spegulo",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "La propra servilo de Pixiv",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Spegulo aŭ via propra servilo vidas ĉiun bildon, kiun vi malfermas, ankaŭ R-18-ajn, kaj vian IP-adreson.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Restarigi la defaŭlton",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Informoj kopiitaj",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Administri konton ĉe pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Neniu rekomendita mangao nun — tiri por aktualigi",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Ŝanĝi al ilustraĵoj",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Ŝanĝi al romanoj",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Komentoj",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Vi silentigis ĝian artiston, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Montri ĉi-foje",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Vi silentigis ĝian etikedon {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Ĉi tiu verko estas silentigita",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Vi silentigis ĉi tiun verkon.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Silentigi ĉi tiun romanon",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romanoj",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Agordoj de silentigo",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Silentigi etikedon",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Skribu r'ŝablono' por silentigi ĉiun etikedon, kiun regula esprimo kongruas. Ŝablonoj ankaŭ vidas ĉiujn etikedojn de verko kunigitajn kiel #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Silentigota etikedo",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Ĉi tiu ŝablono ne estas valida regula esprimo",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etikedoj",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artistoj",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Verkoj",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} amiko en My pixiv} other{{shown} amikoj en My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Romano",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Vidi ties romanojn",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Legosigni private",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Ĉi tie aperas romanoj, kiujn vi publike legosignas",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Ĉi tie aperas romanoj, kiujn vi private legosignas",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "N-ro {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} ĉapitro} other{{shown} ĉapitroj}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} signo} other{{shown} signoj}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Eksporti kiel tekston",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Ne eblis eksporti la romanon",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Kun la marklingvo de Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "La teksto ĝuste kiel Pixiv konservas ĝin, kun etikedoj kiel [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Simpla teksto",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Sen la marklingvo de Pixiv; rubeo skribita kiel bazo(rubeo)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Konservita: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Ĉi tie aperas novaj romanoj de kreantoj, kiujn vi sekvas",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Bildo en la romano",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Malfermi la verkon",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Konservi la bildon",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Vidi tutekrane",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Iri al paĝo {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Ĉu forlasi Pixiv por malfermi {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Malfermi ligilon",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Sekva ĉapitro",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Paĝo {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Antaŭa ĉapitro",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Neniuj rangigitaj romanoj nun",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Neniuj rekomenditaj romanoj nun — tiri por aktualigi",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Romanaj etikedoj, titoloj aŭ uzantoj",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Ordigo laŭ populareco bezonas Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Serĉu romanojn aŭ uzantojn",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Romana serio",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Finita",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Neniuj videblaj ĉapitroj en ĉi tiu serio",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Daŭranta",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Komenci de la unua",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Kunhavigi ligilon al la profilo",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Kunhavigi ligilon al la serio",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Ĉi tie aperas la romanaj serioj, kiujn vi aldonas al via atentolisto",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Malfermi pixiv-ligilojn en XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "En la Android-paĝo „Malfermi defaŭlte“, aldonu pixiv.net kaj pixiv.me kiel subtenatajn ligilojn",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Originala kvalito",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Ne eblis ŝargi pliajn verkojn",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Ne plu estas verkoj",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Artikoloj de Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Neniuj artikoloj de Pixivision nun",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Prezentitaj verkoj",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Naskiĝtago",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Ankoraŭ neniuj publikaj legosignoj",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Kopii profilinformojn",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Sekvantoj",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Neniuj sekvantoj por montri",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Sekvatoj",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Ankoraŭ sekvas neniun",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Sekso",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Uzanto-identigilo kopiita",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Ilustraĵoj",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Informoj",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profilinformoj kopiitaj",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Okupo",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Mangao",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Vi silentigis ĉi tiun kreinton",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "Amikoj en My pixiv",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Kromnomo",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Ankoraŭ neniuj publikaj romanaj legosignoj",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romanoj",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Ankoraŭ neniuj romanoj",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo-konto",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium-membro",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Publikaj legosignoj",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Regiono",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Konservi profilbildon",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Konservi kapbildon",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Montri tamen",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X-konto",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Uzanto-identigilo",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Retejo",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Verkoj",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Ankoraŭ neniuj verkoj ĉi tie",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Paĝoj de verko",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Bildoj en krado",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Granda",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Meza",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Originala",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Plenekranaj paĝoj",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 ĉiutaga",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Redakti",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Fiksitaj rangolistoj aperas kiel langetoj. R-18-rangolistoj estas proponataj dum „Montri R-18 verkojn“ estas ŝaltita.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Langetoj de rangolistoj",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 ĉiusemajna",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G ĉiusemajna",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Neniuj proponitaj kreintoj nun",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Elekti alian bildon",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Neniu verko de Pixiv kongruas kun ĉi tiu bildo",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO ne povis serĉi per ĉi tiu bildo",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Elekti bildon",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Ensalutu denove al Pixiv por vidi antaŭrigardojn",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "La elektita bildo estas alŝutata al saucenao.com por trovi kongruajn verkojn de Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Serĉante ĉe SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} simila",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Serĉi per bildo",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Konservi denove",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Nur novajn paĝojn",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Konservi {count} paĝon} other{Konservi {count} paĝojn}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Konservita en ĉi tiu aparato",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Nombro de legosignoj",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Ajna nombro de legosignoj",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ legosignoj",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} legosignoj",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Dato",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Iam ajn",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Propraj datoj…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Lasta tago",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Lastaj 6 monatoj",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Lasta monato",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Lasta semajno",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Lasta jaro",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Aldoni al ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Aldonita al ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Forigi el ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Forigita el ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Ŝatataj etikedoj",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Fini redaktadon",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Redakti ŝatatajn etikedojn",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Trenu etikedon por movi ĝin. Ŝovu ĝin flanken por forigi ĝin.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Ankoraŭ neniuj ŝatataj etikedoj. Longe premu etikedon de verko por aldoni ĝin.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Serĉaj filtriloj",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Montri ĉiujn ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Forigi lastatempajn serĉojn",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Ĉu forigi ĉiujn lastatempajn serĉojn?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Montri malpli",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Malfermi verkon #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Malfermi romanon #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Malfermi romanan serion #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Malfermi artikolon de Pixivision #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Malfermi uzanton #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Alglui",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Populareco",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Ajna populareco",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Ordigo laŭ populareco ĉe viroj aŭ virinoj bezonas Pixiv Premium. Sen ĝi, «Popularaj» montras la senpagan antaŭrigardon de Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "La afiŝdatoj ne limigas la antaŭrigardon.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Ĉi tio estas la senpaga antaŭrigardo de popularaj verkoj de Pixiv. Ordigi ĉiujn rezultojn laŭ populareco bezonas Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Memori ĉi tiujn filtrilojn",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Ordigi laŭ",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Plej malnovaj",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Popularaj ĉe virinoj",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Popularaj ĉe viroj",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etikedo kopiita",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopii etikedon",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Serĉi en",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Etikedoj, titolo, priskribo",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Ĉefteksto",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Ĉiuj verkoj",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Sen ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Nur ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Legosignita de {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Vidi ĉion",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Neniun",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Elekti paĝojn",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Neniu paĝo elektita} one{{count} paĝo elektita} other{{count} paĝoj elektitaj}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Serio",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Neniuj videblaj verkoj en ĉi tiu serio",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Serio: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Sekva en la serio",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "N-ro {order} el {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Antaŭa en la serio",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Komencita je {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Kunhavigi bildon",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Ne eblis kunhavigi ĉi tiun bildon",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "Ĉu elsaluti el {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Ĉu elsaluti el Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Ŝanĝi la grandon de bildoj kaj detaloj",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv malfermiĝas ĉe",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Ŝovi inter verkoj",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Ŝovu flanken al la sekva verko en la listo. Ĉe verkoj kun pluraj paĝoj, daŭre ŝovu preter la unua aŭ lasta paĝo.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Ŝanĝi konton",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Mangao",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Atentolisto",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Kodigas kadron {current} el {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Ne eblis konservi la animacion",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Prenas kadrojn…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Konservi kiel GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Konservi kadrojn kiel ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animacio konservita kiel GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kadroj konservitaj kiel ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Konservado…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodigado povas daŭri minuton",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "Ĉu malsilentigi {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Rigardado",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Ensalutu por malfermi ĉi tiun verkon",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Popularaj ĉe Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Aldoni al atentolisto",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Ĉi tie aperas la mangaaj serioj, kiujn vi aldonas al via atentolisto",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Forigi el atentolisto",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Ĝisdatigita {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Vidi la plej novan",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} verko} other{{shown} verkoj}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Respondoj de la aŭtoro",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Kaŝi reafiŝojn",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Montri 1 plian respondon} other{Montri {count} pliajn respondojn}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Montri 1 plian afiŝon en ĉi tiu fadeno} other{Montri {count} pliajn afiŝojn en ĉi tiu fadeno}}",
+  "@plugin_threads_show_thread": {}
 }

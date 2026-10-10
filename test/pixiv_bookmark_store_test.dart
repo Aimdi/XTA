@@ -1,31 +1,11 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
-import 'package:pref/pref.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
 void main() {
-  late PrefServiceCache prefs;
-
-  setUp(() async {
-    prefs = PrefServiceCache(
-      cache: {
-        optionPluginPixivRefreshToken: 'refresh-me',
-        optionPluginPixivAccessToken: 'access-1',
-        optionPluginPixivAccessExpiresAt: DateTime.now()
-            .add(const Duration(hours: 1))
-            .toIso8601String(),
-        optionPluginPixivShowR18: false,
-      },
-    );
-  });
-
-  test('isBookmarked uses the illust flag until toggled', () {
+  test('isBookmarked uses the illust flag until a write is recorded', () {
     final store = PixivBookmarkStore();
     final plain = _illust(id: 1);
     final already = _illust(id: 2, isBookmarked: true, totalBookmarks: 4);
@@ -36,69 +16,56 @@ void main() {
     expect(store.bookmarkCount(already), 4);
   });
 
-  test('toggle bookmarks then unbookmarks and adjusts the count', () async {
-    final paths = <String>[];
-    final client = PixivClient(
-      prefs,
-      httpClient: MockClient((request) async {
-        paths.add(request.url.path);
-        return http.Response(
-          jsonEncode({}),
-          200,
-          headers: {'content-type': 'application/json'},
-        );
-      }),
-    );
+  test('a recorded bookmark or removal adjusts the count', () {
     final store = PixivBookmarkStore();
     final illust = _illust(id: 7, totalBookmarks: 10);
+    final bookmarked = _illust(id: 3, isBookmarked: true, totalBookmarks: 5);
 
-    await store.toggle(client, illust);
-    expect(store.isBookmarked(illust), isTrue);
-    expect(store.bookmarkCount(illust), 11);
-    expect(paths, ['/v2/illust/bookmark/add']);
+    store.mark(7, true);
+    store.mark(3, false);
+    expect((store.isBookmarked(illust), store.bookmarkCount(illust)), (true, 11));
+    expect((store.isBookmarked(bookmarked), store.bookmarkCount(bookmarked)), (false, 4));
 
-    await store.toggle(client, illust);
-    expect(store.isBookmarked(illust), isFalse);
-    expect(store.bookmarkCount(illust), 10);
-    expect(paths, ['/v2/illust/bookmark/add', '/v1/illust/bookmark/delete']);
+    store.mark(7, false);
+    expect((store.isBookmarked(illust), store.bookmarkCount(illust)), (false, 10));
   });
 
-  test('unbookmarking a bookmarked illust decrements the count', () async {
-    final client = PixivClient(
-      prefs,
-      httpClient: MockClient(
-        (_) async => http.Response(
-          '{}',
-          200,
-          headers: {'content-type': 'application/json'},
-        ),
-      ),
-    );
+  test('a removal never drives the count below zero', () {
+    final store = PixivBookmarkStore()..mark(4, false);
+    expect(store.bookmarkCount(_illust(id: 4, isBookmarked: true)), 0);
+  });
+
+  test('one write per work at a time; a second one is skipped', () async {
     final store = PixivBookmarkStore();
-    final illust = _illust(id: 3, isBookmarked: true, totalBookmarks: 5);
+    final gate = Completer<String>();
+    final first = store.exclusive(7, () => gate.future);
 
-    await store.toggle(client, illust);
-    expect(store.isBookmarked(illust), isFalse);
-    expect(store.bookmarkCount(illust), 4);
+    expect(store.isBusy(7), isTrue);
+    expect(await store.exclusive(7, () async => 'second'), isNull);
+    expect(await store.exclusive(8, () async => 'other work'), 'other work');
+
+    gate.complete('first');
+    expect(await first, 'first');
+    expect(store.isBusy(7), isFalse);
+  });
+
+  test('a failed write frees the work and rethrows', () async {
+    final store = PixivBookmarkStore();
+    await expectLater(store.exclusive<void>(7, () async => throw StateError('offline')), throwsStateError);
+    expect(store.isBusy(7), isFalse);
   });
 }
 
-PixivIllust _illust({
-  required int id,
-  bool isBookmarked = false,
-  int totalBookmarks = 0,
-}) {
-  return PixivIllust(
-    id: id,
-    title: '',
-    caption: '',
-    type: 'illust',
-    thumbnailUrl: 'https://i.pximg.net/$id.jpg',
-    pageCount: 1,
-    userId: 1,
-    userName: '',
-    userAccount: '',
-    isBookmarked: isBookmarked,
-    totalBookmarks: totalBookmarks,
-  );
-}
+PixivIllust _illust({required int id, bool isBookmarked = false, int totalBookmarks = 0}) => PixivIllust(
+  id: id,
+  title: '',
+  caption: '',
+  type: 'illust',
+  thumbnailUrl: 'https://i.pximg.net/$id.jpg',
+  pageCount: 1,
+  userId: 1,
+  userName: '',
+  userAccount: '',
+  isBookmarked: isBookmarked,
+  totalBookmarks: totalBookmarks,
+);

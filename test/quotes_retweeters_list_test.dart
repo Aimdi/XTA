@@ -4,22 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/quotes_screen.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/paging.dart';
 
 Widget _app(Widget child) {
-  return MaterialApp(
-    locale: const Locale('en'),
-    localizationsDelegates: const [
-      L10n.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: L10n.delegate.supportedLocales,
-    home: Scaffold(body: child),
+  return Provider<ConversationSortStore>(
+    create: (_) => ConversationSortStore(),
+    dispose: (_, sorts) => sorts.destroy(),
+    child: MaterialApp(
+      locale: const Locale('en'),
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L10n.delegate.supportedLocales,
+      home: Scaffold(body: child),
+    ),
   );
 }
 

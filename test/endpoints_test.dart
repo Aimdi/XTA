@@ -20,11 +20,23 @@ void main() {
     });
 
     test('builds the URI a call site used to hardcode', () {
-      final uri = XEndpoints.uri(XEndpoints.userTweets, {'variables': '{}'});
+      final uri = XEndpoints.uri(XEndpoints.userOriginalsTimeline, {'variables': '{}'});
 
       expect(uri.host, 'x.com');
-      expect(uri.path, '/i/api/graphql/36rb3Xj3iJ64Q-9wKDjCcQ/UserTweets');
+      expect(uri.path, '/i/api/graphql/qtvmQffnepvr0oPe4A8MqQ/UserOriginalsTimeline');
       expect(uri.queryParameters['variables'], '{}');
+    });
+
+    // The web's Posts tab moved from UserTweets to UserOriginalsTimeline. The
+    // registry key changed with the operation so an override published for
+    // either can never reach the other.
+    test('the Posts tab is UserOriginalsTimeline and UserTweets is gone', () {
+      expect(XEndpoints.shipped.containsKey('UserTweets'), isFalse);
+      expect(XEndpoints.endpoint(XEndpoints.userOriginalsTimeline).operation, 'UserOriginalsTimeline');
+    });
+
+    test('the profile Media tab stays on UserMedia', () {
+      expect(XEndpoints.uri(XEndpoints.userMedia, {}).path, '/i/api/graphql/9EovraBTXJYGSEQXZqlLmQ/UserMedia');
     });
 
     test('AudioSpaceById is a shipped GraphQL operation', () {
@@ -49,32 +61,35 @@ void main() {
     });
 
     test('an override replaces the query id but keeps operation and host', () {
-      XEndpoints.applyOverrides({XEndpoints.userTweets: 'AAAAAAAAAAAAAAAAAAAAAA'});
+      XEndpoints.applyOverrides({XEndpoints.userOriginalsTimeline: 'AAAAAAAAAAAAAAAAAAAAAA'});
 
-      final uri = XEndpoints.uri(XEndpoints.userTweets, {});
-      expect(uri.path, '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/UserTweets');
+      final uri = XEndpoints.uri(XEndpoints.userOriginalsTimeline, {});
+      expect(uri.path, '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/UserOriginalsTimeline');
       expect(uri.host, 'x.com');
-      expect(XEndpoints.isOverridden(XEndpoints.userTweets), isTrue);
+      expect(XEndpoints.isOverridden(XEndpoints.userOriginalsTimeline), isTrue);
     });
 
     test('unknown endpoints and malformed ids are rejected', () {
       final accepted = XEndpoints.applyOverrides({
         'NotAnEndpoint': 'AAAAAAAAAAAAAAAAAAAAAA',
-        XEndpoints.userTweets: '../../../evil',
+        XEndpoints.userOriginalsTimeline: '../../../evil',
         XEndpoints.tweetDetail: 'short',
         XEndpoints.userMedia: 'BBBBBBBBBBBBBBBBBBBBBB',
       });
 
       expect(accepted, 1);
-      expect(XEndpoints.queryId(XEndpoints.userTweets), '36rb3Xj3iJ64Q-9wKDjCcQ');
-      expect(XEndpoints.queryId(XEndpoints.tweetDetail), 'oCon7R-cgWRFy6EfZjaKfg');
+      expect(XEndpoints.queryId(XEndpoints.userOriginalsTimeline), 'qtvmQffnepvr0oPe4A8MqQ');
+      expect(XEndpoints.queryId(XEndpoints.tweetDetail), 'blErEeZkos5TDrWmrCp7cw');
       expect(XEndpoints.queryId(XEndpoints.userMedia), 'BBBBBBBBBBBBBBBBBBBBBB');
     });
 
     test('a path separator in an override can never escape the operation', () {
-      XEndpoints.applyOverrides({XEndpoints.userTweets: 'a/b/UserTweets?x=1'});
+      XEndpoints.applyOverrides({XEndpoints.userOriginalsTimeline: 'a/b/UserOriginalsTimeline?x=1'});
 
-      expect(XEndpoints.uri(XEndpoints.userTweets, {}).path, '/i/api/graphql/36rb3Xj3iJ64Q-9wKDjCcQ/UserTweets');
+      expect(
+        XEndpoints.uri(XEndpoints.userOriginalsTimeline, {}).path,
+        '/i/api/graphql/qtvmQffnepvr0oPe4A8MqQ/UserOriginalsTimeline',
+      );
     });
 
     test('an unknown endpoint name is a programming error, not a silent 404', () {

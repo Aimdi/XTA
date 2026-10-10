@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
@@ -21,11 +22,18 @@ class HomeFilterDraftStore extends Store<HomeFilterDraft> {
   bool _closed = false;
   HomeFilterDraftStore(Set<String> accounts, Set<String> groups) : super(HomeFilterDraft(accounts, groups));
 
-  void account(String id, bool enabled, List<Account> accounts) {
-    if (isLoading || (!enabled && !canDisableHomeAccount(id, accounts, state.accounts))) return;
+  /// The draft may turn every account off on the way to picking a few; [apply] refuses to save that.
+  void account(String id, bool enabled) {
+    if (isLoading) return;
     final next = {...state.accounts};
     enabled ? next.remove(id) : next.add(id);
     update(HomeFilterDraft(next, state.groups));
+  }
+
+  /// Turns off every id in [disabled] and turns everything else on, for one section.
+  void select({required bool groups, required Set<String> disabled}) {
+    if (isLoading) return;
+    update(groups ? HomeFilterDraft(state.accounts, disabled) : HomeFilterDraft(disabled, state.groups));
   }
 
   void group(String id, bool enabled) {
@@ -39,8 +47,11 @@ class HomeFilterDraftStore extends Store<HomeFilterDraft> {
     if (!isLoading) update(HomeFilterDraft({}, {}));
   }
 
-  Future<bool> apply(HomeAccountFilterStore accounts, HomeGroupFilterStore? groups) async {
-    if (_closed || isLoading) return false;
+  bool keepsAnAccount(List<Account> accounts) =>
+      accounts.isEmpty || accounts.any((account) => !state.accounts.contains(account.id));
+
+  Future<bool> apply(HomeAccountFilterStore accounts, HomeGroupFilterStore? groups, List<Account> known) async {
+    if (_closed || isLoading || !keepsAnAccount(known)) return false;
     final draft = state;
     setLoading(true);
     final previous = homeFeedDisabledIdsToPrefs(accounts.state);
@@ -62,6 +73,7 @@ class HomeFilterDraftStore extends Store<HomeFilterDraft> {
       if (!_closed) setLoading(false);
     }
   }
+
   @override
   Future<void> destroy() {
     _closed = true;
@@ -105,7 +117,7 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
   }
 
   Future<void> _apply() async {
-    final applied = await _draft.apply(widget.accountsStore, widget.groupsStore);
+    final applied = await _draft.apply(widget.accountsStore, widget.groupsStore, widget.accounts);
     if (!mounted || !applied) return;
     widget.onChanged?.call();
     Navigator.pop(context);
@@ -160,7 +172,7 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
                               child: FilledButton(
                                 key: const ValueKey('home-filter-apply'),
                                 style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
-                                onPressed: triple.isLoading ? null : _apply,
+                                onPressed: triple.isLoading || !_draft.keepsAnAccount(widget.accounts) ? null : _apply,
                                 child: triple.isLoading
                                     ? const SizedBox.square(
                                         dimension: 20,
@@ -181,6 +193,14 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
         ),
       ),
     );
+  }
+
+  Set<String> _ids(bool groups) =>
+      groups ? widget.groups.map((group) => group.id).toSet() : widget.accounts.map((account) => account.id).toSet();
+
+  void _only(bool groups, String id) {
+    HapticFeedback.selectionClick();
+    _draft.select(groups: groups, disabled: _ids(groups)..remove(id));
   }
 
   Widget _list(BuildContext context, bool groupSection, String query, HomeFilterDraft draft) {
@@ -256,12 +276,24 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
         ),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
             child: Text(
-              '${groupSection ? l10n.home_feed_groups_description : l10n.home_feed_accounts_description}\n$active / $total',
+              '${groupSection ? l10n.home_feed_groups_description : l10n.home_feed_accounts_description} '
+              '${l10n.home_feed_only_hint}',
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
         ),
+        if (total > 0)
+          SliverToBoxAdapter(
+            child: _BulkBar(
+              active: active,
+              total: total,
+              warning: !groupSection && active == 0 ? l10n.home_feed_keep_one_account : null,
+              onAll: () => _draft.select(groups: groupSection, disabled: {}),
+              onNone: () => _draft.select(groups: groupSection, disabled: _ids(groupSection)),
+            ),
+          ),
         if (!groupSection && widget.accounts.isEmpty)
           SliverToBoxAdapter(
             child: Padding(
@@ -284,7 +316,7 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
             child: Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
           ),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
           sliver: SliverList.builder(
             itemCount: count,
             itemBuilder: (_, index) => groupSection
@@ -292,16 +324,66 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
                     group: groups[index],
                     disabled: draft.groups,
                     onChanged: (enabled) async => _draft.group(groups[index].id, enabled),
+                    onOnly: () => _only(true, groups[index].id),
                   )
                 : HomeAccountToggleTile(
                     account: accounts[index],
                     disabled: draft.accounts,
                     accounts: widget.accounts,
-                    onChanged: (enabled) async => _draft.account(accounts[index].id, enabled, widget.accounts),
+                    keepOne: false,
+                    onChanged: (enabled) async => _draft.account(accounts[index].id, enabled),
+                    onOnly: () => _only(false, accounts[index].id),
                   ),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// How many are on, with one-tap All and None for the visible section.
+class _BulkBar extends StatelessWidget {
+  final int active;
+  final int total;
+  final String? warning;
+  final VoidCallback onAll;
+  final VoidCallback onNone;
+  const _BulkBar({
+    required this.active,
+    required this.total,
+    required this.warning,
+    required this.onAll,
+    required this.onNone,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 12, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              warning ?? '$active / $total',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelLarge?.copyWith(color: warning == null ? null : theme.colorScheme.error),
+            ),
+          ),
+          TextButton(
+            key: const ValueKey('home-filter-all'),
+            onPressed: active == total ? null : onAll,
+            child: Text(l10n.all),
+          ),
+          TextButton(
+            key: const ValueKey('home-filter-none'),
+            onPressed: active == 0 ? null : onNone,
+            child: Text(l10n.home_feed_select_none),
+          ),
+        ],
+      ),
     );
   }
 }

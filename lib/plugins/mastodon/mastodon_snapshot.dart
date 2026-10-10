@@ -19,6 +19,7 @@ Map<String, Object?> mastodonPostSnapshot(MastodonPost post) => {
   'imageAlts': post.imageAlts,
   'imageDownloadUrls': post.imageDownloadUrls,
   'imageIsVideo': post.imageIsVideo,
+  'imageIsGif': post.imageIsGif,
   'published': post.publishedAt?.toIso8601String(),
   'edited': post.editedAt?.toIso8601String(),
   'boosted': post.boosted,
@@ -89,6 +90,7 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
     imageAlts: [for (final alt in json['imageAlts'].list) alt.string],
     imageDownloadUrls: [for (final url in json['imageDownloadUrls'].list) url.string],
     imageIsVideo: [for (final flag in json['imageIsVideo'].list) flag.boolean ?? false],
+    imageIsGif: [for (final flag in json['imageIsGif'].list) flag.boolean ?? false],
     publishedAt: DateTime.tryParse(json['published'].string ?? ''),
     editedAt: DateTime.tryParse(json['edited'].string ?? ''),
     boosted: json['boosted'].boolean ?? false,
@@ -118,6 +120,7 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
             imageAlts: quoted.imageAlts,
             imageDownloadUrls: quoted.imageDownloadUrls,
             imageIsVideo: quoted.imageIsVideo,
+            imageIsGif: quoted.imageIsGif,
           ),
     linkCard: !card.exists
         ? null

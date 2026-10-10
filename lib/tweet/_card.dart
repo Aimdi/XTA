@@ -1,33 +1,24 @@
-import 'dart:convert';
-
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
-import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
+import 'package:xta/tweet/grok_share_card.dart';
 import 'package:xta/tweet/poll.dart';
+import 'package:xta/tweet/poll_results.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
-import 'package:xta/ui/x_look_theme.dart';
-import 'package:intl/intl.dart';
+import 'package:xta/tweet/unified_card.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/links/link_opening.dart';
+import 'package:xta/links/link_preview_card.dart';
+import 'package:xta/tweet/tweet_link_context.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/json.dart';
-
-/// Poll totals are grouped in the reader's locale. Building the pattern parses
-/// it, so one is kept per locale rather than one per build of every poll.
-final Map<String, NumberFormat> _decimalFormats = {};
-
-NumberFormat _decimalFormat(String locale) =>
-    _decimalFormats.putIfAbsent(locale, () => NumberFormat.decimalPattern(locale));
 
 class TweetCard extends StatefulWidget {
   static final log = Logger('TweetCard');
@@ -49,26 +40,14 @@ class _TweetCardState extends State<TweetCard> {
   @override
   void initState() {
     super.initState();
-    _unifiedCard = _decodeUnifiedCard(widget.card);
+    _unifiedCard = unifiedCardOf(widget.card);
   }
 
   @override
   void didUpdateWidget(TweetCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(widget.card, oldWidget.card)) {
-      _unifiedCard = _decodeUnifiedCard(widget.card);
-    }
-  }
-
-  static Map<String, dynamic>? _decodeUnifiedCard(Map<String, dynamic>? card) {
-    final raw = Json(card)['binding_values']['unified_card']['string_value'].string;
-    if (raw == null) return null;
-
-    try {
-      return jsonDecode(raw) as Map<String, dynamic>;
-    } catch (e) {
-      TweetCard.log.severe('Unable to decode the unified card');
-      return null;
+      _unifiedCard = unifiedCardOf(widget.card);
     }
   }
 
@@ -92,29 +71,42 @@ class _TweetCardState extends State<TweetCard> {
       child,
       onTap: url == null
           ? null
-          : () async {
-              if (await openNativeLink(context, url) || !context.mounted) {
-                return;
-              }
-              if (!canOpenInArticleScreen(url)) {
-                await openLink(context, url);
-                return;
-              }
-              final readerTitle =
-                  title?.trim().isNotEmpty == true
-                  ? title!.trim()
-                  : Uri.tryParse(url)?.host;
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ArticleScreen(
-                    url: url,
-                    title: readerTitle,
-                    openNative: openNativeLink,
-                  ),
-                ),
-              );
-            },
+          : () => _openLink(context, url, title),
+    );
+  }
+
+  Future<void> _openLink(BuildContext context, String url, String? title) =>
+      openPostLink(
+        context,
+        url,
+        title: title,
+        post: tweetLinkContext(context, widget.tweet),
+      );
+
+  /// An article link as Threads shows one: a tile, the domain, the title.
+  Widget _createCompactCard(
+    BuildContext context,
+    Json values,
+    String? url,
+    String imageSize,
+  ) {
+    final title = values['title']['string_value'].string;
+    final image = imageSize == 'disabled'
+        ? null
+        : values['thumbnail_image']['image_value']['url'].string;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        kTweetHorizontalPadding,
+        kTweetSpace2,
+        kTweetHorizontalPadding,
+        0,
+      ),
+      child: LinkPreviewCard(
+        url: url ?? values['vanity_url']['string_value'].string ?? '',
+        title: title,
+        imageUrl: image,
+        onTap: url == null ? null : () => _openLink(context, url, title),
+      ),
     );
   }
 
@@ -224,59 +216,6 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  /// One poll option: a rounded bar filled to its share, the option on the left
-  /// and its percentage on the right.
-  ///
-  /// The old bar was a bare [LinearProgressIndicator] with the label painted
-  /// over it — square, full-bleed and with the percentage crowding the option
-  /// text it ran into.
-  Widget _createVoteBar(BuildContext context, PollChoice choice, bool isLeading) {
-    final theme = Theme.of(context);
-    final tokens = XLookTokens.maybeOf(context);
-    final track = tokens?.divider ?? theme.dividerColor;
-    final fill = isLeading
-        ? theme.colorScheme.primary.withValues(alpha: 0.45)
-        : theme.colorScheme.primary.withValues(alpha: 0.18);
-    final weight = isLeading ? FontWeight.w700 : FontWeight.w400;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Stack(
-          children: [
-            Container(height: 34, color: track),
-            // The fill is laid out as a fraction of the bar rather than painted
-            // by a progress indicator, so it keeps the rounded ends.
-            Positioned.fill(
-              child: FractionallySizedBox(
-                alignment: AlignmentDirectional.centerStart,
-                widthFactor: choice.share.clamp(0.0, 1.0),
-                child: Container(color: fill),
-              ),
-            ),
-            SizedBox(
-              height: 34,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(choice.label,
-                          overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: weight)),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('${(choice.share * 100).round()}%', style: TextStyle(fontWeight: weight)),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   dynamic _createWebsiteCard(
       BuildContext context,
       Map<String, dynamic> unifiedCard,
@@ -342,47 +281,68 @@ class _TweetCardState extends State<TweetCard> {
           sensitive: false,
         );
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
+      case 'image_carousel_website':
+        return _createCarouselCard(context, unifiedCard, imageSize);
+      case null when GrokShareCardData.isGrokShare(unifiedCard):
+        return _createGrokShareCard(context, unifiedCard);
       default:
         return Container();
     }
   }
 
+  /// Every picture of the carousel in the media row, above the page they lead to.
+  Widget _createCarouselCard(
+    BuildContext context,
+    Map<String, dynamic> unifiedCard,
+    String imageSize,
+  ) {
+    final carousel = CarouselCardData.fromUnified(unifiedCard);
+    if (carousel == null) return Container();
+    final media = TweetMedia(
+      media: carousel.media,
+      username: widget.tweet.user?.screenName ?? '',
+      sensitive: false,
+    );
+    return _createWebsiteCard(
+      context,
+      unifiedCard,
+      carousel.url,
+      imageSize,
+      media,
+    );
+  }
+
+  Widget _createGrokShareCard(
+    BuildContext context,
+    Map<String, dynamic> unifiedCard,
+  ) {
+    final share = GrokShareCardData.fromUnified(unifiedCard);
+    if (share == null) return Container();
+    return GrokShareCard(
+      share: share,
+      onTap: () => _openLink(context, share.url, null),
+    );
+  }
+
   Widget _createVoteCard(BuildContext context, Map<String, dynamic> card, int numberOfChoices) {
     final poll = TweetPoll.fromCard(card, numberOfChoices);
-    if (poll == null) {
-      return Container();
-    }
+    return poll == null ? Container() : TweetPollResults(poll: poll);
+  }
 
-    final locale = Intl.getCurrentLocale();
-    final numberFormat = _decimalFormat(locale);
-    final endsAt = poll.endsAt;
-    final closed = endsAt != null && endsAt.isBefore(DateTime.now());
-    final relative = endsAt == null
-        ? null
-        : timeago.format(endsAt, allowFromNow: true, locale: Intl.shortLocale(locale));
-
-    return TweetEmbedSurface(
-      padding: const EdgeInsets.all(kTweetSpace3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final choice in poll.choices) _createVoteBar(context, choice, choice.count == poll.leadingCount),
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: DefaultTextStyle.merge(
-              style: Theme.of(context).textTheme.bodySmall!,
-              child: Text([
-                L10n.of(context).numberFormat_format_total_votes(poll.total, numberFormat.format(poll.total)),
-                if (relative != null)
-                  closed
-                      ? L10n.of(context).ended_timeago_format_endsAt_allowFromNow_true(relative)
-                      : L10n.of(context).ends_timeago_format_endsAt_allowFromNow_true(relative),
-              ].join(' • ')),
-            ),
-          )
-        ],
-      ),
-    );
+  /// A large-image card stays large only when its picture is the content —
+  /// a video page, say; a news story's share image goes in the tile.
+  bool _prefersCompact(
+    Map<String, dynamic> card,
+    String? url,
+    String imageSize,
+  ) {
+    final image = Json(card)['binding_values']['thumbnail_image']['image_value']
+        ['url'].string;
+    return linkPreviewLayoutFor(
+          url ?? '',
+          hasImage: image != null && imageSize != 'disabled',
+        ) ==
+        LinkPreviewLayout.compact;
   }
 
   String? _findCardUrl(Map<String, dynamic> card) {
@@ -417,36 +377,13 @@ class _TweetCardState extends State<TweetCard> {
 
     switch (card['name']) {
       case 'summary':
-        final values = Json(card)['binding_values'];
-        final image = values['thumbnail_image$imageKey']['image_value'].raw;
-        final title = values['title']['string_value'].string;
-        final description = values['description']['string_value'].string;
-        final vanityUrl = values['vanity_url']['string_value'].string;
-        return _createCard(
-          _findCardUrl(card),
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: _createImage(
-                  imageSize,
-                  image is Map<String, dynamic> ? image : null,
-                  BoxFit.cover,
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: _createListTile(
-                  context,
-                  title ?? '',
-                  description,
-                  vanityUrl,
-                ),
-              ),
-            ],
-          ),
+      case 'summary_large_image'
+          when _prefersCompact(card, _findCardUrl(card), imageSize):
+        return _createCompactCard(
           context,
-          title: title,
+          Json(card)['binding_values'],
+          _findCardUrl(card),
+          imageSize,
         );
       case 'summary_large_image':
         final values = Json(card)['binding_values'];

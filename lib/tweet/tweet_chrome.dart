@@ -402,15 +402,33 @@ class TweetStateTile extends StatelessWidget {
   final String message;
   final VoidCallback? onTap;
 
+  /// Something the reader can do about the state, set under the message.
+  final Widget? action;
+
   const TweetStateTile({
     super.key,
     required this.icon,
     required this.message,
     this.onTap,
+    this.action,
   });
 
   @override
   Widget build(BuildContext context) {
+    final message = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          size: kTweetActionIconSize,
+          color: tweetSecondaryColor(context),
+        ),
+        const SizedBox(width: kTweetSpace2),
+        Expanded(child: Text(this.message, style: tweetMetadataStyle(context))),
+      ],
+    );
+    final action = this.action;
+
     return TweetEmbedSurface(
       onTap: onTap,
       padding: const EdgeInsets.all(kTweetSpace3),
@@ -418,18 +436,18 @@ class TweetStateTile extends StatelessWidget {
         constraints: const BoxConstraints(
           minHeight: kTweetTouchTarget - kTweetSpace6,
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: kTweetActionIconSize,
-              color: tweetSecondaryColor(context),
-            ),
-            const SizedBox(width: kTweetSpace2),
-            Expanded(child: Text(message, style: tweetMetadataStyle(context))),
-          ],
-        ),
+        child: action == null
+            ? message
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  message,
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: action,
+                  ),
+                ],
+              ),
       ),
     );
   }

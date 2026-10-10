@@ -58,6 +58,8 @@ Future<void> openMastodonReposts(BuildContext context, MastodonPost post) {
       trailing: const Icon(Icons.chevron_right),
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: person.acct))),
     ),
+    // Mastodon's Account entity always carries followers_count.
+    sort: pluginReposterSort(followers: (person) => person.followersCount),
   );
 }
 
@@ -72,5 +74,6 @@ Future<void> openMastodonQuotes(BuildContext context, MastodonPost post) {
     idOf: (post) => post.url,
     errorLabel: _activityError,
     itemBuilder: (context, quote) => MastodonPostCard(post: quote),
+    sort: pluginQuoteSort(postedAt: (quote) => quote.publishedAt, likes: (quote) => quote.favouritesCount),
   );
 }

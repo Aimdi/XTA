@@ -1,79 +1,117 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/stocks/stocks_format.dart';
+import 'package:xta/plugins/stocks/stocks_quote_row.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 
-/// What the line cannot say: how much changed hands, today's range, and where
-/// the price sits inside the year.
-///
-/// A chart alone answers "which way" and nothing else. These are the numbers
-/// every market page puts under one, and both places that draw a price — the
-/// ticker screen and the watchlist — want the same set.
-class TickerStats extends StatelessWidget {
-  final TickerQuote quote;
+/// One labelled figure under a chart: `Open  189.33`.
+typedef TickerStat = ({String label, String? value});
 
-  /// Shown at the end of the row when there is one, since the prices above are
-  /// bare numbers.
-  final bool showCurrency;
+/// Key statistics as label/value rows in as many columns as fit — Google
+/// Finance's grid. A figure the source did not send shows a dash, so the
+/// grid keeps its shape from symbol to symbol.
+class TickerStatGrid extends StatelessWidget {
+  final List<TickerStat> stats;
 
-  const TickerStats({super.key, required this.quote, this.showCurrency = true});
-
-  /// Volume runs to nine figures, which no row has room for, so it is shortened
-  /// the way every market page shortens it.
-  static final NumberFormat _volume = NumberFormat.compact();
-  static final NumberFormat _price = NumberFormat.decimalPatternDigits(
-    decimalDigits: 2,
-  );
-
-  /// Stands in for a number the response did not carry. Punctuation rather than
-  /// a sentence, so it needs no translation.
-  static const String placeholder = '—';
+  const TickerStatGrid({super.key, required this.stats});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    final theme = Theme.of(context);
-    final currency = quote.currency;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cell = MediaQuery.textScalerOf(context).scale(150);
+        final columns = (constraints.maxWidth / cell).floor().clamp(1, 3);
+        return Column(
+          children: [
+            for (var i = 0; i < stats.length; i += columns)
+              _row(context, stats.skip(i).take(columns).toList(), columns),
+          ],
+        );
+      },
+    );
+  }
 
-    return Wrap(
-      spacing: 20,
-      runSpacing: 8,
+  Widget _row(BuildContext context, List<TickerStat> cells, int columns) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _stat(
-          theme,
-          l10n.plugin_stocks_volume,
-          quote.volume,
-          format: _volume.format,
-        ),
-        _stat(theme, l10n.plugin_stocks_day_high, quote.dayHigh),
-        _stat(theme, l10n.plugin_stocks_day_low, quote.dayLow),
-        _stat(theme, l10n.plugin_stocks_year_high, quote.yearHigh),
-        _stat(theme, l10n.plugin_stocks_year_low, quote.yearLow),
-        if (showCurrency && currency != null)
-          Text(currency, style: theme.textTheme.labelSmall),
+        for (var i = 0; i < columns; i++) ...[
+          if (i > 0) const SizedBox(width: 24),
+          Expanded(
+            child: i < cells.length
+                ? _cell(context, cells[i])
+                : const SizedBox.shrink(),
+          ),
+        ],
       ],
     );
   }
 
-  Widget _stat(
-    ThemeData theme,
-    String label,
-    double? value, {
-    String Function(double)? format,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.labelSmall!.copyWith(
-            color: theme.colorScheme.outline,
+  Widget _cell(BuildContext context, TickerStat stat) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Expanded(
+            child: Text(
+              stat.label,
+              style: theme.textTheme.bodySmall!.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
+          const SizedBox(width: 8),
+          Text(
+            stat.value ?? kStockPlaceholder,
+            style: theme.textTheme.bodyMedium!.copyWith(
+              fontWeight: FontWeight.w600,
+              fontFeatures: kStockFigures,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// What the line cannot say: where the day opened and closed before, its
+/// range, how much changed hands, and where the price sits inside the year.
+///
+/// Read from a one-day quote, so "Prev. close" is the previous session's
+/// close whatever range the chart above is showing.
+class TickerStats extends StatelessWidget {
+  final TickerQuote quote;
+
+  const TickerStats({super.key, required this.quote});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    String? price(double? value) => value == null ? null : stockPrice(value);
+
+    return TickerStatGrid(
+      stats: [
+        (label: l10n.plugin_stocks_open, value: price(quote.dayOpen)),
+        (
+          label: l10n.plugin_stocks_prev_close,
+          value: price(quote.previousClose),
         ),
-        Text(
-          value == null ? placeholder : (format ?? _price.format)(value),
-          style: theme.textTheme.bodyMedium,
+        (label: l10n.plugin_stocks_day_high, value: price(quote.dayHigh)),
+        (label: l10n.plugin_stocks_day_low, value: price(quote.dayLow)),
+        (
+          label: l10n.plugin_stocks_volume,
+          value: quote.volume == null ? null : stockCompact(quote.volume!),
         ),
+        (label: l10n.plugin_stocks_year_high, value: price(quote.yearHigh)),
+        (label: l10n.plugin_stocks_year_low, value: price(quote.yearLow)),
       ],
     );
   }

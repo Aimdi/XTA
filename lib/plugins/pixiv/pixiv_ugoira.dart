@@ -37,6 +37,21 @@ PixivUgoira? parsePixivUgoira(Object? json) {
   return zip == null || zip.isEmpty || frames.isEmpty ? null : PixivUgoira(zipUrl: zip, frames: frames);
 }
 
+/// One frame's encoded image and how long it stays up.
+typedef PixivFrameBytes = ({Uint8List bytes, Duration delay});
+
+/// The frames of [archive] in [meta]'s order, each with its delay; frames the
+/// archive lacks are skipped. Throws when none are left.
+List<PixivFrameBytes> pixivUgoiraFrames(PixivUgoira meta, Uint8List archive) {
+  final files = readPixivZip(archive);
+  final frames = [
+    for (final frame in meta.frames)
+      if (files[frame.file] case final bytes?) (bytes: bytes, delay: frame.delay),
+  ];
+  if (frames.isEmpty) throw const FormatException('No ugoira frames');
+  return frames;
+}
+
 const _centralEntry = 0x02014b50;
 const _localEntry = 0x04034b50;
 const _endOfDirectory = 0x06054b50;
@@ -110,10 +125,13 @@ class PixivUgoiraStore extends Store<PixivUgoiraState> {
   final Future<PixivUgoira> Function() metadata;
   final Future<Uint8List> Function(String url) archive;
   final PixivFrameDecoder decode;
-  List<({Uint8List bytes, Duration delay})> _frames = const [];
+  List<PixivFrameBytes> _frames = const [];
   var _index = 0;
   var _run = 0;
   var _closed = false;
+
+  /// Playback the view stopped because it was covered, not the reader's pause.
+  var _held = false;
 
   PixivUgoiraStore({required this.metadata, required this.archive, PixivFrameDecoder? decode})
     : decode = decode ?? decodePixivFrame,
@@ -123,27 +141,46 @@ class PixivUgoiraStore extends Store<PixivUgoiraState> {
 
   Future<void> play() async {
     if (_closed || playing || state.phase == PixivUgoiraPhase.loading) return;
+    _held = false;
     if (_frames.isEmpty && !await _loadFrames()) return;
+    if (_held) {
+      update(PixivUgoiraState(phase: PixivUgoiraPhase.paused, frame: state.frame));
+      return;
+    }
     update(PixivUgoiraState(phase: PixivUgoiraPhase.playing, frame: state.frame));
     unawaited(_loop(++_run));
   }
 
   void pause() {
+    _held = false;
+    _stop();
+  }
+
+  void _stop() {
     if (!playing) return;
     _run++;
     update(PixivUgoiraState(phase: PixivUgoiraPhase.paused, frame: state.frame));
+  }
+
+  /// Stops while the view is covered, remembering to go on when [resume]d.
+  void hold() {
+    if (!playing && state.phase != PixivUgoiraPhase.loading) return;
+    _held = true;
+    _stop();
+  }
+
+  /// Plays again what [hold] stopped; a reader's own pause stays paused.
+  void resume() {
+    if (!_held) return;
+    _held = false;
+    unawaited(play());
   }
 
   Future<bool> _loadFrames() async {
     update(PixivUgoiraState(phase: PixivUgoiraPhase.loading, frame: state.frame));
     try {
       final meta = await metadata();
-      final files = readPixivZip(await archive(meta.zipUrl));
-      _frames = [
-        for (final frame in meta.frames)
-          if (files[frame.file] case final bytes?) (bytes: bytes, delay: frame.delay),
-      ];
-      if (_frames.isEmpty) throw const FormatException('No ugoira frames');
+      _frames = pixivUgoiraFrames(meta, await archive(meta.zipUrl));
       return !_closed;
     } catch (error) {
       if (!_closed) {

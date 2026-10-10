@@ -1,7 +1,4 @@
-import 'package:xta/plugins/plugin_post_actions.dart';
-import 'package:xta/user.dart';
-import 'package:xta/group/group_model.dart';
-import 'package:xta/subscriptions/users_model.dart';
+import 'dart:math' as math;
 import 'dart:typed_data';
 // intl also exports a TextDirection, so the painting one is qualified.
 import 'dart:ui' as ui;
@@ -9,7 +6,6 @@ import 'dart:ui' as ui;
 import 'package:dart_twitter_api/twitter_api.dart' show Media, Url;
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
@@ -20,6 +16,8 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_like_button.dart';
+import 'package:xta/tweet/engagement_count.dart';
+import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/tweet/quote_actions.dart';
@@ -49,18 +47,25 @@ const footerButtonStyle = ButtonStyle(
   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
 );
 
-/// Fixed cost of one count action: padding, the 20dp glyph and the gap Material
-/// puts between an icon and its label.
-const double kFooterCountItemBase = kTweetTouchTarget;
+/// Gap between a count's glyph and its number, as X draws it.
+const double kFooterIconLabelGap = 4;
+
+/// Fixed cost of one count action: padding, the glyph and the gap before its
+/// number. The action is never narrower than a 48dp touch target.
+const double kFooterCountItemBase = kFooterButtonPadding * 2 + kTweetActionGlyphSize + kFooterIconLabelGap;
 
 /// One icon-only action (bookmark, share).
 const double kFooterIconItem = kTweetTouchTarget;
 
-/// Gap between the counts group and the icon group.
+/// Gap between the counts group and the bookmark/share group.
 const double kFooterGroupGap = 8;
 
-/// Size the count labels are drawn at, and therefore measured at.
-const double kFooterLabelFontSize = 14;
+/// Size the count labels are drawn at, and therefore measured at: a step
+/// below the post text, like X's.
+const double kFooterLabelFontSize = 13;
+
+/// Width one count action takes with a number [labelWidth] wide.
+double footerCountItemWidth(double labelWidth) => math.max(kTweetTouchTarget, kFooterCountItemBase + labelWidth);
 
 /// What the footer can afford to show at the width it was given.
 @immutable
@@ -79,7 +84,7 @@ class FooterFit {
 }
 
 double _stripWidth(List<double> labelWidths, int iconButtons) =>
-    labelWidths.fold<double>(0, (sum, width) => sum + kFooterCountItemBase + width) +
+    labelWidths.fold<double>(0, (sum, width) => sum + footerCountItemWidth(width)) +
     iconButtons * kFooterIconItem +
     kFooterGroupGap;
 
@@ -127,12 +132,18 @@ class TweetTranslateButton extends StatelessWidget {
     this.onLongPress,
   });
 
+  /// Sits right before the ⋯ menu, so its glyph is pushed towards it.
+  static final EdgeInsetsDirectional _glyphPadding = tweetActionGlyphPadding(towardEnd: true, alignTop: true);
+
   @override
   Widget build(BuildContext context) {
     if (status == TranslationStatus.translating) {
-      return const Padding(
-        padding: EdgeInsets.all(8),
-        child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+      return SizedBox.square(
+        dimension: kTweetTouchTarget,
+        child: Padding(
+          padding: _glyphPadding,
+          child: const Center(child: SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))),
+        ),
       );
     }
 
@@ -153,7 +164,14 @@ class TweetTranslateButton extends StatelessWidget {
 
     return GestureDetector(
       onLongPress: onLongPress ?? onTranslate,
-      child: tweetFooterIconButton(context, Icons.translate, color, null, onPressed, tooltip),
+      child: tweetActionIconButton(
+        context,
+        icon: Icons.translate,
+        color: color,
+        onPressed: onPressed,
+        tooltip: tooltip,
+        style: tweetActionButtonStyle(_glyphPadding),
+      ),
     );
   }
 }
@@ -238,14 +256,26 @@ Widget tweetFooterIconButton(
   double? fill,
   VoidCallback? onPressed,
   String? tooltip,
-]) {
+]) => tweetActionIconButton(context, icon: icon, color: color, fill: fill, onPressed: onPressed, tooltip: tooltip);
+
+/// An icon-only post action. [style] decides where the glyph sits in its 48dp
+/// target; the footer's centred style is the default.
+Widget tweetActionIconButton(
+  BuildContext context, {
+  required IconData icon,
+  Color? color,
+  double? fill,
+  VoidCallback? onPressed,
+  String? tooltip,
+  ButtonStyle style = footerButtonStyle,
+}) {
   final button = IconButton(
     icon: Icon(icon, fill: fill),
     color: color ?? Theme.of(context).colorScheme.primary,
-    iconSize: 20,
+    iconSize: kTweetActionGlyphSize,
     onPressed: onPressed,
     tooltip: tooltip,
-    style: footerButtonStyle,
+    style: style,
   );
 
   // A tooltip triggers on long press by default, and that recogniser sits
@@ -266,14 +296,10 @@ Widget tweetFooterTextButton(
   VoidCallback? onPressed,
   String? semanticLabel,
 ]) {
-  final button = TextButton.icon(
-    icon: Icon(icon, size: 20, color: color),
+  final button = TextButton(
     onPressed: onPressed,
-    label: Text(
-      label,
-      style: TextStyle(color: color, fontSize: kFooterLabelFontSize),
-    ),
     style: footerButtonStyle,
+    child: footerCountContent(Icon(icon, size: kTweetActionGlyphSize, color: color), label, color),
   );
   if (label.trim().isNotEmpty || semanticLabel == null) {
     return button;
@@ -286,19 +312,67 @@ Widget tweetFooterTextButton(
   );
 }
 
-/// Engagement / save / share / translate strip under a tweet tile.
+/// A count action's glyph followed, when there is one, by its number.
+Widget footerCountContent(Widget icon, String label, Color? color) => Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    icon,
+    if (label.isNotEmpty) ...[
+      const SizedBox(width: kFooterIconLabelGap),
+      Text(
+        label,
+        maxLines: 1,
+        style: TextStyle(color: color, fontSize: kFooterLabelFontSize),
+      ),
+    ],
+  ],
+);
+
+/// X's read-only view count: the bar-chart glyph and the shortened number,
+/// announced as "77K Views". Not a button — there is nothing behind it to open.
+class TweetViewsCount extends StatelessWidget {
+  final int views;
+  final String label;
+  final Color? color;
+
+  const TweetViewsCount({super.key, required this.views, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: L10n.of(context).post_views_count(viewsPluralCount(views), label),
+      excludeSemantics: true,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: kTweetTouchTarget, minHeight: kFooterButtonHeight),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: kFooterButtonPadding),
+          child: Center(
+            widthFactor: 1,
+            child: footerCountContent(Icon(Icons.bar_chart, size: kTweetActionGlyphSize, color: color), label, color),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Engagement / save / share strip under a tweet tile, laid out as X does:
+/// reply, repost, like and views spread across, bookmark and share grouped at
+/// the end. Translate and the ⋯ menu live in the post header.
 ///
 /// XTA is a read-oriented frontend: these controls must not post to X.
 /// Comment opens the conversation, quote opens quotes and retweeters,
-/// heart/bookmark are local-only, share uses the OS sheet, translate works
-/// on loaded text.
+/// heart/bookmark are local-only, share uses the OS sheet.
 class TweetFooterBar extends StatelessWidget {
   final TweetWithCard tweet;
   final String tweetText;
   final String shareBaseUrl;
   final Locale locale;
-  final NumberFormat numberFormat;
+  final String Function(num value) formatCount;
   final bool isArticle;
+
+  /// Off on an opened post, which states its views in the line above instead.
+  final bool showViews;
   final VoidCallback onOpenTweet;
   final Future<Uint8List?> Function() onCaptureImage;
 
@@ -308,11 +382,16 @@ class TweetFooterBar extends StatelessWidget {
     required this.tweetText,
     required this.shareBaseUrl,
     required this.locale,
-    required this.numberFormat,
     required this.onOpenTweet,
     required this.onCaptureImage,
+    this.formatCount = formatEngagementCount,
     this.isArticle = false,
+    this.showViews = true,
   });
+
+  /// Bookmark and share sit together at the end: bookmark's glyph is pushed
+  /// towards share's, as X groups them.
+  static final ButtonStyle _bookmarkStyle = tweetActionButtonStyle(tweetActionGlyphPadding(towardEnd: true));
 
   void _showShareSheet(BuildContext context) {
     final url = shareableTweetUrl(tweet, shareBaseUrl);
@@ -405,7 +484,6 @@ class TweetFooterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tweetId = openablePost(tweet)?.id;
-    final tweetUrl = shareableTweetUrl(tweet, shareBaseUrl);
     final prefs = PrefService.of(context, listen: false);
     final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final tint = tweetFooterButtonsColorOf(context);
@@ -418,27 +496,29 @@ class TweetFooterBar extends StatelessWidget {
 
     return Container(
       alignment: Alignment.center,
-      margin: isArticle ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 8),
+      // No end margin: the share glyph, centred in its target, then lines up
+      // with the header's ⋯ above it.
+      margin: isArticle ? EdgeInsets.zero : const EdgeInsetsDirectional.only(start: kTweetSpace2),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final replyLabel = hideCounts || tweet.replyCount == null ? '' : numberFormat.format(tweet.replyCount);
+          final replyLabel = hideCounts || tweet.replyCount == null ? '' : formatCount(tweet.replyCount!);
           // Missing either count used to hide the whole quotes control. Treat a
           // null as zero so the button still opens QuotesScreen.
           final repostTotal = (tweet.retweetCount ?? 0) + (tweet.quoteCount ?? 0);
-          final repostLabel = hideCounts ? '' : numberFormat.format(repostTotal);
-          final likeLabel = hideCounts || tweet.favoriteCount == null ? '' : numberFormat.format(tweet.favoriteCount);
-          // View counts are vanity on a reader; keep the fit helper for tests
-          // but do not spend strip width on them here.
-          const String? viewsLabel = null;
+          final repostLabel = hideCounts ? '' : formatCount(repostTotal);
+          final likeLabel = hideCounts || tweet.favoriteCount == null ? '' : formatCount(tweet.favoriteCount!);
+          // Like X, a post without views (or before X counted them) shows no
+          // views item at all rather than a zero.
+          final views = tweet.viewCount ?? 0;
+          final viewsLabel = hideCounts || !showViews || views <= 0 ? null : formatCount(views);
 
           final measure = _LabelMeasure(context);
           final fit = resolveFooterFit(
             available: constraints.maxWidth,
             countLabelWidths: [measure.of(replyLabel), measure.of(repostLabel), measure.of(likeLabel)],
             viewsLabelWidth: viewsLabel == null ? null : measure.of(viewsLabel),
-            // Bookmark and share. Translate used to make a third here, and now
-            // sits in the post header instead.
-            iconButtons: 3,
+            // Bookmark and share. Translate and the ⋯ menu sit in the header.
+            iconButtons: 2,
           );
 
           String label(String? value) => fit.showCounts ? (value ?? '') : '';
@@ -450,7 +530,7 @@ class TweetFooterBar extends StatelessWidget {
             openQuotesAndRetweets(context, tweetId: tweetId);
           }
 
-          final actions = <Widget>[
+          final counts = <Widget>[
             GestureDetector(
               onLongPress: tweetId == null
                   ? null
@@ -512,22 +592,33 @@ class TweetFooterBar extends StatelessWidget {
                 );
               },
             ),
-            if (viewsLabel != null && fit.showViews) tweetFooterTextButton(Icons.bar_chart, viewsLabel, tint),
+            if (viewsLabel != null && fit.showViews) TweetViewsCount(views: views, label: viewsLabel, color: tint),
+          ];
+          final grouped = <Widget>[
             ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
               store: savedModel,
               distinct: (_) => tweetId != null && savedModel.isSaved(tweetId),
               onState: (context, _) {
                 final isSaved = tweetId != null && savedModel.isSaved(tweetId);
                 final button = isSaved
-                    ? tweetFooterIconButton(context, Icons.bookmark, tweetReadableAccentColor(context), 1, () async {
-                        await savedModel.deleteSavedTweet(tweetId);
-                      }, L10n.of(context).unsave_from_this_device)
-                    : tweetFooterIconButton(
+                    ? tweetActionIconButton(
                         context,
-                        Icons.bookmark_border,
-                        tint,
-                        0,
-                        tweetId == null
+                        icon: Icons.bookmark,
+                        color: tweetReadableAccentColor(context),
+                        fill: 1,
+                        onPressed: () async {
+                          await savedModel.deleteSavedTweet(tweetId);
+                        },
+                        tooltip: L10n.of(context).unsave_from_this_device,
+                        style: _bookmarkStyle,
+                      )
+                    : tweetActionIconButton(
+                        context,
+                        icon: Icons.bookmark_border,
+                        color: tint,
+                        fill: 0,
+                        style: _bookmarkStyle,
+                        onPressed: tweetId == null
                             ? null
                             : () async {
                                 // Goes wherever the reader last chose, when they have
@@ -546,7 +637,7 @@ class TweetFooterBar extends StatelessWidget {
                                   maybeShowFolderHint(context);
                                 }
                               },
-                        L10n.of(context).save_on_this_device,
+                        tooltip: L10n.of(context).save_on_this_device,
                       );
 
                 return GestureDetector(
@@ -572,54 +663,24 @@ class TweetFooterBar extends StatelessWidget {
               () => _showShareSheet(context),
               L10n.of(context).action_share_post,
             ),
-            tweetFooterIconButton(
-              context,
-              Icons.more_horiz,
-              tint,
-              null,
-              tweetId == null || tweetUrl == null
-                  ? null
-                  : () => showPluginPostActions(
-                      context,
-                      post: PluginPostArchive(id: tweetId, userId: tweet.user?.idStr ?? '', content: tweet.toJson()),
-                      url: tweetUrl,
-                      onGroup: tweet.user?.idStr?.isNotEmpty != true || openableProfile(tweet.user) == null
-                          ? null
-                          : () async {
-                              final author = tweet.user!;
-                              final user = UserSubscription(
-                                id: author.idStr!,
-                                screenName: author.screenName!,
-                                name: author.name ?? author.screenName!,
-                                profileImageUrlHttps: author.profileImageUrlHttps,
-                                verified: author.verified ?? false,
-                                createdAt: author.createdAt ?? DateTime.now(),
-                                inFeed: true,
-                              );
-                              final groups = await context.read<GroupsModel>().listGroupsForUser(user.id);
-                              if (!context.mounted) return;
-                              await pickUserGroups(
-                                context,
-                                user: user,
-                                followed: context.read<SubscriptionsModel>().state.any((e) => e.id == user.id),
-                                groupsForUser: groups,
-                              );
-                            },
-                      onQuotes: openQuotes,
-                      onReposts: () => openQuotesAndRetweets(context, tweetId: tweetId, initialTab: 1),
-                    ),
-              L10n.of(context).more_info,
-            ),
           ];
 
           // Last resort for a narrow window: preserve 48dp targets and let the
           // actions take a second line. Scaling the strip made the controls fit
           // visually while making every hit target too small.
           if (fit.mustScaleDown) {
-            return Wrap(alignment: WrapAlignment.spaceEvenly, children: actions);
+            return Wrap(alignment: WrapAlignment.spaceEvenly, children: [...counts, ...grouped]);
           }
 
-          return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: actions);
+          return Row(
+            children: [
+              Expanded(
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: counts),
+              ),
+              const SizedBox(width: kFooterGroupGap),
+              ...grouped,
+            ],
+          );
         },
       ),
     );

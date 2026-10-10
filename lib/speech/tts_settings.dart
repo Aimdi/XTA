@@ -1,37 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/speech/offline_voices_section.dart';
+import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_engines.dart';
+import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/urls.dart';
-
-/// Which speech engine and voice reading aloud uses.
-///
-/// Android lets more than one engine be installed, and an app that never asks
-/// gets whichever one is the system default. A reader who installed a engine of
-/// their own — Sherpa, RHVoice, anything — had no way to tell XTA to use it
-/// short of changing the system-wide default, which is why reading aloud
-/// appeared to do nothing.
-class TtsChoice {
-  /// Engine package name, e.g. `com.k2fsa.sherpa.onnx.tts.engine`.
-  final String? engine;
-
-  /// Voice name and its locale, which the platform wants together.
-  final String? voiceName;
-  final String? voiceLocale;
-
-  final double rate;
-
-  const TtsChoice({
-    this.engine,
-    this.voiceName,
-    this.voiceLocale,
-    this.rate = 0.45,
-  });
-
-  bool get hasVoice => voiceName != null && voiceLocale != null;
-}
 
 TtsChoice readTtsChoice(BasePrefService prefs) => TtsChoice(
   engine: _orNull(prefs.get<String>(optionTtsEngine)),
@@ -47,41 +24,6 @@ Future<void> preferSherpaTts(BasePrefService prefs) async {
   await prefs.set(optionTtsEngine, sherpaOnnxTtsEngine);
   await prefs.set(optionTtsVoiceName, '');
   await prefs.set(optionTtsVoiceLocale, '');
-}
-
-/// Applies [choice] to [tts]. Returns false when the chosen engine is gone —
-/// uninstalled since, say — so the caller can fall back rather than sit mute.
-Future<bool> applyTtsChoice(FlutterTts tts, TtsChoice choice) async {
-  try {
-    final engine = await resolveBoundEngine(tts, choice.engine);
-    if (engine != null) {
-      try {
-        await tts.setEngine(engine);
-        // Wait until the new engine answers. setLanguage right after setEngine
-        // is otherwise a no-op on some Android builds.
-        try {
-          await tts.getLanguages;
-        } catch (_) {}
-      } catch (_) {
-        if (isSherpaEngine(choice.engine)) return false;
-      }
-    }
-    if (choice.hasVoice) {
-      try {
-        await tts.setVoice({
-          'name': choice.voiceName!,
-          'locale': choice.voiceLocale!,
-        });
-      } catch (_) {}
-    }
-    try {
-      await tts.setVolume(1);
-    } catch (_) {}
-    await tts.setSpeechRate(choice.rate);
-    return true;
-  } catch (_) {
-    return false;
-  }
 }
 
 /// Engine package to bind: the one the reader picked, Sherpa if they asked
@@ -110,6 +52,7 @@ Future<String?> readDefaultEngine(FlutterTts tts) async {
 /// First language the bound engine will actually speak.
 Future<String?> pickSpeakLanguage(
   FlutterTts tts, {
+  String? textLanguage,
   String? voiceLocale,
   String? appLocale,
 }) async {
@@ -123,6 +66,7 @@ Future<String?> pickSpeakLanguage(
 
   return pickListedSpeakLanguage(
     candidates: speakLanguageCandidates(
+      textLanguage: textLanguage,
       voiceLocale: voiceLocale,
       appLocale: appLocale,
     ),
@@ -220,7 +164,9 @@ class TtsSettingsScreen extends StatefulWidget {
 }
 
 class _TtsSettingsScreenState extends State<TtsSettingsScreen> {
-  late final FlutterTts _tts = widget.tts ?? FlutterTts();
+  // The app's own instance: a new FlutterTts() would take the platform
+  // callbacks away from the one reading aloud.
+  late final FlutterTts _tts = widget.tts ?? context.read<SpeechStore>().tts;
   TtsOptions? _options;
 
   @override
@@ -352,6 +298,8 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
         Expanded(
           child: ListView(
             children: [
+              if (_voiceStore(context) case final store?)
+                OfflineVoicesSection(store: store),
               _header(context, l10n.plugin_substack_tts_engine),
               RadioListTile<String?>(
                 value: null,
@@ -435,6 +383,15 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
           ),
       ],
     );
+  }
+
+  /// The downloadable voices, when the app provides them.
+  VoiceDownloadStore? _voiceStore(BuildContext context) {
+    try {
+      return context.read<VoiceDownloadStore>();
+    } on ProviderNotFoundException {
+      return null;
+    }
   }
 
   Widget _header(BuildContext context, String text) => Padding(

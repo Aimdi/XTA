@@ -12,6 +12,7 @@ import 'package:xta/tweet/_video_controls.dart';
 import 'package:xta/tweet/video_audio_focus.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/tweet/video_fullscreen.dart';
+import 'package:xta/tweet/video_mute_badge.dart';
 import 'package:xta/tweet/video_playback_policy.dart';
 import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/tweet/media_strip.dart';
@@ -44,22 +45,25 @@ class TweetVideoMetadata {
 
   TweetVideoMetadata(this.aspectRatio, this.imageUrl, this.streamUrlsBuilder);
 
+  /// The progressive MP4 variants, highest bitrate first.
+  static List<TweetVideoQuality> mp4Qualities(List<Variant> variants) =>
+      variants
+          .where((e) => e.bitrate != null)
+          .where((e) => e.url != null)
+          .where((e) => e.contentType == 'video/mp4')
+          .sorted((a, b) => -(a.bitrate!.compareTo(b.bitrate!)))
+          .map(
+            (e) => TweetVideoQuality(e.url!, _qualityLabel(e.url!, e.bitrate)),
+          )
+          .toList();
+
   static Future<TweetVideoUrls> Function() streamUrlsBuilderFromVariants(
     List<Variant> variants,
   ) {
     // Use progressive MP4, not X's HLS master playlist (variants[0]): libmpv
     // plays the .m3u8 poorly (delayed start, bad seek, phantom subtitle tracks).
     // Fall back to variants[0] only when no MP4 exists (e.g. live broadcasts).
-    var mp4Variants = variants
-        .where((e) => e.bitrate != null)
-        .where((e) => e.url != null)
-        .where((e) => e.contentType == 'video/mp4')
-        .sorted((a, b) => -(a.bitrate!.compareTo(b.bitrate!)))
-        .toList();
-
-    var qualities = mp4Variants
-        .map((e) => TweetVideoQuality(e.url!, _qualityLabel(e.url!, e.bitrate)))
-        .toList();
+    var qualities = mp4Qualities(variants);
 
     var mp4Url = qualities.isNotEmpty ? qualities.first.url : null;
     var streamUrl = mp4Url ?? variants[0].url!;
@@ -125,6 +129,10 @@ class TweetVideo extends StatefulWidget {
   /// Called once when playback fails before the first frame (e.g. CDN 403).
   final VoidCallback? onPlaybackError;
 
+  /// Feed videos wait silently on their poster; a full-screen player with
+  /// nothing else on screen keeps a spinner so a slow stream reads as loading.
+  final bool showLoadingIndicator;
+
   const TweetVideo({
     super.key,
     required this.username,
@@ -135,6 +143,7 @@ class TweetVideo extends StatefulWidget {
     this.tweetId,
     this.mediaIndex = 0,
     this.onPlaybackError,
+    this.showLoadingIndicator = false,
   });
 
   @override
@@ -314,6 +323,7 @@ class _TweetVideoState extends State<TweetVideo> {
     );
 
     final key = _cacheKey;
+    final keyedToThisState = widget.tweetId == null;
     final pool = _pool;
     PooledVideo pooled;
     if (key == null || pool == null) {
@@ -343,6 +353,8 @@ class _TweetVideoState extends State<TweetVideo> {
       }
       if (!mounted || epoch != _acquireEpoch) {
         pool.release(key, acquisition: future);
+        // Nothing can ask for this State's own key once it is gone.
+        if (!mounted && keyedToThisState) pool.discardIfUnused(key, future);
         if (_ownsPool) pool.releaseUnused();
         return pooled;
       }
@@ -610,7 +622,9 @@ class _TweetVideoState extends State<TweetVideo> {
           : (state) => XtaControls(
               pooled: pooled,
               username: widget.username,
-              allowMuting: true,
+              // The always-visible corner badge is this tile's mute control.
+              allowMuting: false,
+              reserveMuteCorner: true,
               accentColor: accent,
               subtitlesEnabled: _subtitlesEnabled,
               onToggleSubtitles: () => _toggleSubtitles(pooled),
@@ -624,43 +638,49 @@ class _TweetVideoState extends State<TweetVideo> {
       ),
     );
 
-    if (_posterGone) {
-      return video;
-    }
-
-    // Poster + spinner over the always-painting video texture, fading out on the
-    // first frame so there's no black flash on the swap.
     return Stack(
       fit: StackFit.expand,
       children: [
         video,
-        IgnorePointer(
-          child: AnimatedOpacity(
-            opacity: _firstFrameRendered ? 0.0 : 1.0,
-            duration: xtaMotionDuration(context, kXtaMotionStandard),
-            onEnd: () {
-              if (_firstFrameRendered && !_posterGone)
-                setState(() => _posterGone = true);
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.center,
-              children: [
-                if (widget.metadata.imageUrl != null)
-                  CappedNetworkImage(url: widget.metadata.imageUrl!),
-                if (!widget.disableControls)
-                  const Center(child: CircularProgressIndicator()),
-              ],
-            ),
-          ),
-        ),
+        if (!_posterGone) _posterOverlay(),
+        if (_showsMuteCorner) InlineVideoMuteCorner(player: pooled.player),
       ],
+    );
+  }
+
+  bool get _showsMuteCorner => !widget.disableControls;
+
+  /// The poster over the always-painting video texture, fading out on the first
+  /// frame so there's no black flash on the swap. While it buffers the poster
+  /// simply stays — no spinner, the way a feed video should wait.
+  Widget _posterOverlay() {
+    return IgnorePointer(
+      child: AnimatedOpacity(
+        opacity: _firstFrameRendered ? 0.0 : 1.0,
+        duration: xtaMotionDuration(context, kXtaMotionStandard),
+        onEnd: () {
+          if (_firstFrameRendered && !_posterGone) {
+            setState(() => _posterGone = true);
+          }
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (widget.metadata.imageUrl != null)
+              CappedNetworkImage(url: widget.metadata.imageUrl!),
+            if (_loadingIndicator case final spinner?) Center(child: spinner),
+          ],
+        ),
+      ),
     );
   }
 
   /// The thumbnail X ships with the video, at the video's own aspect ratio, so
   /// the tile occupies its final size before any player exists.
-  Widget _poster({Widget? child}) {
+  ///
+  /// [muteCorner] marks a video that is about to play by itself: its mute badge
+  /// is already there, so it does not pop in once the player arrives.
+  Widget _poster({Widget? child, bool muteCorner = false}) {
     return AspectRatio(
       aspectRatio: widget.metadata.aspectRatio,
       child: ColoredBox(
@@ -673,6 +693,7 @@ class _TweetVideoState extends State<TweetVideo> {
                 child: CappedNetworkImage(url: widget.metadata.imageUrl!),
               ),
             ?child,
+            if (muteCorner && _showsMuteCorner) const InlineVideoMuteCorner(),
           ],
         ),
       ),
@@ -713,6 +734,12 @@ class _TweetVideoState extends State<TweetVideo> {
     });
   }
 
+  bool get _startsByItself =>
+      _autoPlay || widget.alwaysPlay || _userRequestedPlay;
+
+  Widget? get _loadingIndicator =>
+      widget.showLoadingIndicator ? const CircularProgressIndicator() : null;
+
   /// Poster shown while every pooled player is still on screen. Tap retries
   /// acquire; a short timer retries once a hidden tile hands its slot back.
   Widget _waitingForSlotPoster() {
@@ -730,8 +757,9 @@ class _TweetVideoState extends State<TweetVideo> {
           _acquireFuture = null;
         }),
         child: _poster(
-          child: (_autoPlay || widget.alwaysPlay || _userRequestedPlay)
-              ? const CircularProgressIndicator()
+          muteCorner: _startsByItself,
+          child: _startsByItself
+              ? _loadingIndicator
               : FritterCenterPlayButton(
                   backgroundColor: Colors.black54,
                   iconColor: Colors.white,
@@ -795,7 +823,7 @@ class _TweetVideoState extends State<TweetVideo> {
       return VisibilityDetector(
         key: _creationGateKey,
         onVisibilityChanged: _onCreationGateVisibilityChanged,
-        child: _poster(),
+        child: _poster(muteCorner: true),
       );
     }
 
@@ -820,7 +848,7 @@ class _TweetVideoState extends State<TweetVideo> {
         final hasVideo = pooled != null;
 
         if (isLoading && !hasVideo) {
-          return _poster(child: const CircularProgressIndicator());
+          return _poster(child: _loadingIndicator, muteCorner: true);
         }
 
         if (hasError && !_firstFrameRendered) {
@@ -911,6 +939,16 @@ class _TweetVideoState extends State<TweetVideo> {
           pool?.release(key, acquisition: _poolAcquisition);
           if (_ownsPool) pool?.releaseUnused();
         });
+      }
+      // A player keyed to this State alone can never be re-attached once the
+      // State is gone. Left cached, it kept its decoder and buffers until the
+      // pool happened to need the room.
+      final acquisition = _poolAcquisition;
+      if (widget.tweetId == null && key != null && acquisition != null) {
+        final pool = _pool;
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => pool?.discardIfUnused(key, acquisition),
+        );
       }
     }
     super.dispose();

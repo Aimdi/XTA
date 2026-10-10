@@ -68,6 +68,21 @@ class StocksWatchlistStore extends Store<List<String>> {
     });
   }
 
+  /// Rewrites a watched token's stored metadata with the reader's choice of
+  /// searching its cashtag too. The id is unchanged, so groups keep it.
+  Future<void> setIncludeCashtag(CryptoAsset asset, bool include) async {
+    await execute(() async {
+      final database = await Repository.writable();
+      await database.update(
+        tableStockSubscription,
+        {'symbol': asset.withCashtag(include).encode()},
+        where: 'id = ?',
+        whereArgs: [asset.id],
+      );
+      return _read();
+    });
+  }
+
   Future<void> remove(String symbol) async {
     await execute(() async {
       final id = CryptoAsset.contractForId(symbol) == null ? symbol.toLowerCase() : symbol;

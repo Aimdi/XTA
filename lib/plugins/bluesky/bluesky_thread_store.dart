@@ -4,6 +4,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_outline.dart';
+import 'package:xta/ui/conversation_sort.dart';
 
 export 'package:xta/plugins/bluesky/bluesky_thread_outline.dart';
 
@@ -13,7 +14,7 @@ class BlueskyThreadState {
   final Set<String> collapsed;
   final bool contextOpen;
   final bool authorOnly;
-  final BlueskyReplyOrder order;
+  final ReplySort order;
   final bool loading;
   final Object? error;
   const BlueskyThreadState({
@@ -22,7 +23,7 @@ class BlueskyThreadState {
     this.collapsed = const {},
     this.contextOpen = false,
     this.authorOnly = false,
-    this.order = BlueskyReplyOrder.original,
+    this.order = ReplySort.relevant,
     this.loading = false,
     this.error,
   });
@@ -32,7 +33,7 @@ class BlueskyThreadState {
     Set<String>? collapsed,
     bool? contextOpen,
     bool? authorOnly,
-    BlueskyReplyOrder? order,
+    ReplySort? order,
     bool? loading,
     Object? error,
     bool clearError = false,
@@ -58,7 +59,13 @@ class BlueskyThreadStore extends Store<BlueskyThreadState> {
   final BlueskyClient client;
   var _request = 0;
   var _closed = false;
-  BlueskyThreadStore(this.client, BlueskyPost post) : super(BlueskyThreadState(thread: BlueskyThread(post: post)));
+  BlueskyThreadStore(this.client, BlueskyPost post, {ReplySort order = ReplySort.relevant})
+    : super(
+        BlueskyThreadState(
+          thread: BlueskyThread(post: post),
+          order: effectiveSort(order, blueskyReplySorts),
+        ),
+      );
 
   void toggleContext() {
     if (!_closed) update(state.copyWith(contextOpen: !state.contextOpen));
@@ -75,7 +82,7 @@ class BlueskyThreadStore extends Store<BlueskyThreadState> {
     if (!_closed && selected != state.authorOnly) update(state.copyWith(authorOnly: selected, collapsed: {}));
   }
 
-  void selectOrder(BlueskyReplyOrder order) {
+  void selectOrder(ReplySort order) {
     if (!_closed && order != state.order) update(state.copyWith(order: order));
   }
 

@@ -2,9 +2,9 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:intl/intl.dart';
 import 'package:xta/speech/tts_engines.dart';
-import 'package:xta/speech/tts_settings.dart';
+import 'package:xta/speech/system_speech_engine.dart';
+import 'package:xta/speech/text_language.dart';
 
 /// What is being read aloud, if anything.
 class SpeechPlayback {
@@ -39,7 +39,11 @@ class SpeechPlayback {
 /// is in the background, but there is no media notification behind this and no
 /// foreground service, so the system is free to reclaim the process.
 class SpeechStore extends Store<SpeechPlayback> {
-  final FlutterTts _tts;
+  final SystemSpeechEngine _system;
+
+  /// Who can read aloud, best first. The system engine is last: it is what is
+  /// left when nothing better is ready.
+  final List<SpeechEngine> _engines;
 
   /// Bumped every time a reading starts or is stopped.
   ///
@@ -49,27 +53,32 @@ class SpeechStore extends Store<SpeechPlayback> {
   /// abandoned reading stops rather than talking over its successor.
   int _generation = 0;
 
-  SpeechStore({FlutterTts? tts})
-    : _tts = tts ?? FlutterTts(),
-      super(SpeechPlayback.idle) {
-    _tts.awaitSpeakCompletion(true);
-    // stop() already clears the bar. Treating platform cancel as "finished"
-    // raced the next speak(): a leftover cancel from the previous stop killed
-    // the new reading before the first chunk, which is why Vorlesen sometimes
-    // did nothing.
-    _tts.setCancelHandler(() {});
-    _tts.setErrorHandler((_) {
-      final seen = _generation;
-      Future<void>.microtask(() {
-        if (seen != _generation) return;
-        _finished();
-      });
-    });
-  }
+  /// How long an engine may take to get ready before it counts as broken.
+  final Duration prepareTimeout;
+
+  SpeechStore({
+    FlutterTts? tts,
+    List<SpeechEngine> preferred = const [],
+    Duration startTimeout = SystemSpeechEngine.defaultStartTimeout,
+    Duration prepareTimeout = const Duration(seconds: 20),
+  }) : this._(
+         SystemSpeechEngine(tts ?? FlutterTts(), startTimeout: startTimeout),
+         preferred,
+         prepareTimeout,
+       );
+
+  SpeechStore._(
+    SystemSpeechEngine system,
+    List<SpeechEngine> preferred,
+    this.prepareTimeout,
+  ) : _system = system,
+      _engines = [...preferred, system],
+      super(SpeechPlayback.idle);
 
   /// Exposed for the voice picker, which has to ask the platform what it can
-  /// speak with — and there is only one engine, this one.
-  FlutterTts get tts => _tts;
+  /// speak with. Use this one rather than a new `FlutterTts()`: every new
+  /// instance takes the platform callbacks away from the last.
+  FlutterTts get tts => _system.tts;
 
   void _finished() {
     audioHandler?.clearSession();
@@ -80,38 +89,85 @@ class SpeechStore extends Store<SpeechPlayback> {
 
   /// Reads [text] aloud, replacing whatever was being read.
   ///
-  /// Returns false when there was nothing to say or the engine refused to
-  /// start — callers can nudge the reader toward voice settings.
+  /// Returns false when there was nothing to say or no engine would speak —
+  /// callers can nudge the reader toward voice settings. Completes when the
+  /// reading ends; it never waits on an engine that went quiet.
   Future<bool> speak({
     required String title,
     required String text,
     required TtsChoice choice,
   }) async {
     await stop();
-
-    final chunks = chunkForSpeech(text);
-    if (chunks.isEmpty) {
-      return false;
-    }
-
-    try {
-      // Shared instance keeps Android from dropping the utterance when the
-      // activity is paused or another media session briefly takes focus.
-      await _tts.setSharedInstance(true);
-    } catch (_) {
-      // Desktop / older engines may not expose this.
-    }
-
-    if (!await _applyVoice(choice)) {
-      return false;
-    }
-
-    await _prepareSpeechAudio();
+    if (text.trim().isEmpty) return false;
 
     final generation = _generation;
-    // Bind a lockscreen stop control, but do not mark the media session
-    // playing: that requests exclusive AUDIOFOCUS_GAIN and mutes Sherpa,
-    // which speaks from another process.
+    final language = detectTextLanguage(text);
+    final engine = await _prepare(choice, language);
+    if (generation != _generation) return true;
+    if (engine == null) return false;
+
+    await _prepareSpeechAudio();
+    _bindLockscreenStop(title);
+    update(SpeechPlayback(title: title, speaking: true));
+
+    final chunks = chunkForSpeech(text, maxChars: engine.maxChunkChars);
+    final read = await _readChunks(
+      engine,
+      chunks,
+      retry: () => engine.prepare(choice, textLanguage: language),
+      generation: generation,
+    );
+    if (generation == _generation) _finished();
+    return read;
+  }
+
+  /// The first engine that is ready to read, or null when none is.
+  Future<SpeechEngine?> _prepare(TtsChoice choice, String? language) async {
+    for (final engine in _engines) {
+      final ready = await engine
+          .prepare(choice, textLanguage: language)
+          .timeout(prepareTimeout, onTimeout: () => false)
+          .catchError((_) => false);
+      if (ready) return engine;
+    }
+    return null;
+  }
+
+  /// Speaks [chunks] in order. False when the engine failed; a reading that
+  /// was stopped or superseded is not a failure.
+  Future<bool> _readChunks(
+    SpeechEngine engine,
+    List<String> chunks, {
+    required Future<bool> Function() retry,
+    required int generation,
+  }) async {
+    for (var i = 0; i < chunks.length; i++) {
+      if (generation != _generation) return true;
+      final saying = engine.say(chunks[i]);
+      // After say, so the chunk being read is prepared before the next one.
+      if (engine is SpeechLookahead && i + 1 < chunks.length) {
+        (engine as SpeechLookahead).upcoming(chunks[i + 1]);
+      }
+      var outcome = await saying;
+      if (outcome == UtteranceOutcome.failed &&
+          i == 0 &&
+          generation == _generation) {
+        // Engines sometimes refuse the first utterance after binding.
+        await retry();
+        outcome = await engine.say(chunks[i]);
+      }
+      if (outcome == UtteranceOutcome.cancelled) return true;
+      if (outcome == UtteranceOutcome.failed) {
+        return generation != _generation;
+      }
+    }
+    return true;
+  }
+
+  /// Binds a lockscreen stop control, but does not mark the media session
+  /// playing: that requests exclusive AUDIOFOCUS_GAIN and mutes Sherpa,
+  /// which speaks from another process.
+  void _bindLockscreenStop(String title) {
     audioHandler?.bindSession(
       title: title,
       binding: (
@@ -121,48 +177,6 @@ class SpeechStore extends Store<SpeechPlayback> {
         onSeek: null,
       ),
     );
-    update(SpeechPlayback(title: title, speaking: true));
-
-    try {
-      var first = true;
-      for (final chunk in chunks) {
-        if (generation != _generation) {
-          return true;
-        }
-        var result = await _queueUtterance(chunk);
-        if (_speakFailed(result) && first && generation == _generation) {
-          // Engine sometimes refuses the first queue after setEngine.
-          await _applyVoice(choice);
-          await _prepareSpeechAudio();
-          result = await _queueUtterance(chunk);
-        }
-        first = false;
-        if (_speakFailed(result)) {
-          if (generation == _generation) {
-            _finished();
-          }
-          return false;
-        }
-      }
-    } catch (_) {
-      if (generation == _generation) {
-        _finished();
-      }
-      return false;
-    }
-
-    if (generation == _generation) {
-      _finished();
-    }
-    return true;
-  }
-
-  Future<dynamic> _queueUtterance(String chunk) async {
-    try {
-      return await _tts.speak(chunk, focus: true);
-    } catch (_) {
-      return await _tts.speak(chunk);
-    }
   }
 
   Future<void> stop() async {
@@ -171,32 +185,9 @@ class SpeechStore extends Store<SpeechPlayback> {
     if (state.speaking) {
       update(SpeechPlayback.idle);
     }
-    await _tts.stop();
-  }
-
-  /// The reader's chosen engine and voice, falling back to a language the
-  /// bound engine actually speaks — never insist on de-DE when the voice is
-  /// English-only Sherpa / Next-gen Kaldi.
-  Future<bool> _applyVoice(TtsChoice choice) async {
-    final applied = await applyTtsChoice(_tts, choice);
-    if (isSherpaEngine(choice.engine) && !applied) {
-      return false;
+    for (final engine in _engines) {
+      await engine.stop();
     }
-
-    final language = await pickSpeakLanguage(
-      _tts,
-      voiceLocale: choice.voiceLocale,
-      appLocale: languageTagForShortLocale(
-        Intl.shortLocale(Intl.getCurrentLocale()),
-      ),
-    );
-    if (language != null) {
-      try {
-        await _tts.setLanguage(language);
-      } catch (_) {}
-    }
-    await _tts.setSpeechRate(choice.rate);
-    return true;
   }
 
   /// Drop exclusive media focus so a third-party engine (Sherpa) can be heard.
@@ -210,8 +201,6 @@ class SpeechStore extends Store<SpeechPlayback> {
     }
   }
 }
-
-bool _speakFailed(dynamic result) => result == 0 || result == false;
 
 /// The rest of [full] starting at [needle] (a paragraph the reader held).
 ///

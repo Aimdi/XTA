@@ -70,14 +70,53 @@ String spokenCashtag(String raw) {
   return text;
 }
 
+/// Coins whose cashtag means the coin far more often than the listing that
+/// shares its letters: `$ETH` is Ethereum, not Ethan Allen; `$BTC` is bitcoin,
+/// not a bitcoin ETF; `$SOL` is Solana, not Emeren. Only coins the chart host
+/// files under a plain `-USD` pair belong here.
+const Set<String> kCoinFirstTickers = {
+  'BTC',
+  'ETH',
+  'SOL',
+  'XRP',
+  'DOGE',
+  'ADA',
+  'AVAX',
+  'LINK',
+  'DOT',
+  'LTC',
+  'BNB',
+  'TRX',
+  'XLM',
+  'BCH',
+  'ETC',
+};
+
+/// Which reading of an ambiguous cashtag the reader wants.
+enum TickerInstrument { auto, stock, crypto }
+
+/// True when a cashtag could name both a coin and a listed security, so a
+/// ticker page should let the reader pick which one it charts.
+bool isAmbiguousTicker(String symbol) =>
+    kCoinFirstTickers.contains(symbol.toUpperCase().trim());
+
 /// Every name to try for a cashtag, in order.
-List<String> tickerCandidates(String symbol) {
+List<String> tickerCandidates(
+  String symbol, {
+  TickerInstrument prefer = TickerInstrument.auto,
+}) {
   final upper = symbol.toUpperCase().trim();
   final alias = kTickerAliases[upper];
+  final pairable = !upper.contains('-') && !upper.startsWith('^');
+  final pair = pairable ? '$upper-USD' : null;
 
-  return <String>[
-    upper,
-    ?alias,
-    if (!upper.contains('-') && !upper.startsWith('^')) '$upper-USD',
-  ];
+  return switch (prefer) {
+    TickerInstrument.crypto => [pair ?? upper],
+    TickerInstrument.stock => [upper, ?alias],
+    TickerInstrument.auto when kCoinFirstTickers.contains(upper) => [
+      ?pair,
+      upper,
+    ],
+    TickerInstrument.auto => [upper, ?alias, ?pair],
+  };
 }

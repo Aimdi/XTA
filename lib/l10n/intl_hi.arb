@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "संदिग्ध और अश्लील थंबनेल धुंधले करें",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "पोस्ट खोलने पर वह बिना धुंधलेपन के दिखती है",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "टैग साफ़ करें",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "टिप्पणियाँ",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "क्लिपबोर्ड पर कॉपी हो गया",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "लिंक कॉपी करें",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "टैग कॉपी करें",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "सभी टैग कॉपी करें",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "टेक्स्ट के रूप में संपादित करें",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "इस तारीख की कोई लोकप्रिय पोस्ट नहीं",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "मौजूदा खोज से बाहर रखें",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "बाहर रखें",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "पैरेंट और चाइल्ड पोस्ट",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} पसंदीदा} other{{count} पसंदीदा}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "टैग फ़ॉलो करें",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "फ़ुल स्क्रीन में खोलें",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "ग्रिड कॉलम",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "स्क्रीन के हिसाब से",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "इस टैग वाली पोस्ट छिपाएँ",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "{name} की और पोस्ट",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "एक प्रविष्टि में कई टैग हों, तो सिर्फ़ वे पोस्ट छिपती हैं जिनमें सभी टैग हों। -tag और rating:e भी काम करते हैं",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "अभी कोई टिप्पणी नहीं",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "सबसे ऊँचा स्कोर",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "फ़ुल स्क्रीन में मूल फ़ाइलें",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "फ़ुल स्क्रीन में होस्ट के छोटे संस्करण के बजाय पूरे आकार की फ़ाइल लोड होती है। ज़्यादा डेटा खर्च होता है",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "तारीख चुनें",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "दिन",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "पिछला",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "अगला",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "महीना",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "इस साइट पर लोकप्रिय सूची नहीं है, इसलिए सबसे ऊँचे स्कोर वाली पोस्ट दिखाई जा रही हैं",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "सप्ताह",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "{date} को पोस्ट किया गया",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "यह टैग खोजें",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "डिस्प्ले",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "सभी देखें",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "प्रदर्शित नाम",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "छोटे थंबनेल",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "ग्रिड में होस्ट के छोटे पूर्वावलोकन लोड होते हैं। तेज़ और कम डेटा खर्च, पर थोड़े धुंधले",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "किसी टैग को खोजने, फ़ॉलो करने, छिपाने या उसकी विकी पढ़ने के लिए उस पर टैप करें",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "कलाकार",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "किरदार",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "कॉपीराइट",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "मेटा",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "टैग का क्रम बदलें",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "सबसे ज़्यादा इस्तेमाल",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "वर्णानुक्रम",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "प्रजाति",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "टैग",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "थंबनेल के नीचे विवरण",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "ग्रिड में हर पोस्ट के नीचे होस्ट, पहले टैग और स्कोर",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "टैग अनफ़ॉलो करें",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "इस टैग को छिपाना बंद करें",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "सहेजी गई खोजों से हटाएँ",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "{name} द्वारा अपलोड किया गया",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} अपवोट, {down} डाउनवोट",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "विकी",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "इस टैग का कोई विकी पेज नहीं है",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "पिछली प्राप्त सूची दिखाई जा रही है",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "प्लगइन सूची प्राप्त नहीं की जा सकी",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "टिप्पणियाँ",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "जारी रखें",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{{count} टिप्पणी दिखाएँ} other{सभी {count} टिप्पणियाँ दिखाएँ}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "स्कोर {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "पृष्ठ {page} से जारी रखें",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "टैग कॉपी करें",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{कभी पसंदीदा में नहीं जोड़ा गया} one{एक बार पसंदीदा में जोड़ा गया} other{{count} बार पसंदीदा में जोड़ा गया}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "फ़ाइल आकार: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "भाषा: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "भाषा: {language}, अनुवादित",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} पृष्ठ} other{{count} पृष्ठ}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "{date} को पोस्ट किया गया",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{रेटिंग 5 में से {rating}, {count} वोट} other{रेटिंग 5 में से {rating}, {count} वोट}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} कॉपी हो गया",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "अपलोडर",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, अभी पुष्टि नहीं हुई",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "जाएँ",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "न्यूनतम रेटिंग",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "कलाकार",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "किरदार",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "कॉस्प्लेयर",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "महिला",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "समूह",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "भाषा",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "पुरुष",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "मिश्रित",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "अन्य",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "पैरोडी",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "पुनर्वर्गीकरण",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "अस्थायी",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "इस पृष्ठ की छवि लोड नहीं हुई",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "पढ़ने का मोड",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "बाएँ से दाएँ",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "दाएँ से बाएँ (मांगा)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "लंबवत स्क्रॉल (वेबटून)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "मूल खोलें",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "दूसरा सर्वर आज़माएँ",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "छवि फिर से लोड करें",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "बुकमार्क",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "बुकमार्क फ़ोल्डर",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "इस खाते पर अभी कोई सार्वजनिक बुकमार्क नहीं हैं",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "निजी",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "शीर्षक/कैप्शन",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: फ़ॉलोइंग, रैंकिंग, आपके सार्वजनिक बुकमार्क और खोज। ब्राउज़र में Pixiv खाते से साइन इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। यहाँ से Pixiv पर कुछ पोस्ट, बुकमार्क या फ़ॉलो नहीं होता।",
+  "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: चित्र, मांगा, उपन्यास, रैंकिंग, आपके बुकमार्क और खोज। साइन इन पर टैप करके ब्राउज़र में अपने Pixiv खाते से लॉग इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। आपके Pixiv खाते पर केवल वे बुकमार्क, फ़ॉलो और वॉचलिस्ट बदलाव भेजे जाते हैं जो आप खुद करते हैं। यहाँ से कभी कुछ पोस्ट, टिप्पणी या रिपोर्ट नहीं किया जाता।",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 कृतियाँ दिखाएँ",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "उन कृतियों को छिपाता है जिन्हें उनके रचनाकारों ने AI से बना बताया है। आपके अपने बुकमार्क हमेशा दिखते रहते हैं।",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "ऊपरी बार में पिन करें",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "जब भी बार में जगह हो, पिन की गई चीज़ें सेक्शन के बगल में दिखती हैं। सब कुछ इस मेन्यू में भी रहता है।",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "कोई नहीं",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "किसी एक को देर तक दबाएँ, ताकि सिर्फ़ वही चालू रहे।",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first} फ़ॉलो करते हैं",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first} और {second} फ़ॉलो करते हैं",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}, {second} और {third} फ़ॉलो करते हैं",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{{first}, {second} और आपकी सदस्यताओं में से 1 अन्य फ़ॉलो करते हैं} other{{first}, {second} और आपकी सदस्यताओं में से {count} अन्य फ़ॉलो करते हैं}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "आपकी सदस्यताओं में से फ़ॉलोअर",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{ऐप ने आपकी एकमात्र सदस्यता के जो नवीनतम फ़ॉलो पढ़े हैं, उनके आधार पर। दूसरे भी इस खाते को फ़ॉलो कर सकते हैं।} other{ऐप ने आपकी {total} सदस्यताओं में से {checked} के जो नवीनतम फ़ॉलो पढ़े हैं, उनके आधार पर। दूसरे भी इस खाते को फ़ॉलो कर सकते हैं।}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "सत्यापित खाता",
+  "@verified_account": {},
+  "verified_organization": "सत्यापित संगठन",
+  "@verified_organization": {},
+  "verified_government": "सत्यापित सरकारी खाता",
+  "@verified_government": {},
+  "affiliated_with": "{name} से संबद्ध",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} बार देखा गया} other{{views} बार देखा गया}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "और विकल्प",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "लिंक कॉपी करें",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "लिंक कॉपी हो गया",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "पेज फिर से लोड करें",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "पोस्ट पर वापस जाएँ",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "सुरक्षित कनेक्शन",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "कनेक्शन सुरक्षित नहीं है",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "पसंद: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "जवाब: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "रीपोस्ट: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "क्रम",
+  "@sort_order": {},
+  "sort_relevant": "सबसे प्रासंगिक",
+  "@sort_relevant": {},
+  "sort_oldest": "सबसे पुराने",
+  "@sort_oldest": {},
+  "sort_most_liked": "सबसे ज़्यादा पसंद किए गए",
+  "@sort_most_liked": {},
+  "sort_top": "लोकप्रिय",
+  "@sort_top": {},
+  "sort_most_followers": "सबसे ज़्यादा फ़ॉलोअर",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "शुरुआती भाव",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "पिछला बंद भाव",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "बाज़ार खुला है",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "बाज़ार बंद है",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "बाज़ार डेटा लोड नहीं हो सका",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "बाज़ार पूंजीकरण",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "तरलता",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "24 घंटे का वॉल्यूम",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "{hours} घंटे में बदलाव",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "कॉन्ट्रैक्ट पता कॉपी हो गया",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "इस कॉन्ट्रैक्ट पते के लिए कोई टोकन नहीं मिला",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "{cashtag} वाली पोस्ट भी शामिल करें",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "पोस्ट इस कॉन्ट्रैक्ट पते या {cashtag} से खोजी जाती हैं। दूसरे टोकन भी यही चिह्न इस्तेमाल कर सकते हैं।",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "बैकग्राउंड में सहेजें",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "बिना पूछे सहेजता है: तस्वीरें Pictures/XTA में, वीडियो Movies/XTA में और बाकी फ़ाइलें Download/XTA में",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} में सहेजा गया",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "डाउनलोड की गई आवाज़ें",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "डाउनलोड की गई आवाज़ इस्तेमाल करें",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "अगर कोई डाउनलोड की गई आवाज़ लेख की भाषा बोलती है तो उसी से पढ़ता है; वरना नीचे दिया इंजन इस्तेमाल करता है।",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "आवाज़ें GitHub (k2-fsa/sherpa-onnx) से तभी डाउनलोड होती हैं जब आप डाउनलोड पर टैप करते हैं। ये पूरी तरह इसी डिवाइस पर चलती हैं।",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "लाइसेंस: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "जाँच और अनपैक किया जा रहा है…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "इस डिवाइस पर · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "डाउनलोड नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "डाउनलोड की गई फ़ाइल अपेक्षित फ़ाइल से मेल नहीं खाई, इसलिए हटा दी गई।",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "डाउनलोड की गई आवाज़ अनपैक नहीं हो सकी।",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} हटाएँ?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "आप इसे कभी भी फिर से डाउनलोड कर सकते हैं।",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "web.archive.org पर खोलें",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "बाकी हिस्सा केवल X पर @{screenName} के सशुल्क सब्सक्राइबर पढ़ सकते हैं",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "यह पोस्ट केवल X पर इसके लेखक के सशुल्क सब्सक्राइबर के लिए है।",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "सक्रिय खाता",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv खाता: AI से बनी कृतियाँ",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "यह सेटिंग Pixiv से पढ़ी नहीं जा सकी",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "आंशिक रूप से छिपी",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "आपकी Pixiv सेटिंग जाँची जा रही है…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "दिखाई जाती हैं",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "खाता हटाएँ",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} को इस डिवाइस से हटाएँ?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "AI बैज दिखाएँ",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "ग्रिड में उन कृतियों पर लेबल लगाता है जिन्हें उनके रचनाकारों ने AI से बना बताया है।",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "पहले से सहेजा गया",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "यह पृष्ठ पहले से सहेजा गया है। क्या इसे फिर से सहेजें?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{total} में से {saved} पृष्ठ पहले से सहेजा गया है।} other{{total} में से {saved} पृष्ठ पहले से सहेजे गए हैं।}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "बुकमार्क जोड़ें",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "सहेजते समय बुकमार्क करें",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "किसी कृति को उसके पेज से सहेजने पर वह बुकमार्क भी हो जाती है, अगर पहले से नहीं है।",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "बुकमार्क पर अपने आप टैग लगाएँ",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "एडिटर के बिना बनाए गए बुकमार्क पर कृति के अपने टैग लगते हैं, 1000users入り जैसे लोकप्रियता टैग छोड़कर।",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "सभी हटाएँ",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "डिफ़ॉल्ट रूप से निजी बुकमार्क",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "एडिटर के बिना बनाए गए बुकमार्क निजी होते हैं। एडिटर में आप किसी को भी सार्वजनिक कर सकते हैं।",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "बुकमार्क संपादित करें",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "बुकमार्क करते समय फ़ॉलो करें",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "नया बुकमार्क कलाकार को सार्वजनिक रूप से फ़ॉलो भी करता है, अगर आप उन्हें अभी फ़ॉलो नहीं करते।",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "{name} को फ़ॉलो किया",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "निजी बुकमार्क",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "इसे केवल आप देख सकते हैं",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "बुकमार्क करते समय सहेजें",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "नया बुकमार्क कृति के सभी पेज भी सहेजता है।",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "सभी चुनें",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "बुकमार्क",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "टैग जोड़ें",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "सभी",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "सभी बुकमार्क दिखाएँ",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "इस टैग वाला कोई बुकमार्क नहीं",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "टैग से छाँटें",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "टैग जोड़ें",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "टैग खोजें या लिखें",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "बिना श्रेणी",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "“{tag}” इस्तेमाल करें",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "टैग",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "अभी कोई टैग नहीं। ऊपर अपने टैग जोड़ें।",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "यहाँ अभी कोई बुकमार्क टैग नहीं हैं",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "pixiv.net पर बदलें",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "स्वचालित",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "लैंडस्केप में ग्रिड कॉलम",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "पोर्ट्रेट में ग्रिड कॉलम",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "छिपाया गया: Pixiv के बाहर के लिंक",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "इस टिप्पणी को म्यूट करें",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "{name} को म्यूट करें",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "टिप्पणी के विकल्प",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "{name} को जवाब",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "दिखाएँ",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "स्टिकर",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "अज्ञात उपयोगकर्ता",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "जवाब देखें",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "अभी तक कोई टिप्पणी नहीं",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "अभी तक कोई जवाब नहीं",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "जवाब",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "टिप्पणियाँ",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "टिप्पणियाँ देखें",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "टिप्पणियाँ देखें ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "कॉपी हो गया",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "कृति ID कॉपी करें",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "जानकारी कॉपी करें",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "“जानकारी कॉपी करें” का टेम्पलेट",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "कृति का लिंक",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "शीर्षक: {title}\nकलाकार: {artist}\nकृति ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "“जानकारी कॉपी करें” क्लिपबोर्ड पर क्या रखता है। प्लेसहोल्डर कृति के विवरण से बदल दिए जाते हैं।",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "डालें",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "डिफ़ॉल्ट पर रीसेट करें",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "कलाकार का लिंक",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "कृति का लेआउट",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "चौड़ी स्क्रीन पर साथ-साथ",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "चित्र विवरण के बगल में",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "चित्र विवरण के ऊपर",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "एक साथ डाउनलोड",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "एक समय में कितनी फ़ाइलें डाउनलोड हों",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "सहेजे गए पृष्ठ",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{अभी तक कोई पृष्ठ याद नहीं रखा गया} one{{count} पृष्ठ याद रखा गया} other{{count} पृष्ठ याद रखे गए}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "सहेजे गए कामों पर सही का निशान दिखता है, और किसी पृष्ठ को दोबारा सहेजने से पहले पूछा जाता है",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "भूल जाएँ",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "कौन-से पृष्ठ सहेजे गए थे, यह भूल जाएँ? फ़ाइलें आपके डिवाइस पर ही रहेंगी।",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "सहेजा गया – फिर से डाउनलोड करें",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "डाउनलोड",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "फ़ाइल का नाम",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "किसी जानकारी को कर्सर की जगह डालने के लिए उस पर टैप करें। हर फ़ाइल अपना एक्सटेंशन बनाए रखती है।",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "{token} जोड़ें ताकि किसी काम के हर पृष्ठ का अपना नाम हो",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "पूर्वावलोकन: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "रीसेट करें",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "काम की ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "पृष्ठ संख्या",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "शीर्षक",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "कलाकार की ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "कलाकार का नाम",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "हर कलाकार के लिए फ़ोल्डर",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "हर कलाकार के कामों को डाउनलोड फ़ोल्डर के अंदर उनके नाम वाले फ़ोल्डर में रखता है",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18 के लिए अलग फ़ोल्डर",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 कामों को डाउनलोड फ़ोल्डर के अंदर “R-18” फ़ोल्डर में रखता है",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "निजी",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "निजी रूप से फ़ॉलो करें",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "सिर्फ़ आप देख पाएँगे कि आप इन्हें फ़ॉलो करते हैं",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "सार्वजनिक",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "सभी फ़ॉलो किए गए रचनाकार",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "निजी रूप से फ़ॉलो किए गए रचनाकार",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "सार्वजनिक रूप से फ़ॉलो किए गए रचनाकार",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} फ़ॉलोइंग} other{{shown} फ़ॉलोइंग}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "हैप्टिक फ़ीडबैक",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "बुकमार्क करने या देर तक दबाने पर हल्का कंपन।",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "देखने का इतिहास",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "इतिहास साफ़ करें",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "चित्रों का इतिहास साफ़ करें?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "आप जो कृतियाँ खोलते हैं वे यहाँ दिखती हैं। इतिहास इसी डिवाइस पर रहता है।",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "शीर्षक या कलाकार से फ़िल्टर करें",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "इतिहास में कोई कृति मेल नहीं खाती",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "उपन्यासों का इतिहास साफ़ करें?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "आप जो उपन्यास खोलते हैं वे यहाँ दिखते हैं। इतिहास इसी डिवाइस पर रहता है।",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "शीर्षक या लेखक से फ़िल्टर करें",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "इतिहास में कोई उपन्यास मेल नहीं खाता",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "देखने का इतिहास रोकें",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "चालू रहने पर खोली गई कृतियाँ और उपन्यास इतिहास में नहीं जोड़े जाते",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "“{title}” को इतिहास से हटाएँ?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "कृति ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "कृति ID कॉपी हो गई",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "छवि सर्वर",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "सर्वर का पता",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "आपका अपना सर्वर",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "कृतियों की छवियाँ कहाँ से लोड होती हैं। जहाँ Pixiv का छवि सर्वर धीमा या अवरुद्ध हो, वहाँ मिरर मदद करता है।",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "उदाहरण के लिए img.example.com या https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "बिना रिक्त स्थान वाला मान्य पता दर्ज करें, जैसे img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "सार्वजनिक मिरर",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Pixiv का अपना सर्वर",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "मिरर या आपका अपना सर्वर आपकी खोली हर छवि, R-18 वाली भी, और आपका IP पता देखता है।",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "डिफ़ॉल्ट पर लौटाएँ",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "जानकारी कॉपी हो गई",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "pixiv.net पर खाता प्रबंधित करें",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "अभी कोई सुझाया गया मांगा नहीं — रीफ़्रेश करने के लिए खींचें",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "चित्रों पर जाएँ",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "उपन्यासों पर जाएँ",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "टिप्पणियाँ",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "आपने इसके कलाकार {name} को म्यूट किया है।",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "इस बार दिखाएँ",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "आपने इसका टैग {tag} म्यूट किया है।",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "यह कृति म्यूट है",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "आपने इस कृति को म्यूट किया है।",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "इस उपन्यास को म्यूट करें",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "उपन्यास",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "म्यूट सेटिंग",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "टैग म्यूट करें",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "रेगुलर एक्सप्रेशन से मेल खाने वाले हर टैग को म्यूट करने के लिए r'पैटर्न' लिखें। पैटर्न किसी कृति के सभी टैग को #tag1#tag2 की तरह जोड़कर भी देखते हैं।",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "म्यूट करने के लिए टैग",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "यह पैटर्न मान्य रेगुलर एक्सप्रेशन नहीं है",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "टैग",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "कलाकार",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "कृतियाँ",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixiv मित्र} other{{shown} My pixiv मित्र}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "उपन्यास",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "इनके उपन्यास देखें",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "निजी रूप से बुकमार्क करें",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "जिन उपन्यासों को आप सार्वजनिक रूप से बुकमार्क करते हैं, वे यहाँ दिखते हैं",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "जिन उपन्यासों को आप निजी रूप से बुकमार्क करते हैं, वे यहाँ दिखते हैं",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "अध्याय {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} अध्याय} other{{shown} अध्याय}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} अक्षर} other{{shown} अक्षर}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "टेक्स्ट के रूप में निर्यात करें",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "उपन्यास निर्यात नहीं हो सका",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixiv मार्कअप के साथ",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "टेक्स्ट ठीक वैसा ही जैसा Pixiv उसे सहेजता है, [newpage] जैसे टैग के साथ",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "सादा टेक्स्ट",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Pixiv मार्कअप हटाकर, रूबी को आधार(रूबी) के रूप में लिखा जाता है",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} सहेजी गई",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "आप जिन रचनाकारों को फ़ॉलो करते हैं, उनके नए उपन्यास यहाँ दिखते हैं",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "उपन्यास में चित्र",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "कृति खोलें",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "चित्र सहेजें",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "पूर्ण स्क्रीन पर देखें",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "पृष्ठ {page} पर जाएँ",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "{url} खोलने के लिए Pixiv छोड़ें?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "लिंक खोलें",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "अगला अध्याय",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "पृष्ठ {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "पिछला अध्याय",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "अभी रैंकिंग में कोई उपन्यास नहीं",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "अभी कोई सुझाए गए उपन्यास नहीं — रीफ़्रेश करने के लिए खींचें",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "उपन्यास टैग, शीर्षक या उपयोगकर्ता",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "लोकप्रियता के क्रम के लिए Pixiv Premium चाहिए।",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "उपन्यास या उपयोगकर्ता खोजें",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "उपन्यास शृंखला",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "पूर्ण",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "इस शृंखला में आपके देखने लायक कोई अध्याय नहीं",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "जारी",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "पहले से शुरू करें",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "प्रोफ़ाइल का लिंक साझा करें",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "शृंखला का लिंक साझा करें",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "वॉचलिस्ट में जोड़ी गई उपन्यास शृंखलाएँ यहाँ दिखती हैं",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "pixiv लिंक XTA में खोलें",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Android के “डिफ़ॉल्ट रूप से खोलें” पेज में pixiv.net और pixiv.me को समर्थित लिंक के रूप में जोड़ें",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "मूल गुणवत्ता",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "और कृतियाँ लोड नहीं हो सकीं",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "और कोई कृति नहीं",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivision लेख",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "अभी कोई Pixivision लेख नहीं",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "चुनी गई कृतियाँ",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "जन्मदिन",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "अभी कोई सार्वजनिक बुकमार्क नहीं",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "प्रोफ़ाइल जानकारी कॉपी करें",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "फ़ॉलोअर",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "दिखाने के लिए कोई फ़ॉलोअर नहीं",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "फ़ॉलो कर रहे हैं",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "अभी किसी को फ़ॉलो नहीं करते",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "लिंग",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "उपयोगकर्ता आईडी कॉपी की गई",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "चित्र",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "जानकारी",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "प्रोफ़ाइल जानकारी कॉपी की गई",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "पेशा",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "मांगा",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "आपने इस रचनाकार को म्यूट किया है",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My pixiv मित्र",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "उपनाम",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "अभी कोई सार्वजनिक उपन्यास बुकमार्क नहीं",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "उपन्यास",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "अभी कोई उपन्यास नहीं",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo खाता",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "प्रीमियम सदस्य",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "सार्वजनिक बुकमार्क",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "क्षेत्र",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "प्रोफ़ाइल फ़ोटो सहेजें",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "हेडर छवि सहेजें",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "फिर भी दिखाएँ",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X खाता",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "उपयोगकर्ता आईडी",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "वेबसाइट",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "कृतियाँ",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "यहाँ अभी कोई कृति नहीं",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "कृति के पृष्ठ",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "ग्रिड की छवियाँ",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "बड़ी",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "मध्यम",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "मूल",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "पूर्ण स्क्रीन पृष्ठ",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 दैनिक",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "संपादित करें",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "पिन की गई रैंकिंग टैब के रूप में दिखती हैं। R-18 रैंकिंग तभी मिलती हैं जब “R-18 कृतियाँ दिखाएँ” चालू हो।",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "रैंकिंग टैब",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 साप्ताहिक",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G साप्ताहिक",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "अभी कोई सुझाए गए रचनाकार नहीं",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} पिक्सेल",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "दूसरी इमेज चुनें",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "इस इमेज से मेल खाता कोई Pixiv काम नहीं मिला",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO इस इमेज से खोज नहीं कर सका",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "इमेज चुनें",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "प्रीव्यू देखने के लिए Pixiv में फिर से साइन इन करें",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "आपकी चुनी हुई इमेज मिलते-जुलते Pixiv काम खोजने के लिए saucenao.com पर अपलोड की जाती है।",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO पर खोज रहे हैं…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} मिलान",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "इमेज से खोजें",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "फिर से सहेजें",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "केवल नए पृष्ठ",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{{count} पृष्ठ सहेजें} other{{count} पृष्ठ सहेजें}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "इस डिवाइस पर सहेजा गया",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "बुकमार्क की संख्या",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "कितने भी बुकमार्क",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ बुकमार्क",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} बुकमार्क",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "तारीख",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "कभी भी",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "अपनी तारीखें…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "पिछला दिन",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "पिछले 6 महीने",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "पिछला महीना",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "पिछला हफ़्ता",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "पिछला साल",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "पसंदीदा टैग में जोड़ें",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "पसंदीदा टैग में जोड़ा गया",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "पसंदीदा टैग से हटाएँ",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "पसंदीदा टैग से हटाया गया",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "पसंदीदा टैग",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "बदलाव पूरा करें",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "पसंदीदा टैग बदलें",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "टैग को खिसकाने के लिए खींचें। हटाने के लिए उसे किनारे की ओर स्वाइप करें।",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "अभी कोई पसंदीदा टैग नहीं है। जोड़ने के लिए किसी काम के टैग को देर तक दबाएँ।",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "खोज फ़िल्टर",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "सभी दिखाएँ ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "हाल की खोजें साफ़ करें",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "सभी हाल की खोजें साफ़ करें?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "कम दिखाएँ",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "काम #{id} खोलें",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "उपन्यास #{id} खोलें",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "उपन्यास शृंखला #{id} खोलें",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Pixivision लेख #{id} खोलें",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "उपयोगकर्ता #{id} खोलें",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "पेस्ट करें",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "लोकप्रियता",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "कोई भी लोकप्रियता",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "पुरुषों या महिलाओं में लोकप्रियता के क्रम के लिए Pixiv Premium चाहिए। इसके बिना \"लोकप्रिय\" Pixiv का मुफ़्त प्रीव्यू दिखाता है।",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "पोस्ट करने की तारीखें प्रीव्यू को सीमित नहीं करतीं।",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "यह Pixiv का मुफ़्त लोकप्रिय प्रीव्यू है। सभी नतीजों को लोकप्रियता से क्रमबद्ध करने के लिए Pixiv Premium चाहिए।",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "ये फ़िल्टर याद रखें",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "क्रम",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "सबसे पुराने",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "महिलाओं में लोकप्रिय",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "पुरुषों में लोकप्रिय",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "टैग कॉपी किया गया",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "टैग कॉपी करें",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "कहाँ खोजें",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "टैग, शीर्षक, कैप्शन",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "मुख्य पाठ",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "सभी काम",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "बिना ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "सिर्फ़ ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ लोगों ने बुकमार्क किया",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "सभी देखें",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "कोई नहीं",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "पृष्ठ चुनें",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{कोई पृष्ठ नहीं चुना गया} one{{count} पृष्ठ चुना गया} other{{count} पृष्ठ चुने गए}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "शृंखला",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "इस शृंखला में आपके देखने लायक कोई कृति नहीं",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "शृंखला: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "शृंखला में अगली",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "{total} में से #{order}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "शृंखला में पिछली",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "{date} को शुरू हुई",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "छवि साझा करें",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "यह छवि साझा नहीं की जा सकी",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "{name} से साइन आउट करें?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv से साइन आउट करें?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "चित्रों और विवरण का आकार बदलें",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv यहाँ खुलता है",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "कृतियों के बीच स्वाइप करें",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "सूची की अगली कृति पर जाने के लिए बगल में स्वाइप करें। कई पृष्ठों वाली कृतियों में पहले या आखिरी पृष्ठ के बाद भी स्वाइप करते रहें।",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "खाता बदलें",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "मांगा",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "वॉचलिस्ट",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "{total} में से फ़्रेम {current} एन्कोड हो रहा है…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "एनिमेशन सहेजा नहीं जा सका",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "फ़्रेम लाए जा रहे हैं…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "GIF के रूप में सहेजें",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "फ़्रेम ZIP के रूप में सहेजें",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "एनिमेशन GIF के रूप में सहेजा गया",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "फ़्रेम ZIP के रूप में सहेजे गए",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "सहेजा जा रहा है…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "एन्कोडिंग में एक मिनट लग सकता है",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "{name} से म्यूट हटाएँ?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "देखना",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "यह कृति खोलने के लिए साइन इन करें",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Pixiv पर लोकप्रिय",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "वॉचलिस्ट में जोड़ें",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "वॉचलिस्ट में जोड़ी गई मांगा शृंखलाएँ यहाँ दिखती हैं",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "वॉचलिस्ट से हटाएँ",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "{when} अपडेट हुई",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "नवीनतम देखें",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} कृति} other{{shown} कृतियाँ}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "लेखक के जवाब",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "रीपोस्ट छिपाएँ",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{1 और जवाब दिखाएँ} other{{count} और जवाब दिखाएँ}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{इस थ्रेड की 1 और पोस्ट दिखाएँ} other{इस थ्रेड की {count} और पोस्ट दिखाएँ}}",
+  "@plugin_threads_show_thread": {}
 }

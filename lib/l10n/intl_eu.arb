@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Lausotu miniatura zalantzagarri eta esplizituak",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Argitalpena irekitzean lausotu gabe ikusten da",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Garbitu etiketak",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Iruzkinak",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Arbelera kopiatu da",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Kopiatu esteka",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Kopiatu etiketa",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Kopiatu etiketak",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Editatu testu gisa",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Ez dago argitalpen ezagunik data honetan",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Baztertu uneko bilaketatik",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Baztertu",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Argitalpen gurasoa eta umeak",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} gogoko} other{{count} gogoko}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Jarraitu etiketari",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Ireki pantaila osoan",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Saretako zutabeak",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Doitu pantailara",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Ezkutatu etiketa hau duten argitalpenak",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "{name} artistaren lan gehiago",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Sarrera batean hainbat etiketa jarriz gero, guztiak dituzten argitalpenak soilik ezkutatzen dira. -tag eta rating:e ere erabil daitezke",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Oraindik ez dago iruzkinik",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Puntuazio altuena",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Jatorrizko fitxategiak pantaila osoan",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Pantaila osoan tamaina osoko fitxategia kargatzen da, ostalariaren bertsio txikiaren ordez. Datu gehiago erabiltzen ditu",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Aukeratu data",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Eguna",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Aurrekoa",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Hurrengoa",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Hilabetea",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Gune honek ez du ezagunen zerrendarik; horregatik, puntuazio altuena duten argitalpenak erakusten dira",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Astea",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Argitaratze-data: {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Bilatu etiketa hau",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Bistaratzea",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Ikusi guztiak",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Bistaratzeko izena",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Miniatura txikiagoak",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Saretan ostalariaren aurrebista txikiak kargatzen ditu. Azkarragoa da eta datu gutxiago erabiltzen ditu, baina irudiak lausoagoak dira",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Sakatu etiketa bat bilatzeko, jarraitzeko, ezkutatzeko edo haren wikia irakurtzeko",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artista",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Pertsonaia",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Ordenatu etiketak",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Erabilienak",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Espeziea",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Etiketak",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Xehetasunak miniaturen azpian",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Ostalaria, lehen etiketak eta puntuazioa saretako argitalpen bakoitzaren azpian",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Utzi etiketari jarraitzeari",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Utzi etiketa hau ezkutatzeari",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Kendu gordetako bilaketetatik",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "{name} erabiltzaileak igoa",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} aldeko, {down} aurkako",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Etiketa honek ez du wiki-orririk",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Jasotako azken zerrenda erakusten ari da",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Ezin izan da pluginen zerrenda eskuratu",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Iruzkinak",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Jarraitu",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Erakutsi {count} iruzkin} other{Erakutsi iruzkin guztiak ({count})}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Puntuazioa: {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Jarraitu {page}. orritik",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Kopiatu etiketa",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Ez da inoiz gogokoetara gehitu} one{Behin gehitu da gogokoetara} other{{count} aldiz gehitu da gogokoetara}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Fitxategien tamaina: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Hizkuntza: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Hizkuntza: {language}, itzulia",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} orri} other{{count} orri}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Argitaratze-data: {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Puntuazioa: {rating} 5etik, {count} boto} other{Puntuazioa: {rating} 5etik, {count} boto}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} kopiatu da",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Igotzailea",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, oraindik baieztatu gabe",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Joan",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Gutxieneko puntuazioa",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Artista",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Pertsonaia",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayerra",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Emakumezkoa",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Taldea",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Hizkuntza",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Gizonezkoa",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Mistoa",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Bestelakoak",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodia",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Birsailkapena",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Behin-behinekoa",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Orri honetako irudia ez da kargatu",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Irakurtzeko modua",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Ezkerretik eskuinera",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Eskuinetik ezkerrera (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Korritze bertikala (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Ireki jatorrizkoa",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Probatu beste zerbitzari bat",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Bir<fim-middle>kargatu irudia",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Laster-marka",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Laster-marken karpeta",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Oraindik ez dago laster-marka publikorik kontu honetan",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Pribatuak",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Izenburua/deskribapena",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Plugin pribatu honek Pixiv galeria gisa irakurtzen du: jarraipena, sailkapenak, zure laster-marka publikoak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Hemendik ez da ezer argitaratzen, markatzen edo jarraitzen Pixiv-en.",
+  "plugin_pixiv_settings_intro": "Plugin pribatu honek Pixiv galeria-aplikazio gisa irakurtzen du: ilustrazioak, manga, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Zuk zeuk egiten dituzun laster-markak, jarraipenak eta jarraipen-zerrendako aldaketak soilik bidaltzen dira zure Pixiv kontura. Hemendik ez da inoiz ezer argitaratzen, iruzkintzen edo salatzen.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Erakutsi R-18 lanak",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "Egileek AAk sortutzat markatutako lanak ezkutatzen ditu. Zure laster-markak beti ikusgai geratzen dira.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AA",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Ainguratu goiko barran",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Ainguratutako elementuak atalen ondoan agertzen dira barran lekua dagoenean. Dena menu honetan ere geratzen da.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Bat ere ez",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Sakatu luze bat hori bakarrik aktibo uzteko.",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Jarraitzaileak: {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Jarraitzaileak: {first} eta {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Jarraitzaileak: {first}, {second} eta {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Jarraitzaileak: {first}, {second} eta zure harpidetzetako beste 1} other{Jarraitzaileak: {first}, {second} eta zure harpidetzetako beste {count}}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Zure harpidetzetako jarraitzaileak",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Aplikazioak irakurritako azken jarraipenetan oinarrituta ({checked}/{total} harpidetza). Beste batzuek ere jarrai diezaiokete kontu honi.} other{Aplikazioak irakurritako azken jarraipenetan oinarrituta ({checked}/{total} harpidetza). Beste batzuek ere jarrai diezaiokete kontu honi.}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "Egiaztatutako kontua",
+  "@verified_account": {},
+  "verified_organization": "Egiaztatutako erakundea",
+  "@verified_organization": {},
+  "verified_government": "Egiaztatutako gobernu-kontua",
+  "@verified_government": {},
+  "affiliated_with": "Afiliazioa: {name}",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} ikustaldi} other{{views} ikustaldi}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "Aukera gehiago",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Kopiatu esteka",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Esteka kopiatu da",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Kargatu berriro orria",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Itzuli argitalpenera",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Konexio segurua",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Konexioa ez da segurua",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Atsegiteak: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Erantzunak: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Birbidalketak: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "Ordena",
+  "@sort_order": {},
+  "sort_relevant": "Garrantzitsuenak",
+  "@sort_relevant": {},
+  "sort_oldest": "Zaharrenak",
+  "@sort_oldest": {},
+  "sort_most_liked": "Gustuko gehien dituztenak",
+  "@sort_most_liked": {},
+  "sort_top": "Nabarmenak",
+  "@sort_top": {},
+  "sort_most_followers": "Jarraitzaile gehien dituztenak",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "Irekiera",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "Aurreko itxiera",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "Merkatua irekita",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "Merkatua itxita",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "Ezin izan dira merkatuko datuak kargatu",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "Merkatu-kapitalizazioa",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "Likidezia",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "24 orduko bolumena",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "Aldaketa ({hours} h)",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "Kontratuaren helbidea kopiatu da",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "Ez da tokenik aurkitu kontratu-helbide honekin",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "Sartu {cashtag} duten argitalpenak",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "Argitalpenak kontratuaren helbide honekin edo {cashtag} ikurrarekin bilatzen dira. Beste token batzuek ikur bera erabil dezakete.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Gorde atzeko planoan",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Galdetu gabe gordetzen du: irudiak Pictures/XTA karpetan, bideoak Movies/XTA karpetan eta gainerako fitxategiak Download/XTA karpetan",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} karpetan gorde da",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "Deskargatutako ahotsak",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Erabili deskargatutako ahotsa",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Deskargatutako ahots batekin irakurtzen du artikuluaren hizkuntza hitz egiten badu; bestela, beheko motorra erabiltzen du.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Ahotsak GitHub-etik (k2-fsa/sherpa-onnx) deskargatzen dira, Deskargatu sakatzen duzunean bakarrik. Gailu honetan bertan exekutatzen dira osorik.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lizentzia: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Egiaztatzen eta deskonprimatzen…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Gailu honetan · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Ezin izan da deskargatu. Egiaztatu konexioa eta saiatu berriro.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Deskarga ez zetorren bat espero zen fitxategiarekin, eta baztertu egin da.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Ezin izan da deskargatutako ahotsa deskonprimatu.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} ezabatu?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Nahi duzunean deskarga dezakezu berriro.",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Ireki web.archive.org-en",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "@{screenName} erabiltzailearen ordainpeko harpidedunek soilik irakur dezakete gainerakoa X-en",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Txio hau egilearen ordainpeko harpidedunentzat soilik da X-en.",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Kontu aktiboa",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv kontua: AAk sortutako lanak",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Ezin izan da ezarpen hau Pixiv-etik irakurri",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Partzialki ezkutatuta",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Zure Pixiv ezarpena egiaztatzen…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Erakusten dira",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Kendu kontua",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} gailu honetatik kendu nahi duzu?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "Erakutsi AA ikurra",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "Sareetan, egileek AAk sortutzat markatutako lanak etiketatzen ditu.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Gordeta dago jada",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Orrialde hau gordeta dago jada. Berriro gorde nahi duzu?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{total} orrialdetatik {saved} gordeta dago jada.} other{{total} orrialdetatik {saved} gordeta daude jada.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Gehitu laster-marka",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Gorde ahala gehitu laster-marketara",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Lan bat bere orritik gordetzean laster-marketara ere gehitzen da, oraindik ez badago.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Etiketatu laster-markak automatikoki",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Editorerik gabe egiten dituzun laster-markek lanaren etiketak dituzte, 1000users入り bezalako ospe-etiketak kenduta.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Desautatu guztiak",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Laster-marka pribatuak lehenespenez",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Editorerik gabe egiten dituzun laster-markak pribatuak dira. Editorean edozein publiko egin dezakezu.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Editatu laster-marka",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Jarraitu laster-marka gehitzean",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Laster-marka berri batek artista publikoki jarraitzen du, oraindik jarraitzen ez badiozu.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "{name} jarraitzen ari zara",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Laster-marka pribatua",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Zuk bakarrik ikus dezakezu",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Gorde laster-marka gehitzean",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Laster-marka berri batek lanaren orri guztiak ere gordetzen ditu.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Hautatu guztiak",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Laster-markak",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Gehitu etiketa",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Guztiak",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Erakutsi laster-marka guztiak",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Ez dago etiketa hau duen laster-markarik",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Iragazi etiketaren arabera",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Gehitu etiketa bat",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Bilatu edo idatzi etiketa bat",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Kategoriarik gabe",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "Erabili «{tag}»",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Etiketak",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Oraindik ez dago etiketarik. Gehitu zureak goian.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Oraindik ez dago laster-marken etiketarik hemen",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Aldatu pixiv.net-en",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Automatikoa",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Saretako zutabeak horizontalean",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Saretako zutabeak bertikalean",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Ezkutatuta: Pixivetik kanpoko estekak",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Isilarazi iruzkin hau",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "Isilarazi {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Iruzkinaren aukerak",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "{name} erabiltzaileari erantzunez",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Erakutsi",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Eranskailua",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Erabiltzaile ezezaguna",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Ikusi erantzunak",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Oraindik ez dago iruzkinik",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Oraindik ez dago erantzunik",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Erantzunak",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Iruzkinak",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Ikusi iruzkinak",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Ikusi iruzkinak ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Kopiatu da",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Kopiatu lanaren IDa",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Kopiatu informazioa",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "«Kopiatu informazioa» txantiloia",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Lanaren esteka",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Izenburua: {title}\nArtista: {artist}\nLanaren IDa: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "«Kopiatu informazioa»k arbelean jartzen duena. Leku-markak lanaren datuekin ordezten dira.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Txertatu",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Berrezarri lehenetsia",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Artistaren esteka",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Lanaren diseinua",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Elkarren ondoan pantaila zabaletan",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Irudiak xehetasunen ondoan",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Irudiak xehetasunen gainean",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Aldi bereko deskargak",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Zenbat fitxategi deskargatzen diren aldi berean",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Gordetako orrialdeak",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Oraindik ez dago gogoratutako orrialderik} one{Orrialde {count} gogoratuta} other{{count} orrialde gogoratuta}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Gordetako lanek marka bat dute, eta orrialde bat bigarren aldiz gorde aurretik galdetu egiten da",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Ahaztu",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Zein orrialde gorde diren ahaztu nahi duzu? Fitxategiak gailuan geratuko dira.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Gordeta – deskargatu berriro",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Deskargak",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Fitxategi-izena",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Sakatu datu bat kurtsorearen lekuan txertatzeko. Fitxategi bakoitzak bere luzapena gordetzen du.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Gehitu {token}, lan baten orrialde bakoitzak bere izena izan dezan",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Aurrebista: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Berrezarri",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Lanaren IDa",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Orrialde-zenbakia",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Izenburua",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Artistaren IDa",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Artistaren izena",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Karpeta bat artista bakoitzeko",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Artista bakoitzaren lanak haren izena duen karpeta batean jartzen ditu, deskargen karpetaren barruan",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18rako karpeta bereizia",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 lanak «R-18» karpetan jartzen ditu, deskargen karpetaren barruan",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Pribatuak",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Jarraitu modu pribatuan",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Zuk bakarrik ikusiko duzu jarraitzen diozula",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Publikoak",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Jarraitutako sortzaile guztiak",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Pribatuan jarraitutako sortzaileak",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Publikoki jarraitutako sortzaileak",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} jarraitzen} other{{shown} jarraitzen}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Erantzun haptikoa",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Bibrazio labur bat laster-marka gehitzean edo luze sakatzean.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Historia",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Garbitu historia",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Ilustrazioen historia garbitu nahi duzu?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Irekitzen dituzun lanak hemen agertzen dira. Historia gailu honetan geratzen da.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Iragazi izenburuaren edo artistaren arabera",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Historiako lanik ez dator bat",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Eleberrien historia garbitu nahi duzu?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Irekitzen dituzun eleberriak hemen agertzen dira. Historia gailu honetan geratzen da.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Iragazi izenburuaren edo egilearen arabera",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Historiako eleberririk ez dator bat",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Pausatu historia",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Aktibatuta dagoen bitartean, irekitako lanak eta eleberriak ez dira historiara gehitzen",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "«{title}» historiatik kendu nahi duzu?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Lanaren IDa {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Lanaren IDa kopiatu da",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Irudi-zerbitzaria",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Zerbitzariaren helbidea",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Zure zerbitzaria",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Lanen irudiak nondik kargatzen diren. Ispilu batek laguntzen du Pixiven irudi-zerbitzaria motela edo blokeatuta dagoen tokietan.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Adibidez, img.example.com edo https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Idatzi baliozko helbide bat zuriunerik gabe, adibidez img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Ispilu publikoa",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Pixiven zerbitzari propioa",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Ispilu batek edo zure zerbitzariak irekitzen duzun irudi oro ikusten du, R-18 direnak barne, baita zure IP helbidea ere.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Berrezarri lehenetsia",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Informazioa kopiatu da",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Kudeatu kontua pixiv.net-en",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Une honetan ez dago manga gomendaturik — tira freskatzeko",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Aldatu ilustrazioetara",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Aldatu eleberrietara",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Iruzkinak",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Haren artista isilarazi duzu: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Erakutsi oraingoan",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Haren {tag} etiketa isilarazi duzu.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Lan hau isilarazita dago",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Lan hau isilarazi duzu.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Isilarazi eleberri hau",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Eleberriak",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Isilarazteko ezarpenak",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Isilarazi etiketa",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Idatzi r'eredua' adierazpen erregular batekin bat datozen etiketa guztiak isilarazteko. Ereduek lan baten etiketa guztiak ere ikusten dituzte, #tag1#tag2 gisa elkartuta.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Isilarazteko etiketa",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Eredu hau ez da adierazpen erregular baliozkoa",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etiketak",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artistak",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Lanak",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{My pixiv lagun {shown}} other{{shown} My pixiv lagun}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Eleberria",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Ikusi bere eleberriak",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Gorde laster-marka pribatu gisa",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Laster-marka publiko gisa gordetzen dituzun eleberriak hemen agertzen dira",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Laster-marka pribatu gisa gordetzen dituzun eleberriak hemen agertzen dira",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "{order}. zatia",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{kapitulu {shown}} other{{shown} kapitulu}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{karaktere {shown}} other{{shown} karaktere}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Esportatu testu gisa",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Ezin izan da eleberria esportatu",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixiv-en markaketarekin",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Testua Pixiv-ek gordetzen duen bezala, [newpage] bezalako etiketekin",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Testu soila",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Pixiv-en markaketarik gabe; ruby-a oinarria(ruby) gisa idatzita",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} gorde da",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Jarraitzen dituzun sortzaileen eleberri berriak hemen agertzen dira",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Eleberriko irudia",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Ireki lana",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Gorde irudia",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Ikusi pantaila osoan",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Joan {page}. orrira",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Pixiv utzi {url} irekitzeko?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Ireki esteka",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Hurrengo kapitulua",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "{page}. orria",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Aurreko kapitulua",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Ez dago eleberririk sailkapenean orain",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Une honetan ez dago eleberri gomendaturik — tira freskatzeko",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Eleberrien etiketak, izenburuak edo erabiltzaileak",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Ospearen arabera ordenatzeko Pixiv Premium behar da.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Bilatu eleberriak edo erabiltzaileak",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Eleberri-seriea",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Amaituta",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Serie honetan ez dago ikus dezakezun kapitulurik",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Martxan",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Hasi lehenengotik",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Partekatu profilaren esteka",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Partekatu seriearen esteka",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Jarraipen-zerrendara gehitzen dituzun eleberri-serieak hemen agertzen dira",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Ireki pixiv estekak XTAn",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Androideko «Ireki modu lehenetsian» orrian, gehitu pixiv.net eta pixiv.me esteka onartu gisa",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Jatorrizko kalitatea",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Ezin izan da lan gehiago kargatu",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Ez dago lan gehiagorik",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivision artikuluak",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Une honetan ez dago Pixivision artikulurik",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Nabarmendutako lanak",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Urtebetetzea",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Oraindik ez dago laster-marka publikorik",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Kopiatu profilaren informazioa",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Jarraitzaileak",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Ez dago jarraitzailerik erakusteko",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Jarraitzen",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Oraindik ez dio inori jarraitzen",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Generoa",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Erabiltzaile IDa kopiatu da",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Ilustrazioak",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Informazioa",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profilaren informazioa kopiatu da",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Lanbidea",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Sortzaile hau isilarazi duzu",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My pixiv lagunak",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Ezizena",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Oraindik ez dago eleberrien laster-marka publikorik",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Eleberriak",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Oraindik ez dago eleberririk",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo kontua",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium kidea",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Laster-marka publikoak",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Eskualdea",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Gorde profileko argazkia",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Gorde goiburuko irudia",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Erakutsi hala ere",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X kontua",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Erabiltzaile IDa",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Webgunea",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Lanak",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Oraindik ez dago lanik hemen",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Lanaren orrialdeak",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Saretako irudiak",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Handia",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Ertaina",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Jatorrizkoa",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Pantaila osoko orrialdeak",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "AA",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 egunekoa",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AA",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Editatu",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Ainguratutako sailkapenak fitxa gisa agertzen dira. R-18 sailkapenak «Erakutsi R-18 lanak» aktibatuta dagoenean eskaintzen dira.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Sailkapen-fitxak",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 astekoa",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G astekoa",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Une honetan ez dago iradokitako sortzailerik",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Aukeratu beste irudi bat",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Ez dago irudi honekin bat datorren Pixiv lanik",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO-k ezin izan du irudi hau bilatu",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Aukeratu irudi bat",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Hasi saioa berriro Pixiv-en aurrebistak ikusteko",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Aukeratzen duzun irudia saucenao.com-era igotzen da, bat datozen Pixiv lanak bilatzeko.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO-n bilatzen…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} antzekoa",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Bilatu irudiaren bidez",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Gorde berriro",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Orrialde berriak soilik",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Gorde orrialde {count}} other{Gorde {count} orrialde}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Gailu honetan gordeta",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Laster-marka kopurua",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Edozein laster-marka kopuru",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ laster-marka",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} laster-marka",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Data",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Edozein unetan",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Data pertsonalizatuak…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Azken eguna",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Azken 6 hilabeteak",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Azken hilabetea",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Azken astea",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Azken urtea",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Gehitu etiketa gogokoetara",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Etiketa gogokoetara gehitu da",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Kendu etiketa gogokoetatik",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Etiketa gogokoetatik kendu da",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Etiketa gogokoak",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Amaitu editatzen",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Editatu etiketa gogokoak",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Arrastatu etiketa bat hura mugitzeko. Irristatu alde batera kentzeko.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Oraindik ez dago etiketa gogokorik. Sakatu luze lan bateko etiketa bat gehitzeko.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Bilaketa-iragazkiak",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Erakutsi guztiak ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Garbitu azken bilaketak",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Azken bilaketa guztiak garbitu?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Erakutsi gutxiago",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Ireki #{id} lana",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Ireki #{id} eleberria",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Ireki #{id} eleberri-seriea",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Ireki #{id} Pixivision artikulua",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Ireki #{id} erabiltzailea",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Itsatsi",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Ospea",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Edozein ospe",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Gizonen edo emakumeen arteko ospearen arabera ordenatzeko Pixiv Premium behar da. Hura gabe, «Ospetsuak» aukerak Pixiv-en doako aurrebista erakusten du.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Argitaratze-datek ez dute aurrebista murrizten.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Hau Pixiv-en lan ospetsuen doako aurrebista da. Emaitza guztiak ospearen arabera ordenatzeko Pixiv Premium behar da.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Gogoratu iragazki hauek",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Ordenatu honen arabera",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Zaharrenak",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Emakumeen artean ospetsuak",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Gizonen artean ospetsuak",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etiketa kopiatu da",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopiatu etiketa",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Bilatu hemen",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Etiketak, izenburua, deskribapena",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Gorputzeko testua",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Lan guztiak",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Ugoirarik gabe",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Ugoira soilik",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ laster-markatan",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Ikusi denak",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Bat ere ez",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Hautatu orrialdeak",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Ez da orrialderik hautatu} one{Orrialde {count} hautatuta} other{{count} orrialde hautatuta}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Seriea",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Serie honetan ez dago ikus dezakezun lanik",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Seriea: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Serieko hurrengoa",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "{order}. zatia, guztira {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Serieko aurrekoa",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Hasiera: {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Partekatu irudia",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Ezin izan da irudia partekatu",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "{name} kontuaren saioa itxi nahi duzu?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv-eko saioa itxi nahi duzu?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Aldatu irudien eta xehetasunen tamaina",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv hemen irekitzen da",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Irristatu lanen artean",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Irristatu alboetara zerrendako hurrengo lanera joateko. Orrialde anitzeko lanetan, jarraitu irristatzen lehen edo azken orrialdetik haratago.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Aldatu kontua",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Jarraipen-zerrenda",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "{current}. fotograma kodetzen, guztira {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Ezin izan da animazioa gorde",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Fotogramak eskuratzen…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Gorde GIF gisa",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Gorde fotogramak ZIP gisa",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animazioa GIF gisa gorde da",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Fotogramak ZIP gisa gorde dira",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Gordetzen…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodetzeak minutu bat iraun dezake",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "{name} isilarazteari utzi nahi diozu?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Ikustea",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Hasi saioa lan hau irekitzeko",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Ezagunak Pixiven",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Gehitu jarraipen-zerrendara",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Jarraipen-zerrendara gehitzen dituzun manga-serieak hemen agertzen dira",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Kendu jarraipen-zerrendatik",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Eguneratua: {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Ikusi azkena",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{lan {shown}} other{{shown} lan}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Egilearen erantzunak",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Ezkutatu birargitalpenak",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Erakutsi erantzun 1 gehiago} other{Erakutsi {count} erantzun gehiago}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Erakutsi hari honetako argitalpen 1 gehiago} other{Erakutsi hari honetako {count} argitalpen gehiago}}",
+  "@plugin_threads_show_thread": {}
 }

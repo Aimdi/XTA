@@ -67,7 +67,7 @@ class FeedTab {
 
   bool get isPlugin => id != following.id;
 
-  /// Chip / store mark for this tab — [XtaPlugin.icon], or house / spark for X.
+  /// Chip / store mark for this tab — [XtaPlugin.icon], or the Following / X glyph.
   IconData get icon {
     if (this == following) return followingTabIcon;
     if (this == x) return Icons.close;
@@ -93,13 +93,13 @@ class FeedTabOption {
   Widget markAt(double size) => markBuilder?.call(size) ?? markIcon(icon ?? id.icon, size: size);
 }
 
-/// House for Following, spark for For you — matches the chip-style tab row.
-const IconData followingTabIcon = Icons.home_outlined;
+/// Stacked posts for Following, spark for For you — matches the chip-style tab row.
+const IconData followingTabIcon = Icons.dynamic_feed;
 const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
-  FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
+  FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: followingTabIcon),
   FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close, markBuilder: _xMark),
 ];
 
@@ -110,7 +110,7 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
 /// Same shape as [availableFeedTabs], but from an explicit id list (the store).
 List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
-    FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
+    FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: followingTabIcon),
     FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close, markBuilder: _xMark),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
@@ -632,7 +632,7 @@ class _FeedScreenState extends State<FeedScreen> {
           return GroupUnreadScope(
             builder: (context, unreadIds) => HomeTimelineTitle(
               label: source.titleBuilder(context),
-              mark: source.markAt(22),
+              mark: source.markAt(24),
               unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
               onPressed: () => _pickSource(context),
             ),

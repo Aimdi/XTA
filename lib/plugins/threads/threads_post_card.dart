@@ -8,13 +8,15 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
-import 'package:xta/plugins/plugin_post_media.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_rich_text.dart';
+import 'package:xta/plugins/threads/threads_media.dart';
+import 'package:xta/plugins/threads/threads_quote.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_like_button.dart';
@@ -22,16 +24,14 @@ import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
-import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/links/link_opening.dart';
+import 'package:xta/links/link_post_context.dart';
+import 'package:xta/links/link_preview_card.dart';
 
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
-
-Widget _threadsMediaImage(BuildContext context, PluginMediaItem item, BoxFit fit) {
-  return ThreadsNetworkImage(item.url, fit: fit);
-}
 
 /// A Threads post as a timeline card.
 ///
@@ -152,17 +152,24 @@ class ThreadsPostCard extends StatelessWidget {
                                 const SizedBox(height: 6),
                                 ThreadsCaption(
                                   text: post.text,
+                                  fragments: post.fragments,
                                   style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
                                 ),
                               ],
                               if (post.hasMedia) ...[
                                 const SizedBox(height: 10),
-                                PluginPostMedia(items: post.mediaItems, imageBuilder: _threadsMediaImage, sourceName: 'threads'),
+                                ThreadsPostMedia(post: post, onOpenPost: openOnTap ? () => _open(context) : null),
                               ],
                               if (post.linkCard != null) ...[
                                 const SizedBox(height: 10),
-                                _ThreadsLinkPreview(card: post.linkCard!),
+                                _linkPreview(context, post.linkCard!),
                               ],
+                              if (post.quoted != null) ...[
+                                const SizedBox(height: 10),
+                                ThreadsQuotedPost(quote: post.quoted!),
+                              ],
+                              if (post.selfThreadCount > 0 && openOnTap)
+                                _ShowThreadButton(count: post.selfThreadCount, onPressed: () => _open(context)),
                               _ThreadsEngagementRow(
                                 post: post,
                                 onOpen: () => _open(context),
@@ -183,6 +190,31 @@ class ThreadsPostCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _linkPreview(BuildContext context, ThreadsLinkCard card) => LinkPreviewCard(
+    url: card.url,
+    title: card.title,
+    description: card.description,
+    imageUrl: card.imageUrl,
+    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
+    imageBuilder: (_, url, cacheWidth) => ThreadsNetworkImage(url, fit: BoxFit.cover, cacheWidth: cacheWidth),
+    onTap: () => openPostLink(context, card.url, title: card.title, post: _linkContext(context)),
+  );
+
+  LinkPostContext _linkContext(BuildContext context) => LinkPostContext(
+    sourceId: pluginIdThreads,
+    author: post.authorName,
+    avatarUrl: post.avatarUrl,
+    replies: post.replyCount,
+    reposts: post.repostCount,
+    likes: post.likeCount,
+    postUrl: post.url,
+    openPost: openOnTap
+        ? () {
+            if (context.mounted) _open(context);
+          }
+        : null,
+  );
 
   Widget _repostLine(BuildContext context) {
     final theme = Theme.of(context);
@@ -267,7 +299,10 @@ class ThreadsPostCard extends StatelessWidget {
         // in German the two together were wider than a 320dp phone.
         PluginHandleBadgeRow(
           handle: Text('@${post.handle}', maxLines: 1, overflow: TextOverflow.ellipsis, style: metaStyle),
-          badges: [if (showSourceBadge) PluginCardBadge(label: L10n.of(context).plugin_threads_title)],
+          badges: [
+            if (post.topicTag case final tag?) ThreadsTopicTag(tag: tag),
+            if (showSourceBadge) PluginCardBadge(label: L10n.of(context).plugin_threads_title),
+          ],
         ),
       ],
     );
@@ -288,79 +323,6 @@ class ThreadsPostCard extends StatelessWidget {
           child: Text(L10n.of(context).plugin_threads_follow),
         );
       },
-    );
-  }
-}
-
-/// Large article / link preview from Threads' `link_preview_attachment`.
-class _ThreadsLinkPreview extends StatelessWidget {
-  final ThreadsLinkCard card;
-
-  const _ThreadsLinkPreview({required this.card});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final radius = tweetMediaRadiusOf(context);
-    final host = card.providerName ?? Uri.tryParse(card.url)?.host ?? card.url;
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => openLink(context, card.url),
-        borderRadius: BorderRadius.circular(radius),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.outlineVariant),
-            borderRadius: BorderRadius.circular(radius),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (card.hasImage)
-                AspectRatio(
-                  aspectRatio: clampPluginMediaAspect(null),
-                  child: ThreadsNetworkImage(card.imageUrl!, fit: BoxFit.cover, cacheWidth: (width * scale).ceil()),
-                ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      host,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                    if (card.title != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.title!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
-                      ),
-                    ],
-                    if (card.description != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        card.description!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -436,6 +398,63 @@ class _ThreadsEngagementRow extends StatelessWidget {
               L10n.of(context).open_in_browser,
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// The topic a post was filed under — Threads' "› Books" — opening its feed
+/// on Threads, where tag search lives.
+class ThreadsTopicTag extends StatelessWidget {
+  final String tag;
+
+  const ThreadsTopicTag({super.key, required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onSurfaceVariant;
+    return InkWell(
+      onTap: () => openLink(context, threadsTagSearchUrl(tag)),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.chevron_right, size: 14, color: color),
+            Flexible(
+              child: Text(
+                tag,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium!.copyWith(color: color, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "Show N more posts in this thread" — the author chained more under this
+/// one, which the feed shows only the first of.
+class _ShowThreadButton extends StatelessWidget {
+  final int count;
+  final VoidCallback onPressed;
+
+  const _ShowThreadButton({required this.count, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: TextButton.icon(
+        style: TextButton.styleFrom(minimumSize: const Size(48, 40), padding: const EdgeInsets.symmetric(horizontal: 4)),
+        onPressed: onPressed,
+        icon: const Icon(Icons.forum_outlined, size: 18),
+        label: Text(L10n.of(context).plugin_threads_show_thread(count)),
       ),
     );
   }

@@ -98,6 +98,34 @@ void main() {
     });
   });
 
+  group('UserWithExtra.fromNonLegacyJson without legacy', () {
+    final profile = _fixture('UserByScreenName/modern.json')['data']['user']['result'] as Map<String, dynamic>;
+
+    test('survives losing or nulling any single top-level field', () {
+      for (final key in profile.keys) {
+        expect(
+          () => UserWithExtra.fromNonLegacyJson(_without(profile, key)),
+          returnsNormally,
+          reason: 'dropping "$key" from the profile result throws',
+        );
+        expect(
+          () => UserWithExtra.fromNonLegacyJson(_nulling(profile, key)),
+          returnsNormally,
+          reason: 'nulling "$key" in the profile result throws',
+        );
+      }
+    });
+
+    test('a container of the wrong shape reads as absent', () {
+      final reshaped = {...profile, 'relationship_counts': 'n/a', 'profile_bio': 42, 'pinned_items': []};
+
+      final user = UserWithExtra.fromNonLegacyJson(reshaped);
+      expect(user.followersCount, isNull);
+      expect(user.description, isNull);
+      expect(UserWithExtra.pinnedTweetIdsOf(reshaped), isEmpty);
+    });
+  });
+
   group('TweetWithCard.fromGraphqlJson', () {
     final tweet = _fixture('TweetDetail/tweet_result.json');
 

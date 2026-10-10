@@ -67,6 +67,9 @@ class MastodonPost {
   final List<String?> imageAlts;
   final List<String?> imageDownloadUrls;
   final List<bool> imageIsVideo;
+
+  /// Per slot: a `gifv` clip, played silent and looping like an X GIF.
+  final List<bool> imageIsGif;
   final DateTime? publishedAt;
   final String url;
 
@@ -108,6 +111,7 @@ class MastodonPost {
     this.imageAlts = const [],
     this.imageDownloadUrls = const [],
     this.imageIsVideo = const [],
+    this.imageIsGif = const [],
     this.publishedAt,
     this.boosted = false,
     this.boostedBy,
@@ -124,20 +128,30 @@ class MastodonPost {
     this.poll,
   });
 
+  /// Whether this status answers another, the author's own included — which
+  /// [replyToAcct] alone cannot say, since a reply to yourself mentions nobody.
+  bool get isReply => (replyToId?.isNotEmpty ?? false) || replyToAcct != null;
+
   bool get hasMedia => images.isNotEmpty;
   String get pagingId => timelineId ?? id;
   DateTime? get timelineDate => timelineAt ?? publishedAt;
 
-  List<PluginMediaItem> get mediaItems => [
-    for (var i = 0; i < images.length; i++)
-      PluginMediaItem(
-        url: images[i],
-        aspectRatio: i < imageAspects.length ? imageAspects[i] : null,
-        alt: i < imageAlts.length ? imageAlts[i] : null,
-        downloadUrl: i < imageDownloadUrls.length ? imageDownloadUrls[i] : null,
-        isVideo: i < imageIsVideo.length && imageIsVideo[i],
-      ),
-  ];
+  List<PluginMediaItem> get mediaItems => [for (var i = 0; i < images.length; i++) _mediaItemAt(i)];
+
+  /// A video's original file is its MP4, so it is also what the player opens.
+  PluginMediaItem _mediaItemAt(int i) {
+    final download = i < imageDownloadUrls.length ? imageDownloadUrls[i] : null;
+    final isVideo = i < imageIsVideo.length && imageIsVideo[i];
+    return PluginMediaItem(
+      url: images[i],
+      aspectRatio: i < imageAspects.length ? imageAspects[i] : null,
+      alt: i < imageAlts.length ? imageAlts[i] : null,
+      downloadUrl: download,
+      isVideo: isVideo,
+      videoUrl: isVideo ? download : null,
+      isGif: i < imageIsGif.length && imageIsGif[i],
+    );
+  }
 
   bool get hasSpoiler => spoilerText.trim().isNotEmpty;
 
@@ -158,6 +172,7 @@ class MastodonQuotedPost {
   final List<String?> imageAlts;
   final List<String?> imageDownloadUrls;
   final List<bool> imageIsVideo;
+  final List<bool> imageIsGif;
   final String? avatarUrl;
   final DateTime? publishedAt;
 
@@ -174,6 +189,7 @@ class MastodonQuotedPost {
     this.imageAlts = const [],
     this.imageDownloadUrls = const [],
     this.imageIsVideo = const [],
+    this.imageIsGif = const [],
     this.avatarUrl,
     this.publishedAt,
   });
@@ -191,6 +207,7 @@ class MastodonQuotedPost {
     imageAlts: imageAlts,
     imageDownloadUrls: imageDownloadUrls,
     imageIsVideo: imageIsVideo,
+    imageIsGif: imageIsGif,
     avatarUrl: avatarUrl,
     publishedAt: publishedAt,
   );
@@ -607,33 +624,38 @@ String mastodonHtmlToText(String? contentHtml) {
   return document.body?.text.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim() ?? '';
 }
 
+/// Pictures, videos and GIFs attached to a status.
+///
+/// A `video` or `gifv` is an MP4 under `url` (`remote_url` while the instance
+/// has not cached it), played in place with `preview_url` as its poster.
+/// `audio` and `unknown` have nothing a card can show.
 List<PluginMediaItem> mastodonMediaItemsOf(Json status) {
-  final items = <PluginMediaItem>[];
   final seen = <String>{};
-  for (final media in status['media_attachments'].list) {
-    final type = media['type'].string ?? '';
-    if (type != 'image' && type != 'gifv') {
-      continue;
-    }
-    final preview = media['preview_url'].string;
-    final original = media['url'].string;
-    final url = preview ?? original;
-    if (url == null || url.isEmpty || !seen.add(url)) {
-      continue;
-    }
-    final description = media['description'].string?.trim();
-    items.add(
-      PluginMediaItem(
-        url: url,
-        downloadUrl: original,
-        aspectRatio: pluginMediaAspectFrom(media['meta']['original'].raw),
-        alt: description == null || description.isEmpty ? null : description,
-        isVideo: type == 'gifv',
-      ),
-    );
-  }
-  return items;
+  return [
+    for (final media in status['media_attachments'].list)
+      if (_mastodonAttachment(media) case final item? when seen.add(item.url)) item,
+  ];
 }
+
+PluginMediaItem? _mastodonAttachment(Json media) {
+  final type = media['type'].string ?? '';
+  final isVideo = type == 'video' || type == 'gifv';
+  if (type != 'image' && !isVideo) return null;
+  final original = _nonEmpty(media['url'].string) ?? _nonEmpty(media['remote_url'].string);
+  final url = _nonEmpty(media['preview_url'].string) ?? (isVideo ? null : original);
+  if (url == null || (isVideo && original == null)) return null;
+  return PluginMediaItem(
+    url: url,
+    downloadUrl: original,
+    aspectRatio: pluginMediaAspectFrom(media['meta']['original'].raw),
+    alt: _nonEmpty(media['description'].string?.trim()),
+    isVideo: isVideo,
+    videoUrl: isVideo ? original : null,
+    isGif: type == 'gifv',
+  );
+}
+
+String? _nonEmpty(String? value) => value == null || value.isEmpty ? null : value;
 
 List<String> mastodonImagesOf(Json status) => [for (final item in mastodonMediaItemsOf(status)) item.url];
 
@@ -710,6 +732,7 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain, bool inc
     imageAlts: [for (final item in media) item.alt],
     imageDownloadUrls: [for (final item in media) item.downloadUrl],
     imageIsVideo: [for (final item in media) item.isVideo],
+    imageIsGif: [for (final item in media) item.isGif],
     publishedAt: DateTime.tryParse(status['created_at'].string ?? '')?.toLocal(),
     url: url,
     boosted: boosted,
@@ -765,6 +788,7 @@ MastodonQuotedPost? mastodonQuoteOf(Json status, {String? homeDomain}) {
     imageAlts: post.imageAlts,
     imageDownloadUrls: post.imageDownloadUrls,
     imageIsVideo: post.imageIsVideo,
+    imageIsGif: post.imageIsGif,
     avatarUrl: post.avatarUrl,
     publishedAt: post.publishedAt,
   );

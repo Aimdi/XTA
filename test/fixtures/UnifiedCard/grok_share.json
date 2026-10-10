@@ -1,0 +1,13 @@
+{
+  "name": "unified_card",
+  "url": "https://t.co/CH5rknAUC4",
+  "binding_values": [
+    {
+      "key": "unified_card",
+      "value": {
+        "type": "STRING",
+        "string_value": "{\"component_objects\":{\"details_1\":{\"type\":\"grok_share\",\"data\":{\"profile_user\":{\"id_str\":\"0\",\"name\":\"\"},\"grok_user\":{\"id_str\":\"1720665183188922368\",\"profile_image_url_https\":\"https://pbs.twimg.com/profile_images/2057885623374290944/lmj0pawP.jpg\",\"name\":\"Grok\",\"screen_name\":\"grok\"},\"id\":\"96b0a07447744eb79d03cbcaaf76e19f\",\"conversation_preview\":[{\"message\":\"Is this real?\",\"sender\":\"USER\",\"grokMode\":\"NORMAL\",\"mediaUrls\":[]},{\"message\":\"Yes, the clip is real footage from the live broadcast.<grok:render card_id=\\\"9fb1b7\\\" card_type=\\\"citation_card\\\" type=\\\"render_inline_citation\\\"><argument name=\\\"citation_id\\\">13</argument></grok:render>\\nThe event itself and the raw footage are not disputed.\",\"sender\":\"AGENT\",\"grokMode\":\"NORMAL\",\"mediaUrls\":[]}],\"destination\":\"destination_1\"}}},\"destination_objects\":{\"destination_1\":{\"type\":\"browser\",\"data\":{\"url_data\":{\"url\":\"https://x.com/i/grok/share/96b0a07447744eb79d03cbcaaf76e19f\",\"vanity\":\"Grok\"}}}},\"components\":[\"details_1\"]}"
+      }
+    }
+  ]
+}

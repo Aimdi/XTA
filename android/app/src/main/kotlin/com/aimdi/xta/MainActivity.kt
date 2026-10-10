@@ -1,6 +1,8 @@
 package com.aimdi.xta
 
+import android.annotation.TargetApi
 import android.app.PictureInPictureParams
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -8,6 +10,7 @@ import android.util.Rational
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.provider.MediaStore
 import java.io.File
 import java.io.InterruptedIOException
 import java.util.concurrent.ConcurrentHashMap
@@ -20,6 +23,9 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : AudioServiceActivity() {
     private val CHANNEL = "browser_resolver"
     private val downloadCopies = ConcurrentHashMap<String, AtomicBoolean>()
+    // Saves run on several threads; one lock keeps two of them from both
+    // creating the same new subfolder.
+    private val downloadFolderLock = Any()
     private val REQUEST_PICK_DIRECTORY = 0xD17
 
     // Set while the document-tree picker is open, so its result can be handed
@@ -44,10 +50,15 @@ class MainActivity : AudioServiceActivity() {
                     "hasDownloadDirectoryAccess" -> hasDownloadDirectoryAccess(call, result)
                     "saveToDownloadDirectory" -> saveToDownloadDirectory(call, result)
                     "saveFileToDownloadDirectory" -> saveFileToDownloadDirectory(call, result)
+                    "canSaveToSharedStorage" -> result.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    "saveFileToSharedStorage" ->
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) saveFileToSharedStorage(call, result)
+                        else result.error("UNSUPPORTED", "Shared storage needs Android 10", null)
                     "cancelDownloadSave" -> cancelDownloadSave(call, result)
                     "deleteDownloadedDocument" -> deleteDownloadedDocument(call, result)
                     "openDownloadedDocument" -> openDownloadedDocument(call, result)
                     "enterPictureInPicture" -> enterPictureInPicture(call, result)
+                    "enableWebViewPopups" -> enableWebViewPopups(flutterEngine, call, result)
                     else -> result.notImplemented()
                 }
             }
@@ -96,6 +107,16 @@ class MainActivity : AudioServiceActivity() {
         } catch (e: IllegalArgumentException) {
             result.success(false)
         }
+    }
+
+    /** Lets the sign-in WebView open popups (Sign in with Google), see [WebViewPopups]. */
+    private fun enableWebViewPopups(engine: FlutterEngine, call: MethodCall, result: MethodChannel.Result) {
+        val id = call.argument<Number>("webViewId")?.toLong()
+        if (id == null) {
+            result.error("INVALID_ARGUMENT", "webViewId is null", null)
+            return
+        }
+        result.success(WebViewPopups.install(this, engine, id))
     }
 
     private fun scanMediaFile(call: MethodCall, result: MethodChannel.Result) {
@@ -242,13 +263,14 @@ class MainActivity : AudioServiceActivity() {
         val sourcePath = call.argument<String>("sourcePath")
         val operationId = call.argument<String>("operationId")
         val mimeType = call.argument<String>("mimeType") ?: "application/octet-stream"
+        val subfolder = call.argument<String>("subfolder")
         if (treeUri.isNullOrEmpty() || fileName.isNullOrEmpty() || sourcePath.isNullOrEmpty() || operationId.isNullOrEmpty()) {
             result.error("INVALID_ARGUMENT", "A tree, name, staged file and operation are required", null)
             return
         }
-        val source = File(sourcePath).canonicalFile
-        if (!source.path.startsWith(cacheDir.canonicalPath + File.separator) || !source.isFile) {
-            result.error("INVALID_SOURCE", "Expected a staged file in app cache", null)
+        val source = stagedDownload(sourcePath)
+        if (source == null) {
+            result.error("INVALID_SOURCE", "Expected a staged download", null)
             return
         }
         val cancelled = AtomicBoolean(false)
@@ -259,30 +281,13 @@ class MainActivity : AudioServiceActivity() {
         Thread {
             var document: Uri? = null
             try {
-                val tree = Uri.parse(treeUri)
-                val directory = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
+                val directory = downloadDestination(Uri.parse(treeUri), subfolder)
                 synchronized(cancelled) {
                     if (cancelled.get()) throw InterruptedIOException()
                     document = DocumentsContract.createDocument(contentResolver, directory, mimeType, fileName)
                         ?: throw java.io.IOException("Could not create destination")
                 }
-                val output = contentResolver.openOutputStream(document!!)
-                    ?: throw java.io.IOException("Could not open destination")
-                output.use { destination ->
-                    source.inputStream().use { input ->
-                        val buffer = ByteArray(64 * 1024)
-                        while (true) {
-                            if (cancelled.get()) throw InterruptedIOException()
-                            val count = input.read(buffer)
-                            if (count < 0) break
-                            synchronized(cancelled) {
-                                if (cancelled.get()) throw InterruptedIOException()
-                                destination.write(buffer, 0, count)
-                            }
-                        }
-                    }
-                }
-                if (cancelled.get()) throw InterruptedIOException()
+                copyStagedDownload(source, document!!, cancelled)
                 runOnUiThread {
                     downloadCopies.remove(operationId)
                     result.success(document.toString())
@@ -298,6 +303,147 @@ class MainActivity : AudioServiceActivity() {
         }.start()
     }
 
+    /**
+     * Copies a staged download into the shared Pictures, Movies or Download
+     * folder through MediaStore, which needs no permission for the app's own
+     * files from Android 10 on. The item stays pending, hidden from the
+     * gallery, until the copy is complete, and is removed if it never is.
+     */
+    @TargetApi(Build.VERSION_CODES.Q)
+    private fun saveFileToSharedStorage(call: MethodCall, result: MethodChannel.Result) {
+        val fileName = call.argument<String>("fileName")
+        val sourcePath = call.argument<String>("sourcePath")
+        val operationId = call.argument<String>("operationId")
+        val relativePath = call.argument<String>("relativePath")
+        val mimeType = call.argument<String>("mimeType") ?: "application/octet-stream"
+        val collection = when (call.argument<String>("collection")) {
+            "images" -> MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            "video" -> MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+            else -> MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        }
+        if (fileName.isNullOrEmpty() || sourcePath.isNullOrEmpty() || operationId.isNullOrEmpty() || relativePath.isNullOrEmpty()) {
+            result.error("INVALID_ARGUMENT", "A name, folder, staged file and operation are required", null)
+            return
+        }
+        val source = stagedDownload(sourcePath)
+        if (source == null) {
+            result.error("INVALID_SOURCE", "Expected a staged download", null)
+            return
+        }
+        val cancelled = AtomicBoolean(false)
+        if (downloadCopies.putIfAbsent(operationId, cancelled) != null) {
+            result.error("ALREADY_SAVING", "This operation is already saving", null)
+            return
+        }
+        Thread {
+            var item: Uri? = null
+            try {
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+                    put(MediaStore.MediaColumns.IS_PENDING, 1)
+                }
+                synchronized(cancelled) {
+                    if (cancelled.get()) throw InterruptedIOException()
+                    // MediaStore renames rather than overwrites when the name is taken.
+                    item = contentResolver.insert(collection, values)
+                        ?: throw java.io.IOException("Could not create destination")
+                }
+                copyStagedDownload(source, item!!, cancelled)
+                val published = ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }
+                if (contentResolver.update(item!!, published, null, null) != 1) {
+                    throw java.io.IOException("Could not publish destination")
+                }
+                runOnUiThread {
+                    downloadCopies.remove(operationId)
+                    result.success(item.toString())
+                }
+            } catch (e: Exception) {
+                item?.let { try { contentResolver.delete(it, null, null) } catch (_: Exception) {} }
+                runOnUiThread {
+                    downloadCopies.remove(operationId)
+                    if (cancelled.get()) result.success(null)
+                    else result.error(if (e is SecurityException) "PERMISSION_LOST" else "SAVE_FAILED", e.message, null)
+                }
+            }
+        }.start()
+    }
+
+    /**
+     * The staged download at [path], or null unless it is a file inside the
+     * app's own staging area. Dart stages into path_provider's application
+     * support directory, which on Android is filesDir.
+     */
+    private fun stagedDownload(path: String): File? {
+        val source = File(path).canonicalFile
+        val inside = listOf(File(filesDir, "xta-download-staging"), cacheDir).any {
+            source.path.startsWith(it.canonicalPath + File.separator)
+        }
+        return if (inside && source.isFile) source else null
+    }
+
+    /** Streams [source] into [destination], stopping as soon as [cancelled] is set. */
+    private fun copyStagedDownload(source: File, destination: Uri, cancelled: AtomicBoolean) {
+        val output = contentResolver.openOutputStream(destination)
+            ?: throw java.io.IOException("Could not open destination")
+        output.use { stream ->
+            source.inputStream().use { input ->
+                val buffer = ByteArray(64 * 1024)
+                while (true) {
+                    if (cancelled.get()) throw InterruptedIOException()
+                    val count = input.read(buffer)
+                    if (count < 0) break
+                    synchronized(cancelled) {
+                        if (cancelled.get()) throw InterruptedIOException()
+                        stream.write(buffer, 0, count)
+                    }
+                }
+            }
+        }
+        if (cancelled.get()) throw InterruptedIOException()
+    }
+
+    /**
+     * The folder a save lands in: the picked tree, or [subfolder] inside it
+     * ("R-18/Mika_42"), each level found by name or made the first time.
+     */
+    private fun downloadDestination(tree: Uri, subfolder: String?): Uri {
+        var directory = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
+        val names = subfolder.orEmpty().split('/').map { it.trim() }.filter { it.isNotEmpty() && it != "." && it != ".." }
+        if (names.isEmpty()) return directory
+        synchronized(downloadFolderLock) {
+            for (name in names) {
+                directory = childFolder(tree, directory, name)
+                    ?: DocumentsContract.createDocument(
+                        contentResolver, directory, DocumentsContract.Document.MIME_TYPE_DIR, name
+                    )
+                    ?: throw java.io.IOException("Could not create folder $name")
+            }
+        }
+        return directory
+    }
+
+    /** An existing folder called [name] directly inside [parent], or null. */
+    private fun childFolder(tree: Uri, parent: Uri, name: String): Uri? {
+        val children = DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getDocumentId(parent))
+        val columns = arrayOf(
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE
+        )
+        contentResolver.query(children, columns, null, null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                // Shared storage ignores case, so "mika" already is "Mika".
+                val sameName = cursor.getString(1)?.equals(name, ignoreCase = true) == true
+                if (sameName && cursor.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) {
+                    return DocumentsContract.buildDocumentUriUsingTree(tree, cursor.getString(0))
+                }
+            }
+        }
+        return null
+    }
+
     private fun cancelDownloadSave(call: MethodCall, result: MethodChannel.Result) {
         val operationId = call.argument<String>("operationId")
         if (operationId == null) { result.success(null); return }
@@ -309,7 +455,11 @@ class MainActivity : AudioServiceActivity() {
         val uri = call.argument<String>("documentUri")
         try {
             if (uri == null || Uri.parse(uri).scheme != "content") throw IllegalArgumentException("Expected document URI")
-            DocumentsContract.deleteDocument(contentResolver, Uri.parse(uri))
+            val target = Uri.parse(uri)
+            // A background save is a MediaStore item, not a document; the app
+            // owns it, so it may delete it without asking.
+            if (target.authority == MediaStore.AUTHORITY) contentResolver.delete(target, null, null)
+            else DocumentsContract.deleteDocument(contentResolver, target)
             result.success(null)
         } catch (e: Exception) { result.error("DELETE_FAILED", e.message, null) }
     }

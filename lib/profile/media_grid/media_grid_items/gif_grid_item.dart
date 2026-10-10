@@ -20,6 +20,10 @@ class GifGridItem extends MediaGridItem {
         alwaysPlay: true,
         disableControls: true,
         username: username,
+        // Keyed like the same GIF in a post, so a cell granted playback again
+        // re-attaches to its cached player instead of starting another one.
+        tweetId: tweetId,
+        mediaIndex: mediaIndex,
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_outline.dart';
+import 'package:xta/ui/conversation_sort.dart';
 
 export 'package:xta/plugins/mastodon/mastodon_thread_outline.dart';
 
@@ -10,6 +11,7 @@ class MastodonThreadState {
   final Set<String> collapsed;
   final bool ancestorsOpen;
   final bool authorOnly;
+  final ReplySort order;
   final bool loading;
   final Object? error;
   const MastodonThreadState(
@@ -17,6 +19,7 @@ class MastodonThreadState {
     this.collapsed = const {},
     this.ancestorsOpen = false,
     this.authorOnly = false,
+    this.order = ReplySort.oldest,
     this.loading = false,
     this.error,
   });
@@ -26,6 +29,7 @@ class MastodonThreadState {
     Set<String>? collapsed,
     bool? ancestorsOpen,
     bool? authorOnly,
+    ReplySort? order,
     bool? loading,
     Object? error,
     bool clearError = false,
@@ -34,6 +38,7 @@ class MastodonThreadState {
     collapsed: collapsed == null ? this.collapsed : Set.unmodifiable(collapsed),
     ancestorsOpen: ancestorsOpen ?? this.ancestorsOpen,
     authorOnly: authorOnly ?? this.authorOnly,
+    order: order ?? this.order,
     loading: loading ?? this.loading,
     error: clearError ? null : error ?? this.error,
   );
@@ -44,8 +49,8 @@ class MastodonThreadStore extends Store<MastodonThreadState> {
   final List<String> instances;
   int _request = 0;
   bool _closed = false;
-  MastodonThreadStore(this.client, this.instances, MastodonPost seed)
-    : super(MastodonThreadState(MastodonThread(status: seed)));
+  MastodonThreadStore(this.client, this.instances, MastodonPost seed, {ReplySort order = ReplySort.oldest})
+    : super(MastodonThreadState(MastodonThread(status: seed), order: effectiveSort(order, mastodonReplySorts)));
 
   void toggle(String id) {
     if (_closed) return;
@@ -60,6 +65,10 @@ class MastodonThreadStore extends Store<MastodonThreadState> {
 
   void selectAuthor(bool selected) {
     if (!_closed && selected != state.authorOnly) update(state.copyWith(authorOnly: selected, collapsed: {}));
+  }
+
+  void selectOrder(ReplySort order) {
+    if (!_closed && order != state.order) update(state.copyWith(order: order));
   }
 
   void setAllExpanded(bool expanded) {

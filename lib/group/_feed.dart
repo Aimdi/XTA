@@ -197,6 +197,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// these cannot share one paginator with the X side. They are fetched once per
   /// mount and slotted among the chains by date.
   final _pluginFeed = ProgressiveFeedStore();
+
+  /// The group's reply and repost settings, which the X search already carries.
+  FeedPostKinds get _postKinds => (replies: widget.includeReplies, reposts: widget.includeRetweets);
+
   Future<void> _loadPluginPosts({bool refresh = true}) async {
     if (!mounted) return;
     final loaders = <String, SourceLoader>{};
@@ -213,9 +217,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         homeFeedIds: includeHome ? source.homeFeedIds(context) : const [],
       );
       if (ids.isEmpty) continue;
-      // The replies choice is part of the key, so turning it off never shows a cached page full of replies.
-      keys[id] = _pluginFeed.cache.key(widget.includeReplies ? id : '$id:no-replies', ids);
-      loaders[id] = () => source.groupPosts(context, ids, includeReplies: widget.includeReplies);
+      // The reply and repost choices are part of the key, so turning one off never shows a cached page full of them.
+      keys[id] = _pluginFeed.cache.key(pluginFeedCacheSource(id, _postKinds), ids);
+      loaders[id] = () => source.groupPosts(context, ids, kinds: _postKinds);
     }
     await _pluginFeed.load(loaders, keys, refresh: refresh);
   }
@@ -1055,6 +1059,27 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     );
   }
 
+  /// The bar above already shows progress; the count only earns a row when
+  /// some batches failed and can be retried.
+  Widget _batchRetryRow(BuildContext context, BatchReadState<GroupBatchResult> batches) {
+    if (batches.loading || batches.failed.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: 48,
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(L10n.of(context).reader_batch_progress(batches.results.length, batches.total)),
+            ),
+          ),
+          const Flexible(child: ScheduledReadRetry()),
+          TextButton(onPressed: _retryBatches, child: Text(L10n.of(context).retry)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // A group is empty when it has nothing from *any* source. Testing only the
@@ -1089,10 +1114,15 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                   children: [
                     if (widget.chunks.isNotEmpty)
                       SizedBox(
-                        height: 4,
+                        height: 2,
                         child: batches.loading
                             ? LinearProgressIndicator(
+                                minHeight: 2,
                                 value: batches.total == 0 ? null : batches.results.length / batches.total,
+                                semanticsLabel: L10n.of(context).reader_batch_progress(
+                                  batches.results.length,
+                                  batches.total,
+                                ),
                               )
                             : null,
                       ),
@@ -1106,25 +1136,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                                   .whereType<Object>()
                                   .firstOrNull,
                         retry: _retryBatches,
-                        child: SizedBox(
-                          height: 48,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(
-                                    L10n.of(context).reader_batch_progress(batches.results.length, batches.total),
-                                  ),
-                                ),
-                              ),
-                              if (!batches.loading && batches.failed.isNotEmpty) ...[
-                                const Flexible(child: ScheduledReadRetry()),
-                                TextButton(onPressed: _retryBatches, child: Text(L10n.of(context).retry)),
-                              ],
-                            ],
-                          ),
-                        ),
+                        // The bar above already shows progress; the count only
+                        // earns a row when some batches failed and can be retried.
+                        child: _batchRetryRow(context, batches),
                       ),
                     Expanded(
                       child: PaginatedTweetList(

@@ -2,16 +2,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/utils/shared_links.dart';
+import 'package:xta/utils/urls.dart';
 
 void main() {
   test('extracts X links from captions and surrounding punctuation', () {
     for (final host in ['x.com', 'twitter.com', 'mobile.twitter.com', 'www.x.com', 'fxtwitter.com', 'fixupx.com']) {
       expect(
-        extractSharedXLink('A post worth reading: (https://$host/reader/status/123?s=20).')?.toString(),
+        extractSharedLink('A post worth reading: (https://$host/reader/status/123?s=20).')?.toString(),
         'https://$host/reader/status/123?s=20',
       );
     }
-    expect(extractSharedXLink('https://example.com first\nhttps://x.com/reader')?.host, 'x.com');
+    expect(extractSharedLink('https://example.com first\nhttps://x.com/reader')?.host, 'x.com');
   });
 
   test('rejects unsupported shares, deceptive hosts and non-web URLs', () {
@@ -27,7 +28,7 @@ void main() {
       'https://x.com:8080/reader',
       'https://notwitter.com/reader',
     ]) {
-      expect(extractSharedXLink(text), isNull, reason: text);
+      expect(extractSharedLink(text), isNull, reason: text);
     }
   });
 
@@ -36,7 +37,7 @@ void main() {
       expect(request.followRedirects, isFalse);
       return http.Response('', 302, headers: {'location': 'https://x.com/reader/status/123'});
     });
-    expect((await resolveSharedXLink('Read https://t.co/short', client: client))?.path, '/reader/status/123');
+    expect((await resolveSharedLink('Read https://t.co/short', client: client))?.path, '/reader/status/123');
   });
 
   test('rejects short links to other websites and redirect loops', () async {
@@ -46,13 +47,120 @@ void main() {
         calls++;
         return http.Response('', 302, headers: {'location': destination});
       });
-      expect(await resolveSharedXLink('https://t.co/short', client: client), isNull);
+      expect(await resolveSharedLink('https://t.co/short', client: client), isNull);
       expect(calls, lessThanOrEqualTo(3));
     }
   });
 
+  test('takes Pixiv links only while the Pixiv plugin is on', () {
+    const share = 'Look at this https://www.pixiv.net/artworks/123 !';
+    expect(extractSharedLink(share), isNull);
+    expect(extractSharedLink(share, pixiv: true)?.path, '/artworks/123');
+    expect(extractSharedLink('https://pixiv.me/mika', pixiv: true)?.host, 'pixiv.me');
+    expect(extractSharedLink('https://www.pixiv.net.evil.example/artworks/1', pixiv: true), isNull);
+    expect(extractSharedLink('https://evil@www.pixiv.net/artworks/1', pixiv: true), isNull);
+  });
+
+  test("takes Pixiv's image files and app links with the Pixiv plugin, and never hands one to X", () {
+    const image = 'https://i.pximg.net/img-original/img/2026/07/01/00/00/00/123_p0.png';
+    expect(extractSharedLink('Saved from $image', pixiv: true)?.host, 'i.pximg.net');
+    expect(extractSharedLink(image), isNull, reason: 'only while the Pixiv plugin is on');
+    expect(extractSharedLink('open pixiv://illusts/123 please', pixiv: true)?.toString(), 'pixiv://illusts/123');
+    expect(extractSharedLink('pixiv://illusts/123'), isNull);
+    expect(extractSharedLink('https://i.pximg.net.evil.example/123_p0.png', pixiv: true), isNull);
+    expect(readsAsXLink(Uri.parse(image)), isFalse);
+    expect(readsAsXLink(Uri.parse('pixiv://users/456')), isFalse);
+  });
+
+  test('takes pixivision links with the Pixiv plugin, and never hands one to X', () {
+    const share = 'Autumn cats https://www.pixivision.net/en/a/9876';
+    expect(extractSharedLink(share), isNull);
+    expect(extractSharedLink(share, pixiv: true)?.path, '/en/a/9876');
+    expect(extractSharedLink('https://pixivision.net/ja/a/1', pixiv: true)?.host, 'pixivision.net');
+    expect(extractSharedLink('https://www.pixivision.net.evil.example/en/a/1', pixiv: true), isNull);
+    for (final url in ['https://www.pixivision.net/en/', 'https://www.pixivision.net/en/c/illustration']) {
+      expect(readsAsXLink(Uri.parse(url)), isFalse, reason: url);
+    }
+  });
+
+  test('a Pixiv page no plugin opened goes to the browser, never to X as a profile', () async {
+    for (final url in [
+      'https://www.pixiv.net/ranking.php',
+      'https://www.pixiv.net/en/',
+      'https://pixiv.net/discovery',
+      'https://www.pixiv.net/bookmark_new_illust.php',
+      'https://www.pixiv.net/artworks/123',
+      'https://pixiv.me/mika',
+    ]) {
+      expect(readsAsXLink(Uri.parse(url)), isFalse, reason: url);
+    }
+    expect(
+      await parseUri(Uri.parse('https://www.pixiv.net/en/')),
+      isA<ProfileUriInfo>(),
+      reason: 'why the gate exists',
+    );
+    for (final url in ['https://x.com/reader', 'https://t.co/short', 'https://fixupx.com/reader/status/1']) {
+      expect(readsAsXLink(Uri.parse(url)), isTrue, reason: url);
+    }
+  });
+
+  test('a share that is only a number is a Pixiv work id', () {
+    expect(sharedPixivId(' 123456 '), '123456');
+    expect(sharedPixivId('12 34'), isNull);
+    expect(sharedPixivId('id 5'), isNull);
+    expect(sharedPixivId(''), isNull);
+  });
+
+  test('Pixiv shares need no request to resolve; pixiv.me waits for where it opens', () async {
+    final client = MockClient((_) async => throw StateError('unexpected request'));
+    expect((await resolveSharedLink('https://pixiv.me/mika', pixiv: true, client: client))?.host, 'pixiv.me');
+    expect(await resolveSharedLink('https://pixiv.me/mika', client: client), isNull);
+  });
+
   test('ordinary X shares do not need a network request to resolve', () async {
     final client = MockClient((_) async => throw StateError('unexpected request'));
-    expect((await resolveSharedXLink('https://twitter.com/reader', client: client))?.path, '/reader');
+    expect((await resolveSharedLink('https://twitter.com/reader', client: client))?.path, '/reader');
+  });
+
+  group('sharedTargetOf', () {
+    test('an X link opens on the X screens, even after another link', () {
+      final target = sharedTargetOf('About https://example.com/story via https://x.com/reader/status/1');
+      expect(target, isA<SharedXTarget>());
+      expect((target as SharedXTarget).link.path, '/reader/status/1');
+    });
+
+    test('another network\'s link is handed to the link opener, caption and all', () {
+      for (final url in [
+        'https://bsky.app/profile/reader.bsky.social/post/3k',
+        'https://mastodon.social/@reader/111',
+        'https://www.threads.net/@reader/post/C1',
+        'https://www.reddit.com/r/flutter/comments/abc/title/',
+        'https://reader.substack.com/p/a-post',
+      ]) {
+        final target = sharedTargetOf('Worth a read: $url.');
+        expect(target, isA<SharedWebTarget>(), reason: url);
+        expect((target as SharedWebTarget).link.toString(), url, reason: url);
+      }
+    });
+
+    test('a link with credentials in it is not opened', () {
+      expect(sharedTargetOf('https://user@example.com/page'), isA<SharedSearchTarget>());
+    });
+
+    test('text without a link becomes a search, its whitespace collapsed', () {
+      final target = sharedTargetOf('  flutter\n  release   notes ');
+      expect((target as SharedSearchTarget).query, 'flutter release notes');
+    });
+
+    test('a long share is cut to what X search accepts, without splitting a character', () {
+      final query = (sharedTargetOf('😀' * 600) as SharedSearchTarget).query;
+      expect(query.runes.length, 500);
+      expect(query, '😀' * 500);
+    });
+
+    test('an empty share opens nothing', () {
+      expect(sharedTargetOf(''), isA<SharedNothing>());
+      expect(sharedTargetOf(' \n\t'), isA<SharedNothing>());
+    });
   });
 }

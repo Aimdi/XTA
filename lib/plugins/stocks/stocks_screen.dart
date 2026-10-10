@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -16,8 +18,10 @@ import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/crypto_quote_store.dart';
 import 'package:xta/plugins/stocks/crypto_asset_screen.dart';
+import 'package:xta/plugins/stocks/crypto_copy.dart';
 import 'package:xta/plugins/stocks/stocks_posts_feed.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_query.dart';
+import 'package:xta/plugins/stocks/stocks_watchlist_list.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_reel.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
@@ -27,11 +31,11 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:xta/ui/reader_swipe_navigation.dart';
 
-/// Markets + watchlist + trending cashtag feed.
+/// Watchlist quotes + watchlist posts + trending cashtag feed + markets.
 ///
-/// getquin / Yahoo Finance put a tape of indices and "what's moving" above
-/// the social stream; StockTwits puts the watchlist there. This screen is
-/// all three, as tabs, still read-only.
+/// Apple Stocks and Yahoo Finance lead with a dense quote list; StockTwits
+/// leads with posts about the watched symbols; getquin adds a tape of indices.
+/// This screen is all of them, as tabs, still read-only.
 class StocksScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -44,8 +48,13 @@ class StocksScreen extends StatefulWidget {
 class _StocksScreenState extends State<StocksScreen> {
   final TickerClient _client = TickerClient();
   final _cryptoQuotes = CryptoQuoteStore();
+  Timer? _ticker;
 
-  /// 0 watchlist, 1 trending, 2 markets.
+  /// Quotes go stale in minutes; while the tab is on screen it re-asks this
+  /// often, and the caches' own two-minute freshness keeps that cheap.
+  static const _refreshEvery = Duration(seconds: 60);
+
+  /// 0 watchlist quotes, 1 watchlist posts, 2 trending, 3 markets.
   final _view = PluginViewStore<_StocksViewState>(
     const _StocksViewState(),
     snapshot: (state) => state.copyWith(loading: false),
@@ -70,10 +79,16 @@ class _StocksScreenState extends State<StocksScreen> {
       if (!mounted) return;
       await _selectTab(_tab);
     });
+    _ticker = Timer.periodic(_refreshEvery, (_) => _refreshWhileVisible());
+  }
+
+  void _refreshWhileVisible() {
+    if (mounted && TickerMode.valuesOf(context).enabled) _refreshQuotes();
   }
 
   @override
   void dispose() {
+    _ticker?.cancel();
     _view.destroy();
     _cryptoQuotes.destroy();
     _client.httpClient.close();
@@ -82,22 +97,26 @@ class _StocksScreenState extends State<StocksScreen> {
 
   Future<void> _selectTab(int tab) async {
     _view.select(_view.state.copyWith(tab: tab));
-    if (tab == 1 && _trending.isEmpty) await _loadTrending();
+    if (tab == 2 && _trending.isEmpty) await _loadTrending();
     await _refreshQuotes();
   }
 
-  Future<void> _refreshQuotes() async {
+  List<String> get _tabSymbols => switch (_tab) {
+    2 => _trending,
+    3 => kMarketIndexSymbols,
+    _ => _watchlist.state,
+  };
+
+  Future<void> _refreshQuotes({bool force = false}) async {
     if (!mounted) return;
-    final symbols = switch (_tab) {
-      1 => _trending,
-      2 => kMarketIndexSymbols,
-      _ => _watchlist.state,
-    };
+    final stocks = _tabSymbols.where((symbol) => CryptoAsset.contractForId(symbol) == null);
     await Future.wait([
-      _cache.ensure(symbols.where((symbol) => CryptoAsset.contractForId(symbol) == null)),
-      if (_tab == 0) _cryptoQuotes.ensure(_watchlist.cryptoAssets.values),
+      force ? _cache.refresh(stocks) : _cache.ensure(stocks),
+      if (_tab <= 1) _cryptoQuotes.ensure(_watchlist.cryptoAssets.values, force: force),
     ]);
   }
+
+  Future<void> _pullToRefresh() => _refreshQuotes(force: true);
 
   Future<void> _loadTrending() async {
     if (_view.state.loading) return;
@@ -164,6 +183,9 @@ class _StocksScreenState extends State<StocksScreen> {
                   ListTile(
                     title: Text(store.labelFor(symbol)),
                     subtitle: store.assetFor(symbol) == null ? null : Text(store.assetFor(symbol)!.subtitle),
+                    onLongPress: store.assetFor(symbol) == null
+                        ? null
+                        : () => copyCryptoAddress(sheetContext, store.assetFor(symbol)!),
                     trailing: IconButton(
                       tooltip: L10n.of(sheetContext).unsubscribe,
                       icon: const Icon(Icons.delete_outline),
@@ -213,16 +235,22 @@ class _StocksScreenState extends State<StocksScreen> {
                   onTap: () => _selectTab(0),
                 ),
                 PluginHomeTab(
-                  label: l10n.plugin_stocks_trending,
-                  icon: Icons.trending_up,
+                  label: l10n.tweets,
+                  icon: Icons.forum_outlined,
                   selected: _tab == 1,
                   onTap: () => _selectTab(1),
                 ),
                 PluginHomeTab(
-                  label: l10n.plugin_stocks_markets,
-                  icon: Icons.public_outlined,
+                  label: l10n.plugin_stocks_trending,
+                  icon: Icons.trending_up,
                   selected: _tab == 2,
                   onTap: () => _selectTab(2),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_stocks_markets,
+                  icon: Icons.public_outlined,
+                  selected: _tab == 3,
+                  onTap: () => _selectTab(3),
                 ),
               ],
               actions: [
@@ -238,7 +266,7 @@ class _StocksScreenState extends State<StocksScreen> {
             Expanded(
               child: ReaderSwipeNavigation(
                 index: _tab,
-                count: PluginEmbedded.maybeOf(context) ? 0 : 3,
+                count: PluginEmbedded.maybeOf(context) ? 0 : 4,
                 identity: 'stocks',
                 onChanged: (index) {
                   _selectTab(index);
@@ -275,17 +303,28 @@ class _StocksScreenState extends State<StocksScreen> {
   }
 
   Widget _tabHome(List<String> symbols, Map<String, TickerQuote> quotes, L10n l10n) {
-    if (_tab == 2) {
-      return StocksMarketsList(quotes: quotes);
+    final controller = pluginInnerScrollController(context, widget.scrollController);
+    if (_tab == 3) {
+      return StocksMarketsList(quotes: quotes, controller: controller, onRefresh: _pullToRefresh);
     }
-    if (_tab == 1) {
+    if (_tab == 2) {
       if (_view.state.loading && _trending.isEmpty) return const PluginFeedSkeleton();
       return _feedHome(symbols: _trending, quotes: quotes, empty: _empty(context, l10n, trending: true));
     }
     if (symbols.isEmpty) {
       return _empty(context, l10n, trending: false);
     }
-    return _feedHome(symbols: symbols, quotes: quotes, empty: _empty(context, l10n, trending: false));
+    if (_tab == 1) {
+      return _feedHome(symbols: symbols, quotes: quotes, empty: _empty(context, l10n, trending: false));
+    }
+    return StocksWatchlistList(
+      symbols: symbols,
+      quotes: quotes,
+      assets: _watchlist.cryptoAssets,
+      onOpen: _openAsset,
+      onRefresh: _pullToRefresh,
+      controller: controller,
+    );
   }
 
   Widget _feedHome({required List<String> symbols, required Map<String, TickerQuote> quotes, required Widget empty}) {
@@ -293,7 +332,8 @@ class _StocksScreenState extends State<StocksScreen> {
       return empty;
     }
 
-    final query = _filterSymbol == null ? watchlistCashtagQuery(symbols) : watchlistCashtagQuery([_filterSymbol!]);
+    final assets = _watchlist.cryptoAssets;
+    final query = watchlistCashtagQuery(_filterSymbol == null ? symbols : [_filterSymbol!], assets: assets);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -329,8 +369,8 @@ class _StocksScreenState extends State<StocksScreen> {
             key: ValueKey(query),
             query: query,
             onRefreshQuotes: () async {
-              await _refreshQuotes();
-              if (_tab == 1) {
+              await _refreshQuotes(force: true);
+              if (_tab == 2) {
                 await _loadTrending();
               }
             },
@@ -350,18 +390,20 @@ class _StocksScreenState extends State<StocksScreen> {
         const SizedBox(height: 16),
         Text(
           trending
-              ? (_view.state.failed ? l10n.plugin_stocks_error : l10n.plugin_stocks_trending_empty)
+              ? (_view.state.failed ? l10n.plugin_stocks_data_unavailable : l10n.plugin_stocks_trending_empty)
               : l10n.plugin_stocks_empty,
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.plugin_stocks_feed_hint,
-          textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
+        if (_tab != 0) ...[
+          const SizedBox(height: 8),
+          Text(
+            l10n.plugin_stocks_feed_hint,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ],
         const SizedBox(height: 16),
         Center(
           child: FilledButton.icon(

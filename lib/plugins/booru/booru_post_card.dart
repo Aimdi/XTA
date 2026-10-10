@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:xta/plugins/plugin_link_post.dart';
+import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/ui/provenance_accent.dart';
@@ -22,8 +23,7 @@ class BooruPostCard extends StatelessWidget {
     final preview = post.tags.take(6).join(' ');
 
     return InkWell(
-      onLongPress: post.hostPageUrl == null ? null : () => showPluginLinkPostActions(context, source: 'booru', url: post.hostPageUrl!,
-        author: post.host, text: post.tagLine, images: [post.isVideo ? post.thumbnailUrl : post.displayUrl]),
+      onLongPress: () => showPluginPostActions(context, post: booruPostArchive(post), url: booruShareUrl(post)),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => BooruPostScreen(post: post)),

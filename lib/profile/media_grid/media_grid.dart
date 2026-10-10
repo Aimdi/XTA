@@ -118,8 +118,14 @@ class _MediaGridState extends State<MediaGrid>
   @override
   bool get wantKeepAlive => true;
 
-  final GifPlaybackGate _gifGate = GifPlaybackGate();
+  late final GifPlaybackGate _gifGate;
   bool _firstLoadStarted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _gifGate = GifPlaybackGate.sizedToPool(context);
+  }
 
   @override
   void didUpdateWidget(covariant MediaGrid oldWidget) {
@@ -391,7 +397,13 @@ class StaticMediaGrid extends StatefulWidget {
 }
 
 class _StaticMediaGridState extends State<StaticMediaGrid> {
-  final GifPlaybackGate _gifGate = GifPlaybackGate();
+  late final GifPlaybackGate _gifGate;
+
+  @override
+  void initState() {
+    super.initState();
+    _gifGate = GifPlaybackGate.sizedToPool(context);
+  }
 
   @override
   void dispose() {

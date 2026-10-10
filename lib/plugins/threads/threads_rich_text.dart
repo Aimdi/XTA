@@ -7,12 +7,23 @@ import 'package:xta/plugins/plugin_links.dart';
 final _threadsMention = RegExp(r'(?<![A-Za-z0-9_])@([A-Za-z0-9._]{1,30})');
 final _threadsUrl = RegExp(r'https?://[^\s<>]+', caseSensitive: false);
 
-/// Caption text with tappable @handles and http(s) links — no Meta entities needed.
+/// Caption text with tappable mentions, links and tags.
+///
+/// Meta's own `text_fragments` decide what is tappable when the post carried
+/// them; otherwise @handles and http(s) URLs are found by pattern.
 class ThreadsCaption extends StatefulWidget {
   final String text;
   final TextStyle style;
+  final List<ThreadsTextFragment> fragments;
+  final int? maxLines;
 
-  const ThreadsCaption({super.key, required this.text, required this.style});
+  const ThreadsCaption({
+    super.key,
+    required this.text,
+    required this.style,
+    this.fragments = const [],
+    this.maxLines,
+  });
 
   @override
   State<ThreadsCaption> createState() => _ThreadsCaptionState();
@@ -44,51 +55,69 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
   Widget build(BuildContext context) {
     _clearRecognizers();
     final linkStyle = widget.style.copyWith(color: Theme.of(context).colorScheme.primary);
-    return Text.rich(TextSpan(style: widget.style, children: _spans(context, linkStyle)));
-  }
-
-  List<InlineSpan> _spans(BuildContext context, TextStyle linkStyle) {
-    final text = widget.text;
-    final hits = hitsInThreadsCaption(text);
-    final spans = <InlineSpan>[];
-    var cursor = 0;
-    for (final hit in hits) {
-      if (hit.start < cursor) {
-        continue;
-      }
-      if (hit.start > cursor) {
-        spans.add(TextSpan(text: text.substring(cursor, hit.start)));
-      }
-      spans.add(_spanFor(context, text, hit, linkStyle));
-      cursor = hit.end;
-    }
-    if (cursor < text.length) {
-      spans.add(TextSpan(text: text.substring(cursor)));
-    }
-    return spans;
-  }
-
-  InlineSpan _spanFor(BuildContext context, String text, ThreadsCaptionHit hit, TextStyle linkStyle) {
-    final label = text.substring(hit.start, hit.end);
-    if (hit.isMention) {
-      final handle = normaliseThreadsHandle(hit.value) ?? hit.value.toLowerCase();
-      return TextSpan(
-        text: label,
-        style: linkStyle,
-        recognizer: _tap(() {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)),
-          );
-        }),
-      );
-    }
-    return TextSpan(
-      text: label,
-      style: linkStyle,
-      recognizer: _tap(() => openLink(context, hit.value)),
+    final runs = threadsCaptionRuns(widget.text, widget.fragments);
+    return Text.rich(
+      TextSpan(style: widget.style, children: [for (final run in runs) _spanFor(context, run, linkStyle)]),
+      maxLines: widget.maxLines,
+      overflow: widget.maxLines == null ? null : TextOverflow.ellipsis,
     );
   }
+
+  InlineSpan _spanFor(BuildContext context, ThreadsTextFragment run, TextStyle linkStyle) {
+    final target = run.target;
+    if (run.kind == ThreadsFragmentKind.text || target == null) {
+      return TextSpan(text: run.text);
+    }
+    return TextSpan(
+      text: run.text,
+      style: linkStyle,
+      recognizer: _tap(() => _open(context, run.kind, target)),
+    );
+  }
+
+  void _open(BuildContext context, ThreadsFragmentKind kind, String target) {
+    switch (kind) {
+      case ThreadsFragmentKind.mention:
+        final handle = normaliseThreadsHandle(target) ?? target.toLowerCase();
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)));
+      case ThreadsFragmentKind.link:
+        openLink(context, target);
+      case ThreadsFragmentKind.tag:
+        openLink(context, threadsTagSearchUrl(target));
+      case ThreadsFragmentKind.text:
+        break;
+    }
+  }
+}
+
+/// Where Threads lists the posts filed under [tag].
+String threadsTagSearchUrl(String tag) => Uri.parse(
+  'https://www.threads.com/search',
+).replace(queryParameters: {'q': tag, 'serp_type': 'tags'}).toString();
+
+/// The caption as runs to draw: Meta's fragments when it sent them, else plain
+/// text with the @handles and URLs a pattern can find.
+List<ThreadsTextFragment> threadsCaptionRuns(String text, List<ThreadsTextFragment> fragments) {
+  if (fragments.isNotEmpty) {
+    return fragments;
+  }
+  final runs = <ThreadsTextFragment>[];
+  var cursor = 0;
+  for (final hit in hitsInThreadsCaption(text)) {
+    if (hit.start < cursor) {
+      continue;
+    }
+    if (hit.start > cursor) {
+      runs.add(ThreadsTextFragment(ThreadsFragmentKind.text, text.substring(cursor, hit.start)));
+    }
+    final kind = hit.isMention ? ThreadsFragmentKind.mention : ThreadsFragmentKind.link;
+    runs.add(ThreadsTextFragment(kind, text.substring(hit.start, hit.end), hit.value));
+    cursor = hit.end;
+  }
+  if (cursor < text.length) {
+    runs.add(ThreadsTextFragment(ThreadsFragmentKind.text, text.substring(cursor)));
+  }
+  return runs;
 }
 
 /// One tappable run inside a Threads caption — exposed for tests.

@@ -21,10 +21,12 @@ import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/posts_filter.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/profile/profile_feed_settings.dart';
+import 'package:xta/profile/profile_followed_by_line.dart';
 import 'package:xta/profile/profile_model.dart';
 import 'package:xta/profile/profile_note.dart';
 import 'package:xta/profile/profile_view_store.dart';
 import 'package:xta/search/search.dart';
+import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -473,6 +475,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       name: user.name ?? username,
       handle: '@$username',
       verified: user.verified ?? false,
+      verification: user.badges,
       protected: user.protected ?? false,
       protectedLabel: L10n.of(context).private_profile,
       bio: _descriptionParts.isEmpty
@@ -485,6 +488,10 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             ),
       metadata: _profileMetadata(context, user),
       counts: _profileCounts(context, user),
+      followedBy: ProfileFollowedByLine(
+        profileId: user.idStr!,
+        subscriptions: context.read<SubscriptionsModel>().state,
+      ),
       note: ProfileNoteCard(userId: user.idStr!),
     );
   }

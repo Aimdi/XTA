@@ -220,14 +220,28 @@ void main() {
           'is_followed': true,
           'profile_image_urls': {'medium': 'https://i.pximg.net/a.jpg'},
         },
-        'profile': {'total_illusts': 5, 'total_follower': 9},
+        'profile': {'total_illusts': 5, 'total_manga': 2, 'total_follow_users': 9, 'total_mypixiv_users': 3},
       });
 
       expect(user.id, 11);
       expect(user.name, 'Name');
-      expect(user.illustsCount, 5);
-      expect(user.followersCount, 9);
+      expect(user.worksCount, 7);
+      expect(user.followingCount, 9);
+      expect(user.mypixivCount, 3);
       expect(user.isFollowed, isTrue);
+    });
+
+    test('a profile without counts, or with counts as strings, still reads', () {
+      final bare = PixivUser.fromDetailJson({
+        'user': {'id': 11, 'name': 'Name', 'account': 'acct'},
+      });
+      expect((bare.worksCount, bare.followingCount, bare.mypixivCount), (0, 0, 0));
+
+      final quoted = PixivUser.fromDetailJson({
+        'user': {'id': 11},
+        'profile': {'total_illusts': '4', 'total_manga': null, 'total_follow_users': 'many'},
+      });
+      expect((quoted.worksCount, quoted.followingCount), (4, 0));
     });
   });
 }

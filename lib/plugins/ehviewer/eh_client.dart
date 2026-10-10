@@ -187,6 +187,19 @@ class EhClient {
     return list.isEmpty ? null : list.first;
   }
 
+  /// Tags the site knows that start like [text]; empty on any failure.
+  Future<List<EhTag>> suggestTags(String text) async {
+    final query = text.trim();
+    if (query.length < 2) return const [];
+    try {
+      return parseEhTagSuggestions(
+        await _postApi({'method': 'tagsuggest', 'text': query}),
+      );
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<EhImagePage> imagePage({
     required int gid,
     required String pageToken,

@@ -2,9 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
-import 'package:xta/ui/motion.dart';
-
-List<double> _doubleTapScales = <double>[1.0, 4.0];
+import 'package:xta/ui/double_tap_zoom.dart';
 
 class TweetPhoto extends StatefulWidget {
   final String uri;
@@ -27,26 +25,7 @@ class TweetPhoto extends StatefulWidget {
 }
 
 class _TweetPhotoState extends State<TweetPhoto>
-    with SingleTickerProviderStateMixin {
-  Animation<double>? _doubleClickAnimation;
-  late void Function() _doubleClickAnimationListener;
-
-  /// Only the fullscreen viewer double-taps to zoom, so a feed tile never
-  /// builds this at all.
-  AnimationController? _doubleClickController;
-
-  AnimationController get _doubleClick =>
-      _doubleClickController ??= AnimationController(
-        duration: xtaMotionDuration(context, kXtaMotionFast),
-        vsync: this,
-      );
-
-  @override
-  void dispose() {
-    _doubleClickController?.dispose();
-    super.dispose();
-  }
-
+    with SingleTickerProviderStateMixin, DoubleTapZoom {
   @override
   Widget build(BuildContext context) {
     final url = widget.size != null ? '${widget.uri}:${widget.size}' : widget.uri;
@@ -140,34 +119,7 @@ class _TweetPhotoState extends State<TweetPhoto>
             initialAlignment: InitialAlignment.center,
           );
         },
-        onDoubleTap: (ExtendedImageGestureState state) {
-          final Offset? pointerDownPosition = state.pointerDownPosition;
-          final double? begin = state.gestureDetails!.totalScale;
-          double end;
-
-          _doubleClickAnimation?.removeListener(_doubleClickAnimationListener);
-          _doubleClick.stop();
-          _doubleClick.reset();
-
-          if (begin == _doubleTapScales[0]) {
-            end = _doubleTapScales[1];
-          } else {
-            end = _doubleTapScales[0];
-          }
-
-          _doubleClickAnimationListener = () {
-            state.handleDoubleTap(
-              scale: _doubleClickAnimation!.value,
-              doubleTapPosition: pointerDownPosition,
-            );
-          };
-
-          _doubleClickAnimation = _doubleClick.drive(
-            Tween<double>(begin: begin, end: end),
-          );
-          _doubleClickAnimation!.addListener(_doubleClickAnimationListener);
-          _doubleClick.forward();
-        },
+        onDoubleTap: zoomOnDoubleTap,
       ),
     );
   }

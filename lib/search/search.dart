@@ -385,7 +385,8 @@ class _UserSearchResultList extends StatelessWidget {
             ),
             child: tweetHairlineDivider(context),
           ),
-          itemBuilder: (context, index) => UserTile(user: UserSubscription.fromUser(items[index])),
+          itemBuilder: (context, index) =>
+              UserTile(user: UserSubscription.fromUser(items[index]), verification: items[index].badges),
         );
       },
     );

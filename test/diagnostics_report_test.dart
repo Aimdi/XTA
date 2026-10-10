@@ -118,7 +118,7 @@ void main() {
     });
 
     test('lists every endpoint with the query id actually in force', () {
-      XEndpoints.applyOverrides({XEndpoints.userTweets: 'ZZZZZZZZZZZZZZZZZZZZZZ'});
+      XEndpoints.applyOverrides({XEndpoints.userOriginalsTimeline: 'ZZZZZZZZZZZZZZZZZZZZZZ'});
 
       final report = _report();
       final text = report.toPlainText();

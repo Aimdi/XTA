@@ -76,7 +76,7 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> with AutomaticKeepA
 
   Future<ChainPage> _chainsAfter(String? cursor) async {
     var result = await withRateLimitOperations(
-      [mediaTimelineTypeFor(widget.filter) == 'media' ? 'UserMedia' : 'UserTweets'],
+      [mediaTimelineTypeFor(widget.filter) == 'media' ? 'UserMedia' : 'UserOriginalsTimeline'],
       () => Twitter.getTweets(
         widget.user.idStr!,
         mediaTimelineTypeFor(widget.filter),

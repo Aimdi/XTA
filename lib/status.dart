@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
@@ -6,11 +7,16 @@ import 'package:xta/database/timeline_cache.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/conversation.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
+import 'package:xta/tweet/unavailable_post.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/sort_menu_button.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/translation.dart';
 import 'package:logging/logging.dart';
@@ -54,12 +60,15 @@ class StatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as StatusScreenArguments;
 
-    return _StatusScreen(
-        username: args.username,
+    // Marks the opened post so its tile shows X's time · date · views line.
+    return FocalPostScope(
         id: args.id,
-        tweetOpened: args.tweetOpened,
-        initialMediaIndex: args.initialMediaIndex,
-        initialTweet: args.initialTweet);
+        child: _StatusScreen(
+            username: args.username,
+            id: args.id,
+            tweetOpened: args.tweetOpened,
+            initialMediaIndex: args.initialMediaIndex,
+            initialTweet: args.initialTweet));
   }
 }
 
@@ -183,7 +192,11 @@ class _StatusScreenState extends State<_StatusScreen> {
   /// and it cost a TweetDetail request every time. On a failure the cached copy
   /// is used at any age: a thread the reader saw ten minutes ago beats an error
   /// screen when the network is down or every account is rate limited.
-  Future<TweetStatus> _fetchFirstPage() async {
+  Future<TweetStatus> _fetchFirstPage(ReplySort sort) async {
+    // The cache holds X's default (relevance) order only.
+    if (sort != ReplySort.relevant) {
+      return _getTweet(sort);
+    }
     final key = TimelineCache.threadKey(widget.id);
     final cache = TimelineCache(await Repository.writable());
 
@@ -200,7 +213,7 @@ class _StatusScreenState extends State<_StatusScreen> {
     }
 
     try {
-      final result = await Twitter.getTweet(widget.id);
+      final result = await _getTweet(sort);
       // A focal-only page with a non-zero reply count must not stick for the
       // cache window — re-opening would look like "no replies" again.
       if (_shouldCacheThread(result)) {
@@ -216,6 +229,11 @@ class _StatusScreenState extends State<_StatusScreen> {
       return stale;
     }
   }
+
+  late final ConversationSortStore _sortStore = context.read<ConversationSortStore>();
+
+  Future<TweetStatus> _getTweet(ReplySort sort, {String? cursor}) =>
+      Twitter.getTweet(widget.id, cursor: cursor, rankingMode: xRankingMode(sort));
 
   bool _shouldCacheThread(TweetStatus result) {
     // Cache when the page is usable offline: visible replies, or a show-more
@@ -245,7 +263,8 @@ class _StatusScreenState extends State<_StatusScreen> {
       _seenTweetIds.clear();
     }
 
-    var result = cursor == null ? await _fetchFirstPage() : await Twitter.getTweet(widget.id, cursor: cursor);
+    final sort = effectiveSort(_sortStore.state.replies, xReplySorts);
+    var result = cursor == null ? await _fetchFirstPage(sort) : await _getTweet(sort, cursor: cursor);
 
     // Cursor didn't advance and there are no new tweets -> stop. Still accept
     // the page when TimelineAddToModule appended replies under a repeated
@@ -323,11 +342,18 @@ class _StatusScreenState extends State<_StatusScreen> {
     _paging.resume(cursor);
   }
 
-  Future<void> _retryMissingReplies() async {
+  Future<void> _retryMissingReplies() => _restart(bypassThreadCache: true);
+
+  void _selectReplySort(ReplySort sort) {
+    _sortStore.selectReplies(sort);
+    _restart(bypassThreadCache: false);
+  }
+
+  Future<void> _restart({required bool bypassThreadCache}) async {
     setState(() {
       _repliesMissing = false;
       _showMoreCursor = null;
-      _bypassThreadCache = true;
+      _bypassThreadCache = bypassThreadCache;
       _seenAlready.clear();
       _seenTweetIds.clear();
       _firstLoadStarted = false;
@@ -455,7 +481,7 @@ class _StatusScreenState extends State<_StatusScreen> {
         );
       }
       if (paging.status == PagingStatus.noItemsFound) {
-        return Center(child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user));
+        return _unavailableFocalPage(context);
       }
       return const Center(child: CircularProgressIndicator());
     }
@@ -467,14 +493,15 @@ class _StatusScreenState extends State<_StatusScreen> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       children: [
         for (final chain in visible)
-          TweetConversation(
-              key: ValueKey(chain.id),
-              id: chain.id,
-              tweets: chain.tweets,
-              username: null,
-              isPinned: chain.isPinned,
-              tweetOpened: widget.tweetOpened,
-              initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
+          _unavailableFocal(context, chain) ??
+              TweetConversation(
+                  key: ValueKey(chain.id),
+                  id: chain.id,
+                  tweets: chain.tweets,
+                  username: null,
+                  isPinned: chain.isPinned,
+                  tweetOpened: widget.tweetOpened,
+                  initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
         InkWell(
           onTap: () => context.read<ZenRepliesState>().reveal(),
           child: Padding(
@@ -514,19 +541,51 @@ class _StatusScreenState extends State<_StatusScreen> {
     );
   }
 
+  /// The opened post when X sent it as unavailable: it stands in for the post,
+  /// with the author this screen was opened with.
+  Widget? _unavailableFocal(BuildContext context, TweetChain chain) {
+    final tweet = chain.tweets.singleOrNull;
+    if (chain.id != widget.id || tweet?.isTombstone != true) {
+      return null;
+    }
+    return _unavailableFocalTile(context, tweet?.text);
+  }
+
+  Widget _unavailableFocalTile(BuildContext context, String? message) => UnavailablePostTile(
+      message: message ?? L10n.of(context).this_tweet_is_unavailable, screenName: widget.username, id: widget.id);
+
+  /// X answered with nothing at all for the opened post, which is how it
+  /// answers for a deleted one.
+  Widget _unavailableFocalPage(BuildContext context) =>
+      Align(alignment: Alignment.topCenter, child: _unavailableFocalTile(context, null));
+
   Widget _conversationTile(BuildContext context, TweetChain chain, int index) {
+    final conversation = _unavailableFocal(context, chain) ??
+        TweetConversation(
+            id: chain.id,
+            tweets: chain.tweets,
+            username: null,
+            isPinned: chain.isPinned,
+            tweetOpened: widget.tweetOpened,
+            initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0);
+    final focal = chain.tweets.firstWhereOrNull((t) => t.idStr == widget.id);
     return AutoScrollTag(
       key: ValueKey(chain.id),
       controller: _scrollController,
       index: index,
       highlightColor: Theme.of(context).colorScheme.primary,
-      child: TweetConversation(
-          id: chain.id,
-          tweets: chain.tweets,
-          username: null,
-          isPinned: chain.isPinned,
-          tweetOpened: widget.tweetOpened,
-          initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
+      child: (focal?.replyCount ?? 0) > 0 ? Column(children: [conversation, _replySortButton()]) : conversation,
+    );
+  }
+
+  /// Sits under the opened post, at the top of its replies.
+  Widget _replySortButton() {
+    return ScopedBuilder<ConversationSortStore, ConversationSorts>(
+      store: _sortStore,
+      onState: (context, sorts) => Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: ReplySortButton(value: sorts.replies, options: xReplySorts, onSelected: _selectReplySort),
+      ),
     );
   }
 
@@ -543,9 +602,7 @@ class _StatusScreenState extends State<_StatusScreen> {
       );
     }
     if (state.items!.isEmpty) {
-      return Center(
-        child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user),
-      );
+      return _unavailableFocalPage(context);
     }
     return PagedListView<int, TweetChain>(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -582,7 +639,7 @@ class _StatusScreenState extends State<_StatusScreen> {
         );
       }
       if (state.status == PagingStatus.noItemsFound) {
-        return Center(child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user));
+        return _unavailableFocalPage(context);
       }
       return const Center(child: CircularProgressIndicator());
     }

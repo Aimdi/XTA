@@ -22,13 +22,17 @@ class ProgressiveFeedView extends StatelessWidget {
             icon: const Icon(Icons.arrow_upward),
             label: Text(L10n.of(context).reader_new_posts),
           ),
-        if (state.sources.values.any((source) => source.loading || source.error != null || source.cachedAt != null))
+        // Loading needs no room of its own: a hairline says it, and a chip appears
+        // only for something the reader can act on — a failure or cached posts.
+        if (state.sources.values.any((source) => source.loading))
+          LinearProgressIndicator(minHeight: 2, semanticsLabel: L10n.of(context).reader_source_loading),
+        if (state.sources.values.any(_worthAChip))
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 for (final entry in state.sources.entries)
-                  if (entry.value.loading || entry.value.error != null || entry.value.cachedAt != null)
+                  if (_worthAChip(entry.value))
                     ReadRecovery(
                       key: ValueKey('source-recovery-${entry.key}'),
                       isLoading: () => store.state.sources[entry.key]?.loading ?? false,
@@ -37,9 +41,7 @@ class ProgressiveFeedView extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: ActionChip(
-                          avatar: entry.value.loading
-                              ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
-                              : entry.value.error != null
+                          avatar: entry.value.error != null
                               ? const ScheduledReadRetry(idle: Icon(Icons.error_outline, size: 16), builder: _waiting)
                               : const Icon(Icons.history, size: 16),
                           label: Text(pluginById(entry.key)?.title(context) ?? entry.key),
@@ -59,11 +61,7 @@ class ProgressiveFeedView extends StatelessWidget {
                               builder: (sheetContext) => SafeArea(
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
-                                  child: Text(
-                                    entry.value.loading
-                                        ? L10n.of(context).reader_source_loading
-                                        : L10n.of(context).reader_cached_content,
-                                  ),
+                                  child: Text(L10n.of(context).reader_cached_content),
                                 ),
                               ),
                             );
@@ -79,6 +77,8 @@ class ProgressiveFeedView extends StatelessWidget {
     ),
   );
 }
+
+bool _worthAChip(FeedSourceState source) => source.error != null || (source.cachedAt != null && !source.loading);
 
 /// A source that will retry on its own shows a clock rather than an error.
 Widget _waiting(BuildContext context, int seconds) => const Icon(Icons.schedule, size: 16);

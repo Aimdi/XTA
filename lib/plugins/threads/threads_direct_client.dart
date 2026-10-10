@@ -2,16 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
+import 'package:xta/plugins/threads/threads_parse.dart';
 import 'package:xta/utils/json.dart';
 
-const _threadsWeb = 'https://www.threads.com';
+export 'package:xta/plugins/threads/threads_parse.dart';
+
+const _threadsWeb = threadsWebBase;
 const _instagramApi = 'https://i.instagram.com';
 const _igAppId = '238260118697367';
 const _barcelonaUa = 'Barcelona 289.0.0.77.109 Android';
@@ -21,8 +22,6 @@ const _safariUa =
 /// Guest profile threads — `BarcelonaProfileThreadsTabQuery`. Rotates; if it
 /// 404s or returns empty, [fetchGuestAccount] falls back to SSR `thread_items`.
 const threadsGuestProfileThreadsDocId = '6232751443445612';
-
-final _lsdTokenPattern = RegExp(r'"LSD",\[\],\{"token":"([^"]+)"\}');
 
 /// Cookie names a browser Threads session must carry for cookie REST reads.
 const _requiredCookieKeys = [
@@ -60,478 +59,6 @@ String? normaliseThreadsBearer(String raw) {
   }
   if (!value.startsWith('IGT:2:')) return null;
   return value;
-}
-
-/// Pure parsers for Meta JSON / SSR — kept free of I/O for unit tests.
-List<ThreadsPost> parseThreadsApiFeed(Object? json) {
-  final root = Json(json);
-  final buckets = root['threads'].list.isNotEmpty
-      ? root['threads'].list
-      : root['items'].list;
-  final posts = <ThreadsPost>[];
-  for (final bucket in buckets) {
-    final items = bucket['thread_items'].list;
-    final postJson = items.isNotEmpty ? items.first['post'] : bucket['post'];
-    final post = threadsPostFromApi(postJson);
-    if (post != null) posts.add(post);
-  }
-  return posts;
-}
-
-/// Guest GraphQL profile tab: `data.mediaData.threads` → same post shape as REST.
-List<ThreadsPost> parseThreadsGraphqlFeed(Object? json) {
-  final root = Json(json);
-  final mediaThreads = root['data']['mediaData']['threads'].list;
-  if (mediaThreads.isEmpty) {
-    return parseThreadsApiFeed(json);
-  }
-  return parseThreadsApiFeed({
-    'threads': [for (final thread in mediaThreads) thread.raw],
-  });
-}
-
-/// LSD token embedded in Threads HTML for guest GraphQL.
-String? extractThreadsLsd(String html) =>
-    _lsdTokenPattern.firstMatch(html)?.group(1);
-
-/// Numeric Threads user id for [handle] from a profile page HTML blob.
-String? extractThreadsUserIdFromHtml(String html, String handle) {
-  final key = handle.trim().toLowerCase();
-  if (key.isEmpty) return null;
-
-  // Logged-out profile pages currently embed the owner on
-  // BarcelonaProfileThreadsRoot as `props.user_id` — before any pk/username
-  // blob. Without this, guest GraphQL never starts.
-  final propsId = RegExp(r'"user_id"\s*:\s*"(\d+)"').firstMatch(html)?.group(1);
-  if (propsId != null && propsId != '0') {
-    return propsId;
-  }
-
-  final escaped = RegExp.escape(key);
-  final nearUsername = RegExp(
-    '"username"\\s*:\\s*"$escaped".{0,480}?"pk"\\s*:\\s*"(\\d+)"',
-    caseSensitive: false,
-    dotAll: true,
-  ).firstMatch(html);
-  if (nearUsername != null) return nearUsername.group(1);
-
-  final nearPk = RegExp(
-    '"pk"\\s*:\\s*"(\\d+)".{0,480}?"username"\\s*:\\s*"$escaped"',
-    caseSensitive: false,
-    dotAll: true,
-  ).firstMatch(html);
-  if (nearPk != null) return nearPk.group(1);
-
-  // Modal `userID` — ignore the logged-out stub `0`.
-  final userIds = RegExp(
-    r'"userID"\s*:\s*"(\d+)"',
-  ).allMatches(html).map((m) => m.group(1)!).where((id) => id != '0').toList();
-  if (userIds.isEmpty) return null;
-  final counts = <String, int>{};
-  for (final id in userIds) {
-    counts[id] = (counts[id] ?? 0) + 1;
-  }
-  final ranked = counts.entries.toList()
-    ..sort((a, b) => b.value.compareTo(a.value));
-  return ranked.first.key;
-}
-
-String? _metaContent(String html, String name) {
-  final property = RegExp(
-    '<meta[^>]+(?:property|name)="$name"[^>]+content="([^"]*)"',
-    caseSensitive: false,
-  ).firstMatch(html)?.group(1);
-  if (property != null) {
-    return property;
-  }
-  return RegExp(
-    '<meta[^>]+content="([^"]*)"[^>]+(?:property|name)="$name"',
-    caseSensitive: false,
-  ).firstMatch(html)?.group(1);
-}
-
-String _decodeHtmlEntities(String value) =>
-    html_parser.parseFragment(value).text ?? value;
-
-/// `5.7M` / `1.4K` / `380` → an int the profile card can show.
-int? parseThreadsCompactCount(String? raw) {
-  if (raw == null) {
-    return null;
-  }
-  final match = RegExp(
-    r'^([\d.,]+)\s*([KMB])?$',
-    caseSensitive: false,
-  ).firstMatch(raw.trim());
-  if (match == null) {
-    return null;
-  }
-  final number = double.tryParse(match.group(1)!.replaceAll(',', ''));
-  if (number == null) {
-    return null;
-  }
-  final scale = switch ((match.group(2) ?? '').toUpperCase()) {
-    'K' => 1000,
-    'M' => 1000000,
-    'B' => 1000000000,
-    _ => 1,
-  };
-  return (number * scale).round();
-}
-
-/// Public profile card from OG / meta tags on `threads.com/@handle` (no login).
-ThreadsProfile? threadsProfileFromGuestHtml(String html, String handle) {
-  final key = (normaliseThreadsHandle(handle) ?? handle).trim().toLowerCase();
-  if (key.isEmpty) {
-    return null;
-  }
-
-  final titleRaw =
-      _metaContent(html, 'og:title') ?? _metaContent(html, 'twitter:title');
-  final descRaw =
-      _metaContent(html, 'og:description') ?? _metaContent(html, 'description');
-  final imageRaw =
-      _metaContent(html, 'og:image') ?? _metaContent(html, 'twitter:image');
-  if (titleRaw == null && descRaw == null && imageRaw == null) {
-    return null;
-  }
-
-  final title = titleRaw == null ? '' : _decodeHtmlEntities(titleRaw);
-  final desc = descRaw == null ? '' : _decodeHtmlEntities(descRaw);
-  final image = imageRaw == null
-      ? ''
-      : _decodeHtmlEntities(imageRaw).replaceAll('&amp;', '&');
-
-  final nameMatch = RegExp(
-    r'^(.*?)\s*\(@',
-    caseSensitive: false,
-  ).firstMatch(title);
-  final displayName = (nameMatch?.group(1)?.trim().isNotEmpty ?? false)
-      ? nameMatch!.group(1)!.trim()
-      : key;
-
-  var followers = 0;
-  var mediaCount = 0;
-  var biography = '';
-  final parts = desc.split(RegExp(r'\s*[•·]\s*'));
-  for (final part in parts) {
-    final followersMatch = RegExp(
-      r'^([\d.,]+[KMB]?)\s+Followers?$',
-      caseSensitive: false,
-    ).firstMatch(part.trim());
-    if (followersMatch != null) {
-      followers =
-          parseThreadsCompactCount(followersMatch.group(1)) ?? followers;
-      continue;
-    }
-    final threadsMatch = RegExp(
-      r'^([\d.,]+[KMB]?)\s+Threads?$',
-      caseSensitive: false,
-    ).firstMatch(part.trim());
-    if (threadsMatch != null) {
-      mediaCount =
-          parseThreadsCompactCount(threadsMatch.group(1)) ?? mediaCount;
-      continue;
-    }
-    if (part.trim().isNotEmpty && biography.isEmpty) {
-      biography = part.trim();
-    }
-  }
-
-  final pk = extractThreadsUserIdFromHtml(html, key) ?? '';
-  return ThreadsProfile(
-    pk: pk,
-    id: pk,
-    username: key,
-    fullName: displayName,
-    isVerified: false,
-    isPrivate: false,
-    profilePicUrl: image,
-    biography: biography,
-    followerCount: followers,
-    followingCount: 0,
-    mediaCount: mediaCount,
-    externalUrl: '$_threadsWeb/@$key',
-  );
-}
-
-/// One Meta post object → [ThreadsPost], including pure reposts.
-///
-/// A repost often has an empty outer caption; the original lives under
-/// `text_post_app_info.share_info.reposted_post`. Skipping those empty shells
-/// is why followed accounts' reposts never showed up.
-ThreadsPost? threadsPostFromApi(Json post) {
-  if (!post.exists) return null;
-
-  final reposted = post['text_post_app_info']['share_info']['reposted_post'];
-  if (reposted.exists) {
-    return _threadsRepostFromApi(outer: post, inner: reposted);
-  }
-  return _threadsOriginalFromApi(post);
-}
-
-ThreadsPost? _threadsRepostFromApi({required Json outer, required Json inner}) {
-  final original = _threadsOriginalFromApi(inner);
-  if (original == null) {
-    return null;
-  }
-
-  final user = outer['user'];
-  final reposter = (user['username'].string ?? '').trim().toLowerCase();
-  if (reposter.isEmpty) {
-    return null;
-  }
-  final reposterName = (user['full_name'].string ?? '').trim();
-  final outerPk = outer['pk'].string ?? outer['id'].string ?? original.id;
-  final taken = outer['taken_at'].integer;
-
-  return ThreadsPost(
-    id: outerPk,
-    handle: original.handle,
-    authorName: original.authorName,
-    avatarUrl: original.avatarUrl,
-    text: original.text,
-    images: original.images,
-    imageAspects: original.imageAspects,
-    publishedAt: taken == null
-        ? original.publishedAt
-        : DateTime.fromMillisecondsSinceEpoch(
-            taken * 1000,
-            isUtc: true,
-          ).toLocal(),
-    url: original.url,
-    likeCount: original.likeCount,
-    replyCount: original.replyCount,
-    repostCount: original.repostCount,
-    linkCard: original.linkCard,
-    repostedByHandle: reposter,
-    repostedByName: reposterName.isEmpty ? reposter : reposterName,
-    isVerified: original.isVerified,
-    replyToHandle: original.replyToHandle,
-    isReply: original.isReply,
-  );
-}
-
-ThreadsPost? _threadsOriginalFromApi(Json post) {
-  if (!post.exists) return null;
-  final user = post['user'];
-  final handle = (user['username'].string ?? '').trim().toLowerCase();
-  final text = (post['caption']['text'].string ?? '').trim();
-  final media = _threadsMediaOf(post);
-  final images = [for (final item in media) item.url];
-  final linkCard = threadsLinkCardOf(post);
-  final replyTo = _threadsReplyToHandleOf(post);
-  if (handle.isEmpty || (text.isEmpty && images.isEmpty && linkCard == null)) {
-    return null;
-  }
-
-  final code = post['code'].string;
-  final pk = post['pk'].string ?? post['id'].string ?? code;
-  if (pk == null || pk.isEmpty) return null;
-
-  final tpi = post['text_post_app_info'];
-  final taken = post['taken_at'].integer;
-  return ThreadsPost(
-    id: pk,
-    handle: handle,
-    authorName: (user['full_name'].string ?? '').trim().isEmpty
-        ? handle
-        : user['full_name'].string!.trim(),
-    avatarUrl:
-        user['profile_pic_url'].string ??
-        user['hd_profile_pic_url_info']['url'].string,
-    text: text,
-    images: images,
-    imageAspects: [for (final item in media) item.aspectRatio],
-    publishedAt: taken == null
-        ? null
-        : DateTime.fromMillisecondsSinceEpoch(
-            taken * 1000,
-            isUtc: true,
-          ).toLocal(),
-    url: code == null ? null : '$_threadsWeb/@$handle/post/$code',
-    likeCount: post['like_count'].integer,
-    replyCount: tpi['direct_reply_count'].integer,
-    repostCount: tpi['repost_count'].integer,
-    linkCard: linkCard,
-    isVerified: user['is_verified'].boolean ?? false,
-    replyToHandle: replyTo,
-    isReply: replyTo != null || _threadsIsReply(post),
-  );
-}
-
-String? _threadsReplyToHandleOf(Json post) {
-  final handle = post['text_post_app_info']['reply_to_author']['username']
-      .string
-      ?.trim();
-  if (handle == null || handle.isEmpty) {
-    return null;
-  }
-  return handle.toLowerCase();
-}
-
-bool _threadsIsReply(Json post) {
-  final tpi = post['text_post_app_info'];
-  return tpi['is_reply'].boolean == true || tpi['reply_to_author'].exists;
-}
-
-({String? url, double? aspect}) _bestCandidate(Json versions) {
-  String? best;
-  var bestArea = -1;
-  double? aspect;
-  for (final candidate in versions['candidates'].list) {
-    final url = candidate['url'].string;
-    if (url == null || url.isEmpty) {
-      continue;
-    }
-    final w = candidate['width'].integer ?? 0;
-    final h = candidate['height'].integer ?? 0;
-    final area = w * h;
-    if (area >= bestArea) {
-      bestArea = area;
-      best = url;
-      if (w > 0 && h > 0) {
-        aspect = w / h;
-      }
-    }
-  }
-  return (url: best, aspect: aspect);
-}
-
-List<PluginMediaItem> _threadsMediaOf(Json post) {
-  final items = <PluginMediaItem>[];
-  final seen = <String>{};
-
-  void add(Json media) {
-    final picked = _bestCandidate(media['image_versions2']);
-    final url = picked.url;
-    if (url == null || url.isEmpty || seen.contains(url)) {
-      return;
-    }
-    seen.add(url);
-    final fallback = pluginMediaAspectFrom({
-      'width':
-          media['original_width'].integer ?? post['original_width'].integer,
-      'height':
-          media['original_height'].integer ?? post['original_height'].integer,
-    });
-    items.add(
-      PluginMediaItem(url: url, aspectRatio: picked.aspect ?? fallback),
-    );
-  }
-
-  if (post['carousel_media'].list.isNotEmpty) {
-    for (final media in post['carousel_media'].list) {
-      add(media);
-    }
-    return items;
-  }
-  add(post);
-  return items;
-}
-
-ThreadsProfile? threadsProfileFromUserJson(Json user) {
-  if (!user.exists) return null;
-  final username = (user['username'].string ?? '').trim();
-  if (username.isEmpty) return null;
-  final pk =
-      user['pk'].string ?? user['id'].string ?? user['pk_id'].string ?? '';
-  final url = user['external_url'].string?.trim();
-  return ThreadsProfile(
-    pk: pk,
-    id: user['id'].string ?? pk,
-    username: username,
-    fullName: user['full_name'].string ?? '',
-    isVerified: user['is_verified'].boolean ?? false,
-    isPrivate: user['is_private'].boolean ?? false,
-    profilePicUrl:
-        user['profile_pic_url'].string ??
-        user['hd_profile_pic_url_info']['url'].string ??
-        '',
-    biography: user['biography'].string ?? '',
-    followerCount: user['follower_count'].integer ?? 0,
-    followingCount: user['following_count'].integer ?? 0,
-    mediaCount: user['media_count'].integer ?? 0,
-    externalUrl: url == null || url.isEmpty ? null : url,
-  );
-}
-
-/// Walks decoded `data-sjs` blobs for `thread_items` posts.
-///
-/// Profile pages: one card per thread (the root item). Post pages should use
-/// [parseThreadsSsrThread], which keeps every reply in the chain.
-List<ThreadsPost> parseThreadsSsrHtml(String body, String handle) {
-  final document = html_parser.parse(body);
-  final posts = <ThreadsPost>[];
-  final seen = <String>{};
-
-  for (final script in document.querySelectorAll('script[data-sjs]')) {
-    final text = script.text.trim();
-    if (text.isEmpty || !text.contains('thread_items')) continue;
-    Object? decoded;
-    try {
-      decoded = jsonDecode(text);
-    } catch (_) {
-      continue;
-    }
-    _collectSsrPosts(decoded, handle, posts, seen, rootsOnly: true);
-  }
-  return posts;
-}
-
-/// Every post embedded in a Threads post page (root + replies).
-List<ThreadsPost> parseThreadsSsrThread(String body) {
-  final document = html_parser.parse(body);
-  final posts = <ThreadsPost>[];
-  final seen = <String>{};
-
-  for (final script in document.querySelectorAll('script[data-sjs]')) {
-    final text = script.text.trim();
-    if (text.isEmpty || !text.contains('thread_items')) continue;
-    Object? decoded;
-    try {
-      decoded = jsonDecode(text);
-    } catch (_) {
-      continue;
-    }
-    _collectSsrPosts(decoded, '', posts, seen, rootsOnly: false);
-  }
-  return posts;
-}
-
-void _collectSsrPosts(
-  Object? node,
-  String handle,
-  List<ThreadsPost> out,
-  Set<String> seen, {
-  required bool rootsOnly,
-}) {
-  if (node is Map) {
-    final items = node['thread_items'];
-    if (items is List && items.isNotEmpty) {
-      final slice = rootsOnly ? items.take(1) : items;
-      for (final item in slice) {
-        final post = threadsPostFromApi(
-          Json(item is Map ? item['post'] : null),
-        );
-        // Reposts keep the original author on [ThreadsPost.handle]; the profile
-        // owner is [repostedByHandle]. Match either so SSR profile scrapes keep them.
-        final matches =
-            handle.isEmpty ||
-            post?.handle == handle ||
-            post?.repostedByHandle == handle;
-        if (post != null && matches && seen.add(post.id)) {
-          out.add(post);
-        }
-      }
-    }
-    for (final value in node.values) {
-      _collectSsrPosts(value, handle, out, seen, rootsOnly: rootsOnly);
-    }
-  } else if (node is List) {
-    for (final value in node) {
-      _collectSsrPosts(value, handle, out, seen, rootsOnly: rootsOnly);
-    }
-  }
 }
 
 /// Read-only Meta client: cookies on threads.com, Bearer on i.instagram.com,
@@ -1133,54 +660,78 @@ class ThreadsDirectClient {
   ///
   /// Returns root + replies when the page embeds them. Empty when Meta sent
   /// nothing parseable — the caller still has the seed card from the feed.
-  Future<List<ThreadsPost>> fetchGuestPostThread(String postUrl) async {
-    final uri = Uri.tryParse(postUrl.trim());
-    if (uri == null || !uri.host.contains('threads.')) {
-      throw ThreadsException(
-        ThreadsErrorKind.unreachable,
-        'not a threads url: $postUrl',
-      );
-    }
+  Future<List<ThreadsPost>> fetchGuestPostThread(String postUrl) async =>
+      (await fetchGuestPostChains(postUrl)).expand((chain) => chain).toList(growable: false);
 
-    final response = await _get(uri, {
-      'User-Agent': _safariUa,
-      'Accept':
-          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.9',
-    }, respectCooldown: false);
-    if (response.statusCode == 404) {
-      throw ThreadsException(ThreadsErrorKind.noSuchFeed, '$uri: 404');
+  /// The post page's chains — the conversation leading to the post, then each
+  /// reply thread — as [threadsSsrChains] reads them.
+  ///
+  /// Remembered for [threadsConversationTtl] and shared while in flight:
+  /// going back and opening the same post again, or a link to a post the feed
+  /// already opened, should not ask Meta twice. [force] is the reader pulling
+  /// to refresh, the one time it is worth asking again.
+  Future<List<List<ThreadsPost>>> fetchGuestPostChains(String postUrl, {bool force = false}) {
+    final uri = canonicalThreadsPostUri(postUrl);
+    if (uri == null) {
+      return Future.error(ThreadsException(ThreadsErrorKind.unreachable, 'not a threads url: $postUrl'));
     }
-    if (response.statusCode == 429) {
-      throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
+    final key = threadsShortcodeOf(uri.toString()) ?? uri.toString();
+    final cached = _conversations[key];
+    if (!force && cached != null && DateTime.now().difference(cached.at) < threadsConversationTtl) {
+      return Future.value(cached.chains);
     }
-    if (response.statusCode != 200) {
-      throw ThreadsException(
-        ThreadsErrorKind.unreachable,
-        '$uri: ${response.statusCode}',
-      );
-    }
+    return _conversationsInFlight.putIfAbsent(key, () async {
+      try {
+        final chains = threadsSsrChains(await _guestHtml(uri));
+        _rememberConversation(key, chains);
+        return chains;
+      } finally {
+        _conversationsInFlight.remove(key);
+      }
+    });
+  }
 
-    return parseThreadsSsrThread(utf8.decode(response.bodyBytes));
+  final Map<String, ({DateTime at, List<List<ThreadsPost>> chains})> _conversations = {};
+  final Map<String, Future<List<List<ThreadsPost>>>> _conversationsInFlight = {};
+
+  void _rememberConversation(String key, List<List<ThreadsPost>> chains) {
+    if (chains.isEmpty) {
+      return;
+    }
+    _conversations.remove(key);
+    _conversations[key] = (at: DateTime.now(), chains: chains);
+    while (_conversations.length > threadsConversationCacheSize) {
+      _conversations.remove(_conversations.keys.first);
+    }
+  }
+
+  /// [handle]'s replies, from the public `/@handle/replies` page.
+  ///
+  /// Asked for only when the reader opens the Replies tab — never on a feed
+  /// refresh — and empty when Meta did not embed them for a guest.
+  Future<List<ThreadsPost>> fetchGuestReplies(String handle) async {
+    final key = handle.trim().toLowerCase();
+    final body = await _guestHtml(Uri.parse('$_threadsWeb/@$key/replies'));
+    return parseThreadsSsrReplies(body, key);
   }
 
   Future<String> _fetchProfileHtml(String handle) {
     final key = handle.trim().toLowerCase();
     return _profileHtmlInFlight.putIfAbsent(key, () async {
       try {
-        return await _downloadProfileHtml(key);
+        return await _guestHtml(Uri.parse('$_threadsWeb/@$key'));
       } finally {
         _profileHtmlInFlight.remove(key);
       }
     });
   }
 
-  Future<String> _downloadProfileHtml(String handle) async {
-    final uri = Uri.parse('$_threadsWeb/@$handle');
+  /// A public page as a logged-out browser sees it. Guest pages ignore the
+  /// session cooldown: they spend no session.
+  Future<String> _guestHtml(Uri uri) async {
     final response = await _get(uri, {
       'User-Agent': _safariUa,
-      'Accept':
-          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'en-US,en;q=0.9',
     }, respectCooldown: false);
     if (response.statusCode == 404) {
@@ -1190,12 +741,9 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
     }
     if (response.statusCode != 200) {
-      throw ThreadsException(
-        ThreadsErrorKind.unreachable,
-        '$uri: ${response.statusCode}',
-      );
+      throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: ${response.statusCode}');
     }
-    return utf8.decode(response.bodyBytes);
+    return utf8.decode(response.bodyBytes, allowMalformed: true);
   }
 
   Future<List<ThreadsPost>> _fetchGuestGraphqlThreads({
@@ -1271,4 +819,14 @@ String _randomDeviceId() {
     (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0'),
   ).join();
   return '${hex(4)}-${hex(2)}-${hex(2)}-${hex(2)}-${hex(6)}';
+}
+
+/// A post link as `www.threads.com` serves it: `threads.net`, `m.` hosts and
+/// share-sheet query strings each cost a redirect, or a cache miss, otherwise.
+Uri? canonicalThreadsPostUri(String postUrl) {
+  final uri = Uri.tryParse(postUrl.trim());
+  if (uri == null || !uri.host.contains('threads.') || uri.pathSegments.isEmpty) {
+    return null;
+  }
+  return Uri.parse('$_threadsWeb${uri.path}');
 }

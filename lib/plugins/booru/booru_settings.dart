@@ -6,10 +6,14 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_display_settings.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
+import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/ui/errors.dart';
 
 class BooruSettingsScreen extends StatefulWidget {
@@ -115,6 +119,12 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     }
   }
 
+  Future<void> _mute(String entry) async {
+    if (normaliseBooruQuery(entry) == null) return;
+    await context.read<BooruMuteStore>().mute(entry);
+    _muteTag.clear();
+  }
+
   Future<void> _test() async {
     setState(() => _testing = true);
     final l10n = L10n.of(context);
@@ -196,7 +206,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
           ),
           ListTile(
             title: Text(l10n.plugin_booru_engine),
-            subtitle: Text(_engineLabel(l10n, engine)),
+            subtitle: Text(booruEngineLabel(l10n, engine)),
             onTap: () async {
               final next = await showModalBottomSheet<BooruEngine>(
                 context: context,
@@ -206,7 +216,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                     children: [
                       for (final value in BooruEngine.values)
                         ListTile(
-                          title: Text(_engineLabel(l10n, value)),
+                          title: Text(booruEngineLabel(l10n, value)),
                           onTap: () => Navigator.pop(context, value),
                         ),
                     ],
@@ -266,7 +276,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
           PrefTitle(title: Text(l10n.plugin_booru_section_content)),
           ListTile(
             title: Text(l10n.plugin_booru_max_rating),
-            subtitle: Text(_ratingLabel(l10n, maxRating)),
+            subtitle: Text(booruRatingLabel(l10n, maxRating)),
             onTap: () async {
               final next = await showModalBottomSheet<BooruRating>(
                 context: context,
@@ -276,7 +286,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                     children: [
                       for (final value in BooruRating.values)
                         ListTile(
-                          title: Text(_ratingLabel(l10n, value)),
+                          title: Text(booruRatingLabel(l10n, value)),
                           onTap: () => Navigator.pop(context, value),
                         ),
                     ],
@@ -303,29 +313,25 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               }
             },
           ),
+          const BooruDisplaySettings(),
           PrefTitle(title: Text(l10n.plugin_booru_mute_section)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
               controller: _muteTag,
+              autocorrect: false,
+              enableSuggestions: false,
               decoration: InputDecoration(
                 labelText: l10n.plugin_booru_mute_tag,
+                helperText: l10n.plugin_booru_mute_help,
+                helperMaxLines: 3,
                 suffixIcon: IconButton(
+                  tooltip: l10n.plugin_booru_mute_tag,
                   icon: const Icon(Icons.add),
-                  onPressed: () async {
-                    final tag = normaliseBooruTag(_muteTag.text);
-                    if (tag == null) return;
-                    await context.read<BooruMuteStore>().mute(tag);
-                    _muteTag.clear();
-                  },
+                  onPressed: () => _mute(_muteTag.text),
                 ),
               ),
-              onSubmitted: (value) async {
-                final tag = normaliseBooruTag(value);
-                if (tag == null) return;
-                await context.read<BooruMuteStore>().mute(tag);
-                _muteTag.clear();
-              },
+              onSubmitted: _mute,
             ),
           ),
           ScopedBuilder<BooruMuteStore, Set<String>>(
@@ -345,7 +351,9 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                   children: [
                     for (final tag in muted.toList()..sort())
                       InputChip(
-                        label: Text(tag),
+                        label: Text.rich(
+                          booruQuerySpan(tag, Theme.of(context)),
+                        ),
                         onDeleted: () =>
                             context.read<BooruMuteStore>().unmute(tag),
                       ),
@@ -369,20 +377,6 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
       ),
     );
   }
-
-  String _engineLabel(L10n l10n, BooruEngine engine) => switch (engine) {
-    BooruEngine.danbooru => l10n.plugin_booru_engine_danbooru,
-    BooruEngine.moebooru => l10n.plugin_booru_engine_moebooru,
-    BooruEngine.gelbooruV2 => l10n.plugin_booru_engine_gelbooru,
-    BooruEngine.e621 => l10n.plugin_booru_engine_e621,
-  };
-
-  String _ratingLabel(L10n l10n, BooruRating rating) => switch (rating) {
-    BooruRating.general => l10n.plugin_booru_rating_general,
-    BooruRating.sensitive => l10n.plugin_booru_rating_sensitive,
-    BooruRating.questionable => l10n.plugin_booru_rating_questionable,
-    BooruRating.explicit => l10n.plugin_booru_rating_explicit,
-  };
 
   String _loginHelp(L10n l10n, BooruEngine engine) => switch (engine) {
     BooruEngine.gelbooruV2 => l10n.plugin_booru_login_help_gelbooru,
@@ -498,7 +492,7 @@ class _AddBooruSiteDialogState extends State<_AddBooruSiteDialog> {
               for (final engine in BooruEngine.values)
                 DropdownMenuItem(
                   value: engine,
-                  child: Text(_engineLabel(l10n, engine)),
+                  child: Text(booruEngineLabel(l10n, engine)),
                 ),
             ],
             onChanged: (value) {
@@ -519,11 +513,4 @@ class _AddBooruSiteDialogState extends State<_AddBooruSiteDialog> {
       ],
     );
   }
-
-  String _engineLabel(L10n l10n, BooruEngine engine) => switch (engine) {
-    BooruEngine.danbooru => l10n.plugin_booru_engine_danbooru,
-    BooruEngine.moebooru => l10n.plugin_booru_engine_moebooru,
-    BooruEngine.gelbooruV2 => l10n.plugin_booru_engine_gelbooru,
-    BooruEngine.e621 => l10n.plugin_booru_engine_e621,
-  };
 }

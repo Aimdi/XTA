@@ -8,6 +8,13 @@ class DownloadEntry {
   final Uri uri;
   final String fileName;
   final String? treeUri;
+
+  /// Saved without a picker into the shared folder for its type (see
+  /// `SharedDownloadFolder`); ignored when [treeUri] names a folder.
+  final bool background;
+
+  /// A folder path inside the destination, created on save when missing.
+  final String? subfolder;
   final DownloadStatus status;
   final DateTime createdAt;
   final int received;
@@ -19,6 +26,8 @@ class DownloadEntry {
     required this.uri,
     required this.fileName,
     this.treeUri,
+    this.background = false,
+    this.subfolder,
     required this.createdAt,
     this.status = DownloadStatus.queued,
     this.received = 0,
@@ -37,24 +46,34 @@ class DownloadEntry {
       status == DownloadStatus.failed || status == DownloadStatus.interrupted || status == DownloadStatus.cancelled;
   bool get canCancel => active && status != DownloadStatus.choosingLocation;
 
-  DownloadEntry copyWith({DownloadStatus? status, int? received, int? total, String? savedUri, bool reset = false}) =>
-      DownloadEntry(
-        id: id,
-        uri: uri,
-        fileName: fileName,
-        treeUri: treeUri,
-        createdAt: createdAt,
-        status: status ?? this.status,
-        received: reset ? 0 : received ?? this.received,
-        total: reset ? null : total ?? this.total,
-        savedUri: reset ? null : savedUri ?? this.savedUri,
-      );
+  DownloadEntry copyWith({
+    DownloadStatus? status,
+    int? received,
+    int? total,
+    String? savedUri,
+    bool? background,
+    bool reset = false,
+  }) => DownloadEntry(
+    id: id,
+    uri: uri,
+    fileName: fileName,
+    treeUri: treeUri,
+    background: background ?? this.background,
+    subfolder: subfolder,
+    createdAt: createdAt,
+    status: status ?? this.status,
+    received: reset ? 0 : received ?? this.received,
+    total: reset ? null : total ?? this.total,
+    savedUri: reset ? null : savedUri ?? this.savedUri,
+  );
 
   Map<String, Object?> toJson() => {
     'id': id,
     'url': uri.toString(),
     'name': fileName,
     'tree': treeUri,
+    if (background) 'background': true,
+    if (subfolder != null) 'folder': subfolder,
     'status': status.name,
     'created': createdAt.toIso8601String(),
     'received': received,
@@ -87,6 +106,8 @@ class DownloadEntry {
       fileName: safeDownloadName(name),
       createdAt: date,
       treeUri: value['tree'] is String ? value['tree'] as String : null,
+      background: value['background'] == true,
+      subfolder: value['folder'] is String ? safeDownloadFolder(value['folder'] as String) : null,
       status: statuses.first,
       received: value['received'] is int ? (value['received'] as int).clamp(0, 1 << 53) : 0,
       total: value['total'] is int ? (value['total'] as int).clamp(0, 1 << 53) : null,
@@ -100,6 +121,27 @@ String safeDownloadName(String value) {
   final name = p.basename(value.replaceAll('\\', '/').split('?').first).replaceAll(RegExp(r'[\x00-\x1f<>:"|?*]'), '_');
   if (name.isEmpty || name == '.' || name == '..') return 'xta-media';
   return name.length > 240 ? name.substring(name.length - 240) : name;
+}
+
+/// [value] as a relative folder path that stays inside the chosen download
+/// folder: separators split it, each part loses what no file system accepts,
+/// and `.`, `..` and empty parts are dropped. Null when nothing is left.
+String? safeDownloadFolder(String value) {
+  final parts = value
+      .replaceAll('\\', '/')
+      .split('/')
+      .map((part) => _folderPart(part.replaceAll(RegExp(r'[\x00-\x1f<>:"|?*]'), '_')))
+      .where((part) => part.isNotEmpty)
+      .take(4)
+      .toList();
+  return parts.isEmpty ? null : parts.join('/');
+}
+
+// Trailing dots and spaces are dropped as some card file systems refuse them,
+// and leading ones because Android hides a dot folder from the gallery.
+String _folderPart(String part) {
+  final short = part.length > 120 ? part.substring(0, 120) : part;
+  return short.replaceAll(RegExp(r'^[.\s]+|[.\s]+$'), '');
 }
 
 Uri originalDownloadUri(Uri uri) {
@@ -122,7 +164,15 @@ class DownloadRequest {
   final Uri uri;
   final String fileName;
   final String? treeUri;
-  const DownloadRequest({required this.uri, required this.fileName, this.treeUri});
+  final bool background;
+  final String? subfolder;
+  const DownloadRequest({
+    required this.uri,
+    required this.fileName,
+    this.treeUri,
+    this.background = false,
+    this.subfolder,
+  });
 }
 
 class DownloadBatchResult {

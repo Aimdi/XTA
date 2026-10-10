@@ -10,6 +10,7 @@ import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/threads/threads_interleaved.dart';
+import 'package:xta/plugins/threads/threads_feed_options.dart';
 import 'package:xta/plugins/subscription_source.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
@@ -109,6 +110,13 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
   ) => loadThreadsInterleaved(context, ids);
 
   @override
+  Future<List<InterleavedItem>> groupPosts(
+    BuildContext context,
+    List<String> ids, {
+    required FeedPostKinds kinds,
+  }) => loadThreadsInterleaved(context, ids, kinds: kinds);
+
+  @override
   bool inHomeFeed(BuildContext context) =>
       threadsInHomeFeed(PrefService.of(context, listen: false));
 
@@ -144,10 +152,16 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginThreadsGuestLsd, '');
     await prefs.set(optionPluginThreadsGuestLsdAt, '');
     await prefs.set(optionPluginThreadsSearchHistory, '[]');
+    await prefs.set(optionPluginThreadsFeedOptions, '');
+    await prefs.set(optionPluginThreadsFeedSnapshot, '');
   }
 
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
+    final feed = context.read<ThreadsFeedStore>();
+    final options = context.read<ThreadsFeedOptionsStore>();
     await context.read<ThreadsAccountsStore>().load();
+    await feed.forget();
+    await options.reset();
   }
 }

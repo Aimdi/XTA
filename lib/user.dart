@@ -12,7 +12,10 @@ import 'package:xta/subscriptions/group_membership_sheet.dart';
 import 'package:xta/subscriptions/subscription_unfollow.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/motion.dart';
+import 'package:xta/ui/verified_badges.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/user_verification.dart';
+import 'package:xta/utils/json.dart';
 import 'package:provider/provider.dart';
 
 Widget _createUserAvatar(String? uri, double size, [int? cacheWidth]) {
@@ -83,7 +86,11 @@ class UserAvatar extends StatelessWidget {
 class UserTile extends StatelessWidget {
   final Subscription user;
 
-  const UserTile({super.key, required this.user});
+  /// The badges read from X, when the tile is built from a fetched user; a
+  /// stored subscription only knows whether it was verified.
+  final UserVerification? verification;
+
+  const UserTile({super.key, required this.user, this.verification});
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +100,7 @@ class UserTile extends StatelessWidget {
       title: Row(
         children: [
           Flexible(child: Text(user.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
-          if (user.verified) const SizedBox(width: 6),
-          if (user.verified) Icon(Icons.verified, size: 14, color: Theme.of(context).colorScheme.primary)
+          VerifiedBadges(verification: verification ?? UserVerification.fromFlag(user.verified), size: 14, gap: 6),
         ],
       ),
       subtitle: Text('@${user.screenName}', maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -213,6 +219,10 @@ class UserWithExtra extends User {
   Map<String, dynamic>? card;
   bool? possiblySensitive;
 
+  /// Null when this user was not built from X's JSON (a hand-made placeholder);
+  /// [UserBadges.badges] then falls back to the `verified` flag.
+  UserVerification? verification;
+
   UserWithExtra();
 
   factory UserWithExtra.fromArguments({
@@ -274,6 +284,7 @@ class UserWithExtra extends User {
   Map<String, dynamic> toJson() {
     var json = super.toJson();
     json['potentiallySensitive'] = possiblySensitive;
+    json.addAll(verification?.toJson() ?? const {});
 
     return json;
   }
@@ -283,15 +294,53 @@ class UserWithExtra extends User {
     // A response that has finished that migration must still yield a usable
     // profile, so an absent `legacy` degrades to whatever the rest carries
     // rather than throwing and taking the whole screen down.
-    var userWithExtra = UserWithExtra.fromJson((json["legacy"] as Map<String, dynamic>?) ?? const <String, dynamic>{});
+    final legacy = json["legacy"];
+    var userWithExtra = UserWithExtra.fromJson({
+      if (legacy is Map<String, dynamic>) ...legacy,
+      ..._modernUserFields(Json(json)),
+    });
     userWithExtra
-      ..name = json["core"]?["name"] ?? userWithExtra.name
-      ..createdAt = convertTwitterDateTime(json["core"]?["created_at"]) ?? userWithExtra.createdAt
-      ..screenName = json["core"]?["screen_name"] ?? userWithExtra.screenName
       ..verified = json["is_blue_verified"] ?? userWithExtra.verified
-      ..profileImageUrlHttps = json["avatar"]?["image_url"] ?? userWithExtra.profileImageUrlHttps
-      ..idStr = json["rest_id"] ?? userWithExtra.idStr;
+      ..verification = UserVerification.fromJson(json);
     return userWithExtra;
+  }
+
+  /// The profile fields of a user result that has no `legacy` left (current
+  /// UserByScreenName, timelines, follows and people search), under the
+  /// `legacy` names [UserWithExtra.fromJson] reads. Absent fields are left out
+  /// so a half-migrated result keeps its `legacy` values.
+  static Map<String, dynamic> _modernUserFields(Json user) {
+    String? text(Json value) => (value.string?.isEmpty ?? true) ? null : value.string;
+    final avatar = text(user['avatar']['image_url']);
+    final entities = user['profile_bio']['entities'].raw;
+    final fields = <String, dynamic>{
+      'id_str': user['rest_id'].string,
+      'name': user['core']['name'].string,
+      'screen_name': user['core']['screen_name'].string,
+      'created_at': user['core']['created_at'].string,
+      'location': text(user['location']['location']),
+      'url': text(user['website']['url']),
+      'description': user['profile_bio']['description'].string,
+      'entities': entities is Map<String, dynamic> ? entities : null,
+      'protected': user['privacy']['protected'].boolean,
+      'followers_count': user['relationship_counts']['followers'].integer,
+      'friends_count': user['relationship_counts']['following'].integer,
+      'favorites_count': user['action_counts']['favorites_count'].integer,
+      'statuses_count': user['tweet_counts']['tweets'].integer,
+      'profile_banner_url': text(user['banner']['image_url']),
+      'profile_image_url_https': avatar,
+      'possibly_sensitive': user['possibly_sensitive'].boolean,
+      'default_profile_image': avatar?.contains('default_profile_images'),
+    };
+    fields.removeWhere((_, value) => value == null);
+    return fields;
+  }
+
+  /// Pinned post ids: `pinned_items` on current results, `legacy` on older ones.
+  static List<String> pinnedTweetIdsOf(Map<String, dynamic> json) {
+    final modern = Json(json)['pinned_items']['tweet_ids_str'];
+    final ids = modern.exists ? modern : Json(json)['legacy']['pinned_tweet_ids_str'];
+    return [for (final id in ids.list) ?id.string];
   }
 
   factory UserWithExtra.fromJson(Map<String, dynamic> json) {
@@ -323,7 +372,17 @@ class UserWithExtra extends User {
       ..withheldScope = json['withheld_scope'] as String?;
 
     userWithExtra.possiblySensitive = json['possibly_sensitive'] as bool?;
+    userWithExtra.verification = UserVerification.fromJson(json);
 
     return userWithExtra;
+  }
+}
+
+extension UserBadges on User {
+  /// The badges to draw after this user's name.
+  UserVerification get badges {
+    final self = this;
+    final parsed = self is UserWithExtra ? self.verification : null;
+    return parsed ?? UserVerification.fromFlag(verified);
   }
 }

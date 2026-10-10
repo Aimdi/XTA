@@ -1,27 +1,36 @@
-import 'package:flutter_triple/flutter_triple.dart';
-import 'package:xta/plugins/pixiv/pixiv_group.dart';
-import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'dart:math';
+
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
-import 'package:xta/plugins/pixiv/pixiv_grid.dart';
-import 'package:xta/plugins/pixiv/pixiv_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/plugins/pixiv/pixiv_social_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_header.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_menu.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_tabs.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/profile/profile_chrome.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/utils/urls.dart';
-import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/ui/motion.dart';
+import 'package:xta/ui/reader_tab_view.dart';
 
-/// One Pixiv user's profile and works in a staggered grid.
+/// One Pixiv creator's profile: header, then Works, Bookmarks, Following and
+/// Info tabs. A creator the reader muted shows a placeholder instead.
 class PixivUserScreen extends StatefulWidget {
   final int userId;
 
-  const PixivUserScreen({super.key, required this.userId});
+  /// The [PixivProfileTab.id] to open on; the first tab when absent or not offered.
+  final String? initialTab;
+
+  const PixivUserScreen({super.key, required this.userId, this.initialTab});
 
   @override
   State<PixivUserScreen> createState() => _PixivUserScreenState();
@@ -29,202 +38,147 @@ class PixivUserScreen extends StatefulWidget {
 
 class _PixivUserScreenState extends State<PixivUserScreen> {
   late final PixivUserStore _profile;
-  late final PixivIllustListStore _works;
-  PixivUser? get _user => _profile.state;
+  final _loads = PixivLoads();
+
+  /// Show anyway, for this visit only.
+  final _revealed = PluginViewStore<bool>(false);
 
   @override
   void initState() {
     super.initState();
-    final client = context.read<PixivClient>();
-    _profile = PixivUserStore(client, widget.userId);
-    _works = PixivIllustListStore(({nextUrl}) => client.userIllusts(widget.userId, nextUrl: nextUrl),
-      filter: context.read<PixivMuteStore>().filter);
+    _profile = PixivUserStore(PixivSocialApi.of(context), widget.userId);
     _load();
   }
 
+  Future<void> _load() => _loads.track(_profile.load());
+
   @override
-  void dispose() { _profile.destroy(); _works.destroy(); super.dispose(); }
-
-  Future<void> _load() async { await Future.wait([_profile.load(), _works.refresh()]); }
-
-  Future<void> _toggleFollow() async {
-    final l10n = L10n.of(context);
-    try { await _profile.toggleFollow(); }
-    catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(pixivErrorMessage(l10n, error))));
-    }
+  void dispose() {
+    _loads.destroyAfter([_profile]);
+    _revealed.destroy();
+    super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) => TripleBuilder<PixivUserStore, PixivUserProfile?>(
+    store: _profile,
+    builder: (context, triple) {
+      final profile = triple.state;
+      if (profile == null) return _pending(context, triple.isLoading ? null : triple.error);
+      return ScopedBuilder<PixivMuteStore, PixivMuteState>(
+        store: context.read<PixivMuteStore>(),
+        onState: (context, mute) => ScopedBuilder<PluginViewStore<bool>, bool>(
+          store: _revealed,
+          onState: (context, revealed) {
+            final scope = PixivProfileScope(
+              profile: profile,
+              own: profile.id == context.read<PixivClient>().storedUserId,
+              muted: mute.authorIds.contains(profile.id),
+            );
+            if (scope.muted && !revealed) return _muted(context, scope);
+            return PixivProfileView(scope: scope, initialTab: widget.initialTab);
+          },
+        ),
+      );
+    },
+  );
+
+  Widget _pending(BuildContext context, Object? error) => Scaffold(
+    appBar: AppBar(),
+    body: error == null
+        ? const Center(child: CircularProgressIndicator())
+        : Padding(
+            padding: const EdgeInsets.all(24),
+            child: FullPageErrorWidget(
+              error: error,
+              stackTrace: null,
+              prefix: pixivErrorMessage(L10n.of(context), error),
+              onRetry: _load,
+            ),
+          ),
+  );
+
+  Widget _muted(BuildContext context, PixivProfileScope scope) {
+    final l10n = L10n.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(scope.profile.user.name), actions: pixivProfileActions(context, scope)),
+      body: EmptyPane(
+        key: const ValueKey('pixiv-profile-muted'),
+        icon: Icons.person_off_outlined,
+        message: l10n.plugin_pixiv_profile_muted,
+        action: Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 8,
+          children: [
+            FilledButton(onPressed: () => _revealed.select(true), child: Text(l10n.plugin_pixiv_profile_show_anyway)),
+            OutlinedButton(
+              onPressed: () => context.read<PixivMuteStore>().unmuteAuthor(scope.profile.id),
+              child: Text(l10n.plugin_pixiv_unmute),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A loaded profile: the header and tab bar collapse under the AppBar while
+/// the tab below scrolls.
+class PixivProfileView extends StatelessWidget {
+  final PixivProfileScope scope;
+  final String? initialTab;
+
+  const PixivProfileView({super.key, required this.scope, this.initialTab});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-
-    return TripleBuilder<PixivUserStore, PixivUser?>(store: _profile,
-      builder: (_, profile) => TripleBuilder<PixivIllustListStore, List<PixivIllust>>(
-        store: _works, builder: (_, works) => Scaffold(
-      appBar: AppBar(
-        title: Text(_user?.name ?? '${widget.userId}'),
-        actions: [
-          if (_user != null)
-            IconButton(
-              icon: const Icon(Icons.open_in_new),
-              tooltip: l10n.plugin_pixiv_open_on_pixiv,
-              onPressed: () =>
-                  openUri(context, 'https://www.pixiv.net/users/${_user!.id}'),
-            ),
-        ],
-      ),
-      body: _body(context, profile.error ?? works.error),
-    )));
+    final tabs = pixivProfileTabsFor(scope);
+    return DefaultTabController(
+      length: tabs.length,
+      initialIndex: max(0, tabs.indexWhere((tab) => tab.id == initialTab)),
+      child: Builder(builder: (context) => Scaffold(body: _scroll(context, tabs))),
+    );
   }
 
-  Widget _body(BuildContext context, Object? error) {
+  VoidCallback? _showTab(BuildContext context, TabController controller, List<PixivProfileTab> tabs, String id) {
+    final index = tabs.indexWhere((tab) => tab.id == id);
+    final duration = xtaMotionDuration(context, controller.animationDuration);
+    return index < 0 ? null : () => controller.animateTo(index, duration: duration);
+  }
+
+  Widget _scroll(BuildContext context, List<PixivProfileTab> tabs) {
     final l10n = L10n.of(context);
-
-    if (error != null) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: pixivErrorMessage(l10n, error),
-          onRetry: _load,
+    final controller = DefaultTabController.of(context);
+    final pinned = MediaQuery.paddingOf(context).top + kToolbarHeight + kProfileTabHeight;
+    return ExtendedNestedScrollView(
+      onlyOneScrollInBody: true,
+      pinnedHeaderSliverHeightBuilder: () => pinned,
+      headerSliverBuilder: (context, _) => [
+        SliverAppBar(
+          pinned: true,
+          title: Text(scope.profile.user.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+          actions: pixivProfileActions(context, scope),
         ),
-      );
-    }
-
-    if (_profile.isLoading || _user == null) return const Center(child: CircularProgressIndicator());
-    final user = _user!;
-    final theme = Theme.of(context);
-    final avatar = user.avatarUrl;
-
-    return NotificationListener<ScrollNotification>(
-      onNotification: (n) {
-        if (n.metrics.pixels > n.metrics.maxScrollExtent - 400) {
-          _works.loadMore();
-        }
-        return false;
-      },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      ClipOval(
-                        child: avatar == null
-                            ? FallbackAvatar(
-                                seed: '${user.id}',
-                                displayName: user.name,
-                                size: 64,
-                                accent: theme.colorScheme.primary,
-                              )
-                            : SizedBox(
-                                width: 64,
-                                height: 64,
-                                child: PixivNetworkImage(
-                                  url: avatar,
-                                  fit: BoxFit.cover,
-                                  cacheWidth:
-                                      (64 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                  cacheHeight:
-                                      (64 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                ),
-                              ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.name,
-                              style: theme.textTheme.titleLarge!.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              '@${user.account}',
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (user.comment.trim().isNotEmpty) ...[
-                    const SizedBox(height: 14),
-                    Text(
-                      user.comment.trim(),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                  const SizedBox(height: 14),
-                  Text(
-                    '${compactCount(user.illustsCount)} ${l10n.tweets} · ${compactCount(user.followersCount)} ${l10n.followers}',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    onPressed: () => addPixivToGroup(context, user),
-                    icon: const Icon(Icons.group_add_outlined),
-                    label: Text(l10n.add_to_group),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: FilledButton.tonalIcon(
-                      onPressed: _profile.followBusy ? null : _toggleFollow,
-                      icon: Icon(
-                        user.isFollowed
-                            ? Icons.person_remove_outlined
-                            : Icons.person_add_alt_1_outlined,
-                      ),
-                      label: Text(
-                        user.isFollowed
-                            ? l10n.plugin_pixiv_unfollow
-                            : l10n.plugin_pixiv_follow,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+        SliverToBoxAdapter(
+          child: PixivUserHeader(profile: scope.profile, onWorks: _showTab(context, controller, tabs, 'works')),
+        ),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: ProfileTabsDelegate(
+            ProfileTabsBar(
+              controller: controller,
+              tabs: [for (final tab in tabs) Tab(key: ValueKey('pixiv-profile-tab-${tab.id}'), text: tab.label(l10n))],
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
-            sliver: SliverMasonryGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              childCount: _works.state.length,
-              itemBuilder: (context, index) =>
-                  PixivIllustTile(illust: _works.state[index]),
-            ),
-          ),
-          if (_works.loadingMore)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-        ],
+        ),
+      ],
+      body: SafeArea(
+        top: false,
+        child: ReaderTabView(
+          controller: controller,
+          children: [for (final tab in tabs) PixivKeepAlive(child: tab.build(scope))],
+        ),
       ),
     );
   }

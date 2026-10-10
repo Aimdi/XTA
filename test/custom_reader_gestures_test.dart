@@ -77,6 +77,12 @@ class _ThreadsDirect extends ThreadsDirectClient {
   @override
   Future<ThreadsProfile> fetchGuestProfile(String handle) async =>
       ThreadsProfile.fromJson({'pk': '1', 'id': '1', 'username': handle, 'full_name': 'Reader'});
+  var replyReads = 0;
+  @override
+  Future<List<ThreadsPost>> fetchGuestReplies(String handle) async {
+    replyReads++;
+    return [];
+  }
 }
 
 class _ThreadsFeed extends ThreadsFeedStore {
@@ -227,6 +233,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.widget<PluginProfileTabBar>(find.byType(PluginProfileTabBar)).selected, PluginProfileFeedTab.posts);
     expect(feed.reads, 1);
+    expect(direct.replyReads, 1, reason: 'the replies page is read once, when its tab is first opened');
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await tester.pump();

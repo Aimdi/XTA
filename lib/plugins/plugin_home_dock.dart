@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_top_bar_pins.dart';
 
 /// A presentation contribution. Reader stores and callbacks stay with the reader.
 class PluginDockContent {
@@ -351,6 +352,9 @@ class PluginDockOptionsButton extends StatelessWidget {
   final bool includeSearch;
   final bool showSections;
   final bool attention;
+
+  /// The bar this opens from shows pinned entries, so offer to pin them.
+  final bool pinnable;
   const PluginDockOptionsButton({
     super.key,
     required this.store,
@@ -360,6 +364,7 @@ class PluginDockOptionsButton extends StatelessWidget {
     this.includeSearch = false,
     this.showSections = true,
     this.attention = false,
+    this.pinnable = false,
   });
 
   @override
@@ -475,6 +480,10 @@ class PluginDockOptionsButton extends StatelessWidget {
                           if (opener.mounted) scope.onOpenClient?.call();
                         },
                       ),
+                    if (pinnable) ...[
+                      const Divider(),
+                      PluginTopBarPinsTile(opener: opener, store: store, source: source),
+                    ],
                   ],
                 ),
               );
@@ -490,6 +499,17 @@ class PluginDockOptionsButton extends StatelessWidget {
     if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) action();
   }
 
+  Widget _toolTile(BuildContext sheet, BuildContext opener, PluginDockTool tool, {Key? key}) => ListTile(
+    key: key,
+    minTileHeight: 48,
+    leading: tool.icon,
+    title: tool.title ?? Text(tool.label),
+    subtitle: tool.subtitle,
+    enabled: tool.onPressed != null,
+    trailing: tool.checked == true ? const Icon(Icons.check) : tool.trailing,
+    onTap: tool.onPressed == null ? null : () => _selectAction(sheet, opener, tool.onPressed!),
+  );
+
   Iterable<Widget> _actionEntries(BuildContext sheet, BuildContext opener, List<Widget> actions) sync* {
     for (final action in actions) {
       if (action is PluginHomeMenu) {
@@ -498,41 +518,12 @@ class PluginDockOptionsButton extends StatelessWidget {
           if (entry is PopupMenuDivider) {
             yield const Divider();
           } else if (entry is PopupMenuItem<String>) {
-            // A menu row drawn as a ListTile keeps its icon and description here.
-            final tile = entry.child is ListTile ? entry.child as ListTile : null;
-            yield ListTile(
-              key: entry.key,
-              minTileHeight: 48,
-              leading: tile?.leading,
-              title: tile?.title ?? entry.child,
-              subtitle: tile?.subtitle,
-              enabled: entry.enabled,
-              trailing: entry is CheckedPopupMenuItem<String> && entry.checked
-                  ? const Icon(Icons.check)
-                  : tile?.trailing,
-              onTap: () => _selectAction(sheet, opener, () {
-                entry.onTap?.call();
-                if (entry.value != null) action.select(opener, entry.value!);
-              }),
-            );
+            yield _toolTile(sheet, opener, pluginMenuEntryTool(opener, action, entry), key: entry.key);
           }
         }
-      } else if (action is IconButton && action.tooltip != null) {
-        yield ListTile(
-          minTileHeight: 48,
-          leading: action.icon,
-          title: Text(action.tooltip!),
-          enabled: action.onPressed != null,
-          onTap: action.onPressed == null ? null : () => _selectAction(sheet, opener, action.onPressed!),
-        );
-      } else if (action is PluginHomeSecondaryAction) {
-        yield ListTile(
-          minTileHeight: 48,
-          leading: action.icon,
-          title: Text(action.label),
-          enabled: action.onPressed != null,
-          onTap: action.onPressed == null ? null : () => _selectAction(sheet, opener, action.onPressed!),
-        );
+      } else if (pluginControlTool(opener, action) case final tool?
+          when action is IconButton || action is PluginHomeSecondaryAction) {
+        yield _toolTile(sheet, opener, tool);
       } else {
         // Some readers publish reactive menus; keep their builders alive.
         yield Align(alignment: AlignmentDirectional.centerStart, child: action);

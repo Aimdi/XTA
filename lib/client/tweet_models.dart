@@ -10,6 +10,7 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:xta/article/article.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/user.dart';
+import 'package:xta/utils/json.dart';
 
 class TweetWithCard extends Tweet {
   String? noteText;
@@ -22,6 +23,10 @@ class TweetWithCard extends Tweet {
   TweetWithCard? birdwatchQuotedStatus; // Community notes
   Article? article;
   int? viewCount;
+
+  /// Only the beginning of a post its author reserves to their paid
+  /// subscribers, which X sends as a `TweetPreviewDisplay`.
+  bool isSubscriberPreview = false;
 
   /// Alt text keyed by media `id_str`, from X's `ext_alt_text` (dropped by Media.fromJson).
   Map<String, String> mediaAltText = const {};
@@ -56,6 +61,7 @@ class TweetWithCard extends Tweet {
     json['viewCount'] = viewCount;
     json['noteText'] = noteText;
     json['noteEntities'] = noteEntities?.toJson();
+    json['isSubscriberPreview'] = isSubscriberPreview;
     if (mediaAltText.isNotEmpty) {
       json['mediaAltText'] = mediaAltText;
     }
@@ -75,9 +81,13 @@ class TweetWithCard extends Tweet {
     var tweetWithCard = TweetWithCard();
     tweetWithCard.idStr = '';
     tweetWithCard.isTombstone = true;
-    tweetWithCard.text =
-        ((e['richText']?['text'] ?? e['text']?['text'] ?? L10n.current.this_tweet_is_unavailable) as String)
-            .replaceFirst(' Learn more', '');
+    // `text` is X's explanation object on a tombstone, but a plain string on
+    // the preview of a subscriber-only post; reading it as a map threw (#188).
+    final explanation = Json(e)['richText']['text'].string ?? Json(e)['text']['text'].string;
+    tweetWithCard.text = explanation?.replaceFirst(' Learn more', '') ??
+        (Json(e)['reason'].string == 'ExclusiveTweet'
+            ? L10n.current.subscribers_only_post_of_author
+            : L10n.current.this_tweet_is_unavailable);
 
     return tweetWithCard;
   }
@@ -118,7 +128,9 @@ class TweetWithCard extends Tweet {
     tweetWithCard.viewCount = e['viewCount'];
     tweetWithCard.source = tweet.source;
     tweetWithCard.text = tweet.text;
-    tweetWithCard.user = tweet.user;
+    // Read back as the app's own user so the badges it serialized survive.
+    final userJson = e['user'];
+    tweetWithCard.user = userJson is Map<String, dynamic> ? UserWithExtra.fromJson(userJson) : tweet.user;
     tweetWithCard.coordinates = tweet.coordinates;
     tweetWithCard.truncated = tweet.truncated;
     tweetWithCard.place = tweet.place;
@@ -127,6 +139,7 @@ class TweetWithCard extends Tweet {
     tweetWithCard.article = e['article'] == null ? null : Article.fromJson(e['article']);
     tweetWithCard.noteText = e['noteText'];
     tweetWithCard.noteEntities = e['noteEntities'] == null ? null : Entities.fromJson(e['noteEntities']);
+    tweetWithCard.isSubscriberPreview = e['isSubscriberPreview'] as bool? ?? false;
     tweetWithCard.mediaAltText = _mediaAltTextFromJson(e['mediaAltText']) ??
         extractMediaAltText(e['extended_entities'] ?? e['extendedEntities']);
 
@@ -138,6 +151,7 @@ class TweetWithCard extends Tweet {
     dynamic quotedStatus;
     dynamic user;
 
+    result = subscriberPreviewAsTweet(result) ?? result;
     if (result['tweet'] != null) {
       result = result['tweet']!;
     } else if (result['legacy']?['retweeted_status_result']?['result'] != null) {
@@ -152,8 +166,11 @@ class TweetWithCard extends Tweet {
       quotedStatus = TweetWithCard.fromGraphqlJson(quotedTweetResult);
     }
 
-    var resCore = result['core']?['user_results']?['result'];
-    if (resCore != null && resCore['legacy'] != null) {
+    var resCore = Json(result)['core']['user_results']['result'].raw;
+    // Current responses, subscriber-only previews included, carry the author
+    // without `legacy` (see fromNonLegacyJson).
+    if (resCore is Map<String, dynamic> &&
+        (resCore['legacy'] != null || resCore['core'] != null || resCore['rest_id'] != null)) {
       user = UserWithExtra.fromNonLegacyJson(resCore);
     }
 
@@ -182,6 +199,7 @@ class TweetWithCard extends Tweet {
       quotedStatus,
       int.tryParse(result['views']?['count'] ?? ''),
     );
+    tweet.isSubscriberPreview = result[_subscriberPreviewMarker] == true;
 
     if (tweet.card == null && result['card']?['legacy'] != null) {
       tweet.card = result['card']['legacy'];
@@ -206,6 +224,44 @@ class TweetWithCard extends Tweet {
     }
 
     return tweet;
+  }
+
+  static const _subscriberPreviewMarker = 'xta_subscriber_preview';
+
+  /// A `TweetPreviewDisplay` — the cut-off post X shows in place of one its
+  /// author reserves to paid subscribers — reshaped as an ordinary tweet
+  /// result, so that every parser reads it like any other post. Null for
+  /// anything else.
+  ///
+  /// The preview has no `legacy`: its text, counts and dates sit directly on
+  /// the inner `tweet`, under slightly different names.
+  static Map<String, dynamic>? subscriberPreviewAsTweet(dynamic result) {
+    final json = Json(result);
+    final preview = json['tweet'].raw;
+    final id = json['tweet']['rest_id'].string;
+    if (json['__typename'].string != 'TweetPreviewDisplay' || preview is! Map<String, dynamic> || id == null) {
+      return null;
+    }
+    final text = json['tweet']['text'].string ?? '';
+    return {
+      ...preview,
+      _subscriberPreviewMarker: true,
+      'views': {'count': json['tweet']['view_count']['count'].string},
+      'legacy': {
+        'id_str': id,
+        'conversation_id_str': id,
+        'user_id_str': json['tweet']['core']['user_results']['result']['rest_id'].string,
+        'full_text': text,
+        'display_text_range': [0, text.runes.length],
+        'entities': preview['entities'] is Map<String, dynamic> ? preview['entities'] : null,
+        'created_at': json['tweet']['created_at'].string,
+        'favorite_count': json['tweet']['favorite_count'].integer,
+        'quote_count': json['tweet']['quote_count'].integer,
+        'reply_count': json['tweet']['reply_count'].integer,
+        'retweet_count': json['tweet']['retweet_count'].integer,
+        'in_reply_to_status_id_str': json['tweet']['reply_to_results']['rest_id'].string,
+      },
+    };
   }
 
   static Map<String, dynamic> rearrangeBirdwatch(Map<String, dynamic> birdwatch) {

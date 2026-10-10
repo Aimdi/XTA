@@ -13,19 +13,26 @@ import 'package:xta/tweet/ticker/ticker_symbol.dart';
 const int kWatchlistFeedSymbolCap = 20;
 
 /// `($AAPL OR $TSLA)` — or a single `$AAPL` — for [symbols], uppercased and
-/// capped. Empty watchlist → empty query (no search).
-String watchlistCashtagQuery(Iterable<String> symbols) {
-  final cashtags = <String>[];
+/// capped. A token is searched by its quoted contract address, plus its
+/// cashtag when the reader opted in on [assets]. Empty watchlist → empty query.
+String watchlistCashtagQuery(Iterable<String> symbols, {Map<String, CryptoAsset> assets = const {}}) {
+  final terms = <String>[];
   for (final raw in symbols) {
     final symbol = raw.trim();
     if (symbol.isEmpty) continue;
-    final contract = CryptoAsset.contractForId(symbol);
-    final query = contract == null ? '\$${spokenCashtag(symbol)}' : '"$contract"';
-    if (!cashtags.contains(query)) cashtags.add(query);
-    if (cashtags.length >= kWatchlistFeedSymbolCap) break;
+    for (final term in _termsFor(symbol, assets[symbol])) {
+      if (!terms.contains(term)) terms.add(term);
+    }
+    if (terms.length >= kWatchlistFeedSymbolCap) break;
   }
-  if (cashtags.isEmpty) {
+  if (terms.isEmpty) {
     return '';
   }
-  return cashtags.length == 1 ? cashtags.single : '(${cashtags.join(' OR ')})';
+  return terms.length == 1 ? terms.single : '(${terms.join(' OR ')})';
+}
+
+List<String> _termsFor(String symbol, CryptoAsset? asset) {
+  if (asset != null) return asset.searchTerms;
+  final contract = CryptoAsset.contractForId(symbol);
+  return [contract == null ? '\$${spokenCashtag(symbol)}' : '"$contract"'];
 }

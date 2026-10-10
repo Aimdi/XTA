@@ -18,6 +18,7 @@ writes (compose, reply, repost-to-Threads, like-on-Meta, follow-on-Meta).
 
 ## Out of scope
 
-- Profile Replies tab (needs a stable guest GraphQL doc_id)
-- Quoted-post embeds until a live fixture confirms `quoted_post`
-- Full video playback / For You without Bearer
+- For You without Bearer
+
+Replies tab, quoted-post embeds and video playback have since landed — see
+`threads-reader-upgrade.md`.

@@ -157,6 +157,9 @@ void _viewport(WidgetTester tester, {double width = 390, double height = 844}) {
   addTearDown(tester.view.resetViewInsets);
 }
 
+bool? _checked(WidgetTester tester, Finder row) =>
+    tester.widget<Checkbox>(find.descendant(of: row, matching: find.byType(Checkbox))).value;
+
 Finder _account(String id) => find.byKey(ValueKey('home-account-$id'));
 Finder _groupFilter(String id) => find.byKey(ValueKey('home-group-filter-$id'));
 Finder _drawerGroup(String id) => find.byKey(ValueKey('drawer-group-$id'));
@@ -185,36 +188,60 @@ void main() {
     await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
-  testWidgets('Home filter stages changes, protects the last account, and applies once', (tester) async {
+  testWidgets('Home filter stages changes, refuses to save no account, and applies once', (tester) async {
     _viewport(tester);
     final h = _HomeChromeHarness();
     addTearDown(() => h.close(tester));
     await tester.pumpWidget(h.app());
     await _open(tester, _openFilter);
-    expect(tester.widget<SwitchListTile>(_account('main')).value, isTrue);
+    final apply = find.byKey(const ValueKey('home-filter-apply'));
+    expect(_checked(tester, _account('main')), isTrue);
     await _tap(tester, _account('main'));
+    expect(_checked(tester, _account('main')), isFalse);
     expect(h.accountsStore.state, isEmpty);
     expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledAccountIds)), isEmpty);
     expect(h.filterChanges, 0);
-    final remaining = tester.widget<SwitchListTile>(_account('art'));
-    expect(remaining.value, isTrue);
-    expect(remaining.onChanged, isNull);
-    expect(find.text(L10n.current.home_feed_keep_one_account), findsOneWidget);
     await _golden(tester, 'home-filter-accounts');
 
     await _tap(tester, _account('art'));
-    expect(h.accountsStore.state, isEmpty);
+    expect(find.text(L10n.current.home_feed_keep_one_account), findsOneWidget);
+    expect(tester.widget<FilledButton>(apply).onPressed, isNull);
+    await _tap(tester, find.byKey(const ValueKey('home-filter-all')));
+    expect(_checked(tester, _account('main')), isTrue);
+    expect(_checked(tester, _account('art')), isTrue);
+    await _tap(tester, find.byKey(const ValueKey('home-filter-none')));
+    expect(_checked(tester, _account('art')), isFalse);
+    await tester.ensureVisible(_account('art'));
+    await tester.longPress(_account('art'));
+    await tester.pumpAndSettle();
+    expect(_checked(tester, _account('main')), isFalse);
+    expect(_checked(tester, _account('art')), isTrue);
     expect(h.filterChanges, 0);
-    await _tap(tester, find.byKey(const ValueKey('home-filter-apply')));
+    await _tap(tester, apply);
     expect(h.accountsStore.state, {'main'});
     expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledAccountIds)), ['main']);
     expect(h.filterChanges, 1);
     await _open(tester, _openFilter);
     await _tap(tester, _account('main'));
-    expect(tester.widget<SwitchListTile>(_account('art')).onChanged, isNotNull);
+    expect(_checked(tester, _account('main')), isTrue);
     await _tap(tester, find.byTooltip(L10n.current.close));
     expect(h.accountsStore.state, {'main'});
     expect(h.filterChanges, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Home filter keeps only one group on with a long press', (tester) async {
+    _viewport(tester);
+    final h = _HomeChromeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.pumpWidget(h.app());
+    await _open(tester, _openFilter);
+    await _tap(tester, find.text(L10n.current.groups));
+    await tester.ensureVisible(_groupFilter('tech'));
+    await tester.longPress(_groupFilter('tech'));
+    await tester.pumpAndSettle();
+    await _tap(tester, find.byKey(const ValueKey('home-filter-apply')));
+    expect(h.groupsStore.state, h.groups.map((group) => group.id).where((id) => id != 'tech').toSet());
     expect(tester.takeException(), isNull);
   });
 
@@ -307,7 +334,8 @@ void main() {
     expect(tester.getRect(find.byKey(_filterSearch)).bottom, lessThanOrEqualTo(844 - 280));
     expect(_account('art'), findsNothing);
     await tester.scrollUntilVisible(
-      _account('main'), 160,
+      _account('main'),
+      160,
       scrollable: find.descendant(of: find.byType(HomeFilterSheet), matching: find.byType(Scrollable)).first,
     );
     await _tap(tester, _account('main'));

@@ -7,12 +7,16 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/media_strip.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/_video_controls.dart';
+import 'package:xta/tweet/video_controller_pool.dart';
+import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
 import 'package:xta/ui/errors.dart';
@@ -277,6 +281,19 @@ Future<void> downloadMediaItem(
       );
     },
   );
+}
+
+/// The MP4 the media viewer saves for a GIF or a video; null for a photo.
+///
+/// On X a GIF is a looping MP4 and its media URL only the poster frame, which
+/// is what the viewer used to save. The variant a player is showing
+/// ([playingUrl]) wins, as in the player's own Download entry.
+String? viewerVideoDownloadUrl(Media media, {String? playingUrl}) {
+  if (media.type != 'animated_gif' && media.type != 'video') return null;
+  final qualities = TweetVideoMetadata.mp4Qualities(
+    media.videoInfo?.variants ?? const [],
+  );
+  return downloadUrlFor(playingUrl, qualities, qualities.firstOrNull?.url);
 }
 
 class TweetMedia extends StatefulWidget {
@@ -613,6 +630,20 @@ class _TweetMediaViewState extends State<TweetMediaView> {
     super.dispose();
   }
 
+  /// The variant the pooled player of the current page is on, if one is.
+  String? _playingUrl() {
+    final tweetId = _current.tweetId;
+    if (tweetId == null) return null;
+    try {
+      return context
+          .read<VideoControllerPool>()
+          .peek('$tweetId:${_current.mediaIndex}')
+          ?.currentStreamUrl;
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
   String originalMediaUrl() {
     if (widget.entries.isEmpty) return '';
     final mediaUrl = _current.media.mediaUrlHttps;
@@ -702,6 +733,15 @@ class _TweetMediaViewState extends State<TweetMediaView> {
                   );
                 },
                 onPressed: () async {
+                  final media = _current.media;
+                  if (media.type == 'animated_gif' || media.type == 'video') {
+                    await downloadTweetVideo(
+                      context,
+                      _current.username,
+                      viewerVideoDownloadUrl(media, playingUrl: _playingUrl()),
+                    );
+                    return;
+                  }
                   final url = path.basename(_current.media.mediaUrlHttps!);
                   final fileName = '${_current.username}-$url';
                   final uri = Uri.parse(originalMediaUrl());

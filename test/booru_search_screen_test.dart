@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +11,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
@@ -393,21 +396,63 @@ void main() {
 
     testWidgets('a tag on a post can be added to the search it came from', (tester) async {
       final harness = await _open(tester, initialQuery: 'cat');
-      await tester.tap(find.byType(BooruPostTile).first);
+      await _openTagActions(tester, 'hat_red');
+      await tester.tap(find.byKey(const ValueKey('booru-tag-action-add')));
       await _settle(tester);
-      expect(find.byType(BooruPostScreen), findsOneWidget);
-
-      final hat = find.widgetWithText(InputChip, 'hat_red');
-      await tester.scrollUntilVisible(
-        hat,
-        300,
-        scrollable: find.descendant(of: find.byType(BooruPostScreen), matching: find.byType(Scrollable)).first,
-      );
-      await tester.tap(find.descendant(of: hat, matching: find.byIcon(Icons.playlist_add)));
-      await _settle(tester);
-      expect(find.byType(BooruPostScreen), findsNothing);
+      expect(find.byType(BooruPostPager), findsNothing);
       expect(harness.client.queries.last, 'cat hat_red');
       expect(harness.history.first, 'cat hat_red');
     });
+
+    testWidgets('a tag on a post can be excluded from the search', (tester) async {
+      final harness = await _open(tester, initialQuery: 'cat');
+      await _openTagActions(tester, 'hat_red');
+      await tester.tap(find.byKey(const ValueKey('booru-tag-action-exclude')));
+      await _settle(tester);
+      expect(harness.client.queries.last, 'cat -hat_red');
+    });
+
+    testWidgets('a tag can be followed and hidden from its sheet', (tester) async {
+      final harness = await _open(tester, initialQuery: 'cat');
+      await _openTagActions(tester, 'smile');
+      await tester.tap(find.byKey(const ValueKey('booru-tag-action-follow')));
+      await _settle(tester);
+      expect(harness.saved.state, contains('smile'));
+
+      await tester.tap(find.byKey(const ValueKey('booru-post-tag-smile')));
+      await _settle(tester);
+      expect(find.text('Unfollow tag'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('booru-tag-action-hide')));
+      await _settle(tester);
+      expect(readMuted(harness.prefs), contains('smile'));
+    });
+
+    testWidgets('the viewer swipes on to the next post', (tester) async {
+      await _open(tester, initialQuery: 'cat');
+      await tester.tap(find.byType(BooruPostTile).first);
+      await _settle(tester);
+      expect(find.text('#1'), findsOneWidget);
+      await tester.fling(find.byType(PageView), const Offset(-600, 0), 1000);
+      await _settle(tester);
+      expect(find.text('#2'), findsOneWidget);
+    });
   });
 }
+
+/// Opens the first result and the actions of its [tag].
+Future<void> _openTagActions(WidgetTester tester, String tag) async {
+  await tester.tap(find.byType(BooruPostTile).first);
+  await _settle(tester);
+  expect(find.byType(BooruPostPager), findsOneWidget);
+  final chip = find.byKey(ValueKey('booru-post-tag-$tag'));
+  await tester.scrollUntilVisible(
+    chip,
+    300,
+    scrollable: find.descendant(of: find.byType(BooruPostDetails), matching: find.byType(Scrollable)).first,
+  );
+  await tester.tap(chip);
+  await _settle(tester);
+}
+
+List<String> readMuted(PrefServiceCache prefs) =>
+    (jsonDecode(prefs.get<String>(optionPluginBooruMutedTags) ?? '[]') as List).cast<String>();

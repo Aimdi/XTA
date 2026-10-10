@@ -66,4 +66,30 @@ void main() {
     expect(store.state, contains(_second.id));
     await store.destroy();
   });
+
+  test('a token added by contract keeps its cashtag choice across reloads and backups', () async {
+    const evm = CryptoAsset(
+      chain: 'base',
+      address: '0x6982508145454ce325ddbe47a25d4ec3d2311933',
+      symbol: 'PEPE',
+      name: 'Pepe',
+    );
+    final store = StocksWatchlistStore();
+    await store.add(evm.encode());
+    await store.setIncludeCashtag(evm, true);
+
+    final reopened = StocksWatchlistStore();
+    await reopened.load();
+    expect(reopened.state, [evm.id], reason: 'the id is the identity, unchanged by the choice');
+    expect(reopened.assetFor(evm.id)!.includeCashtag, isTrue);
+    expect(reopened.assetFor(evm.id)!.subtitle, 'Base · 0x6982…1933');
+
+    final database = await Repository.readOnly();
+    final rows = await database.query(tableStockSubscription, where: 'id = ?', whereArgs: [evm.id]);
+    final restored = CryptoAsset.decode(StockSubscription.fromMap(rows.single).toMap()['symbol'] as String)!;
+    expect(restored.includeCashtag, isTrue);
+    expect(restored.searchQuery, contains(r'$PEPE'));
+    await store.destroy();
+    await reopened.destroy();
+  });
 }

@@ -39,15 +39,22 @@ class TickerClient {
   /// Every name to try for a cashtag, in order.
   static List<String> candidatesFor(String symbol) => tickerCandidates(symbol);
 
+  /// [includePrePost] adds the pre-market and after-hours bars, which is how
+  /// an extended-hours print reaches a tape that only has the chart host.
   static Uri chartUri(
     String symbol, {
     String range = '1mo',
     String interval = '1d',
+    bool includePrePost = false,
   }) {
     return Uri.https(
       _host,
       '/v8/finance/chart/${Uri.encodeComponent(symbol.toUpperCase())}',
-      {'range': range, 'interval': interval},
+      {
+        'range': range,
+        'interval': interval,
+        if (includePrePost) 'includePrePost': 'true',
+      },
     );
   }
 
@@ -75,12 +82,20 @@ class TickerClient {
     String symbol, {
     String range = '1mo',
     String interval = '1d',
+    bool includePrePost = false,
+    TickerInstrument prefer = TickerInstrument.auto,
   }) async {
     TickerException? last;
 
-    for (final candidate in candidatesFor(symbol)) {
+    for (final candidate in tickerCandidates(symbol, prefer: prefer)) {
       try {
-        return await _fetchOne(candidate, range: range, interval: interval);
+        final uri = chartUri(
+          candidate,
+          range: range,
+          interval: interval,
+          includePrePost: includePrePost,
+        );
+        return await _fetchOne(candidate, uri);
       } on TickerException catch (e) {
         last = e;
         if (e.kind == TickerErrorKind.unavailable) {
@@ -108,14 +123,8 @@ class TickerClient {
     return tickerTrendsFromJson(decoded);
   }
 
-  Future<TickerQuote> _fetchOne(
-    String symbol, {
-    required String range,
-    required String interval,
-  }) async {
-    final decoded = await _getJson(
-      chartUri(symbol, range: range, interval: interval),
-    );
+  Future<TickerQuote> _fetchOne(String symbol, Uri uri) async {
+    final decoded = await _getJson(uri);
     final quote = TickerQuote.fromChartJson(decoded, symbol: symbol);
     if (quote == null) {
       throw TickerException(

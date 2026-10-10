@@ -54,3 +54,25 @@ analysis if the pinned toolchain is available; disclose any environment block.
   miss posts containing only a ticker and can include another chain's deployment
   with the same literal address; the token quote and watchlist identity remain
   explicitly network-bound. Live service/device validation is still required.
+
+## Follow-up: following a token by pasted contract address
+
+- The add sheet recognises a pasted address without the reader choosing the
+  crypto chip: EVM `0x` + 40 hex (checksum casing ignored, stored lower-case)
+  and Solana base58 mints (32–44 chars, case preserved, must contain a digit so
+  a long typed name is not mistaken for one). A `$` prefix or an explorer/DEX
+  link whose last path segment is the address also works.
+- Resolution stays on the two DEX Screener endpoints already used, keyless and
+  without cookies: `/latest/dex/search?q=<address>` returns pairs on every
+  network, which are narrowed to pairs whose base *or* quote token is exactly
+  that contract, one result per network (an EVM address can exist on several).
+  A network where the token only appeared as quote currency is priced through
+  `/token-pairs/v1/{chain}/{address}`, at most six networks per paste.
+- Persistence is unchanged: the versioned JSON in `stock_subscription.symbol`.
+  It gains an optional `cashtag: true` key, written only when the reader opts
+  in, so rows saved earlier stay byte-identical through backups.
+- Posts default to the literal contract. A per-token chip adds `$SYMBOL` to the
+  X search (`("0x…" OR $PEPE)`), with the shared-symbol caveat shown beside it;
+  the watchlist feed follows each token's choice.
+- Rows show the network name and a shortened address (`0x6982…1933`);
+  long-pressing a token row copies the full address.

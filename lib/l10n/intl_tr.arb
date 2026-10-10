@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Şüpheli ve müstehcen küçük resimleri bulanıklaştır",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Açılan gönderi bulanıklaştırılmadan gösterilir",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Etiketleri temizle",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Yorumlar",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Panoya kopyalandı",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Bağlantıyı kopyala",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Etiketi kopyala",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Etiketleri kopyala",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Metin olarak düzenle",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Bu tarih için popüler gönderi yok",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Geçerli aramadan hariç tut",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Hariç tut",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Ana ve alt gönderiler",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} favori} other{{count} favori}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Etiketi takip et",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Tam ekran aç",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Izgara sütunları",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Ekrana sığdır",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Bu etiketli gönderileri gizle",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Diğer {name} gönderileri",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Tek girişteki birden çok etiket, yalnızca hepsini içeren gönderileri gizler. -tag ve rating:e de çalışır",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Henüz yorum yok",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "En yüksek puan",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Tam ekranda orijinal dosyalar",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Tam ekran, sitenin küçültülmüş örneği yerine tam boyutlu dosyayı yükler. Daha fazla veri kullanır",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Tarih seç",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Gün",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Önceki",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Sonraki",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Ay",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Bu sitede popüler listesi yok, bu yüzden en yüksek puanlı gönderiler gösteriliyor",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Hafta",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "{date} tarihinde paylaşıldı",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Bu etiketi ara",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Görünüm",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Tümünü gör",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Görünen ad",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Küçük önizlemeler",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Izgarada sitenin küçük önizlemelerini yükler. Daha hızlıdır ve daha az veri kullanır, ancak daha bulanıktır",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Aramak, takip etmek, gizlemek veya wiki sayfasını okumak için bir etikete dokun",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Sanatçı",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Karakter",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Telif hakkı",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Etiketleri sırala",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "En çok kullanılan",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Tür",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Etiketler",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Küçük resimlerin altında ayrıntılar",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Izgaradaki her gönderinin altında site, ilk etiketler ve puan",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Etiketi takip etmeyi bırak",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Bu etiketi gizlemeyi bırak",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Kayıtlı aramalardan kaldır",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Yükleyen: {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} olumlu, {down} olumsuz",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Bu etiketin wiki sayfası yok",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Alınabilen son liste gösteriliyor",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Eklenti listesi alınamadı",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Yorumlar",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Devam et",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{{count} yorumu göster} other{{count} yorumun tümünü göster}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Puan {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "{page}. sayfadan devam et",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Etiketi kopyala",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Hiç favorilere eklenmedi} one{{count} kez favorilere eklendi} other{{count} kez favorilere eklendi}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Dosya boyutu {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Dil: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Dil: {language}, çeviri",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} sayfa} other{{count} sayfa}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "{date} tarihinde paylaşıldı",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{5 üzerinden {rating} puan ({count} oy)} other{5 üzerinden {rating} puan ({count} oy)}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} kopyalandı",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Yükleyen",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, henüz onaylanmadı",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Git",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "En düşük puan",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Sanatçı",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Karakter",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Kadın",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Grup",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Dil",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Erkek",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Karışık",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Diğer",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodi",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Yeniden sınıflandırma",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Geçici",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Bu sayfanın görseli yüklenmedi",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Okuma modu",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Soldan sağa",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Sağdan sola (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Dikey kaydırma (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Orijinali aç",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Başka bir sunucu dene",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Görseli yeniden yükle",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Yer imi",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Yer işareti klasörü",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Bu hesapta henüz herkese açık yer imi yok",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Özel",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Başlık/açıklama",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri gibi okur: takip, sıralamalar, herkese açık yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Buradan Pixiv’de hiçbir şey gönderilmez, yer imine eklenmez veya takip edilmez.",
+  "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri uygulaması gibi okur: illüstrasyonlar, mangalar, romanlar, sıralamalar, yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Pixiv hesabınıza yalnızca kendi yaptığınız yer imleri, takipler ve izleme listesi değişiklikleri gönderilir. Buradan asla gönderi paylaşılmaz, yorum yapılmaz veya şikâyette bulunulmaz.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 eserleri göster",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "Yaratıcılarının yapay zekâ ile üretildi olarak işaretlediği eserleri gizler. Kendi yer imlerin her zaman görünür kalır.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "YZ",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Üst çubuğa sabitle",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Sabitlenen öğeler, çubukta yer olduğunda bölümlerin yanında görünür. Hepsi bu menüde de kalır.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Hiçbiri",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Yalnızca birini açık bırakmak için ona uzun basın.",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "{first} takip ediyor",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "{first} ve {second} takip ediyor",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "{first}, {second} ve {third} takip ediyor",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{{first}, {second} ve aboneliklerinizden 1 kişi daha takip ediyor} other{{first}, {second} ve aboneliklerinizden {count} kişi daha takip ediyor}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Aboneliklerinizdeki takipçiler",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Uygulamanın tek aboneliğiniz için okuduğu en son takiplere dayanır. Bu hesabı başkaları da takip ediyor olabilir.} other{Uygulamanın {total} aboneliğinizden {checked} tanesi için okuduğu en son takiplere dayanır. Bu hesabı başkaları da takip ediyor olabilir.}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "Doğrulanmış hesap",
+  "@verified_account": {},
+  "verified_organization": "Doğrulanmış kuruluş",
+  "@verified_organization": {},
+  "verified_government": "Doğrulanmış devlet hesabı",
+  "@verified_government": {},
+  "affiliated_with": "{name} ile bağlantılı",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, other{{views} görüntülenme}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "Diğer seçenekler",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Bağlantıyı kopyala",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Bağlantı kopyalandı",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Sayfayı yeniden yükle",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Gönderiye dön",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Güvenli bağlantı",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Bağlantı güvenli değil",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Beğeniler: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Yanıtlar: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Yeniden paylaşımlar: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "Sıralama",
+  "@sort_order": {},
+  "sort_relevant": "En alakalı",
+  "@sort_relevant": {},
+  "sort_oldest": "En eski",
+  "@sort_oldest": {},
+  "sort_most_liked": "En çok beğenilen",
+  "@sort_most_liked": {},
+  "sort_top": "Popüler",
+  "@sort_top": {},
+  "sort_most_followers": "En çok takipçi",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "Açılış",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "Önceki kapanış",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "Piyasa açık",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "Piyasa kapalı",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "Piyasa verileri yüklenemedi",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "Piyasa değeri",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "Likidite",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "24 sa hacim",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "{hours} sa değişim",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "Sözleşme adresi kopyalandı",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "Bu sözleşme adresine ait token bulunamadı",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "{cashtag} gönderilerini dahil et",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "Gönderiler bu sözleşme adresiyle veya {cashtag} ile aranır. Başka tokenlar da aynı sembolü kullanabilir.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Arka planda kaydet",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Sormadan kaydeder: resimleri Pictures/XTA, videoları Movies/XTA, diğer dosyaları Download/XTA klasörüne",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "{folder} klasörüne kaydedildi",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "İndirilen sesler",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "İndirilen bir sesi kullan",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Makalenin dilini konuşan indirilmiş bir ses varsa onunla okur; yoksa aşağıdaki motoru kullanır.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Sesler yalnızca İndir'e dokunduğunuzda GitHub'dan (k2-fsa/sherpa-onnx) indirilir. Tamamen bu cihazda çalışırlar.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Lisans: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Denetleniyor ve açılıyor…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Bu cihazda · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "İndirme başarısız oldu. Bağlantınızı kontrol edip yeniden deneyin.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "İndirilen dosya beklenen dosyayla eşleşmedi ve silindi.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "İndirilen ses açılamadı.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} silinsin mi?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "İstediğiniz zaman yeniden indirebilirsiniz.",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "web.archive.org'da aç",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Devamını yalnızca @{screenName} hesabının X'teki ücretli aboneleri okuyabilir",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Bu tweet yalnızca yazarının X'teki ücretli abonelerine özel.",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Etkin hesap",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv hesabı: yapay zekâ ile üretilmiş eserler",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Bu ayar Pixiv'den okunamadı",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Kısmen gizli",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Pixiv ayarınız denetleniyor…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Gösteriliyor",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Hesabı kaldır",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} bu cihazdan kaldırılsın mı?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "YZ rozetini göster",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "Izgaralarda, yaratıcılarının yapay zekâ ile üretildi olarak işaretlediği eserleri etiketler.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Zaten kaydedildi",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Bu sayfa zaten kaydedildi. Tekrar kaydedilsin mi?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{{total} sayfanın {saved} tanesi zaten kaydedildi.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Yer imi ekle",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Kaydederken yer imlerine ekle",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Bir eseri kendi sayfasından kaydetmek, henüz yer imlerinde değilse onu yer imlerine de ekler.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Yer imlerini otomatik etiketle",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Düzenleyici olmadan eklediğin yer imleri eserin kendi etiketlerini alır; 1000users入り gibi popülerlik etiketleri hariç.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Tümünü kaldır",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Varsayılan olarak özel yer imleri",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Düzenleyici olmadan eklediğin yer imleri özeldir. Düzenleyicide istediğini herkese açık yapabilirsin.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Yer imini düzenle",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Yer imine eklerken takip et",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Yeni bir yer imi, henüz takip etmiyorsan sanatçıyı herkese açık olarak da takip eder.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "{name} takip edildi",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Özel yer imi",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Yalnızca sen görebilirsin",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Yer imine eklerken kaydet",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Yeni bir yer imi eserin tüm sayfalarını da kaydeder.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Tümünü seç",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Yer imleri",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Etiket ekle",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Tümü",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Tüm yer imlerini göster",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Bu etikete sahip yer imi yok",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Etikete göre filtrele",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Bir etiket ekle",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Etiket bul ya da yaz",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Kategorisiz",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "“{tag}” kullan",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Etiketler",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Henüz etiket yok. Kendi etiketlerini yukarıdan ekle.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Burada henüz yer imi etiketi yok",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "pixiv.net'te değiştir",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Otomatik",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Yatay yönde ızgara sütunları",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Dikey yönde ızgara sütunları",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Gizlendi: Pixiv dışına bağlantılar",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Bu yorumu sessize al",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "{name} kullanıcısını sessize al",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Yorum seçenekleri",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "{name} kullanıcısına yanıt",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Göster",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Çıkartma",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Bilinmeyen kullanıcı",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Yanıtları gör",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Henüz yorum yok",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Henüz yanıt yok",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Yanıtlar",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Yorumlar",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Yorumları gör",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Yorumları gör ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Kopyalandı",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Eser kimliğini kopyala",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Bilgileri kopyala",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "“Bilgileri kopyala” şablonu",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Eser bağlantısı",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Başlık: {title}\nSanatçı: {artist}\nEser kimliği: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "“Bilgileri kopyala” komutunun panoya koyduğu metin. Yer tutucular eserin bilgileriyle değiştirilir.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Ekle",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Varsayılana sıfırla",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Sanatçı bağlantısı",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Eser düzeni",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Geniş ekranlarda yan yana",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Görseller ayrıntıların yanında",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Görseller ayrıntıların üstünde",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Eşzamanlı indirmeler",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Aynı anda kaç dosyanın indirileceği",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Kaydedilen sayfalar",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Henüz hatırlanan sayfa yok} other{{count} sayfa hatırlanıyor}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Kaydedilen eserlere onay işareti konur ve bir sayfa ikinci kez kaydedilmeden önce sorulur",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Unut",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Hangi sayfaların kaydedildiği unutulsun mu? Dosyaların kendisi cihazınızda kalır.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Kaydedildi – tekrar indir",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "İndirmeler",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Dosya adı",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "İmlecin bulunduğu yere eklemek için bir bilgiye dokunun. Her dosya kendi uzantısını korur.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Bir eserin her sayfasının kendi adı olması için {token} ekleyin",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Önizleme: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Sıfırla",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Eser kimliği",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Sayfa numarası",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Başlık",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Sanatçı kimliği",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Sanatçı adı",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Her sanatçıya ayrı klasör",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Her sanatçının eserlerini indirme klasöründe onun adını taşıyan bir klasöre koyar",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18 için ayrı klasör",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 eserlerini indirme klasöründeki “R-18” klasörüne koyar",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Özel",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Gizlice takip et",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Takip ettiğinizi yalnızca siz görürsünüz",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Herkese açık",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Takip edilen tüm yaratıcılar",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Gizli takip edilen yaratıcılar",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Herkese açık takip edilen yaratıcılar",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} takip edilen} other{{shown} takip edilen}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Dokunsal geri bildirim",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Yer imine eklerken veya uzun basarken kısa bir titreşim.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Görüntüleme geçmişi",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Geçmişi temizle",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "İllüstrasyon geçmişi temizlensin mi?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Açtığınız eserler burada görünür. Geçmiş bu cihazda kalır.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Başlığa veya sanatçıya göre filtrele",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Geçmişte eşleşen eser yok",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Roman geçmişi temizlensin mi?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Açtığınız romanlar burada görünür. Geçmiş bu cihazda kalır.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Başlığa veya yazara göre filtrele",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Geçmişte eşleşen roman yok",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Geçmişi duraklat",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Açıkken, açılan eserler ve romanlar geçmişe eklenmez",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "“{title}” geçmişten kaldırılsın mı?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Eser kimliği {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Eser kimliği kopyalandı",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Görsel sunucusu",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Sunucu adresi",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Kendi sunucunuz",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Eser görsellerinin yüklendiği yer. Pixiv'in görsel sunucusunun yavaş ya da engelli olduğu yerlerde bir yansı işe yarar.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Örneğin img.example.com veya https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Boşluk içermeyen geçerli bir adres girin, örneğin img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Herkese açık yansı",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Pixiv'in kendi sunucusu",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Bir yansı veya kendi sunucunuz, açtığınız her görseli (R-18 olanlar dahil) ve IP adresinizi görür.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Varsayılana sıfırla",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Bilgiler kopyalandı",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Hesabı pixiv.net'te yönet",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Şu an önerilen manga yok — yenilemek için çekin",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "İllüstrasyonlara geç",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Romanlara geç",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Yorumlar",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Sanatçısını sessize aldınız: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Bu seferlik göster",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "{tag} etiketini sessize aldınız.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Bu eser sessize alındı",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Bu eseri sessize aldınız.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Bu romanı sessize al",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romanlar",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Sessize alma ayarları",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Etiketi sessize al",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Bir düzenli ifadenin eşleştiği her etiketi sessize almak için r'kalıp' yazın. Kalıplar bir eserin tüm etiketlerini #tag1#tag2 biçiminde birleşik olarak da görür.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Sessize alınacak etiket",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Bu kalıp geçerli bir düzenli ifade değil",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etiketler",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Sanatçılar",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Eserler",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixiv arkadaşı} other{{shown} My pixiv arkadaşı}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Roman",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Romanlarını gör",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Özel yer imlerine ekle",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Herkese açık yer imlerine eklediğiniz romanlar burada görünür",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Özel yer imlerine eklediğiniz romanlar burada görünür",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "{order}. bölüm",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} bölüm} other{{shown} bölüm}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} karakter} other{{shown} karakter}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Metin olarak dışa aktar",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Roman dışa aktarılamadı",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixiv biçimlendirmesiyle",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Metin, Pixiv'in sakladığı haliyle, [newpage] gibi etiketlerle birlikte",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Düz metin",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Pixiv biçimlendirmesi olmadan, ruby taban(ruby) olarak yazılır",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} kaydedildi",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Takip ettiğiniz yazarların yeni romanları burada görünür",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Romandaki görsel",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Eseri aç",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Görseli kaydet",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Tam ekranda görüntüle",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "{page}. sayfaya git",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "{url} adresini açmak için Pixiv'den çıkılsın mı?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Bağlantıyı aç",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Sonraki bölüm",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Sayfa {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Önceki bölüm",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Şu an sıralamada roman yok",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Şu an önerilen roman yok — yenilemek için çekin",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Roman etiketleri, başlıklar veya kullanıcılar",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Popülerliğe göre sıralama Pixiv Premium gerektirir.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Roman veya kullanıcı arayın",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Roman serisi",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Tamamlandı",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Bu seride görebileceğiniz bölüm yok",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Devam ediyor",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "İlk bölümden başla",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Profil bağlantısını paylaş",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Seri bağlantısını paylaş",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "İzleme listenize eklediğiniz roman serileri burada görünür",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "pixiv bağlantılarını XTA'da aç",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Android'in “Varsayılan olarak aç” sayfasında pixiv.net ve pixiv.me'yi desteklenen bağlantı olarak ekleyin",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Orijinal kalite",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Daha fazla eser yüklenemedi",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Başka eser yok",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivision makaleleri",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Şu an Pixivision makalesi yok",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Öne çıkan eserler",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Doğum günü",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Henüz herkese açık yer imi yok",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Profil bilgilerini kopyala",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Takipçiler",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Gösterilecek takipçi yok",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Takip edilenler",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Henüz kimseyi takip etmiyor",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Cinsiyet",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Kullanıcı kimliği kopyalandı",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "İllüstrasyonlar",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Bilgi",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profil bilgileri kopyalandı",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Meslek",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Bu içerik üreticisini sessize aldınız",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My pixiv arkadaşları",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Takma ad",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Henüz herkese açık roman yer imi yok",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romanlar",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Henüz roman yok",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo hesabı",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium üye",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Herkese açık yer imleri",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Bölge",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Profil fotoğrafını kaydet",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Kapak görselini kaydet",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Yine de göster",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X hesabı",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Kullanıcı kimliği",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Web sitesi",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Eserler",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Burada henüz eser yok",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Eser sayfaları",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Izgara görselleri",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Büyük",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Orta",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Orijinal",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Tam ekran sayfalar",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "YZ",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 günlük",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 YZ",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Düzenle",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Sabitlenen sıralamalar sekme olarak görünür. R-18 sıralamaları “R-18 eserleri göster” açıkken sunulur.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Sıralama sekmeleri",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 haftalık",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G haftalık",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Şu an önerilen yaratıcı yok",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} piksel",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Başka bir görsel seç",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Bu görselle eşleşen Pixiv eseri yok",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO bu görselle arama yapamadı",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Görsel seç",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Önizlemeleri görmek için Pixiv’e yeniden giriş yapın",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Seçtiğiniz görsel, eşleşen Pixiv eserlerini bulmak için saucenao.com’a yüklenir.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO’da aranıyor…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} benzerlik",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Görselle ara",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Tekrar kaydet",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Yalnızca yeni sayfalar",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, other{{count} sayfayı kaydet}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Bu cihaza kaydedildi",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Yer imi sayısı",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Herhangi bir yer imi sayısı",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ yer imi",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} yer imi",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Tarih",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Herhangi bir zaman",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Özel tarihler…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Son gün",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Son 6 ay",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Son ay",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Son hafta",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Son yıl",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Favori etiketlere ekle",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Favori etiketlere eklendi",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Favori etiketlerden kaldır",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Favori etiketlerden kaldırıldı",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Favori etiketler",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Düzenlemeyi bitir",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Favori etiketleri düzenle",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Taşımak için bir etiketi sürükleyin. Kaldırmak için yana kaydırın.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Henüz favori etiket yok. Eklemek için bir eserdeki etikete uzun basın.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Arama filtreleri",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Tümünü göster ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Son aramaları temizle",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Tüm son aramalar temizlensin mi?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Daha az göster",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "#{id} eserini aç",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "#{id} romanını aç",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "#{id} roman serisini aç",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "#{id} Pixivision makalesini aç",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "#{id} kullanıcısını aç",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Yapıştır",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popülerlik",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Herhangi bir popülerlik",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Erkekler ya da kadınlar arasındaki popülerliğe göre sıralama Pixiv Premium gerektirir. Premium olmadan “Popüler”, Pixiv’in ücretsiz önizlemesini gösterir.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Yayın tarihleri önizlemeyi daraltmaz.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Bu, Pixiv’in ücretsiz popüler önizlemesidir. Tüm sonuçları popülerliğe göre sıralamak için Pixiv Premium gerekir.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Bu filtreleri hatırla",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sıralama",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "En eski",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Kadınlar arasında popüler",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Erkekler arasında popüler",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etiket kopyalandı",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Etiketi kopyala",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Arama yeri",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Etiketler, başlık, açıklama",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Metin gövdesi",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Tüm eserler",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Ugoira hariç",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Yalnızca ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "{count}+ kişi yer imlerine ekledi",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Tümünü gör",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Hiçbiri",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Sayfaları seç",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Sayfa seçilmedi} other{{count} sayfa seçildi}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Seri",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Bu seride görebileceğiniz eser yok",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Seri: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Serideki sonraki",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "{total} eserden {order}.",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Serideki önceki",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Başlangıç: {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Görseli paylaş",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Bu görsel paylaşılamadı",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "{name} oturumu kapatılsın mı?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv oturumu kapatılsın mı?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Görsellerin ve ayrıntıların boyutunu değiştir",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv şurada açılır",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Eserler arasında kaydır",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Listedeki sonraki esere geçmek için yana kaydırın. Çok sayfalı eserlerde ilk veya son sayfadan sonra kaydırmaya devam edin.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Hesap değiştir",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "İzleme listesi",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Kare {current}/{total} kodlanıyor…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Animasyon kaydedilemedi",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Kareler alınıyor…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "GIF olarak kaydet",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Kareleri ZIP olarak kaydet",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animasyon GIF olarak kaydedildi",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kareler ZIP olarak kaydedildi",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Kaydediliyor…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodlama bir dakika sürebilir",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "{name} sessizden çıkarılsın mı?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Görüntüleme",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Bu eseri açmak için oturum açın",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Pixiv’de popüler",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "İzleme listesine ekle",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "İzleme listenize eklediğiniz manga serileri burada görünür",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "İzleme listesinden çıkar",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Güncellendi: {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "En yenisini gör",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} eser} other{{shown} eser}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Yazarın yanıtları",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Yeniden paylaşımları gizle",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, other{{count} yanıt daha göster}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, other{Bu dizideki {count} gönderiyi daha göster}}",
+  "@plugin_threads_show_thread": {}
 }

@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -10,10 +10,17 @@ import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
+import 'package:xta/plugins/ehviewer/eh_search_store.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
+import 'package:xta/plugins/ehviewer/eh_tags.dart';
 import 'package:xta/plugins/ehviewer/eh_ui.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/plugin_search_history.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 import 'package:xta/ui/errors.dart';
 
+/// Search with the site's own tag suggestions, category, rating and language
+/// filters, and the searches run before.
 class EhSearchScreen extends StatefulWidget {
   final String? initialQuery;
 
@@ -24,207 +31,264 @@ class EhSearchScreen extends StatefulWidget {
 }
 
 class _EhSearchScreenState extends State<EhSearchScreen> {
+  late final PluginSearchHistoryStore _history;
+  late final EhSearchStore _store;
   late final TextEditingController _controller;
-  EhFeedStore? _results;
-  var _submitted = false;
-  late Set<EhCategory> _categories;
-  var _minRating = 0;
-  var _language = EhSearchLanguage.any;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialQuery ?? '');
-    _categories = Set.of(context.read<EhClient>().includedCategories);
-    if ((widget.initialQuery ?? '').trim().isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _search());
-    }
+    final initial = widget.initialQuery?.trim() ?? '';
+    _controller = TextEditingController(
+      text: initial.isEmpty ? '' : '$initial ',
+    );
+    _history = PluginSearchHistoryStore(
+      PrefService.of(context, listen: false),
+      optionPluginEhSearchHistory,
+    );
+    _store = EhSearchStore(context.read<EhClient>(), _history);
+    if (initial.isNotEmpty) unawaited(_store.search(initial));
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _results?.destroy();
+    unawaited(_store.destroy());
+    unawaited(_history.destroy());
     super.dispose();
   }
 
-  Future<void> _search() async {
-    final query = _controller.text.trim();
-    if (query.isEmpty) return;
-    final client = context.read<EhClient>();
-    _results?.destroy();
-    final store = EhFeedStore(
-      ({pageUrl}) => client.search(
-        query,
-        pageUrl: pageUrl,
-        categories: _categories,
-        minRating: _minRating,
-        language: _language.tag,
-      ),
+  void _run(String query) {
+    FocusScope.of(context).unfocus();
+    unawaited(_store.search(query));
+  }
+
+  void _pick(EhTag tag) {
+    final text = _store.pick(tag);
+    _controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
     );
-    setState(() {
-      _results = store;
-      _submitted = true;
-    });
-    await _remember(query);
-    await store.refresh();
   }
 
-  Future<void> _remember(String query) async {
-    final prefs = PrefService.of(context, listen: false);
-    final raw = prefs.get<String>(optionPluginEhSearchHistory) ?? '[]';
-    var history = <String>[];
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is List) history = decoded.whereType<String>().toList();
-    } catch (_) {}
-    history.remove(query);
-    history.insert(0, query);
-    if (history.length > 20) history = history.take(20).toList();
-    await prefs.set(optionPluginEhSearchHistory, jsonEncode(history));
-  }
-
-  List<String> _history() {
-    final raw =
-        PrefService.of(
-          context,
-          listen: false,
-        ).get<String>(optionPluginEhSearchHistory) ??
-        '[]';
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is List) return decoded.whereType<String>().toList();
-    } catch (_) {}
-    return const [];
+  void _fromHistory(String query) {
+    _controller.text = query;
+    _run(query);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          autofocus: true,
-          textInputAction: TextInputAction.search,
-          decoration: InputDecoration(
-            hintText: l10n.plugin_eh_search_hint,
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              tooltip: l10n.search,
-              icon: const Icon(Icons.search),
-              onPressed: _search,
+    return ScopedBuilder<EhSearchStore, EhSearchState>(
+      store: _store,
+      onState: (context, state) => Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            key: const ValueKey('eh-search-field'),
+            controller: _controller,
+            autofocus: (widget.initialQuery ?? '').trim().isEmpty,
+            autocorrect: false,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: l10n.plugin_eh_search_hint,
+              border: InputBorder.none,
+              suffixIcon: IconButton(
+                tooltip: l10n.search,
+                icon: const Icon(Icons.search),
+                onPressed: () => _run(_controller.text),
+              ),
             ),
+            onChanged: _store.type,
+            onSubmitted: _run,
           ),
-          onSubmitted: (_) => _search(),
+        ),
+        body: Column(
+          children: [
+            _EhSearchFilters(store: _store, state: state),
+            const Divider(height: 1),
+            Expanded(child: _body(state)),
+          ],
         ),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              children: [
-                for (final cat in EhCategory.values)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: FilterChip(
-                      label: Text(cat.label),
-                      selected: _categories.contains(cat),
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            _categories.add(cat);
-                          } else if (_categories.length > 1) {
-                            _categories.remove(cat);
-                          }
-                        });
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: FilterChip(
-                    label: Text(l10n.plugin_eh_min_rating),
-                    selected: _minRating >= 2,
-                    onSelected: (_) {
-                      setState(() {
-                        _minRating = _minRating >= 4
-                            ? 0
-                            : (_minRating < 2 ? 2 : _minRating + 1);
-                      });
-                    },
-                  ),
+    );
+  }
+
+  Widget _body(EhSearchState state) {
+    final results = _store.results;
+    if (state.suggestions.isNotEmpty) {
+      return _EhSuggestions(tags: state.suggestions, onPick: _pick);
+    }
+    if (results == null) {
+      return _EhSearchHistory(history: _history, onRun: _fromHistory);
+    }
+    return _EhSearchResults(key: ObjectKey(results), results: results);
+  }
+}
+
+/// Category, minimum rating and language, each one a tap away.
+class _EhSearchFilters extends StatelessWidget {
+  final EhSearchStore store;
+  final EhSearchState state;
+
+  const _EhSearchFilters({required this.store, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Column(
+      children: [
+        PluginFilterRow(
+          children: [
+            for (final category in EhCategory.values)
+              FilterChip(
+                avatar: CircleAvatar(
+                  radius: 6,
+                  backgroundColor: ehCategoryColor(category),
                 ),
-                if (_minRating >= 2)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Chip(label: Text('$_minRating+')),
-                  ),
-                for (final language in EhSearchLanguage.values)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: FilterChip(
-                      label: Text(ehLanguageLabel(l10n, language)),
-                      selected: _language == language,
-                      onSelected: (_) => setState(() => _language = language),
-                    ),
-                  ),
-              ],
+                label: Text(category.label),
+                selected: state.categories.contains(category),
+                showCheckmark: false,
+                onSelected: (_) => store.toggleCategory(category),
+              ),
+          ],
+        ),
+        PluginFilterRow(
+          children: [
+            Text(l10n.plugin_eh_min_rating),
+            for (final stars in const [2, 3, 4, 5])
+              ChoiceChip(
+                key: ValueKey('eh-rating-$stars'),
+                avatar: const Icon(Icons.star_rounded, size: 18),
+                label: Text(
+                  '$stars',
+                  semanticsLabel: l10n.plugin_eh_rating('$stars'),
+                ),
+                selected: state.minRating == stars,
+                showCheckmark: false,
+                onSelected: (_) => store.setMinRating(stars),
+              ),
+            for (final language in EhSearchLanguage.values)
+              ChoiceChip(
+                label: Text(ehLanguageLabel(l10n, language)),
+                selected: state.language == language,
+                onSelected: (_) => store.setLanguage(language),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// The site's tags for the term being typed, in their namespace colours.
+class _EhSuggestions extends StatelessWidget {
+  final List<EhTag> tags;
+  final ValueChanged<EhTag> onPick;
+
+  const _EhSuggestions({required this.tags, required this.onPick});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      itemCount: tags.length,
+      itemBuilder: (context, index) {
+        final tag = tags[index];
+        final color = pluginTagKindColor(
+          ehTagKind(tag.namespace),
+          theme.colorScheme,
+        );
+        return ListTile(
+          key: ValueKey('eh-suggestion-${tag.raw}'),
+          title: Text(tag.name, style: TextStyle(color: color)),
+          trailing: Text(
+            ehNamespaceLabel(l10n, tag.namespace),
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          Expanded(
-            child: !_submitted
-                ? ListView(
-                    children: [
-                      for (final query in _history())
-                        ListTile(
-                          leading: const Icon(Icons.history),
-                          title: Text(query),
-                          onTap: () {
-                            _controller.text = query;
-                            _search();
-                          },
-                        ),
-                    ],
-                  )
-                : ScopedBuilder<EhFeedStore, List<EhGallery>>(
-                    store: _results!,
-                    onLoading: (_) =>
-                        const Center(child: CircularProgressIndicator()),
-                    onError: (_, error) => FullPageErrorWidget(
-                      error: error,
-                      stackTrace: null,
-                      prefix: ehErrorMessage(l10n, error),
-                      onRetry: () => _results!.refresh(),
-                    ),
-                    onState: (context, galleries) {
-                      if (galleries.isEmpty) {
-                        return Center(child: Text(l10n.plugin_eh_empty_search));
-                      }
-                      return EhGalleryGrid(
-                        galleries: galleries,
-                        onRefresh: _results!.refresh,
-                        loadingMore: _results!.loadingMore,
-                        onNearEnd: _results!.loadMore,
-                      );
-                    },
-                  ),
-          ),
+          onTap: () => onPick(tag),
+        );
+      },
+    );
+  }
+}
+
+class _EhSearchHistory extends StatelessWidget {
+  final PluginSearchHistoryStore history;
+  final ValueChanged<String> onRun;
+
+  const _EhSearchHistory({required this.history, required this.onRun});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<PluginSearchHistoryStore, List<String>>(
+      store: history,
+      onState: (context, queries) => ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        children: [
+          if (queries.isNotEmpty)
+            ListTile(
+              title: Text(
+                l10n.plugin_eh_tab_history,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              trailing: IconButton(
+                tooltip: l10n.plugin_eh_clear_history,
+                icon: const Icon(Icons.delete_sweep_outlined),
+                onPressed: history.clear,
+              ),
+            ),
+          for (final query in queries)
+            ListTile(
+              key: ValueKey('eh-history-$query'),
+              leading: const Icon(Icons.history),
+              title: Text(query),
+              trailing: IconButton(
+                tooltip: l10n.delete,
+                icon: const Icon(Icons.close),
+                onPressed: () => history.forget(query),
+              ),
+              onTap: () => onRun(query),
+            ),
         ],
       ),
     );
   }
+}
+
+class _EhSearchResults extends StatelessWidget {
+  final EhFeedStore results;
+
+  const _EhSearchResults({super.key, required this.results});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<EhFeedStore, List<EhGallery>>(
+      store: results,
+      onLoading: (_) => results.state.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : _grid(results.state),
+      onError: (_, error) => FullPageErrorWidget(
+        error: error,
+        stackTrace: null,
+        prefix: ehErrorMessage(l10n, error),
+        onRetry: results.refresh,
+      ),
+      onState: (context, galleries) => galleries.isEmpty
+          ? Center(child: Text(l10n.plugin_eh_empty_search))
+          : _grid(galleries),
+    );
+  }
+
+  Widget _grid(List<EhGallery> galleries) => EhGalleryGrid(
+    galleries: galleries,
+    onRefresh: results.refresh,
+    loadingMore: results.loadingMore,
+    onNearEnd: results.loadMore,
+  );
 }

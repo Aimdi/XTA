@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 
-/// Text colour for a tag kind. General tags keep the body colour; the rest
-/// follow the usual booru colours, tuned to stay readable on light, dim and
-/// black surfaces.
-Color? booruTagColor(BooruTagCategory? category, ColorScheme scheme) {
-  final dark = scheme.brightness == Brightness.dark;
-  return switch (category) {
-    BooruTagCategory.artist => dark ? const Color(0xFFFF8A80) : const Color(0xFFC62828),
-    BooruTagCategory.copyright => dark ? const Color(0xFFD7A6F5) : const Color(0xFF7B1FA2),
-    BooruTagCategory.character => dark ? const Color(0xFF7ED68A) : const Color(0xFF2E7D32),
-    BooruTagCategory.species => dark ? const Color(0xFFFFB74D) : const Color(0xFFB34700),
-    BooruTagCategory.meta => dark ? const Color(0xFFFFD54F) : const Color(0xFF7A5C00),
-    BooruTagCategory.general || null => null,
-  };
-}
+/// The shared tag kind a booru category is coloured as.
+PluginTagKind? booruTagKind(BooruTagCategory? category) => switch (category) {
+  BooruTagCategory.artist => PluginTagKind.artist,
+  BooruTagCategory.copyright => PluginTagKind.copyright,
+  BooruTagCategory.character => PluginTagKind.character,
+  BooruTagCategory.species => PluginTagKind.species,
+  BooruTagCategory.general => PluginTagKind.general,
+  BooruTagCategory.meta => PluginTagKind.meta,
+  null => null,
+};
+
+/// Text colour for a tag kind; a tag of unknown kind keeps the body colour.
+Color? booruTagColor(BooruTagCategory? category, ColorScheme scheme) =>
+    pluginTagKindColor(booruTagKind(category), scheme);
+
+/// How a tag reads: boorus join words with underscores, people read spaces.
+String booruTagDisplayName(String tag) => tag.replaceAll('_', ' ');
 
 /// A query token as rich text: the operator and metatag name are set apart
 /// from the value so `-` and `rating:` read at a glance. The token is

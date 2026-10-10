@@ -158,7 +158,7 @@ void main() {
       },
     );
 
-    test('pre-market is the tape print while that session is live', () {
+    test('a pre-market print is reported beside, not instead of, the price', () {
       final quote = TickerQuote.fromChartJson(
         _chart(
           meta: {
@@ -170,7 +170,9 @@ void main() {
         symbol: 'AAPL',
       )!;
 
-      expect(quote.displayPrice, closeTo(101.5, 0.001));
+      expect(quote.displayPrice, closeTo(100, 0.001));
+      expect(quote.extendedPrint?.price, closeTo(101.5, 0.001));
+      expect(quote.extendedChangePercent, closeTo(1.5, 0.001));
       expect(quote.isPreMarket, isTrue);
     });
 

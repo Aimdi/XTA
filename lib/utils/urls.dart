@@ -62,6 +62,26 @@ String? articleIdIn(String? url) {
   return parts[2];
 }
 
+/// The conversation id in an `x.com/i/grok/share/…` link, or null if it is
+/// not one.
+///
+/// A shared Grok conversation is no post, profile or list, so it used to read
+/// as an unknown X link. Only X's web page can show the whole of it.
+String? grokShareIdIn(String? url) {
+  final uri = Uri.tryParse(url?.trim() ?? '');
+  if (uri == null || !_xHosts.contains(uri.host.toLowerCase())) {
+    return null;
+  }
+  final parts = uri.pathSegments.where((e) => e.isNotEmpty).toList(growable: false);
+  if (parts.length < 4 ||
+      parts[0] != 'i' ||
+      parts[1] != 'grok' ||
+      parts[2] != 'share') {
+    return null;
+  }
+  return parts[3];
+}
+
 /// The broadcast id in an `x.com/i/broadcasts/…` (or `/i/broadcast/…`,
 /// `pscp.tv/w/…`) link, or null if it is not one.
 ///
@@ -240,15 +260,49 @@ Future<void> openInDefaultBrowser(String url) async {
   await intent.launch();
 }
 
+/// True when [url] is an X page XTA has no screen for and must leave to a
+/// browser: a VIEW of it without a named browser would reopen this app.
+bool _needsNamedBrowser(String url) =>
+    isLiveWatchUrl(url) || grokShareIdIn(url) != null;
+
 /// True when [url] is an X broadcast, Periscope watch link, or Space.
 ///
 /// In-app playback goes through the live player screen. A generic VIEW of
 /// x.com would bounce back through our intent-filter, so the leftover path
-/// that still leaves the app (openLiveUrl) always names a real browser.
+/// that still leaves the app ([openInRealBrowser]) always names a real browser.
 bool isLiveWatchUrl(String? url) =>
     spaceIdIn(url) != null || broadcastIdIn(url) != null;
 
 const _xtaPackage = 'com.aimdi.xta';
+
+/// The Pixiv hosts the manifest's VIEW filter claims once the reader lets XTA
+/// open them.
+const _claimedPixivHosts = {'pixiv.net', 'www.pixiv.net', 'pixiv.me'};
+
+/// Whether a plain VIEW of [url] could land back in XTA: a Pixiv page that
+/// XTA opens by default, or one Android would offer in a chooser beside XTA,
+/// which before Android 12 it does for every Pixiv page. Only a Pixiv page
+/// another app takes outright, and everything else, goes out as usual.
+Future<bool> _reopensXta(String url) async {
+  final uri = Uri.tryParse(url.trim());
+  if (uri == null ||
+      (uri.scheme != 'https' && uri.scheme != 'http') ||
+      !_claimedPixivHosts.contains(uri.host.toLowerCase())) {
+    return false;
+  }
+  try {
+    final handler = await AndroidIntent(
+      action: 'android.intent.action.VIEW',
+      data: url,
+    ).getResolvedActivity();
+    // A chooser resolves to the system's own package, and it lists XTA.
+    final package = handler?.packageName;
+    return package == null || package == 'android' || package == _xtaPackage;
+  } catch (_) {
+    // Unknown: a named browser is the choice that cannot loop.
+    return true;
+  }
+}
 
 /// VIEW that names a browser. A package-less VIEW of x.com comes back here.
 Future<bool> _openInNamedBrowser(String url, String? package) async {
@@ -267,11 +321,13 @@ Future<bool> _openInNamedBrowser(String url, String? package) async {
   }
 }
 
-/// Opens a broadcast or Space in a real browser.
+/// Opens a link XTA's own intent filters claim — a broadcast, a Space, a
+/// shared Grok conversation, a pixiv.net page — in a real browser.
 ///
 /// Custom Tabs and a named browser package never bounce back into XTA.
-/// [openExternally] is not used: its fallback is a generic VIEW of x.com.
-Future<void> openLiveUrl(BuildContext context, String uri) async {
+/// [openExternally] is not used: its fallback is a generic VIEW, which Android
+/// hands straight back to this app.
+Future<void> openInRealBrowser(BuildContext context, String uri) async {
   final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
@@ -302,15 +358,16 @@ Future<void> openLiveUrl(BuildContext context, String uri) async {
 /// asked for that in settings, otherwise in the browser they named — or the
 /// system default, if they named none.
 ///
-/// Broadcasts and Spaces always go through [openLiveUrl]: a generic VIEW of
-/// x.com would reopen this app and show "unable to open link".
+/// Broadcasts, Spaces and Grok shares always go through [openInRealBrowser],
+/// and so do Pixiv pages once XTA opens those by default: a generic VIEW of
+/// them would reopen this app instead of a browser.
 Future<void> openUri(BuildContext context, String uri) async {
-  if (isLiveWatchUrl(uri)) {
-    await openLiveUrl(context, uri);
+  final prefs = PrefService.of(context, listen: false);
+  if (_needsNamedBrowser(uri) || await _reopensXta(uri)) {
+    if (context.mounted) await openInRealBrowser(context, uri);
     return;
   }
 
-  final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
   if (prefs.get(optionOpenLinksInEmbeddedBrowser) == true) {
@@ -365,6 +422,16 @@ ProfileUriInfo? _parseAsProfileLink(List<String> parts) {
 
   // The URI is not an account link
   return null;
+}
+
+/// The screen name an X profile link points at, or null when [url] is not one —
+/// another host, a post, a list. Pure: unlike [parseUri] it resolves nothing.
+String? xProfileScreenName(String? url) {
+  final uri = Uri.tryParse(url ?? '');
+  if (uri == null || !_xHosts.contains(uri.host.toLowerCase())) {
+    return null;
+  }
+  return _parseAsProfileLink(uri.pathSegments.where((e) => e.isNotEmpty).toList())?.screenName;
 }
 
 class ListUriInfo extends UriParseResult {
@@ -432,6 +499,25 @@ PostUriInfo? _parseAsPostLink(List<String> parts) {
   return null;
 }
 
+/// The author and id in a post link, read without resolving it — so not for
+/// t.co links.
+PostUriInfo? parsePostLink(Uri link) => _parseAsPostLink(link.pathSegments.where((e) => e.isNotEmpty).toList());
+
+final _handlePattern = RegExp(r'^[A-Za-z0-9_]{1,15}$');
+final _postIdPattern = RegExp(r'^[0-9]+$');
+
+/// The Wayback Machine's list of captures of a post, or null when [screenName]
+/// or [id] is not a real handle or post id.
+///
+/// The address is twitter.com because most captures predate x.com, and the
+/// trailing star also matches the addresses that carried a query.
+Uri? waybackSearchUri(String screenName, String id) {
+  if (!_handlePattern.hasMatch(screenName) || !_postIdPattern.hasMatch(id)) {
+    return null;
+  }
+  return Uri.parse('https://web.archive.org/web/*/twitter.com/$screenName/status/$id*');
+}
+
 Future<String?> _resolveShortUrl(Uri shortUrl) async {
   final request = http.Request('GET', shortUrl)
     ..followRedirects = false;
@@ -444,6 +530,14 @@ Future<String?> _resolveShortUrl(Uri shortUrl) async {
 }
 
 class UnknownResult extends UriParseResult {}
+
+/// An `x.com/i/grok/share/{id}` link: a shared Grok conversation, which only
+/// X's web page shows in full.
+class GrokShareUriInfo extends UriParseResult {
+  final String url;
+
+  GrokShareUriInfo(this.url);
+}
 
 /// An `x.com/i/broadcasts/{id}` or `x.com/i/spaces/{id}` (or pscp.tv) link.
 ///
@@ -489,6 +583,9 @@ Future<UriParseResult> parseUri(Uri link) async {
   final liveInfo = _parseAsLiveLink(link);
   if (liveInfo != null) {
     return liveInfo;
+  }
+  if (grokShareIdIn(link.toString()) != null) {
+    return GrokShareUriInfo(link.toString());
   }
   final profileInfo = _parseAsProfileLink(parts);
   if (profileInfo != null) {

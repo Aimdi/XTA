@@ -95,12 +95,15 @@ class TimelineParser {
   }
 
   /// The tweet node inside a `tweet_results.result`, unwrapping the extra layer
-  /// that reply-restricted tweets (`TweetWithVisibilityResults`) add. Null when
-  /// the result carries no usable tweet — deleted, restricted, or a shape we no
-  /// longer recognise.
+  /// that reply-restricted tweets (`TweetWithVisibilityResults`) add, and
+  /// reading a subscriber-only preview (`TweetPreviewDisplay`) as a tweet. Null
+  /// when the result carries no usable tweet — deleted, restricted, or a shape
+  /// we no longer recognise.
   static Map<String, dynamic>? _unwrapTweetResult(dynamic result) {
     final map = _asStringKeyedMap(result);
     if (map == null) return null;
+    final preview = TweetWithCard.subscriberPreviewAsTweet(map);
+    if (preview != null) return preview;
     final unwrapped = map['rest_id'] != null ? map : _asStringKeyedMap(map['tweet']);
     if (unwrapped == null || unwrapped['rest_id'] == null) {
       return null;
@@ -301,6 +304,8 @@ class TimelineParser {
     return null;
   }
 
+  static final _profileConversation = RegExp(r'^profile-(originals-)?conversation-?');
+
   static List<TweetChain> createTweets(List<dynamic> addEntries, [bool isPinned = false]) {
     List<TweetChain> replies = [];
 
@@ -337,10 +342,12 @@ class TimelineParser {
         // TODO: Use as the "next page" cursor
       }
 
-      if (entryId.startsWith('profile-conversation')) {
+      // The posts tab also names its threads `profile-originals-conversation-`.
+      final conversation = _profileConversation.firstMatch(entryId);
+      if (conversation != null) {
         replies.add(
           TweetChain(
-            id: entryId.replaceFirst('profile-conversation-', ''),
+            id: entryId.substring(conversation.end),
             tweets: _conversationTweets(entry, skipPromoted: false),
             isPinned: false,
           ),

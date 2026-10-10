@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 
 /// Width one count action occupies with a label of [labelWidth].
-double _item(double labelWidth) => kFooterCountItemBase + labelWidth;
+double _item(double labelWidth) => footerCountItemWidth(labelWidth);
 
 void main() {
   group('resolveFooterFit', () {
@@ -41,11 +41,13 @@ void main() {
     });
 
     test('drops the labels only once dropping views is not enough', () {
-      final withCounts = _item(8) * 3 + kFooterIconItem * 3 + kFooterGroupGap;
+      // Labels wide enough to stretch their actions past the 48dp minimum.
+      const labels = [24.0, 24.0, 24.0];
+      final withCounts = _item(24) * 3 + kFooterIconItem * 3 + kFooterGroupGap;
 
       final fit = resolveFooterFit(
         available: withCounts - 5,
-        countLabelWidths: narrowLabels,
+        countLabelWidths: labels,
         viewsLabelWidth: viewsLabel,
         iconButtons: 3,
       );
@@ -82,11 +84,11 @@ void main() {
       expect(fit.showViews, isFalse);
     });
 
-    test('preserves every interactive action on a 360dp phone', () {
+    test('fits views beside every action on a 360dp phone, as X does', () {
       // The screenshot: 0 replies, 3 reposts, 6 likes and a view count, with
-      // bookmark and share — translate lives in the header — on a 360dp
-      // screen less the 8dp margins.
-      const available = 360.0 - 16;
+      // bookmark and share — translate and the menu live in the header — on a
+      // 360dp screen less the 8dp start margin.
+      const available = 360.0 - 8;
 
       final fit = resolveFooterFit(
         available: available,
@@ -96,11 +98,7 @@ void main() {
       );
 
       expect(fit.showCounts, isTrue);
-      expect(
-        fit.showViews,
-        isFalse,
-        reason: 'the read-only view count yields before a 48dp action target',
-      );
+      expect(fit.showViews, isTrue, reason: 'X-sized glyphs leave room for the views item');
       expect(fit.mustScaleDown, isFalse);
     });
 
@@ -122,12 +120,7 @@ void main() {
       // count rather than clipping a digit off the end.
       const wide = [28.0, 28.0, 28.0];
 
-      final fit = resolveFooterFit(
-        available: 360.0 - 16,
-        countLabelWidths: wide,
-        viewsLabelWidth: 28,
-        iconButtons: 2,
-      );
+      final fit = resolveFooterFit(available: 360.0 - 8, countLabelWidths: wide, viewsLabelWidth: 28, iconButtons: 2);
 
       expect(fit.showCounts, isTrue);
       expect(fit.showViews, isFalse);

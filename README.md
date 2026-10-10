@@ -80,7 +80,7 @@ installed plugin stays installed when its catalogue availability changes.
 | **Hacker News** | Story feeds and discussions, with local likes and bookmarks. |
 | **Substack** | Publication follows, article reading, text-to-speech and podcast playback. |
 | **RSS** | Follow feeds, read articles and bring subscriptions into Home and groups. |
-| **Booru** | Browse supported imageboard hosts and follow tags into groups. |
+| **Booru** | Browse imageboard hosts (Danbooru, Gelbooru, Moebooru, e621 and their forks): latest and popular posts, tag search, a swipeable viewer with tags by kind, related posts, comments and wiki; follow tags into groups. |
 | **Stocks & crypto** | Watchlists, charts and cashtag posts; find crypto by ticker or contract, with network-aware identity and DEX Screener quotes. |
 | **Karakeep** | Send selected bookmarks to a configured Karakeep instance. |
 | **Deepmarks** | Save selected bookmarks through Nostr. |
@@ -138,6 +138,11 @@ These checks establish build provenance; independently reproducible APKs are
   [`openrouter/free`](https://openrouter.ai/openrouter/free)), then save. AI features use the provider and key you configure.
   AI requests and actions such as sending a bookmark to Karakeep, Deepmarks or
   Immich transmit data to that chosen service.
+- **Downloaded voices:** Settings → Accessibility → Read aloud can download an
+  on-device voice (about 22 MB each) from k2-fsa's
+  [sherpa-onnx `tts-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models)
+  on GitHub, only when you tap Download. Each archive is checked against a
+  pinned SHA-256. Reading aloud with it then runs entirely on the device.
 
 XTA uses unofficial APIs for several sources. Upstream changes, rate limits and
 expired sessions can interrupt loading. When reporting a problem, include the
@@ -211,3 +216,10 @@ version alone does not identify an XTA release.
 [XTA release history](release-notes.md) ·
 [Historical upstream changelog](changelog.md) ·
 [MIT license](LICENSE)
+
+XTA's source is MIT-licensed. The APK also bundles
+[sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache-2.0) for the
+downloadable voices, whose native library statically links
+[espeak-ng](https://github.com/espeak-ng/espeak-ng) (GPL-3.0-or-later), so the
+APK as a whole is distributed under the GPL-3.0's terms. The in-app licence
+page lists both.

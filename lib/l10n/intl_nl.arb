@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Twijfelachtige en expliciete miniaturen vervagen",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Open je de post, dan zie je hem zonder vervaging",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Tags wissen",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Reacties",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Gekopieerd naar klembord",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Link kopiëren",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Tag kopiëren",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Tags kopiëren",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Als tekst bewerken",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Geen populaire posts op deze datum",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Uitsluiten van huidige zoekopdracht",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Uitsluiten",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Ouder- en kindposts",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} favoriet} other{{count} favorieten}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Tag volgen",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Openen op volledig scherm",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Kolommen in raster",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Aanpassen aan scherm",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Posts met deze tag verbergen",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Meer van {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Meerdere tags in één regel verbergen alleen posts die ze allemaal hebben. -tag en rating:e werken ook",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Nog geen reacties",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Hoogste score",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Originele bestanden op volledig scherm",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Volledig scherm laadt het bestand op ware grootte in plaats van de verkleinde versie van de host. Gebruikt meer data",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Kies een datum",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Dag",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Eerder",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Later",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Maand",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Deze site heeft geen lijst met populaire posts, dus zie je de posts met de hoogste score",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Week",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Geplaatst op {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Zoeken op deze tag",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Weergave",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Alles bekijken",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Weergavenaam",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Kleinere miniaturen",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Laadt de kleine voorbeelden van de host in het raster. Sneller en zuiniger met data, maar waziger",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Tik op een tag om erop te zoeken, hem te volgen of te verbergen, of om de wiki te lezen",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Kunstenaar",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Personage",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Serie",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Tags sorteren",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Meest gebruikt",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Soort",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tags",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Details onder miniaturen",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Host, eerste tags en score onder elke post in het raster",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Tag ontvolgen",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Deze tag niet meer verbergen",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Verwijderen uit opgeslagen zoekopdrachten",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Geüpload door {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} upvotes, {down} downvotes",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Deze tag heeft geen wikipagina",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "De laatst opgehaalde lijst wordt getoond",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "De pluginlijst kon niet worden opgehaald",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Reacties",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Verder lezen",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{{count} reactie tonen} other{Alle {count} reacties tonen}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Score {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Verder lezen vanaf pagina {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Tag kopiëren",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Geen favorieten} one{{count} favoriet} other{{count} favorieten}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Bestandsgrootte {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Taal: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Taal: {language}, vertaald",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} pagina} other{{count} pagina's}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Geplaatst op {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Score {rating} van 5, op basis van {count} stem} other{Score {rating} van 5, op basis van {count} stemmen}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} gekopieerd",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Uploader",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, nog niet bevestigd",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Ga",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minimumscore",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Kunstenaar",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Personage",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Vrouwelijk",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Groep",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Taal",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Mannelijk",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Gemengd",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Overig",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodie",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Herclassificatie",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Tijdelijk",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "De afbeelding van deze pagina is niet geladen",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Leesmodus",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Links naar rechts",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Rechts naar links (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Verticaal scrollen (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Origineel openen",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Andere server proberen",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Afbeelding opnieuw laden",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Bladwijzer",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Bladwijzermap",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Nog geen openbare bladwijzers op dit account",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privé",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titel/bijschrift",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Deze privéplug-in leest Pixiv als een galerij-app: volgend, ranglijsten, je openbare bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Hier vanuit wordt niets op Pixiv gepost, gebookmarkt of gevolgd.",
+  "plugin_pixiv_settings_intro": "Deze privéplug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Alleen de bladwijzers, follows en wijzigingen in de volglijst die je zelf maakt, gaan naar je Pixiv-account. Vanuit hier wordt nooit iets gepost, becommentarieerd of gemeld.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18-werken tonen",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "Verbergt werken die makers als met AI gegenereerd hebben gemarkeerd. Je eigen bladwijzers blijven altijd zichtbaar.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Vastzetten in bovenbalk",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Vastgezette items staan naast de secties zodra de balk ruimte heeft. Alles blijft ook in dit menu staan.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Geen",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Houd er een ingedrukt om alleen die aan te laten.",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Gevolgd door {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Gevolgd door {first} en {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Gevolgd door {first}, {second} en {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Gevolgd door {first}, {second} en 1 ander abonnement van je} other{Gevolgd door {first}, {second} en {count} andere abonnementen van je}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Volgers uit je abonnementen",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Op basis van de nieuwste gevolgde accounts die de app voor je enige abonnement heeft gelezen. Ook anderen kunnen dit account volgen.} other{Op basis van de nieuwste gevolgde accounts die de app voor {checked} van je {total} abonnementen heeft gelezen. Ook anderen kunnen dit account volgen.}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "Geverifieerd account",
+  "@verified_account": {},
+  "verified_organization": "Geverifieerde organisatie",
+  "@verified_organization": {},
+  "verified_government": "Geverifieerd overheidsaccount",
+  "@verified_government": {},
+  "affiliated_with": "Verbonden aan {name}",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} weergave} other{{views} weergaven}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "Meer opties",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Link kopiëren",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Link gekopieerd",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Pagina opnieuw laden",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Terug naar bericht",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Beveiligde verbinding",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Verbinding niet beveiligd",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "Likes: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Reacties: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Reposts: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "Sortering",
+  "@sort_order": {},
+  "sort_relevant": "Meest relevant",
+  "@sort_relevant": {},
+  "sort_oldest": "Oudste",
+  "@sort_oldest": {},
+  "sort_most_liked": "Meeste likes",
+  "@sort_most_liked": {},
+  "sort_top": "Populair",
+  "@sort_top": {},
+  "sort_most_followers": "Meeste volgers",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "Opening",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "Vorige slot",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "Markt open",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "Markt gesloten",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "Marktgegevens konden niet worden geladen",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "Marktkapitalisatie",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "Liquiditeit",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "Volume 24 u",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "Verandering {hours} u",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "Contractadres gekopieerd",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "Geen token gevonden voor dit contractadres",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "Berichten met {cashtag} opnemen",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "Berichten worden gezocht met dit contractadres of {cashtag}. Andere tokens kunnen hetzelfde symbool gebruiken.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Op de achtergrond opslaan",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Slaat op zonder te vragen: afbeeldingen in Pictures/XTA, video's in Movies/XTA en andere bestanden in Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Opgeslagen in {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "Gedownloade stemmen",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Gedownloade stem gebruiken",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Leest voor met een gedownloade stem als die de taal van het artikel spreekt; anders met de engine hieronder.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Stemmen worden pas van GitHub (k2-fsa/sherpa-onnx) gedownload als je op Downloaden tikt. Ze draaien volledig op dit apparaat.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licentie: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Controleren en uitpakken…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "Op dit apparaat · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Downloaden mislukt. Controleer je verbinding en probeer het opnieuw.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "De download kwam niet overeen met het verwachte bestand en is verwijderd.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "De gedownloade stem kon niet worden uitgepakt.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "{name} verwijderen?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Je kunt hem altijd opnieuw downloaden.",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Openen op web.archive.org",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Alleen betalende abonnees van @{screenName} op X kunnen de rest lezen",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Dit bericht is alleen voor betalende abonnees van de auteur op X.",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Actief account",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-account: met AI gegenereerde werken",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Deze instelling kon niet bij Pixiv worden gelezen",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Deels verborgen",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Je Pixiv-instelling wordt gecontroleerd…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Getoond",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Account verwijderen",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} van dit apparaat verwijderen?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "AI-label tonen",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "Markeert in rasters werken die hun makers als door AI gegenereerd hebben aangemerkt.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Al opgeslagen",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Deze pagina is al opgeslagen. Opnieuw opslaan?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} van de {total} pagina’s is al opgeslagen.} other{{saved} van de {total} pagina’s zijn al opgeslagen.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Bladwijzer toevoegen",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Bladwijzer maken bij opslaan",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Een werk opslaan vanaf de pagina maakt er ook een bladwijzer van, als dat nog niet zo is.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Bladwijzers automatisch taggen",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Bladwijzers die je zonder de editor maakt krijgen de eigen tags van het werk, zonder populariteitstags zoals 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Alles deselecteren",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Standaard privébladwijzers",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Bladwijzers die je zonder de editor maakt zijn privé. In de editor kun je er toch een openbaar maken.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Bladwijzer bewerken",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Volgen bij bladwijzer maken",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Een nieuwe bladwijzer volgt ook openbaar de artiest, als je die nog niet volgt.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Je volgt nu {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Privébladwijzer",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Alleen jij kunt hem zien",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Opslaan bij bladwijzer maken",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Een nieuwe bladwijzer slaat ook alle pagina’s van het werk op.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Alles selecteren",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Bladwijzers",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Tag toevoegen",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Alle",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Alle bladwijzers tonen",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Geen bladwijzers met deze tag",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Filteren op tag",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Voeg een tag toe",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Zoek of typ een tag",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Zonder categorie",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "‘{tag}’ gebruiken",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Tags",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Nog geen tags. Voeg hierboven je eigen tags toe.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Hier zijn nog geen bladwijzertags",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Wijzigen op pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Automatisch",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Rasterkolommen in liggende stand",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Rasterkolommen in staande stand",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Verborgen: links buiten Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Deze reactie dempen",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "{name} dempen",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Opties voor reactie",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Antwoord aan {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Tonen",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Sticker",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Onbekende gebruiker",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Antwoorden bekijken",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Nog geen reacties",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Nog geen antwoorden",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Antwoorden",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Reacties",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Reacties bekijken",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Reacties bekijken ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Gekopieerd",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Werk-ID kopiëren",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Info kopiëren",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Sjabloon voor ‘Info kopiëren’",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Link naar werk",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titel: {title}\nMaker: {artist}\nWerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Wat ‘Info kopiëren’ op het klembord zet. Plaatshouders worden vervangen door de gegevens van het werk.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Invoegen",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Standaard herstellen",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Link naar maker",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Indeling van een werk",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Naast elkaar op brede schermen",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Afbeeldingen naast de details",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Afbeeldingen boven de details",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Gelijktijdige downloads",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Hoeveel bestanden tegelijk worden gedownload",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Opgeslagen pagina’s",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Nog geen pagina’s onthouden} one{1 pagina onthouden} other{{count} pagina’s onthouden}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Opgeslagen werken krijgen een vinkje, en voordat een pagina een tweede keer wordt opgeslagen, wordt het eerst gevraagd",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Vergeten",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Vergeten welke pagina’s zijn opgeslagen? De bestanden zelf blijven op je apparaat.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Opgeslagen – opnieuw downloaden",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Downloads",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Bestandsnaam",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Tik op een gegeven om het bij de cursor in te voegen. Elk bestand houdt zijn eigen extensie.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Voeg {token} toe zodat elke pagina van een werk een eigen naam krijgt",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Voorbeeld: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Herstellen",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Werk-ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Paginanummer",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titel",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Artiest-ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Artiestnaam",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Map per artiest",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Zet de werken van elke artiest in een map met diens naam, binnen de downloadmap",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Aparte map voor R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Zet R-18-werken in een map ‘R-18’ binnen de downloadmap",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Privé",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Privé volgen",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Alleen jij ziet dat je volgt",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Openbaar",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Alle gevolgde makers",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Privé gevolgde makers",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Openbaar gevolgde makers",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} volgend} other{{shown} volgend}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Haptische feedback",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Een korte trilling bij een bladwijzer of lang indrukken.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Geschiedenis",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Geschiedenis wissen",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "De illustratiegeschiedenis wissen?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Werken die je opent verschijnen hier. De geschiedenis blijft op dit apparaat.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filteren op titel of maker",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Geen werk in de geschiedenis komt overeen",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "De romangeschiedenis wissen?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Romans die je opent verschijnen hier. De geschiedenis blijft op dit apparaat.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filteren op titel of auteur",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Geen roman in de geschiedenis komt overeen",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Geschiedenis pauzeren",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Zolang dit aan staat, worden geopende werken en romans niet aan de geschiedenis toegevoegd",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "‘{title}’ uit de geschiedenis verwijderen?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Werk-ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Werk-ID gekopieerd",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Afbeeldingsserver",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Serveradres",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Je eigen server",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Waar de afbeeldingen van werken vandaan komen. Een mirror helpt waar de afbeeldingsserver van Pixiv traag of geblokkeerd is.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Bijvoorbeeld img.example.com of https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Voer een geldig adres zonder spaties in, zoals img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Openbare mirror",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Eigen server van Pixiv",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Een mirror of je eigen server ziet elke afbeelding die je opent, ook R-18, en je IP-adres.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Standaard herstellen",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Info gekopieerd",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Account beheren op pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Nu geen aanbevolen manga — trek om te vernieuwen",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Overschakelen naar illustraties",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Overschakelen naar romans",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Reacties",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Je hebt de maker gedempt: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Deze keer tonen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Je hebt de tag {tag} gedempt.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dit werk is gedempt",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Je hebt dit werk gedempt.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Deze roman dempen",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romans",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Instellingen voor dempen",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Tag dempen",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Schrijf r'patroon' om elke tag te dempen waar een reguliere expressie op past. Patronen zien ook alle tags van een werk samengevoegd als #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tag om te dempen",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dit patroon is geen geldige reguliere expressie",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tags",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Makers",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Werken",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixiv-vriend} other{{shown} My pixiv-vrienden}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Roman",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Hun romans bekijken",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Privé een bladwijzer maken",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Romans met een openbare bladwijzer verschijnen hier",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Romans met een privébladwijzer verschijnen hier",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Nr. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} hoofdstuk} other{{shown} hoofdstukken}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} teken} other{{shown} tekens}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Exporteren als tekst",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Kan de roman niet exporteren",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Met Pixiv-opmaakcodes",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "De tekst precies zoals Pixiv hem opslaat, met codes zoals [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Platte tekst",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Zonder Pixiv-opmaakcodes, ruby geschreven als basis(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} opgeslagen",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Nieuwe romans van makers die je volgt, verschijnen hier",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Afbeelding in de roman",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Werk openen",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Afbeelding opslaan",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Volledig scherm bekijken",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Naar pagina {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Pixiv verlaten om {url} te openen?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Link openen",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Volgend hoofdstuk",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Pagina {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Vorig hoofdstuk",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Nu geen romans in de ranking",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Nu geen aanbevolen romans — trek om te vernieuwen",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Romantags, titels of gebruikers",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Sorteren op populariteit vereist Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Zoek romans of gebruikers",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Romanreeks",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Voltooid",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Geen zichtbare hoofdstukken in deze reeks",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Lopend",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Begin bij nr. 1",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Profiellink delen",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Link naar reeks delen",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Romanreeksen die je aan je volglijst toevoegt, verschijnen hier",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Pixiv-links openen in XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Voeg op de Android-pagina ‘Standaard openen’ pixiv.net en pixiv.me toe als ondersteunde links",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Originele kwaliteit",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Kan geen werken meer laden",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Geen werken meer",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivision-artikelen",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Nu geen Pixivision-artikelen",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Uitgelichte werken",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Verjaardag",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Nog geen openbare bladwijzers",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Profielinfo kopiëren",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Volgers",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Geen volgers om te tonen",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Volgend",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Volgt nog niemand",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Geslacht",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Gebruikers-ID gekopieerd",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Illustraties",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Info",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profielinfo gekopieerd",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Beroep",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Je hebt deze maker gedempt",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My pixiv-vrienden",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Bijnaam",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Nog geen openbare romanbladwijzers",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romans",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Nog geen romans",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo-account",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium-lid",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Openbare bladwijzers",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Regio",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Profielfoto opslaan",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Headerafbeelding opslaan",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Toch tonen",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X-account",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Gebruikers-ID",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Website",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Werken",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Hier nog geen werken",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Pagina's van een werk",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Afbeeldingen in raster",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Groot",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Gemiddeld",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Origineel",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Pagina's op volledig scherm",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 dagelijks",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Bewerken",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Vastgezette ranglijsten verschijnen als tabbladen. R-18-ranglijsten zijn beschikbaar zolang ‘R-18-werken tonen’ aan staat.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Ranglijsttabbladen",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 wekelijks",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G wekelijks",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Nu geen voorgestelde makers",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Kies een andere afbeelding",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Geen Pixiv-werken komen overeen met deze afbeelding",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO kon niet zoeken met deze afbeelding",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Kies een afbeelding",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Log opnieuw in bij Pixiv om voorbeelden te zien",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "De gekozen afbeelding wordt geüpload naar saucenao.com om bijpassende Pixiv-werken te vinden.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Zoeken op SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} gelijkenis",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Zoeken met afbeelding",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Opnieuw opslaan",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Alleen nieuwe pagina’s",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{1 pagina opslaan} other{{count} pagina’s opslaan}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Opgeslagen op dit apparaat",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Aantal bladwijzers",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Elk aantal bladwijzers",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ bladwijzers",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} bladwijzers",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Datum",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Altijd",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Eigen datums…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Afgelopen dag",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Afgelopen 6 maanden",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Afgelopen maand",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Afgelopen week",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Afgelopen jaar",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Toevoegen aan favoriete tags",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Toegevoegd aan favoriete tags",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Verwijderen uit favoriete tags",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Verwijderd uit favoriete tags",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Favoriete tags",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Klaar met bewerken",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Favoriete tags bewerken",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Sleep een tag om hem te verplaatsen. Veeg hem opzij om hem te verwijderen.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Nog geen favoriete tags. Houd een tag van een werk ingedrukt om hem toe te voegen.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Zoekfilters",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Alles tonen ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Recente zoekopdrachten wissen",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Alle recente zoekopdrachten wissen?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Minder tonen",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Werk #{id} openen",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Roman #{id} openen",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Romanreeks #{id} openen",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Pixivision-artikel #{id} openen",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Gebruiker #{id} openen",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Plakken",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Populariteit",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Elke populariteit",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Populariteit bij mannen of vrouwen vereist Pixiv Premium. Zonder Premium toont ‘Populair’ de gratis preview van Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Plaatsingsdatums beperken de preview niet.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Dit is de gratis populair-preview van Pixiv. Alle resultaten op populariteit sorteren vereist Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Deze filters onthouden",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sorteren op",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Oudste",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Populair bij vrouwen",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populair bij mannen",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Tag gekopieerd",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Tag kopiëren",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Zoeken in",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Tags, titel, bijschrift",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Hoofdtekst",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Alle werken",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Zonder ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Alleen ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Door {count}+ bewaard",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Alles bekijken",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Geen",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Pagina’s selecteren",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Geen pagina’s geselecteerd} one{1 pagina geselecteerd} other{{count} pagina’s geselecteerd}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Reeks",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Geen zichtbare werken in deze reeks",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Reeks: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Volgende in de reeks",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr. {order} van {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Vorige in de reeks",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Gestart op {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Afbeelding delen",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Kan deze afbeelding niet delen",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "{name} afmelden?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Afmelden bij Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Formaat van afbeeldingen en details wijzigen",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv opent op",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Tussen werken vegen",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Veeg opzij naar het volgende werk in de lijst. Bij werken met meerdere pagina's veeg je door voorbij de eerste of laatste pagina.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Ander account",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Volglijst",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Frame {current} van {total} coderen…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Kan de animatie niet opslaan",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Frames ophalen…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Opslaan als GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Frames opslaan als ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animatie opgeslagen als GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Frames opgeslagen als ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Opslaan…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Coderen kan een minuut duren",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "{name} niet meer dempen?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Weergave",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Meld je aan om dit werk te openen",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populair op Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Aan volglijst toevoegen",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Mangareeksen die je aan je volglijst toevoegt, verschijnen hier",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Van volglijst verwijderen",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Bijgewerkt {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Nieuwste bekijken",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} werk} other{{shown} werken}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Reacties van de auteur",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Reposts verbergen",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Nog 1 reactie tonen} other{Nog {count} reacties tonen}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Nog 1 bericht in dit draadje tonen} other{Nog {count} berichten in dit draadje tonen}}",
+  "@plugin_threads_show_thread": {}
 }

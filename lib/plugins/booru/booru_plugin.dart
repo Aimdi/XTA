@@ -157,6 +157,12 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBooruSearchHistory, '[]');
     await prefs.set(optionPluginBooruMutedTags, '[]');
     await prefs.set(optionPluginBooruCustomSites, '[]');
+    await prefs.set(optionPluginBooruGridColumns, 0);
+    await prefs.set(optionPluginBooruSmallThumbnails, false);
+    await prefs.set(optionPluginBooruOriginalInViewer, false);
+    await prefs.set(optionPluginBooruTileDetails, true);
+    await prefs.set(optionPluginBooruBlurExplicit, false);
+    await prefs.set(optionPluginBooruTagSort, 'name');
   }
 
   @override

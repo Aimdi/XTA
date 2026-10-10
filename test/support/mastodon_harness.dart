@@ -11,6 +11,7 @@ import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_session.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const sampleProfile = MastodonProfile(
@@ -162,6 +163,7 @@ class MastodonHarness {
   final accounts = MastodonFixtureAccounts();
   final scroll = ScrollController();
   final session = PluginSessionStore();
+  final sorts = ConversationSortStore();
   late final following = MastodonFeedStore(client, prefs, accounts);
   late final explore = MastodonExploreStore(client, prefs);
   late final local = MastodonLocalStore(client, prefs);
@@ -195,6 +197,7 @@ class MastodonHarness {
         Provider<MastodonLocalStore>.value(value: local),
         Provider<MastodonFederatedStore>.value(value: federated),
         Provider<PluginSessionStore>.value(value: session),
+        Provider<ConversationSortStore>.value(value: sorts),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -237,6 +240,7 @@ class MastodonHarness {
     await tester.pump();
     scroll.dispose();
     await session.destroy();
+    await sorts.destroy();
     await accounts.destroy();
     await following.destroy();
     await explore.destroy();

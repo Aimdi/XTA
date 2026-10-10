@@ -92,6 +92,20 @@ class BooruPost {
   final String? source;
   final DateTime? createdAt;
 
+  /// Kind of each tag, when the post itself says (Danbooru, e621). Other
+  /// engines need a lookup; see `BooruClient.tagCategories`.
+  final Map<String, BooruTagCategory> tagCategories;
+  final int? fileSize;
+  final String? md5;
+  final int? favCount;
+  final int? upScore;
+
+  /// Down votes as a positive count, whatever sign the host sends.
+  final int? downScore;
+  final String? parentId;
+  final bool hasChildren;
+  final String? uploader;
+
   const BooruPost({
     required this.id,
     required this.host,
@@ -107,6 +121,15 @@ class BooruPost {
     required this.fileExt,
     required this.source,
     required this.createdAt,
+    this.tagCategories = const {},
+    this.fileSize,
+    this.md5,
+    this.favCount,
+    this.upScore,
+    this.downScore,
+    this.parentId,
+    this.hasChildren = false,
+    this.uploader,
   });
 
   String get thumbnailUrl => (previewUrl != null && previewUrl!.isNotEmpty)
@@ -138,14 +161,35 @@ class BooruPost {
     return width / height;
   }
 
-  bool get isVideo {
-    final ext = (fileExt ?? '').toLowerCase();
-    if (ext == 'mp4' || ext == 'webm' || ext == 'mkv') return true;
-    final url = (fileUrl ?? sampleUrl ?? '').toLowerCase();
-    return url.endsWith('.mp4') || url.endsWith('.webm');
+  bool get isVideo =>
+      _videoExtensions.contains((fileExt ?? '').toLowerCase()) ||
+      videoUrl != null;
+
+  /// A file the player can open: the original, else a sample. Danbooru keeps
+  /// animations as a zip of frames and samples them as webm.
+  String? get videoUrl => [fileUrl, sampleUrl].nonNulls
+      .where((url) => _videoExtensions.contains(_extensionOf(url)))
+      .firstOrNull;
+
+  static const _videoExtensions = {'mp4', 'webm', 'mkv'};
+
+  static String _extensionOf(String url) {
+    final path = Uri.tryParse(url)?.path ?? url;
+    final dot = path.lastIndexOf('.');
+    return dot < 0 ? '' : path.substring(dot + 1).toLowerCase();
   }
 
   String get tagLine => tags.join(' ');
+
+  /// Identity across hosts: ids are only unique on one.
+  String get key => '$host:$id';
+
+  /// The original file, else the largest version the host gave.
+  String get originalUrl =>
+      (fileUrl != null && fileUrl!.isNotEmpty) ? fileUrl! : displayUrl;
+
+  /// Whether the post belongs to a parent/child set on the host.
+  bool get hasFamily => parentId != null || hasChildren;
 
   /// Canonical page on the host for this post, when the engine has one.
   String? get hostPageUrl {
@@ -214,17 +258,26 @@ enum BooruTagCategory {
         _ => null,
       };
 
-  /// Gelbooru forks that send the kind as a word.
+  /// Gelbooru forks and Moebooru's tag map send the kind as a word. A
+  /// Moebooru circle is a group of artists; faults are notes about the file.
   static BooruTagCategory? named(String? name) =>
       switch ((name ?? '').toLowerCase()) {
         'general' || 'tag' => general,
-        'artist' => artist,
+        'artist' || 'circle' => artist,
         'copyright' => copyright,
         'character' => character,
         'species' => species,
-        'metadata' || 'meta' => meta,
+        'metadata' || 'meta' || 'faults' || 'lore' => meta,
         _ => null,
       };
+}
+
+/// What a host says about one tag: its kind and how many posts carry it.
+class BooruTagInfo {
+  final BooruTagCategory? category;
+  final int? postCount;
+
+  const BooruTagInfo({this.category, this.postCount});
 }
 
 class BooruTagSuggestion {
@@ -233,4 +286,20 @@ class BooruTagSuggestion {
   final BooruTagCategory? category;
 
   const BooruTagSuggestion({required this.name, this.postCount, this.category});
+}
+
+class BooruComment {
+  final String id;
+  final String? author;
+  final String body;
+  final DateTime? createdAt;
+  final int? score;
+
+  const BooruComment({
+    required this.id,
+    required this.author,
+    required this.body,
+    required this.createdAt,
+    required this.score,
+  });
 }

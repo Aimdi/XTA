@@ -20,6 +20,14 @@ void main() {
     expect(french, isNot(english), reason: 'French uses a comma, not a point');
   });
 
+  test('a language intl has no number symbols for gets English digits', () {
+    Intl.defaultLocale = 'en';
+    final english = compactCount(1234);
+
+    Intl.defaultLocale = 'eo';
+    expect(compactCount(1234), english);
+  });
+
   test('the same locale is not re-parsed for every card in a feed', () {
     Intl.defaultLocale = 'de';
 

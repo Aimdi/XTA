@@ -47,6 +47,10 @@ class PluginHomeChrome extends StatelessWidget {
   final Widget? search;
   final Color? accent;
 
+  /// Lets the standalone bar leave [mark] out when that alone keeps every tab
+  /// a 48 dp icon beside [actions], which must then be 48 dp icon buttons.
+  final bool markGivesWay;
+
   const PluginHomeChrome({
     super.key,
     this.title,
@@ -55,6 +59,7 @@ class PluginHomeChrome extends StatelessWidget {
     this.actions = const [],
     this.search,
     this.accent,
+    this.markGivesWay = false,
   });
 
   @override
@@ -132,30 +137,42 @@ class PluginHomeChrome extends StatelessWidget {
           height: pluginToolbarHeight(context),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              children: [
-                if (Navigator.canPop(context)) const SizedBox.square(dimension: 48, child: BackButton()),
-                if (mark != null)
-                  SizedBox(
-                    width: 40,
-                    child: Tooltip(
-                      message: title!,
-                      child: Semantics(label: title, image: true, child: mark),
+            child: LayoutBuilder(
+              builder: (context, constraints) => Row(
+                children: [
+                  if (Navigator.canPop(context)) const SizedBox.square(dimension: 48, child: BackButton()),
+                  if (mark != null && _keepsMark(context, constraints.maxWidth))
+                    SizedBox(
+                      width: _markWidth,
+                      child: Tooltip(
+                        message: title!,
+                        child: Semantics(label: title, image: true, child: mark),
+                      ),
                     ),
+                  Expanded(
+                    child: tabs.isEmpty
+                        ? Text(title!, maxLines: 1, overflow: TextOverflow.ellipsis)
+                        : PluginCompactTabs(tabs: tabs, accent: accent),
                   ),
-                Expanded(
-                  child: tabs.isEmpty
-                      ? Text(title!, maxLines: 1, overflow: TextOverflow.ellipsis)
-                      : PluginCompactTabs(tabs: tabs, accent: accent),
-                ),
-                ...actions,
-              ],
+                  ...actions,
+                ],
+              ),
             ),
           ),
         ),
       ),
     ),
   );
+
+  static const _markWidth = 40.0;
+
+  /// See [markGivesWay]: the mark stays when the icon tabs fit beside it, or
+  /// when they would not fit without it either.
+  bool _keepsMark(BuildContext context, double width) {
+    if (!markGivesWay) return true;
+    final spare = width - (Navigator.canPop(context) ? 48 : 0) - (actions.length + tabs.length) * 48;
+    return spare >= _markWidth || spare < 0;
+  }
 
   bool _tabsFit(BuildContext context, double width) {
     var requiredWidth = 8.0;

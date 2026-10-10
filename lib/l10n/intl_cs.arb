@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Rozmazat pochybné a explicitní náhledy",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Po otevření se příspěvek zobrazí bez rozmazání",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Vymazat štítky",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Komentáře",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Zkopírováno do schránky",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Kopírovat odkaz",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Kopírovat štítek",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Kopírovat štítky",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Upravit jako text",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Pro toto datum nejsou žádné populární příspěvky",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Vyloučit z aktuálního hledání",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Vyloučit",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Nadřazené a podřízené příspěvky",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{V oblíbených u {count} uživatele} few{V oblíbených u {count} uživatelů} many{V oblíbených u {count} uživatele} other{V oblíbených u {count} uživatelů}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Sledovat štítek",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Otevřít na celou obrazovku",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Sloupce mřížky",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Přizpůsobit obrazovce",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Skrýt příspěvky s tímto štítkem",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Další od {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Více štítků v jedné položce skryje jen příspěvky, které je mají všechny. Funguje i -tag a rating:e",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Zatím žádné komentáře",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Nejvyšší skóre",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Originální soubory na celé obrazovce",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Na celé obrazovce se načte soubor v plné velikosti místo zmenšené verze hostitele. Spotřebuje více dat",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Vyberte datum",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Den",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Dříve",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Později",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Měsíc",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Tato stránka nemá seznam populárních, proto se zobrazují příspěvky s nejvyšším skóre",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Týden",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Zveřejněno {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Hledat tento štítek",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Zobrazení",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Zobrazit vše",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Zobrazovaný název",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Menší náhledy",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Načítá do mřížky malé náhledy hostitele. Rychlejší a šetří data, ale jsou rozmazanější",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Klepnutím na štítek ho můžete vyhledat, sledovat, skrýt nebo si přečíst jeho wiki",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Umělec",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Postava",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Seřadit štítky",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Nejpoužívanější",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Druh",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Štítky",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Podrobnosti pod náhledy",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Hostitel, první štítky a skóre pod každým příspěvkem v mřížce",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Přestat sledovat štítek",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Přestat skrývat tento štítek",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Odebrat z uložených hledání",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Nahráno uživatelem {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} pro, {down} proti",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Tento štítek nemá stránku na wiki",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Zobrazuje se poslední načtený seznam",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Seznam pluginů se nepodařilo načíst",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Komentáře",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Pokračovat",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Zobrazit {count} komentář} few{Zobrazit všechny {count} komentáře} many{Zobrazit všech {count} komentáře} other{Zobrazit všech {count} komentářů}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Skóre {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Pokračovat od stránky {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Kopírovat štítek",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Nikdo ji nemá v oblíbených} one{V oblíbených u {count} uživatele} few{V oblíbených u {count} uživatelů} many{V oblíbených u {count} uživatele} other{V oblíbených u {count} uživatelů}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Velikost souborů: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Jazyk: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Jazyk: {language}, překlad",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} stránka} few{{count} stránky} many{{count} stránky} other{{count} stránek}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Zveřejněno {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Hodnocení {rating} z 5, {count} hlas} few{Hodnocení {rating} z 5, {count} hlasy} many{Hodnocení {rating} z 5, {count} hlasu} other{Hodnocení {rating} z 5, {count} hlasů}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "Zkopírováno: {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Autor",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, zatím nepotvrzený",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Přejít",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minimální hodnocení",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Umělec",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Postava",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Ženy",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Skupina",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Jazyk",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Muži",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Smíšené",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Ostatní",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodie",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Přeřazení",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Dočasné",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Obrázek této stránky se nenačetl",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Režim čtení",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Zleva doprava",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Zprava doleva (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Svislé posouvání (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Otevřít originál",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Zkusit jiný server",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Znovu načíst obrázek",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",
@@ -2219,8 +2494,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Přidat záložku",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Složka záložek",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Na tomto účtu zatím nejsou žádné veřejné záložky",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Soukromé",
@@ -2341,7 +2614,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Název/popisek",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Tento soukromý plugin čte Pixiv jako galerii: sledování, žebříčky, vaše veřejné záložky a vyhledávání. Klepněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Odtud se na Pixivu nic nepublikuje, nepřidává do záložek ani nesleduje.",
+  "plugin_pixiv_settings_intro": "Tento soukromý plugin čte Pixiv jako galerii: ilustrace, manga, romány, žebříčky, vaše záložky a vyhledávání. Klepněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Do vašeho účtu Pixiv se odesílají jen záložky, sledování a změny sledovaných sérií, které sami provedete. Odtud se nikdy nic nepublikuje, nekomentuje ani nenahlašuje.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Zobrazit díla R-18",
   "@plugin_pixiv_show_r18": {},
@@ -3766,5 +4039,1215 @@
   "plugin_pixiv_hide_ai_description": "Skryje díla, která autoři označili jako vytvořená AI. Vaše vlastní záložky zůstávají vždy viditelné.",
   "@plugin_pixiv_hide_ai_description": {},
   "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@plugin_pixiv_ai": {},
+  "plugin_top_bar_pins": "Připnout na horní lištu",
+  "@plugin_top_bar_pins": {},
+  "plugin_top_bar_pins_hint": "Připnuté položky se zobrazí vedle sekcí, kdykoli je na liště místo. Vše zůstává i v této nabídce.",
+  "@plugin_top_bar_pins_hint": {},
+  "home_feed_select_none": "Nic",
+  "@home_feed_select_none": {},
+  "home_feed_only_hint": "Dlouhým stisknutím položky necháte zapnutou jen ji.",
+  "@home_feed_only_hint": {},
+  "profile_followed_by_one": "Sleduje {first}",
+  "@profile_followed_by_one": {},
+  "profile_followed_by_two": "Sledují {first} a {second}",
+  "@profile_followed_by_two": {},
+  "profile_followed_by_three": "Sledují {first}, {second} a {third}",
+  "@profile_followed_by_three": {},
+  "profile_followed_by_many": "{count, plural, one{Sledují {first}, {second} a 1 další z vašich odběrů} few{Sledují {first}, {second} a {count} další z vašich odběrů} many{Sledují {first}, {second} a {count} dalšího z vašich odběrů} other{Sledují {first}, {second} a {count} dalších z vašich odběrů}}",
+  "@profile_followed_by_many": {},
+  "profile_followed_by_title": "Sledující z vašich odběrů",
+  "@profile_followed_by_title": {},
+  "profile_followed_by_basis": "{total, plural, one{Podle nejnovějších sledování, která aplikace načetla u vašeho jediného odběru. Tento účet mohou sledovat i další.} few{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběrů. Tento účet mohou sledovat i další.} many{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběru. Tento účet mohou sledovat i další.} other{Podle nejnovějších sledování, která aplikace načetla u {checked} z vašich {total} odběrů. Tento účet mohou sledovat i další.}}",
+  "@profile_followed_by_basis": {},
+  "verified_account": "Ověřený účet",
+  "@verified_account": {},
+  "verified_organization": "Ověřená organizace",
+  "@verified_organization": {},
+  "verified_government": "Ověřený vládní účet",
+  "@verified_government": {},
+  "affiliated_with": "Přidružený k {name}",
+  "@affiliated_with": {},
+  "post_views_count": "{count, plural, one{{views} zobrazení} few{{views} zobrazení} many{{views} zobrazení} other{{views} zobrazení}}",
+  "@post_views_count": {},
+  "link_browser_more_options": "Další možnosti",
+  "@link_browser_more_options": {},
+  "link_browser_copy_link": "Kopírovat odkaz",
+  "@link_browser_copy_link": {},
+  "link_browser_link_copied": "Odkaz zkopírován",
+  "@link_browser_link_copied": {},
+  "link_browser_reload": "Znovu načíst stránku",
+  "@link_browser_reload": {},
+  "link_browser_back_to_post": "Zpět na příspěvek",
+  "@link_browser_back_to_post": {},
+  "link_browser_secure": "Zabezpečené připojení",
+  "@link_browser_secure": {},
+  "link_browser_not_secure": "Připojení není zabezpečené",
+  "@link_browser_not_secure": {},
+  "link_post_likes_count": "To se mi líbí: {count}",
+  "@link_post_likes_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_replies_count": "Odpovědi: {count}",
+  "@link_post_replies_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "link_post_reposts_count": "Sdílení: {count}",
+  "@link_post_reposts_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "sort_order": "Řazení",
+  "@sort_order": {},
+  "sort_relevant": "Relevantní",
+  "@sort_relevant": {},
+  "sort_oldest": "Nejstarší",
+  "@sort_oldest": {},
+  "sort_most_liked": "Nejvíc lajků",
+  "@sort_most_liked": {},
+  "sort_top": "Populární",
+  "@sort_top": {},
+  "sort_most_followers": "Nejvíc sledujících",
+  "@sort_most_followers": {},
+  "plugin_stocks_open": "Otevírací cena",
+  "@plugin_stocks_open": {},
+  "plugin_stocks_prev_close": "Předchozí závěr",
+  "@plugin_stocks_prev_close": {},
+  "plugin_stocks_market_open": "Trh otevřen",
+  "@plugin_stocks_market_open": {},
+  "plugin_stocks_market_closed": "Trh zavřen",
+  "@plugin_stocks_market_closed": {},
+  "plugin_stocks_data_unavailable": "Tržní data se nepodařilo načíst",
+  "@plugin_stocks_data_unavailable": {},
+  "plugin_stocks_market_cap": "Tržní kapitalizace",
+  "@plugin_stocks_market_cap": {},
+  "plugin_stocks_fdv": "FDV",
+  "@plugin_stocks_fdv": {},
+  "plugin_stocks_liquidity": "Likvidita",
+  "@plugin_stocks_liquidity": {},
+  "plugin_stocks_volume_24h": "Objem za 24 h",
+  "@plugin_stocks_volume_24h": {},
+  "plugin_stocks_change_hours": "Změna za {hours} h",
+  "@plugin_stocks_change_hours": {},
+  "plugin_stocks_crypto_address_copied": "Adresa kontraktu zkopírována",
+  "@plugin_stocks_crypto_address_copied": {},
+  "plugin_stocks_crypto_no_token": "Pro tuto adresu kontraktu nebyl nalezen žádný token",
+  "@plugin_stocks_crypto_no_token": {},
+  "plugin_stocks_crypto_include_cashtag": "Zahrnout příspěvky s {cashtag}",
+  "@plugin_stocks_crypto_include_cashtag": {},
+  "plugin_stocks_crypto_posts_hint_cashtag": "Příspěvky se hledají podle této adresy kontraktu nebo {cashtag}. Stejný symbol mohou používat i jiné tokeny.",
+  "@plugin_stocks_crypto_posts_hint_cashtag": {},
+  "download_handling_type_auto": "Ukládat na pozadí",
+  "@download_handling_type_auto": {},
+  "download_handling_type_auto_description": "Ukládá bez ptaní: obrázky do Pictures/XTA, videa do Movies/XTA a ostatní soubory do Download/XTA",
+  "@download_handling_type_auto_description": {},
+  "download_saved_to": "Uloženo do {folder}",
+  "@download_saved_to": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voices": "Stažené hlasy",
+  "@tts_offline_voices": {},
+  "tts_offline_voices_use": "Používat stažený hlas",
+  "@tts_offline_voices_use": {},
+  "tts_offline_voices_use_description": "Předčítá staženým hlasem, pokud některý mluví jazykem článku; jinak použije modul níže.",
+  "@tts_offline_voices_use_description": {},
+  "tts_offline_voices_note": "Hlasy se stahují z GitHubu (k2-fsa/sherpa-onnx) jen tehdy, když klepnete na Stáhnout. Běží celé v tomto zařízení.",
+  "@tts_offline_voices_note": {},
+  "tts_offline_voice_licence": "Licence: {licence}",
+  "@tts_offline_voice_licence": {
+    "placeholders": {
+      "licence": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_installing": "Kontrola a rozbalování…",
+  "@tts_offline_voice_installing": {},
+  "tts_offline_voice_ready": "V tomto zařízení · {size}",
+  "@tts_offline_voice_ready": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_failed_network": "Stažení se nezdařilo. Zkontrolujte připojení a zkuste to znovu.",
+  "@tts_offline_voice_failed_network": {},
+  "tts_offline_voice_failed_checksum": "Stažený soubor neodpovídal očekávanému a byl zahozen.",
+  "@tts_offline_voice_failed_checksum": {},
+  "tts_offline_voice_failed_archive": "Stažený hlas se nepodařilo rozbalit.",
+  "@tts_offline_voice_failed_archive": {},
+  "tts_offline_voice_delete_question": "Smazat {name}?",
+  "@tts_offline_voice_delete_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tts_offline_voice_delete_description": "Kdykoli si ho můžete stáhnout znovu.",
+  "@tts_offline_voice_delete_description": {},
+  "open_on_web_archive": "Otevřít na web.archive.org",
+  "@open_on_web_archive": {},
+  "subscribers_only_post": "Zbytek si mohou přečíst jen platící odběratelé @{screenName} na X",
+  "@subscribers_only_post": {},
+  "subscribers_only_post_of_author": "Tento tweet je jen pro platící odběratele svého autora na X.",
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Aktivní účet",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Účet Pixiv: díla vytvořená AI",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Toto nastavení se z Pixivu nepodařilo načíst",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Částečně skryta",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontroluje se vaše nastavení Pixivu…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Zobrazena",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Odebrat účet",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Odebrat {name} z tohoto zařízení?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "Zobrazovat štítek AI",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "V mřížkách označí díla, která autoři označili jako vytvořená AI.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Už uloženo",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Tato stránka už je uložená. Uložit ji znovu?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} z {total} stránek už je uložena.} few{{saved} z {total} stránek už jsou uloženy.} many{{saved} z {total} stránek už je uloženo.} other{{saved} z {total} stránek už je uloženo.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Přidat záložku",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Při uložení přidat do záložek",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Uložení díla z jeho stránky ho zároveň přidá do záložek, pokud tam ještě není.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Automaticky štítkovat záložky",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Záložky vytvořené bez editoru dostanou štítky samotného díla, kromě štítků oblíbenosti jako 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Zrušit vše",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Soukromé záložky ve výchozím stavu",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Záložky vytvořené bez editoru jsou soukromé. V editoru můžete kteroukoli zveřejnit.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Upravit záložku",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Při přidání do záložek sledovat autora",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Nová záložka zároveň veřejně začne sledovat autora, pokud ho ještě nesledujete.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Sledujete {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Soukromá záložka",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Vidíte ji jen vy",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Při přidání do záložek uložit",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Nová záložka zároveň uloží všechny stránky díla.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Vybrat vše",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Záložky",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Přidat štítek",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Vše",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Zobrazit všechny záložky",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "S tímto štítkem nejsou žádné záložky",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Filtrovat podle štítku",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Přidejte štítek",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Najděte nebo napište štítek",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Nezařazené",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "Použít „{tag}“",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Štítky",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Zatím žádné štítky. Přidejte vlastní výše.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Zatím tu nejsou žádné štítky záložek",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Změnit na pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Automaticky",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Sloupce mřížky na šířku",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Sloupce mřížky na výšku",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Skryto: odkazy mimo Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Ztlumit tento komentář",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "Ztlumit uživatele {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Možnosti komentáře",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Odpověď pro {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Zobrazit",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Nálepka",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Neznámý uživatel",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Zobrazit odpovědi",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Zatím žádné komentáře",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Zatím žádné odpovědi",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Odpovědi",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Komentáře",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Zobrazit komentáře",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Zobrazit komentáře ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Zkopírováno",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Zkopírovat ID díla",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Kopírovat informace",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Šablona pro „Kopírovat informace“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Odkaz na dílo",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Název: {title}\nUmělec: {artist}\nID díla: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Co „Kopírovat informace“ vloží do schránky. Zástupné symboly se nahradí údaji díla.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Vložit",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Obnovit výchozí",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Odkaz na umělce",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Rozvržení díla",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Vedle sebe na širokých displejích",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Obrázky vedle podrobností",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Obrázky nad podrobnostmi",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Souběžná stahování",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Kolik souborů se stahuje současně",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Uložené stránky",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Zatím žádné zapamatované stránky} one{Zapamatována {count} stránka} few{Zapamatovány {count} stránky} many{Zapamatováno {count} stránky} other{Zapamatováno {count} stránek}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Uložená díla dostanou zaškrtnutí a před druhým uložením stejné stránky se aplikace zeptá",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Zapomenout",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Zapomenout, které stránky byly uloženy? Samotné soubory zůstanou ve vašem zařízení.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Uloženo – stáhnout znovu",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Stahování",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Název souboru",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Klepnutím na údaj ho vložíte na místo kurzoru. Každý soubor si ponechá svou příponu.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Přidejte {token}, aby měla každá stránka díla vlastní název",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Náhled: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Obnovit",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID díla",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Číslo stránky",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Název",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID umělce",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Jméno umělce",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Složka pro každého umělce",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Ukládá díla každého umělce do složky pojmenované po něm uvnitř složky pro stahování",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Samostatná složka pro R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Ukládá díla R-18 do složky „R-18“ uvnitř složky pro stahování",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Soukromé",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Sledovat soukromě",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Že sledujete, uvidíte jen vy",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Veřejné",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Všichni sledovaní tvůrci",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Soukromě sledovaní tvůrci",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Veřejně sledovaní tvůrci",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} sledovaný} few{{shown} sledovaní} many{{shown} sledovaného} other{{shown} sledovaných}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Haptická odezva",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Krátké zavibrování při přidání do záložek nebo dlouhém stisknutí.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Historie prohlížení",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Vymazat historii",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Vymazat historii ilustrací?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Otevřená díla se zobrazí zde. Historie zůstává v tomto zařízení.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrovat podle názvu nebo umělce",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Žádné dílo v historii neodpovídá",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Vymazat historii románů?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Otevřené romány se zobrazí zde. Historie zůstává v tomto zařízení.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtrovat podle názvu nebo autora",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Žádný román v historii neodpovídá",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Pozastavit historii prohlížení",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Když je zapnuto, otevřená díla a romány se do historie nepřidávají",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Odebrat „{title}“ z historie?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "ID díla {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID díla zkopírováno",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Server obrázků",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Adresa serveru",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Váš server",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Odkud se načítají obrázky děl. Zrcadlo pomůže tam, kde je server obrázků Pixivu pomalý nebo blokovaný.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Například img.example.com nebo https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Zadejte platnou adresu bez mezer, například img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Veřejné zrcadlo",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Vlastní server Pixivu",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Zrcadlo nebo váš server vidí každý obrázek, který otevřete, včetně R-18, i vaši IP adresu.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Obnovit výchozí",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Informace zkopírovány",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Spravovat účet na pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Teď žádná doporučená manga — potáhněte pro obnovení",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Přepnout na ilustrace",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Přepnout na romány",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Komentáře",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Ztlumili jste jeho umělce, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Tentokrát zobrazit",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Ztlumili jste jeho štítek {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Toto dílo je ztlumené",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Ztlumili jste toto dílo.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Ztlumit tento román",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romány",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Nastavení ztlumení",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Ztlumit štítek",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Napište r'vzor' a ztlumíte každý štítek, kterému odpovídá regulární výraz. Vzory vidí také všechny štítky díla spojené jako #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Štítek ke ztlumení",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Tento vzor není platný regulární výraz",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Štítky",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Umělci",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Díla",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} přítel na My pixiv} few{{shown} přátelé na My pixiv} many{{shown} přítele na My pixiv} other{{shown} přátel na My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Román",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Romány autora",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Uložit do soukromých záložek",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Zde se objeví romány, které si veřejně uložíte do záložek",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Zde se objeví romány, které si soukromě uložíte do záložek",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Č. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} kapitola} few{{shown} kapitoly} many{{shown} kapitoly} other{{shown} kapitol}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} znak} few{{shown} znaky} many{{shown} znaku} other{{shown} znaků}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Exportovat jako text",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Román se nepodařilo exportovat",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Se značkami Pixivu",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Text přesně tak, jak ho ukládá Pixiv, se značkami jako [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Prostý text",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Bez značek Pixivu, ruby zapsané jako základ(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Uloženo: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Zde se objeví nové romány od autorů, které sledujete",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Obrázek v románu",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Otevřít dílo",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Uložit obrázek",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Zobrazit na celou obrazovku",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Přejít na stranu {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Opustit Pixiv a otevřít {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Otevřít odkaz",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Další kapitola",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Strana {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Předchozí kapitola",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "V žebříčku teď nejsou žádné romány",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Teď žádné doporučené romány — potáhněte pro obnovení",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Tagy románů, názvy nebo uživatelé",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Řazení podle obliby vyžaduje Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Hledejte romány nebo uživatele",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Série románů",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Dokončená",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "V této sérii nejsou žádné kapitoly, které můžete vidět",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Pokračuje",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Začít od prvního",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Sdílet odkaz na profil",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Sdílet odkaz na sérii",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Zde se objeví série románů, které přidáte do sledovaných",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Otevírat odkazy pixiv v XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Na stránce Androidu „Otevírat ve výchozím nastavení“ přidejte pixiv.net a pixiv.me jako podporované odkazy",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Původní kvalita",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Další díla se nepodařilo načíst",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Žádná další díla",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Články Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Teď žádné články Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Představená díla",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Narozeniny",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Zatím žádné veřejné záložky",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Kopírovat informace o profilu",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Sledující",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Žádní sledující k zobrazení",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Sleduje",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Zatím nikoho nesleduje",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Pohlaví",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "ID uživatele zkopírováno",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Ilustrace",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Informace",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Informace o profilu zkopírovány",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Povolání",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Tohoto autora jste ztlumili",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "Přátelé na My pixiv",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Přezdívka",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Zatím žádné veřejné záložky románů",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romány",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Zatím žádné romány",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Účet Pawoo",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Člen Premium",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Veřejné záložky",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Oblast",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Uložit profilový obrázek",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Uložit obrázek záhlaví",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Přesto zobrazit",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "Účet na X",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "ID uživatele",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Web",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Díla",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Zatím tu nejsou žádná díla",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Stránky díla",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Obrázky v mřížce",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Velká",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Střední",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Originál",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Stránky na celou obrazovku",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 denní",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Upravit",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Připnuté žebříčky se zobrazují jako karty. Žebříčky R-18 jsou k dispozici, když je zapnuto „Zobrazit díla R-18“.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Karty žebříčků",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 týdenní",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G týdenní",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Teď žádní navrhovaní tvůrci",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Vybrat jiný obrázek",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Tomuto obrázku neodpovídají žádná díla z Pixivu",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO nedokázal tento obrázek vyhledat",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Vybrat obrázek",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Pro zobrazení náhledů se znovu přihlaste k Pixivu",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Vybraný obrázek se nahraje na saucenao.com, aby se našla odpovídající díla z Pixivu.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Hledání na SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Podobnost {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Hledat podle obrázku",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Uložit znovu",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Jen nové stránky",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Uložit {count} stránku} few{Uložit {count} stránky} many{Uložit {count} stránky} other{Uložit {count} stránek}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Uloženo v tomto zařízení",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Počet záložek",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Libovolný počet záložek",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ záložek",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} záložek",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Datum",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Kdykoli",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Vlastní data…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Poslední den",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Posledních 6 měsíců",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Poslední měsíc",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Poslední týden",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Poslední rok",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Přidat do oblíbených štítků",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Přidáno do oblíbených štítků",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Odebrat z oblíbených štítků",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Odebráno z oblíbených štítků",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Oblíbené štítky",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Dokončit úpravy",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Upravit oblíbené štítky",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Štítek přesunete přetažením. Odstraníte ho přejetím do strany.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Zatím nemáte žádné oblíbené štítky. Přidáte je dlouhým stisknutím štítku u díla.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filtry hledání",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Zobrazit vše ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Vymazat nedávná hledání",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Vymazat všechna nedávná hledání?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Zobrazit méně",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Otevřít dílo #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Otevřít román #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Otevřít sérii románů #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Otevřít článek Pixivision #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Otevřít uživatele #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Vložit",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularita",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Libovolná popularita",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Řazení podle obliby u mužů nebo žen vyžaduje Pixiv Premium. Bez něj volba Populární zobrazí bezplatný náhled Pixivu.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Datum zveřejnění náhled nezužuje.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Toto je bezplatný náhled populárních děl od Pixivu. Řazení všech výsledků podle popularity vyžaduje Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Zapamatovat tyto filtry",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Řadit podle",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Nejstarší",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Oblíbené u žen",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Oblíbené u mužů",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Štítek zkopírován",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopírovat štítek",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Hledat v",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Tagy, název, popisek",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Text díla",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Všechna díla",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Bez ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Jen ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "V záložkách u {count}+ lidí",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Zobrazit vše",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Zrušit výběr",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Vybrat stránky",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Žádná stránka nevybrána} one{Vybrána {count} stránka} few{Vybrány {count} stránky} many{Vybráno {count} stránky} other{Vybráno {count} stránek}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Série",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "V této sérii nejsou žádná díla, která můžete vidět",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Série: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Další v sérii",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Č. {order} z {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Předchozí v sérii",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Zahájeno {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Sdílet obrázek",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Obrázek se nepodařilo sdílet",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "Odhlásit účet {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Odhlásit se z Pixivu?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Změnit velikost obrázků a podrobností",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv se otevře na",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Přecházet mezi díly přejetím",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Přejetím do strany přejdete na další dílo v seznamu. U děl s více stránkami přejeďte za první nebo poslední stránku.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Přepnout účet",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Sledované série",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Kóduje se snímek {current} z {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Animaci se nepodařilo uložit",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Načítají se snímky…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Uložit jako GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Uložit snímky jako ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animace uložena jako GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Snímky uloženy jako ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Ukládá se…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kódování může trvat minutu",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "Zrušit ztlumení {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Zobrazení",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Pro otevření díla se přihlaste",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Oblíbené na Pixivu",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Přidat do sledovaných",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Zde se objeví série mangy, které přidáte do sledovaných",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Odebrat ze sledovaných",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Aktualizováno {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Zobrazit nejnovější",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} dílo} few{{shown} díla} many{{shown} díla} other{{shown} děl}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Odpovědi autora",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Skrýt opětovná sdílení",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Zobrazit 1 další odpověď} few{Zobrazit {count} další odpovědi} many{Zobrazit {count} další odpovědi} other{Zobrazit {count} dalších odpovědí}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Zobrazit 1 další příspěvek z tohoto vlákna} few{Zobrazit {count} další příspěvky z tohoto vlákna} many{Zobrazit {count} dalšího příspěvku z tohoto vlákna} other{Zobrazit {count} dalších příspěvků z tohoto vlákna}}",
+  "@plugin_threads_show_thread": {}
 }

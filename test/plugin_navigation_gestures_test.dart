@@ -40,7 +40,7 @@ void main() {
     await tester.tap(
       find.ancestor(
         of: find.text(L10n.current.plugin_reddit_title),
-        matching: find.byType(CheckedPopupMenuItem<SavedSource>),
+        matching: find.byType(PopupMenuItem<SavedSource>),
       ),
     );
     await tester.pumpAndSettle();

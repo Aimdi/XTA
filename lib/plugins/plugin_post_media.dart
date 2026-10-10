@@ -4,15 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:pref/pref.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
+import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
 
-/// One image (or video thumbnail) on a plugin post.
+/// One image or video on a plugin post.
 class PluginMediaItem {
   const PluginMediaItem({
     required this.url,
@@ -21,8 +24,11 @@ class PluginMediaItem {
     this.isVideo = false,
     this.downloadUrl,
     this.shareUrl,
+    this.videoUrl,
+    this.isGif = false,
   });
 
+  /// The picture itself, or a video's poster frame.
   final String url;
   final double? aspectRatio;
   final String? alt;
@@ -34,6 +40,15 @@ class PluginMediaItem {
   /// Destination shared from the fullscreen viewer. Defaults to [url].
   final String? shareUrl;
 
+  /// The playable file behind a video entry: an MP4, or an HLS playlist
+  /// (Bluesky). [url] stays the poster either way.
+  final String? videoUrl;
+
+  /// A silent looping clip (Mastodon `gifv`), played the way X plays GIFs.
+  final bool isGif;
+
+  bool get isPlayable => isVideo && (videoUrl?.isNotEmpty ?? false);
+
   String get resolvedDownloadUrl => downloadUrl ?? url;
   String get resolvedShareUrl => shareUrl ?? url;
 }
@@ -43,6 +58,8 @@ List<PluginMediaItem> pluginMediaItemsFrom({
   List<double?> aspects = const [],
   List<bool> videos = const [],
   List<String?> alts = const [],
+  List<String?> videoUrls = const [],
+  List<bool> gifs = const [],
 }) {
   return [
     for (var i = 0; i < urls.length; i++)
@@ -51,6 +68,8 @@ List<PluginMediaItem> pluginMediaItemsFrom({
         aspectRatio: i < aspects.length ? aspects[i] : null,
         isVideo: i < videos.length && videos[i],
         alt: i < alts.length ? alts[i] : null,
+        videoUrl: i < videoUrls.length ? videoUrls[i] : null,
+        isGif: i < gifs.length && gifs[i],
       ),
   ];
 }
@@ -89,6 +108,10 @@ double? pluginMediaAspectFrom(Object? raw) {
 typedef PluginMediaImageBuilder =
     Widget Function(BuildContext context, PluginMediaItem item, BoxFit fit);
 
+/// An inline player for a video entry, or null to keep the poster tile.
+typedef PluginMediaVideoBuilder =
+    Widget? Function(BuildContext context, PluginMediaItem item, int index);
+
 typedef VisiblePluginMedia = ({
   List<PluginMediaItem> items,
   int initialIndex,
@@ -126,12 +149,16 @@ class PluginPostMedia extends StatelessWidget {
     this.imageBuilder,
     this.sourceName = 'xta',
     this.onOpenPost,
+    this.videoBuilder,
   });
 
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
   final String sourceName;
   final VoidCallback? onOpenPost;
+
+  /// Plays a video entry in place instead of showing its poster.
+  final PluginMediaVideoBuilder? videoBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +171,7 @@ class PluginPostMedia extends StatelessWidget {
         index: 0,
         items: items,
         imageBuilder: imageBuilder,
+        videoBuilder: videoBuilder,
         sourceName: sourceName,
         onOpenPost: onOpenPost,
       );
@@ -151,6 +179,7 @@ class PluginPostMedia extends StatelessWidget {
     return _PluginMediaPager(
       items: items,
       imageBuilder: imageBuilder,
+      videoBuilder: videoBuilder,
       sourceName: sourceName,
       onOpenPost: onOpenPost,
     );
@@ -162,11 +191,13 @@ class _PluginMediaPager extends StatefulWidget {
     required this.items,
     required this.sourceName,
     this.imageBuilder,
+    this.videoBuilder,
     this.onOpenPost,
   });
 
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
+  final PluginMediaVideoBuilder? videoBuilder;
   final String sourceName;
   final VoidCallback? onOpenPost;
 
@@ -196,6 +227,7 @@ class _PluginMediaPagerState extends State<_PluginMediaPager> {
               index: i,
               items: items,
               imageBuilder: widget.imageBuilder,
+              videoBuilder: widget.videoBuilder,
               sourceName: widget.sourceName,
               onOpenPost: widget.onOpenPost,
               fill: true,
@@ -230,6 +262,7 @@ class _PluginMediaTile extends StatelessWidget {
     required this.items,
     required this.sourceName,
     this.imageBuilder,
+    this.videoBuilder,
     this.onOpenPost,
     this.fill = false,
   });
@@ -238,13 +271,44 @@ class _PluginMediaTile extends StatelessWidget {
   final int index;
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
+  final PluginMediaVideoBuilder? videoBuilder;
   final String sourceName;
   final VoidCallback? onOpenPost;
   final bool fill;
 
+  /// Plays in place: a tap belongs to the player's controls, not the viewer.
+  Widget _video(BuildContext context) {
+    final video = PluginPostVideo(item: item, sourceName: sourceName);
+    if (fill) {
+      return Center(child: video);
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
+      child: video,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final radius = tweetMediaRadiusOf(context);
+    // A source's own player (Threads) wins; any other playable entry uses the
+    // shared X player.
+    final player = item.isVideo ? videoBuilder?.call(context, item, index) : null;
+    if (player == null && item.isPlayable) {
+      return _video(context);
+    }
+    if (player != null) {
+      final clipped = ClipRRect(
+        borderRadius: fill ? BorderRadius.zero : BorderRadius.circular(radius),
+        child: player,
+      );
+      return fill
+          ? clipped
+          : AspectRatio(
+              aspectRatio: clampPluginMediaAspect(item.aspectRatio),
+              child: clipped,
+            );
+    }
     final image =
         imageBuilder?.call(context, item, BoxFit.cover) ??
         LayoutBuilder(
@@ -353,6 +417,116 @@ class _PluginMediaTile extends StatelessWidget {
   }
 }
 
+/// A plugin post's video in the same player, pool and controls as X videos.
+///
+/// The player reads the reader's media prefs itself (autoplay, mute, loop,
+/// quality); manual loading holds even the poster back until it is asked for.
+class PluginPostVideo extends StatefulWidget {
+  const PluginPostVideo({
+    super.key,
+    required this.item,
+    this.sourceName = 'xta',
+  });
+
+  final PluginMediaItem item;
+
+  /// Names a downloaded file, as for pictures.
+  final String sourceName;
+
+  @override
+  State<PluginPostVideo> createState() => _PluginPostVideoState();
+}
+
+class _PluginPostVideoState extends State<PluginPostVideo> {
+  final _revealed = _PluginVideoRevealStore();
+
+  @override
+  void dispose() {
+    _revealed.destroy();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final prefs = PrefService.of(context, listen: false);
+    final manual = prefs.get<bool>(optionMediaDisableAutoload) ?? false;
+    return ScopedBuilder<_PluginVideoRevealStore, bool>(
+      store: _revealed,
+      onState: (context, revealed) => manual && !revealed
+          ? _PluginVideoPlaceholder(
+              aspectRatio: clampPluginMediaAspect(widget.item.aspectRatio),
+              onTap: _revealed.reveal,
+            )
+          : _player(),
+    );
+  }
+
+  Widget _player() {
+    final item = widget.item;
+    return TweetVideo(
+      username: widget.sourceName,
+      loop: item.isGif,
+      alwaysPlay: item.isGif,
+      disableControls: item.isGif,
+      tweetId: pluginVideoPoolKey(item),
+      metadata: pluginVideoMetadata(item),
+    );
+  }
+}
+
+class _PluginVideoRevealStore extends Store<bool> {
+  _PluginVideoRevealStore() : super(false);
+  void reveal() => update(true);
+}
+
+class _PluginVideoPlaceholder extends StatelessWidget {
+  const _PluginVideoPlaceholder({
+    required this.aspectRatio,
+    required this.onTap,
+  });
+
+  final double aspectRatio;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: AspectRatio(
+        aspectRatio: aspectRatio,
+        child: ColoredBox(
+          color: Colors.black26,
+          child: Center(
+            child: Text(l10n.tap_to_show_getMediaType_item_type(l10n.media)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pool key, so a feed tile and a scroll back share one player.
+String pluginVideoPoolKey(PluginMediaItem item) => 'plugin-${item.videoUrl}';
+
+/// Stream, poster and clamped aspect for [TweetVideo].
+///
+/// An HLS playlist has no single file to save, so only a direct file is
+/// offered as the download.
+TweetVideoMetadata pluginVideoMetadata(PluginMediaItem item) {
+  final stream = item.videoUrl ?? '';
+  final poster = item.url.isEmpty ? null : item.url;
+  final download = isHlsPlaylistUrl(stream) ? null : stream;
+  return TweetVideoMetadata(
+    clampPluginMediaAspect(item.aspectRatio),
+    poster,
+    () async => TweetVideoUrls(stream, download),
+  );
+}
+
+bool isHlsPlaylistUrl(String url) =>
+    Uri.tryParse(url)?.path.toLowerCase().endsWith('.m3u8') ?? false;
+
 class _AltBadge extends StatelessWidget {
   const _AltBadge({required this.alt});
 
@@ -411,19 +585,24 @@ String pluginMediaFileName(PluginMediaItem item, String sourceName) {
   return base.isEmpty ? '$safeSource-media' : '$safeSource-$base';
 }
 
-Future<void> downloadPluginMediaItem(
+/// True once the file is saved. A plugin with its own naming passes [fileName]
+/// and, for the configured download folder, a [subfolder].
+Future<bool> downloadPluginMediaItem(
   BuildContext context,
   PluginMediaItem item, {
   String sourceName = 'xta',
+  String? fileName,
+  String? subfolder,
 }) async {
-  if (!context.mounted || item.isVideo) return;
+  if (!context.mounted || item.isVideo) return false;
   final uri = Uri.tryParse(item.resolvedDownloadUrl);
-  if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http')) return;
+  if (uri == null || (uri.scheme != 'https' && uri.scheme != 'http')) return false;
 
-  await downloadUriToPickedFile(
+  return downloadUriToPickedFile(
     context,
     uri,
-    pluginMediaFileName(item, sourceName),
+    fileName ?? pluginMediaFileName(item, sourceName),
+    subfolder: subfolder,
     prefs: PrefService.of(context, listen: false),
     onStart: () {
       showWorkingSnackBar(context, L10n.of(context).downloading_media);
@@ -472,7 +651,7 @@ Future<void> openPluginImageViewer(
 
 /// Fullscreen image pager shared by plugin feeds.
 ///
-/// Video entries remain thumbnails here; their dedicated players still own
+/// Video entries remain thumbnails here; the feed tile's player owns
 /// playback. The viewer never offers download for those thumbnails.
 class PluginImageViewer extends StatefulWidget {
   const PluginImageViewer({

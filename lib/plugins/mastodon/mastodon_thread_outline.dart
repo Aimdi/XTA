@@ -1,4 +1,5 @@
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/ui/conversation_sort.dart';
 
 class MastodonReplyRow {
   final MastodonPost post;
@@ -12,18 +13,22 @@ class MastodonReplyRow {
 
 typedef _Branch = ({MastodonPost post, String? parent, int depth});
 
-/// Preserve sibling order, break cycles, and retain replies with missing parents.
-List<_Branch> _replyForest(MastodonThread thread) {
+/// Order siblings as [order] asks (the server's order for the default), break
+/// cycles, and retain replies with missing parents.
+List<_Branch> _replyForest(MastodonThread thread, ReplySort order) {
   final excluded = {thread.status.id, ...thread.ancestors.map((post) => post.id)};
   final posts = {
     for (final post in thread.descendants)
       if (!excluded.contains(post.id)) post.id: post,
   };
-  final children = <String?, List<String>>{};
+  final siblings = <String?, List<MastodonPost>>{};
   for (final post in posts.values) {
     final parent = post.replyToId != post.id && posts.containsKey(post.replyToId) ? post.replyToId : null;
-    (children[parent] ??= []).add(post.id);
+    (siblings[parent] ??= []).add(post);
   }
+  final children = {
+    for (final MapEntry(:key, :value) in siblings.entries) key: [for (final post in _ordered(value, order)) post.id],
+  };
   final branches = <_Branch>[];
   final visited = <String>{};
   for (final root in [...?children[null], ...posts.keys]) {
@@ -32,6 +37,14 @@ List<_Branch> _replyForest(MastodonThread thread) {
   }
   return branches;
 }
+
+List<MastodonPost> _ordered(List<MastodonPost> posts, ReplySort order) => orderReplies(
+  posts,
+  order,
+  options: mastodonReplySorts,
+  postedAt: (post) => post.publishedAt,
+  likes: (post) => post.favouritesCount,
+);
 
 Iterable<_Branch> _walkBranch(
   String root,
@@ -64,8 +77,13 @@ Set<String> _authorContext(List<_Branch> branches, String author) {
 }
 
 /// Author focus keeps the reply chain leading to each of the author's posts.
-List<MastodonReplyRow> mastodonReplyRows(MastodonThread thread, Set<String> collapsed, {bool authorOnly = false}) {
-  final forest = _replyForest(thread);
+List<MastodonReplyRow> mastodonReplyRows(
+  MastodonThread thread,
+  Set<String> collapsed, {
+  bool authorOnly = false,
+  ReplySort order = ReplySort.oldest,
+}) {
+  final forest = _replyForest(thread, order);
   final author = thread.status.acct.toLowerCase();
   final included = authorOnly ? _authorContext(forest, author) : null;
   final branches = included == null ? forest : forest.where((branch) => included.contains(branch.post.id)).toList();

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -35,9 +36,15 @@ Future<List<InterleavedItem>> loadPixivGroupPosts(BuildContext context, List<Str
         if (illust.createdAt case final date?) {
           items.add(InterleavedItem(
             date: date,
-            build: (_) => Padding(
-              padding: const EdgeInsets.all(8),
-              child: PixivIllustTile(illust: illust),
+            // A work muted from its tile leaves the timeline at once.
+            build: (_) => ScopedBuilder<PixivMuteStore, PixivMuteState>(
+              store: mute,
+              onState: (_, state) => state.isMuted(illust)
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: PixivIllustTile(illust: illust),
+                    ),
             ),
           ));
         }

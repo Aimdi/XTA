@@ -12,6 +12,7 @@ import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_screen.dart';
+import 'package:xta/plugins/threads/threads_feed_options.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'support/bluesky_reading_harness.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
@@ -196,6 +197,7 @@ void main() {
               Provider<ThreadsAccountsStore>.value(value: accounts),
               Provider<ThreadsLikesStore>.value(value: likes),
               Provider<ThreadsFeedStore>.value(value: feed),
+              Provider<ThreadsFeedOptionsStore>.value(value: ThreadsFeedOptionsStore(h.prefs)),
               Provider<ThreadsDirectClient>.value(value: direct),
               Provider<ThreadsClient>.value(value: client),
             ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // intl exports a TextDirection of its own, which has no `ltr` and silently
 // shadows the one TextPainter wants.
 import 'package:intl/intl.dart' hide TextDirection;
+import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 
 /// Room reserved for the price labels down the right edge.
@@ -90,8 +91,7 @@ class _TickerChartState extends State<TickerChart> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final up = widget.quote.isUp ?? true;
-    final colour = up ? const Color(0xFF00BA7C) : const Color(0xFFF4212E);
+    final colour = stockTrendColour(context, widget.quote.changePercent);
 
     return SizedBox(
       height: widget.height,
@@ -157,10 +157,6 @@ class _TickerChartPainter extends CustomPainter {
     required this.active,
     required this.textScaler,
   });
-
-  /// Prices are formatted here rather than passed in: how many of them there
-  /// are depends on the height, which only the painter knows.
-  static final _price = NumberFormat.decimalPatternDigits(decimalDigits: 2);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -248,7 +244,9 @@ class _TickerChartPainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(plot.width, y), paint);
       _text(
         canvas,
-        _price.format(value),
+        // Formatted here rather than passed in: how many labels there are
+        // depends on the height, which only the painter knows.
+        stockPrice(value),
         Offset(plot.width + 6, y - 6),
         maxWidth: kTickerAxisWidth - 8,
       );

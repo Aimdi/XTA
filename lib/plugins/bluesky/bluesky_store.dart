@@ -111,6 +111,10 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   String? _enteredFor;
   String? _paintedServer;
   _BlueskyReadCache? _cache;
+
+  /// Group reads with replies hidden, kept apart from [_cache] because the tab
+  /// shows replies.
+  _BlueskyReadCache? _noRepliesCache;
   Future<void>? _inFlight;
   Object? _refreshError;
   var _generation = 0;
@@ -204,12 +208,17 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   bool _current(String identity, int request) => !_closed && request == _generation && identity == _entryIdentity();
 
   /// Group reads share the author cache, but never publish into Following.
+  ///
+  /// Without [withReplies] each account is asked for its posts without replies,
+  /// so a group that hides them still gets a full page from someone who mostly
+  /// replies.
   Future<List<BlueskyPost>> postsFor(
     List<String> actors, {
     bool forceRefresh = false,
+    bool withReplies = true,
     void Function(List<BlueskyPost>)? onPartial,
   }) async {
-    final result = await _read(actors, force: forceRefresh, onPartial: onPartial);
+    final result = await _read(actors, force: forceRefresh, withReplies: withReplies, onPartial: onPartial);
     if (result.posts.isEmpty && result.error != null) throw result.error!;
     return result.posts;
   }
@@ -217,9 +226,16 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   Future<({List<BlueskyPost> posts, Object? error})> _read(
     List<String> actors, {
     required bool force,
+    bool withReplies = true,
     void Function(List<BlueskyPost>)? onPartial,
   }) async {
     final server = client.baseUrl;
+    if (!withReplies) {
+      if (_noRepliesCache?.server != server) {
+        _noRepliesCache = _BlueskyReadCache(server, filter: blueskyAuthorFeedNoReplies);
+      }
+      return _noRepliesCache!.read(actors, client, force: force, onPartial: onPartial);
+    }
     if (_cache?.server != server) _cache = _BlueskyReadCache(server);
     final cache = _cache!;
     return cache.read(actors, client, force: force, onPartial: onPartial);
@@ -245,7 +261,10 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
 /// Keeps failed authors retryable while preserving their last successful page.
 class _BlueskyReadCache {
   final String server;
-  _BlueskyReadCache(this.server);
+
+  /// The `getAuthorFeed` filter every page is read with; null for the default.
+  final String? filter;
+  _BlueskyReadCache(this.server, {this.filter});
 
   final _pages = <String, List<BlueskyPost>>{};
   final _readAt = <String, DateTime>{};
@@ -308,7 +327,7 @@ class _BlueskyReadCache {
     _attemptedAt[actor] = DateTime.now();
     try {
       if (client.baseUrl != server) throw StateError('Bluesky AppView changed');
-      final page = await client.getAuthorFeed(actor, limit: blueskyPostsPerAccount);
+      final page = await client.getAuthorFeed(actor, limit: blueskyPostsPerAccount, filter: filter);
       if (_requests[actor] != request) return _pages[actor] ?? page.posts;
       _pages[actor] = page.posts;
       _readAt[actor] = DateTime.now();

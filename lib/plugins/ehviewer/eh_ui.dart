@@ -41,3 +41,30 @@ String ehToplistLabel(L10n l10n, EhToplistPeriod period) => switch (period) {
   EhToplistPeriod.year => l10n.plugin_eh_toplist_year,
   EhToplistPeriod.allTime => l10n.plugin_eh_toplist_all,
 };
+
+const _languageCodes = {
+  'english': 'EN',
+  'japanese': 'JA',
+  'chinese': 'ZH',
+  'korean': 'KO',
+  'spanish': 'ES',
+  'french': 'FR',
+  'german': 'DE',
+  'russian': 'RU',
+  'portuguese': 'PT',
+  'italian': 'IT',
+  'thai': 'TH',
+  'vietnamese': 'VI',
+  'indonesian': 'ID',
+  'polish': 'PL',
+  'ukrainian': 'UK',
+  'arabic': 'AR',
+  'turkish': 'TR',
+};
+
+/// A short badge for a gallery language: its ISO code, else its first letters.
+String ehLanguageCode(String language) =>
+    _languageCodes[language.toLowerCase()] ??
+    language
+        .substring(0, language.length < 2 ? language.length : 2)
+        .toUpperCase();

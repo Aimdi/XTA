@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show ZLibEncoder;
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -20,37 +18,15 @@ import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_reader_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/plugins/pixiv/pixiv_zoomable.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 
 import 'support/pixiv_reader_harness.dart';
-
-List<int> _u16(int value) => [value & 0xff, value >> 8 & 0xff];
-List<int> _u32(int value) => [..._u16(value & 0xffff), ..._u16(value >> 16)];
-
-/// A minimal ZIP archive, stored or deflated, as Pixiv serves ugoira frames.
-Uint8List _zip(Map<String, List<int>> files, {bool deflate = false}) {
-  final out = BytesBuilder();
-  final directory = BytesBuilder();
-  for (final MapEntry(key: file, value: content) in files.entries) {
-    final name = utf8.encode(file);
-    final data = deflate ? ZLibEncoder(raw: true).convert(content) : content;
-    final method = deflate ? 8 : 0;
-    final sizes = [..._u32(0), ..._u32(data.length), ..._u32(content.length)];
-    directory.add([..._u32(0x02014b50), ..._u16(20), ..._u16(20), ..._u16(0), ..._u16(method), ..._u32(0)]);
-    directory.add([...sizes, ..._u16(name.length), ..._u16(0), ..._u16(0), ..._u16(0), ..._u16(0), ..._u32(0)]);
-    directory.add([..._u32(out.length), ...name]);
-    out.add([..._u32(0x04034b50), ..._u16(20), ..._u16(0), ..._u16(method), ..._u32(0), ...sizes]);
-    out.add([..._u16(name.length), ..._u16(0), ...name, ...data]);
-  }
-  final start = out.length;
-  final central = directory.takeBytes();
-  out.add(central);
-  out.add([..._u32(0x06054b50), ..._u16(0), ..._u16(0), ..._u16(files.length), ..._u16(files.length)]);
-  out.add([..._u32(central.length), ..._u32(start), ..._u16(0)]);
-  return out.takeBytes();
-}
+import 'support/pixiv_search_fakes.dart';
+import 'support/pixiv_zip_fixture.dart';
 
 Future<ui.Image> _image(Color color) {
   final recorder = ui.PictureRecorder();
@@ -195,34 +171,82 @@ void main() {
     });
   });
 
-  testWidgets('tags show Pixiv\'s spelling with the translation beside it', (tester) async {
-    final tags = [const PixivTag(name: 'オリジナル', translatedName: 'original'), const PixivTag(name: '漫画')];
-    await pumpPixiv(
-      tester,
-      PixivIllustScreen(illust: pixivWork(tags: tags)),
-      size: const Size(390, 1600),
-      client: (prefs) => FakePixivClient(prefs, detail: pixivWork(tags: tags)),
-    );
-    expect(find.text('#オリジナル  original', findRichText: true), findsOneWidget);
-    expect(find.text('#漫画'), findsOneWidget);
-    await disposePixiv(tester);
-  });
+  group('tags', () {
+    final tags = [
+      const PixivTag(name: '女の子', translatedName: 'girl'),
+      const PixivTag(name: 'R-18'),
+      const PixivTag(name: 'マルチャーナ(勝利の女神:NIKKE)', translatedName: 'Marciana (NIKKE)'),
+      const PixivTag(name: '勝利の女神:NIKKE'),
+      const PixivTag(name: '漫画', translatedName: '漫画'),
+    ];
+    final work = pixivWork(pages: 1, tags: tags);
 
-  group('detail menu', () {
-    testWidgets('bookmarks privately, publicly or into a folder', (tester) async {
-      final harness = await pumpPixiv(tester, PixivIllustScreen(illust: pixivWork()));
-      for (final choice in ['pixiv-bookmark-private', 'Favs']) {
-        await _openDetailMenu(tester, 'folder');
-        await tester.tap(choice.startsWith('pixiv') ? find.byKey(ValueKey(choice)) : find.text(choice));
-        await settlePixiv(tester);
-      }
-      expect(harness.client.calls.where((call) => call.startsWith('bookmark')), [
-        'bookmark:120:private:-',
-        'bookmark:120:public:Favs',
-      ]);
+    /// Opens the work over a home route, so muting has somewhere to return to.
+    Future<PixivHarness> pumpTags(WidgetTester tester, {FakePixivSearchApi? api}) async {
+      final harness = await pumpPixiv(
+        tester,
+        const Scaffold(),
+        size: const Size(390, 1600),
+        client: (prefs) => FakePixivClient(prefs, detail: work),
+        extraProviders: [(api ?? FakePixivSearchApi()).provider, pixivFavoriteTagsProvider()],
+      );
+      tester
+          .state<NavigatorState>(find.byType(Navigator))
+          .push(MaterialPageRoute<void>(builder: (_) => PixivIllustScreen(illust: work)));
+      await settlePixiv(tester);
+      return harness;
+    }
+
+    testWidgets('show Pixiv\'s spelling with the translation beside it, ordered by kind', (tester) async {
+      await pumpTags(tester);
+      final chips = tester.widgetList<PluginTagChip>(find.byType(PluginTagChip));
+      expect(
+        [for (final chip in chips) (chip.label, chip.detail, chip.kind)],
+        [
+          ('#勝利の女神:NIKKE', null, PluginTagKind.copyright),
+          ('#マルチャーナ(勝利の女神:NIKKE)', 'Marciana (NIKKE)', PluginTagKind.character),
+          ('#女の子', 'girl', PluginTagKind.general),
+          ('#漫画', null, PluginTagKind.general),
+          ('#R-18', null, PluginTagKind.meta),
+        ],
+      );
+      expect(find.text('#女の子  girl', findRichText: true), findsOneWidget);
+      expect(find.text('#漫画', findRichText: true), findsOneWidget);
+      expect(tester.getSize(find.byKey(const ValueKey('pixiv-tag-女の子'))).height, greaterThanOrEqualTo(48));
       await disposePixiv(tester);
     });
 
+    testWidgets('a tap searches the tag', (tester) async {
+      final api = FakePixivSearchApi();
+      await pumpTags(tester, api: api);
+      await tester.tap(find.byKey(const ValueKey('pixiv-tag-女の子')));
+      await settlePixiv(tester);
+      expect(
+        find.byWidgetPredicate((widget) => widget is PixivSearchScreen && widget.initialQuery == '女の子'),
+        findsOneWidget,
+      );
+      expect(api.calls, contains('illusts:女の子'));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a long press offers to mute the tag, as the mute sheet does', (tester) async {
+      final harness = await pumpTags(tester);
+      await tester.longPress(find.byKey(const ValueKey('pixiv-tag-女の子')));
+      await settlePixiv(tester);
+      await tester.tap(find.byKey(const ValueKey('pixiv-tag-action-mute')));
+      await settlePixiv(tester);
+      final mute = find.widgetWithText(FilledButton, 'Mute tag "girl"');
+      expect(find.descendant(of: find.byType(AlertDialog), matching: mute), findsOneWidget);
+
+      await tester.tap(mute);
+      await settlePixiv(tester);
+      expect(harness.prefs.get<String>(optionPluginPixivMutedTags), contains('女の子'));
+      expect(find.byType(PixivIllustScreen), findsNothing);
+      await disposePixiv(tester);
+    });
+  });
+
+  group('detail menu', () {
     testWidgets('copies the link and downloads every page', (tester) async {
       String? copied;
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
@@ -240,7 +264,12 @@ void main() {
       expect(harness.downloader.requests, hasLength(8));
       expect(find.text('Files saved: 8 / 8'), findsOneWidget);
 
+      // Every page is saved now, so the page button is filled and asks first.
+      expect(find.byTooltip('Saved – download again'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('pixiv-illust-download')));
+      await settlePixiv(tester);
+      expect(find.text('Already saved'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
       await settlePixiv(tester);
       expect(harness.downloader.pages, [0]);
       await disposePixiv(tester);
@@ -344,7 +373,7 @@ void main() {
     for (final deflate in [false, true]) {
       test('frames come out of a ${deflate ? 'deflated' : 'stored'} archive intact', () {
         final files = {'000000.jpg': List.generate(300, (i) => i % 7), '000001.jpg': List.generate(90, (i) => 255 - i)};
-        final read = readPixivZip(_zip(files, deflate: deflate));
+        final read = readPixivZip(pixivZipFixture(files, deflate: deflate));
         expect(read.keys, files.keys);
         for (final name in files.keys) {
           expect(read[name], files[name]);
@@ -376,7 +405,7 @@ void main() {
             PixivUgoiraFrame(file: 'c', delay: Duration(milliseconds: 100)),
           ],
         ),
-        archive: (_) async => _zip({
+        archive: (_) async => pixivZipFixture({
           'a': [0],
           'b': [1],
           'c': [2],
@@ -426,7 +455,7 @@ void main() {
               PixivUgoiraFrame(file: '1.png', delay: Duration(milliseconds: 60)),
             ],
           ),
-          archiveBytes: _zip({'0.png': frames![0], '1.png': frames[1]}),
+          archiveBytes: pixivZipFixture({'0.png': frames![0], '1.png': frames[1]}),
         ),
       );
       expect(find.byTooltip('Play animation'), findsOneWidget);

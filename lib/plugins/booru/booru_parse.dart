@@ -1,8 +1,11 @@
 /// Pure parsers for booru JSON — unit-tested without HTTP.
 library;
 
+import 'dart:convert';
+
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/utils/json.dart';
 
 List<BooruPost> parseBooruPosts(
@@ -100,8 +103,74 @@ BooruPost? _parseOne(
     fileExt: ext,
     source: json['source'].string,
     createdAt: _createdAt(json),
+    tagCategories: _danbooruCategories(json),
+    fileSize: _positive(json['file_size']),
+    md5: _nonEmpty(json['md5'].string ?? json['hash'].string),
+    favCount: json['fav_count'].integer,
+    upScore: json['up_score'].integer,
+    downScore: json['down_score'].integer?.abs(),
+    parentId: _parentId(json['parent_id']),
+    hasChildren: _flag(json['has_children']),
+    uploader: _nonEmpty(
+      json['author'].string ??
+          json['owner'].string ??
+          json['uploader_name'].string,
+    ),
   );
 }
+
+const _danbooruCategoryFields = {
+  'tag_string_artist': BooruTagCategory.artist,
+  'tag_string_copyright': BooruTagCategory.copyright,
+  'tag_string_character': BooruTagCategory.character,
+  'tag_string_general': BooruTagCategory.general,
+  'tag_string_meta': BooruTagCategory.meta,
+};
+
+Map<String, BooruTagCategory> _danbooruCategories(Json json) => {
+  for (final MapEntry(key: field, value: category)
+      in _danbooruCategoryFields.entries)
+    for (final tag in _splitTags(json[field].string)) tag: category,
+};
+
+const _e621CategoryGroups = {
+  'artist': BooruTagCategory.artist,
+  'copyright': BooruTagCategory.copyright,
+  'character': BooruTagCategory.character,
+  'species': BooruTagCategory.species,
+  'general': BooruTagCategory.general,
+  'meta': BooruTagCategory.meta,
+  'lore': BooruTagCategory.meta,
+};
+
+Map<String, BooruTagCategory> _e621Categories(Json tags) => {
+  for (final MapEntry(key: group, value: category)
+      in _e621CategoryGroups.entries)
+    for (final tag in tags[group].list) ?tag.string: category,
+};
+
+List<String> _splitTags(String? raw) => (raw ?? '')
+    .split(RegExp(r'\s+'))
+    .where((t) => t.isNotEmpty)
+    .toList(growable: false);
+
+String? _nonEmpty(String? value) =>
+    value == null || value.trim().isEmpty ? null : value.trim();
+
+int? _positive(Json value) {
+  final number = value.integer;
+  return number == null || number <= 0 ? null : number;
+}
+
+/// Hosts send no parent as null, 0 or an empty string.
+String? _parentId(Json value) {
+  final id = _positive(value);
+  return id == null ? null : '$id';
+}
+
+/// Gelbooru sends booleans as the strings "true" and "false".
+bool _flag(Json value) =>
+    value.boolean ?? (value.string?.toLowerCase() == 'true');
 
 BooruPost? _parseE621(Json json, {required String host}) {
   final id = _idOf(json);
@@ -125,6 +194,7 @@ BooruPost? _parseE621(Json json, {required String host}) {
   ];
 
   final score = json['score']['total'].integer ?? json['score'].integer;
+  final relationships = json['relationships'];
 
   return BooruPost(
     id: id,
@@ -141,6 +211,17 @@ BooruPost? _parseE621(Json json, {required String host}) {
     fileExt: file['ext'].string,
     source: json['sources'][0].string ?? json['source'].string,
     createdAt: _createdAt(json),
+    tagCategories: _e621Categories(tagsJson),
+    fileSize: _positive(file['size']),
+    md5: _nonEmpty(file['md5'].string),
+    favCount: json['fav_count'].integer,
+    upScore: json['score']['up'].integer,
+    downScore: json['score']['down'].integer?.abs(),
+    parentId: _parentId(relationships['parent_id']),
+    hasChildren:
+        _flag(relationships['has_children']) ||
+        relationships['children'].list.isNotEmpty,
+    uploader: _nonEmpty(json['uploader_name'].string),
   );
 }
 
@@ -182,9 +263,10 @@ List<String> _tagsOf(Json json, BooruEngine engine) {
 
 DateTime? _createdAt(Json json) {
   final asString = json['created_at'].string;
-  if (asString != null && asString.isNotEmpty) {
-    return DateTime.tryParse(asString);
-  }
+  final parsed = asString == null
+      ? null
+      : DateTime.tryParse(asString) ?? parseGelbooruDate(asString);
+  if (parsed != null) return parsed;
   final asInt = json['created_at'].integer;
   if (asInt != null && asInt > 0) {
     if (asInt > 1e12) {
@@ -197,6 +279,41 @@ DateTime? _createdAt(Json json) {
     return DateTime.fromMillisecondsSinceEpoch(change * 1000);
   }
   return null;
+}
+
+const _months = {
+  'jan': 1,
+  'feb': 2,
+  'mar': 3,
+  'apr': 4,
+  'may': 5,
+  'jun': 6,
+  'jul': 7,
+  'aug': 8,
+  'sep': 9,
+  'oct': 10,
+  'nov': 11,
+  'dec': 12,
+};
+
+/// Gelbooru writes dates like Ruby's `to_s`: `Sat Oct 05 13:52:20 -0500 2024`.
+DateTime? parseGelbooruDate(String raw) {
+  final match = RegExp(
+    r'^\w{3} (\w{3}) (\d{1,2}) (\d{2}):(\d{2}):(\d{2}) ([+-])(\d{2})(\d{2}) (\d{4})$',
+  ).firstMatch(raw.trim());
+  final month = _months[match?.group(1)?.toLowerCase()];
+  if (match == null || month == null) return null;
+  int part(int group) => int.parse(match.group(group)!);
+  final offset = Duration(hours: part(7), minutes: part(8));
+  final local = DateTime.utc(
+    part(9),
+    month,
+    part(2),
+    part(3),
+    part(4),
+    part(5),
+  );
+  return match.group(6) == '-' ? local.add(offset) : local.subtract(offset);
 }
 
 /// Rule34 / Xbooru omit `file_url` for guests and only send directory + image.
@@ -236,10 +353,52 @@ bool booruPostAllowed(BooruPost post, BooruRating maxRating) {
   return !rating.exceeds(maxRating);
 }
 
-bool booruPostMuted(BooruPost post, Set<String> mutedTags) {
-  if (mutedTags.isEmpty) return false;
-  for (final tag in post.tags) {
-    if (mutedTags.contains(tag)) return true;
+/// Whether any blacklist entry hides [post]. An entry is one tag or several;
+/// several hide a post only when all of them match. `-tag` matches a post
+/// without the tag, `~a ~b` matches a post with either, and `rating:x` uses
+/// the host's own rating letters.
+bool booruPostMuted(BooruPost post, Set<String> entries) {
+  if (entries.isEmpty) return false;
+  final tags = post.tags.map((tag) => tag.toLowerCase()).toSet();
+  return entries.any((entry) => _entryMatches(post, tags, entry));
+}
+
+bool _entryMatches(BooruPost post, Set<String> tags, String entry) {
+  final tokens = booruQueryTokens(entry).map(BooruQueryToken.parse).toList();
+  if (tokens.isEmpty) return false;
+  final either = tokens.where((t) => t.operator == BooruTagOperator.either);
+  final rest = tokens.where((t) => t.operator != BooruTagOperator.either);
+  return rest.every((t) => _tokenMatches(post, tags, t)) &&
+      (either.isEmpty || either.any((t) => _tokenMatches(post, tags, t)));
+}
+
+bool _tokenMatches(BooruPost post, Set<String> tags, BooruQueryToken token) {
+  final present = switch (token.metatag) {
+    null => tags.contains(token.value.toLowerCase()),
+    'rating' => _ratingMatches(post, token.value),
+    // Other metatags need the host; an entry using one never hides a post.
+    _ => null,
+  };
+  if (present == null) return false;
+  return token.operator == BooruTagOperator.exclude ? !present : present;
+}
+
+bool _ratingMatches(BooruPost post, String value) {
+  final engine = BooruEngine.tryParse(post.engine) ?? BooruEngine.danbooru;
+  final rating = BooruRating.parseWire(value, engine);
+  return rating != null && rating == post.rating;
+}
+
+/// Stored blacklist entries, normalised and de-duplicated.
+Set<String> parseBooruBlacklist(String? raw) {
+  try {
+    final decoded = jsonDecode(raw ?? '[]');
+    if (decoded is! List) return const {};
+    return {
+      for (final entry in decoded.whereType<String>())
+        ?normaliseBooruQuery(entry),
+    };
+  } catch (_) {
+    return const {};
   }
-  return false;
 }

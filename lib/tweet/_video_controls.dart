@@ -11,6 +11,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/tweet/video_fullscreen.dart';
+import 'package:xta/tweet/video_mute_badge.dart';
 import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
@@ -24,6 +25,10 @@ class XtaControls extends StatefulWidget {
   final PooledVideo pooled;
   final String username;
   final bool allowMuting;
+
+  /// Inline only: keeps the seek bar clear of the always-visible mute badge
+  /// that the tile draws in its bottom-end corner.
+  final bool reserveMuteCorner;
   final Color accentColor;
   final bool subtitlesEnabled;
   final VoidCallback onToggleSubtitles;
@@ -45,6 +50,7 @@ class XtaControls extends StatefulWidget {
     required this.pooled,
     required this.username,
     required this.allowMuting,
+    this.reserveMuteCorner = false,
     required this.accentColor,
     required this.subtitlesEnabled,
     required this.onToggleSubtitles,
@@ -185,6 +191,7 @@ class _XtaControlsState extends State<XtaControls> {
             pooled: widget.pooled,
             username: widget.username,
             allowMuting: widget.allowMuting,
+            reserveMuteCorner: widget.reserveMuteCorner,
             accentColor: widget.accentColor,
             subtitlesEnabled: widget.subtitlesEnabled,
             onToggleSubtitles: widget.onToggleSubtitles,
@@ -229,6 +236,7 @@ class _BottomBar extends StatelessWidget {
   final PooledVideo pooled;
   final String username;
   final bool allowMuting;
+  final bool reserveMuteCorner;
   final Color accentColor;
   final bool subtitlesEnabled;
   final VoidCallback onToggleSubtitles;
@@ -241,6 +249,7 @@ class _BottomBar extends StatelessWidget {
     required this.pooled,
     required this.username,
     required this.allowMuting,
+    required this.reserveMuteCorner,
     required this.accentColor,
     required this.subtitlesEnabled,
     required this.onToggleSubtitles,
@@ -291,7 +300,15 @@ class _BottomBar extends StatelessWidget {
         Transform.translate(
           offset: const Offset(0, -8),
           child: Padding(
-            padding: const EdgeInsets.only(left: 14, right: 16, bottom: 6),
+            // The badge sits at the bottom end, so the gap follows reading
+            // direction.
+            padding: reserveMuteCorner
+                ? const EdgeInsetsDirectional.only(
+                    start: 14,
+                    end: kVideoMuteCornerReserve,
+                    bottom: 6,
+                  )
+                : const EdgeInsets.only(left: 14, right: 16, bottom: 6),
             child: _SeekBar(accentColor: accentColor),
           ),
         ),
@@ -845,7 +862,15 @@ class _MoreButton extends StatelessWidget {
               title: Text(L10n.of(sheetContext).download),
               onTap: () {
                 Navigator.of(sheetContext).pop();
-                downloadTweetVideo(context, username, pooled.downloadUrl);
+                downloadTweetVideo(
+                  context,
+                  username,
+                  downloadUrlFor(
+                    pooled.currentStreamUrl,
+                    pooled.qualities,
+                    pooled.downloadUrl,
+                  ),
+                );
               },
             ),
           ],

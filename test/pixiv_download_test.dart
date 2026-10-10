@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/downloads/download_transfer.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
@@ -101,6 +102,44 @@ void main() {
     });
   });
 
+  group('PixivDownloadStore with a wider queue', () {
+    test('keeps as many pages in flight as the queue allows and remembers which saved', () async {
+      final gates = <String, Completer<bool>>{};
+      final store = PixivDownloadStore(
+        save: (request) => (gates[request.fileName] = Completer<bool>()).future,
+        cancelActive: (_) {},
+        total: 3,
+        parallel: 2,
+      );
+      addTearDown(store.destroy);
+      final run = store.run([_request(0), _request(1), _request(2)]);
+
+      expect(gates.keys, ['p0.png', 'p1.png']);
+      gates['p1.png']!.complete(true);
+      await pumpEventQueue();
+      expect(gates.keys, ['p0.png', 'p1.png', 'p2.png']);
+      gates['p0.png']!.complete(false);
+      gates['p2.png']!.complete(true);
+
+      final result = await run;
+      expect((result.done, result.saved), (3, 2));
+      expect(result.savedIndexes..sort(), [1, 2]);
+    });
+
+    test('cancelling stops every page in flight', () async {
+      final cancelled = <Uri>[];
+      final gate = Completer<bool>();
+      final store = PixivDownloadStore(save: (_) => gate.future, cancelActive: cancelled.add, total: 4, parallel: 2);
+      addTearDown(store.destroy);
+      final run = store.run([for (var page = 0; page < 4; page++) _request(page)]);
+
+      store.cancel();
+      expect(cancelled, [_request(0).uri, _request(1).uri]);
+      gate.complete(false);
+      expect((await run).done, 2);
+    });
+  });
+
   testWidgets('download all shows page progress with a cancel button and reports the final count', (tester) async {
     final harness = await pumpPixiv(tester, PixivReaderScreen(illust: pixivWork(pages: 3)));
     final gates = <Completer<bool>>[];
@@ -164,24 +203,31 @@ void main() {
     await disposePixiv(tester);
   });
 
-  testWidgets('the reader download button and a long-press save the page on screen', (tester) async {
+  testWidgets('the reader download button and a long-press save the page on screen, asking the second time', (
+    tester,
+  ) async {
     final harness = await pumpPixiv(tester, PixivReaderScreen(illust: pixivWork(), initialPage: 2, vertical: false));
 
     await tester.tap(find.byKey(const ValueKey('pixiv-reader-download')));
     await settlePixiv(tester);
+    expect(harness.downloads.isSaved(120, 2), isTrue);
     await tester.longPressAt(tester.getTopLeft(find.byType(PageView)) + const Offset(40, 40));
     await settlePixiv(tester);
     expect(find.text('Page 3 of 8'), findsOneWidget);
     await tester.tap(find.byKey(ValueKey('pixiv-page-action-${PixivPageAction.downloadPage.name}')));
+    await settlePixiv(tester);
+    expect(find.text('This page is already saved. Save it again?'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
     await settlePixiv(tester);
 
     expect(harness.downloader.pages, [2, 2]);
     await disposePixiv(tester);
   });
 
-  test('page requests save the originals under Pixiv-style names', () {
-    final requests = pixivPageRequests(pixivWork(pages: 2), 'content://tree/x');
-    expect(requests.map((request) => request.fileName), ['pixiv-120_p0.png', 'pixiv-120_p1.png']);
+  test('page requests save the originals under the default {illust_id}_p{part} names', () {
+    final requests = pixivPageRequests(pixivWork(pages: 2), const DownloadDestination.folder('content://tree/x'));
+    expect(requests.map((request) => request.fileName), ['120_p0.png', '120_p1.png']);
+    expect(requests.map((request) => request.subfolder).toSet(), {null});
     expect(requests.first.uri.toString(), 'https://i.pximg.net/img-original/img/2026/07/01/00/00/00/120_p0.png');
     expect(requests.map((request) => request.treeUri).toSet(), {'content://tree/x'});
     expect(pixivPageMedia(pixivWork(), 3).url, contains('120_p3_master1200'));

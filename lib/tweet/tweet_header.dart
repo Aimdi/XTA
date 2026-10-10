@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/verified_badges.dart';
+import 'package:xta/user_verification.dart';
 
 /// Author hierarchy shared by ordinary, quoted and threaded posts.
 class TweetAuthorBlock extends StatelessWidget {
   final String? displayName;
   final String? handle;
   final bool verified;
+
+  /// The parsed badges; when absent, [verified] alone draws the blue check.
+  final UserVerification? verification;
   final Widget? timestamp;
   final Widget? trailing;
 
@@ -14,6 +19,7 @@ class TweetAuthorBlock extends StatelessWidget {
     required this.displayName,
     required this.handle,
     required this.verified,
+    this.verification,
     this.timestamp,
     this.trailing,
   });
@@ -44,14 +50,12 @@ class TweetAuthorBlock extends StatelessWidget {
                       style: tweetDisplayNameStyle(context),
                     ),
                   ),
-                  if (verified) ...[
-                    const SizedBox(width: kTweetSpace1),
-                    Icon(
-                      Icons.verified,
-                      size: 16,
-                      color: tweetReadableAccentColor(context),
-                    ),
-                  ],
+                  VerifiedBadges(
+                    verification:
+                        verification ?? UserVerification.fromFlag(verified),
+                    size: 16,
+                    gap: kTweetSpace1,
+                  ),
                 ],
               ),
               if (handle != null || timestamp != null) ...[
@@ -81,12 +85,11 @@ class TweetAuthorBlock extends StatelessWidget {
             ],
           ),
         ),
+        // The actions size their own 48dp targets and place their glyphs on
+        // the name's line, as X does.
         if (trailing != null) ...[
           const SizedBox(width: kTweetSpace1),
-          SizedBox.square(
-            dimension: kTweetTouchTarget,
-            child: Center(child: trailing),
-          ),
+          trailing!,
         ],
       ],
     );
@@ -99,6 +102,7 @@ class TweetHeader extends StatelessWidget {
   final String? displayName;
   final String? handle;
   final bool verified;
+  final UserVerification? verification;
   final Widget? timestamp;
   final Widget? trailing;
   final bool compact;
@@ -110,6 +114,7 @@ class TweetHeader extends StatelessWidget {
     required this.displayName,
     required this.handle,
     required this.verified,
+    this.verification,
     this.timestamp,
     this.trailing,
     this.compact = false,
@@ -120,10 +125,12 @@ class TweetHeader extends StatelessWidget {
     final avatarSize = compact ? kTweetQuotedAvatarSize : kTweetAvatarSize;
     final top = compact ? kTweetSpace2 : kTweetVerticalPadding;
     return Padding(
+      // Header actions run to the edge: the ⋯ glyph, centred in its target,
+      // then lines up with the share glyph closing the footer.
       padding: EdgeInsetsDirectional.fromSTEB(
         kTweetHorizontalPadding,
         top,
-        kTweetSpace2,
+        trailing == null ? kTweetSpace2 : 0,
         kTweetSpace1,
       ),
       child: Row(
@@ -155,6 +162,7 @@ class TweetHeader extends StatelessWidget {
                 displayName: displayName,
                 handle: handle,
                 verified: verified,
+                verification: verification,
                 timestamp: timestamp,
                 trailing: trailing,
               ),

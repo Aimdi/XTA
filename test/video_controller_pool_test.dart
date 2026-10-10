@@ -9,6 +9,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
+import 'package:dart_twitter_api/api/media/data/media.dart';
+import 'package:xta/profile/media_grid/gif_playback_gate.dart';
+import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 
 class _Video extends Fake implements PooledVideo {
   int disposals = 0;
@@ -28,7 +31,8 @@ class _Video extends Fake implements PooledVideo {
 Future<void> _settle() => Future<void>.delayed(Duration.zero);
 
 
-Widget _startupApp(VideoControllerPool pool, Future<TweetVideoUrls> Function() urls) => PrefService(
+Widget _startupApp(VideoControllerPool pool, Future<TweetVideoUrls> Function() urls, {String? tweetId = 'post'}) =>
+    PrefService(
   service: PrefServiceCache(defaults: {
     optionMediaDefaultLoop: false,
     optionMediaDefaultAutoPlay: false,
@@ -57,7 +61,7 @@ Widget _startupApp(VideoControllerPool pool, Future<TweetVideoUrls> Function() u
             child: TweetVideo(
               username: 'reader',
               loop: false,
-              tweetId: 'post',
+              tweetId: tweetId,
               metadata: TweetVideoMetadata(1, null, urls),
             ),
           ),
@@ -188,5 +192,105 @@ void main() {
     pool.release('a');
     pool.releaseUnused();
     await _settle();
+  });
+
+  group('players nothing can re-attach to', () {
+    // The widget shares a startup seeded under its own key, which finishes
+    // after the widget is gone — the usual way a scrolled-past video ends.
+    Future<(_Video, String)> startThenDisposeBeforeReady(
+      WidgetTester tester,
+      VideoControllerPool pool,
+      String? tweetId,
+    ) async {
+      await tester.pumpWidget(
+        _startupApp(pool, () async => throw StateError('shares the seeded startup'), tweetId: tweetId),
+      );
+      final state = tester.state(find.byType(TweetVideo));
+      final key = tweetId == null ? 'local:${identityHashCode(state)}' : '$tweetId:0';
+      final pending = Completer<PooledVideo>();
+      final startup = pool.acquire(key, () => pending.future);
+      pool.release(key, acquisition: startup);
+
+      await tester.tap(find.byType(TweetVideo));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump();
+      await tester.pumpWidget(const SizedBox.shrink());
+
+      final video = _Video();
+      pending.complete(video);
+      await tester.pump();
+      await tester.pump();
+      return (video, key);
+    }
+
+    testWidgets('a player keyed to its widget alone goes with the widget', (tester) async {
+      final pool = VideoControllerPool(maxSize: 3);
+      final (video, _) = await startThenDisposeBeforeReady(tester, pool, null);
+
+      expect(pool.cachedKeys, isEmpty,
+          reason: 'cached under a key no widget will ask for again, it held a slot until the pool needed it');
+      expect(video.disposals, 1);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a player keyed to its post stays cached for the next screen', (tester) async {
+      final pool = VideoControllerPool(maxSize: 3);
+      final (video, key) = await startThenDisposeBeforeReady(tester, pool, 'post');
+
+      expect(pool.cachedKeys, [key]);
+      expect(video.disposals, 0);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('profile media grid GIFs', () {
+    testWidgets('play no more at once than the pool can host', (tester) async {
+      late GifPlaybackGate pooled;
+      late GifPlaybackGate standalone;
+      await tester.pumpWidget(Column(children: [
+        Provider<VideoControllerPool>.value(
+          value: VideoControllerPool(maxSize: 2),
+          child: Builder(builder: (context) {
+            pooled = GifPlaybackGate.sizedToPool(context);
+            return const SizedBox.shrink();
+          }),
+        ),
+        Builder(builder: (context) {
+          standalone = GifPlaybackGate.sizedToPool(context);
+          return const SizedBox.shrink();
+        }),
+      ]));
+
+      expect(pooled.maxConcurrent, 2);
+      expect(standalone.maxConcurrent, 5, reason: 'without a shared pool the gate keeps its own cap');
+      pooled.dispose();
+      standalone.dispose();
+    });
+
+    testWidgets('are keyed like the same GIF in a post', (tester) async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      final item = GifGridItem(
+        tweetId: '42',
+        username: 'someone',
+        thumbnailUrl: 'https://pbs.twimg.com/tweet_video_thumb/a.jpg',
+        aspectRatio: 1,
+        mediaIndex: 1,
+        media: Media.fromJson({
+          'type': 'animated_gif',
+          'media_url_https': 'https://pbs.twimg.com/tweet_video_thumb/a.jpg',
+          'video_info': {
+            'aspect_ratio': [1, 1],
+            'variants': [
+              {'bitrate': 0, 'content_type': 'video/mp4', 'url': 'https://video.twimg.com/tweet_video/a.mp4'},
+            ],
+          },
+        }),
+      );
+
+      final video = (item.toWidget(tester.element(find.byType(SizedBox))) as IgnorePointer).child as TweetVideo;
+      expect((video.tweetId, video.mediaIndex), ('42', 1),
+          reason: 'a cell granted playback again re-attaches to its cached player instead of starting one');
+    });
   });
 }

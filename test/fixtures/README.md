@@ -12,6 +12,13 @@ responses over hand-written stubs.
 | `UserTweets/add_entries.json` | Slim `TimelineAddEntries` from guest `UserTweets` | `Twitter.createTweetChains` |
 | `Retweeters/ok.json` | Hand-shaped `Retweeters` timeline (`user_results` + cursor) | `TimelineParser.retweetersInstructions` / `parseUsersTimeline` |
 | `Retweeters/module.json` | Hand-shaped Retweeters `TimelineTimelineModule` + `userResults` | `TimelineParser.parseUsersTimeline` |
+| `UnifiedCard/image_carousel_website.json` | Card of a recorded `TweetResultByRestId` (QuaX fixture, MIT), trimmed to two pictures | `CarouselCardData`, `TweetCard` |
+| `UnifiedCard/grok_share.json` | Card of a recorded `TweetResultByRestId` (QuaX fixture, MIT), conversation text shortened | `GrokShareCardData`, `TweetCard` |
+| `TweetDetail/subscriber_preview.json` | `TweetDetail` body for x.com/Osemka8/status/2105589900078641579, recorded by QuaX: a `TweetPreviewDisplay` focal post and an `ExclusiveTweet` reply | `TimelineParser.createTweetChains` (`subscriber_preview_test.dart`) |
+| `UserTweets/subscriber_previews.json` | x.com/Osemka8 posts tab recorded by QuaX (`UserOriginalsTimeline`), slimmed to a post, a `profile-originals-conversation-` thread of previews, a preview and the bottom cursor | `TimelineParser.createUnconversationedChains` |
+| `UserByScreenName/modern.json` | `UserByScreenName` (`KybxDj9RrADIITXlGG8kpw`) for the QuaX test account `@quax_tests`, recorded by QuaX — no `legacy` left | `UserWithExtra.fromNonLegacyJson` / `pinnedTweetIdsOf` |
+| `UserOriginalsTimeline/page.json` | `UserOriginalsTimeline` (`qtvmQffnepvr0oPe4A8MqQ`) for `@quax_tests_2`, recorded by QuaX, slimmed to two posts + cursors | `TimelineParser.createUnconversationedChains` |
+| `Pixivision/article_en.html`, `Pixivision/article_zh.html` | Hand-shaped pixivision.net article pages in the English and Chinese layouts | `parsePixivisionArticle` |
 
 Guest `TweetDetail` returned 404; tweet shapes were taken from `UserTweets`
 instead. No auth tokens are stored in these files.

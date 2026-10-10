@@ -114,9 +114,9 @@ void main() {
   });
 
   test('tiny token prices remain nonzero and useful', () {
-    expect(stockAssetPrice(0.0000000123), contains('123'));
-    expect(stockAssetPrice(0.000000000000123), contains('e-13'));
-    expect(stockAssetPrice(0), '0.00');
+    expect(stockPrice(0.0000000123), contains('123'));
+    expect(stockPrice(0.000000000000123), contains('e-13'));
+    expect(stockPrice(0), '0.00');
   });
 
   test('clearing a search invalidates the request already in flight', () async {

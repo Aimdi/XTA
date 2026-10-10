@@ -5,12 +5,11 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
-import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
 
 const _thumbSize = 132.0;
 const _maxWorks = 12;
@@ -66,10 +65,7 @@ class _PixivAuthorWorksState extends State<PixivAuthorWorks> {
       children: [
         InkWell(
           key: const ValueKey('pixiv-author-works-header'),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute<void>(builder: (_) => PixivUserScreen(userId: widget.illust.userId)),
-          ),
+          onTap: () => openPixivUser(context, widget.illust.userId),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
             child: Padding(
@@ -95,7 +91,7 @@ class _PixivAuthorWorksState extends State<PixivAuthorWorks> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: shown.length,
             separatorBuilder: (_, _) => const SizedBox(width: 8),
-            itemBuilder: (context, index) => _thumb(context, shown[index]),
+            itemBuilder: (context, index) => _thumb(context, shown, index),
           ),
         ),
         const SizedBox(height: 8),
@@ -103,35 +99,36 @@ class _PixivAuthorWorksState extends State<PixivAuthorWorks> {
     );
   }
 
-  void _open(PixivIllust illust) =>
-      Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivIllustScreen(illust: illust)));
-
-  Widget _thumb(BuildContext context, PixivIllust illust) => Semantics(
-    button: true,
-    label: illust.title,
-    onTap: () => _open(illust),
-    excludeSemantics: true,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: SizedBox.square(
-        dimension: _thumbSize,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest),
-            PixivNetworkImage(
-              url: illust.thumbnailUrl,
-              fit: BoxFit.cover,
-              cacheWidth: (_thumbSize * MediaQuery.devicePixelRatioOf(context)).ceil(),
-              loadStateChanged: (state) => pixivTileLoadState(context, state),
-            ),
-            Material(
-              type: MaterialType.transparency,
-              child: InkWell(key: ValueKey('pixiv-author-work-${illust.id}'), onTap: () => _open(illust)),
-            ),
-          ],
+  Widget _thumb(BuildContext context, List<PixivIllust> shown, int index) {
+    final illust = shown[index];
+    void open() => openPixivIllustFromList(context, shown, index);
+    return Semantics(
+      button: true,
+      label: illust.title,
+      onTap: open,
+      excludeSemantics: true,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox.square(
+          dimension: _thumbSize,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest),
+              PixivNetworkImage(
+                url: illust.thumbnailUrl,
+                fit: BoxFit.cover,
+                cacheWidth: (_thumbSize * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                loadStateChanged: (state) => pixivTileLoadState(context, state),
+              ),
+              Material(
+                type: MaterialType.transparency,
+                child: InkWell(key: ValueKey('pixiv-author-work-${illust.id}'), onTap: open),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

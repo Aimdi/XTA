@@ -63,7 +63,11 @@ String languageTagForShortLocale(String locale) {
 }
 
 /// Languages to try, in order, so an English-only engine is not asked for de-DE.
+///
+/// The text's own language comes first: a German voice reading an English
+/// article is not reading it, whatever the settings say.
 List<String> speakLanguageCandidates({
+  String? textLanguage,
   String? voiceLocale,
   String? appLocale,
 }) {
@@ -79,11 +83,25 @@ List<String> speakLanguageCandidates({
     }
   }
 
+  add(_withRegion(textLanguage, voiceLocale, appLocale));
   add(voiceLocale);
   add(appLocale);
   add('en-US');
   add('en');
   return tags;
+}
+
+/// [language] (`en`) with the region of a matching locale (`en-GB`), else
+/// the usual region for it.
+String? _withRegion(String? language, String? voiceLocale, String? appLocale) {
+  if (language == null || language.isEmpty) return null;
+  for (final locale in [voiceLocale, appLocale]) {
+    final tag = locale?.replaceAll('_', '-');
+    if (tag != null && tag.split('-').first.toLowerCase() == language) {
+      return tag;
+    }
+  }
+  return language == 'en' ? 'en-US' : languageTagForShortLocale(language);
 }
 
 /// Android [isLanguageAvailable] returns 0/1/2 for success and negatives for
@@ -132,4 +150,66 @@ Future<String?> pickListedSpeakLanguage({
     if (tag.isNotEmpty) return tag;
   }
   return null;
+}
+
+/// Which speech engine and voice reading aloud uses.
+///
+/// Android lets more than one engine be installed, and an app that never asks
+/// gets whichever one is the system default. A reader who installed a engine of
+/// their own — Sherpa, RHVoice, anything — had no way to tell XTA to use it
+/// short of changing the system-wide default, which is why reading aloud
+/// appeared to do nothing.
+class TtsChoice {
+  /// Engine package name, e.g. `com.k2fsa.sherpa.onnx.tts.engine`.
+  final String? engine;
+
+  /// Voice name and its locale, which the platform wants together.
+  final String? voiceName;
+  final String? voiceLocale;
+
+  final double rate;
+
+  const TtsChoice({
+    this.engine,
+    this.voiceName,
+    this.voiceLocale,
+    this.rate = 0.45,
+  });
+
+  bool get hasVoice => voiceName != null && voiceLocale != null;
+}
+
+/// How one utterance ended.
+enum UtteranceOutcome { completed, failed, cancelled }
+
+/// Something that can read text aloud, one chunk at a time.
+///
+/// The system engine (whatever Android has installed) is one; an on-device
+/// voice XTA downloads itself would be another — see
+/// `docs/specs/downloadable-tts.md`. The speech store only talks to this, so
+/// it neither knows nor cares which one is speaking.
+abstract interface class SpeechEngine {
+  /// Longest piece of text [say] should be handed at once.
+  int get maxChunkChars;
+
+  /// Gets ready to read text in [textLanguage] (`de`, `en`, … or null when
+  /// unknown) with [choice]. False when this engine cannot speak at all.
+  Future<bool> prepare(TtsChoice choice, {String? textLanguage});
+
+  /// Speaks [chunk] and completes when it is over — finished, failed, or
+  /// cut short by [stop]. Never leaves the caller waiting forever.
+  Future<UtteranceOutcome> say(String chunk);
+
+  /// Stops speaking; a pending [say] completes as cancelled.
+  Future<void> stop();
+}
+
+/// An engine that does better when told what comes next.
+///
+/// An on-device voice synthesises audio before it can play it; knowing the
+/// next chunk while the current one plays lets it have that audio ready, so
+/// sentences follow each other without a pause.
+abstract interface class SpeechLookahead {
+  /// [chunk] will be handed to `say` after the current one.
+  void upcoming(String chunk);
 }

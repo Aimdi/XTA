@@ -14,6 +14,10 @@ import 'package:xta/utils/local_json_store.dart';
 const String discoveryFollowsPrefix = 'discovery:follows:';
 const Duration discoveryFollowsTtl = Duration(days: 3);
 
+/// How long a read is still trusted for who-follows-whom after it stops being
+/// fresh enough for Discover: a following list barely changes in a month.
+const Duration discoveryFollowsRetention = Duration(days: 30);
+
 class DiscoveryFollow {
   final String id;
   final String handle;
@@ -45,20 +49,25 @@ typedef DiscoveryFollowsResult = ({DiscoveryFollowsByMember follows, Object? err
 
 typedef DiscoveryFollowsFetch = Future<List<DiscoveryFollow>> Function(String memberId);
 
+/// One member's following list as last read, newest follow first.
+typedef RememberedFollows = ({DateTime at, List<DiscoveryFollow> follows});
+
 class DiscoveryFollowsCache {
   static final shared = DiscoveryFollowsCache();
 
   final JsonStore storage;
   final DiscoveryFollowsFetch fetch;
   final Duration ttl;
+  final Duration retention;
   final DateTime Function() now;
-  final Map<String, ({DateTime at, List<DiscoveryFollow> follows})> _memory = {};
+  final Map<String, RememberedFollows> _memory = {};
   Future<void>? _restored;
 
   DiscoveryFollowsCache({
     JsonStore? storage,
     this.fetch = fetchXFollowing,
     this.ttl = discoveryFollowsTtl,
+    this.retention = discoveryFollowsRetention,
     this.now = DateTime.now,
   }) : storage = storage ?? LocalJsonStore.shared;
 
@@ -93,14 +102,18 @@ class DiscoveryFollowsCache {
     return (follows: _known(ordered), error: error);
   }
 
-  DiscoveryFollowsByMember _known(List<String> members) => {
-    for (final member in members)
-      if (_memory[member] case final entry?) member: entry.follows,
-  };
+  /// Every member's follows read within [retention], without asking X.
+  Future<Map<String, RememberedFollows>> remembered() async {
+    await (_restored ??= _restore());
+    return {
+      for (final entry in _memory.entries)
+        if (now().difference(entry.value.at) <= retention) entry.key: entry.value,
+    };
+  }
 
-  Future<void> _refresh(String member, Duration? timeout) async {
-    final request = fetch(member);
-    final follows = await (timeout == null ? request : request.timeout(timeout));
+  /// Keeps a following list the app read anyway, so it counts as this member's latest read.
+  Future<void> remember(String member, List<DiscoveryFollow> follows) async {
+    await (_restored ??= _restore());
     final at = now();
     _memory[member] = (at: at, follows: follows);
     await storage.write('$discoveryFollowsPrefix$member', {
@@ -109,13 +122,23 @@ class DiscoveryFollowsCache {
     });
   }
 
+  DiscoveryFollowsByMember _known(List<String> members) => {
+    for (final member in members)
+      if (_memory[member] case final entry?) member: entry.follows,
+  };
+
+  Future<void> _refresh(String member, Duration? timeout) async {
+    final request = fetch(member);
+    await remember(member, await (timeout == null ? request : request.timeout(timeout)));
+  }
+
   Future<void> _restore() async {
     final stored = await storage.readPrefix(discoveryFollowsPrefix);
     for (final entry in stored.entries) {
       final value = entry.value;
       if (value is! Map || value['users'] is! List) continue;
       final at = DateTime.tryParse('${value['at']}');
-      if (at == null || now().difference(at) > ttl) continue;
+      if (at == null || now().difference(at) > retention) continue;
       final follows = (value['users'] as List).map(DiscoveryFollow.fromJson).whereType<DiscoveryFollow>().toList();
       _memory.putIfAbsent(entry.key.substring(discoveryFollowsPrefix.length), () => (at: at, follows: follows));
     }
@@ -125,15 +148,18 @@ class DiscoveryFollowsCache {
 /// One page of who [memberId] follows, through the registered `Following` operation.
 Future<List<DiscoveryFollow>> fetchXFollowing(String memberId) async {
   final page = await Twitter.friendsList(memberId, 100);
-  return [
-    for (final User user in page.users ?? const [])
-      if (user.idStr case final String id when id.isNotEmpty)
-        DiscoveryFollow(
-          id: id,
-          handle: user.screenName ?? '',
-          name: user.name ?? '',
-          avatarUrl: user.profileImageUrlHttps,
-          bio: user.description,
-        ),
-  ];
+  return discoveryFollowsOf(page.users ?? const []);
 }
+
+/// X users as remembered follows, in the order X listed them; users without an id are dropped.
+List<DiscoveryFollow> discoveryFollowsOf(Iterable<User> users) => [
+  for (final user in users)
+    if (user.idStr case final String id when id.isNotEmpty)
+      DiscoveryFollow(
+        id: id,
+        handle: user.screenName ?? '',
+        name: user.name ?? '',
+        avatarUrl: user.profileImageUrlHttps,
+        bio: user.description,
+      ),
+];

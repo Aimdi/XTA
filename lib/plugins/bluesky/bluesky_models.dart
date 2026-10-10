@@ -41,6 +41,12 @@ class BlueskyPost {
   final List<double?> imageAspects;
   final List<bool> imageIsVideo;
   final List<String?> imageAlts;
+
+  /// HLS playlist per media slot; null for a picture.
+  final List<String?> videoUrls;
+
+  /// Per slot: a video Bluesky presents as a GIF (silent, looping).
+  final List<bool> imageIsGif;
   final List<BlueskyFacet> facets;
   final DateTime? publishedAt;
   final DateTime? repostedAt;
@@ -82,6 +88,8 @@ class BlueskyPost {
     this.imageAspects = const [],
     this.imageIsVideo = const [],
     this.imageAlts = const [],
+    this.videoUrls = const [],
+    this.imageIsGif = const [],
     this.facets = const [],
     this.publishedAt,
     this.repostedAt,
@@ -121,8 +129,14 @@ class BlueskyPost {
   bool get hasQuote => quotedPost != null;
   bool get hasLinkCard => linkCard != null;
 
-  List<PluginMediaItem> get mediaItems =>
-      pluginMediaItemsFrom(urls: images, aspects: imageAspects, videos: imageIsVideo, alts: imageAlts);
+  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
+    urls: images,
+    aspects: imageAspects,
+    videos: imageIsVideo,
+    alts: imageAlts,
+    videoUrls: videoUrls,
+    gifs: imageIsGif,
+  );
 
   Map<String, dynamic> toJson() => {
     'uri': uri,
@@ -136,6 +150,8 @@ class BlueskyPost {
     'imageAspects': imageAspects,
     'imageIsVideo': imageIsVideo,
     'imageAlts': imageAlts,
+    'videoUrls': videoUrls,
+    'imageIsGif': imageIsGif,
     'facets': facets.map((f) => f.toJson()).toList(),
     'publishedAt': publishedAt?.toIso8601String(),
     'repostedAt': repostedAt?.toIso8601String(),
@@ -177,6 +193,8 @@ class BlueskyPost {
       imageAspects: _snapshotAspects(json['imageAspects'].raw),
       imageIsVideo: _snapshotFlags(json['imageIsVideo'].raw),
       imageAlts: _snapshotNullableStrings(json['imageAlts'].raw),
+      videoUrls: _snapshotNullableStrings(json['videoUrls'].raw),
+      imageIsGif: _snapshotFlags(json['imageIsGif'].raw),
       facets: _safeSnapshotFacets(json['facets']),
       publishedAt: DateTime.tryParse(json['publishedAt'].string ?? '')?.toLocal(),
       repostedAt: DateTime.tryParse(json['repostedAt'].string ?? '')?.toLocal(),
@@ -437,7 +455,7 @@ const kBlueskyAuthorFeedPosts = 'posts_and_author_threads';
 const kBlueskyAuthorFeedReplies = 'posts_with_replies';
 const kBlueskyAuthorFeedMedia = 'posts_with_media';
 
-/// Images + video thumbs from a feed post's view embed.
+/// Images and videos from a feed post's view embed.
 ///
 /// Prefers `fullsize` (official clients do). Also walks `embeds` on a
 /// `viewRecord` so quoted posts keep their media.
@@ -480,12 +498,7 @@ List<PluginMediaItem> blueskyMediaOf(Json post) {
     }
     final type = embed[r'$type'].string ?? '';
     if (type.contains('embed.video')) {
-      final thumb = embed['thumbnail'].string;
-      if (thumb != null && thumb.isNotEmpty) {
-        addItem(
-          PluginMediaItem(url: thumb, aspectRatio: pluginMediaAspectFrom(embed['aspectRatio'].raw), isVideo: true),
-        );
-      }
+      addItem(blueskyVideoOf(embed));
     }
   }
 
@@ -494,6 +507,21 @@ List<PluginMediaItem> blueskyMediaOf(Json post) {
     addEmbed(embed);
   }
   return items;
+}
+
+/// An `app.bsky.embed.video#view`: the HLS `playlist` the player opens, with
+/// the `thumbnail` as its poster. One with no thumbnail is skipped, since the
+/// media grids and filters key on the poster.
+PluginMediaItem blueskyVideoOf(Json embed) {
+  final playlist = embed['playlist'].string?.trim();
+  return PluginMediaItem(
+    url: embed['thumbnail'].string?.trim() ?? '',
+    aspectRatio: pluginMediaAspectFrom(embed['aspectRatio'].raw),
+    alt: embed['alt'].string,
+    isVideo: true,
+    videoUrl: playlist == null || playlist.isEmpty ? null : playlist,
+    isGif: embed['presentation'].string == 'gif',
+  );
 }
 
 List<String> blueskyImagesOf(Json post) => [for (final item in blueskyMediaOf(post)) item.url];
@@ -602,6 +630,8 @@ BlueskyPost? blueskyPostFromView(
     imageAspects: [for (final item in media) item.aspectRatio],
     imageIsVideo: [for (final item in media) item.isVideo],
     imageAlts: [for (final item in media) item.alt],
+    videoUrls: [for (final item in media) item.videoUrl],
+    imageIsGif: [for (final item in media) item.isGif],
     facets: facets,
     publishedAt: DateTime.tryParse(created ?? '')?.toLocal(),
     url: url,

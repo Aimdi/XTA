@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/feed_post_kinds.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
@@ -34,6 +35,7 @@ Future<List<InterleavedItem>> loadMastodonInterleaved(
   BuildContext context,
   List<String> accts, {
   int limit = kMastodonInterleavedPageSize,
+  FeedPostKinds kinds = allFeedPostKinds,
 }) async {
   if (accts.isEmpty) {
     return const [];
@@ -42,7 +44,7 @@ Future<List<InterleavedItem>> loadMastodonInterleaved(
   final store = context.read<MastodonFeedStore>();
   try {
     final posts = await store.postsFor(accts);
-    return mastodonInterleavedItems(posts, limit: limit);
+    return mastodonInterleavedItems(posts, limit: limit, kinds: kinds);
   } catch (_) {
     rethrow;
   }
@@ -50,11 +52,16 @@ Future<List<InterleavedItem>> loadMastodonInterleaved(
 
 /// Posts as dated items, each keeping its source badge so a mixed group feed
 /// says where the card came from.
+///
+/// Filtered by [kinds] before [limit] is applied. The statuses are read with
+/// `exclude_replies`, which still lets an author's replies to themselves
+/// through, and boosts arrive whatever the group's repost setting says.
 List<InterleavedItem> mastodonInterleavedItems(
   Iterable<MastodonPost> posts, {
   int limit = kMastodonInterleavedPageSize,
+  FeedPostKinds kinds = allFeedPostKinds,
 }) => [
-  for (final post in posts.take(limit))
+  for (final post in posts.where((post) => mastodonFeedTakes(kinds, post)).take(limit))
     if (post.publishedAt case final date?)
       provenanceInterleavedItem(
         date: date,
@@ -75,3 +82,7 @@ List<InterleavedItem> mastodonInterleavedItems(
         build: (_) => MastodonPostCard(post: post, showSourceBadge: true),
       ),
 ];
+
+/// Whether [post] belongs in a feed taking [kinds]; a boost is a repost.
+bool mastodonFeedTakes(FeedPostKinds kinds, MastodonPost post) =>
+    feedTakesPost(kinds, isReply: post.isReply, isRepost: post.boosted);

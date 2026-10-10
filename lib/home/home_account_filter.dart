@@ -17,7 +17,6 @@ import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/home_filter_sheet.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
-import 'package:xta/tweet/tweet_chrome.dart';
 
 const int homeTimelineMergeConcurrency = 2;
 
@@ -328,7 +327,10 @@ class HomeAccountFilterStore extends Store<Set<String>> {
   }
 }
 
-void showHomeAccountFilterSheet(BuildContext context, {VoidCallback? onChanged}) {
+void showHomeAccountFilterSheet(
+  BuildContext context, {
+  VoidCallback? onChanged,
+}) {
   final filter = context.read<HomeAccountFilterStore>();
   HomeGroupFilterStore? groupFilter;
   List<SubscriptionGroup> groups = const [];
@@ -348,7 +350,10 @@ void showHomeAccountFilterSheet(BuildContext context, {VoidCallback? onChanged})
       future: accountsFuture,
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(height: 180, child: Center(child: CircularProgressIndicator()));
+          return const SizedBox(
+            height: 180,
+            child: Center(child: CircularProgressIndicator()),
+          );
         }
         return HomeFilterSheet(
           accounts: snapshot.data ?? const [],
@@ -358,7 +363,10 @@ void showHomeAccountFilterSheet(BuildContext context, {VoidCallback? onChanged})
           onChanged: onChanged,
           onAddAccount: () {
             Navigator.pop(sheetContext);
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),
+            );
           },
         );
       },
@@ -366,13 +374,15 @@ void showHomeAccountFilterSheet(BuildContext context, {VoidCallback? onChanged})
   );
 }
 
-/// One login on the home-feed filter. The last account left on cannot be
-/// turned off — the switch stays on so it does not look broken.
+/// One login on the home-feed filter. With [keepOne], the last account left
+/// on cannot be turned off — its box stays checked so it does not look broken.
 class HomeAccountToggleTile extends StatelessWidget {
   final Account account;
   final Set<String> disabled;
   final List<Account> accounts;
   final Future<void> Function(bool enabled) onChanged;
+  final VoidCallback? onOnly;
+  final bool keepOne;
 
   const HomeAccountToggleTile({
     super.key,
@@ -380,30 +390,28 @@ class HomeAccountToggleTile extends StatelessWidget {
     required this.disabled,
     required this.accounts,
     required this.onChanged,
+    this.onOnly,
+    this.keepOne = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     final enabled = isHomeAccountEnabled(account.id, disabled);
-    final canDisable = canDisableHomeAccount(account.id, accounts, disabled);
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      color: enabled ? Theme.of(context).colorScheme.surfaceContainerLow : Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: tweetDividerColor(context))),
-      child: SwitchListTile(
+    final locked =
+        keepOne &&
+        enabled &&
+        !canDisableHomeAccount(account.id, accounts, disabled);
+    return HomeFilterRow(
       key: ValueKey('home-account-${account.id}'),
-      secondary: CircleAvatar(child: Icon(enabled ? Icons.person : Icons.person_outline)),
-      title: Text(account.screenName ?? l10n.unknown_username),
-      subtitle: Text(
-        enabled && !canDisable
-            ? l10n.home_feed_keep_one_account
-            : enabled ? l10n.home_feed_include_in_for_you : l10n.disabled,
+      leading: CircleAvatar(
+        radius: 16,
+        child: Icon(enabled ? Icons.person : Icons.person_outline, size: 18),
       ),
+      title: account.screenName ?? L10n.of(context).unknown_username,
+      subtitle: locked ? L10n.of(context).home_feed_keep_one_account : null,
       value: enabled,
-      onChanged: !enabled || canDisable ? onChanged : null,
-      ),
+      onChanged: locked ? null : onChanged,
+      onOnly: onOnly,
     );
   }
 }
@@ -413,30 +421,68 @@ class HomeGroupToggleTile extends StatelessWidget {
   final SubscriptionGroup group;
   final Set<String> disabled;
   final Future<void> Function(bool enabled) onChanged;
+  final VoidCallback? onOnly;
 
   const HomeGroupToggleTile({
     super.key,
     required this.group,
     required this.disabled,
     required this.onChanged,
+    this.onOnly,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final enabled = !disabled.contains(group.id);
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      color: enabled ? Theme.of(context).colorScheme.surfaceContainerLow : Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: tweetDividerColor(context))),
-      child: SwitchListTile(
-      key: ValueKey('home-group-filter-${group.id}'),
-      secondary: GroupMark.forGroup(group, size: 40),
-      title: Text(group.name),
-      subtitle: Text('${L10n.of(context).subscription_group_member_count(group.numberOfMembers)} · ${enabled ? L10n.of(context).home_feed_include_in_following : L10n.of(context).disabled}'),
-      value: enabled,
-      onChanged: onChanged,
+  Widget build(BuildContext context) => HomeFilterRow(
+    key: ValueKey('home-group-filter-${group.id}'),
+    leading: GroupMark.forGroup(group, size: 32),
+    title: group.name,
+    subtitle: L10n.of(
+      context,
+    ).subscription_group_member_count(group.numberOfMembers),
+    value: !disabled.contains(group.id),
+    onChanged: onChanged,
+    onOnly: onOnly,
+  );
+}
+
+/// A flat, checkable filter row: tap toggles it, long-press keeps only it on.
+class HomeFilterRow extends StatelessWidget {
+  final Widget leading;
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final Future<void> Function(bool enabled)? onChanged;
+  final VoidCallback? onOnly;
+
+  const HomeFilterRow({
+    super.key,
+    required this.leading,
+    required this.title,
+    this.subtitle,
+    required this.value,
+    required this.onChanged,
+    this.onOnly,
+  });
+
+  @override
+  Widget build(BuildContext context) => MergeSemantics(
+    child: ListTile(
+      minTileHeight: 56,
+      contentPadding: const EdgeInsetsDirectional.only(start: 16, end: 8),
+      enabled: onChanged != null || onOnly != null,
+      leading: SizedBox.square(dimension: 32, child: leading),
+      title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: subtitle == null
+          ? null
+          : Text(subtitle!, maxLines: 1, overflow: TextOverflow.ellipsis),
+      trailing: Checkbox(
+        value: value,
+        onChanged: onChanged == null
+            ? null
+            : (next) => onChanged!(next ?? false),
       ),
-    );
-  }
+      onTap: onChanged == null ? null : () => onChanged!(!value),
+      onLongPress: onOnly,
+    ),
+  );
 }
