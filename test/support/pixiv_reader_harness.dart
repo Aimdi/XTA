@@ -153,6 +153,9 @@ class FakePixivDownloader extends PixivDownloader {
   @override
   Future<DownloadDestination?> batchDestination(BasePrefService prefs) async =>
       folder == null ? null : DownloadDestination.folder(folder!);
+
+  @override
+  Future<String?> batchFolder(BasePrefService prefs) async => folder;
 }
 
 class PixivHarness {
