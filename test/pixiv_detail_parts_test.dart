@@ -127,7 +127,9 @@ void main() {
     );
     final harness = await pumpPixiv(
       tester,
-      Scaffold(body: Column(children: [link(const PixivLinkRef.artwork(120), '120'), link(const PixivLinkRef.user(42), '42')])),
+      Scaffold(
+        body: Column(children: [link(const PixivLinkRef.artwork(120), '120'), link(const PixivLinkRef.user(42), '42')]),
+      ),
       client: _FlakyPixivClient.new,
     );
 

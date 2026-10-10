@@ -45,16 +45,26 @@ Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
   if (code == null || !context.mounted) {
     return null;
   }
+  final user = await _signInWithCode(context, client, code: code, verifier: pkce.verifier);
+  if (user != null && previous != null && previous != user.id) forget();
+  return user;
+}
 
+/// Trades the login code for tokens and keeps the account, saying how it went.
+Future<PixivAuthUser?> _signInWithCode(
+  BuildContext context,
+  PixivClient client, {
+  required String code,
+  required String verifier,
+}) async {
   try {
-    final tokens = await PixivAuth().exchangeCode(code: code, codeVerifier: pkce.verifier);
+    final tokens = await PixivAuth().exchangeCode(code: code, codeVerifier: verifier);
     if (!context.mounted) {
       return null;
     }
     await keepActivePixivToken(client.prefs);
     final user = await client.applyLoginTokens(tokens);
     await rememberPixivAccount(client.prefs, user);
-    if (previous != null && previous != user.id) forget();
     if (context.mounted) {
       showSnackBar(context, icon: '✅', message: L10n.of(context).plugin_pixiv_signed_in(user.displayName));
     }

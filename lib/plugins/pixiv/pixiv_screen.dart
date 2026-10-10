@@ -58,10 +58,7 @@ class _PixivScreenState extends State<PixivScreen> {
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'pixiv');
-    final start = pixivStartSectionIndex(
-      PrefService.of(context, listen: false).get<String>(optionPluginPixivStartSection),
-    );
-    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(PixivViewState(section: start)));
+    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(PixivViewState(section: _startSection)));
     final view = _view;
     final client = context.read<PixivClient>();
     _account = _session.obtain('account', () => PluginViewStore<int>(client.storedUserId ?? 0));
@@ -95,6 +92,9 @@ class _PixivScreenState extends State<PixivScreen> {
       _ensureTabLoaded(_state.section);
     });
   }
+
+  int get _startSection =>
+      pixivStartSectionIndex(PrefService.of(context, listen: false).get<String>(optionPluginPixivStartSection));
 
   bool get _hasToken =>
       (PrefService.of(context, listen: false).get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;

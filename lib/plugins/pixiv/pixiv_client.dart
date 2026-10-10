@@ -260,6 +260,15 @@ class PixivClient {
 
     _throwForAuthStatus(response);
     final json = Json(_decode(response, Uri.parse(PixivAuth.authTokenUrl)));
+    // The reader switched accounts while this was in flight: the answer
+    // belongs to the old one and must not replace the new one's tokens.
+    if (sent != _refreshToken) {
+      return PixivAuthUser.fromJson(json['user'].raw);
+    }
+    return _storeRefreshed(json);
+  }
+
+  Future<PixivAuthUser> _storeRefreshed(Json json) async {
     final access = json['access_token'].string;
     final refresh = json['refresh_token'].string;
     final expiresIn = json['expires_in'].integer ?? 3600;
@@ -269,11 +278,6 @@ class PixivClient {
         PixivErrorKind.badResponse,
         'token response missing access_token',
       );
-    }
-    // The reader switched accounts while this was in flight: the answer
-    // belongs to the old one and must not replace the new one's tokens.
-    if (sent != _refreshToken) {
-      return PixivAuthUser.fromJson(json['user'].raw);
     }
 
     await prefs.set(optionPluginPixivAccessToken, access);
