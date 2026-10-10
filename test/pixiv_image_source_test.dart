@@ -79,6 +79,21 @@ void main() {
       expect(downloadRequestHeaders(requests.first.uri), isEmpty);
     });
 
+    test('a single picture, such as an avatar or one in a novel, shows and saves from the picked server', () {
+      final avatar = pixivImageMedia('https://i.pximg.net/user-profile/img/1.jpg', imageHost: pixivMirrorHost);
+      expect(avatar.resolvedDownloadUrl, 'https://i.pixiv.re/user-profile/img/1.jpg');
+      final upload = pixivImageMedia(
+        'https://i.pximg.net/novel/9_1200.jpg',
+        downloadUrl: 'https://i.pximg.net/novel/9.jpg',
+        imageHost: pixivMirrorHost,
+      );
+      expect(
+        [upload.url, upload.resolvedDownloadUrl],
+        ['https://i.pixiv.re/novel/9_1200.jpg', 'https://i.pixiv.re/novel/9.jpg'],
+      );
+      expect(pixivImageMedia('https://s.pximg.net/common/a.png', imageHost: pixivMirrorHost).url, contains('s.pximg'));
+    });
+
     test('an ugoira archive comes from the mirror once, then from memory', () async {
       final asked = <Uri>[];
       final client = PixivClient(

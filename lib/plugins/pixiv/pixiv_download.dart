@@ -21,17 +21,25 @@ import 'package:xta/utils/download_directory.dart';
 
 const pixivDownloadSource = 'pixiv';
 
-/// One page as the shared plugin media path sees it: shown large, saved original, both
-/// fetched from [imageHost] when the reader picked another image server.
-PluginMediaItem pixivPageMedia(PixivIllust illust, int page, {String imageHost = pixivImageHost}) => PluginMediaItem(
-  url: pixivImageUrl(illust.viewerUrls[page], imageHost),
-  downloadUrl: pixivImageUrl(illust.downloadUrlAt(page), imageHost),
-);
+/// A Pixiv picture as the shared plugin media path sees it: [url] shown, [downloadUrl]
+/// (else [url]) saved, both fetched from [imageHost] when the reader picked another server.
+PluginMediaItem pixivImageMedia(String url, {String? downloadUrl, String imageHost = pixivImageHost}) =>
+    PluginMediaItem(
+      url: pixivImageUrl(url, imageHost),
+      downloadUrl: downloadUrl == null ? null : pixivImageUrl(downloadUrl, imageHost),
+    );
+
+/// One page as the shared plugin media path sees it: shown large, saved original.
+PluginMediaItem pixivPageMedia(PixivIllust illust, int page, {String imageHost = pixivImageHost}) =>
+    pixivImageMedia(illust.viewerUrls[page], downloadUrl: illust.downloadUrlAt(page), imageHost: imageHost);
 
 /// Saves one Pixiv picture by its address, like any other plugin image: a
 /// profile picture, a header image, a picture in a novel.
-Future<void> savePixivImage(BuildContext context, String url) =>
-    downloadPluginMediaItem(context, PluginMediaItem(url: url), sourceName: pixivDownloadSource);
+Future<void> savePixivImage(BuildContext context, String url) => downloadPluginMediaItem(
+  context,
+  pixivImageMedia(url, imageHost: pixivImageHostSetting(PrefService.of(context, listen: false))),
+  sourceName: pixivDownloadSource,
+);
 
 /// [pages] of [illust] (every page by default) queued into [treeUri], named
 /// and foldered as [naming] says, fetched from [imageHost].

@@ -204,6 +204,54 @@ void main() {
     expect(prefs.get<String>(articleReadingPreference), original);
   });
 
+  test('a journal of its own, joined only once the reader moves, and emptied on its own', () async {
+    final prefs = PrefServiceCache(
+      defaults: {
+        articleReadingPreference: jsonEncode({
+          'rss:item': {'fraction': 0.5, 'updatedAt': 1},
+        }),
+      },
+    );
+    ArticleReadingStore open(String id, {bool Function(BasePrefService prefs) remembers = articleRemembersPosition}) =>
+        ArticleReadingStore(
+          prefs: prefs,
+          articleId: id,
+          onCompleted: () async {},
+          journalKey: 'own.journal',
+          remembers: remembers,
+          journalOnOpen: false,
+        );
+    Map<String, Object?> own() => jsonDecode(prefs.get<String>('own.journal') ?? '{}') as Map<String, Object?>;
+
+    final glanced = open('glanced');
+    glanced.receiveProgress(progress(scroll: false));
+    await glanced.destroy();
+    expect(prefs.get<String>('own.journal'), isNull, reason: 'opening and restoring leave no trace');
+
+    final read = open('read');
+    read.receiveProgress(progress(fraction: 0.3));
+    await read.destroy();
+    expect(ArticleReadPoint.parse(own()['read']).fraction, 0.3);
+
+    final reopened = open('read');
+    expect(reopened.state.point.fraction, 0.3);
+    reopened.receiveProgress(progress(fraction: 0.6, scroll: false));
+    await reopened.destroy();
+    expect(ArticleReadPoint.parse(own()['read']).fraction, 0.6, reason: 'a journaled article keeps its place');
+
+    final paused = open('paused', remembers: (_) => false);
+    paused.receiveProgress(progress());
+    await paused.destroy();
+    expect(own().containsKey('paused'), isFalse);
+    expect(jsonDecode(prefs.get<String>(articleReadingPreference)!), {
+      'rss:item': {'fraction': 0.5, 'updatedAt': 1},
+    }, reason: 'the shared journal is left alone');
+
+    await ArticleReadingStore.forget(prefs, journalKey: 'own.journal');
+    expect(own(), isEmpty);
+    expect(prefs.get<String>(articleReadingPreference), contains('rss:item'));
+  });
+
   test('disposed sessions ignore delayed progress callbacks', () async {
     final store = ArticleReadingStore(prefs: PrefServiceCache(), articleId: 'a', onCompleted: () async {});
     final destroying = store.destroy();

@@ -60,6 +60,10 @@ class ArticleReadingState {
 
 double _number(Object? value, double fallback) => value is num && value.isFinite ? value.toDouble() : fallback;
 
+/// Whether readers keep their place, as the app-wide Remember reading position says.
+bool articleRemembersPosition(BasePrefService prefs) =>
+    !prefs.getKeys().contains(optionFeedReadingPosition) || prefs.get(optionFeedReadingPosition) != false;
+
 Map<String, dynamic> _preferenceMap(BasePrefService prefs, String key) {
   try {
     if (!prefs.getKeys().contains(key)) return {};
@@ -78,26 +82,41 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
   final String articleId;
   final Future<void> Function() onCompleted;
   final Stopwatch activeTime;
+
+  /// The preference the places are kept in. A reader whose places must never
+  /// leave the device keeps a journal of its own, out of settings backups.
+  final String journalKey;
+
+  /// Whether places are kept at all, asked each time one is read or written.
+  final bool Function(BasePrefService prefs) remembers;
   static Future<void>? _writes;
   Timer? _debounce;
   Timer? _endTimer;
   bool _closed = false;
   bool _completionPending = false;
-  bool allowAutomaticCompletion;
-  bool get remembersPosition =>
-      !prefs.getKeys().contains(optionFeedReadingPosition) || prefs.get(optionFeedReadingPosition) != false;
 
+  /// Whether the article is in the journal, or joins it at the next write.
+  bool _journaled = true;
+  bool allowAutomaticCompletion;
+  bool get remembersPosition => remembers(prefs);
+
+  /// With [journalOnOpen] false, an article joins the journal only once the
+  /// reader moves through it or finishes it, so opening one leaves no trace.
   ArticleReadingStore({
     required this.prefs,
     required this.articleId,
     required this.onCompleted,
     this.allowAutomaticCompletion = true,
+    this.journalKey = articleReadingPreference,
+    this.remembers = articleRemembersPosition,
+    bool journalOnOpen = true,
     bool alreadyCompleted = false,
     Stopwatch? clock,
   }) : activeTime = clock ?? Stopwatch(),
        super(const ArticleReadingState()) {
     final appearance = _preferenceMap(prefs, articleAppearancePreference);
-    final saved = remembersPosition ? _preferenceMap(prefs, articleReadingPreference)[articleId] : null;
+    final saved = remembersPosition ? _preferenceMap(prefs, journalKey)[articleId] : null;
+    _journaled = journalOnOpen || saved != null;
     final point = ArticleReadPoint.parse(saved);
     update(
       ArticleReadingState(
@@ -166,6 +185,7 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
   /// the reader to the end may complete the article.
   void receivePoint(ArticleReadPoint point, {bool interacted = false, bool userScrolled = false, bool atEnd = false}) {
     if (_closed) return;
+    if (interacted) _journaled = true;
     update(
       ArticleReadingState(
         fontSize: state.fontSize,
@@ -205,6 +225,7 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
     try {
       await onCompleted();
       if (_closed) return;
+      _journaled = true;
       final point = state.point;
       update(
         ArticleReadingState(
@@ -246,18 +267,23 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   Future<void> flush() {
     _debounce?.cancel();
-    if (!remembersPosition) return _writes ?? Future.value();
+    if (!_journaled || !remembersPosition) return _writes ?? Future.value();
     final point = state.point.toJson();
     return _write(() async {
-      final journal = _preferenceMap(prefs, articleReadingPreference);
+      final journal = _preferenceMap(prefs, journalKey);
       journal[articleId] = point;
       final entries = journal.entries.toList()
         ..sort(
           (a, b) => ArticleReadPoint.parse(b.value).updatedAt.compareTo(ArticleReadPoint.parse(a.value).updatedAt),
         );
-      await prefs.set(articleReadingPreference, jsonEncode(Map.fromEntries(entries.take(articleReadingLimit))));
+      await prefs.set(journalKey, jsonEncode(Map.fromEntries(entries.take(articleReadingLimit))));
     });
   }
+
+  /// Empties the journal kept under [journalKey], after any write still on its way.
+  static Future<void> forget(BasePrefService prefs, {String journalKey = articleReadingPreference}) => _write(() async {
+    await prefs.set(journalKey, '{}');
+  });
 
   static Future<void> _write(Future<void> Function() task) {
     final previous = _writes;

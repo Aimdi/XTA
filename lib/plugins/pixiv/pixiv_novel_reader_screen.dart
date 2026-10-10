@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_fetch_store.dart';
@@ -29,13 +29,18 @@ import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_store.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
+import 'package:xta/utils/number_locale.dart';
 import 'package:xta/utils/urls.dart';
 
 /// The widest the text runs; wider screens centre it.
 const _measure = 680.0;
 
-/// How the shared reading journal knows a novel.
+/// How the reading journal knows a novel.
 String pixivNovelReadingId(int novelId) => 'pixiv-novel:$novelId';
+
+/// Novels keep their place as the article readers do, except while the Pixiv
+/// history is paused: where a novel was left says that it was read.
+bool pixivNovelRemembersPlace(BasePrefService prefs) => articleRemembersPosition(prefs) && !pixivHistoryPaused(prefs);
 
 /// The one route into a novel's reader. [novel] is the novel as its opener
 /// had it; one opened by its id alone fetches its detail too.
@@ -68,6 +73,13 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
 
   /// Set while the reader's place is put back, so the moves made for it are not reported as reading.
   bool _restoring = true;
+
+  /// The place being put back, and how many restores are queued for it: a
+  /// text size changed meanwhile holds this place rather than reading a view
+  /// still on its way there.
+  ArticleReadPoint? _holding;
+  int _queued = 0;
+  Future<void> _restores = Future.value();
   bool _interacted = false;
   bool _userScrolled = false;
   bool _opened = false;
@@ -88,6 +100,9 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
       prefs: PrefService.of(context, listen: false),
       articleId: pixivNovelReadingId(widget.novelId),
       onCompleted: () async {},
+      journalKey: optionPluginPixivNovelReading,
+      remembers: pixivNovelRemembersPlace,
+      journalOnOpen: false,
     );
     _load();
   }
@@ -101,14 +116,27 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
     _opened = true;
     recordPixivNovelVisit(context, reading.novel);
     _reading.setActive(true);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _restore(reading));
+    if (await _putBack(_reading.state.point)) _reportNow();
   }
 
-  Future<void> _restore(PixivNovelReading reading) async {
-    if (!mounted) return;
-    await _position.restore(_reading.state.point, blocks: reading.blocks.length);
+  /// Puts [point] back once the next frame is laid out, after the restores
+  /// queued before it; only the last of a burst moves the list. True when it
+  /// was the last and the place is back.
+  Future<bool> _putBack(ArticleReadPoint point) async {
+    _holding = point;
+    _restoring = true;
+    _queued++;
+    final previous = _restores;
+    final restore = _restores = () async {
+      await previous;
+      await WidgetsBinding.instance.endOfFrame;
+      if (mounted && _queued == 1) await _position.restore(point, blocks: _novel.state?.blocks.length ?? 0);
+    }();
+    await restore;
+    if (--_queued > 0 || !mounted) return false;
+    _holding = null;
     _restoring = false;
-    _reportNow();
+    return true;
   }
 
   @override
@@ -172,15 +200,8 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
 
   /// A new text size or spacing keeps the passage being read at the top.
   void _keepPlace() {
-    final point = _position.read();
-    final blocks = _novel.state?.blocks.length ?? 0;
-    if (point == null) return;
-    _restoring = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      await _position.restore(point, blocks: blocks);
-      _restoring = false;
-    });
+    final point = _holding ?? _position.read();
+    if (point != null) unawaited(_putBack(point));
   }
 
   void _startOver() {
@@ -193,6 +214,7 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
   void _jumpToPage(int page) {
     final index = _novel.state?.pageStarts[page];
     if (index == null) return;
+    _interacted = true;
     unawaited(_position.showBlock(index, duration: xtaMotionDuration(context, kXtaMotionNavigation)));
   }
 
@@ -286,7 +308,7 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
   Widget _title(BuildContext context, PixivNovel novel) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    final length = NumberFormat.decimalPattern(Intl.getCurrentLocale()).format(novel.textLength);
+    final length = decimalCount(context, novel.textLength);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

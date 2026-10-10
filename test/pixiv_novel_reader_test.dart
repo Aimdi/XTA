@@ -11,9 +11,11 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_comment_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_comments_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_comments_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_image_source.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
@@ -22,9 +24,12 @@ import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_position.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/reading/article_reading_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/crash_reporter.dart';
 
 import 'support/memory_json_store.dart';
 import 'support/pixiv_comments_fake.dart';
@@ -68,6 +73,39 @@ String _lines(int count) => [for (var i = 0; i < count; i++) 'Line $i'].join('\n
 /// The style a line of the novel is drawn in: its span's, under the app's default.
 TextStyle? _styleOf(WidgetTester tester, String text) =>
     (tester.widget<RichText>(find.text(text, findRichText: true)).text as TextSpan).children?.first.style;
+
+/// The line of the text showing first at the top of the list, and how far above the top it starts.
+(String, double) _topLine(WidgetTester tester) {
+  final top = tester.getTopLeft(find.byType(CustomScrollView)).dy;
+  final lines = [
+    for (final element in find.byType(RichText).evaluate())
+      if ((element.widget as RichText).text.toPlainText() case final text when RegExp(r'^Line \d+$').hasMatch(text))
+        if ((element.renderObject! as RenderBox).localToGlobal(Offset.zero).dy - top case final at
+            when at + (element.renderObject! as RenderBox).size.height > 0)
+          (text, at),
+  ]..sort((a, b) => a.$2.compareTo(b.$2));
+  return lines.first;
+}
+
+/// The places the reader keeps, by novel.
+Map<String, Object?> _places(PixivHarness harness) =>
+    jsonDecode(harness.prefs.get<String>(optionPluginPixivNovelReading) ?? '{}') as Map<String, Object?>;
+
+/// Scrolls well into the text and waits until the place is written.
+Future<void> _read(WidgetTester tester) async {
+  await tester.fling(find.byType(CustomScrollView), const Offset(0, -3000), 3000);
+  await settlePixiv(tester);
+  await tester.pump(const Duration(seconds: 1));
+}
+
+/// Leaves the reader for a page of its own, so nothing is left to write.
+Future<BuildContext> _leave(WidgetTester tester) async {
+  tester
+      .state<NavigatorState>(find.byType(Navigator).first)
+      .pushAndRemoveUntil(MaterialPageRoute<void>(builder: (_) => const SizedBox(key: ValueKey('left'))), (_) => false);
+  await settlePixiv(tester);
+  return tester.element(find.byKey(const ValueKey('left')));
+}
 
 /// Taps the words themselves, where a link's recognizer is.
 Future<void> _tapText(WidgetTester tester, String text) async {
@@ -383,6 +421,43 @@ void main() {
     await _close(tester);
   });
 
+  testWidgets('pictures open and save from the picked image server; a fetched work saves as its page', (tester) async {
+    final api = _api(
+      contents: {
+        _id: _content(
+          text: '[uploadedimage:9]\n[pixivimage:120-2]',
+          uploads: {
+            '9': const PixivNovelPicture(
+              url: 'https://i.pximg.net/novel/9_1200.jpg',
+              originalUrl: 'https://i.pximg.net/novel/9.jpg',
+            ),
+          },
+        ),
+      },
+    );
+    final harness = await pumpPixiv(tester, const SizedBox(), extraProviders: api.providers);
+    await harness.prefs.set(optionPluginPixivImageHost, pixivMirrorHost);
+    await _push(tester, pixivNovelReaderRoute(_id, novel: pixivNovel()));
+
+    final pictures = find.bySemanticsLabel('Picture in the novel');
+    await tester.ensureVisible(pictures.last);
+    await tester.pumpAndSettle();
+    await tester.longPressAt(tester.getTopLeft(pictures.last) + const Offset(12, 12));
+    await settlePixiv(tester);
+    expect(harness.downloader.pages, [1], reason: 'page 2 of the work, saved the way its own screen saves it');
+
+    await tester.ensureVisible(pictures.first);
+    await tester.pumpAndSettle();
+    await tester.tapAt(tester.getTopLeft(pictures.first) + const Offset(12, 12));
+    await settlePixiv(tester);
+    final item = tester.widget<PluginImageViewer>(find.byType(PluginImageViewer)).items.single;
+    expect(
+      [item.url, item.resolvedDownloadUrl],
+      ['https://i.pixiv.re/novel/9_1200.jpg', 'https://i.pixiv.re/novel/9.jpg'],
+    );
+    await _close(tester);
+  });
+
   testWidgets('export saves <title>.txt, as plain text or with the markup', (tester) async {
     final exporter = _Exporter();
     final api = _api(contents: {_id: _content(text: '[[rb:漢字>かんじ]]\n[newpage]\nEnd')});
@@ -477,12 +552,14 @@ void main() {
     final api = _api(contents: {_id: _content(text: _lines(300))});
     final harness = await _open(tester, api, novel: pixivNovel());
 
-    await tester.fling(find.byType(CustomScrollView), const Offset(0, -3000), 3000);
-    await settlePixiv(tester);
-    await tester.pump(const Duration(seconds: 1));
-    final journal = jsonDecode(harness.prefs.get<String>(articleReadingPreference)!) as Map<String, Object?>;
-    final saved = ArticleReadPoint.parse(journal[pixivNovelReadingId(_id)]);
+    await _read(tester);
+    final saved = ArticleReadPoint.parse(_places(harness)[pixivNovelReadingId(_id)]);
     expect(saved.paragraph, greaterThan(20));
+    expect(
+      harness.prefs.get<String>(articleReadingPreference),
+      isNull,
+      reason: 'the RSS and Substack journal is not used',
+    );
 
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
     navigator.pushReplacement(pixivNovelReaderRoute(_id, novel: pixivNovel()));
@@ -505,11 +582,107 @@ void main() {
     await harness.prefs.set(optionFeedReadingPosition, false);
     await _push(tester, pixivNovelReaderRoute(_id, novel: pixivNovel()));
 
-    await tester.fling(find.byType(CustomScrollView), const Offset(0, -3000), 3000);
-    await settlePixiv(tester);
-    await tester.pump(const Duration(seconds: 1));
+    await _read(tester);
 
-    expect(harness.prefs.get<String>(articleReadingPreference) ?? '', isNot(contains(pixivNovelReadingId(_id))));
+    expect(_places(harness), isEmpty);
+    await _close(tester);
+  });
+
+  testWidgets('a novel only opened, or one that would not load, leaves no place behind', (tester) async {
+    final api = _api(contents: {_id: _content(text: _lines(300))});
+    final harness = await pumpPixiv(tester, const SizedBox(), extraProviders: api.providers);
+    await _push(tester, pixivNovelReaderRoute(_id, novel: pixivNovel()));
+    await tester.pump(const Duration(seconds: 1));
+    await _leave(tester);
+
+    api.contentError = PixivException(PixivErrorKind.network, 'offline');
+    await _push(tester, pixivNovelReaderRoute(_id, novel: pixivNovel()));
+    expect(find.byType(FullPageErrorWidget), findsOneWidget);
+    await _leave(tester);
+
+    expect(harness.prefs.toMap().keys, isNot(contains(optionPluginPixivNovelReading)));
+    expect(harness.prefs.toMap().keys, isNot(contains(articleReadingPreference)));
+    await disposePixiv(tester);
+  });
+
+  testWidgets('with the history paused, a novel keeps no place and finds none', (tester) async {
+    final api = _api(contents: {_id: _content(text: _lines(300))});
+    final harness = await pumpPixiv(tester, const SizedBox(), extraProviders: api.providers);
+    final saved = jsonEncode({
+      pixivNovelReadingId(_id): const ArticleReadPoint(fraction: 0.5, paragraph: 150).toJson(),
+    });
+    await harness.prefs.set(optionPluginPixivNovelReading, saved);
+    await harness.prefs.set(optionPluginPixivHistoryPaused, true);
+    await _push(tester, pixivNovelReaderRoute(_id, novel: pixivNovel()));
+
+    expect(find.text('Line 0', findRichText: true), findsOneWidget, reason: 'the old place is not put back');
+    await _read(tester);
+    await _leave(tester);
+
+    expect(harness.prefs.get<String>(optionPluginPixivNovelReading), saved);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('places stay out of backups and go with the novel history when the plugin forgets its data', (
+    tester,
+  ) async {
+    final history = PixivNovelHistoryStore(storage: MemoryJsonStore());
+    final favorites = PixivFavoriteTagsStore(PrefServiceCache());
+    addTearDown(history.destroy);
+    addTearDown(favorites.destroy);
+    final api = _api(contents: {_id: _content(text: _lines(300))});
+    final harness = await pumpPixiv(
+      tester,
+      const SizedBox(),
+      extraProviders: [
+        ...api.providers,
+        Provider<PixivNovelHistoryStore>.value(value: history),
+        Provider<PixivFavoriteTagsStore>.value(value: favorites),
+      ],
+    );
+    await _push(tester, pixivNovelReaderRoute(_id, novel: pixivNovel()));
+    await _read(tester);
+
+    expect(_places(harness).keys, [pixivNovelReadingId(_id)]);
+    expect(history.state, hasLength(1));
+    expect(prefsMapWithoutSecrets(harness.prefs.toMap()).keys, isNot(contains(optionPluginPixivNovelReading)));
+
+    await PixivPlugin().forgetLoadedData(await _leave(tester));
+    expect(_places(harness), isEmpty);
+    expect(history.state, isEmpty);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('a text size dragged over several steps keeps the passage being read at the top', (tester) async {
+    await _open(
+      tester,
+      _api(contents: {_id: _content(text: _lines(400))}),
+      novel: pixivNovel(),
+    );
+    final position = tester.state<ScrollableState>(find.byType(Scrollable).last).position;
+    position.jumpTo(2000);
+    await settlePixiv(tester);
+    position.jumpTo(position.pixels + _topLine(tester).$2 + 15);
+    await settlePixiv(tester);
+    final (line, at) = _topLine(tester);
+    expect(at, closeTo(-15, 1), reason: 'the line read is cut through its middle');
+
+    await _tap(tester, find.byTooltip('Reading appearance'));
+    final slider = find.byType(Slider).first;
+    final gesture = await tester.startGesture(tester.getRect(slider).centerLeft + const Offset(24, 0));
+    for (var i = 0; i < 30; i++) {
+      await gesture.moveBy(const Offset(8, 0));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    await gesture.up();
+    await settlePixiv(tester);
+    await tester.tapAt(const Offset(20, 20));
+    await settlePixiv(tester);
+
+    final (lineAfter, atAfter) = _topLine(tester);
+    expect(lineAfter, line);
+    expect(atAfter, closeTo(at, 2));
+    expect(_styleOf(tester, line)?.fontSize, greaterThan(18));
     await _close(tester);
   });
 
@@ -517,7 +690,7 @@ void main() {
     final api = _api(
       contents: {
         _id: _content(
-          text: '[chapter:A long chapter title that wraps]\n${_lines(5)}',
+          text: '[chapter:A long chapter title that wraps]\n彼は[[rb:漢字 > かんじ]]を書いた\n${_lines(5)}',
           previous: const PixivNovelNeighbour(id: 899, viewable: true, title: 'A previous chapter with a long title'),
           next: const PixivNovelNeighbour(id: 901, viewable: true, title: 'A next chapter with a long title'),
         ),
@@ -526,6 +699,13 @@ void main() {
     await _open(tester, api, novel: pixivNovel(), size: const Size(320, 640), textScale: 2);
 
     expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(find.text('漢字'), 300);
+    expect(
+      tester.getRect(find.text('漢字')).height,
+      closeTo(18 * 2, 1),
+      reason: 'ruby\'s base is as large as the text around it, scaled once',
+    );
+    expect(tester.getRect(find.text('かんじ')).height, closeTo(9 * 1.1 * 2, 1));
     await tester.scrollUntilVisible(find.byKey(const ValueKey('pixiv-novel-chapter-901')), 300);
     expect(tester.takeException(), isNull);
     await _close(tester);

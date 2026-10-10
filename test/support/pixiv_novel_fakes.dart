@@ -23,6 +23,7 @@ PixivNovel pixivNovel({
   bool ai = false,
   int comments = 0,
   String caption = '',
+  bool cover = true,
 }) => PixivNovel(
   id: id,
   title: title,
@@ -30,7 +31,7 @@ PixivNovel pixivNovel({
   captionHtml: caption,
   totalComments: comments,
   user: PixivUser(id: userId, name: userName, account: userName.toLowerCase(), comment: ''),
-  coverUrl: 'https://i.pximg.net/c/240x480_80/novel-cover-master/img/2026/09/01/$id.jpg',
+  coverUrl: cover ? 'https://i.pximg.net/c/240x480_80/novel-cover-master/img/2026/09/01/$id.jpg' : null,
   tags: tags,
   series: series,
   textLength: textLength,

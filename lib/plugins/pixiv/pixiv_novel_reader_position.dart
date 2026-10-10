@@ -58,7 +58,8 @@ class PixivNovelScrollPosition {
   /// for a point at the very start; [blocks] bounds a point from a longer text.
   ///
   /// The list builds its blocks lazily, so the way to a block far from the
-  /// ones built is long; [point.fraction] lands near it first.
+  /// ones built is long; [point.fraction] lands near it first. It completes
+  /// once the place is laid out, so a [read] right after finds it.
   Future<void> restore(ArticleReadPoint point, {required int blocks}) async {
     if (point.fraction <= 0.001 || blocks == 0 || !controller.hasClients) return;
     final index = point.paragraph.clamp(0, blocks - 1);
@@ -70,6 +71,7 @@ class PixivNovelScrollPosition {
     if (!controller.hasClients) return;
     final position = controller.position;
     controller.jumpTo((position.pixels - point.leading).clamp(position.minScrollExtent, position.maxScrollExtent));
+    await WidgetsBinding.instance.endOfFrame;
   }
 
   /// Scrolls block [index] to the top over [duration].

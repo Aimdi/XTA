@@ -78,11 +78,12 @@ class PixivHistoryEntry {
     bookmarked: novel.isBookmarked,
   );
 
-  /// A stored entry, or null when it lacks the id or the thumbnail to show it.
-  static PixivHistoryEntry? fromJson(Json json) {
+  /// A stored entry, or null when it lacks the id or, when [needsThumb], the
+  /// thumbnail to show it. A novel without a cover still has its row.
+  static PixivHistoryEntry? fromJson(Json json, {bool needsThumb = true}) {
     final id = json['id'].integer;
     final thumb = json['thumbUrl'].string ?? '';
-    if (id == null || id <= 0 || thumb.isEmpty) {
+    if (id == null || id <= 0 || (needsThumb && thumb.isEmpty)) {
       return null;
     }
     return PixivHistoryEntry(
@@ -154,12 +155,12 @@ List<PixivHistoryEntry> pixivHistoryFiltered(List<PixivHistoryEntry> entries, St
           if (entry.matches(query)) entry,
       ];
 
-List<PixivHistoryEntry> _decodeHistory(Object? stored) {
+List<PixivHistoryEntry> _decodeHistory(Object? stored, {required bool needsThumb}) {
   final ids = <int>{};
   return List.unmodifiable(
     [
       for (final item in Json(stored).list)
-        if (PixivHistoryEntry.fromJson(item) case final entry? when ids.add(entry.id)) entry,
+        if (PixivHistoryEntry.fromJson(item, needsThumb: needsThumb) case final entry? when ids.add(entry.id)) entry,
     ].take(pixivHistoryLimit),
   );
 }
@@ -169,14 +170,18 @@ List<PixivHistoryEntry> _decodeHistory(Object? stored) {
 class PixivHistoryStore extends Store<List<PixivHistoryEntry>> {
   final JsonStore storage;
   final String key;
+
+  /// Whether an entry is only kept with a thumbnail, as a work's tile needs.
+  final bool needsThumb;
   Future<void>? _loaded;
 
-  PixivHistoryStore({JsonStore? storage, this.key = pixivIllustHistoryKey})
+  PixivHistoryStore({JsonStore? storage, this.key = pixivIllustHistoryKey, this.needsThumb = true})
     : storage = storage ?? LocalJsonStore.shared,
       super(const []);
 
   /// Reads the file once; later calls wait for that first read.
-  Future<void> load() => _loaded ??= execute(() async => _decodeHistory(await storage.read(key)));
+  Future<void> load() =>
+      _loaded ??= execute(() async => _decodeHistory(await storage.read(key), needsThumb: needsThumb));
 
   Future<void> record(PixivHistoryEntry entry) => _change((entries) => pixivHistoryWith(entries, entry));
 
@@ -199,8 +204,11 @@ class PixivHistoryStore extends Store<List<PixivHistoryEntry>> {
 /// The novels opened on this device, in a file of their own; a type of its
 /// own too, so both histories can be provided side by side.
 class PixivNovelHistoryStore extends PixivHistoryStore {
-  PixivNovelHistoryStore({super.storage}) : super(key: pixivNovelHistoryKey);
+  PixivNovelHistoryStore({super.storage}) : super(key: pixivNovelHistoryKey, needsThumb: false);
 }
+
+/// Whether the reader paused the history: nothing they open is remembered.
+bool pixivHistoryPaused(BasePrefService prefs) => prefs.get<bool>(optionPluginPixivHistoryPaused) == true;
 
 /// Adds [illust] to the history unless the reader paused it or no history is
 /// provided (a test, or a screen outside the app).
@@ -212,7 +220,6 @@ void recordPixivNovelVisit(BuildContext context, PixivNovel novel) =>
     _record(context, context.read<PixivNovelHistoryStore?>(), PixivHistoryEntry.ofNovel(novel, DateTime.now()));
 
 void _record(BuildContext context, PixivHistoryStore? history, PixivHistoryEntry entry) {
-  final paused = PrefService.of(context, listen: false).get<bool>(optionPluginPixivHistoryPaused) == true;
-  if (history == null || paused) return;
+  if (history == null || pixivHistoryPaused(PrefService.of(context, listen: false))) return;
   unawaited(history.record(entry));
 }

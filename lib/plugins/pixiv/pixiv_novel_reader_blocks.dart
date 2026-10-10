@@ -2,11 +2,13 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_image_source.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
@@ -157,6 +159,9 @@ Future<void> openPixivNovelLink(BuildContext context, String url) async {
 
 /// [ruby] in small type over [base]. The base comes first, so the pair sits on
 /// the line by the base's baseline.
+///
+/// It sits in a [WidgetSpan], which already scales it by the reader's text
+/// size, so its own texts must not scale again.
 class PixivNovelRubyText extends StatelessWidget {
   final String base;
   final String ruby;
@@ -169,8 +174,12 @@ class PixivNovelRubyText extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     verticalDirection: VerticalDirection.up,
     children: [
-      Text(base, style: style.copyWith(height: 1)),
-      Text(ruby, style: style.copyWith(fontSize: (style.fontSize ?? 16) / 2, height: 1.1)),
+      Text(base, style: style.copyWith(height: 1), textScaler: TextScaler.noScaling),
+      Text(
+        ruby,
+        style: style.copyWith(fontSize: (style.fontSize ?? 16) / 2, height: 1.1),
+        textScaler: TextScaler.noScaling,
+      ),
     ],
   );
 }
@@ -220,7 +229,7 @@ class PixivNovelPictureView extends StatelessWidget {
   Widget build(BuildContext context) => switch (block) {
     final PixivNovelUploadBlock upload => _upload(context, scope.content.upload(upload)),
     final PixivNovelIllustBlock illust => switch (scope.content.illust(illust)) {
-      final picture? => _work(context, illust, picture.url, picture.saveUrl),
+      final picture? => _work(context, illust, picture.url, onSave: () => savePixivImage(context, picture.saveUrl)),
       null => _fetchedWork(illust),
     },
     _ => const SizedBox.shrink(),
@@ -235,20 +244,27 @@ class PixivNovelPictureView extends StatelessWidget {
 
   Future<void> _viewFullScreen(BuildContext context, PixivNovelPicture picture) => openPluginImageViewer(
     context,
-    items: [PluginMediaItem(url: picture.url, downloadUrl: picture.originalUrl)],
+    items: [
+      pixivImageMedia(
+        picture.url,
+        downloadUrl: picture.originalUrl,
+        imageHost: pixivImageHostSetting(PrefService.of(context, listen: false)),
+      ),
+    ],
     sourceName: pixivDownloadSource,
     imageBuilder: (context, item, fit) => PixivNetworkImage(url: item.url, fit: fit, fullResolution: true),
   );
 
-  Widget _work(BuildContext context, PixivNovelIllustBlock block, String? url, String? saveUrl) =>
+  Widget _work(BuildContext context, PixivNovelIllustBlock block, String? url, {VoidCallback? onSave}) =>
       PixivNovelPictureFrame(
         url: url,
         openHint: L10n.of(context).plugin_pixiv_novel_image_open,
         onOpen: () => openPixivHref(context, pixivArtworkUrl(block.illustId)),
-        onSave: saveUrl == null ? null : () => savePixivImage(context, saveUrl),
+        onSave: onSave,
       );
 
-  /// A work the page carried no picture of, fetched on its own.
+  /// A work the page carried no picture of, fetched on its own. Having the
+  /// whole work, a save names and files the page as the work's screen does.
   Widget _fetchedWork(PixivNovelIllustBlock block) {
     scope.works.need(block.illustId);
     return ScopedBuilder<PixivEmbeddedWorksStore, Map<int, PixivIllust?>>(
@@ -257,9 +273,9 @@ class PixivNovelPictureView extends StatelessWidget {
       onState: (context, works) {
         final illust = works[block.illustId];
         final pages = illust?.viewerUrls ?? const <String>[];
-        if (illust == null || pages.isEmpty) return _work(context, block, null, null);
+        if (illust == null || pages.isEmpty) return _work(context, block, null);
         final page = (block.page - 1).clamp(0, pages.length - 1);
-        return _work(context, block, pages[page], illust.downloadUrlAt(page));
+        return _work(context, block, pages[page], onSave: () => savePixivPages(context, illust, [page]));
       },
     );
   }

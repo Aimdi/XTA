@@ -4,6 +4,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/utils/json.dart';
 
 import 'support/memory_json_store.dart';
+import 'support/pixiv_novel_fakes.dart';
 import 'support/pixiv_reader_harness.dart';
 
 PixivHistoryEntry _entry(int id, {String title = 'Work', String user = 'Mika', int minute = 0}) => PixivHistoryEntry(
@@ -116,6 +117,19 @@ void main() {
       addTearDown(novels.destroy);
       await novels.record(_entry(1));
       expect(storage.values.keys, ['pixiv-history:novels']);
+    });
+
+    test('a novel without a cover keeps its row after a restart', () async {
+      final storage = MemoryJsonStore();
+      final novels = PixivNovelHistoryStore(storage: storage);
+      addTearDown(novels.destroy);
+      await novels.record(PixivHistoryEntry.ofNovel(pixivNovel(id: 5, cover: false), DateTime.utc(2026)));
+      await novels.record(PixivHistoryEntry.ofNovel(pixivNovel(id: 6), DateTime.utc(2026)));
+
+      final reloaded = PixivNovelHistoryStore(storage: storage);
+      addTearDown(reloaded.destroy);
+      await reloaded.load();
+      expect(reloaded.state.map((entry) => (entry.id, entry.thumbUrl.isEmpty)), [(6, false), (5, true)]);
     });
   });
 }

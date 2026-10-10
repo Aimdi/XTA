@@ -21,8 +21,10 @@ plugin as a whole is described in `pixiv-plugin.md`.
   `LocalJsonStore` under `pixiv-history:illusts` (the app's reader-state
   folder). Settings backups and exports never read it. Opened novels go to
   their own file, `pixiv-history:novels` (`PixivNovelHistoryStore`, recorded
-  by the novel reader, entries with the cover as `thumbUrl`; see
-  `pixiv-novels.md`).
+  by the novel reader, entries with the cover as `thumbUrl`, kept without
+  one; see `pixiv-novels.md`). Where the reader stopped in each novel is a
+  journal in `plugin.pixiv.novel_reading`, listed in `secretPrefKeys` so no
+  export, backup or crash report carries it.
 - Each entry is `{id, title, userId, userName, thumbUrl, tags, viewedAt,
   width, height, bookmarks, bookmarked}`; newest first, one entry per work
   (reopening moves it to the top), at most 500. Tags are kept so a muted tag
@@ -31,12 +33,13 @@ plugin as a whole is described in `pixiv-plugin.md`.
 - A visit is recorded in `pixivIllustRoute` (`pixiv_link_open.dart`) once the
   work's detail has loaded — not while it waits behind the mute notice, and
   not for a work Pixiv no longer has.
-- `plugin.pixiv.history_paused` stops recording. The history screen (More →
+- `plugin.pixiv.history_paused` stops recording, and the novel reader then
+  neither keeps nor restores places. The history screen (More →
   Viewing history, or Settings) is the shared `PixivIllustGrid` (mute filter
   off, long press forgets a work) under a header with the title/artist filter
   and the pause switch, all in one scroll view so large text never squeezes
   the works out. Forgetting a work and Clear history both ask first.
-- Uninstalling the plugin clears the history.
+- Uninstalling the plugin clears both histories and the novel places.
 
 ## Mute
 
@@ -176,3 +179,4 @@ pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 | `plugin.pixiv.start_section` | `home` | Yes |
 | `plugin.pixiv.copy_template` | `''` | Yes |
 | `plugin.pixiv.history_paused` | `false` | Yes |
+| `plugin.pixiv.novel_reading` | `{}` | Never (viewing history, in `secretPrefKeys`) |
