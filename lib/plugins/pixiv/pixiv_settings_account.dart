@@ -191,8 +191,10 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
           hintText: l10n.plugin_pixiv_refresh_token_hint,
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
-            tooltip: view.tokenShown ? null : l10n.plugin_pixiv_reveal,
-            icon: Icon(view.tokenShown ? Icons.visibility_off : Icons.visibility),
+            tooltip: l10n.plugin_pixiv_reveal,
+            isSelected: view.tokenShown,
+            icon: const Icon(Icons.visibility),
+            selectedIcon: const Icon(Icons.visibility_off),
             onPressed: () => _view.select(view.copyWith(tokenShown: !view.tokenShown)),
           ),
         ),

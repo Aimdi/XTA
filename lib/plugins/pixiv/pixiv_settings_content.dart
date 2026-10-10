@@ -84,7 +84,7 @@ class _PixivAiShowSettingState extends State<PixivAiShowSetting> {
           ),
         ),
         TextButton.icon(
-          onPressed: () => openInRealBrowser(context, pixivViewingSettingsUrl),
+          onPressed: () => openUri(context, pixivViewingSettingsUrl),
           icon: const Icon(Icons.open_in_new, size: 18),
           label: Text(l10n.plugin_pixiv_change_on_pixiv),
         ),

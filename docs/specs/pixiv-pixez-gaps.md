@@ -33,7 +33,7 @@ once those are in.
 | B5b | Bookmarks and bookmark organisation | Planned |
 | B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Planned |
 | B6b | Saving: naming, folders, index, multi-select, ugoira export | Planned |
-| B7 | Settings, accounts, history, mute, links | Planned |
+| B7 | Settings, accounts, history, mute, links | Built |
 
 ### B0 — shared seams (built)
 
@@ -129,14 +129,17 @@ Ugoira export as GIF or ZIP; file-name template; per-artist and R-18
 subfolders; already-downloaded check and badge; pick pages to save; grid tile
 long-press actions; bookmark when downloading.
 
-### B7 — settings, accounts, history, mute, links
+### B7 — settings, accounts, history, mute, links (built)
 
-Viewing history (on device); mute settings page; tag mute with regex and
-combinations; blocked-work screen with temporary reveal; Pixiv account AI
-setting and AI badge toggle; multiple accounts; caption with tappable links
-and selection; copy artwork info with a template; Pixiv link and deep-link
-routing; open pixiv links shared to XTA; More hub; start section and
-navigation.
+Viewing history on the device with a pause switch; mute page with typed tags,
+artist names and `r'pattern'` rules (single tags and `#a#b` combinations);
+muted-work notice with *Show this time*; the account's AI setting, read only
+with a link to pixiv.net (the AI badge toggle moved to B6a); multiple accounts
+kept out of backups; caption with tappable links and selection; Copy info with
+a template; every Pixiv link form routed (series, novels and pixivision open in
+the browser until B2 and B4); pixiv links shared to or opened by default in
+XTA; the More hub; start section and tap-again-to-top. Details in
+`pixiv-settings.md`.
 
 ## Already on par
 

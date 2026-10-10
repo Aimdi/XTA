@@ -254,11 +254,26 @@ const _xtaPackage = 'com.aimdi.xta';
 /// open them.
 const _claimedPixivHosts = {'pixiv.net', 'www.pixiv.net', 'pixiv.me'};
 
-bool _claimedPixivPage(String url) {
+/// Whether a plain VIEW of [url] would land back in XTA: a Pixiv page, once
+/// the reader made XTA open those by default. Everything else, Pixiv pages
+/// included while another app or a chooser takes them, goes out as usual.
+Future<bool> _reopensXta(String url) async {
   final uri = Uri.tryParse(url.trim());
-  return uri != null &&
-      (uri.scheme == 'https' || uri.scheme == 'http') &&
-      _claimedPixivHosts.contains(uri.host.toLowerCase());
+  if (uri == null ||
+      (uri.scheme != 'https' && uri.scheme != 'http') ||
+      !_claimedPixivHosts.contains(uri.host.toLowerCase())) {
+    return false;
+  }
+  try {
+    final handler = await AndroidIntent(
+      action: 'android.intent.action.VIEW',
+      data: url,
+    ).getResolvedActivity();
+    return handler?.packageName == _xtaPackage;
+  } catch (_) {
+    // Unknown: a named browser is the choice that cannot loop.
+    return true;
+  }
 }
 
 /// VIEW that names a browser. A package-less VIEW of x.com comes back here.
@@ -315,15 +330,16 @@ Future<void> openInRealBrowser(BuildContext context, String uri) async {
 /// asked for that in settings, otherwise in the browser they named — or the
 /// system default, if they named none.
 ///
-/// Broadcasts, Spaces and Pixiv pages always go through [openInRealBrowser]:
-/// a generic VIEW of them would reopen this app instead of a browser.
+/// Broadcasts and Spaces always go through [openInRealBrowser], and so do
+/// Pixiv pages once XTA opens those by default: a generic VIEW of them would
+/// reopen this app instead of a browser.
 Future<void> openUri(BuildContext context, String uri) async {
-  if (isLiveWatchUrl(uri) || _claimedPixivPage(uri)) {
-    await openInRealBrowser(context, uri);
+  final prefs = PrefService.of(context, listen: false);
+  if (isLiveWatchUrl(uri) || await _reopensXta(uri)) {
+    if (context.mounted) await openInRealBrowser(context, uri);
     return;
   }
 
-  final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
   if (prefs.get(optionOpenLinksInEmbeddedBrowser) == true) {

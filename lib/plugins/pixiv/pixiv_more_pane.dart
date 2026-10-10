@@ -47,8 +47,7 @@ Future<void> _openPreferences(BuildContext context) => _push(context, const Pixi
 
 Future<void> _openMute(BuildContext context) => _push(context, const PixivMuteScreen());
 
-Future<void> _manageOnPixiv(BuildContext context) =>
-    openInRealBrowser(context, 'https://www.pixiv.net/settings/account');
+Future<void> _manageOnPixiv(BuildContext context) => openUri(context, 'https://www.pixiv.net/settings/account');
 
 final pixivMoreEntries = <PixivMoreEntry>[
   PixivMoreEntry(id: 'history', icon: Icons.history, label: (l10n) => l10n.plugin_pixiv_history, open: _openHistory),

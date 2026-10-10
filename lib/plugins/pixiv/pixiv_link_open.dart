@@ -51,7 +51,7 @@ Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
     case PixivShortLinkRef():
       return _openShortLink(context, ref);
     case PixivWebPageLinkRef(:final webUrl):
-      await openInRealBrowser(context, webUrl);
+      await openUri(context, webUrl);
       return true;
   }
 }
@@ -76,7 +76,7 @@ Future<bool> _openShortLink(BuildContext context, PixivShortLinkRef ref) async {
     return true;
   }
   if (target == null) {
-    await openInRealBrowser(context, ref.uri.toString());
+    await openUri(context, ref.uri.toString());
     return true;
   }
   return openPixivLinkRef(context, target);

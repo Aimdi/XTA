@@ -72,8 +72,8 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 
 | Feature | Detail |
 |---|---|
-| Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), mute review (authors, tags, works, comments, novels) |
-| Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`) |
+| Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` |
+| Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
@@ -82,13 +82,17 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large. `onFollowChanged` lets a list update its copy |
 | Follow state | One app-wide `PixivFollowStore` (`pixiv_user_store.dart`): the follows changed this session and the ones in flight, read by every follow button, so a follow survives list rebuilds and recycled rows and shows the same on cards and profiles. Signing out or uninstalling clears it |
 | Avatars | `PixivAvatar` (`pixiv_avatar.dart`): the round avatar, decoded at its painted size, or initials when Pixiv sends none |
-| Local mute | Author ids, tag names, work ids, comment ids and novel ids in prefs; works are filtered from every grid |
+| Local mute | Authors (with names), tag names and `r'pattern'` rules, work ids, comment ids and novel ids in prefs; works are filtered from every grid, and a muted work opened directly waits behind a notice |
+| Viewing history | On the device only (`LocalJsonStore`), newest first, 500 works, filter, pause, clear |
+| Accounts | Several accounts in a secret pref; switching clears the access token and what was loaded |
+| Links | Every Pixiv link form, `pixiv://`, i.pximg.net files and pixiv.me short links; pixiv links shared to XTA or opened by default |
 | Group Discover | Related creators (`/v1/user/related`), cached unfiltered for 10 minutes; each is shown through a preview work that passes mute, Show R-18 and Hide AI as they are at read time |
 
 Every way into a work goes through `pixiv_link_open.dart`: `openPixivLinkRef`
 for links (used by `plugin_links.dart`), `openPixivIllust` and
 `openPixivIllustFromList` (what tiles call), all building the route in
-`pixivIllustRoute`.
+`pixivIllustRoute`, which puts muted works behind their notice and records
+the works it shows in the viewing history.
 
 Paged lists use `PixivPagedListStore<T>` (`pixiv_store.dart`): first load,
 soft refresh, `next_url` paging with de-duplication, a filter, and skipping
@@ -123,9 +127,11 @@ its illust case.
 | Follow delete | `POST /v1/user/follow/delete` |
 | Bookmark add | `POST /v2/illust/bookmark/add` |
 | Bookmark delete | `POST /v1/illust/bookmark/delete` |
+| AI display setting (read only) | `GET /v1/user/ai-show-settings` |
+| Short link | `GET https://pixiv.me/<name>` (redirect read, not followed) |
 
 ## Not yet
 
 What remains against PixEz — novels, comments, Pixivision, series and
-watchlists, richer search and bookmarks, viewing history, multiple accounts and
-more — is planned batch by batch in `pixiv-pixez-gaps.md`.
+watchlists, richer search and bookmarks and more — is planned batch by batch
+in `pixiv-pixez-gaps.md`.
