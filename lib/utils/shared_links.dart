@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:xta/plugins/pixiv/pixiv_links.dart' show isPixivWebHost;
 
 const sharedTextChannel = EventChannel('com.aimdi.xta/shared_text');
 const _shareHosts = {
@@ -32,7 +33,7 @@ bool _supported(Uri uri, {required bool pixiv}) {
 /// The first X link in a share — or Pixiv link, when [pixiv] is on. Shares
 /// often carry the post's caption before the actual link.
 Uri? extractSharedLink(String text, {bool pixiv = false}) {
-  final urls = RegExp(r'''https?://[^\s<>"​]+''', caseSensitive: false);
+  final urls = RegExp(r'''https?://[^\s<>"\u200b]+''', caseSensitive: false);
   for (final match in urls.allMatches(text)) {
     final candidate = match.group(0)!.replaceFirst(RegExp(r'''[)\]}>.,!?;:'"]+$'''), '');
     final uri = Uri.tryParse(candidate);
@@ -40,6 +41,11 @@ Uri? extractSharedLink(String text, {bool pixiv = false}) {
   }
   return null;
 }
+
+/// Whether X's link parser should read [link], which no plugin opened. A Pixiv
+/// page should not: X would take `pixiv.net/en/` for the profile `@en`, so it
+/// goes to the browser instead.
+bool readsAsXLink(Uri link) => !isPixivWebHost(link.host);
 
 /// A share that is only a number, which Pixiv reads as a work's ID.
 String? sharedPixivId(String text) {

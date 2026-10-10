@@ -12,6 +12,8 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/utils/urls.dart';
 
@@ -164,7 +166,11 @@ class _PixivMorePaneState extends State<PixivMorePane> {
   @override
   Widget build(BuildContext context) => ScopedBuilder<PluginViewStore<PixivAccountView>, PixivAccountView>(
     store: _view,
-    onState: (context, view) => ListView(controller: widget.scrollController, children: _entries(context, view)),
+    onState: (context, view) => ListView(
+      controller: pluginInnerScrollController(context, widget.scrollController),
+      primary: PluginEmbedded.maybeOf(context) ? false : null,
+      children: _entries(context, view),
+    ),
   );
 
   List<Widget> _entries(BuildContext context, PixivAccountView view) {

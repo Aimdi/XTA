@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
@@ -10,7 +11,11 @@ import 'support/memory_json_store.dart';
 import 'support/pixiv_reader_harness.dart';
 
 void main() {
-  Future<(PixivHarness, PixivHistoryStore)> pump(WidgetTester tester, {double textScale = 1}) async {
+  Future<(PixivHarness, PixivHistoryStore)> pump(
+    WidgetTester tester, {
+    double textScale = 1,
+    Size size = const Size(390, 844),
+  }) async {
     final storage = MemoryJsonStore()
       ..values[pixivIllustHistoryKey] = [
         for (final (id, title, user) in [(3, 'Regen', 'Mika'), (2, 'Winterabend', 'Haru'), (1, 'Sommerfest', 'Mika')])
@@ -22,6 +27,7 @@ void main() {
       tester,
       const PixivHistoryScreen(),
       textScale: textScale,
+      size: size,
       extraProviders: [Provider<PixivHistoryStore>.value(value: history)],
     );
     return (harness, history);
@@ -30,18 +36,21 @@ void main() {
   testWidgets('lists the newest first and filters by title or artist', (tester) async {
     await pump(tester);
     final titles = [
-      for (final tile in tester.widgetList<PixivHistoryTile>(find.byType(PixivHistoryTile))) tile.entry.title,
+      for (final tile in tester.widgetList<PixivIllustTile>(find.byType(PixivIllustTile))) tile.illust.title,
     ];
     expect(titles, ['Regen', 'Winterabend', 'Sommerfest']);
 
     await tester.enterText(find.byKey(const ValueKey('pixiv-history-filter')), 'haru');
     await tester.pump();
-    expect(find.byType(PixivHistoryTile), findsOneWidget);
+    expect(find.byType(PixivIllustTile), findsOneWidget);
     expect(find.text('Winterabend'), findsOneWidget);
 
     await tester.enterText(find.byKey(const ValueKey('pixiv-history-filter')), 'nobody');
     await tester.pump();
     expect(find.text('No work in the history matches'), findsOneWidget);
+    final field = tester.widget<EditableText>(find.byType(EditableText));
+    expect(field.controller.text, 'nobody', reason: 'the field keeps its text as the works under it go');
+    expect(field.focusNode.hasFocus, isTrue);
     await disposePixiv(tester);
   });
 
@@ -88,6 +97,18 @@ void main() {
   testWidgets('large text keeps the tiles inside the screen', (tester) async {
     await pump(tester, textScale: 2);
     expect(tester.takeException(), isNull);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('a narrow screen with large text scrolls the filter away to reach the works', (tester) async {
+    await pump(tester, textScale: 2, size: const Size(320, 640));
+    expect(tester.takeException(), isNull);
+    final grid = find.byType(CustomScrollView);
+    await tester.drag(grid, const Offset(0, -500));
+    await settlePixiv(tester);
+    expect(tester.takeException(), isNull);
+    expect(find.byType(PixivIllustTile), findsWidgets);
+    expect(tester.getSize(find.byType(PixivIllustTile).first).height, greaterThan(100));
     await disposePixiv(tester);
   });
 }

@@ -94,10 +94,15 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
     _syncToken();
   }
 
+  /// A typed or pasted token may be another account's: the stored id is
+  /// cleared until a token check names its owner, so no stored account takes it.
   Future<void> _saveToken() async {
-    await _prefs.set(optionPluginPixivRefreshToken, _token.text.trim());
+    final token = _token.text.trim();
+    if (token == (_prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim()) return;
+    await _prefs.set(optionPluginPixivRefreshToken, token);
     await _prefs.set(optionPluginPixivAccessToken, '');
     await _prefs.set(optionPluginPixivAccessExpiresAt, '');
+    await _prefs.set(optionPluginPixivUserId, 0);
   }
 
   Future<void> _signIn() async {

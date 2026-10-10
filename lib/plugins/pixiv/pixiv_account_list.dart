@@ -3,15 +3,17 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
+import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/ui/errors.dart';
 
-/// Makes [account] the active one and drops what was loaded for the last.
+/// Drops what was loaded for the account in use, then makes [account] the
+/// active one. Forgetting first means nothing reloaded for the new account is
+/// forgotten after it.
 Future<void> switchPixivAccount(BuildContext context, PixivAccountsStore store, PixivAccount account) async {
-  final forget = pixivAccountDataForgetter(context);
   final message = L10n.of(context).plugin_pixiv_signed_in(account.displayName);
+  pixivAccountDataForgetter(context)();
   await store.switchTo(account);
-  forget();
   if (context.mounted) showSnackBar(context, icon: '✅', message: message);
 }
 
@@ -21,35 +23,22 @@ Future<bool> confirmPixivSignOut(BuildContext context, PixivAccountsStore store)
   final l10n = L10n.of(context);
   final name = store.active?.displayName;
   final question = name == null ? l10n.plugin_pixiv_sign_out_question : l10n.plugin_pixiv_sign_out_named(name);
-  if (!await _confirm(context, question, l10n.plugin_pixiv_sign_out)) return false;
-  if (!context.mounted) return false;
-  final forget = pixivAccountDataForgetter(context);
+  if (!await confirmPixivAction(context, question, l10n.plugin_pixiv_sign_out) || !context.mounted) return false;
+  pixivAccountDataForgetter(context)();
   final next = await store.signOutActive();
-  forget();
   if (next != null && context.mounted) {
     showSnackBar(context, icon: '✅', message: l10n.plugin_pixiv_signed_in(next.displayName));
   }
   return true;
 }
 
-Future<void> _confirmRemove(BuildContext context, PixivAccountsStore store, PixivAccount account) async {
+/// Asks first, then forgets [account]. True once it is gone.
+Future<bool> _confirmRemove(BuildContext context, PixivAccountsStore store, PixivAccount account) async {
   final l10n = L10n.of(context);
   final question = l10n.plugin_pixiv_account_remove_question(account.displayName);
-  if (await _confirm(context, question, l10n.plugin_pixiv_account_remove)) await store.remove(account);
-}
-
-Future<bool> _confirm(BuildContext context, String question, String action) async {
-  final answer = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(question),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(L10n.of(dialogContext).cancel)),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(action)),
-      ],
-    ),
-  );
-  return answer == true;
+  if (!await confirmPixivAction(context, question, l10n.plugin_pixiv_account_remove)) return false;
+  await store.remove(account);
+  return true;
 }
 
 /// The accounts stored on this device, the active one checked. Tapping
@@ -88,12 +77,12 @@ class PixivAccountList extends StatelessWidget {
               icon: const Icon(Icons.delete_outline),
               onPressed: () => _then(_confirmRemove(context, store, account)),
             ),
-      onTap: active ? null : () => _then(switchPixivAccount(context, store, account)),
+      onTap: active ? null : () => _then(switchPixivAccount(context, store, account).then((_) => true)),
     );
   }
 
-  Future<void> _then(Future<void> change) async {
-    await change;
-    onChanged?.call();
+  /// Tells [onChanged] only about a change that happened, not a cancelled one.
+  Future<void> _then(Future<bool> change) async {
+    if (await change) onChanged?.call();
   }
 }

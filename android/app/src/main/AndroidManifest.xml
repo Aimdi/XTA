@@ -134,9 +134,11 @@
                     android:scheme="https" />
 
             </intent-filter>
-            <!-- Pixiv pages, read by the Pixiv plugin. Android only sends them
-                 here once the reader adds these links under "Open by default";
-                 links XTA cannot show go to a named browser, never back here. -->
+            <!-- Pixiv pages, read by the Pixiv plugin. From Android 12 they only
+                 come here once the reader adds these links under "Open by
+                 default"; before that Android offers XTA in a chooser beside the
+                 browser. Either way, links XTA cannot show (or any while the
+                 plugin is off) go to a named browser, never back here. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

@@ -58,6 +58,8 @@ void main() {
       );
       expect(back.tags, ['cat']);
       expect(back.viewedAt, DateTime.utc(2026));
+      expect([back.width, back.height, back.bookmarks, back.bookmarked], [1200, 1700, 0, false]);
+      expect(back.toIllust().aspectRatio, closeTo(1200 / 1700, 0.001), reason: 'the tile keeps its shape');
     });
 
     test('drops entries without an id or thumbnail and tolerates the rest missing', () {

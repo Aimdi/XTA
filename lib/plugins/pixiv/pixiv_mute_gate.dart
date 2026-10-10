@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
@@ -52,7 +51,7 @@ String pixivMuteReasonText(L10n l10n, PixivMuteReason reason) => switch (reason)
 };
 
 /// Puts a muted work behind a notice saying why, with a way to see it this
-/// once, and adds each work it shows to the viewing history.
+/// once.
 ///
 /// Once a work is on screen it stays there: muting it from its own menu leaves
 /// the screen rather than swapping the work for this notice.
@@ -72,9 +71,7 @@ class _PixivMuteGateState extends State<PixivMuteGate> {
   @override
   void initState() {
     super.initState();
-    final muted = context.read<PixivMuteStore>().isMuted(widget.illust);
-    _shown = PluginViewStore(!muted);
-    if (!muted) recordPixivVisit(context, widget.illust);
+    _shown = PluginViewStore(!context.read<PixivMuteStore>().isMuted(widget.illust));
   }
 
   @override
@@ -83,11 +80,7 @@ class _PixivMuteGateState extends State<PixivMuteGate> {
     super.dispose();
   }
 
-  void _show() {
-    if (_shown.state) return;
-    recordPixivVisit(context, widget.illust);
-    _shown.select(true);
-  }
+  void _show() => _shown.select(true);
 
   Future<void> _openMuteSettings() async {
     final mute = context.read<PixivMuteStore>();

@@ -20,14 +20,19 @@ plugin as a whole is described in `pixiv-plugin.md`.
   `LocalJsonStore` under `pixiv-history:illusts` (the app's reader-state
   folder). Settings backups and exports never read it. Novels get their own
   key (`PixivHistoryStore(key: …)`).
-- Each entry is `{id, title, userId, userName, thumbUrl, tags, viewedAt}`;
-  newest first, one entry per work (reopening moves it to the top), at most
-  500. Tags are kept so a muted tag still gates a work reopened from history.
-- A visit is recorded in `pixivIllustRoute` (`pixiv_link_open.dart`) when the
-  work is actually shown — not while it waits behind the mute notice.
+- Each entry is `{id, title, userId, userName, thumbUrl, tags, viewedAt,
+  width, height, bookmarks, bookmarked}`; newest first, one entry per work
+  (reopening moves it to the top), at most 500. Tags are kept so a muted tag
+  still gates a work reopened from history; the size and bookmarks keep the
+  tile's shape and count.
+- A visit is recorded in `pixivIllustRoute` (`pixiv_link_open.dart`) once the
+  work's detail has loaded — not while it waits behind the mute notice, and
+  not for a work Pixiv no longer has.
 - `plugin.pixiv.history_paused` stops recording. The history screen (More →
-  Viewing history, or Settings) has a title/artist filter, the pause switch,
-  long press to forget one work and Clear history, both asking first.
+  Viewing history, or Settings) is the shared `PixivIllustGrid` (mute filter
+  off, long press forgets a work) under a header with the title/artist filter
+  and the pause switch, all in one scroll view so large text never squeezes
+  the works out. Forgetting a work and Clear history both ask first.
 - Uninstalling the plugin clears the history.
 
 ## Mute
@@ -38,7 +43,8 @@ plugin as a whole is described in `pixiv-plugin.md`.
   written `r'pattern'` is a case-insensitive regular expression tested against
   each tag and against all of a work's tags joined as `#a#b`, so one rule can
   need several tags together. Patterns are stored exactly as written (plain
-  names are lower-cased); one that does not compile is refused in the field.
+  names are lower-cased, without the `#` the list shows, so `#cat` mutes
+  `cat`); one that does not compile is refused in the field.
   `PixivTagMatcher` compiles the entries once per `PixivMuteState`.
 - **Page.** Tags (with the add field), Artists (name · id), Works, Comments,
   Novels. Tapping an entry asks before unmuting; the × unmutes at once; a long
@@ -57,16 +63,28 @@ plugin as a whole is described in `pixiv-plugin.md`.
   (`refresh_token`, `user_id`, `is_premium`, …). `PixivClient.switchTo`
   copies another account into them and clears the access token, so the next
   request refreshes one. A token refresh that was in flight for the old
-  account is discarded instead of overwriting the new one.
+  account is discarded and asked again for the account now in use.
+- **A token belongs to the stored user id.** Every path that sets the refresh
+  token sets `user_id` with it; a token typed or pasted in Settings clears
+  `user_id` until a token check names its owner. A user is only kept in the
+  list with the token while `user_id` is theirs, so a check that lands after
+  a switch, or a pasted token, never overwrites another account's entry.
 - Before switching or adding, the active entry takes the refresh token now in
-  use, in case Pixiv rotated it.
+  use, in case Pixiv rotated it. An account never checked since it signed in
+  joins the list by id (its name fills in at the next check); one with no id
+  on record is checked first.
 - Signing in (PKCE) adds or updates the account; a working token check does
   too, which is how an account signed in before this batch joins the list.
 - Sign out asks first, then forgets only the active account; another stored
   account takes over when there is one.
-- Switching, adding a different account and signing out drop what was loaded
-  for the last account (`pixivAccountDataForgetter`); the Pixiv screen empties
-  its lists when it sees another account.
+- Switching, adding a different account and signing out first drop what was
+  loaded for the last account (`pixivAccountDataForgetter`), so nothing
+  reloaded for the new one is dropped after it. The Pixiv screen compares the
+  account its lists were loaded for with the one in use when it is built and
+  whenever preferences change, so a switch made anywhere (the More pane, the
+  plugin's page in Settings, the failure screen) empties and reloads them.
+- Confirmations (sign out, remove an account, forget or clear history,
+  unmute, mute) share `confirmPixivAction` (`pixiv_confirm.dart`).
 
 ## Pixiv account AI setting
 
@@ -78,8 +96,9 @@ plugin as a whole is described in `pixiv-plugin.md`.
 
 `PixivHtmlText` renders Pixiv's HTML (caption, and later bios and novel
 captions) as selectable text: line breaks, bold and links kept. Pixiv links
-(`pixiv://`, paths, pixiv.net) open in XTA through `openPixivLinkRef`;
-`/jump.php?<url>` is unwrapped; other links go through `openLink`.
+(`pixiv://`, paths, pixiv.net) open in XTA through `openPixivLinkRef`, and go
+straight to the browser when the work cannot be fetched; `/jump.php?<url>` is
+unwrapped; other links go through `openLink`.
 
 ## Copy info
 
@@ -114,12 +133,17 @@ and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
 ## Opening links from other apps
 
 - The manifest's VIEW filter covers `pixiv.net`, `www.pixiv.net` and
-  `pixiv.me`. Android only sends them once the reader adds them under
+  `pixiv.me`. From Android 12 they only come once the reader adds them under
   *Open by default*; the Browsing section's tile opens that page
-  (`APP_OPEN_BY_DEFAULT_SETTINGS`, else the app's info page).
-- `openUri` asks Android who would open a Pixiv page; when that is XTA itself,
-  the page goes to a named browser instead, so a link XTA cannot show never
-  comes straight back.
+  (`APP_OPEN_BY_DEFAULT_SETTINGS`, else the app's info page). Before
+  Android 12 Android offers XTA beside the browser in a chooser.
+- A Pixiv link that no plugin opened (the plugin is off, the page is one XTA
+  has no screen for, or the work did not load) goes to the browser through
+  `openUri`; X's link parser never sees it (`readsAsXLink`), since it would
+  read `pixiv.net/en/` as the X profile `@en`.
+- `openUri` asks Android who would open a Pixiv page; when that is XTA itself
+  or a chooser that lists it, the page goes to a named browser instead, so a
+  link XTA cannot show never comes straight back.
 - Shared text (`shared_links.dart`) yields Pixiv links while the plugin is
   on; a share that is only a number opens Pixiv search with it.
 
@@ -132,7 +156,8 @@ and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
 - `plugin.pixiv.start_section` (`home`, `ranking`, `favorites`, `search`)
   picks the section the Pixiv screen opens on.
 - Tapping the section, Home source, Favorites visibility or ranking mode
-  already shown scrolls that list to the top.
+  already shown scrolls that list to the top. Embedded in Home, the More list
+  scrolls with Home's controller, so tapping More again works there too.
 
 ## Preferences added
 

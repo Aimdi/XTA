@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
@@ -28,6 +29,7 @@ void main() {
     WidgetTester tester, {
     String mutedTags = '[]',
     bool paused = false,
+    bool detailFails = false,
   }) async {
     final history = PixivHistoryStore(storage: MemoryJsonStore());
     addTearDown(history.destroy);
@@ -39,7 +41,7 @@ void main() {
       client: (prefs) {
         prefs.set(optionPluginPixivMutedTags, mutedTags);
         prefs.set(optionPluginPixivHistoryPaused, paused);
-        return FakePixivClient(prefs, detail: work);
+        return detailFails ? _GoneClient(prefs) : FakePixivClient(prefs, detail: work);
       },
     );
     final mute = Provider.of<PixivMuteStore>(tester.element(find.text('open')), listen: false);
@@ -93,6 +95,15 @@ void main() {
     await disposePixiv(tester);
   });
 
+  testWidgets('a work whose detail does not load stays out of the history', (tester) async {
+    final stores = await pump(tester, detailFails: true);
+    await tester.tap(find.text('open'));
+    await settlePixiv(tester);
+    expect(find.byType(PixivIllustScreen), findsOneWidget);
+    expect(stores.history.state, isEmpty);
+    await disposePixiv(tester);
+  });
+
   testWidgets('a paused history records nothing', (tester) async {
     final stores = await pump(tester, paused: true);
     await tester.tap(find.text('open'));
@@ -101,4 +112,12 @@ void main() {
     expect(stores.history.state, isEmpty);
     await disposePixiv(tester);
   });
+}
+
+/// A work Pixiv no longer has.
+class _GoneClient extends FakePixivClient {
+  _GoneClient(super.prefs);
+
+  @override
+  Future<PixivIllust> illustDetail(int illustId) async => throw PixivException(PixivErrorKind.notFound, 'gone');
 }

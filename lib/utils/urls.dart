@@ -254,9 +254,10 @@ const _xtaPackage = 'com.aimdi.xta';
 /// open them.
 const _claimedPixivHosts = {'pixiv.net', 'www.pixiv.net', 'pixiv.me'};
 
-/// Whether a plain VIEW of [url] would land back in XTA: a Pixiv page, once
-/// the reader made XTA open those by default. Everything else, Pixiv pages
-/// included while another app or a chooser takes them, goes out as usual.
+/// Whether a plain VIEW of [url] could land back in XTA: a Pixiv page that
+/// XTA opens by default, or one Android would offer in a chooser beside XTA,
+/// which before Android 12 it does for every Pixiv page. Only a Pixiv page
+/// another app takes outright, and everything else, goes out as usual.
 Future<bool> _reopensXta(String url) async {
   final uri = Uri.tryParse(url.trim());
   if (uri == null ||
@@ -269,7 +270,9 @@ Future<bool> _reopensXta(String url) async {
       action: 'android.intent.action.VIEW',
       data: url,
     ).getResolvedActivity();
-    return handler?.packageName == _xtaPackage;
+    // A chooser resolves to the system's own package, and it lists XTA.
+    final package = handler?.packageName;
+    return package == null || package == 'android' || package == _xtaPackage;
   } catch (_) {
     // Unknown: a named browser is the choice that cannot loop.
     return true;

@@ -63,6 +63,22 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('reads the setting again for the account switched to', (tester) async {
+      late _FakeAccountApi api;
+      final harness = await pumpPixiv(
+        tester,
+        const Scaffold(body: PixivContentSettings()),
+        extraProviders: [
+          Provider<PixivAccountApi>(create: (context) => api = _FakeAccountApi(context.read<PixivClient>(), true)),
+        ],
+      );
+      expect(api.reads, 1);
+      await harness.prefs.set(optionPluginPixivUserId, 2);
+      await settlePixiv(tester);
+      expect(api.reads, 2);
+      await disposePixiv(tester);
+    });
+
     test('parses show_ai and refuses an answer without it', () async {
       final prefs = PrefServiceCache();
       final api = PixivAccountApi(_JsonClient(prefs, {'show_ai': false}));

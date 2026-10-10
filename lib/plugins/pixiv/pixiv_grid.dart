@@ -21,6 +21,12 @@ import 'package:xta/ui/errors.dart';
 
 export 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 
+/// Builds the cell for the work at [index] of the works a grid shows.
+typedef PixivIllustTileBuilder = Widget Function(BuildContext context, List<PixivIllust> illusts, int index);
+
+Widget _illustTile(BuildContext context, List<PixivIllust> illusts, int index) =>
+    PixivIllustTile(illust: illusts[index], siblings: illusts, index: index);
+
 /// Pixez-style staggered gallery of illust thumbnails.
 class PixivIllustGrid extends StatelessWidget {
   final List<PixivIllust> illusts;
@@ -32,6 +38,11 @@ class PixivIllustGrid extends StatelessWidget {
   /// Slivers scrolled above the works, such as a carousel or a header row.
   final List<Widget> leadingSlivers;
 
+  /// Off for a list the reader keeps themselves, such as the viewing history;
+  /// a muted work there still waits behind its notice when opened.
+  final bool hideMuted;
+  final PixivIllustTileBuilder tileBuilder;
+
   const PixivIllustGrid({
     super.key,
     required this.illusts,
@@ -40,23 +51,25 @@ class PixivIllustGrid extends StatelessWidget {
     this.loadingMore = false,
     this.padding = const EdgeInsets.all(4),
     this.leadingSlivers = const [],
+    this.hideMuted = true,
+    this.tileBuilder = _illustTile,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (!hideMuted) return _layout(illusts);
     // Plain ScopedBuilder (not .transition): mute changes must not animate the
     // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
     return ScopedBuilder<PixivMuteStore, PixivMuteState>(
       store: context.read<PixivMuteStore>(),
-      onState: (context, mute) => LayoutBuilder(
-        builder: (context, constraints) => _grid(
-          context,
-          mute.filter(illusts),
-          pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context)),
-        ),
-      ),
+      onState: (context, mute) => _layout(mute.filter(illusts)),
     );
   }
+
+  Widget _layout(List<PixivIllust> shown) => LayoutBuilder(
+    builder: (context, constraints) =>
+        _grid(context, shown, pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context))),
+  );
 
   Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts, int columns) {
     final grid = CustomScrollView(
@@ -73,8 +86,7 @@ class PixivIllustGrid extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
-            itemBuilder: (context, index) =>
-                PixivIllustTile(illust: visibleIllusts[index], siblings: visibleIllusts, index: index),
+            itemBuilder: (context, index) => tileBuilder(context, visibleIllusts, index),
           ),
         ),
         if (loadingMore)

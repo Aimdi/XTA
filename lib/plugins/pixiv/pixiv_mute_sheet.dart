@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 
@@ -10,17 +11,7 @@ typedef PixivMuteChoice = ({IconData icon, String label, Future<void> Function(P
 /// Asks before muting; true once [choice] was muted.
 Future<bool> confirmPixivMute(BuildContext context, PixivMuteChoice choice) async {
   final store = context.read<PixivMuteStore>();
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(choice.label),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(L10n.of(dialogContext).cancel)),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(choice.label)),
-      ],
-    ),
-  );
-  if (confirmed != true || !context.mounted) return false;
+  if (!await confirmPixivAction(context, choice.label, choice.label) || !context.mounted) return false;
   await choice.mute(store);
   return true;
 }

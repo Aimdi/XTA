@@ -261,9 +261,9 @@ class PixivClient {
     _throwForAuthStatus(response);
     final json = Json(_decode(response, Uri.parse(PixivAuth.authTokenUrl)));
     // The reader switched accounts while this was in flight: the answer
-    // belongs to the old one and must not replace the new one's tokens.
+    // belongs to the old one, so the caller gets the account now in use.
     if (sent != _refreshToken) {
-      return PixivAuthUser.fromJson(json['user'].raw);
+      return _refreshAccessTokenBody();
     }
     return _storeRefreshed(json);
   }
@@ -358,6 +358,9 @@ class PixivClient {
           .add(Duration(seconds: tokens.expiresIn - 60))
           .toIso8601String(),
     );
+    // Even an answer without a user id must not leave the last account's id
+    // beside this token.
+    await prefs.set(optionPluginPixivUserId, tokens.user.id);
     await _rememberUser(tokens.user);
     return tokens.user;
   }

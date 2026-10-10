@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/utils/shared_links.dart';
+import 'package:xta/utils/urls.dart';
 
 void main() {
   test('extracts X links from captions and surrounding punctuation', () {
@@ -58,6 +59,27 @@ void main() {
     expect(extractSharedLink('https://pixiv.me/mika', pixiv: true)?.host, 'pixiv.me');
     expect(extractSharedLink('https://www.pixiv.net.evil.example/artworks/1', pixiv: true), isNull);
     expect(extractSharedLink('https://evil@www.pixiv.net/artworks/1', pixiv: true), isNull);
+  });
+
+  test('a Pixiv page no plugin opened goes to the browser, never to X as a profile', () async {
+    for (final url in [
+      'https://www.pixiv.net/ranking.php',
+      'https://www.pixiv.net/en/',
+      'https://pixiv.net/discovery',
+      'https://www.pixiv.net/bookmark_new_illust.php',
+      'https://www.pixiv.net/artworks/123',
+      'https://pixiv.me/mika',
+    ]) {
+      expect(readsAsXLink(Uri.parse(url)), isFalse, reason: url);
+    }
+    expect(
+      await parseUri(Uri.parse('https://www.pixiv.net/en/')),
+      isA<ProfileUriInfo>(),
+      reason: 'why the gate exists',
+    );
+    for (final url in ['https://x.com/reader', 'https://t.co/short', 'https://fixupx.com/reader/status/1']) {
+      expect(readsAsXLink(Uri.parse(url)), isTrue, reason: url);
+    }
   });
 
   test('a share that is only a number is a Pixiv work id', () {

@@ -82,6 +82,7 @@ class _PixivScreenState extends State<PixivScreen> {
       'bookmarks',
       () => PixivIllustListStore(_bookmarksLoader(_state.bookmarksRestrict), filter: mute.filter),
     );
+    _forgetOtherAccount();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       await mute.load();
@@ -134,20 +135,32 @@ class _PixivScreenState extends State<PixivScreen> {
   Future<void> _scrollToTop() =>
       scrollToTop(context, pluginInnerScrollController(context, _scrollControllerFor(_state.section)));
 
+  int get _accountInUse => context.read<PixivClient>().storedUserId ?? 0;
+
+  /// Empties the lists loaded for another account and drops their pages
+  /// still in flight.
+  void _forgetOtherAccount() {
+    final now = _accountInUse;
+    if (now == _account.state) return;
+    _account.select(now);
+    for (final list in [_recommended, _ranking, _bookmarks, context.read<PixivFeedStore>()]) {
+      list.clear();
+    }
+  }
+
   /// After a sign-in, switch or sign-out: lists loaded for another account
   /// are emptied, and the shown one loads for the account now in use.
   void _onAuthChanged() {
     if (!mounted) return;
-    final client = context.read<PixivClient>();
-    final now = client.storedUserId ?? 0;
-    if (now != _account.state) {
-      _account.select(now);
-      _recommended.useLoader(({nextUrl}) => client.recommended(nextUrl: nextUrl));
-      _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict));
-      _ranking.useLoader(_rankingLoader());
-    }
+    _forgetOtherAccount();
     _ensureTabLoaded(_state.section);
     _view.select(_state.copyWith());
+  }
+
+  /// An account changed somewhere this screen did not hear of, such as the
+  /// plugin's page in Settings.
+  void _followAccount() {
+    if (mounted && _accountInUse != _account.state) _onAuthChanged();
   }
 
   void _ensureTabLoaded(int index) {
@@ -236,6 +249,7 @@ class _PixivScreenState extends State<PixivScreen> {
     }
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
+    if (_accountInUse != _account.state) WidgetsBinding.instance.addPostFrameCallback((_) => _followAccount());
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),

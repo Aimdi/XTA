@@ -18,6 +18,7 @@ class PixivContentSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final prefs = PrefService.of(context);
     return Column(
       children: [
         PixivPrefSwitch(
@@ -26,7 +27,8 @@ class PixivContentSettings extends StatelessWidget {
           subtitle: l10n.plugin_pixiv_show_r18_description,
         ),
         const PixivHideAiSwitch(),
-        if (pixivSignedIn(PrefService.of(context))) const PixivAiShowSetting(),
+        // Keyed by account, so a switch reads the new account's setting.
+        if (pixivSignedIn(prefs)) PixivAiShowSetting(key: ValueKey(prefs.get<int>(optionPluginPixivUserId) ?? 0)),
       ],
     );
   }

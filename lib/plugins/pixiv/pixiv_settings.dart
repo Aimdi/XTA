@@ -30,12 +30,11 @@ String pixivErrorMessage(L10n l10n, Object error) {
 
 /// Opens the Pixiv login webview and stores tokens on success. The account
 /// joins the stored ones and becomes the active one; when it replaces another,
-/// what was loaded for that one is dropped.
+/// what was loaded for that one is dropped first.
 ///
 /// Returns the signed-in user, or null when cancelled or failed.
 Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
   final client = context.read<PixivClient>();
-  final previous = client.storedUserId;
   final forget = pixivAccountDataForgetter(context);
   final pkce = PixivAuth.generatePkce();
   final code = await Navigator.push<String>(
@@ -45,9 +44,7 @@ Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
   if (code == null || !context.mounted) {
     return null;
   }
-  final user = await _signInWithCode(context, client, code: code, verifier: pkce.verifier);
-  if (user != null && previous != null && previous != user.id) forget();
-  return user;
+  return _signInWithCode(context, client, code: code, verifier: pkce.verifier, onReplace: forget);
 }
 
 /// Trades the login code for tokens and keeps the account, saying how it went.
@@ -56,13 +53,15 @@ Future<PixivAuthUser?> _signInWithCode(
   PixivClient client, {
   required String code,
   required String verifier,
+  required VoidCallback onReplace,
 }) async {
   try {
     final tokens = await PixivAuth().exchangeCode(code: code, codeVerifier: verifier);
     if (!context.mounted) {
       return null;
     }
-    await keepActivePixivToken(client.prefs);
+    await _keepSignedInAccount(client);
+    if (tokens.user.id != client.storedUserId) onReplace();
     final user = await client.applyLoginTokens(tokens);
     await rememberPixivAccount(client.prefs, user);
     if (context.mounted) {
@@ -75,6 +74,13 @@ Future<PixivAuthUser?> _signInWithCode(
     }
     return null;
   }
+}
+
+/// Keeps the account signed in now before a new one replaces it. A pasted
+/// token nobody checked yet has no owner on record, so it is checked first.
+Future<void> _keepSignedInAccount(PixivClient client) async {
+  if (client.storedUserId == null && pixivSignedIn(client.prefs)) await pixivVerifiedName(client);
+  await keepActivePixivToken(client.prefs);
 }
 
 /// The plugin's settings page: an intro over one section per concern. A

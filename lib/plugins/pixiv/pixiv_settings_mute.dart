@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_confirm.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/ui/errors.dart';
@@ -140,17 +141,9 @@ class _MuteGroup extends StatelessWidget {
 
   Future<void> _confirmUnmute(BuildContext context, _MuteChip chip) async {
     final l10n = L10n.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.plugin_pixiv_unmute_question(chip.label)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.plugin_pixiv_unmute)),
-        ],
-      ),
-    );
-    if (confirmed == true) await chip.unmute();
+    if (await confirmPixivAction(context, l10n.plugin_pixiv_unmute_question(chip.label), l10n.plugin_pixiv_unmute)) {
+      await chip.unmute();
+    }
   }
 }
 

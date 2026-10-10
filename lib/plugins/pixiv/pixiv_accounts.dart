@@ -46,25 +46,43 @@ Future<List<PixivAccount>> _store(BasePrefService prefs, List<PixivAccount> acco
   return accounts;
 }
 
+int _activeId(BasePrefService prefs) => prefs.get<int>(optionPluginPixivUserId) ?? 0;
+
 /// Keeps [user] — just signed in, or confirmed by a token check — with the
 /// refresh token now in use.
+///
+/// The token belongs to [user] only while the stored user id is theirs: every
+/// path that sets a token sets that id too, or clears it for a pasted token.
+/// A check that lands after a switch is for another account and keeps nothing.
 Future<List<PixivAccount>> rememberPixivAccount(BasePrefService prefs, PixivAuthUser user) async {
   final accounts = _stored(prefs);
   final token = _currentToken(prefs);
-  if (user.id <= 0 || token.isEmpty) return accounts;
+  if (user.id <= 0 || user.id != _activeId(prefs) || token.isEmpty) return accounts;
   final next = pixivAccountsWith(accounts, PixivAccount.of(user, token));
   return jsonEncode(next) == jsonEncode(accounts) ? accounts : _store(prefs, next);
 }
 
-/// Copies the token now in use into the active account's entry: Pixiv may
-/// have rotated it since that account was stored.
+/// Keeps the account in use among the stored ones before another takes its
+/// place: the token now in use goes into its entry, since Pixiv may have
+/// rotated it, and an account never confirmed since it signed in joins by id.
+/// Its name fills in at the next token check.
 Future<List<PixivAccount>> keepActivePixivToken(BasePrefService prefs) async {
   final accounts = _stored(prefs);
-  final activeId = prefs.get<int>(optionPluginPixivUserId) ?? 0;
-  final active = accounts.where((account) => account.userId == activeId).firstOrNull;
+  final activeId = _activeId(prefs);
   final token = _currentToken(prefs);
-  if (active == null || token.isEmpty || token == active.refreshToken) return accounts;
-  return _store(prefs, pixivAccountsWith(accounts, active.withRefreshToken(token)));
+  if (activeId <= 0 || token.isEmpty) return accounts;
+  final active = accounts.where((account) => account.userId == activeId).firstOrNull;
+  if (token == active?.refreshToken) return accounts;
+  final kept =
+      active?.withRefreshToken(token) ??
+      PixivAccount(
+        userId: activeId,
+        name: '',
+        account: '',
+        refreshToken: token,
+        isPremium: prefs.get<bool>(optionPluginPixivIsPremium) == true,
+      );
+  return _store(prefs, pixivAccountsWith(accounts, kept));
 }
 
 /// Every Pixiv account signed in on this device. The active one is the account
@@ -122,7 +140,7 @@ VoidCallback pixivAccountDataForgetter(BuildContext context) {
   final bookmarks = context.read<PixivBookmarkStore?>();
   final follows = context.read<PixivFollowStore?>();
   return () {
-    feed?.update(const []);
+    feed?.clear();
     bookmarks?.update(const {});
     follows?.clear();
   };

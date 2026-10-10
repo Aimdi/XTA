@@ -6,6 +6,7 @@ import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/utils/urls.dart';
 
 /// A run of caption text with the formatting it had.
 class PixivCaptionPart {
@@ -102,10 +103,12 @@ class _PixivHtmlTextState extends State<PixivHtmlText> {
   List<PixivCaptionPart> get _parts =>
       widget.html.isEmpty ? [PixivCaptionPart(widget.plainText)] : pixivCaptionParts(widget.html);
 
+  /// A Pixiv link that did not open in XTA goes straight to the browser:
+  /// [openLink] would hand it back to the Pixiv router and fetch it again.
   Future<void> _open(String href) async {
     final ref = parsePixivLink(href);
-    if (ref != null && await openPixivLinkRef(context, ref)) return;
-    if (mounted) await openLink(context, href);
+    if (ref == null) return openLink(context, href);
+    if (!await openPixivLinkRef(context, ref) && mounted) await openUri(context, href);
   }
 
   @override

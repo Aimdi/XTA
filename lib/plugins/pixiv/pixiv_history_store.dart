@@ -27,6 +27,12 @@ class PixivHistoryEntry {
   final List<String> tags;
   final DateTime viewedAt;
 
+  /// The image's size and bookmarks when it was opened, for the tile.
+  final int width;
+  final int height;
+  final int bookmarks;
+  final bool bookmarked;
+
   const PixivHistoryEntry({
     required this.id,
     required this.title,
@@ -35,6 +41,10 @@ class PixivHistoryEntry {
     required this.thumbUrl,
     required this.viewedAt,
     this.tags = const [],
+    this.width = 0,
+    this.height = 0,
+    this.bookmarks = 0,
+    this.bookmarked = false,
   });
 
   factory PixivHistoryEntry.of(PixivIllust illust, DateTime viewedAt) => PixivHistoryEntry(
@@ -45,6 +55,10 @@ class PixivHistoryEntry {
     thumbUrl: illust.thumbnailUrl,
     tags: [for (final tag in illust.tags) tag.name],
     viewedAt: viewedAt,
+    width: illust.width,
+    height: illust.height,
+    bookmarks: illust.totalBookmarks,
+    bookmarked: illust.isBookmarked,
   );
 
   /// A stored entry, or null when it lacks the id or the thumbnail to show it.
@@ -62,6 +76,10 @@ class PixivHistoryEntry {
       thumbUrl: thumb,
       tags: [for (final tag in json['tags'].list) ?tag.string],
       viewedAt: DateTime.tryParse(json['viewedAt'].string ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0),
+      width: json['width'].integer ?? 0,
+      height: json['height'].integer ?? 0,
+      bookmarks: json['bookmarks'].integer ?? 0,
+      bookmarked: json['bookmarked'].boolean == true,
     );
   }
 
@@ -73,6 +91,10 @@ class PixivHistoryEntry {
     'thumbUrl': thumbUrl,
     'tags': tags,
     'viewedAt': viewedAt.toUtc().toIso8601String(),
+    'width': width,
+    'height': height,
+    'bookmarks': bookmarks,
+    'bookmarked': bookmarked,
   };
 
   /// Whether the title or the author's name contains [query], ignoring case.
@@ -93,6 +115,10 @@ class PixivHistoryEntry {
     userName: userName,
     userAccount: '',
     tags: [for (final tag in tags) PixivTag(name: tag)],
+    width: width,
+    height: height,
+    totalBookmarks: bookmarks,
+    isBookmarked: bookmarked,
   );
 }
 

@@ -59,6 +59,9 @@ void main() {
     test('patterns keep their case; plain names are lower-cased', () {
       expect(pixivNormalizeMuteTag(r"  r'\D+'  "), r"r'\D+'");
       expect(pixivNormalizeMuteTag('  Cat '), 'cat');
+      expect(pixivNormalizeMuteTag('#Cat'), 'cat', reason: 'the list shows #cat, so readers type it that way');
+      final typed = PixivMuteState(tags: {pixivNormalizeMuteTag('#cat')});
+      expect(typed.isMuted(_illust(id: 1, tags: const [PixivTag(name: 'Cat')])), isTrue);
       expect(pixivMutePattern("r'x'"), 'x');
       expect(pixivMutePattern('rx'), isNull);
       expect(pixivMutePattern("r''"), isNull);
@@ -67,6 +70,7 @@ void main() {
     test('an invalid pattern or a blank entry is refused', () {
       expect(pixivMuteTagValid("r'(unclosed'"), isFalse);
       expect(pixivMuteTagValid('   '), isFalse);
+      expect(pixivMuteTagValid(' # '), isFalse);
       expect(pixivMuteTagValid("r'ok+'"), isTrue);
       expect(pixivMuteTagValid('(plain'), isTrue);
     });

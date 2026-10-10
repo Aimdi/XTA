@@ -17,10 +17,12 @@ String? pixivMutePattern(String entry) {
 }
 
 /// How a muted tag is stored: a pattern exactly as written (lower-casing would
-/// change `\D` into `\d`), a plain name trimmed and lower-cased.
+/// change `\D` into `\d`), a plain name trimmed and lower-cased. The `#` the
+/// mute list shows before a name is dropped, so typing `#cat` mutes `cat`.
 String pixivNormalizeMuteTag(String entry) {
   final text = entry.trim();
-  return pixivMutePattern(text) == null ? text.toLowerCase() : text;
+  if (pixivMutePattern(text) != null) return text;
+  return (text.startsWith('#') ? text.substring(1) : text).trim().toLowerCase();
 }
 
 /// Whether [entry] can be muted: not blank, and a pattern that compiles.
@@ -28,7 +30,7 @@ bool pixivMuteTagValid(String entry) {
   final text = entry.trim();
   final pattern = pixivMutePattern(text);
   if (pattern == null) {
-    return text.isNotEmpty;
+    return pixivNormalizeMuteTag(text).isNotEmpty;
   }
   try {
     RegExp(pattern);

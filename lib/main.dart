@@ -1441,6 +1441,10 @@ class _DefaultPageState extends State<DefaultPage> {
     if (!mounted) {
       return;
     }
+    if (!readsAsXLink(link)) {
+      await openUri(context, link.toString());
+      return;
+    }
     final parsed = await parseUri(link);
     if (!mounted) {
       return;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -15,11 +16,11 @@ import 'package:xta/utils/urls.dart';
 
 /// The one route into a work's detail, so whatever must happen on every
 /// opening happens wherever it was opened from: a muted work waits behind its
-/// notice, and a shown one joins the viewing history.
+/// notice, and a shown one joins the viewing history once it has loaded.
 Route<void> pixivIllustRoute(PixivIllust illust) => MaterialPageRoute<void>(
-  builder: (_) => PixivMuteGate(
+  builder: (context) => PixivMuteGate(
     illust: illust,
-    child: PixivIllustScreen(illust: illust),
+    child: PixivIllustScreen(illust: illust, onLoaded: (loaded) => recordPixivVisit(context, loaded)),
   ),
 );
 

@@ -25,7 +25,10 @@ import 'package:xta/plugins/plugin_view_store.dart';
 class PixivIllustScreen extends StatefulWidget {
   final PixivIllust illust;
 
-  const PixivIllustScreen({super.key, required this.illust});
+  /// Told once the whole work has loaded the first time.
+  final ValueChanged<PixivIllust>? onLoaded;
+
+  const PixivIllustScreen({super.key, required this.illust, this.onLoaded});
 
   @override
   State<PixivIllustScreen> createState() => _PixivIllustScreenState();
@@ -44,7 +47,11 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
     final client = context.read<PixivClient>();
     _detail = PixivIllustDetailStore(client, widget.illust);
     _related = pixivRelatedStore(client, widget.illust, filter: context.read<PixivMuteStore>().filter);
-    _load();
+    unawaited(_firstLoad());
+  }
+
+  Future<void> _firstLoad() async {
+    if (await _load() && mounted) widget.onLoaded?.call(_detail.state);
   }
 
   @override
@@ -61,7 +68,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
     }
   }
 
-  Future<void> _track(Future<void> work) {
+  Future<T> _track<T>(Future<T> work) {
     _inFlight.add(work);
     unawaited(work.whenComplete(() => _inFlight.remove(work)));
     return work;
@@ -74,7 +81,8 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
   }
 
   /// Detail and similar works in parallel; the seed stays on screen meanwhile.
-  Future<void> _load() => _track(Future.wait([_detail.load(), _related.refresh()]));
+  /// True once the detail arrived.
+  Future<bool> _load() => _track((_detail.load(), _related.refresh()).wait.then((loaded) => loaded.$1));
 
   @override
   PixivIllust get pageIllust => _detail.state;
