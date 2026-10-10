@@ -18,8 +18,9 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 
-/// A history lists what was opened, muted or not: a muted work still waits
-/// behind its notice when reopened.
+/// A history lists everything that was opened, muted since or not, so it can
+/// be found and forgotten; a muted work still waits behind its notice when
+/// reopened.
 PixivMuteState _showingEverything(PixivMuteState _) => PixivMuteState.empty;
 
 /// The works or novels opened on this device, newest first: an Illustrations
