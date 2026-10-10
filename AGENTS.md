@@ -94,8 +94,9 @@ limits / migrations / client parsers).
 
 ## Cursor Cloud specific instructions
 
-This is an **Android-only** Flutter app (only `android/` exists — no `web/`,
-`linux/`, etc.). The toolchain is pinned to Flutter **3.44.4** via FVM, so always
+This is an Android and Linux desktop Flutter app (`android/` and `linux/`; no
+`web/`, `windows/` or `macos/`). Android-only services are guarded by
+`isDesktop` (`lib/utils/desktop.dart`); see `docs/desktop.md`. The toolchain is pinned to Flutter **3.44.4** via FVM, so always
 invoke Flutter as `fvm flutter` / `fvm dart` (see `CLAUDE.md` / `README.md`).
 
 The Cloud VM snapshot already has: FVM + the pinned Flutter SDK (`~/fvm`), the
@@ -114,11 +115,21 @@ symlinked into `/usr/local/bin`. The startup update script runs `fvm install`,
 - Build: `fvm flutter build apk --debug` → `build/app/outputs/flutter-apk/app-debug.apk`.
 - Details: `docs/cloud-testing.md`.
 
-### Running the app UI is NOT possible in this VM without a phone
+### Running the Android UI is NOT possible in this VM without a phone
 There is no `/dev/kvm`, so a usable Android emulator is not available (software
 emulation can start but Package Manager / boot stay broken). No physical device is
-attached by default, and the app is Android-only (the `linux`/`chrome` devices
-`flutter` lists are unusable — no platform folders and Android-only plugins).
+attached by default.
+
+The Linux desktop build *does* run here, headless: install `libgtk-3-dev` and
+`libmpv-dev`, `fvm flutter build linux --release`, then start
+`build/linux/x64/release/bundle/xta` under `xvfb-run` and capture the screen
+with ImageMagick's `import -window root`. It exercises the shared UI and
+reading code, not the Android-only paths. If CMake fails verifying
+`mimalloc-2.1.2.tar.gz`, the sandbox blocked GitHub's archive download: recreate
+it with `git archive --format=tar --prefix=mimalloc-2.1.2/ v2.1.2 | gzip -cn`
+from a clone of microsoft/mimalloc (MD5 `5179c8f5cf1237d2300e2d8559a7bc55`)
+into `build/linux/x64/release/`, and delete that directory first if an earlier
+failed configure left CMake installing into `/usr/local`.
 
 Interactive UI testing needs a real device via wireless ADB:
 `bash scripts/adb_wireless_connect.sh <pair_host:port> <code> <connect_host:port>`

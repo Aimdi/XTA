@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:xta/utils/browsers.dart';
+import 'package:xta/utils/desktop.dart';
 
 const _trackingParams = {
   'fbclid',
@@ -330,6 +331,7 @@ Future<bool> _openInNamedBrowser(String url, String? package) async {
 Future<void> openInRealBrowser(BuildContext context, String uri) async {
   final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
+  if (isDesktop) return _openInDesktopBrowser(url);
 
   final named = prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser;
   if (await _openInNamedBrowser(url, named)) {
@@ -363,6 +365,7 @@ Future<void> openInRealBrowser(BuildContext context, String uri) async {
 /// them would reopen this app instead of a browser.
 Future<void> openUri(BuildContext context, String uri) async {
   final prefs = PrefService.of(context, listen: false);
+  if (isDesktop) return _openInDesktopBrowser(prepareUrl(prefs, uri));
   if (_needsNamedBrowser(uri) || await _reopensXta(uri)) {
     if (context.mounted) await openInRealBrowser(context, uri);
     return;
@@ -376,6 +379,12 @@ Future<void> openUri(BuildContext context, String uri) async {
   }
 
   await openExternally(url, package: prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser);
+}
+
+/// The desktop has one browser to offer, the reader's default, and no app of
+/// its own that a link could bounce back into.
+Future<void> _openInDesktopBrowser(String url) async {
+  await launchUrlString(url, mode: LaunchMode.externalApplication);
 }
 
 sealed class UriParseResult {}

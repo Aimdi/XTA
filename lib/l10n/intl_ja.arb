@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, other{返信をあと {count} 件表示}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, other{このスレッドの投稿をあと {count} 件表示}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "x.com の Cookie",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "ブラウザで x.com にログインし、開発者ツール (F12) を開いて、ストレージ → Cookie から auth_token と ct0 をコピーしてください。下に auth_token=…; ct0=… の形式で貼り付けます。このパソコンにだけ保存され、共有されることはありません。",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "ここでのログインには Android アプリの内蔵ブラウザが必要ですが、デスクトップ版にはありません。",
+  "@sign_in_needs_android": {}
 }

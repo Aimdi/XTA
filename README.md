@@ -121,6 +121,21 @@ certificate before publication. See the [certificate fingerprints](certificate-f
 These checks establish build provenance; independently reproducible APKs are
 [still a separate goal](docs/reproducible-builds.md).
 
+### Linux desktop (Arch Linux)
+
+Each release also carries a Linux desktop build: the Arch package
+`xta-bin-<version>-1-x86_64.pkg.tar.zst`, the `PKGBUILD` that builds it, and a
+portable `xta-aimdiNN-linux-x86_64.tar.gz` for other distributions.
+
+```bash
+sudo pacman -U xta-bin-*-x86_64.pkg.tar.zst
+```
+
+It reads, stores and backs up exactly as the Android app does. On the desktop
+an X account is added by pasting your x.com session cookies, and links and
+article readers open in your browser. See the [desktop guide](docs/desktop.md)
+for the details, other distributions and building it yourself.
+
 ## Accounts and privacy
 
 - **X access:** guest requests are attempted when no account is configured, but
@@ -179,6 +194,8 @@ fvm flutter build apk --debug
 ```
 
 The debug APK is written to `build/app/outputs/flutter-apk/app-debug.apk`.
+For the Linux desktop build, install GTK 3 and libmpv headers and run
+`fvm flutter build linux --release` instead; see the [desktop guide](docs/desktop.md#build-from-source).
 This shell example uses Bash. See [cloud testing and Android setup](docs/cloud-testing.md)
 and the [SDK setup notes](AGENTS.md#non-obvious-gotchas) for environment-specific details.
 

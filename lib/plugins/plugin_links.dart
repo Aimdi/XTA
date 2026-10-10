@@ -32,6 +32,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/live_player_screen.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/utils/desktop.dart';
 
 /// Opens [url] in a native XTA screen when one can read it.
 Future<bool> openNativeLink(BuildContext context, String url) async {
@@ -189,6 +190,9 @@ Future<bool> _openTikTokVideo(
   BuildContext context,
   TikTokVideoLink link,
 ) async {
+  // Declined on the desktop, whose player has no web view: the link then
+  // opens in the browser like any other.
+  if (isDesktop) return false;
   try {
     final client = context.read<TikTokClient>();
     final post = await client.video(link.id, handle: link.handle);
@@ -202,6 +206,7 @@ Future<bool> _openTikTokVideo(
 }
 
 Future<bool> _openSubstack(BuildContext context, String url) async {
+  if (isDesktop) return false;
   final link = substackLinkFor(context, url);
   if (link == null) {
     return false;

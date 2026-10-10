@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Ver 1 respuesta más} other{Ver {count} respuestas más}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Ver 1 publicación más de este hilo} other{Ver {count} publicaciones más de este hilo}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookies de x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Inicia sesión en x.com en tu navegador, abre las herramientas para desarrolladores (F12) y copia las cookies auth_token y ct0 desde Almacenamiento → Cookies. Pégalas abajo con el formato auth_token=…; ct0=…. Solo se guardan en este ordenador y nunca se comparten.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Para iniciar sesión aquí hace falta el navegador integrado de la app de Android, que la app de escritorio no tiene.",
+  "@sign_in_needs_android": {}
 }

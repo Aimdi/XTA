@@ -9,6 +9,7 @@ import 'package:xta/plugins/substack/substack_reader_screen.dart';
 import 'package:xta/plugins/substack/substack_search_store.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/links/link_opening.dart';
 
 /// Preview a URL before making an explicit local subscription.
 class SubstackAddScreen extends StatefulWidget {
@@ -166,7 +167,7 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
                     subtitle: Text(l10n.plugin_substack_open_pasted_post),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post))),
+                        pushWebViewScreen(context, url: post.canonicalUrl, screen: () => SubstackReaderScreen(post: post)),
                   ),
                 if (state.followed)
                   TextButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.plugin_substack_done)),

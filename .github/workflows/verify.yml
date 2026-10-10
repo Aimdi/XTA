@@ -42,6 +42,20 @@ jobs:
       - name: Check .claude/skills and .grok/skills are identical
         run: bash scripts/check_skill_sync.sh
 
+  linux:
+    name: Linux desktop build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The release path, packaging and makepkg included, under a stand-in tag.
+      - name: Build and package
+        uses: ./.github/actions/build-linux
+        with:
+          release-tag: verify
+
   dart:
     name: Format, analyze, test
     runs-on: ubuntu-latest

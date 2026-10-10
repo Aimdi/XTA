@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Pakazać jašče 1 adkaz} few{Pakazać jašče {count} adkazy} many{Pakazać jašče {count} adkazaŭ} other{Pakazać jašče {count} adkazu}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Pakazać jašče 1 dopis u hetaj halincy} few{Pakazać jašče {count} dopisy ŭ hetaj halincy} many{Pakazać jašče {count} dopisaŭ u hetaj halincy} other{Pakazać jašče {count} dopisu ŭ hetaj halincy}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie z x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Uvajdzicie na x.com u braŭziery, adkryjcie instrumienty raspracoŭščyka (F12) i skapirujcie cookie auth_token i ct0 z razdziela «Schovišča» → «Cookie». Ustaŭcie ich nižej u vyhladzie auth_token=…; ct0=…. Jany zachoŭvajucca tolki na hetym kampjutary i nikomu nie pieradajucca.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Dla ŭvachodu tut patrebny ŭbudavany braŭzier prahramy dla Android, jakoha niama ŭ versii dla kampjutara.",
+  "@sign_in_needs_android": {}
 }

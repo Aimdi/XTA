@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Erakutsi erantzun 1 gehiago} other{Erakutsi {count} erantzun gehiago}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Erakutsi hari honetako argitalpen 1 gehiago} other{Erakutsi hari honetako {count} argitalpen gehiago}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "x.com-eko cookieak",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Hasi saioa x.com-en nabigatzailean, ireki garatzaileentzako tresnak (F12) eta kopiatu auth_token eta ct0 cookieak Biltegiratzea → Cookieak ataletik. Itsatsi behean auth_token=…; ct0=… formatuan. Ordenagailu honetan bakarrik gordetzen dira eta ez dira inoiz partekatzen.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.",
+  "@sign_in_needs_android": {}
 }

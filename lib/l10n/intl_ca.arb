@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Mostra 1 resposta més} other{Mostra {count} respostes més}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Mostra 1 publicació més d'aquest fil} other{Mostra {count} publicacions més d'aquest fil}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Galetes d'x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Inicia la sessió a x.com al navegador, obre les eines per a desenvolupadors (F12) i copia les galetes auth_token i ct0 des d'Emmagatzematge → Galetes. Enganxa-les a sota amb el format auth_token=…; ct0=…. Només es desen en aquest ordinador i no es comparteixen mai.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Per iniciar la sessió aquí cal el navegador integrat de l'app d'Android, que l'app d'escriptori no té.",
+  "@sign_in_needs_android": {}
 }

@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:xta/catcher/exceptions.dart';
 
 import 'package:xta/client/client.dart';
-import 'package:xta/client/login_webview.dart';
+import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
@@ -281,7 +281,7 @@ class ActionableErrorWidget extends FritterErrorWidget {
 Widget addAccountButton(BuildContext context) => ElevatedButton.icon(
   icon: const Icon(Icons.person_add),
   label: Text(L10n.of(context).add_account),
-  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview())),
+  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => xLoginScreen())),
 );
 
 class NoAccountErrorWidget extends FritterErrorWidget {

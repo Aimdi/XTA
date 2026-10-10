@@ -14,6 +14,7 @@ import 'package:xta/plugins/reddit/reddit_login_webview.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/json.dart';
+import 'package:xta/utils/desktop.dart';
 
 /// The Reddit sign-in, in one place.
 ///
@@ -80,6 +81,10 @@ Future<void> redditForgetSignIn(
 /// most reliable route Reddit offers. It still needs a client id: the login
 /// authorises *this app*, and Reddit has to know which app that is.
 Future<bool> signInToReddit(BuildContext context) async {
+  if (isDesktop) {
+    showSnackBar(context, icon: '🖥️', message: L10n.of(context).sign_in_needs_android);
+    return false;
+  }
   final prefs = PrefService.of(context, listen: false);
   final clientId = redditClientId(prefs);
   if (clientId.isEmpty) {

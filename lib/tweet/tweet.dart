@@ -42,6 +42,7 @@ import 'package:xta/utils/urls.dart' show parsePostLink;
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/links/link_opening.dart';
 
 class TweetTile extends StatefulWidget {
   final bool clickable;
@@ -852,10 +853,7 @@ class TweetTileState extends State<TweetTile> {
           url: articleLink,
           // Read in XTA rather than handed to a browser: the article is the
           // post's own content.
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => ArticleScreen(url: articleLink)),
-          ),
+          onTap: () => pushWebViewScreen(context, url: articleLink, screen: () => ArticleScreen(url: articleLink)),
         ),
       media,
       quotedTweet,

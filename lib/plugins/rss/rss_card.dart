@@ -8,6 +8,7 @@ import 'package:xta/plugins/rss/rss_reader_screen.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/dates.dart';
+import 'package:xta/links/link_opening.dart';
 
 /// An article row: publication first, headline/excerpt, optional thumbnail.
 class RssItemCard extends StatelessWidget {
@@ -57,7 +58,7 @@ class RssItemCard extends StatelessWidget {
         child: tweetFlatCard(
           color: theme.scaffoldBackgroundColor,
           child: InkWell(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RssReaderScreen(item: item))),
+            onTap: () => pushWebViewScreen(context, url: item.link, screen: () => RssReaderScreen(item: item)),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(

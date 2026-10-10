@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Mostrar mais 1 resposta} other{Mostrar mais {count} respostas}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Mostrar mais 1 publicação desta conversa} other{Mostrar mais {count} publicações desta conversa}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookies de x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Inicie sessão em x.com no navegador, abra as ferramentas de programador (F12) e copie os cookies auth_token e ct0 em Armazenamento → Cookies. Cole-os abaixo no formato auth_token=…; ct0=…. Ficam guardados apenas neste computador e nunca são partilhados.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Iniciar sessão aqui requer o navegador integrado da app Android, que a app para computador não tem.",
+  "@sign_in_needs_android": {}
 }

@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, other{답글 {count}개 더 보기}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, other{이 스레드의 게시물 {count}개 더 보기}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "x.com 쿠키",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "브라우저에서 x.com에 로그인한 뒤 개발자 도구(F12)를 열고 저장소 → 쿠키에서 auth_token과 ct0 쿠키를 복사하세요. 아래에 auth_token=…; ct0=… 형식으로 붙여 넣으세요. 이 컴퓨터에만 저장되며 공유되지 않습니다.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "여기서 로그인하려면 Android 앱의 내장 브라우저가 필요하지만 데스크톱 앱에는 없습니다.",
+  "@sign_in_needs_android": {}
 }

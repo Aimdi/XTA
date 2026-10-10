@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
@@ -27,6 +26,7 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/backup_data.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/settings/import_preview.dart';
+import 'package:xta/utils/file_dialogs.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -201,7 +201,7 @@ Future<String> appVersionLabel() async {
 
 /// Whether a backup was applied; a cancelled picker or a rejected file is false.
 Future<bool> importBackup(BuildContext context) async {
-  var path = await FlutterFileDialog.pickFile(params: const OpenFileDialogParams());
+  var path = await pickFileWithDialog();
   if (path != null && context.mounted) {
     return _importFromFile(context, File(path));
   }
