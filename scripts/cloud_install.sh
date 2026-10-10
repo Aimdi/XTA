@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Idempotent toolchain bootstrap for Cursor Cloud agents working on XTA.
+# Idempotent toolchain bootstrap for cloud sessions working on XTA.
 # Works on a warm snapshot (refresh only) and on a cold VM (install FVM +
 # Android cmdline-tools first).
 set -euo pipefail
@@ -113,5 +113,5 @@ ensure_android_sdk
 fix_android_37_platform
 
 echo "==> cloud_install complete"
-echo "Note: interactive Android UI needs /dev/kvm (not available on Cursor Cloud VMs)."
+echo "Note: interactive Android UI needs /dev/kvm (not available on cloud VMs)."
 echo "      Use scripts/cloud_verify.sh, or adb connect <device> for a real phone."

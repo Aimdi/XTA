@@ -10,7 +10,7 @@ Without a baseline you cannot prove "smoother."
 | App version | 4.12.0+400001040 |
 | Flutter (FVM) | 3.44.4 |
 | Date | 2026-07-23 |
-| Host | Cursor Cloud Linux VM (no `/dev/kvm`, no physical device) |
+| Host | Cloud Linux VM (no `/dev/kvm`, no physical device) |
 
 **Device scroll / cold-start traces cannot run in this VM** (Android-only app,
 no emulator acceleration, no attached phone). Numbers that need a mid-range

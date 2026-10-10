@@ -1,9 +1,9 @@
 # XTA improvement areas
 
-Multi-agent audit (2026-07-30) of where **XTA** (Aimdi/XTA — read-only QuaX
+Audit (2026-07-30) of where **XTA** (Aimdi/XTA — read-only QuaX
 fork) could improve, and what it still needs. Sources: codebase + specs,
 upstream [Teskann/QuaX](https://github.com/Teskann/QuaX) issues, recent XTA
-releases (`aimdi71`–`aimdi72`), and `docs/grok-rewrite-plan.md`.
+releases (`aimdi71`–`aimdi72`).
 
 **Product hard rule (unchanged):** XTA is a **read-oriented** X frontend. Do
 not add compose / reply / quote / repost / like-on-X / DMs / Spaces hosting.

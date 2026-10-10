@@ -137,13 +137,28 @@ Strings live in `lib/l10n/*.arb` files. The `L10n` class in `lib/generated/l10n.
 - Anytime when you are about to copy/paste code from somewhere, think about refactoring instead. Ask me first what to do in such cases.
 - Go easy on comments. Avoid comments that are obvious or redundant, or that simply describe the code you're about to write.
 
+## Hard Rules
+
+- **XTA is a read-oriented X frontend, not X itself.** It views timelines,
+  profiles, search, and media via reverse-engineered APIs. It does **not**
+  create posts on X. Never add compose / reply / quote / repost / like-on-X /
+  DM / Spaces hosting / account settings write-back. Local-only actions
+  (device likes, saved folders, subscriptions stored in SQLite) are fine and
+  already exist — do not wire them to X write endpoints.
+- Footer icons that look like X actions are **navigation / local** affordances
+  (e.g. comment opens the conversation; repeat opens the quotes screen; heart
+  is local-only). Do not "fix" them into real posting.
+- **`lib/client/` and `lib/database/` are frozen** — never rewrite them as part
+  of a UI/perf pass. Touch only to fix a live API break. DB schema changes only
+  via `sqflite_migration_plan` migrations.
+- **Do not big-bang rewrite.** Rewrite UI/feature folders incrementally.
+- **Never bump pinned deps** (`dart_twitter_api: 0.6.0`, the
+  `dependency_overrides` block, Flutter **3.44.4** in `.fvmrc` / `pubspec.yaml`).
+  They are load-bearing.
+
 ## Custom Skills
 
-Skills live under both `.claude/skills/` (Claude Code) and `.grok/skills/`
-(Grok Build). Keep them in sync — `scripts/check_skill_sync.sh` enforces it in
-CI (the `skills` job in `.github/workflows/verify.yml`). Grok also loads this
-file and `AGENTS.md` automatically — see `docs/grok-rewrite-plan.md` for the
-incremental rewrite plan.
+Skills live under `.claude/skills/`.
 
 - `/parse-api` — guidance for safely parsing reverse-engineered X API responses
 - `/port-from-squawker` — port a bug fix or feature from the Squawker codebase
@@ -151,20 +166,61 @@ incremental rewrite plan.
 
 ## Enforced Guardrails
 
-`.claude/settings.json` enforces part of the AGENTS.md hard rules: generated code
-(`lib/generated/**`, `lib/oss_licenses.dart`) is deny-listed, `lib/client/**` and
-`lib/database/**` always prompt, and hooks in `.claude/hooks/` block pinned-dep
-bumps, run codegen at session start, and `dart format` edited Dart files. See
-"Enforced guardrails" in `AGENTS.md`.
+`.claude/settings.json` machine-enforces part of the hard rules above:
+
+- `permissions.deny` — Edit/Write on `lib/generated/**` and `lib/oss_licenses.dart`.
+- `permissions.ask` — Edit/Write on `lib/client/**` and `lib/database/**`.
+- `PreToolUse` → `.claude/hooks/guard-pinned-deps.sh` denies edits that change
+  `dart_twitter_api`, a `dependency_overrides` entry, or the Flutter version in
+  `pubspec.yaml` / `.fvmrc`. Other pubspec edits pass.
+- `SessionStart` → `.claude/hooks/session-start.sh` runs `pub get` +
+  `intl_utils:generate` (non-fatal, skipped without `fvm`).
+- `PostToolUse` → `.claude/hooks/format-dart.sh` runs `fvm dart format` on an
+  edited `.dart` file.
+
+## Verifying Changes
+
+This is an **Android-only** Flutter app (only `android/` exists — no `web/`,
+`linux/`, etc.).
+
+- One-shot: `bash scripts/cloud_verify.sh` (analyze + tests + debug APK).
+- Lint: `fvm flutter analyze`.
+- Tests: `fvm flutter test` (pure-Dart unit tests under `test/`, using in-memory
+  sqflite).
+- Live guest API (optional):
+  `fvm flutter test test/live/guest_api_smoke_test.dart --dart-define=RUN_LIVE=true`
+- Build: `fvm flutter build apk --debug` → `build/app/outputs/flutter-apk/app-debug.apk`.
+- Details: `docs/cloud-testing.md`.
+
+Interactive UI testing needs a real device via wireless ADB (there is no
+`/dev/kvm` for an emulator in cloud VMs):
+`bash scripts/adb_wireless_connect.sh <pair_host:port> <code> <connect_host:port>`
+then `adb install -r build/app/outputs/flutter-apk/app-debug.apk`.
+
+### Non-obvious gotchas
+
+- **`compileSdk 37` platform fix.** `android/app/build.gradle` uses `compileSdkVersion 37`,
+  but `sdkmanager` only ships `platforms;android-37.0` (its `AndroidVersion.ApiLevel=37.0`),
+  which this project's AGP resolves as hash `android-37` and fails to find. Fix:
+  `cp -r ~/android-sdk/platforms/android-37.0 ~/android-sdk/platforms/android-37`
+  then edit `source.properties` to `AndroidVersion.ApiLevel=37`. Gradle prints a harmless
+  "inconsistent location" warning for `android-37`; ignore it.
+- **`dart run dart_pubspec_licenses:generate` fails** under Flutter 3.44.4 + FVM
+  (`PathNotFoundException: .../3.44.4/version` — the SDK dropped the legacy `version`
+  file). Its output `lib/oss_licenses.dart` is **not imported** (the app uses Flutter's
+  built-in `showLicensePage`), so this step is safe to skip.
+- **Generated code is gitignored** (`lib/generated`, `lib/oss_licenses.dart`,
+  `assets/icon-*.png`). `intl_utils:generate` and
+  `flutter_iconpicker:generate_packs --packs material` must run before analyzing or
+  testing. A full APK build also needs the launcher icons:
+  `.venv/bin/python generate_icons.py` then `fvm dart run flutter_launcher_icons`.
 
 ## Installed design skills
 
 For UI layout, compactness, placement, and visual hierarchy work, read
 `docs/xta-design-skills.md` first. The installed `impeccable` and `ui-ux-pro-max`
-skills are available under `.agents/skills/` (Codex), `.claude/skills/` (Claude
-Code), and `.grok/skills/` (Grok Build). Keep the three copies of these two skills
-identical; `python3 scripts/check_design_skills.py` verifies them, in addition
-to the existing `bash scripts/check_skill_sync.sh` guardrail.
+skills live under `.claude/skills/`; `python3 scripts/check_design_skills.py`
+verifies them.
 
 Use Impeccable's critique/distill/layout workflow and UI UX Pro Max's Flutter
 stack guidance to refine existing XTA surfaces. Preserve features, true-black

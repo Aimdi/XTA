@@ -1,7 +1,7 @@
 # Home/plugin redesign checkpoint
 
 Base: `4c6b8e87f4acce99b6998ac2b65a13892ac41673` (`aimdi126`).
-Branch: `codex/home-plugin-redesign`. No merge, tag or release publication.
+No merge, tag or release publication.
 
 Completed implementation and CI verification at
 `8429faa5ccbc662296087350f875f30171971090`: 2,179 tests passed, five opt-in
@@ -53,7 +53,7 @@ Enabled/install state, Home pins and bottom-bar visibility remain distinct.
 ## Verification log
 
 Baseline local: `python scripts/validate_arb.py` -> no errors; existing missing
-placeholder warnings. `bash scripts/check_skill_sync.sh` -> pass.
+placeholder warnings.
 `git merge-base --is-ancestor aimdi126 HEAD` -> pass; initial tree clean.
 No local Flutter/FVM/Android SDK and no connected device. Production baseline
 verify run `33641378899` and build run `33641378888` both succeeded.
@@ -159,7 +159,6 @@ Flutter, Android SDK, emulator or connected device was available.
 | `dart format --line-length 120` on the 47 touched Dart files | 47 formatted, zero changed. |
 | `dart run arb_utils sort` and `dart run arb_utils generate-meta` for each ARB | Passed; final combined formatter/ARB patch is zero bytes. |
 | `python scripts/validate_arb.py` | 1,527 keys across 28 translated locales; no errors. Existing placeholder warnings remain. |
-| `bash scripts/check_skill_sync.sh` | Passed. |
 | `flutter analyze --no-fatal-infos` | Passed, no errors or warnings; informational lints remain. |
 | `flutter test test/home_plugin_journeys_test.dart test/pixiv_reader_journey_test.dart test/plugin_connection_journeys_test.dart test/plugin_reader_accessibility_test.dart --reporter expanded --timeout 60s` | All 30 focused checks passed; no missed-tap warnings. |
 | `flutter test --reporter expanded` | 2,179 passed; five opt-in live-service tests skipped in both verification runs. |

@@ -1,6 +1,6 @@
 # Substack reader upgrade
 
-Implemented on `codex/substack-reader-upgrade`, building on the completed X,
+Implemented building on the completed X,
 Mastodon and Bluesky changes at `d499ede`. Public reading and device-local
 following, likes, saves and read state remain the plugin's model.
 

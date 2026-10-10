@@ -4,8 +4,7 @@
 
 Verified through GitHub on 2026-09-06: `claude/main`, latest production release
 `aimdi126`, and its lightweight tag all identify
-`4c6b8e87f4acce99b6998ac2b65a13892ac41673`. The isolated working branch is
-`codex/home-plugin-redesign`; existing worktrees are untouched.
+`4c6b8e87f4acce99b6998ac2b65a13892ac41673`.
 
 The baseline's [verification](https://github.com/Aimdi/XTA/actions/runs/33641378899)
 and [Android build](https://github.com/Aimdi/XTA/actions/runs/33641378888) passed.

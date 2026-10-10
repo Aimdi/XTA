@@ -2,7 +2,6 @@
 
 ## Integrated source
 
-Prepared branch: `codex/aimdi137-integration`.
 Release branch: `release/aimdi137`.
 
 - X reader completeness through `33f5fe4`.

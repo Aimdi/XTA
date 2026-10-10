@@ -29,7 +29,7 @@ reproducibility. It does not decode the Dart release-tag constant from AOT.
 
 | Checklist areas | Current evidence | Remaining work |
 |---|---|---|
-| 1–4: purpose, research, requirements, planning | `AGENTS.md`, `CLAUDE.md` and feature specs establish the read-oriented product and incremental scope | Keep a current prioritized backlog; user research and operating budget were not assessed |
+| 1–4: purpose, research, requirements, planning | `CLAUDE.md` and feature specs establish the read-oriented product and incremental scope | Keep a current prioritized backlog; user research and operating budget were not assessed |
 | 5: existing-project baseline | Default branch and latest release both resolve to aimdi128 | Record the exact base for each future change; distinguish pending work from released behavior |
 | 6–8: stack, setup, version control | FVM/SDK pins, dependency lockfile, build docs, CI and module rules exist | Remove remaining unused license-codegen calls from local setup/verification paths in a separate tooling cleanup; do not bump pins |
 | 9–10: architecture and navigation | Feature folders, Store models, shared reader components and route handling exist | Review concrete lifecycle/navigation failures incrementally; no architectural rewrite is justified by this review |

@@ -1,6 +1,6 @@
 # Bluesky reader upgrade
 
-Implemented on `codex/bluesky-reader-upgrade`, building on the completed X and
+Implemented building on the completed X and
 Mastodon changes at `92570a5`. Public reads and local follows/likes remain the
 plugin's model; no authentication or remote posting was introduced.
 

@@ -223,7 +223,7 @@ checked for:
 - duplicate `libc++_shared.so` with media_kit;
 - the real APK size.
 
-Do that before adding the dependency, using the steps in `AGENTS.md`
+Do that before adding the dependency, using the steps in `CLAUDE.md`
 ("Verifying the environment"): `flutter build apk --debug`, then a
 `--split-per-abi` release build, then compare sizes.
 

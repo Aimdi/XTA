@@ -14,7 +14,6 @@ import sys
 
 CHECKS = (
     ("translations", ("python3", "scripts/validate_arb.py")),
-    ("skill-sync", ("bash", "scripts/check_skill_sync.sh")),
     ("analysis", ("flutter", "analyze", "--no-fatal-infos")),
     ("tests", ("flutter", "test", "--reporter", "expanded")),
 )

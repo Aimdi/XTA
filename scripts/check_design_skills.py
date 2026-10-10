@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate complete, synchronized repository-local design skill installations."""
+"""Validate complete repository-local design skill installations."""
 import ast
 import hashlib
 import os
@@ -28,7 +28,7 @@ def inventory(folder):
 
 def main():
     for name in NAMES:
-        canonical = ROOT / '.agents' / 'skills' / name
+        canonical = ROOT / '.claude' / 'skills' / name
         for relative in REQUIRED[name]:
             if not (canonical / relative).is_file():
                 raise ValueError(f'Missing required resource: {name}/{relative}')
@@ -40,14 +40,11 @@ def main():
         if 'docs/xta-design-skills.md' not in text:
             raise ValueError(f'Missing XTA guardrails: {name}')
         expected = inventory(canonical)
-        for host in ('.claude', '.grok'):
-            if inventory(ROOT / host / 'skills' / name) != expected:
-                raise ValueError(f'Design skill drift: {host}/{name}')
         for path in canonical.rglob('*.py'):
             ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
-        print(f'PASS {name}: complete, licensed, syntax-checked; {len(expected)} files identical across 3 hosts')
-    subprocess.run(['sh', '-n', str(ROOT / '.agents/skills/impeccable/scripts/impeccable')], check=True)
-    script = ROOT / '.agents/skills/ui-ux-pro-max/scripts/search.py'
+        print(f'PASS {name}: complete, licensed, syntax-checked; {len(expected)} files')
+    subprocess.run(['sh', '-n', str(ROOT / '.claude/skills/impeccable/scripts/impeccable')], check=True)
+    script = ROOT / '.claude/skills/ui-ux-pro-max/scripts/search.py'
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1')
     output = subprocess.check_output([sys.executable, str(script), 'compact spacing', '--stack', 'flutter'], cwd=ROOT, env=env, text=True, timeout=30)
     if not output.strip() or 'flutter' not in output.lower():

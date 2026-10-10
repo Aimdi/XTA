@@ -16,7 +16,7 @@ Example (from Wireless debugging screen):
   scripts/adb_wireless_connect.sh 192.168.1.20:37123 123456 192.168.1.20:5555
 
 Notes:
-  - Cursor Cloud VMs have no /dev/kvm, so the local Android emulator is not usable for UI.
+  - Cloud VMs have no /dev/kvm, so the local Android emulator is not usable for UI.
   - A real phone on the same reachable network (or via a tunnel) is the way to interactively
     run the app from this environment.
 EOF

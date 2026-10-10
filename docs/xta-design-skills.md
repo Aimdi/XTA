@@ -1,11 +1,11 @@
 # XTA design skills
 
-This is a project-local installation for coding agents, not an Android runtime
-plugin and not a global installation into the ChatGPT account.
+This is a project-local installation for Claude Code, not an Android runtime
+plugin and not a global installation.
 
 ## Scope and precedence
 
-Read `AGENTS.md` and `CLAUDE.md` before either skill. This brief and the user's
+Read `CLAUDE.md` before either skill. This brief and the user's
 request take precedence over generic upstream design suggestions.
 
 XTA is an existing Android-only Flutter reader. Refine the current app rather
@@ -37,10 +37,9 @@ Use UI UX Pro Max's Flutter stack explicitly; do not default to HTML/Tailwind.
 
 ## Use
 
-Start a fresh coding-agent session from the XTA checkout. Both skills are
-installed under `.agents/skills/` (Codex), `.claude/skills/` (Claude Code), and
-`.grok/skills/` (Grok Build). Each installed copy contains its resources; no
-submodule initialization is needed. The three design-skill copies are identical.
+Start a fresh Claude Code session from the XTA checkout. Both skills are
+installed under `.claude/skills/` with all their resources; no submodule
+initialization is needed.
 
 Example request:
 
@@ -51,11 +50,10 @@ Example request:
 From the repository root, a focused Flutter lookup is:
 
 ```sh
-python3 .agents/skills/ui-ux-pro-max/scripts/search.py "compact spacing" --stack flutter
+python3 .claude/skills/ui-ux-pro-max/scripts/search.py "compact spacing" --stack flutter
 ```
 
-In hosts exposing skill commands, invoke the names `impeccable` and
-`ui-ux-pro-max`; command-prefix syntax depends on the host. Impeccable's
+Invoke them as `/impeccable` and `/ui-ux-pro-max`. Impeccable's
 `critique`, `distill`, `layout`, `extract`, `harden`, and native `audit` playbooks
 are the relevant starting points. Do not run browser-only checks as proof of
 Android behavior.
@@ -81,11 +79,9 @@ upstream documented direct-context/reference fallback and disclose that limit.
 
 Updates are deliberate: inspect new upstream revisions, change the pins, vendor
 again in a separate branch, retain licenses, and run the checks. Do not replace
-these copies with floating downloads or weaken the existing skill sync check.
+these copies with floating downloads.
 
 ## Verification
 
-Run `python3 scripts/check_design_skills.py` and
-`bash scripts/check_skill_sync.sh`. The design check compares all three copies,
-checks manifests/resources/licenses, verifies Python syntax, and runs a local
+Run `python3 scripts/check_design_skills.py`. It checks manifests/resources/licenses, verifies Python syntax, and runs a local
 Flutter search. It does not assert Android UI quality or build an APK.

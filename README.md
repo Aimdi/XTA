@@ -180,7 +180,7 @@ fvm flutter build apk --debug
 
 The debug APK is written to `build/app/outputs/flutter-apk/app-debug.apk`.
 This shell example uses Bash. See [cloud testing and Android setup](docs/cloud-testing.md)
-and the [SDK setup notes](AGENTS.md#non-obvious-gotchas) for environment-specific details.
+and the [SDK setup notes](CLAUDE.md#non-obvious-gotchas) for environment-specific details.
 
 Run the checks with:
 
@@ -188,7 +188,6 @@ Run the checks with:
 fvm flutter analyze --no-fatal-infos
 fvm flutter test
 python3 scripts/validate_arb.py
-bash scripts/check_skill_sync.sh
 ```
 
 `dart_pubspec_licenses:generate` is omitted from this local recipe because of its
@@ -199,11 +198,11 @@ existing [signed release workflow](.github/workflows/build-release.yml).
 ## Contributing and project history
 
 Open issues and pull requests in **[Aimdi/XTA](https://github.com/Aimdi/XTA)**;
-the development branch is **`claude/main`**. Read [AGENTS.md](AGENTS.md) and
-[CLAUDE.md](CLAUDE.md) before changing code. Preserve the Store architecture,
+the development branch is **`claude/main`**. Read [CLAUDE.md](CLAUDE.md) before changing
+code. Preserve the Store architecture,
 localisation and pinned dependencies, and keep changes focused.
 
-XTA is developed with assistance from AI coding agents. Automated formatting,
+XTA is developed by Aimdi with Claude. Automated formatting,
 analysis and tests support review; device and live-service testing remain
 important for changes to reading, navigation and account access.
 
