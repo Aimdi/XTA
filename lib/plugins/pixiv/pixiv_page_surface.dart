@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/pixiv/pixiv_haptics.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_overview.dart';
@@ -31,6 +32,7 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> openPageActions(int page) async {
+    playPixivHaptic(context, PixivHaptic.medium);
     final action = await showPixivPageActions(context, illust: pageIllust, page: page);
     if (mounted && action != null) await runPageAction(action, page);
   }

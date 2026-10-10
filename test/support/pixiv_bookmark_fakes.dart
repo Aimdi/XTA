@@ -1,10 +1,12 @@
 import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
-/// Records every bookmark call instead of reaching Pixiv; pass it to
-/// `pumpPixiv(extraProviders: [Provider<PixivBookmarkApi?>.value(value: api)])`.
+/// Records every bookmark call instead of reaching Pixiv; pass [provider] to
+/// `pumpPixiv(extraProviders: …)`.
 class FakePixivBookmarkApi extends PixivBookmarkApi {
   final calls = <String>[];
   PixivBookmarkDetail detailResult;
@@ -52,6 +54,8 @@ class FakePixivBookmarkApi extends PixivBookmarkApi {
     calls.add('tags:$restrict');
     return PixivPage(tagLists[restrict] ?? const []);
   }
+
+  SingleChildWidget get provider => Provider<PixivBookmarkApi>.value(value: this);
 
   List<String> get writes => calls.where((call) => call.startsWith('add') || call.startsWith('delete')).toList();
 }

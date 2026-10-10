@@ -50,6 +50,9 @@ class PixivHaptics {
   }
 }
 
-/// Plays [kind] for an action taken in [context].
-void playPixivHaptic(BuildContext context, PixivHaptic kind) =>
-    PixivHaptics.of(context).play(PrefService.of(context, listen: false), kind);
+/// Plays [kind] for an action taken in [context]; a screen mounted without
+/// preferences, as some tests mount one, stays silent.
+void playPixivHaptic(BuildContext context, PixivHaptic kind) {
+  final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+  if (prefs != null) PixivHaptics.of(context).play(prefs, kind);
+}

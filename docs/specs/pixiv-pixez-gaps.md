@@ -109,12 +109,13 @@ following lists for any user; followers list; follow privately and the
 follow-detail dialog; mute users from profiles with a muted-profile
 placeholder.
 
-### B5b — bookmarks
+### B5b — bookmarks (built)
 
 Bookmark heart with default visibility; bookmark editor with tags and
 visibility; tag picker with suggestions; bookmark lists with tag filter for
-any user; auto-tag, follow-author and download after bookmarking; haptic
-feedback.
+any user; auto-tag, follow-author and download after bookmarking; bookmark
+after saving; haptic feedback. Described in `pixiv-bookmarks.md`; another
+user's public bookmarks are B5a's profile Bookmarks tab.
 
 ### B6a — viewing
 

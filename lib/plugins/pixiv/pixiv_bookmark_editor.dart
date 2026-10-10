@@ -72,14 +72,11 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
     padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
     child: ConstrainedBox(
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.85),
-      child: TripleBuilder<PixivBookmarkEditorStore, PixivBookmarkDraft>(
+      child: ScopedBuilder<PixivBookmarkEditorStore, PixivBookmarkDraft>(
         store: _store,
-        builder: (context, triple) {
-          final draft = triple.state;
-          if (draft.loaded) return _editor(context, draft);
-          if (triple.error != null && !triple.isLoading) return _loadFailed(context, triple.error as Object);
-          return const _SheetMessage(child: CircularProgressIndicator());
-        },
+        onState: (context, draft) => draft.loaded ? _editor(context, draft) : const _SheetMessage.loading(),
+        onLoading: (_) => const _SheetMessage.loading(),
+        onError: (context, error) => _loadFailed(context, error as Object),
       ),
     ),
   );
@@ -245,6 +242,8 @@ class _SheetMessage extends StatelessWidget {
   final Widget child;
 
   const _SheetMessage({required this.child});
+
+  const _SheetMessage.loading() : child = const CircularProgressIndicator();
 
   @override
   Widget build(BuildContext context) => ConstrainedBox(

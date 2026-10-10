@@ -7,6 +7,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/ui/motion.dart';
 
 /// Which of the reader's bookmarks Favorites shows: public or private, and
 /// one tag or (null) all of them.
@@ -81,6 +82,7 @@ class _PixivBookmarkTagPickerState extends State<PixivBookmarkTagPicker> {
         child: DefaultTabController(
           length: _restricts.length,
           initialIndex: _restricts.indexOf(widget.current.restrict).clamp(0, _restricts.length - 1),
+          animationDuration: xtaMotionDuration(context, kTabScrollDuration),
           child: Builder(builder: (context) => _sheet(context, l10n)),
         ),
       ),
@@ -162,7 +164,12 @@ class _PixivBookmarkTagTab extends StatefulWidget {
 class _PixivBookmarkTagTabState extends State<_PixivBookmarkTagTab> {
   PixivPagedListStore<PixivBookmarkTag> get _store => widget.store;
 
-  Future<void> _refresh() => widget.inFlight.track(_store.refresh());
+  /// Shows the spinner from the start, so an empty list is never mistaken
+  /// for a reader without tags while the first page is on its way.
+  Future<void> _refresh() {
+    _store.setLoading(true);
+    return widget.inFlight.track(_store.refresh());
+  }
 
   @override
   void initState() {
@@ -173,38 +180,48 @@ class _PixivBookmarkTagTabState extends State<_PixivBookmarkTagTab> {
   @override
   Widget build(BuildContext context) => ScopedBuilder<PluginViewStore<String>, String>(
     store: widget.query,
-    onState: (context, query) => TripleBuilder<PixivPagedListStore<PixivBookmarkTag>, List<PixivBookmarkTag>>(
+    onState: (context, query) => ScopedBuilder<PixivPagedListStore<PixivBookmarkTag>, List<PixivBookmarkTag>>(
       store: _store,
-      builder: (context, triple) => NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.extentAfter < 600) widget.inFlight.track(_store.loadMore());
-          return false;
-        },
-        child: ListView(
-          children: query.trim().isEmpty ? _browse(context, triple) : _search(context, query.trim(), triple.state),
-        ),
-      ),
+      onState: (context, tags) => _list(context, query.trim(), tags),
+      onLoading: (context) => _list(context, query.trim(), _store.state, loading: true),
+      onError: (context, error) => _list(context, query.trim(), _store.state, error: error as Object),
     ),
   );
 
-  List<Widget> _browse(BuildContext context, Triple<List<PixivBookmarkTag>> triple) {
+  Widget _list(
+    BuildContext context,
+    String query,
+    List<PixivBookmarkTag> tags, {
+    bool loading = false,
+    Object? error,
+  }) => NotificationListener<ScrollNotification>(
+    onNotification: (notification) {
+      if (notification.metrics.extentAfter < 600) widget.inFlight.track(_store.loadMore());
+      return false;
+    },
+    child: ListView(
+      children: query.isEmpty ? _browse(context, tags, loading: loading, error: error) : _search(context, query, tags),
+    ),
+  );
+
+  List<Widget> _browse(BuildContext context, List<PixivBookmarkTag> tags, {required bool loading, Object? error}) {
     final l10n = L10n.of(context);
     return [
       _tile(context, icon: Icons.collections_outlined, tag: null),
       _tile(context, icon: Icons.label_off_outlined, tag: pixivUnclassifiedTag),
       const Divider(height: 1),
-      for (final tag in triple.state) _tile(context, icon: Icons.sell_outlined, tag: tag.name, count: tag.count),
-      if (triple.isLoading || _store.loadingMore)
+      for (final tag in tags) _tile(context, icon: Icons.sell_outlined, tag: tag.name, count: tag.count),
+      if (loading || _store.loadingMore)
         const Padding(
           padding: EdgeInsets.all(16),
           child: Center(child: CircularProgressIndicator()),
         ),
-      if (triple.error != null && !triple.isLoading && triple.state.isEmpty)
+      if (error != null && tags.isEmpty)
         ListTile(
-          title: Text(pixivErrorMessage(l10n, triple.error as Object)),
+          title: Text(pixivErrorMessage(l10n, error)),
           trailing: TextButton(onPressed: _refresh, child: Text(l10n.retry)),
         ),
-      if (triple.error == null && !triple.isLoading && triple.state.isEmpty)
+      if (error == null && !loading && tags.isEmpty)
         ListTile(enabled: false, title: Text(l10n.plugin_pixiv_bookmark_tags_none)),
     ];
   }
