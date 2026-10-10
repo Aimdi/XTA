@@ -31,7 +31,7 @@ once those are in.
 | B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Planned |
 | B5a | Profiles and follows | Planned |
 | B5b | Bookmarks and bookmark organisation | Planned |
-| B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Planned |
+| B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Built |
 | B6b | Saving: naming, folders, index, multi-select, ugoira export | Planned |
 | B7 | Settings, accounts, history, mute, links | Planned |
 
@@ -116,12 +116,18 @@ visibility; tag picker with suggestions; bookmark lists with tag filter for
 any user; auto-tag, follow-author and download after bookmarking; haptic
 feedback.
 
-### B6a — viewing
+### B6a — viewing (built)
 
-Image host mirror (`i.pixiv.re` or custom); image quality settings; grid
-column count; loading and failure states; share image and HD toggle in the
-viewer; swipe between artworks; side-by-side detail for landscape and
-tablets.
+Image server (`i.pximg.net`, the `i.pixiv.re` mirror or a custom address)
+for every image, prefetch, ugoira archive and download; grid, work-page and
+full-screen image sizes; portrait and landscape column counts; tap-to-retry
+on tiles and detail pages and a progress ring in the reader; Share image and
+an original-quality toggle in the reader bar; zoom in the vertical reader
+with full-size decoding when zoomed or in HD; ugoira paused while covered and
+recent archives kept in memory; swipe between works (off by default) with
+next-page loading and edge turns for multi-page works; side-by-side detail on
+wide screens with a remembered divider; the AI badge switch. Details in
+`pixiv-viewing.md`.
 
 ### B6b — saving
 

@@ -72,7 +72,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 
 | Feature | Detail |
 |---|---|
-| Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), mute review (authors, tags, works, comments, novels) |
+| Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), viewing (image server, image sizes, columns, work layout, swipe between works, AI badge — `pixiv-viewing.md`), mute review (authors, tags, works, comments, novels) |
 | Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`) |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
@@ -87,8 +87,10 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 
 Every way into a work goes through `pixiv_link_open.dart`: `openPixivLinkRef`
 for links (used by `plugin_links.dart`), `openPixivIllust` and
-`openPixivIllustFromList` (what tiles call), all building the route in
-`pixivIllustRoute`.
+`openPixivIllustFromList` (what tiles call, which opens the swipe pager when
+Swipe between works is on), all building each work's page with
+`pixivIllustPage`, alone in `pixivIllustRoute` or as a page of
+`PixivIllustPager`.
 
 Paged lists use `PixivPagedListStore<T>` (`pixiv_store.dart`): first load,
 soft refresh, `next_url` paging with de-duplication, a filter, and skipping
