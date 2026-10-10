@@ -29,7 +29,7 @@ once those are in.
 | B2c | Novels: search, profiles, history, deep links | Planned |
 | B3 | Comments (reading only) | Planned |
 | B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Planned |
-| B5a | Profiles and follows | Planned |
+| B5a | Profiles and follows | Built |
 | B5b | Bookmarks and bookmark organisation | Planned |
 | B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Planned |
 | B6b | Saving: naming, folders, index, multi-select, ugoira export | Planned |
@@ -102,12 +102,12 @@ Following feed with public / private filter; follow hub (new works,
 bookmarks, watchlist, followed); illust / manga series page and series
 context; manga watchlist; signed-out preview; artwork ID and resolution.
 
-### B5a — profiles and follows
+### B5a — profiles and follows (built)
 
 Profile header, info and actions; profile works (illustrations and manga);
 following lists for any user; followers list; follow privately and the
 follow-detail dialog; mute users from profiles with a muted-profile
-placeholder.
+placeholder. Described in `pixiv-profiles.md`.
 
 ### B5b — bookmarks
 

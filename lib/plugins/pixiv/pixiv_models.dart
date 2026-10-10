@@ -543,18 +543,3 @@ class PixivPage<T> {
 
   const PixivPage(this.items, {this.nextUrl});
 }
-
-class PixivUserPage extends PixivPage<PixivUser> {
-  const PixivUserPage({required List<PixivUser> users, super.nextUrl}) : super(users);
-
-  List<PixivUser> get users => items;
-
-  factory PixivUserPage.fromJson(Object? json) {
-    final root = Json(json);
-    return PixivUserPage(
-      users: [for (final preview in root['user_previews'].list)
-        if (PixivUser.fromUserJson(preview['user'].raw) case final user when user.id > 0) user],
-      nextUrl: root['next_url'].string,
-    );
-  }
-}

@@ -21,6 +21,10 @@ import 'package:xta/ui/errors.dart';
 
 export 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 
+/// The reader's mutes as one list applies them, such as a profile that shows
+/// its own creator's works.
+typedef PixivMuteView = PixivMuteState Function(PixivMuteState mute);
+
 /// Pixez-style staggered gallery of illust thumbnails.
 class PixivIllustGrid extends StatelessWidget {
   final List<PixivIllust> illusts;
@@ -32,6 +36,9 @@ class PixivIllustGrid extends StatelessWidget {
   /// Slivers scrolled above the works, such as a carousel or a header row.
   final List<Widget> leadingSlivers;
 
+  /// The reader's mutes as this list applies them; all of them when null.
+  final PixivMuteView? mutes;
+
   const PixivIllustGrid({
     super.key,
     required this.illusts,
@@ -40,6 +47,7 @@ class PixivIllustGrid extends StatelessWidget {
     this.loadingMore = false,
     this.padding = const EdgeInsets.all(4),
     this.leadingSlivers = const [],
+    this.mutes,
   });
 
   @override
@@ -51,7 +59,7 @@ class PixivIllustGrid extends StatelessWidget {
       onState: (context, mute) => LayoutBuilder(
         builder: (context, constraints) => _grid(
           context,
-          mute.filter(illusts),
+          (mutes?.call(mute) ?? mute).filter(illusts),
           pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context)),
         ),
       ),
@@ -102,12 +110,16 @@ class PixivIllustFeed extends StatelessWidget {
   final ScrollController? scrollController;
   final List<Widget> leadingSlivers;
 
+  /// The reader's mutes as this list applies them; [store] filters its pages the same way.
+  final PixivMuteView? mutes;
+
   const PixivIllustFeed({
     super.key,
     required this.store,
     required this.emptyMessage,
     this.scrollController,
     this.leadingSlivers = const [],
+    this.mutes,
   });
 
   @override
@@ -167,6 +179,7 @@ class PixivIllustFeed extends StatelessWidget {
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
           leadingSlivers: leadingSlivers,
+          mutes: mutes,
         ),
       ),
     );

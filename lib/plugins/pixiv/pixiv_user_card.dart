@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_follow_dialog.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -24,6 +25,9 @@ const _followButtonChrome = 66.0;
 
 /// The avatar and the gaps either side of the name in the card header.
 const _headerChrome = 40.0 + 12 + 8;
+
+/// Room each extra icon action beside the follow button takes.
+const _actionWidth = kMinInteractiveDimension;
 
 /// The works a preview row may show: none the reader muted, and none their
 /// Show R-18 / Hide AI choices keep out of the feeds — dropped, not blurred.
@@ -58,8 +62,9 @@ double pixivFollowButtonWidth(BuildContext context) {
   return max(measure(l10n.plugin_pixiv_follow), measure(l10n.plugin_pixiv_unfollow)) + _followButtonChrome;
 }
 
-/// Follow / Unfollow for one creator, public follows only, with a 48dp target
-/// and a spinner while Pixiv answers. The state lives in the app-wide
+/// Follow / Unfollow for one creator, with a 48dp target and a spinner while
+/// Pixiv answers. A tap follows publicly or unfollows; a long press opens the
+/// follow dialog to follow privately. The state lives in the app-wide
 /// [PixivFollowStore]; [onChanged] lets the list holding [user] update its copy.
 class PixivFollowButton extends StatelessWidget {
   final PixivUser user;
@@ -97,12 +102,99 @@ class PixivFollowButton extends StatelessWidget {
       key: ValueKey('pixiv-follow-${user.id}'),
       style: FilledButton.styleFrom(minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension)),
       onPressed: busy ? null : () => _toggle(context),
+      onLongPress: busy ? null : () => editPixivFollow(context, user, onChanged: onChanged),
       icon: icon,
       label: Text(
         followed ? l10n.plugin_pixiv_unfollow : l10n.plugin_pixiv_follow,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
+    );
+  }
+}
+
+/// Who a row is about beside their follow button and [actions]: side by side
+/// while the name keeps room to be read, the buttons under the name on a
+/// narrow screen or with large text.
+class PixivFollowHeader extends StatelessWidget {
+  final PixivUser user;
+
+  /// The avatar and names, which take what room the buttons leave.
+  final Widget identity;
+  final ValueChanged<bool>? onFollowChanged;
+  final List<Widget> actions;
+
+  /// Width [identity] spends on things other than the name, such as the avatar.
+  final double identityChrome;
+
+  const PixivFollowHeader({
+    super.key,
+    required this.user,
+    required this.identity,
+    this.onFollowChanged,
+    this.actions = const [],
+    this.identityChrome = _headerChrome,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // The reader cannot follow themselves; their own works and profile offer no button.
+    final self = context.read<PixivClient>().storedUserId == user.id;
+    if (self && actions.isEmpty) return identity;
+    return LayoutBuilder(builder: (context, constraints) => _layout(context, constraints.maxWidth, self: self));
+  }
+
+  Widget _layout(BuildContext context, double width, {required bool self}) {
+    final buttons = [if (!self) PixivFollowButton(user: user, onChanged: onFollowChanged), ...actions];
+    final nameSize = Theme.of(context).textTheme.titleSmall?.fontSize ?? 14;
+    final nameMin = MediaQuery.textScalerOf(context).scale(nameSize) * pixivCardNameMinEm;
+    final buttonsWidth = (self ? 0 : pixivFollowButtonWidth(context)) + _actionWidth * actions.length;
+    if (width - buttonsWidth - identityChrome >= nameMin) {
+      return Row(
+        children: [
+          Expanded(child: identity),
+          const SizedBox(width: 8),
+          ...buttons,
+        ],
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        identity,
+        Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: buttons),
+      ],
+    );
+  }
+}
+
+/// A creator's name over their @account, each on one line.
+class PixivUserNames extends StatelessWidget {
+  final String name;
+  final String account;
+
+  const PixivUserNames({super.key, required this.name, required this.account});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
+        ),
+        Text(
+          '@$account',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+      ],
     );
   }
 }
@@ -115,7 +207,10 @@ class PixivUserPreviewCard extends StatelessWidget {
   /// Hears the card's follow button, so the list can update its preview.
   final ValueChanged<bool>? onFollowChanged;
 
-  const PixivUserPreviewCard({super.key, required this.preview, this.onFollowChanged});
+  /// Icon buttons beside the follow button, such as Add to group.
+  final List<Widget> actions;
+
+  const PixivUserPreviewCard({super.key, required this.preview, this.onFollowChanged, this.actions = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +227,20 @@ class PixivUserPreviewCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              LayoutBuilder(builder: (context, constraints) => _header(context, user, constraints.maxWidth)),
+              PixivFollowHeader(
+                user: user,
+                identity: Row(
+                  children: [
+                    PixivAvatar.user(user),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: PixivUserNames(name: user.name, account: user.account),
+                    ),
+                  ],
+                ),
+                onFollowChanged: onFollowChanged,
+                actions: actions,
+              ),
               ScopedBuilder<PixivMuteStore, PixivMuteState>(
                 store: context.read<PixivMuteStore>(),
                 onState: (context, mute) => _works(context, _visibleWorks(context, mute)),
@@ -147,52 +255,6 @@ class PixivUserPreviewCard extends StatelessWidget {
   List<PixivIllust> _visibleWorks(BuildContext context, PixivMuteState mute) {
     final client = context.read<PixivClient>();
     return pixivVisiblePreviewWorks(preview.illusts, mute: mute, showR18: client.showR18, hideAi: client.hideAi);
-  }
-
-  /// The follow button sits beside the name while the name keeps room to be
-  /// read, and under it on a narrow screen or with large text.
-  Widget _header(BuildContext context, PixivUser user, double width) {
-    final identity = Row(
-      children: [
-        PixivAvatar.user(user),
-        const SizedBox(width: 12),
-        Expanded(child: _names(context, user)),
-      ],
-    );
-    final follow = PixivFollowButton(user: user, onChanged: onFollowChanged);
-    final nameSize = Theme.of(context).textTheme.titleSmall?.fontSize ?? 14;
-    final nameMin = MediaQuery.textScalerOf(context).scale(nameSize) * pixivCardNameMinEm;
-    if (width - pixivFollowButtonWidth(context) - _headerChrome >= nameMin) {
-      return Row(
-        children: [
-          Expanded(child: identity),
-          const SizedBox(width: 8),
-          follow,
-        ],
-      );
-    }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: 8, children: [identity, follow]);
-  }
-
-  Widget _names(BuildContext context, PixivUser user) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          user.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
-        ),
-        Text(
-          '@${user.account}',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-        ),
-      ],
-    );
   }
 
   Widget _works(BuildContext context, List<PixivIllust> works) {

@@ -10,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
 
 import 'support/pixiv_reader_harness.dart';
+import 'support/pixiv_social_fakes.dart';
 
 PixivIllust _work(int id, {bool r18 = false, bool ai = false}) => PixivIllust(
   id: id,
@@ -188,8 +189,11 @@ void main() {
   });
 
   testWidgets('the profile counts read as whole phrases, singular where the count is one', (tester) async {
-    await pumpPixiv(tester, const PixivUserScreen(userId: 9), client: _CountedProfile.new);
-    expect(find.text('1 work · 1.5K following · 2 My pixiv friends'), findsOneWidget);
+    final api = FakePixivSocialApi(profile: pixivProfileOf(illusts: 1));
+    await pumpPixiv(tester, const PixivUserScreen(userId: 9), extraProviders: [api.provider]);
+    expect(find.text('1 work'), findsOneWidget);
+    expect(find.text('1.5K following'), findsOneWidget);
+    expect(find.text('2 My pixiv friends'), findsOneWidget);
     await disposePixiv(tester);
   });
 
@@ -211,19 +215,4 @@ void main() {
       await disposePixiv(tester);
     });
   });
-}
-
-class _CountedProfile extends FakePixivClient {
-  _CountedProfile(super.prefs);
-
-  @override
-  Future<PixivUser> userDetail(int userId) async => PixivUser(
-    id: userId,
-    name: 'Mika',
-    account: 'mika',
-    comment: '',
-    worksCount: 1,
-    followingCount: 1500,
-    mypixivCount: 2,
-  );
 }

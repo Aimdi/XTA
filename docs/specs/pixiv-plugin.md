@@ -78,8 +78,9 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
 | Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
-| Profile | User detail with works (illustrations + manga), following and My pixiv counts as plural phrases, public follow, works grid |
-| User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large. `onFollowChanged` lets a list update its copy |
+| Profile | Header (image, avatar, counts, bio, follow, Add to group) over Works (illustrations / manga), Bookmarks, Following and Info tabs; share, follow privately, copy info, mute; muted creators show a placeholder. See `pixiv-profiles.md` |
+| Follow lists | `PixivUserListScreen`: whom anyone follows or who follows them, as preview cards; your own following list switches public / private |
+| User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large (`PixivFollowHeader`, also on profiles and the work's author row). A long press opens the follow dialog to follow privately. `onFollowChanged` lets a list update its copy |
 | Follow state | One app-wide `PixivFollowStore` (`pixiv_user_store.dart`): the follows changed this session and the ones in flight, read by every follow button, so a follow survives list rebuilds and recycled rows and shows the same on cards and profiles. Signing out or uninstalling clears it |
 | Avatars | `PixivAvatar` (`pixiv_avatar.dart`): the round avatar, decoded at its painted size, or initials when Pixiv sends none |
 | Local mute | Author ids, tag names, work ids, comment ids and novel ids in prefs; works are filtered from every grid |
@@ -117,8 +118,11 @@ its illust case.
 | Ugoira metadata | `GET /v1/ugoira/metadata` |
 | Related | `GET /v2/illust/related` |
 | User detail | `GET /v1/user/detail` |
-| User illusts | `GET /v1/user/illusts` |
+| User illusts | `GET /v1/user/illusts` (`type=illust` or `manga`) |
+| User bookmarks | `GET /v1/user/bookmarks/illust` (any user) |
 | Following users | `GET /v1/user/following` |
+| Followers | `GET /v1/user/follower` |
+| Follow detail | `GET /v1/user/follow/detail` |
 | Follow add | `POST /v1/user/follow/add` |
 | Follow delete | `POST /v1/user/follow/delete` |
 | Bookmark add | `POST /v2/illust/bookmark/add` |
