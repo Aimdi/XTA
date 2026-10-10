@@ -1821,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Mostra {count} commento} other{Mostra tutti i {count} commenti}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Punteggio {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Riprendi da pagina {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Copia il tag",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Mai aggiunta ai preferiti} one{Aggiunta ai preferiti una volta} other{Aggiunta ai preferiti {count} volte}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Dimensione dei file: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Lingua: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Lingua: {language}, traduzione",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} pagina} other{{count} pagine}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Pubblicata il {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Valutazione di {rating} su 5 con {count} voto} other{Valutazione di {rating} su 5 con {count} voti}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} copiato",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Autore",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, non ancora confermato",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Vai",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",

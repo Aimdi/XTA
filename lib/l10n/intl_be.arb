@@ -1821,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Паказаць {count} каментарый} few{Паказаць усе {count} каментарыі} many{Паказаць усе {count} каментарыяў} other{Паказаць усе {count} каментарыя}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Ацэнка {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Працягнуць са старонкі {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Скапіяваць тэг",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Ніхто не дадаў у абранае} one{{count} карыстальнік дадаў у абранае} few{{count} карыстальнікі дадалі ў абранае} many{{count} карыстальнікаў дадалі ў абранае} other{{count} карыстальніка дадалі ў абранае}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Памер файлаў: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Мова: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Мова: {language}, пераклад",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} старонка} few{{count} старонкі} many{{count} старонак} other{{count} старонкі}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Апублікавана {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Рэйтынг {rating} з 5, {count} голас} few{Рэйтынг {rating} з 5, {count} галасы} many{Рэйтынг {rating} з 5, {count} галасоў} other{Рэйтынг {rating} з 5, {count} голасу}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "Скапіявана: {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Аўтар",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, яшчэ не пацверджаны",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Перайсці",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",

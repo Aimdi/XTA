@@ -1821,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Erakutsi {count} iruzkin} other{Erakutsi iruzkin guztiak ({count})}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Puntuazioa: {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Jarraitu {page}. orritik",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Kopiatu etiketa",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Ez da inoiz gogokoetara gehitu} one{Behin gehitu da gogokoetara} other{{count} aldiz gehitu da gogokoetara}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Fitxategien tamaina: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Hizkuntza: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Hizkuntza: {language}, itzulia",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} orri} other{{count} orri}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Argitaratze-data: {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Puntuazioa: {rating} 5etik, {count} boto} other{Puntuazioa: {rating} 5etik, {count} boto}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} kopiatu da",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Igotzailea",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, oraindik baieztatu gabe",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Joan",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",

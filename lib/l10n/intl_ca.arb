@@ -1821,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Mostra {count} comentari} other{Mostra els {count} comentaris}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Puntuació {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Continua des de la pàgina {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Copia l’etiqueta",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Mai afegida als preferits} one{Afegida als preferits una vegada} other{Afegida als preferits {count} vegades}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Mida dels fitxers: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Llengua: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Llengua: {language}, traducció",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} pàgina} other{{count} pàgines}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Publicada el {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Puntuació de {rating} sobre 5 amb {count} vot} other{Puntuació de {rating} sobre 5 amb {count} vots}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "S’ha copiat {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Autor",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, encara sense confirmar",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Anar-hi",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",

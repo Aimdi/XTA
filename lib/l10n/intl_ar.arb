@@ -1821,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, zero{عرض التعليقات} one{عرض تعليق واحد} two{عرض التعليقَين} few{عرض كل التعليقات ({count})} many{عرض كل التعليقات ({count})} other{عرض كل التعليقات ({count})}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "النقاط: {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "متابعة من الصفحة {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "نسخ الوسم",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{ليس في مفضلة أحد} zero{ليس في مفضلة أحد} one{في مفضلة مستخدم واحد} two{في مفضلة مستخدمَين} few{في مفضلة {count} مستخدمين} many{في مفضلة {count} مستخدمًا} other{في مفضلة {count} مستخدم}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "حجم الملفات: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "اللغة: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "اللغة: {language}، مترجَم",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, zero{لا صفحات} one{صفحة واحدة} two{صفحتان} few{{count} صفحات} many{{count} صفحة} other{{count} صفحة}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "نُشر في {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, zero{التقييم {rating} من 5، بلا أصوات} one{التقييم {rating} من 5 بناءً على صوت واحد} two{التقييم {rating} من 5 بناءً على صوتين} few{التقييم {rating} من 5 بناءً على {count} أصوات} many{التقييم {rating} من 5 بناءً على {count} صوتًا} other{التقييم {rating} من 5 بناءً على {count} صوت}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "تم نسخ {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "الناشر",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}، لم يُؤكَّد بعد",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "انتقال",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
