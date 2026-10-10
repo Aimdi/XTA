@@ -43,7 +43,8 @@ class PixivDetailViewer extends StatelessWidget {
       final quality = pixivQuality(prefs, PixivQualitySlot.detail);
       final pages = [for (var i = 0; i < illust.viewerUrls.length; i++) pixivPageUrl(illust, i, quality)];
       final poster = pixivTileUrl(illust, pixivQuality(prefs, PixivQualitySlot.feed));
-      final cacheWidth = (width * MediaQuery.devicePixelRatioOf(context)).ceil();
+      // The screen, not the pane: a split divider dragged would otherwise decode the art again every frame.
+      final cacheWidth = (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil();
       final pager = NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           pixivPageEdge(notification)?.dispatch(context);
@@ -84,12 +85,14 @@ class PixivDetailViewer extends StatelessWidget {
             url: poster,
             fit: BoxFit.contain,
             cacheWidth: cacheWidth,
+            gaplessPlayback: true,
             loadStateChanged: _quietUnlessLoaded,
           ),
         PixivNetworkImage(
           url: pages[index],
           fit: BoxFit.contain,
           cacheWidth: cacheWidth,
+          gaplessPlayback: true,
           loadStateChanged: (state) => pixivRetryLoadState(state, fill: false),
         ),
       ],

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
@@ -11,6 +13,13 @@ import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 /// Without a limit, ExtendedImage keeps the default spinner forever on a stalled
 /// `i.pximg.net` connection — which reads as "the plugin loads forever".
 const pixivImageTimeLimit = Duration(seconds: 12);
+
+/// The widest a whole-page decode goes. Some originals pass 8000px, and a few pages of those
+/// decoded in full would exhaust a phone's memory.
+const pixivFullResolutionMaxWidth = 4096;
+
+/// Three screens wide is sharp beyond the double-tap zoom and close at the deepest pinch.
+int pixivFullResolutionWidth(double screenWidthPx) => min(pixivFullResolutionMaxWidth, (screenWidthPx * 3).ceil());
 
 /// [url] from the image server the reader picked in the settings above [context].
 String pixivImageUrlFor(BuildContext context, String url) =>
@@ -37,7 +46,8 @@ class PixivNetworkImage extends StatelessWidget {
   final int? cacheHeight;
   final LoadStateChanged? loadStateChanged;
 
-  /// Decodes every pixel, for art the reader zooms into.
+  /// Decodes at [pixivFullResolutionWidth] of the screen rather than the painted width, for
+  /// art the reader zooms into.
   final bool fullResolution;
 
   /// Keeps the current picture up while a new decode of it loads.
@@ -61,7 +71,11 @@ class PixivNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final source = pixivImageUrlFor(context, url);
-    if (fullResolution || cacheWidth != null || cacheHeight != null) {
+    if (fullResolution) {
+      final screen = MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context);
+      return _image(source, width: pixivFullResolutionWidth(screen));
+    }
+    if (cacheWidth != null || cacheHeight != null) {
       return _image(source, width: cacheWidth, height: cacheHeight);
     }
 
@@ -79,8 +93,8 @@ class PixivNetworkImage extends StatelessWidget {
     fit: fit,
     cache: true,
     headers: pixivImageHeaders,
-    cacheWidth: fullResolution ? null : width,
-    cacheHeight: fullResolution ? null : height,
+    cacheWidth: width,
+    cacheHeight: height,
     timeLimit: pixivImageTimeLimit,
     retries: 1,
     gaplessPlayback: gaplessPlayback,

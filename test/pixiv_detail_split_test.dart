@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
@@ -20,6 +21,13 @@ Future<PixivHarness> _pumpDetail(WidgetTester tester, Size size, {PixivDetailLay
 );
 
 double _infoWidth(WidgetTester tester) => tester.getSize(find.byType(CustomScrollView)).width;
+
+Set<ImageProvider> _pictures(WidgetTester tester) => {
+  for (final image in tester.widgetList<ExtendedImage>(
+    find.descendant(of: find.byType(PixivDetailViewer), matching: find.byType(ExtendedImage)),
+  ))
+    image.image,
+};
 
 void main() {
   group('when the detail splits', () {
@@ -116,6 +124,25 @@ void main() {
       await tester.drag(handle, const Offset(600, 0));
       await settlePixiv(tester);
       expect(_infoWidth(tester), closeTo(pixivSplitMinInfo, 1));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('holding the divider keeps the pictures as they were decoded instead of loading them again', (
+      tester,
+    ) async {
+      await _pumpDetail(tester, const Size(1000, 700));
+      final before = _pictures(tester);
+      expect(before, isNotEmpty);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(const ValueKey('pixiv-detail-split-handle'))),
+      );
+      for (var step = 0; step < 5; step++) {
+        await gesture.moveBy(const Offset(-30, 0));
+        await tester.pump();
+        expect(_pictures(tester), before);
+      }
+      await gesture.up();
+      await settlePixiv(tester);
       await disposePixiv(tester);
     });
   });

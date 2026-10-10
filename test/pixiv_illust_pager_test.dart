@@ -35,6 +35,14 @@ class _EchoClient extends FakePixivClient {
       works.firstWhere((work) => work.id == illustId, orElse: () => pixivWork(id: illustId));
 }
 
+/// A list served from [pages] in order, each page but the last pointing at the next.
+PixivIllustListStore _pagedStore(List<List<PixivIllust>> pages, List<String?> asked) =>
+    PixivIllustListStore(({nextUrl}) async {
+      asked.add(nextUrl);
+      final index = nextUrl == null ? 0 : int.parse(nextUrl);
+      return PixivIllustPage(illusts: pages[index], nextUrl: index + 1 < pages.length ? '${index + 1}' : null);
+    });
+
 ScrollMetrics _metrics({double pixels = 0, Axis axis = Axis.horizontal}) => FixedScrollMetrics(
   minScrollExtent: 0,
   maxScrollExtent: 400,
@@ -194,6 +202,41 @@ void main() {
       feed.store.destroy();
     });
 
+    test('next pages that only repeat works already shown are passed over to the next new work', () async {
+      final asked = <String?>[];
+      final one = pixivWork(id: 1);
+      final two = pixivWork(id: 2);
+      final store = _pagedStore([
+        [one, two],
+        [two],
+        [one],
+        [pixivWork(id: 3)],
+      ], asked);
+      await store.refresh();
+      final pager = PixivIllustPagerStore(store.state, source: store);
+      await pager.loadMore();
+      expect(pager.state.illusts.map((work) => work.id), [1, 2, 3]);
+      expect(pager.state.tail, PixivPagerTail.end);
+      expect(asked, [null, '1', '2', '3']);
+      pager.destroy();
+      store.destroy();
+    });
+
+    test('a list that keeps repeating itself stops asking and offers Retry rather than a spinner', () async {
+      final asked = <String?>[];
+      final store = PixivIllustListStore(({nextUrl}) async {
+        asked.add(nextUrl);
+        return PixivIllustPage(illusts: [pixivWork(id: 1)], nextUrl: 'again');
+      });
+      await store.refresh();
+      final pager = PixivIllustPagerStore(store.state, source: store);
+      await pager.loadMore();
+      expect((pager.state.tail, pager.state.illusts.length), (PixivPagerTail.failed, 1));
+      expect(asked.length, 1 + pixivEmptyPageAdvanceLimit);
+      pager.destroy();
+      store.destroy();
+    });
+
     test('a list without a store pages through what it has and nothing after', () {
       final pager = PixivIllustPagerStore([pixivWork(id: 1), pixivWork(id: 2)]);
       expect((pager.state.tail, pager.pageCount), (PixivPagerTail.none, 2));
@@ -263,6 +306,37 @@ void main() {
       await settlePixiv(tester);
       expect(find.widgetWithText(AppBar, 'One'), findsOneWidget);
       expect(find.text('2 / 2'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a turn made while the finger stays down leaves the next work free to turn back', (tester) async {
+      final works = [pixivWork(id: 1, pages: 2, title: 'One'), pixivWork(id: 2, pages: 2, title: 'Two')];
+      await pumpPixiv(
+        tester,
+        PixivIllustPager(
+          illusts: works,
+          initialIndex: 0,
+          page: (work) => PixivIllustScreen(illust: work),
+        ),
+        client: (prefs) => _EchoClient(prefs, works),
+      );
+      final first = find.byKey(const PageStorageKey('pixiv-detail-pages-1'));
+      await tester.drag(first, const Offset(-300, 0));
+      await settlePixiv(tester);
+
+      final gesture = await tester.startGesture(tester.getCenter(first));
+      for (var step = 0; step < 6; step++) {
+        await gesture.moveBy(const Offset(-30, 0));
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      await tester.pump(const Duration(milliseconds: 1200));
+      await gesture.up();
+      await settlePixiv(tester);
+      expect(find.widgetWithText(AppBar, 'Two'), findsOneWidget);
+
+      await tester.drag(find.byKey(const PageStorageKey('pixiv-detail-pages-2')), const Offset(300, 0));
+      await settlePixiv(tester);
+      expect(find.widgetWithText(AppBar, 'One'), findsOneWidget);
       await disposePixiv(tester);
     });
   });

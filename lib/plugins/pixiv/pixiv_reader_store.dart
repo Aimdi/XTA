@@ -106,11 +106,13 @@ class PixivReaderStore extends Store<PixivReaderState> {
     selectPage(mostVisible.key);
   }
 
-  /// Retire old visibility measurements before a jump or direction change.
+  /// Retire old visibility measurements before a jump or direction change. A sideways jump
+  /// to another page leaves the magnified page behind, and it never reports letting go.
   int beginNavigation(int index) {
     if (_closed) return _navigationGeneration;
     _restoringPosition = true;
     _visibleAreas.clear();
+    if (!state.vertical && _bounded(index, pageCount) != state.pageIndex) setZoomed(false);
     selectPage(index);
     return ++_navigationGeneration;
   }

@@ -74,14 +74,30 @@ class PixivIllustPagerStore extends Store<PixivIllustPagerState> {
   /// Every work, then the page that says what comes after them.
   int get pageCount => state.illusts.length + (state.tail == PixivPagerTail.none ? 0 : 1);
 
-  /// The list's next page, also as Retry after it failed.
+  /// The list's next page, also as Retry after it failed. A list still offering more after
+  /// pages of repeats alone also gets Retry, since no load is left for a spinner to wait on.
   Future<void> loadMore() async {
     final store = source;
     if (store == null || state.tail == PixivPagerTail.loading || state.tail == PixivPagerTail.end) return;
     update(PixivIllustPagerState(state.illusts, PixivPagerTail.loading));
-    await store.loadMore();
+    final illusts = await _nextWorks(store);
     if (_closed) return;
-    update(PixivIllustPagerState(mergePixivIllusts(state.illusts, visible(store.state)), _tailOf(store)));
+    final tail = _tailOf(store);
+    final stalled = tail == PixivPagerTail.more && illusts.length == state.illusts.length;
+    update(PixivIllustPagerState(illusts, stalled ? PixivPagerTail.failed : tail));
+  }
+
+  /// Next pages until one brings a work the pager lacks, the list ends or fails, or the
+  /// attempts run out. Pixiv's feeds repeat works across pages.
+  Future<List<PixivIllust>> _nextWorks(PixivIllustListStore store) async {
+    var illusts = state.illusts;
+    for (var attempt = 0; attempt < pixivEmptyPageAdvanceLimit; attempt++) {
+      await store.loadMore();
+      if (_closed) break;
+      illusts = mergePixivIllusts(state.illusts, visible(store.state));
+      if (illusts.length > state.illusts.length || _tailOf(store) != PixivPagerTail.more) break;
+    }
+    return illusts;
   }
 
   /// Follows a page viewer pushed past its edge: -1 or 1 once, when the push is far enough
@@ -151,6 +167,10 @@ class _PixivIllustPagerState extends State<PixivIllustPager> {
     if (index >= _store.state.illusts.length - pixivPagerPrefetch) unawaited(_store.loadMore());
   }
 
+  /// A turn can carry the dragged work off screen before its viewer reports the drag's end,
+  /// so the finger lifting anywhere over the pager ends the push too.
+  void _released(PointerEvent _) => _store.edgePush(const PixivPageEdgeNotification.ended());
+
   bool _onEdge(PixivPageEdgeNotification edge) {
     final turn = _store.edgePush(edge);
     if (turn != 0 && _pages.hasClients) _turn(turn);
@@ -169,18 +189,22 @@ class _PixivIllustPagerState extends State<PixivIllustPager> {
   }
 
   @override
-  Widget build(BuildContext context) => NotificationListener<PixivPageEdgeNotification>(
-    onNotification: _onEdge,
-    child: ScopedBuilder<PixivIllustPagerStore, PixivIllustPagerState>(
-      store: _store,
-      onState: (context, state) => PageView.builder(
-        key: const ValueKey('pixiv-illust-pager'),
-        controller: _pages,
-        itemCount: _store.pageCount,
-        onPageChanged: _changed,
-        itemBuilder: (context, index) => index < state.illusts.length
-            ? KeyedSubtree(key: ValueKey(state.illusts[index].id), child: widget.page(state.illusts[index]))
-            : PixivPagerTailPage(tail: state.tail, onRetry: _store.loadMore),
+  Widget build(BuildContext context) => Listener(
+    onPointerUp: _released,
+    onPointerCancel: _released,
+    child: NotificationListener<PixivPageEdgeNotification>(
+      onNotification: _onEdge,
+      child: ScopedBuilder<PixivIllustPagerStore, PixivIllustPagerState>(
+        store: _store,
+        onState: (context, state) => PageView.builder(
+          key: const ValueKey('pixiv-illust-pager'),
+          controller: _pages,
+          itemCount: _store.pageCount,
+          onPageChanged: _changed,
+          itemBuilder: (context, index) => index < state.illusts.length
+              ? KeyedSubtree(key: ValueKey(state.illusts[index].id), child: widget.page(state.illusts[index]))
+              : PixivPagerTailPage(tail: state.tail, onRetry: _store.loadMore),
+        ),
       ),
     ),
   );

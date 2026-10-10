@@ -214,8 +214,8 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> with PixivPageSur
     ),
   );
 
-  /// A page decoded at the screen's width, or whole once zoomed or with HD on; the decode
-  /// switch keeps the picture up, a different file starts over with its own progress.
+  /// A page decoded at the screen's width, or up to three screens wide once zoomed or with HD
+  /// on; the decode switch keeps the picture up, a different file starts over with its own progress.
   Widget _pageImage(int index, PixivReaderState state, {required bool vertical}) {
     final url = _urlAt(index, state);
     return Semantics(

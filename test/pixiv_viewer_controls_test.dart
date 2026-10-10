@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -79,6 +80,20 @@ void main() {
       store.destroy();
     });
 
+    test('a jump to another page in the horizontal reader lets go of the zoom', () {
+      final store = PixivReaderStore(pageCount: 3, vertical: false)..setZoomed(true);
+      store.finishNavigation(store.beginNavigation(0));
+      expect(store.state.zoomed, isTrue);
+      store.finishNavigation(store.beginNavigation(2));
+      expect((store.state.pageIndex, store.state.zoomed), (2, false));
+      store
+        ..toggleDirection()
+        ..setZoomed(true);
+      store.finishNavigation(store.beginNavigation(0));
+      expect((store.state.pageIndex, store.state.zoomed), (0, true));
+      store.destroy();
+    });
+
     test('a loaded page is remembered once, and nothing changes after closing', () {
       final store = PixivReaderStore(pageCount: 2);
       var updates = 0;
@@ -92,6 +107,11 @@ void main() {
       store.pageLoaded('b');
       expect(store.state.loaded, {'a'});
     });
+  });
+
+  test('a whole-page decode goes three screens wide and never past its cap', () {
+    expect(pixivFullResolutionWidth(1080), 3240);
+    expect(pixivFullResolutionWidth(1440), pixivFullResolutionMaxWidth);
   });
 
   group('reader bar', () {
@@ -145,6 +165,8 @@ void main() {
       );
       expect(_pageUrls(tester).first, work.originalUrls.first);
       expect(tester.widget<PixivNetworkImage>(find.byType(PixivNetworkImage).first).fullResolution, isTrue);
+      final decode = tester.widget<ExtendedImage>(find.byType(ExtendedImage).first).image as ExtendedResizeImage;
+      expect(decode.width, pixivFullResolutionWidth(390));
 
       await tester.tap(find.byKey(const ValueKey('pixiv-reader-hd')));
       await settlePixiv(tester);

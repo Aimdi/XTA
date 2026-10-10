@@ -100,10 +100,13 @@ after B5a, profile tabs), similar works and the profile grid all use it.
 
 The vertical reader is now zoomable too (pinch, and double-tap where tapped),
 with the whole list in one `PixivZoomable`. `PixivZoomable.onZoomChanged`
-feeds `PixivReaderStore.setZoomed`; while zoomed or in HD, pages decode at full
-size (`PixivNetworkImage.fullResolution`) with `gaplessPlayback`, so the
-picture stays up while the sharper decode loads. Turning a page in the
-horizontal reader lets go of the zoom.
+feeds `PixivReaderStore.setZoomed`; while zoomed or in HD, pages decode at
+three times the screen's width, never past 4096px
+(`PixivNetworkImage.fullResolution`, `pixivFullResolutionWidth`), with
+`gaplessPlayback`, so the picture stays up while the sharper decode loads. The
+cap keeps a few built pages of an 8000px original from exhausting a phone's
+memory. Turning a page in the horizontal reader, by swipe, slider or page
+overview, lets go of the zoom.
 
 ## Ugoira
 
@@ -128,15 +131,19 @@ opens a single work as before unless Swipe between works is on. Then it pushes
   search). `PixivIllustPagerStore` keeps its own copy and only appends the
   store's later pages, passed through the reader's mutes, so the work on
   screen never moves.
-- Two works from the end it asks the store for its next page. The page after
-  the last work shows a spinner, *Couldn't load more works* with Retry, or
-  *No more works*. `PixivPagedListStore.loadMore` now returns the load already
-  in flight and records `loadMoreFailed`, which a refresh clears.
+- Two works from the end it asks the store for its next page. Pixiv's feeds
+  repeat works across pages, so a page that adds nothing new is followed by
+  the next, up to `pixivEmptyPageAdvanceLimit` pages. The page after the last
+  work shows a spinner, *Couldn't load more works* with Retry (also when those
+  pages brought only repeats), or *No more works*.
+  `PixivPagedListStore.loadMore` now returns the load already in flight and
+  records `loadMoreFailed`, which a refresh clears.
 - A work with several pages keeps its own page swipe. Its viewer reports a
   drag pushed past its first or last page (`PixivPageEdgeNotification`, from
   clamping and bouncing physics); after 56dp the pager turns to the
-  neighbouring work, once per drag. Other horizontal lists in the detail do not
-  turn works.
+  neighbouring work, once per drag. The finger lifting anywhere over the pager
+  ends the drag, since a turn can carry the dragged work off screen first.
+  Other horizontal lists in the detail do not turn works.
 - A work swiped back into view reopens on the page it was left at, and its
   counter follows.
 
@@ -148,8 +155,10 @@ fit (a landscape phone), `vertical` never does. Pictures and the page bar sit
 on the left, filling the height; author, stats, caption, tags, the author's
 works and similar works scroll on the right with pull-to-refresh. The divider
 has a 48dp drag target and screen-reader increase/decrease steps; its position
-is kept in `plugin.pixiv.detail_split` when let go. The viewer's page survives
-a rotation between the two layouts.
+is kept in `plugin.pixiv.detail_split` when let go. Pages decode at the
+screen's width rather than the pane's, so dragging the divider never decodes
+them again, and `gaplessPlayback` keeps them up through a rotation. The
+viewer's page survives a rotation between the two layouts.
 
 ## Merge notes
 
