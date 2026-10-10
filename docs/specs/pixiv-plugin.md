@@ -73,7 +73,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Feature | Detail |
 |---|---|
 | Settings | One page of section widgets (`pixivSettingsSections`): account (WebView PKCE sign-in, sign out, refresh-token paste, test), content (Show R-18, Hide AI), mute review (authors, tags, works, comments, novels) |
-| Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`) |
+| Home | Shell (`pixiv_screen.dart`) over Home (Following with all / public / private, Recommended with Pixivision and suggested creators, Manga, Watchlist), Rankings (pinned board chips and archive date), Favorites (public / private bookmarks), Search and More (`pixiv_more_pane.dart`); see `pixiv-discovery.md` |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
@@ -123,6 +123,9 @@ its illust case.
 | Follow delete | `POST /v1/user/follow/delete` |
 | Bookmark add | `POST /v2/illust/bookmark/add` |
 | Bookmark delete | `POST /v1/illust/bookmark/delete` |
+
+Rankings, recommended manga and creators, Pixivision, series, the manga
+watchlist and the walkthrough are listed in `pixiv-discovery.md`.
 
 ## Not yet
 

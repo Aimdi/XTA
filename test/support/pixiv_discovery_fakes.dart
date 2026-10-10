@@ -4,6 +4,26 @@ import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixivision_parser.dart';
 
+import 'pixiv_reader_harness.dart';
+
+/// A harness client the whole Pixiv screen can run on: no token refresh, and
+/// fixed Following and Recommended pages.
+class FakePixivScreenClient extends FakePixivClient {
+  List<PixivIllust> followingWorks;
+  List<PixivIllust> recommendedWorks;
+
+  FakePixivScreenClient(super.prefs, {this.followingWorks = const [], this.recommendedWorks = const []});
+
+  @override
+  Future<void> ensureAccessToken() async {}
+
+  @override
+  Future<PixivIllustPage> following({String? nextUrl}) async => PixivIllustPage(illusts: followingWorks);
+
+  @override
+  Future<PixivIllustPage> recommended({String? nextUrl}) async => PixivIllustPage(illusts: recommendedWorks);
+}
+
 /// Answers every discovery call from fixtures and records what was asked.
 class FakePixivDiscoveryApi extends PixivDiscoveryApi {
   final calls = <String>[];
@@ -67,7 +87,10 @@ class FakePixivDiscoveryApi extends PixivDiscoveryApi {
   @override
   Future<PixivSeriesPage> illustSeries(int seriesId, {String? nextUrl}) async {
     calls.add('series:$seriesId');
-    return PixivSeriesPage(series: series, works: PixivIllustPage(illusts: seriesWorks));
+    return PixivSeriesPage(
+      series: series,
+      works: PixivIllustPage(illusts: seriesWorks),
+    );
   }
 
   @override

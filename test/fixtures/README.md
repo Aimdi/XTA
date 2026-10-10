@@ -12,6 +12,7 @@ responses over hand-written stubs.
 | `UserTweets/add_entries.json` | Slim `TimelineAddEntries` from guest `UserTweets` | `Twitter.createTweetChains` |
 | `Retweeters/ok.json` | Hand-shaped `Retweeters` timeline (`user_results` + cursor) | `TimelineParser.retweetersInstructions` / `parseUsersTimeline` |
 | `Retweeters/module.json` | Hand-shaped Retweeters `TimelineTimelineModule` + `userResults` | `TimelineParser.parseUsersTimeline` |
+| `Pixivision/article_en.html`, `Pixivision/article_zh.html` | Hand-shaped pixivision.net article pages in the English and Chinese layouts | `parsePixivisionArticle` |
 
 Guest `TweetDetail` returned 404; tweet shapes were taken from `UserTweets`
 instead. No auth tokens are stored in these files.

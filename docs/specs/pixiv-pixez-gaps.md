@@ -28,7 +28,7 @@ once those are in.
 | B2b | Novels: reader | Planned |
 | B2c | Novels: search, profiles, history, deep links | Planned |
 | B3 | Comments (reading only) | Planned |
-| B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Planned |
+| B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Built |
 | B5a | Profiles and follows | Planned |
 | B5b | Bookmarks and bookmark organisation | Planned |
 | B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Planned |
@@ -94,13 +94,16 @@ Artwork comments; reply threads; Pixiv emoji and stickers; comment mute and
 spam handling; selectable comment text with Translate; novel comments and
 replies.
 
-### B4 — discovery
+### B4 — discovery (built)
 
 Recommended manga; recommended users page; Pixivision carousel, list and
 article reader; illustration ranking with all modes, pinned tabs and date;
 Following feed with public / private filter; follow hub (new works,
 bookmarks, watchlist, followed); illust / manga series page and series
 context; manga watchlist; signed-out preview; artwork ID and resolution.
+Described in `pixiv-discovery.md`. Series and Pixivision links are routed
+once B7's link refs land; the Pixivision-ID search tile joins B1's
+shortcuts.
 
 ### B5a — profiles and follows
 
@@ -144,4 +147,4 @@ navigation.
   rather than masking them, and the app-wide secure window covers the privacy
   screen.
 - **Hide AI works** drops `illust_ai_type == 2` everywhere except the reader's
-  own bookmarks; the AI-ranking exemption arrives with B4's rankings.
+  own bookmarks and the AI ranking boards, which the reader opens by name.
