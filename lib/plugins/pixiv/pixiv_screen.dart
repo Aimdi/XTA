@@ -16,6 +16,7 @@ import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_session_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_sign_in_body.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -101,6 +102,23 @@ class _PixivScreenState extends State<PixivScreen> {
       'bookmarks',
       () => PixivIllustListStore(_bookmarksLoader(_state.bookmarksRestrict), filter: mute.filter),
     );
+    _watchAccount(prefs);
+  }
+
+  /// Empties every session list when the reader signs out or switches account.
+  void _watchAccount(BasePrefService prefs) {
+    final lists = [..._home.all, _ranking, _bookmarks];
+    _session.obtain(
+      'account',
+      () => PixivSessionAccountStore(
+        prefs,
+        onSwitched: () {
+          for (final list in lists) {
+            list.clear();
+          }
+        },
+      ),
+    );
   }
 
   Future<void> _warmUp() async {
@@ -133,15 +151,16 @@ class _PixivScreenState extends State<PixivScreen> {
     super.dispose();
   }
 
+  List<PixivPagedListStore<Object>> _storesFor(int section) => switch (section) {
+    0 => _home.storesFor(_state.homeSource),
+    1 => [_ranking],
+    2 => [_bookmarks],
+    _ => const [],
+  };
+
   void _ensureTabLoaded(int index) {
     if (!_hasToken) return;
-    final List<PixivPagedListStore<Object>> stores = switch (index) {
-      0 => _home.storesFor(_state.homeSource),
-      1 => [_ranking],
-      2 => [_bookmarks],
-      _ => const [],
-    };
-    for (final store in stores) {
+    for (final store in _storesFor(index)) {
       if (store.state.isEmpty) store.refresh();
     }
   }
@@ -171,8 +190,11 @@ class _PixivScreenState extends State<PixivScreen> {
 
   String get _rankingMode => pixivEffectiveRankingMode(_state.rankingMode, _rankingModes);
 
+  void _useRankingLoader() =>
+      _ranking.useLoader(_rankingLoader(_api, context.read<PixivClient>(), _view, _rankingPins));
+
   Future<void> _reloadRanking() async {
-    _ranking.useLoader(_rankingLoader(_api, context.read<PixivClient>(), _view, _rankingPins));
+    _useRankingLoader();
     await _ranking.refresh();
   }
 
@@ -182,16 +204,28 @@ class _PixivScreenState extends State<PixivScreen> {
     await _reloadRanking();
   }
 
-  /// Moves off a board whose chip went away: unpinned, or R-18 now hidden.
-  void _syncRankingMode() {
-    final mode = _rankingMode;
-    if (mode != _state.rankingMode) _changeRankingMode(mode);
+  /// Runs after any build that finds the shown board without its chip:
+  /// unpinned, or hidden by Show R-18 going off from whichever settings entry.
+  void _scheduleRankingSync() {
+    if (_rankingMode == _state.rankingMode) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _syncRankingMode();
+    });
   }
 
-  Future<void> _editRankingModes() async {
+  /// Moves to the first chip and drops the old board's works; they reload now
+  /// if Rankings is on screen, else when it is next opened.
+  void _syncRankingMode() {
+    final mode = _rankingMode;
+    if (mode == _state.rankingMode) return;
+    _view.select(_state.copyWith(rankingMode: mode));
+    _useRankingLoader();
+    if (_state.section == 1) _ensureTabLoaded(1);
+  }
+
+  Future<void> _editRankingModes() {
     final offered = pixivRankingModesOffered(pixivIllustRankingModes, showR18: context.read<PixivClient>().showR18);
-    await showPixivRankingModeSheet(context, pins: _rankingPins, offered: offered);
-    if (mounted) _syncRankingMode();
+    return showPixivRankingModeSheet(context, pins: _rankingPins, offered: offered);
   }
 
   Future<void> _changeRankingDate(DateTime? date) async {
@@ -214,6 +248,8 @@ class _PixivScreenState extends State<PixivScreen> {
       await runPixivSignIn(context);
       if (mounted) {
         _view.select(_state.copyWith());
+        // Signing out emptied every list, so the section on screen loads too.
+        _ensureTabLoaded(_state.section);
         await feed.refresh();
       }
     } finally {
@@ -229,6 +265,7 @@ class _PixivScreenState extends State<PixivScreen> {
     }
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
+    _scheduleRankingSync();
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -260,15 +297,18 @@ class _PixivScreenState extends State<PixivScreen> {
     ),
     (_) => ScopedBuilder<PixivRankingPinsStore, List<String>>(
       store: _rankingPins,
-      onState: (_, _) => PixivRankingSection(
-        modes: _rankingModes,
-        mode: _rankingMode,
-        date: state.rankingDate,
-        onMode: _changeRankingMode,
-        onEditModes: _editRankingModes,
-        onDate: _changeRankingDate,
-        store: _ranking,
-      ),
+      onState: (_, _) {
+        _scheduleRankingSync();
+        return PixivRankingSection(
+          modes: _rankingModes,
+          mode: _rankingMode,
+          date: state.rankingDate,
+          onMode: _changeRankingMode,
+          onEditModes: _editRankingModes,
+          onDate: _changeRankingDate,
+          store: _ranking,
+        );
+      },
     ),
     (_) => PixivFavoritesSection(
       restrict: state.bookmarksRestrict,
@@ -278,9 +318,7 @@ class _PixivScreenState extends State<PixivScreen> {
     (_) => const PixivSearchScreen(embedded: true),
     (_) => PixivMorePane(
       onAuthChanged: () {
-        if (!mounted) return;
-        _view.select(_state.copyWith());
-        _syncRankingMode();
+        if (mounted) _view.select(_state.copyWith());
       },
     ),
   ];

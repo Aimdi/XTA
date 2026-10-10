@@ -106,14 +106,15 @@ class PixivRankingPinsStore extends Store<List<String>> {
 
   bool isPinned(String id) => state.contains(id);
 
-  /// Pins or unpins [id], keeping the table's order.
+  /// Pins or unpins [id], keeping the table's order. The pins change before
+  /// the write, so a tap that lands while it is on its way builds on this one.
   Future<void> toggle(String id) async {
     final next = [
       for (final mode in table)
         if (mode.id == id ? !isPinned(id) : isPinned(mode.id)) mode.id,
     ];
-    await prefs.set(prefKey, jsonEncode(next));
     update(next);
+    await prefs.set(prefKey, jsonEncode(next));
   }
 }
 

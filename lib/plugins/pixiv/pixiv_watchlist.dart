@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -12,6 +15,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/plugins/plugin_pending_actions.dart';
 import 'package:xta/ui/dates.dart';
 
 typedef PixivWatchlistStore = PixivPagedListStore<PixivWatchlistSeries>;
@@ -19,21 +23,26 @@ typedef PixivWatchlistStore = PixivPagedListStore<PixivWatchlistSeries>;
 PixivWatchlistStore pixivMangaWatchlistStore(PixivDiscoveryApi api) =>
     PixivPagedListStore(({nextUrl}) => api.mangaWatchlist(nextUrl: nextUrl), keyOf: (series) => series.id);
 
-/// Opens the newest work of a watched manga series.
+/// Fetches the newest work of a watched manga series and opens it, without
+/// waiting on the work's page; with no newest work known, opens the series.
 Future<void> openPixivWatchlistLatest(BuildContext context, PixivWatchlistSeries series) async {
   final id = series.latestContentId;
-  if (id == null) return openPixivSeries(context, series.id);
+  if (id == null) {
+    unawaited(openPixivSeries(context, series.id));
+    return;
+  }
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
   try {
     final illust = await context.read<PixivClient>().illustDetail(id);
-    if (context.mounted) await openPixivIllust(context, illust);
+    if (context.mounted) unawaited(openPixivIllust(context, illust));
   } catch (error) {
     messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
   }
 }
 
 /// Home's Watchlist: the manga series the reader watches, newest update first.
+/// A change made on a series page shows here at once.
 class PixivMangaWatchlistFeed extends StatelessWidget {
   final PixivWatchlistStore store;
 
@@ -43,17 +52,20 @@ class PixivMangaWatchlistFeed extends StatelessWidget {
   Widget build(BuildContext context) => PixivWatchlistFeed(
     store: store,
     emptyMessage: L10n.of(context).plugin_pixiv_watchlist_empty,
-    onOpen: (context, series) => openPixivSeries(context, series.id),
+    onOpen: (context, series) => openPixivSeries(context, series.id, onWatchlistChanged: store.refresh),
     onViewLatest: openPixivWatchlistLatest,
   );
 }
 
+typedef PixivWatchlistAction = Future<void> Function(BuildContext context, PixivWatchlistSeries series);
+
 /// A paged watchlist of series rows; the novel watchlist passes its own openers.
-class PixivWatchlistFeed extends StatelessWidget {
+/// A row's View latest is busy until its newest part has been fetched.
+class PixivWatchlistFeed extends StatefulWidget {
   final PixivWatchlistStore store;
   final String emptyMessage;
-  final void Function(BuildContext context, PixivWatchlistSeries series) onOpen;
-  final void Function(BuildContext context, PixivWatchlistSeries series) onViewLatest;
+  final PixivWatchlistAction onOpen;
+  final PixivWatchlistAction onViewLatest;
 
   const PixivWatchlistFeed({
     super.key,
@@ -64,19 +76,39 @@ class PixivWatchlistFeed extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PixivPagedFeed<PixivWatchlistSeries>(
-    store: store,
-    emptyMessage: emptyMessage,
-    emptyIcon: Icons.bookmarks_outlined,
-    placeholder: const PluginFeedSkeleton(count: 4),
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    sliver: (context, items) => SliverList.separated(
-      itemCount: items.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, index) => PixivWatchlistRow(
-        series: items[index],
-        onOpen: () => onOpen(context, items[index]),
-        onViewLatest: () => onViewLatest(context, items[index]),
+  State<PixivWatchlistFeed> createState() => _PixivWatchlistFeedState();
+}
+
+class _PixivWatchlistFeedState extends State<PixivWatchlistFeed> {
+  final _opening = PluginPendingActions<int>();
+
+  @override
+  void dispose() {
+    _opening.destroy();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ScopedBuilder<PluginPendingActions<int>, Set<int>>(
+    store: _opening,
+    onState: (context, opening) => PixivPagedFeed<PixivWatchlistSeries>(
+      store: widget.store,
+      emptyMessage: widget.emptyMessage,
+      emptyIcon: Icons.bookmarks_outlined,
+      placeholder: const PluginFeedSkeleton(count: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      sliver: (context, items) => SliverList.separated(
+        itemCount: items.length,
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final series = items[index];
+          return PixivWatchlistRow(
+            series: series,
+            opening: opening.contains(series.id),
+            onOpen: () => widget.onOpen(context, series),
+            onViewLatest: () => _opening.run(series.id, () => widget.onViewLatest(context, series)),
+          );
+        },
       ),
     ),
   );
@@ -89,7 +121,16 @@ class PixivWatchlistRow extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onViewLatest;
 
-  const PixivWatchlistRow({super.key, required this.series, required this.onOpen, required this.onViewLatest});
+  /// Whether View latest is still fetching the newest part.
+  final bool opening;
+
+  const PixivWatchlistRow({
+    super.key,
+    required this.series,
+    required this.onOpen,
+    required this.onViewLatest,
+    this.opening = false,
+  });
 
   @override
   Widget build(BuildContext context) => InkWell(
@@ -130,8 +171,10 @@ class PixivWatchlistRow extends StatelessWidget {
         TextButton.icon(
           key: ValueKey('pixiv-watchlist-latest-${series.id}'),
           style: TextButton.styleFrom(minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension)),
-          onPressed: onViewLatest,
-          icon: const Icon(Icons.auto_stories_outlined, size: 18),
+          onPressed: opening ? null : onViewLatest,
+          icon: opening
+              ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+              : const Icon(Icons.auto_stories_outlined, size: 18),
           label: Text(l10n.plugin_pixiv_watchlist_view_latest),
         ),
       ],

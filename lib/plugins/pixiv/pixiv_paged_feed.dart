@@ -64,7 +64,9 @@ class PixivPagedFeed<T> extends StatelessWidget {
 
   Widget _list(BuildContext context, List<T> items) => NotificationListener<ScrollNotification>(
     onNotification: (notification) {
-      if (notification.metrics.pixels > notification.metrics.maxScrollExtent - 800) store.loadMore();
+      // Only this list's own scrolls page it, not a sideways strip inside it.
+      final metrics = notification.metrics;
+      if (notification.depth == 0 && metrics.pixels > metrics.maxScrollExtent - 800) store.loadMore();
       return false;
     },
     child: RefreshIndicator(

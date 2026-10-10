@@ -46,6 +46,10 @@ class PixivPagedListStore<T> extends Store<List<T>> {
     update(const []);
   }
 
+  /// Empties the list and forgets its paging but keeps the source: the next
+  /// [refresh] starts again from the first page.
+  void clear() => useLoader(_loader);
+
   int _restart() {
     _loadingMore = false;
     return ++_generation;

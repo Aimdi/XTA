@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -23,6 +24,30 @@ class _FeedClient extends PixivClient {
 
   @override
   Future<PixivIllustPage> following({String? nextUrl}) async => const PixivIllustPage(illusts: []);
+}
+
+/// Answers each board with one work named after it.
+class _BoardApi extends FakePixivDiscoveryApi {
+  _BoardApi() : super(PixivClient(PrefServiceCache()));
+
+  @override
+  Future<PixivIllustPage> ranking(String mode, {String? date, String? nextUrl}) async {
+    calls.add('rank:$mode:$date');
+    return PixivIllustPage(
+      illusts: [pixivWork(id: 100 * mode.length, pages: 1, title: 'board $mode')],
+    );
+  }
+}
+
+/// A preference store whose writes take a moment, like the platform's.
+class _SlowPrefs extends PrefServiceCache {
+  _SlowPrefs({super.defaults});
+
+  @override
+  FutureOr<bool> put<T>(String key, T val) async {
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    return super.put(key, val);
+  }
 }
 
 void main() {
@@ -87,6 +112,15 @@ void main() {
         'day_ai',
       ]);
       expect(PixivRankingPinsStore(prefs).state, store.state);
+      await store.destroy();
+    });
+
+    test('a tap while the last one is still being saved builds on it', () async {
+      final prefs = _SlowPrefs(defaults: {optionPluginPixivRankingModes: '["day"]'});
+      final store = PixivRankingPinsStore(prefs);
+      await Future.wait([store.toggle('day_ai'), store.toggle('day_r18')]);
+      expect(store.state, ['day', 'day_ai', 'day_r18']);
+      expect(jsonDecode(prefs.get<String>(optionPluginPixivRankingModes)!), ['day', 'day_ai', 'day_r18']);
       await store.destroy();
     });
   });
@@ -174,6 +208,37 @@ void main() {
       final day = tester.widget<FilterChip>(find.byKey(const ValueKey('pixiv-ranking-pin-day')));
       expect((day.selected, day.onSelected), (true, null));
       expect(pins.state, ['day', 'week_r18'], reason: 'the hidden R-18 pin stays saved');
+      await disposePixiv(tester);
+    });
+
+    testWidgets('Show R-18 going off from any settings entry moves off an R-18 board', (tester) async {
+      final boards = _BoardApi();
+      final harness = await pumpPixiv(
+        tester,
+        PixivScreen(scrollController: scroll),
+        client: (prefs) {
+          prefs.set(optionPluginPixivShowR18, true);
+          prefs.set(optionPluginPixivRankingModes, '["day","day_r18"]');
+          return FakePixivScreenClient(prefs);
+        },
+        extraProviders: [
+          Provider<PixivFeedStore>.value(value: feed),
+          Provider<PixivDiscoveryApi>.value(value: boards),
+        ],
+      );
+      await tester.tap(find.descendant(of: find.byType(PluginHomeChrome), matching: find.byTooltip('Ranking')));
+      await settlePixiv(tester);
+      await tester.tap(find.byKey(const ValueKey('pixiv-ranking-mode-day_r18')));
+      await settlePixiv(tester);
+      expect(find.text('board day_r18'), findsOneWidget);
+
+      await harness.prefs.set(optionPluginPixivShowR18, false);
+      await settlePixiv(tester);
+      expect(find.byKey(const ValueKey('pixiv-ranking-mode-day_r18')), findsNothing);
+      expect(find.text('board day_r18'), findsNothing);
+      expect(find.text('board day'), findsOneWidget);
+      expect(boards.calls.last, 'rank:day:null');
+      expect(tester.widget<ChoiceChip>(find.byKey(const ValueKey('pixiv-ranking-mode-day'))).selected, isTrue);
       await disposePixiv(tester);
     });
 

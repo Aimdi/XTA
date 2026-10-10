@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/pixiv/pixivision_parser.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/ui/errors.dart';
@@ -31,6 +31,17 @@ class PixivisionArticleStore extends Store<PixivisionArticle?> {
   PixivisionArticleStore(this.api, this.articleId) : super(null);
 
   Future<void> load() => execute(() => api.pixivisionArticle(articleId));
+
+  /// A pull on a shown article fetches it quietly and keeps it if that fails;
+  /// with nothing shown yet it is a first load.
+  Future<void> refresh() async {
+    if (state == null) return load();
+    try {
+      update(await api.pixivisionArticle(articleId));
+    } catch (_) {
+      // The article on screen stays: a failed pull must not blank it.
+    }
+  }
 }
 
 /// A Pixivision article: its picture and title, the intro, then each featured
@@ -97,7 +108,7 @@ class _PixivisionArticleScreenState extends State<PixivisionArticleScreen> {
     final cover = widget.article?.thumbnailUrl.isNotEmpty == true ? widget.article!.thumbnailUrl : article?.coverUrl;
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: _store.load,
+        onRefresh: _store.refresh,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [_appBar(context, title, cover), ...body],
@@ -240,27 +251,12 @@ class PixivisionWorkCard extends StatelessWidget {
     );
   }
 
-  Widget _artist(BuildContext context) => InkWell(
-    onTap: () => openPixivUser(context, work.userId),
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          spacing: 10,
-          children: [
-            PixivAvatar(userId: work.userId, name: work.userName, url: work.avatarUrl, size: 28),
-            Expanded(
-              child: Text(
-                work.userName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
+  Widget _artist(BuildContext context) => PixivUserLink(
+    userId: work.userId,
+    name: work.userName,
+    avatarUrl: work.avatarUrl,
+    avatarSize: 28,
+    style: Theme.of(context).textTheme.bodyMedium,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
   );
 }

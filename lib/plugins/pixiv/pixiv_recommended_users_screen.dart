@@ -78,11 +78,17 @@ class _PixivRecommendedUsersScreenState extends State<PixivRecommendedUsersScree
   }
 }
 
-/// The avatar strip on Home: suggested creators, one tap from their profile.
+/// A sideways strip of creators, each one tap from their profile: Home's
+/// suggested creators, and the search landing's once it moves onto this.
 class PixivRecommendedUsersStrip extends StatelessWidget {
-  final List<PixivUserPreview> previews;
+  final List<PixivUser> users;
+  final EdgeInsetsGeometry padding;
 
-  const PixivRecommendedUsersStrip({super.key, required this.previews});
+  const PixivRecommendedUsersStrip({
+    super.key,
+    required this.users,
+    this.padding = const EdgeInsets.symmetric(horizontal: 12),
+  });
 
   static const _avatar = 56.0;
 
@@ -94,10 +100,10 @@ class PixivRecommendedUsersStrip extends StatelessWidget {
       height: _avatar + 6 + nameHeight + 8,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        itemCount: previews.length,
+        padding: padding,
+        itemCount: users.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) => _creator(context, previews[index].user),
+        itemBuilder: (context, index) => _creator(context, users[index]),
       ),
     );
   }

@@ -110,6 +110,8 @@ class PixivisionArticleCard extends StatelessWidget {
                   if (published != null)
                     Text(
                       MaterialLocalizations.of(context).formatMediumDate(published),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                 ],

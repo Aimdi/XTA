@@ -123,10 +123,12 @@ class PixivWalkthroughTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // The label replaces the picture's own semantics, so the tap is given here too.
     return Semantics(
       button: true,
       label: illust.title,
       excludeSemantics: true,
+      onTap: () => _askToSignIn(context),
       child: Material(
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),

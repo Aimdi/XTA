@@ -17,6 +17,19 @@ import 'package:xta/plugins/pixiv/pixivision_list_screen.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_session.dart';
 
+/// Recommended works whose every refresh, pull-to-refresh included, also
+/// refreshes the parts shown above them: Pixivision articles and creators.
+class PixivRecommendedStore extends PixivIllustListStore {
+  final List<PixivPagedListStore<Object>> companions;
+
+  PixivRecommendedStore(super.loader, {super.filter, required this.companions});
+
+  @override
+  Future<void> refresh() async {
+    await Future.wait([super.refresh(), for (final store in companions) store.refresh()]);
+  }
+}
+
 /// The lists Home shows, kept for the Home session. Following is the app-wide feed.
 class PixivHomeStores {
   final PixivIllustListStore following;
@@ -41,26 +54,37 @@ class PixivHomeStores {
     required PixivClient client,
     required PixivDiscoveryApi api,
     required PixivMuteStore mute,
-  }) => PixivHomeStores(
-    following: following,
-    recommended: session.obtain(
-      'recommended',
-      () => PixivIllustListStore(({nextUrl}) => client.recommended(nextUrl: nextUrl), filter: mute.filter),
-    ),
-    manga: session.obtain(
-      'manga',
-      () => PixivIllustListStore(({nextUrl}) => api.mangaRecommended(nextUrl: nextUrl), filter: mute.filter),
-    ),
-    watchlist: session.obtain('watchlist', () => pixivMangaWatchlistStore(api)),
-    users: session.obtain('recommendedUsers', () => pixivRecommendedUsersStore(api, mute)),
-    articles: session.obtain('spotlight', () => pixivSpotlightStore(api)),
-  );
+  }) {
+    final users = session.obtain('recommendedUsers', () => pixivRecommendedUsersStore(api, mute));
+    final articles = session.obtain('spotlight', () => pixivSpotlightStore(api));
+    return PixivHomeStores(
+      following: following,
+      recommended: session.obtain(
+        'recommended',
+        () => PixivRecommendedStore(
+          ({nextUrl}) => client.recommended(nextUrl: nextUrl),
+          filter: mute.filter,
+          companions: [articles, users],
+        ),
+      ),
+      manga: session.obtain(
+        'manga',
+        () => PixivIllustListStore(({nextUrl}) => api.mangaRecommended(nextUrl: nextUrl), filter: mute.filter),
+      ),
+      watchlist: session.obtain('watchlist', () => pixivMangaWatchlistStore(api)),
+      users: users,
+      articles: articles,
+    );
+  }
 
-  /// The lists [source] shows: Recommended also heads its works with
-  /// Pixivision articles and suggested creators.
+  /// Every list, for emptying them all when the account changes.
+  List<PixivPagedListStore<Object>> get all => [following, recommended, manga, watchlist, users, articles];
+
+  /// The lists [source] shows. Recommended's own refresh also loads the
+  /// articles and creators above its works.
   List<PixivPagedListStore<Object>> storesFor(PixivHomeSource source) => switch (source) {
     PixivHomeSource.following => [following],
-    PixivHomeSource.recommended => [recommended, articles, users],
+    PixivHomeSource.recommended => [recommended],
     PixivHomeSource.manga => [manga],
     PixivHomeSource.watchlist => [watchlist],
   };
@@ -150,38 +174,49 @@ class PixivHomeSection extends StatelessWidget {
   };
 }
 
-/// All / public / private follows for the Following feed, as icons with tooltips.
+/// Whose works the Following feed shows — all, public or private follows — as
+/// one icon button with a menu, so the source chips beside it keep their room.
 class PixivFollowRestrictControl extends StatelessWidget {
   final String restrict;
   final ValueChanged<String> onChanged;
 
   const PixivFollowRestrictControl({super.key, required this.restrict, required this.onChanged});
 
+  static IconData _icon(String restrict) => switch (restrict) {
+    'public' => Icons.public,
+    'private' => Icons.lock_outline,
+    _ => Icons.all_inclusive,
+  };
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return SegmentedButton<String>(
+    final labels = {
+      'all': l10n.plugin_pixiv_follow_restrict_all,
+      'public': l10n.plugin_pixiv_follow_restrict_public,
+      'private': l10n.plugin_pixiv_follow_restrict_private,
+    };
+    return PopupMenuButton<String>(
       key: const ValueKey('pixiv-follow-restrict'),
-      showSelectedIcon: false,
-      segments: [
-        ButtonSegment(
-          value: 'all',
-          icon: const Icon(Icons.all_inclusive),
-          tooltip: l10n.plugin_pixiv_follow_restrict_all,
-        ),
-        ButtonSegment(
-          value: 'public',
-          icon: const Icon(Icons.public),
-          tooltip: l10n.plugin_pixiv_follow_restrict_public,
-        ),
-        ButtonSegment(
-          value: 'private',
-          icon: const Icon(Icons.lock_outline),
-          tooltip: l10n.plugin_pixiv_follow_restrict_private,
-        ),
+      tooltip: labels[restrict],
+      icon: Icon(_icon(restrict)),
+      iconColor: restrict == 'all' ? null : Theme.of(context).colorScheme.primary,
+      initialValue: restrict,
+      onSelected: onChanged,
+      itemBuilder: (_) => [
+        for (final MapEntry(key: value, value: label) in labels.entries)
+          PopupMenuItem(
+            key: ValueKey('pixiv-follow-restrict-$value'),
+            value: value,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(_icon(value)),
+              title: Text(label),
+              selected: value == restrict,
+              trailing: value == restrict ? const Icon(Icons.check) : null,
+            ),
+          ),
       ],
-      selected: {restrict},
-      onSelectionChanged: (selected) => onChanged(selected.first),
     );
   }
 }
@@ -197,28 +232,33 @@ class PixivRecommendedHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ScopedBuilder<PixivSpotlightStore, List<PixivSpotlightArticle>>(
-          store: articles,
-          onState: (context, items) => items.isEmpty
-              ? const SizedBox.shrink()
-              : _part(
-                  context,
-                  title: l10n.plugin_pixiv_pixivision_articles,
-                  onSeeAll: () => openPixivisionList(context),
-                  child: PixivisionCarousel(articles: items),
-                ),
-        ),
-        ScopedBuilder<PixivMuteStore, PixivMuteState>(
-          store: context.read<PixivMuteStore>(),
-          onState: (context, mute) => ScopedBuilder<PixivRecommendedUsersStore, List<PixivUserPreview>>(
-            store: users,
-            onState: (context, previews) => _users(context, pixivUnmutedPreviews(previews, mute)),
+    // Sideways scrolls stay in the header: the works feed below asks for its
+    // next page on any scroll it hears, whatever its axis.
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) => notification.metrics.axis == Axis.horizontal,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ScopedBuilder<PixivSpotlightStore, List<PixivSpotlightArticle>>(
+            store: articles,
+            onState: (context, items) => items.isEmpty
+                ? const SizedBox.shrink()
+                : _part(
+                    context,
+                    title: l10n.plugin_pixiv_pixivision_articles,
+                    onSeeAll: () => openPixivisionList(context),
+                    child: PixivisionCarousel(articles: items),
+                  ),
           ),
-        ),
-      ],
+          ScopedBuilder<PixivMuteStore, PixivMuteState>(
+            store: context.read<PixivMuteStore>(),
+            onState: (context, mute) => ScopedBuilder<PixivRecommendedUsersStore, List<PixivUserPreview>>(
+              store: users,
+              onState: (context, previews) => _users(context, pixivUnmutedPreviews(previews, mute)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -228,7 +268,7 @@ class PixivRecommendedHeader extends StatelessWidget {
           context,
           title: L10n.of(context).plugin_pixiv_recommended_users,
           onSeeAll: () => openPixivRecommendedUsers(context),
-          child: PixivRecommendedUsersStrip(previews: previews),
+          child: PixivRecommendedUsersStrip(users: [for (final preview in previews) preview.user]),
         );
 
   Widget _part(BuildContext context, {required String title, required VoidCallback onSeeAll, required Widget child}) =>
@@ -239,10 +279,18 @@ class PixivRecommendedHeader extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 4, 0),
+              // See all may shrink and ellipsize, so large text never pushes it off the row.
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: Text(title, style: Theme.of(context).textTheme.titleSmall)),
-                  TextButton(onPressed: onSeeAll, child: Text(L10n.of(context).plugin_pixiv_see_all)),
+                  Expanded(flex: 3, child: Text(title, style: Theme.of(context).textTheme.titleSmall)),
+                  Flexible(
+                    flex: 2,
+                    child: TextButton(
+                      onPressed: onSeeAll,
+                      child: Text(L10n.of(context).plugin_pixiv_see_all, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 ],
               ),
             ),

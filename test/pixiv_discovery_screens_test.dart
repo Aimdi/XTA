@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,17 +7,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_stats.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
+import 'package:xta/plugins/pixiv/pixiv_home_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_recommended_users_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_session_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_sign_in_body.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
@@ -139,6 +143,44 @@ Future<void> _tapChip(WidgetTester tester, String source) async {
   await _tap(tester, chip);
 }
 
+PixivSpotlightArticle _articleNumber(int index) => PixivSpotlightArticle(
+  id: 9000 + index,
+  title: 'Article $index',
+  thumbnailUrl: '',
+  publishedAt: DateTime(2026, 9, 30),
+);
+
+/// Recommended works that always have a next page, counting each ask.
+class _PagedRecommendedClient extends FakePixivScreenClient {
+  final asked = <String?>[];
+
+  _PagedRecommendedClient(super.prefs);
+
+  @override
+  Future<PixivIllustPage> recommended({String? nextUrl}) async {
+    asked.add(nextUrl);
+    return PixivIllustPage(
+      illusts: [pixivWork(id: 700 + asked.length, pages: 1)],
+      nextUrl: 'https://app-api.pixiv.net/v1/illust/recommended?offset=${asked.length}',
+    );
+  }
+}
+
+/// A work's detail that arrives only when [gate] completes.
+class _SlowDetailClient extends FakePixivClient {
+  final gate = Completer<void>();
+  var details = 0;
+
+  _SlowDetailClient(super.prefs);
+
+  @override
+  Future<PixivIllust> illustDetail(int illustId) async {
+    details++;
+    await gate.future;
+    return pixivWork(id: illustId);
+  }
+}
+
 void main() {
   group('Home', () {
     late PixivFeedStore feed;
@@ -153,18 +195,26 @@ void main() {
       scroll.dispose();
     });
 
-    Future<void> pumpHome(WidgetTester tester, FakePixivDiscoveryApi api) async {
+    Future<PixivHarness> pumpHome(
+      WidgetTester tester,
+      FakePixivDiscoveryApi api, {
+      int userId = 0,
+      FakePixivScreenClient Function(PrefServiceCache prefs)? client,
+    }) {
       final screenClient = FakePixivScreenClient(
         PrefServiceCache(),
         followingWorks: [pixivWork(id: 600, pages: 1, title: 'Followed work')],
       );
       feed = PixivFeedStore(screenClient);
-      await _pump(
+      return _pump(
         tester,
         PixivScreen(scrollController: scroll),
         api,
-        client: (prefs) =>
-            FakePixivScreenClient(prefs, recommendedWorks: [pixivWork(id: 700, pages: 1, title: 'Suggested work')]),
+        client: (prefs) {
+          prefs.set(optionPluginPixivUserId, userId);
+          return client?.call(prefs) ??
+              FakePixivScreenClient(prefs, recommendedWorks: [pixivWork(id: 700, pages: 1, title: 'Suggested work')]);
+        },
         more: [Provider<PixivFeedStore>.value(value: feed)],
       );
     }
@@ -196,14 +246,19 @@ void main() {
       await disposePixiv(tester);
     });
 
-    testWidgets('Following can be narrowed to public or private follows', (tester) async {
+    testWidgets('Following can be narrowed to public or private follows from one button', (tester) async {
       final api = _api();
       await pumpHome(tester, api);
-      expect(find.byKey(const ValueKey('pixiv-follow-restrict')), findsOneWidget);
+      final control = find.byKey(const ValueKey('pixiv-follow-restrict'));
+      expect(tester.getSize(control).width, lessThanOrEqualTo(48), reason: 'the source chips keep their room');
+      expect(find.byTooltip('All followed creators'), findsOneWidget);
 
-      await _tap(tester, find.byTooltip('Privately followed creators'));
+      await _tap(tester, control);
+      await _tap(tester, find.byKey(const ValueKey('pixiv-follow-restrict-private')));
       expect(api.calls.last, 'following:private');
-      await _tap(tester, find.byTooltip('Publicly followed creators'));
+      expect(find.byTooltip('Privately followed creators'), findsOneWidget);
+      await _tap(tester, control);
+      await _tap(tester, find.byKey(const ValueKey('pixiv-follow-restrict-public')));
       expect(api.calls.last, 'following:public');
 
       await tester.pumpWidget(const SizedBox());
@@ -229,12 +284,92 @@ void main() {
       expect(find.text('Sora'), findsOneWidget);
       await disposePixiv(tester);
     });
+
+    testWidgets('sideways scrolls in the Recommended header do not page its works', (tester) async {
+      late _PagedRecommendedClient client;
+      final api = _api(
+        users: [for (var id = 1; id <= 8; id++) _creator(id, 'Creator $id')],
+        articles: [for (var index = 0; index < 8; index++) _articleNumber(index)],
+      );
+      await pumpHome(tester, api, client: (prefs) => client = _PagedRecommendedClient(prefs));
+      await _tapChip(tester, 'recommended');
+      expect(client.asked, [null]);
+
+      for (var drag = 0; drag < 4; drag++) {
+        await tester.drag(find.byType(PixivisionCarousel), const Offset(-200, 0));
+        await settlePixiv(tester);
+      }
+      await tester.drag(find.byType(PixivRecommendedUsersStrip), const Offset(-200, 0));
+      await settlePixiv(tester);
+      expect(client.asked, [null]);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('pulling Recommended down also refreshes its articles and creators', (tester) async {
+      final api = _api(users: [_creator(7, 'Sora')], articles: [_article]);
+      await pumpHome(tester, api);
+      await _tapChip(tester, 'recommended');
+      expect(api.calls.where((call) => call == 'spotlight' || call == 'users'), ['spotlight', 'users']);
+
+      await tester.fling(find.text('Suggested work'), const Offset(0, 400), 1200);
+      await settlePixiv(tester);
+      expect(api.calls.where((call) => call == 'spotlight'), hasLength(2));
+      expect(api.calls.where((call) => call == 'users'), hasLength(2));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('another account signing in empties the lists the last one loaded', (tester) async {
+      final api = _api(watchlist: [_watched]);
+      final harness = await pumpHome(tester, api, userId: 5);
+      await _tapChip(tester, 'watchlist');
+      expect(find.text('Autumn Diary'), findsOneWidget);
+
+      api.watchlist = const [PixivWatchlistSeries(id: 3, title: 'Winter Notes', userId: 9, userName: 'Ren')];
+      await harness.prefs.set(optionPluginPixivUserId, 6);
+      await settlePixiv(tester);
+      expect(find.text('Autumn Diary'), findsNothing);
+
+      await _tap(tester, find.text('Retry'));
+      expect(find.text('Winter Notes'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('the Recommended header fits a narrow phone with large text', (tester) async {
+      final api = _api(users: [_creator(7, 'Sora')], articles: [_articleNumber(1), _articleNumber(2)]);
+      final mute = PixivMuteStore(PrefServiceCache());
+      final articles = pixivSpotlightStore(api)..refresh();
+      final users = pixivRecommendedUsersStore(api, mute)..refresh();
+      addTearDown(mute.destroy);
+      addTearDown(articles.destroy);
+      addTearDown(users.destroy);
+      for (final textScale in [2.0, 3.0]) {
+        await _pump(
+          tester,
+          Scaffold(
+            body: SingleChildScrollView(
+              child: PixivRecommendedHeader(articles: articles, users: users),
+            ),
+          ),
+          api,
+          size: const Size(320, 900),
+          textScale: textScale,
+        );
+        expect(tester.takeException(), isNull, reason: 'text scale $textScale');
+        expect(find.text('Article 1'), findsOneWidget);
+        await disposePixiv(tester);
+      }
+    });
   });
 
   group('the watchlist', () {
     late PixivWatchlistStore store;
 
-    Future<void> pumpWatchlist(WidgetTester tester, {double textScale = 1, Size size = const Size(390, 844)}) async {
+    Future<FakePixivDiscoveryApi> pumpWatchlist(
+      WidgetTester tester, {
+      double textScale = 1,
+      Size size = const Size(390, 844),
+      FakePixivClient Function(PrefServiceCache prefs)? client,
+    }) async {
       final api = _api(watchlist: [_watched], series: _series, seriesWorks: [pixivWork(id: 11, pages: 1)]);
       store = pixivMangaWatchlistStore(api)..refresh();
       addTearDown(store.destroy);
@@ -244,7 +379,9 @@ void main() {
         api,
         textScale: textScale,
         size: size,
+        client: client,
       );
+      return api;
     }
 
     testWidgets('View latest opens the newest work', (tester) async {
@@ -255,10 +392,36 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('View latest waits for the newest work, so a second tap opens it once', (tester) async {
+      late _SlowDetailClient client;
+      await pumpWatchlist(tester, client: (prefs) => client = _SlowDetailClient(prefs));
+      final latest = find.byKey(const ValueKey('pixiv-watchlist-latest-266067'));
+      await tester.tap(latest);
+      await tester.pump();
+      expect(tester.widget<ButtonStyleButton>(latest).onPressed, isNull);
+      await tester.tap(latest, warnIfMissed: false);
+      await tester.pump();
+      expect(client.details, 1);
+
+      client.gate.complete();
+      await settlePixiv(tester);
+      expect(find.byType(PixivIllustScreen), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
     testWidgets('a row opens its series', (tester) async {
       await pumpWatchlist(tester);
       await _tap(tester, find.text('Autumn Diary'));
       expect(tester.widget<PixivSeriesScreen>(find.byType(PixivSeriesScreen)).seriesId, 266067);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a watchlist change on the series page refreshes the list', (tester) async {
+      final api = await pumpWatchlist(tester);
+      expect(api.calls.where((call) => call == 'watchlist'), hasLength(1));
+      await _tap(tester, find.text('Autumn Diary'));
+      await _tap(tester, find.text('Add to watchlist'));
+      expect(api.calls.where((call) => call == 'watchlist'), hasLength(2));
       await disposePixiv(tester);
     });
 
@@ -285,6 +448,18 @@ void main() {
       await _tap(tester, find.text('Add to watchlist'));
       expect(api.calls.last, 'watch:266067');
       expect(find.text('Remove from watchlist'), findsOneWidget);
+
+      await _tap(tester, find.text('Remove from watchlist'));
+      expect(api.calls.last, 'unwatch:266067');
+      expect(find.text('Add to watchlist'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('keeps its header and watchlist toggle when no work can be shown', (tester) async {
+      final api = _api(series: _series.copyWith(watchlistAdded: true));
+      await _pump(tester, const PixivSeriesScreen(seriesId: 266067), api);
+      expect(find.text('No works in this series you can see'), findsOneWidget);
+      expect(find.text('Leaves and cats'), findsOneWidget);
 
       await _tap(tester, find.text('Remove from watchlist'));
       expect(api.calls.last, 'unwatch:266067');
@@ -371,6 +546,13 @@ void main() {
       expect(api.calls, ['walkthrough']);
       expect(find.text('Popular on Pixiv'), findsOneWidget);
 
+      final semantics = tester.ensureSemantics();
+      expect(
+        tester.getSemantics(find.byKey(const ValueKey('pixiv-walkthrough-31'))),
+        isSemantics(label: 'Sommerfest', isButton: true, hasTapAction: true),
+      );
+      semantics.dispose();
+
       await _tap(tester, find.byKey(const ValueKey('pixiv-walkthrough-31')));
       expect(find.text('Sign in to open this work'), findsOneWidget);
       expect(find.byType(PixivIllustScreen), findsNothing);
@@ -411,11 +593,42 @@ void main() {
       await disposePixiv(tester);
     });
 
+    test('a pull keeps the article on screen, even when the page cannot be fetched', () async {
+      final api = _api(article: parsed);
+      final store = PixivisionArticleStore(api, 9876);
+      addTearDown(store.destroy);
+      await store.load();
+      final loading = <bool>[];
+      final stop = store.observer(onLoading: loading.add);
+      addTearDown(stop);
+
+      api.article = null;
+      await store.refresh();
+      expect(store.state, same(parsed));
+      expect(store.error, isNull);
+      expect(loading, isEmpty, reason: 'no full-page spinner over the article');
+    });
+
     testWidgets('an article that cannot be read says so and offers a retry', (tester) async {
       await _pump(tester, const PixivisionArticleScreen(articleId: 1), _api());
       expect(find.byType(FullPageErrorWidget), findsOneWidget);
       await disposePixiv(tester);
     });
+  });
+
+  test('the session account counts signing out and a new account as a switch, not learning the id', () async {
+    final prefs = PrefServiceCache(defaults: {optionPluginPixivUserId: 0});
+    var switches = 0;
+    final account = PixivSessionAccountStore(prefs, onSwitched: () => switches++);
+    await prefs.set(optionPluginPixivUserId, 5);
+    expect(switches, 0);
+    await prefs.set(optionPluginPixivUserId, 6);
+    expect(switches, 1);
+    await prefs.set(optionPluginPixivUserId, 0);
+    expect(switches, 2);
+    await account.destroy();
+    await prefs.set(optionPluginPixivUserId, 7);
+    expect(switches, 2, reason: 'a destroyed store stops listening');
   });
 
   testWidgets('suggested creators leave out authors the reader mutes', (tester) async {

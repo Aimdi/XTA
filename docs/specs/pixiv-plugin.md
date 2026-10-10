@@ -129,6 +129,6 @@ watchlist and the walkthrough are listed in `pixiv-discovery.md`.
 
 ## Not yet
 
-What remains against PixEz — novels, comments, Pixivision, series and
-watchlists, richer search and bookmarks, viewing history, multiple accounts and
-more — is planned batch by batch in `pixiv-pixez-gaps.md`.
+What remains against PixEz — novels and the novel watchlist, comments, richer
+search and bookmarks, viewing history, multiple accounts and more — is planned
+batch by batch in `pixiv-pixez-gaps.md`.

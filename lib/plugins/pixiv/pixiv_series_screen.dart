@@ -3,22 +3,26 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
-import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/utils/urls.dart';
 
-/// Opens an illustration or manga series by its id.
-Future<void> openPixivSeries(BuildContext context, int seriesId) =>
-    Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivSeriesScreen(seriesId: seriesId)));
+/// Opens an illustration or manga series by its id. [onWatchlistChanged] runs
+/// after the reader adds it to or removes it from the watchlist there.
+Future<void> openPixivSeries(BuildContext context, int seriesId, {VoidCallback? onWatchlistChanged}) => Navigator.push(
+  context,
+  MaterialPageRoute<void>(
+    builder: (_) => PixivSeriesScreen(seriesId: seriesId, onWatchlistChanged: onWatchlistChanged),
+  ),
+);
 
 /// A series' header and whether its watchlist change is still on its way.
 typedef PixivSeriesView = ({PixivIllustSeries? series, bool busy});
@@ -59,8 +63,9 @@ class PixivSeriesStore extends Store<PixivSeriesView> {
 /// One series: cover, title, author, caption, size, a watchlist toggle and its works.
 class PixivSeriesScreen extends StatefulWidget {
   final int seriesId;
+  final VoidCallback? onWatchlistChanged;
 
-  const PixivSeriesScreen({super.key, required this.seriesId});
+  const PixivSeriesScreen({super.key, required this.seriesId, this.onWatchlistChanged});
 
   @override
   State<PixivSeriesScreen> createState() => _PixivSeriesScreenState();
@@ -90,6 +95,7 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
     final l10n = L10n.of(context);
     try {
       await _series.toggleWatchlist();
+      widget.onWatchlistChanged?.call();
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
     }
@@ -105,15 +111,16 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
           title: Text(view.series?.title ?? l10n.plugin_pixiv_series, maxLines: 1, overflow: TextOverflow.ellipsis),
           actions: [if (view.series case final series?) ..._actions(l10n, series)],
         ),
-        body: PixivIllustFeed(
-          store: _works,
-          emptyMessage: l10n.plugin_pixiv_series_empty,
-          leadingSlivers: [
+        // The header sits outside the works list, so it and its watchlist
+        // toggle stay when every work is filtered out or a page fails.
+        body: NestedScrollView(
+          headerSliverBuilder: (context, _) => [
             if (view.series case final series?)
               SliverToBoxAdapter(
                 child: PixivSeriesHeader(series: series, busy: view.busy, onToggleWatchlist: _toggleWatchlist),
               ),
           ],
+          body: PixivIllustFeed(store: _works, emptyMessage: l10n.plugin_pixiv_series_empty),
         ),
       ),
     );
@@ -187,30 +194,14 @@ class PixivSeriesHeader extends StatelessWidget {
     ];
   }
 
-  Widget _author(BuildContext context) {
-    final user = series.user;
-    return InkWell(
-      borderRadius: BorderRadius.circular(8),
-      onTap: user.id == 0 ? null : () => openPixivUser(context, user.id),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
-        child: Row(
-          spacing: 10,
-          children: [
-            PixivAvatar.user(user, size: 32),
-            Flexible(
-              child: Text(
-                user.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _author(BuildContext context) => PixivUserLink(
+    userId: series.user.id,
+    name: series.user.name,
+    avatarUrl: series.user.avatarUrl,
+    avatarSize: 32,
+    style: Theme.of(context).textTheme.titleSmall,
+    borderRadius: BorderRadius.circular(8),
+  );
 
   Widget _watchlistButton(L10n l10n) {
     final added = series.watchlistAdded;

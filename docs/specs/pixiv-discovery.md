@@ -40,15 +40,19 @@ Watchlist — with the people icon (followed creators) kept beside Following.
 Each source's list is a session store (`PixivHomeStores.obtain`), so switching
 back keeps its scroll and data; Following is the app-wide `PixivFeedStore`.
 
-- **Following** carries an icon-only segmented control (all / public /
-  private follows, each with a tooltip) while it is the chosen source. The
-  choice is session state (`PixivViewState.followRestrict`); the shell swaps
-  the feed's loader to `PixivDiscoveryApi.following(restrict)` and puts it
-  back to every follow when the Home session ends, so the app-wide feed is
-  never left narrowed.
+- **Following** carries one 48 dp icon button beside its chip while it is
+  the chosen source. Its icon shows whose works are shown (all / public /
+  private follows, named in its tooltip) and it opens a menu of the three, so
+  the other source chips keep their room on a phone. The choice is session
+  state (`PixivViewState.followRestrict`); the shell swaps the feed's loader
+  to `PixivDiscoveryApi.following(restrict)` and puts it back to every follow
+  when the Home session ends, so the app-wide feed is never left narrowed.
 - **Recommended** heads its works (through `PixivIllustGrid.leadingSlivers`)
   with a Pixivision carousel and a strip of suggested creators, each with
-  See all. A part with nothing to show is left out.
+  See all. A part with nothing to show is left out. `PixivRecommendedStore`
+  refreshes the articles and creators with the works, so pull-to-refresh
+  updates all three. Sideways scrolls of the carousel and strip stop in the
+  header: the works feed below asks for its next page on any scroll it hears.
 - **Manga** is `/v1/manga/recommended` in the same grid, mute and filters.
 - **Watchlist** lists watched manga series (below).
 
@@ -67,8 +71,12 @@ R-18 AI, R-18 weekly and R-18G weekly.
   dropped on read.
 - R-18 boards are offered and shown only while Show R-18 works is on; their
   pins stay saved while hidden. When the shown board loses its chip
-  (unpinned, or R-18 turned off) the section moves to the first chip and
-  reloads.
+  (unpinned, or R-18 turned off from any settings entry) the section moves to
+  the first chip and drops the old board's works: the shell checks after
+  every build, and the screen rebuilds on any preference change. The new
+  board loads at once if Rankings is on screen, else when it is next opened.
+- A pin changes before it is saved, so a tap that lands while the last one is
+  being written builds on it.
 - AI boards keep their AI works even with Hide AI on: the reader asked for
   that board by name. Every other board still drops them.
 - `PixivRankingModeChips`, `PixivRankingPinsStore` and
@@ -95,6 +103,8 @@ R-18 AI, R-18 weekly and R-18G weekly.
   `member_illust.php` links, and never lends one work's artist to another.
   The intro is the header description, else the paragraphs before the first
   work. Fixtures: `test/fixtures/Pixivision/`.
+- Pulling a shown article fetches it quietly and keeps it if that fails; only
+  the first load shows the full-page spinner.
 
 ## Series
 
@@ -107,13 +117,31 @@ R-18 AI, R-18 weekly and R-18G weekly.
   author, caption, work count and start date, a watchlist toggle with its own
   busy state, the paged works grid, share and open on Pixiv. Its URL is
   `https://www.pixiv.net/user/{uid}/series/{sid}` (`pixivSeriesUrl`).
+- The header sits in a `NestedScrollView` above the works rather than among
+  them, so it and the watchlist toggle stay when every work is filtered out
+  (an R-18 series with Show R-18 off) or a page fails.
+- `openPixivSeries` takes an optional `onWatchlistChanged`, called after a
+  successful add or remove; the watchlist passes its store's refresh.
 
 ## Watchlist
 
 `PixivWatchlistFeed` lists `PixivWatchlistRow`s: cover with the published
 count, title, author, when it last updated and View latest. A row opens the
-series; View latest fetches `latest_content_id` and opens the work. The feed
-takes its store and openers, so the novel watchlist reuses it.
+series; View latest fetches `latest_content_id` and opens the work, showing a
+spinner and ignoring taps until the work has been fetched
+(`PluginPendingActions`). A watchlist change on a series page opened from a
+row refreshes the list. The feed takes its store and openers, so the novel
+watchlist reuses it.
+
+## Accounts
+
+`PixivSessionAccountStore` (`pixiv_session_account.dart`) watches the stored
+user id for the Home session. Signing out, or another account's id replacing
+the one the lists were loaded for, empties every session list (Home's,
+Rankings and Favorites) through `PixivPagedListStore.clear()`, so one
+account's private lists never show under another. An account learning its
+own id (none to one) is not a switch. After signing in from the sign-in
+body, the section on screen loads as well as the Following feed.
 
 ## Signed-out preview
 
@@ -129,10 +157,18 @@ rather than overflow at large text sizes.
 
 ## Shared pieces
 
-`PixivPagedFeed<T>` (`pixiv_paged_feed.dart`) is the paged list for anything
-that is not a works grid — creators, articles, watchlist rows: placeholder,
-soft refresh, failed appends kept, retry, and the next page asked for near
-the end.
+- `PixivPagedFeed<T>` (`pixiv_paged_feed.dart`) is the paged list for
+  anything that is not a works grid — creators, articles, watchlist rows:
+  placeholder, soft refresh, failed appends kept, retry, and the next page
+  asked for near the end of its own scroll (not a sideways strip inside it).
+- `PixivRecommendedUsersStrip` takes plain users and a padding, so any
+  creator strip can use it.
+- `PixivUserLink` (`pixiv_user_link.dart`) is a creator's avatar and name as a
+  48 dp row opening the profile: the series author and a Pixivision work's
+  artist.
+- `PluginPendingActions<K>` (`lib/plugins/plugin_pending_actions.dart`) is the
+  keys whose action is on its way; it was Substack's private follow store,
+  now shared by Substack follows and the watchlist's View latest.
 
 ## Left for later batches
 
@@ -141,3 +177,20 @@ the end.
   refs to `openPixivisionArticle(context, id)` and `openPixivSeries(context, id)`.
 - The Pixivision-ID tile in search's numeric shortcuts: the shortcut list is
   B1's, which has not landed; it calls `openPixivisionArticle`.
+
+## Wave-2 merge items
+
+Duplication this batch could not remove without editing another batch's file:
+
+- `pixiv_search_screen.dart` (B1) keeps a private `_recommendedUsersStrip`
+  that repeats `PixivRecommendedUsersStrip`. Wave 2 points the search landing
+  at the public strip (`users:`, `padding: EdgeInsets.zero`) and deletes the
+  copy.
+- `PixivIllustFeed` (`pixiv_grid.dart`, B6) repeats `PixivPagedFeed`'s state
+  handling. Wave 2 rebuilds it on `PixivPagedFeed` with the masonry grid as
+  its sliver, keeping the thumbnail prefetch, and gives its scroll listener
+  the same own-scroll check.
+- `PixivClient.ranking` (`pixiv_client.dart`, B0; no other wave-1 batch
+  edits it) is no longer called by the app; `PixivDiscoveryApi.ranking` is
+  the one in use. Wave 2 removes `PixivClient.ranking` and points
+  `pixiv_client_test` and `pixiv_discovery_test` at the API.
