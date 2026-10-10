@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
+import 'package:xta/utils/number_locale.dart';
 import 'package:xta/utils/reader_value_store.dart';
 
 /// What the filter sheet hands back: the filter, and whether to keep it.
@@ -39,7 +40,7 @@ String pixivDatePresetLabel(L10n l10n, PixivDatePreset preset) => switch (preset
 };
 
 String _count(BuildContext context, int value) =>
-    NumberFormat.decimalPattern(Localizations.localeOf(context).toLanguageTag()).format(value);
+    NumberFormat.decimalPattern(numberFormatLocale(context)).format(value);
 
 String pixivUsersIriLabel(BuildContext context, int threshold) =>
     L10n.of(context).plugin_pixiv_search_users_iri(_count(context, threshold));

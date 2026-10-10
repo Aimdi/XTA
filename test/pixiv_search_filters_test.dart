@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
+import 'package:xta/utils/number_locale.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
@@ -213,5 +215,24 @@ void main() {
     expect(ids(pixivUgoiraFiltered(works, PixivUgoiraFilter.all)), [1, 2, 3]);
     expect(ids(pixivUgoiraFiltered(works, PixivUgoiraFilter.only)), [2]);
     expect(ids(pixivUgoiraFiltered(works, PixivUgoiraFilter.none)), [1, 3]);
+  });
+
+  testWidgets('counts are formatted even in a language intl has no number symbols for', (tester) async {
+    final seen = <String>[];
+    for (final locale in const [Locale('eo'), Locale('de')]) {
+      await tester.pumpWidget(
+        Localizations(
+          locale: locale,
+          delegates: const [DefaultWidgetsLocalizations.delegate],
+          child: Builder(
+            builder: (context) {
+              seen.add(numberFormatLocale(context));
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+    }
+    expect(seen, ['en', 'de']);
   });
 }

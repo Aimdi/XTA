@@ -15,6 +15,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_saucenao.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_shortcuts.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/utils/number_locale.dart';
 
 typedef PixivImagePicker = Future<Uint8List?> Function();
 
@@ -244,7 +245,9 @@ class _PixivSauceRowState extends State<_PixivSauceRow> {
   Widget _row(BuildContext context, PixivIllust? illust, {Object? error}) {
     final l10n = L10n.of(context);
     final match = widget.match;
-    final authBroken = error is PixivException && error.kind == PixivErrorKind.unauthorized;
+    final authBroken =
+        error is PixivException &&
+        (error.kind == PixivErrorKind.unauthorized || error.kind == PixivErrorKind.notConfigured);
     final title = match.title.isNotEmpty ? match.title : (illust?.title ?? '#${match.illustId}');
     final details = [
       if (match.similarity case final similarity?) l10n.plugin_pixiv_saucenao_similarity(_percent(context, similarity)),
@@ -264,7 +267,7 @@ class _PixivSauceRowState extends State<_PixivSauceRow> {
   }
 
   String _percent(BuildContext context, double similarity) => NumberFormat.decimalPercentPattern(
-    locale: Localizations.localeOf(context).toLanguageTag(),
+    locale: numberFormatLocale(context),
     decimalDigits: 1,
   ).format(similarity / 100);
 

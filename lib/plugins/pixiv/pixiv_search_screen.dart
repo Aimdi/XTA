@@ -61,8 +61,8 @@ class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTicker
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _history.load();
-      unawaited(_store.loadLanding());
-      if ((widget.initialQuery ?? '').trim().isNotEmpty) unawaited(_submit());
+      final searching = (widget.initialQuery ?? '').trim().isNotEmpty;
+      unawaited(searching ? _submit() : _store.loadLanding());
     });
   }
 

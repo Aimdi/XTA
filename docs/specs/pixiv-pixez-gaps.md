@@ -23,7 +23,7 @@ once those are in.
 | Batch | Area | Status |
 |---|---|---|
 | B0 | Shared seams: transport, models, user card, file splits | Built |
-| B1 | Search: filters, shortcuts, favourite tags, SauceNAO | Planned |
+| B1 | Search: filters, shortcuts, favourite tags, SauceNAO | Built |
 | B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Planned |
 | B2b | Novels: reader | Planned |
 | B2c | Novels: search, profiles, history, deep links | Planned |
@@ -65,14 +65,22 @@ once those are in.
   `extraProviders`, and the home, settings, tile and detail screens split into
   section files.
 
-### B1 — search
+### B1 — search (built)
 
-Search filter sheet (target, sort, remembered); posting-date range with
-presets; popularity filter (users入り); Premium bookmark-count range; AI and
-ugoira filters; popular preview for non-Premium readers; user search with
-preview cards and follow; tag autocomplete with multi-word editing; open by ID
-or URL; search history management (clear all); tag chips with long-press
-menu, copy and favourite; favourite tags; SauceNAO reverse image search.
+Search state lives in `PixivSearchStore`. A filter bar and sheet cover target,
+sort (oldest and the audience sorts for Premium), posting-date presets and a
+custom range, users入り popularity, the Premium bookmark bracket, AI
+(`search_ai_type`) and ugoira, and Remember keeps the filter. Popular without
+Premium shows Pixiv's free preview as the grid; date sorts keep it as a strip.
+Creator results use the preview card with follow. Suggestions complete the last
+word; digits offer Open artwork / Open user tiles from `pixivNumericShortcuts`
+(a later batch adds its own tile there); paste opens a pasted link or id.
+Recent searches fold past twelve and clear after a confirmation. The landing
+pulls to refresh and loads trending tags and creators each with its own retry;
+trending tiles show the translation and open their work on long press. Tags on
+a work have a long-press sheet (mute, favourite, copy); favourite tags get a
+tabbed screen with an edit mode; SauceNAO searches by image. Details in
+`pixiv-search.md`.
 
 ### B2a–B2c — novels
 

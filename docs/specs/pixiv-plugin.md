@@ -77,7 +77,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
-| Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
+| Search | Works and creators with a filter bar and sheet (target, sort, dates, users入り, Premium bookmark bracket, AI, ugoira, Remember), the free popular preview for non-Premium readers, last-word tag suggestions, id shortcuts, paste, trending tags and suggested creators with pull-to-refresh, favourite tags and SauceNAO. State in `PixivSearchStore`, endpoints in `pixiv_search_api.dart`; see `pixiv-search.md`. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
 | Profile | User detail with works (illustrations + manga), following and My pixiv counts as plural phrases, public follow, works grid |
 | User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large. `onFollowChanged` lets a list update its copy |
 | Follow state | One app-wide `PixivFollowStore` (`pixiv_user_store.dart`): the follows changed this session and the ones in flight, read by every follow button, so a follow survives list rebuilds and recycled rows and shows the same on cards and profiles. Signing out or uninstalling clears it |
@@ -109,7 +109,7 @@ its illust case.
 | Trending tags | `GET /v1/trending-tags/illust` |
 | Popular preview | `GET /v1/search/popular-preview/illust` |
 | Autocomplete | `GET /v2/search/autocomplete` |
-| Search illust | `GET /v1/search/illust` |
+| Search illust | `GET /v1/search/illust` (filters in `pixiv-search.md`) |
 | Search user | `GET /v1/search/user` |
 | Recommended users | `GET /v1/user/recommended` |
 | Related users | `GET /v1/user/related` |
@@ -123,6 +123,7 @@ its illust case.
 | Follow delete | `POST /v1/user/follow/delete` |
 | Bookmark add | `POST /v2/illust/bookmark/add` |
 | Bookmark delete | `POST /v1/illust/bookmark/delete` |
+| SauceNAO (not Pixiv) | `POST https://saucenao.com/search.php` |
 
 ## Not yet
 
