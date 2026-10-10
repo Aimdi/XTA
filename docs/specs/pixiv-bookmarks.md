@@ -60,7 +60,7 @@ page; all are off by default except haptics, and all are reset with the plugin:
 
 | Switch | Preference | Effect |
 |---|---|---|
-| Bookmark privately | `plugin.pixiv.default_private_bookmark` | Bookmarks made without the editor are private |
+| Bookmark privately | `plugin.pixiv.default_private_bookmark` | Bookmarks made without the editor are private, a novel's heart included (`pixivDefaultBookmarkRestrict`, see `pixiv-novels.md`) |
 | Tag bookmarks automatically | `plugin.pixiv.auto_tag_bookmarks` | Bookmarks made without the editor carry the work's tags; the editor pre-checks them on a work not bookmarked yet |
 | Follow when bookmarking | `plugin.pixiv.follow_after_bookmark` | A new bookmark follows an author the reader does not follow yet, publicly (never the reader themself); a failed follow leaves the bookmark |
 | Save when bookmarking | `plugin.pixiv.download_after_bookmark` | A new bookmark saves every page through `downloadAllPixivPages` |
