@@ -66,6 +66,7 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
@@ -611,6 +612,7 @@ Future<void> main() async {
       optionPluginPixivMutedComments: '[]',
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginPixivRankingModes: jsonEncode(pixivDefaultRankingPins),
       optionPluginPixivGroupSubscriptions: '[]',
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,

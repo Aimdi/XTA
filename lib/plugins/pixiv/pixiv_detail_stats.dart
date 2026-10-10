@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -7,7 +8,8 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/ui/dates.dart';
 
-/// Bookmarks, views, date and the R-18 / AI marks under a work's title.
+/// Bookmarks, views, date, the R-18 / AI marks, the work's ID and its size
+/// under a work's title.
 class PixivDetailStats extends StatelessWidget {
   final PixivIllust illust;
 
@@ -21,6 +23,7 @@ class PixivDetailStats extends StatelessWidget {
     return Wrap(
       spacing: 12,
       runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         _bookmarks(context),
         PixivDetailStat(icon: Icons.visibility_outlined, label: compactCount(illust.totalViews)),
@@ -32,6 +35,9 @@ class PixivDetailStats extends StatelessWidget {
         if (illust.isR18)
           Text(l10n.plugin_pixiv_r18, style: theme.textTheme.labelMedium!.copyWith(color: theme.colorScheme.error)),
         if (illust.isAi) PixivDetailStat(icon: Icons.auto_awesome_outlined, label: l10n.plugin_pixiv_ai),
+        PixivIllustIdStat(illustId: illust.id),
+        if (illust.width > 0 && illust.height > 0)
+          PixivDetailStat(icon: Icons.aspect_ratio, label: l10n.plugin_pixiv_resolution(illust.width, illust.height)),
       ],
     );
   }
@@ -65,8 +71,40 @@ class PixivDetailStat extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: muted),
         const SizedBox(width: 4),
-        Text(label, style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+        Flexible(child: Text(label, style: theme.textTheme.bodySmall!.copyWith(color: muted))),
       ],
     );
   }
+}
+
+/// The work's ID; tapping copies it.
+class PixivIllustIdStat extends StatelessWidget {
+  final int illustId;
+
+  const PixivIllustIdStat({super.key, required this.illustId});
+
+  Future<void> _copy(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final copied = L10n.of(context).plugin_pixiv_illust_id_copied;
+    await Clipboard.setData(ClipboardData(text: '$illustId'));
+    messenger.showSnackBar(SnackBar(content: Text(copied)));
+  }
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    onTapHint: L10n.of(context).plugin_pixiv_copy_illust_id,
+    child: InkWell(
+      key: const ValueKey('pixiv-illust-id'),
+      borderRadius: BorderRadius.circular(6),
+      onTap: () => _copy(context),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+        child: Center(
+          widthFactor: 1,
+          child: PixivDetailStat(icon: Icons.tag, label: L10n.of(context).plugin_pixiv_illust_id('$illustId')),
+        ),
+      ),
+    ),
+  );
 }

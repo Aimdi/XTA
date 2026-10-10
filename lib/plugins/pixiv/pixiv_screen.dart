@@ -7,11 +7,13 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorites_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_home_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -37,10 +39,34 @@ class PixivScreen extends StatefulWidget {
   State<PixivScreen> createState() => _PixivScreenState();
 }
 
+/// The ranking board the view and the pins name when each page is asked for.
+PixivIllustPageLoader _rankingLoader(
+  PixivDiscoveryApi api,
+  PluginViewStore<PixivViewState> view,
+  PixivRankingPinsStore pins,
+) =>
+    ({nextUrl}) => api.ranking(
+      pixivEffectiveRankingMode(view.state.rankingMode, _visibleRankingModes(pins, api.client)),
+      date: pixivRankingDateParam(view.state.rankingDate),
+      nextUrl: nextUrl,
+    );
+
+List<PixivRankingMode> _visibleRankingModes(PixivRankingPinsStore pins, PixivClient client) =>
+    pixivVisibleRankingModes(pins.state, pixivIllustRankingModes, showR18: client.showR18);
+
+/// The Following filter is a choice for one Home session; the app-wide feed
+/// goes back to every follow when the session ends.
+void _endViewSession(PluginViewStore<PixivViewState> view, PixivIllustListStore feed, PixivDiscoveryApi api) {
+  if (view.state.followRestrict != 'all') feed.useLoader(({nextUrl}) => api.following(nextUrl: nextUrl));
+  view.destroy();
+}
+
 class _PixivScreenState extends State<PixivScreen> {
   late final PluginSessionLease _session;
   late final PluginViewStore<PixivViewState> _view;
-  late final PixivIllustListStore _recommended;
+  late final PixivDiscoveryApi _api;
+  late final PixivHomeStores _home;
+  late final PixivRankingPinsStore _rankingPins;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
   PixivViewState get _state => _view.state;
@@ -49,24 +75,23 @@ class _PixivScreenState extends State<PixivScreen> {
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'pixiv');
-    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(const PixivViewState()));
-    final view = _view;
     final client = context.read<PixivClient>();
+    final feed = context.read<PixivFeedStore>();
     final mute = context.read<PixivMuteStore>();
-    _recommended = _session.obtain(
-      'recommended',
-      () => PixivIllustListStore(({nextUrl}) => client.recommended(nextUrl: nextUrl), filter: mute.filter),
+    final api = _api = PixivDiscoveryApi.of(context);
+    _view = _session.obtain(
+      'view',
+      () => PluginViewStore<PixivViewState>(const PixivViewState()),
+      dispose: (view) => _endViewSession(view, feed, api),
     );
+    _home = PixivHomeStores.obtain(_session, following: feed, client: client, api: api, mute: mute);
+    final prefs = PrefService.of(context, listen: false);
+    _rankingPins = _session.obtain('rankingPins', () => PixivRankingPinsStore(prefs));
+    final view = _view;
+    final pins = _rankingPins;
     _ranking = _session.obtain(
       'ranking',
-      () => PixivIllustListStore(
-        ({nextUrl}) => client.ranking(
-          mode: view.state.rankingMode,
-          date: pixivRankingDateParam(view.state.rankingDate),
-          nextUrl: nextUrl,
-        ),
-        filter: mute.filter,
-      ),
+      () => PixivIllustListStore(_rankingLoader(api, view, pins), filter: mute.filter),
     );
     _bookmarks = _session.obtain(
       'bookmarks',
@@ -105,15 +130,14 @@ class _PixivScreenState extends State<PixivScreen> {
 
   void _ensureTabLoaded(int index) {
     if (!_hasToken) return;
-    final store = switch (index) {
-      0 when _state.homeSource == PixivHomeSource.following => context.read<PixivFeedStore>(),
-      0 => _recommended,
-      1 => _ranking,
-      2 => _bookmarks,
-      _ => null,
+    final List<PixivPagedListStore<Object>> stores = switch (index) {
+      0 => _home.storesFor(_state.homeSource),
+      1 => [_ranking],
+      2 => [_bookmarks],
+      _ => const [],
     };
-    if (store != null && store.state.isEmpty) {
-      store.refresh();
+    for (final store in stores) {
+      if (store.state.isEmpty) store.refresh();
     }
   }
 
@@ -128,17 +152,41 @@ class _PixivScreenState extends State<PixivScreen> {
     _ensureTabLoaded(0);
   }
 
+  void _useFollowRestrict(String restrict) =>
+      _home.following.useLoader(({nextUrl}) => _api.following(restrict: restrict, nextUrl: nextUrl));
+
+  Future<void> _changeFollowRestrict(String restrict) async {
+    if (restrict == _state.followRestrict) return;
+    _view.select(_state.copyWith(followRestrict: restrict));
+    _useFollowRestrict(restrict);
+    await _home.following.refresh();
+  }
+
+  List<PixivRankingMode> get _rankingModes => _visibleRankingModes(_rankingPins, _api.client);
+
+  String get _rankingMode => pixivEffectiveRankingMode(_state.rankingMode, _rankingModes);
+
   Future<void> _reloadRanking() async {
-    final client = context.read<PixivClient>();
-    final mode = _state.rankingMode;
-    final date = pixivRankingDateParam(_state.rankingDate);
-    _ranking.useLoader(({nextUrl}) => client.ranking(mode: mode, date: date, nextUrl: nextUrl));
+    _ranking.useLoader(_rankingLoader(_api, _view, _rankingPins));
     await _ranking.refresh();
   }
 
   Future<void> _changeRankingMode(String mode) async {
+    if (mode == _state.rankingMode) return;
     _view.select(_state.copyWith(rankingMode: mode));
     await _reloadRanking();
+  }
+
+  /// Moves off a board whose chip went away: unpinned, or R-18 now hidden.
+  void _syncRankingMode() {
+    final mode = _rankingMode;
+    if (mode != _state.rankingMode) _changeRankingMode(mode);
+  }
+
+  Future<void> _editRankingModes() async {
+    final offered = pixivRankingModesOffered(pixivIllustRankingModes, showR18: _api.client.showR18);
+    await showPixivRankingModeSheet(context, pins: _rankingPins, offered: offered);
+    if (mounted) _syncRankingMode();
   }
 
   Future<void> _changeRankingDate(DateTime? date) async {
@@ -157,7 +205,7 @@ class _PixivScreenState extends State<PixivScreen> {
   Future<void> _signIn() async {
     _view.select(_state.copyWith(signingIn: true));
     try {
-      final feed = context.read<PixivFeedStore>();
+      final feed = _home.following;
       await runPixivSignIn(context);
       if (mounted) {
         _view.select(_state.copyWith());
@@ -172,6 +220,7 @@ class _PixivScreenState extends State<PixivScreen> {
   Widget build(BuildContext context) {
     if (_view.restore(context, 'pixiv')) {
       _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict));
+      if (_state.followRestrict != 'all') _useFollowRestrict(_state.followRestrict);
     }
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
@@ -196,19 +245,25 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   List<WidgetBuilder> _sections(PixivViewState state) => [
-    (context) => PixivHomeSection(
+    (_) => PixivHomeSection(
       source: state.homeSource,
       onSource: _selectHomeSource,
-      following: context.read<PixivFeedStore>(),
-      recommended: _recommended,
+      followRestrict: state.followRestrict,
+      onFollowRestrict: _changeFollowRestrict,
+      stores: _home,
       scrollController: widget.scrollController,
     ),
-    (_) => PixivRankingSection(
-      mode: state.rankingMode,
-      date: state.rankingDate,
-      onMode: _changeRankingMode,
-      onDate: _changeRankingDate,
-      store: _ranking,
+    (_) => ScopedBuilder<PixivRankingPinsStore, List<String>>(
+      store: _rankingPins,
+      onState: (_, _) => PixivRankingSection(
+        modes: _rankingModes,
+        mode: _rankingMode,
+        date: state.rankingDate,
+        onMode: _changeRankingMode,
+        onEditModes: _editRankingModes,
+        onDate: _changeRankingDate,
+        store: _ranking,
+      ),
     ),
     (_) => PixivFavoritesSection(
       restrict: state.bookmarksRestrict,
@@ -218,7 +273,9 @@ class _PixivScreenState extends State<PixivScreen> {
     (_) => const PixivSearchScreen(embedded: true),
     (_) => PixivMorePane(
       onAuthChanged: () {
-        if (mounted) _view.select(_state.copyWith());
+        if (!mounted) return;
+        _view.select(_state.copyWith());
+        _syncRankingMode();
       },
     ),
   ];

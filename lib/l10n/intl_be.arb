@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Публічныя",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "Скапіяваць ID працы",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "Прыватны чытач Pixiv — стужка, рэйтынг, закладкі і пошук. Без публікацый",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "У стужцы падпісак пакуль нічога няма",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Падпісацца",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "Усе падпіскі",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Прыватныя падпіскі",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Публічныя падпіскі",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} падпіска} few{{shown} падпіскі} many{{shown} падпісак} other{{shown} падпіскі}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID працы {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID працы скапіяваны",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "Пакуль няма рэкамендаванай мангі — пацягніце, каб абнавіць",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Пра праграму",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Уліковы запіс",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Артыкулы Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Пакуль няма артыкулаў Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Працы ў артыкуле",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Самае папулярнае",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Дзённы",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "ШІ",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Жаночы",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Мужчынскі",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Манга",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 дзённы",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 ШІ",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Змяніць",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Замацаваныя рэйтынгі паказваюцца як укладкі. Рэйтынгі R-18 даступныя, калі ўключана «Паказваць працы R-18».",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Укладкі рэйтынгу",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Зараз у рэйтынгу нічога няма",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Месячны",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Арыгінал",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 тыднёвы",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G тыднёвы",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Чытаць гарызантальна",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Чытаць вертыкальна",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Рэкамендаваныя аўтары",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Пакуль няма рэкамендаваных аўтараў",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh-токен",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Доўгі токен з OAuth-уваходу ў Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Падобныя працы",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} пкс",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Паказаць",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "Нічога не знойдзена",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Назва/апісанне",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Паказаць усе",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "Серыя",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "У гэтай серыі няма прац, даступных вам",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Серыя: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Наступная ў серыі",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "№ {order} з {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Папярэдняя ў серыі",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Пачата {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Гэты прыватны плагін чытае Pixiv як галерэю: стужка, рэйтынгі, вашы публічныя закладкі і пошук. Націсніце «Увайсці», каб увайсці ў Pixiv у браўзеры, або ўстаўце refresh-токен ніжэй. Адсюль нічога не публікуецца, не дадаецца ў закладкі і не падпісваецца на Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Паказваць працы R-18",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Ілюстрацыі",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Манга",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Яшчэ",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Рэйтынг",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Карыстальнікі",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Спіс назірання",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Праверыць злучэнне",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Увайшлі як {name}",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Паказваць зноў",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "Увайдзіце, каб адкрыць гэтую працу",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Папулярнае на Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Дадаць у спіс назірання",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Тут з’явяцца серыі мангі, якія вы дадасце ў спіс назірання",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Выдаліць са спісу назірання",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Абноўлена {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Адкрыць апошнюю",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} праца} few{{shown} працы} many{{shown} прац} other{{shown} працы}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

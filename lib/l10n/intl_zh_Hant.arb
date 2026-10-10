@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "公開",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "複製作品 ID",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "私有 Pixiv 閱讀器 — 追蹤、排行榜、收藏與搜尋。不發文",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "追蹤動態裡還沒有內容",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "追蹤",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "所有追蹤的創作者",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "私密追蹤的創作者",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "公開追蹤的創作者",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, other{追蹤 {shown}}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "作品 ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "已複製作品 ID",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "目前沒有推薦漫畫 — 下拉重新整理",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "關於",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "帳號",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivision 特輯",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "目前沒有 Pixivision 特輯",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "精選作品",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "最受歡迎",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "日榜",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI生成",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "女性",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "男性",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "漫畫",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 日榜",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI生成",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "編輯",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "已釘選的排行榜會顯示為分頁。開啟「顯示 R-18 作品」時才提供 R-18 排行榜。",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "排行榜分頁",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "目前沒有排行榜作品",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "月榜",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "原創",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 週榜",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G 週榜",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "橫向閱讀",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "直向閱讀",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "推薦創作者",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "目前沒有推薦創作者",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "重新整理權杖",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "來自 Pixiv OAuth 登入的長權杖",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "相關作品",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} 像素",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "顯示",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "沒有結果",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "標題/說明",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "查看全部",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "系列",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "此系列沒有你可以查看的作品",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "系列：{title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "系列中的下一篇",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "第 {order} 篇，共 {total} 篇",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "系列中的上一篇",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "始於 {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "此私有外掛像圖庫應用程式一樣閱讀 Pixiv：追蹤、排行榜、公開收藏與搜尋。點登入以在瀏覽器中用 Pixiv 帳號登入，或在下方貼上重新整理權杖。此處不會在 Pixiv 發文、收藏或追蹤。",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "顯示 R-18 作品",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "插畫",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "漫畫",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "更多",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "排行榜",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "使用者",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "追更清單",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "測試連線",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "已以 {name} 身分登入",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "取消封鎖",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "登入後才能開啟此作品",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Pixiv 熱門",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "加入追更清單",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "加入追更清單的漫畫系列會顯示在這裡",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "移出追更清單",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "{when}更新",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "查看最新話",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, other{{shown} 件作品}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "सार्वजनिक",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "कृति ID कॉपी करें",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "निजी Pixiv रीडर — फ़ॉलोइंग, रैंकिंग, बुकमार्क और खोज। बिना पोस्टिंग",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "फ़ॉलोइंग फ़ीड में अभी कुछ नहीं",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "फ़ॉलो करें",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "सभी फ़ॉलो किए गए रचनाकार",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "निजी रूप से फ़ॉलो किए गए रचनाकार",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "सार्वजनिक रूप से फ़ॉलो किए गए रचनाकार",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} फ़ॉलोइंग} other{{shown} फ़ॉलोइंग}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "कृति ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "कृति ID कॉपी हो गई",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "अभी कोई सुझाया गया मांगा नहीं — रीफ़्रेश करने के लिए खींचें",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "परिचय",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "खाता",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivision लेख",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "अभी कोई Pixivision लेख नहीं",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "चुनी गई कृतियाँ",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "सबसे लोकप्रिय",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "दैनिक",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "महिला",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "पुरुष",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "मांगा",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 दैनिक",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "संपादित करें",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "पिन की गई रैंकिंग टैब के रूप में दिखती हैं। R-18 रैंकिंग तभी मिलती हैं जब “R-18 कृतियाँ दिखाएँ” चालू हो।",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "रैंकिंग टैब",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "अभी रैंकिंग में कोई कृति नहीं",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "मासिक",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "मूल",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 साप्ताहिक",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G साप्ताहिक",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "क्षैतिज पढ़ें",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "लंबवत पढ़ें",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "सुझाए गए रचनाकार",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "अभी कोई सुझाए गए रचनाकार नहीं",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "रिफ़्रेश टोकन",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Pixiv OAuth लॉगिन से लंबा टोकन",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "संबंधित कृतियाँ",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} पिक्सेल",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "दिखाएँ",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "कोई परिणाम नहीं",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "शीर्षक/कैप्शन",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "सभी देखें",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "शृंखला",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "इस शृंखला में आपके देखने लायक कोई कृति नहीं",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "शृंखला: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "शृंखला में अगली",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "{total} में से #{order}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "शृंखला में पिछली",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "{date} को शुरू हुई",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: फ़ॉलोइंग, रैंकिंग, आपके सार्वजनिक बुकमार्क और खोज। ब्राउज़र में Pixiv खाते से साइन इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। यहाँ से Pixiv पर कुछ पोस्ट, बुकमार्क या फ़ॉलो नहीं होता।",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 कृतियाँ दिखाएँ",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "चित्र",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "मांगा",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "और",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "रैंकिंग",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "उपयोगकर्ता",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "वॉचलिस्ट",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "कनेक्शन जाँचें",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "{name} के रूप में साइन इन",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "म्यूट हटाएँ",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "यह कृति खोलने के लिए साइन इन करें",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Pixiv पर लोकप्रिय",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "वॉचलिस्ट में जोड़ें",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "वॉचलिस्ट में जोड़ी गई मांगा शृंखलाएँ यहाँ दिखती हैं",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "वॉचलिस्ट से हटाएँ",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "{when} अपडेट हुई",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "नवीनतम देखें",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} कृति} other{{shown} कृतियाँ}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

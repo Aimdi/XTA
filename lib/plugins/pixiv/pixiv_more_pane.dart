@@ -8,6 +8,7 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
+import 'package:xta/plugins/pixiv/pixivision_list_screen.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
 /// Flare-style More list: account, history, preferences, mute, about, logout.
@@ -92,6 +93,11 @@ class _PixivMorePaneState extends State<PixivMorePane> {
         leading: const Icon(Icons.history),
         title: Text(l10n.plugin_pixiv_search_history),
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PixivSearchScreen())),
+      ),
+      ListTile(
+        leading: const Icon(Icons.article_outlined),
+        title: Text(l10n.plugin_pixiv_pixivision_articles),
+        onTap: () => openPixivisionList(context),
       ),
       ListTile(leading: const Icon(Icons.tune), title: Text(l10n.plugin_pixiv_more_preferences), onTap: _openSettings),
       ListTile(

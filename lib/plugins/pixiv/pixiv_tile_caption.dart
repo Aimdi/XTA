@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_detail_series.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
-/// Title, author and bookmark count under a tile's image.
+/// Title, series, author and bookmark count under a tile's image.
 class PixivTileCaption extends StatelessWidget {
   final PixivIllust illust;
 
@@ -26,6 +27,8 @@ class PixivTileCaption extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, height: 1.2),
             ),
+          if (illust.series case final series? when series.title.isNotEmpty)
+            PixivSeriesLink(series: series, dense: true),
           const SizedBox(height: 2),
           Row(
             children: [

@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publice",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "Copiază ID-ul lucrării",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "Cititor Pixiv privat — urmăriți, clasamente, semne de carte și căutare. Fără publicare",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Nimic încă în fluxul de urmăriri",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Urmărește",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "Toți creatorii urmăriți",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Creatori urmăriți privat",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Creatori urmăriți public",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} urmărit} few{{shown} urmăriți} other{{shown} de urmăriți}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID-ul lucrării {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID-ul lucrării a fost copiat",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "Nicio manga recomandată acum — trage pentru a reîmprospăta",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Despre",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Cont",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Articole Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Niciun articol Pixivision acum",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Lucrări prezentate",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Cele mai populare",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Zilnic",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "IA",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Feminin",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Masculin",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 zilnic",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 IA",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Editează",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Clasamentele fixate apar ca file. Clasamentele R-18 sunt disponibile cât timp „Afișează lucrări R-18” este activat.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "File de clasament",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Nicio lucrare în clasament acum",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Lunar",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Original",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 săptămânal",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G săptămânal",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Citește orizontal",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Citește vertical",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Creatori sugerați",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Niciun creator sugerat acum",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Token de reînnoire",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Token lung dintr-o autentificare OAuth Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Lucrări asemănătoare",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Afișează",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "Niciun rezultat",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titlu/descriere",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Vezi tot",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "Serie",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Nicio lucrare vizibilă în această serie",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Serie: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Următoarea din serie",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr. {order} din {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Anterioara din serie",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Începută pe {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Acest plugin privat citește Pixiv ca o galerie: urmăriți, clasamente, semnele dvs. publice și căutarea. Atingeți Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. De aici nu se publică, marchează sau urmărește nimic pe Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Afișează lucrări R-18",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Ilustrații",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Mai mult",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Clasament",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Utilizatori",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Listă de urmărire",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Testează conexiunea",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Autentificat ca {name}",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Anulează ascunderea",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "Conectează-te pentru a deschide această lucrare",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populare pe Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Adaugă în lista de urmărire",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Seriile manga adăugate în lista de urmărire apar aici",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Elimină din lista de urmărire",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Actualizată {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Vezi cel mai recent",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} lucrare} few{{shown} lucrări} other{{shown} de lucrări}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

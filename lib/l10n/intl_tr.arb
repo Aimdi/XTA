@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Herkese açık",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "Eser kimliğini kopyala",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "Özel Pixiv okuyucu — takip, sıralama, yer imleri ve arama. Gönderi yok",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Takip akışında henüz bir şey yok",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Takip et",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "Takip edilen tüm yaratıcılar",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Gizli takip edilen yaratıcılar",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Herkese açık takip edilen yaratıcılar",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} takip edilen} other{{shown} takip edilen}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "Eser kimliği {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Eser kimliği kopyalandı",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "Şu an önerilen manga yok — yenilemek için çekin",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Hakkında",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Hesap",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivision makaleleri",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Şu an Pixivision makalesi yok",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Öne çıkan eserler",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "En popülerler",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Günlük",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "YZ",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Kadın",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Erkek",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 günlük",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 YZ",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Düzenle",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Sabitlenen sıralamalar sekme olarak görünür. R-18 sıralamaları “R-18 eserleri göster” açıkken sunulur.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Sıralama sekmeleri",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Şu an sıralamada eser yok",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Aylık",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Orijinal",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 haftalık",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G haftalık",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Yatay oku",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Dikey oku",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Önerilen yaratıcılar",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Şu an önerilen yaratıcı yok",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Yenileme jetonu",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Pixiv OAuth oturumundan uzun jeton",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "İlgili eserler",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} piksel",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Göster",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "Sonuç yok",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Başlık/açıklama",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Tümünü gör",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "Seri",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Bu seride görebileceğiniz eser yok",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Seri: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Serideki sonraki",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "{total} eserden {order}.",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Serideki önceki",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Başlangıç: {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri gibi okur: takip, sıralamalar, herkese açık yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Buradan Pixiv’de hiçbir şey gönderilmez, yer imine eklenmez veya takip edilmez.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 eserleri göster",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "İllüstrasyonlar",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Daha fazla",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Sıralama",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Kullanıcılar",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "İzleme listesi",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Bağlantıyı dene",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "{name} olarak oturum açıldı",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Sessizi kaldır",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "Bu eseri açmak için oturum açın",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Pixiv’de popüler",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "İzleme listesine ekle",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "İzleme listenize eklediğiniz manga serileri burada görünür",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "İzleme listesinden çıkar",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Güncellendi: {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "En yenisini gör",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} eser} other{{shown} eser}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

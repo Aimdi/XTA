@@ -1,5 +1,5 @@
 /// Which list Home shows under its source chips.
-enum PixivHomeSource { following, recommended }
+enum PixivHomeSource { following, recommended, manga, watchlist }
 
 /// Session-only choices for the illustration reader, independent of feed data.
 class PixivViewState {

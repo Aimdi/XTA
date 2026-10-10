@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Públicos",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "Copiar ID da obra",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "Leitor privado do Pixiv — a seguir, ranking, favoritos e pesquisa. Sem publicar",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Ainda não há nada no feed de seguidos",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Seguir",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "Todos os criadores seguidos",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Criadores seguidos em privado",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Criadores seguidos publicamente",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} a seguir} other{{shown} a seguir}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID da obra {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID da obra copiado",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "Nenhum manga recomendado de momento — puxe para atualizar",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Acerca de",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Conta",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Artigos da Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Nenhum artigo da Pixivision de momento",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Obras em destaque",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Os mais populares",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Diário",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "IA",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Feminino",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Masculino",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 diário",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 IA",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Editar",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "As classificações fixadas aparecem como separadores. As classificações R-18 ficam disponíveis enquanto «Mostrar obras R-18» estiver ativo.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Separadores de classificação",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Sem obras no ranking de momento",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Mensal",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Original",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 semanal",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G semanal",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Ler na horizontal",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Ler na vertical",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Criadores sugeridos",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Nenhum criador sugerido de momento",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Token de atualização",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Token longo de um início de sessão OAuth no Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Obras relacionadas",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Mostrar",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "Sem resultados",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Título/legenda",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Ver tudo",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "Série",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Não há obras visíveis nesta série",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Série: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Seguinte da série",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "N.º {order} de {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Anterior da série",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Iniciada a {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Este plugin privado lê o Pixiv como uma galeria: a seguir, rankings, os seus favoritos públicos e pesquisa. Toque em Iniciar sessão para entrar com a conta Pixiv no browser, ou cole um token de atualização abaixo. Daqui não se publica, marca nem segue nada no Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Mostrar obras R-18",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Ilustrações",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Mais",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Ranking",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Utilizadores",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Lista de acompanhamento",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Testar ligação",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Sessão iniciada como {name}",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Deixar de silenciar",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "Inicie sessão para abrir esta obra",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Popular no Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Adicionar à lista de acompanhamento",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "As séries de manga que adicionar à lista de acompanhamento aparecem aqui",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Remover da lista de acompanhamento",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Atualizada {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Ver o mais recente",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} obra} other{{shown} obras}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

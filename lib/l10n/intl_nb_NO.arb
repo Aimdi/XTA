@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Offentlige",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "Kopier verk-ID",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "Privat Pixiv-leser — følging, rangering, bokmerker og søk. Uten posting",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Ingenting i følgefeeden ennå",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Følg",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "Alle skapere du følger",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Skapere du følger privat",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Skapere du følger offentlig",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, one{følger {shown}} other{følger {shown}}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "Verk-ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Verk-ID kopiert",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "Ingen anbefalt manga akkurat nå — dra for å oppdatere",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Om",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Pixivision-artikler",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Ingen Pixivision-artikler akkurat nå",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Utvalgte verk",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Mest populære",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Daglig",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "KI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Kvinner",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Menn",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 daglig",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 KI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Rediger",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Festede rangeringer vises som faner. R-18-rangeringer tilbys så lenge «Vis R-18-verk» er på.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Rangeringsfaner",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Ingen rangeringsverk akkurat nå",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Månedlig",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Original",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 ukentlig",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G ukentlig",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Les horisontalt",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Les vertikalt",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Foreslåtte skapere",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Ingen foreslåtte skapere akkurat nå",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Oppfriskningstoken",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Langt token fra en Pixiv-OAuth-innlogging",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Relaterte verk",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Vis",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "Ingen treff",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tittel/bildetekst",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Se alle",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "Serie",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Ingen verk i denne serien som du kan se",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Serie: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Neste i serien",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr. {order} av {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Forrige i serien",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Startet {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Denne private utvidelsen leser Pixiv som et galleri: følging, rangeringer, dine offentlige bokmerker og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Herfra blir ingenting postet, bokmerket eller fulgt på Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Vis R-18-verk",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Illustrasjoner",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Mer",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Rangering",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Brukere",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Følgeliste",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Test tilkobling",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Innlogget som {name}",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Opphev demping",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "Logg inn for å åpne dette verket",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populært på Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Legg til i følgelisten",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Mangaserier du legger til i følgelisten, vises her",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Fjern fra følgelisten",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Oppdatert {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Se nyeste",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, one{{shown} verk} other{{shown} verk}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

@@ -378,6 +378,9 @@ const optionPluginPixivMutedNovels = 'plugin.pixiv.muted_novels';
 const optionPluginPixivGroupSubscriptions = 'plugin.pixiv.group_subscriptions';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
 
+/// The ranking boards pinned as chips, a JSON list of Pixiv mode names.
+const optionPluginPixivRankingModes = 'plugin.pixiv.ranking_modes';
+
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
 const optionPluginBooruShowTab = 'plugin.booru.show_tab';

@@ -2229,6 +2229,8 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publik",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_copy_illust_id": "Salin ID karya",
+  "@plugin_pixiv_copy_illust_id": {},
   "plugin_pixiv_description": "Pembaca Pixiv pribadi — mengikuti, peringkat, penanda, dan pencarian. Tanpa posting",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "Belum ada apa pun di feed mengikuti",
@@ -2245,6 +2247,12 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Ikuti",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_follow_restrict_all": "Semua kreator yang diikuti",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Kreator yang diikuti secara pribadi",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Kreator yang diikuti secara publik",
+  "@plugin_pixiv_follow_restrict_public": {},
   "plugin_pixiv_following_count": "{count, plural, other{{shown} mengikuti}}",
   "@plugin_pixiv_following_count": {
     "placeholders": {
@@ -2256,6 +2264,18 @@
       }
     }
   },
+  "plugin_pixiv_illust_id": "ID karya {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID karya disalin",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_manga_empty": "Belum ada manga rekomendasi — tarik untuk menyegarkan",
+  "@plugin_pixiv_manga_empty": {},
   "plugin_pixiv_more_about": "Tentang",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Akun",
@@ -2301,6 +2321,12 @@
       }
     }
   },
+  "plugin_pixiv_pixivision_articles": "Artikel Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Belum ada artikel Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Karya pilihan",
+  "@plugin_pixiv_pixivision_featured": {},
   "plugin_pixiv_popular_title": "Paling populer",
   "@plugin_pixiv_popular_title": {},
   "plugin_pixiv_r18": "R-18",
@@ -2309,12 +2335,24 @@
   "@plugin_pixiv_ranking_back_to_today": {},
   "plugin_pixiv_ranking_day": "Harian",
   "@plugin_pixiv_ranking_day": {},
+  "plugin_pixiv_ranking_day_ai": "AI",
+  "@plugin_pixiv_ranking_day_ai": {},
   "plugin_pixiv_ranking_day_female": "Perempuan",
   "@plugin_pixiv_ranking_day_female": {},
   "plugin_pixiv_ranking_day_male": "Laki-laki",
   "@plugin_pixiv_ranking_day_male": {},
   "plugin_pixiv_ranking_day_manga": "Manga",
   "@plugin_pixiv_ranking_day_manga": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 harian",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 AI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Ubah",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Peringkat yang disematkan tampil sebagai tab. Peringkat R-18 tersedia selama “Tampilkan karya R-18” aktif.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Tab peringkat",
+  "@plugin_pixiv_ranking_edit_title": {},
   "plugin_pixiv_ranking_empty": "Tidak ada karya di peringkat sekarang",
   "@plugin_pixiv_ranking_empty": {},
   "plugin_pixiv_ranking_month": "Bulanan",
@@ -2327,6 +2365,10 @@
   "@plugin_pixiv_ranking_week": {},
   "plugin_pixiv_ranking_week_original": "Original",
   "@plugin_pixiv_ranking_week_original": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 mingguan",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G mingguan",
+  "@plugin_pixiv_ranking_week_r18g": {},
   "plugin_pixiv_read_horizontally": "Baca horizontal",
   "@plugin_pixiv_read_horizontally": {},
   "plugin_pixiv_read_vertically": "Baca vertikal",
@@ -2335,12 +2377,25 @@
   "@plugin_pixiv_recommended_empty": {},
   "plugin_pixiv_recommended_users": "Kreator yang disarankan",
   "@plugin_pixiv_recommended_users": {},
+  "plugin_pixiv_recommended_users_empty": "Belum ada kreator yang disarankan",
+  "@plugin_pixiv_recommended_users_empty": {},
   "plugin_pixiv_refresh_token": "Refresh token",
   "@plugin_pixiv_refresh_token": {},
   "plugin_pixiv_refresh_token_hint": "Token panjang dari login OAuth Pixiv",
   "@plugin_pixiv_refresh_token_hint": {},
   "plugin_pixiv_related": "Karya terkait",
   "@plugin_pixiv_related": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_reveal": "Tampilkan",
   "@plugin_pixiv_reveal": {},
   "plugin_pixiv_search_empty": "Tidak ada hasil",
@@ -2363,6 +2418,43 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Judul/takarir",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_see_all": "Lihat semua",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_series": "Seri",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Tidak ada karya di seri ini yang bisa kamu lihat",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Seri: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Berikutnya dalam seri",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "#{order} dari {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Sebelumnya dalam seri",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Dimulai {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Plugin pribadi ini membaca Pixiv seperti galeri: mengikuti, peringkat, penanda publik Anda, dan pencarian. Ketuk Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Dari sini tidak ada yang diposting, ditandai, atau diikuti di Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Tampilkan karya R-18",
@@ -2391,6 +2483,8 @@
   "@plugin_pixiv_tab_following": {},
   "plugin_pixiv_tab_illusts": "Ilustrasi",
   "@plugin_pixiv_tab_illusts": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
   "plugin_pixiv_tab_more": "Lainnya",
   "@plugin_pixiv_tab_more": {},
   "plugin_pixiv_tab_ranking": "Peringkat",
@@ -2399,6 +2493,8 @@
   "@plugin_pixiv_tab_recommended": {},
   "plugin_pixiv_tab_users": "Pengguna",
   "@plugin_pixiv_tab_users": {},
+  "plugin_pixiv_tab_watchlist": "Daftar pantau",
+  "@plugin_pixiv_tab_watchlist": {},
   "plugin_pixiv_test": "Uji koneksi",
   "@plugin_pixiv_test": {},
   "plugin_pixiv_test_ok": "Masuk sebagai {name}",
@@ -2421,6 +2517,26 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Batal bisukan",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_walkthrough_sign_in": "Masuk untuk membuka karya ini",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populer di Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Tambahkan ke daftar pantau",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Seri manga yang kamu tambahkan ke daftar pantau muncul di sini",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Hapus dari daftar pantau",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Diperbarui {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Lihat terbaru",
+  "@plugin_pixiv_watchlist_view_latest": {},
   "plugin_pixiv_works_count": "{count, plural, other{{shown} karya}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {

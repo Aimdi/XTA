@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
@@ -14,6 +16,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -138,6 +141,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivMutedComments, '[]');
     await prefs.set(optionPluginPixivMutedNovels, '[]');
     await prefs.set(optionPluginPixivSearchHistory, '[]');
+    await prefs.set(optionPluginPixivRankingModes, jsonEncode(pixivDefaultRankingPins));
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
       where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);
