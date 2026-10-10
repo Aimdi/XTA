@@ -145,13 +145,7 @@ class PixivFollowHeader extends StatelessWidget {
   }
 
   Widget _layout(BuildContext context, double width, {required bool self}) {
-    final buttons = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (!self) PixivFollowButton(user: user, onChanged: onFollowChanged),
-        ...actions,
-      ],
-    );
+    final buttons = [if (!self) PixivFollowButton(user: user, onChanged: onFollowChanged), ...actions];
     final nameSize = Theme.of(context).textTheme.titleSmall?.fontSize ?? 14;
     final nameMin = MediaQuery.textScalerOf(context).scale(nameSize) * pixivCardNameMinEm;
     final buttonsWidth = (self ? 0 : pixivFollowButtonWidth(context)) + _actionWidth * actions.length;
@@ -160,11 +154,18 @@ class PixivFollowHeader extends StatelessWidget {
         children: [
           Expanded(child: identity),
           const SizedBox(width: 8),
-          buttons,
+          ...buttons,
         ],
       );
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: 8, children: [identity, buttons]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        identity,
+        Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: buttons),
+      ],
+    );
   }
 }
 
