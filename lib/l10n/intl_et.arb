@@ -3014,6 +3014,14 @@
       }
     }
   },
+  "plugin_pixiv_search_open_pixivision": "Ava Pixivisioni artikkel #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_user": "Ava kasutaja #{id}",
   "@plugin_pixiv_search_open_user": {
     "placeholders": {

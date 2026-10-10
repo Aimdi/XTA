@@ -3014,6 +3014,14 @@
       }
     }
   },
+  "plugin_pixiv_search_open_pixivision": "Deschide articolul Pixivision #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_user": "Deschide utilizatorul #{id}",
   "@plugin_pixiv_search_open_user": {
     "placeholders": {

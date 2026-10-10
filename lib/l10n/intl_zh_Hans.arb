@@ -3014,6 +3014,14 @@
       }
     }
   },
+  "plugin_pixiv_search_open_pixivision": "打开 Pixivision 特辑 #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_user": "打开用户 #{id}",
   "@plugin_pixiv_search_open_user": {
     "placeholders": {

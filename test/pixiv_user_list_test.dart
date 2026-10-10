@@ -3,13 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/plugins/pixiv/pixiv_following_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 
 import 'support/pixiv_reader_harness.dart';
 import 'support/pixiv_social_fakes.dart';
+
+/// The signed-in reader's own follows, as Home's people icon opens them.
+const _ownFollowing = PixivUserListScreen(kind: PixivUserListKind.following);
 
 FakePixivSocialApi _api() => FakePixivSocialApi(
   following: {
@@ -49,9 +51,9 @@ void main() {
     });
   });
 
-  testWidgets('Home\'s people icon lists your follows and switches to the private ones', (tester) async {
+  testWidgets('your own following list shows public follows and switches to the private ones', (tester) async {
     final api = _api();
-    await pumpPixiv(tester, const PixivFollowingScreen(), extraProviders: [api.provider]);
+    await pumpPixiv(tester, _ownFollowing, extraProviders: [api.provider]);
     expect(find.text('Following'), findsOneWidget);
     expect(api.calls, ['following:7:public']);
     expect(find.text('Public one'), findsOneWidget);
@@ -91,7 +93,7 @@ void main() {
   });
 
   testWidgets('each card unfollows in place and offers Add to group', (tester) async {
-    final harness = await pumpPixiv(tester, const PixivFollowingScreen(), extraProviders: [_api().provider]);
+    final harness = await pumpPixiv(tester, _ownFollowing, extraProviders: [_api().provider]);
     final group = find.byKey(const ValueKey('pixiv-user-list-group-21'));
     expect(tester.getSize(group).shortestSide, greaterThanOrEqualTo(48));
     expect(find.byTooltip('Add to group'), findsNWidgets(2));
@@ -104,7 +106,7 @@ void main() {
   });
 
   testWidgets('a creator muted while the list is open disappears from it', (tester) async {
-    await pumpPixiv(tester, const PixivFollowingScreen(), extraProviders: [_api().provider]);
+    await pumpPixiv(tester, _ownFollowing, extraProviders: [_api().provider]);
     await _mute(tester).muteAuthor(21);
     await tester.pump();
     expect(find.text('Public one'), findsNothing);
@@ -113,7 +115,7 @@ void main() {
   });
 
   testWidgets('an empty list says so', (tester) async {
-    await pumpPixiv(tester, const PixivFollowingScreen(), extraProviders: [FakePixivSocialApi().provider]);
+    await pumpPixiv(tester, _ownFollowing, extraProviders: [FakePixivSocialApi().provider]);
     expect(find.text('Not following anyone yet'), findsOneWidget);
     await disposePixiv(tester);
   });
@@ -188,7 +190,7 @@ void main() {
   testWidgets('large text on a narrow phone does not overflow', (tester) async {
     await pumpPixiv(
       tester,
-      const PixivFollowingScreen(),
+      _ownFollowing,
       extraProviders: [_api().provider],
       size: const Size(320, 640),
       textScale: 2,

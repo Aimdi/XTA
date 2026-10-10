@@ -89,8 +89,9 @@ follow button and Add to group, loading the next page as the list nears its
 end. A null `userId` is the signed-in reader; their following list has a
 Public / Private switch. Creators the reader muted are left out (pages that
 only held muted creators are skipped). The list body, `PixivUserList`, is also
-the profile's Following tab. `PixivFollowingScreen`, which Home's people icon
-opens, is now this list for the reader.
+the profile's Following tab. Home's people icon opens it through
+`openPixivUserList(context, PixivUserListKind.following)`, the reader's own
+follows; the old `PixivFollowingScreen` wrapper is gone.
 
 ## Following privately
 
