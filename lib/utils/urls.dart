@@ -269,11 +269,40 @@ bool _needsNamedBrowser(String url) =>
 ///
 /// In-app playback goes through the live player screen. A generic VIEW of
 /// x.com would bounce back through our intent-filter, so the leftover path
-/// that still leaves the app (openLiveUrl) always names a real browser.
+/// that still leaves the app ([openInRealBrowser]) always names a real browser.
 bool isLiveWatchUrl(String? url) =>
     spaceIdIn(url) != null || broadcastIdIn(url) != null;
 
 const _xtaPackage = 'com.aimdi.xta';
+
+/// The Pixiv hosts the manifest's VIEW filter claims once the reader lets XTA
+/// open them.
+const _claimedPixivHosts = {'pixiv.net', 'www.pixiv.net', 'pixiv.me'};
+
+/// Whether a plain VIEW of [url] could land back in XTA: a Pixiv page that
+/// XTA opens by default, or one Android would offer in a chooser beside XTA,
+/// which before Android 12 it does for every Pixiv page. Only a Pixiv page
+/// another app takes outright, and everything else, goes out as usual.
+Future<bool> _reopensXta(String url) async {
+  final uri = Uri.tryParse(url.trim());
+  if (uri == null ||
+      (uri.scheme != 'https' && uri.scheme != 'http') ||
+      !_claimedPixivHosts.contains(uri.host.toLowerCase())) {
+    return false;
+  }
+  try {
+    final handler = await AndroidIntent(
+      action: 'android.intent.action.VIEW',
+      data: url,
+    ).getResolvedActivity();
+    // A chooser resolves to the system's own package, and it lists XTA.
+    final package = handler?.packageName;
+    return package == null || package == 'android' || package == _xtaPackage;
+  } catch (_) {
+    // Unknown: a named browser is the choice that cannot loop.
+    return true;
+  }
+}
 
 /// VIEW that names a browser. A package-less VIEW of x.com comes back here.
 Future<bool> _openInNamedBrowser(String url, String? package) async {
@@ -292,11 +321,13 @@ Future<bool> _openInNamedBrowser(String url, String? package) async {
   }
 }
 
-/// Opens a broadcast, Space or shared Grok conversation in a real browser.
+/// Opens a link XTA's own intent filters claim — a broadcast, a Space, a
+/// shared Grok conversation, a pixiv.net page — in a real browser.
 ///
 /// Custom Tabs and a named browser package never bounce back into XTA.
-/// [openExternally] is not used: its fallback is a generic VIEW of x.com.
-Future<void> openLiveUrl(BuildContext context, String uri) async {
+/// [openExternally] is not used: its fallback is a generic VIEW, which Android
+/// hands straight back to this app.
+Future<void> openInRealBrowser(BuildContext context, String uri) async {
   final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
@@ -327,15 +358,16 @@ Future<void> openLiveUrl(BuildContext context, String uri) async {
 /// asked for that in settings, otherwise in the browser they named — or the
 /// system default, if they named none.
 ///
-/// Broadcasts, Spaces and Grok shares always go through [openLiveUrl]: a
-/// generic VIEW of x.com would reopen this app instead of a browser.
+/// Broadcasts, Spaces and Grok shares always go through [openInRealBrowser],
+/// and so do Pixiv pages once XTA opens those by default: a generic VIEW of
+/// them would reopen this app instead of a browser.
 Future<void> openUri(BuildContext context, String uri) async {
-  if (_needsNamedBrowser(uri)) {
-    await openLiveUrl(context, uri);
+  final prefs = PrefService.of(context, listen: false);
+  if (_needsNamedBrowser(uri) || await _reopensXta(uri)) {
+    if (context.mounted) await openInRealBrowser(context, uri);
     return;
   }
 
-  final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
   if (prefs.get(optionOpenLinksInEmbeddedBrowser) == true) {

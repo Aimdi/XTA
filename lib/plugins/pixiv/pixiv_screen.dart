@@ -1,4 +1,3 @@
-import 'package:xta/plugins/pixiv/pixiv_following_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,28 +6,40 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_tag_picker.dart';
+import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorites_section.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
+import 'package:xta/plugins/pixiv/pixiv_home_section.dart';
+import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
+import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_home.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_session.dart';
+import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_section.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_session_account.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/plugins/pixiv/pixiv_sign_in_body.dart';
+import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/plugins/plugin_marks.dart';
-import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
-import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_session.dart';
-import 'package:xta/plugins/plugin_filter_row.dart';
-import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
-import 'package:xta/plugins/pixiv/pixiv_client.dart';
-import 'package:xta/plugins/pixiv/pixiv_grid.dart';
-import 'package:xta/plugins/pixiv/pixiv_image.dart';
-import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
-import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
-import 'package:xta/ui/empty_pane.dart';
-import 'package:xta/ui/errors.dart';
-import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/ui/scroll_to_top.dart';
 
-/// Flare-style Pixiv home: Home / Rankings / Favorites / Search / More.
+/// Flare-style Pixiv home: Home / Rankings / Favorites / Search / More, over
+/// illustrations or, in Novel mode, novels.
+///
+/// This shell owns the session stores, the section switch and the mode; each
+/// section lives in its own file.
 class PixivScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -38,210 +49,351 @@ class PixivScreen extends StatefulWidget {
   State<PixivScreen> createState() => _PixivScreenState();
 }
 
+/// The ranking board the view and the pins name when each page is asked for.
+PixivIllustPageLoader _rankingLoader(
+  PixivDiscoveryApi api,
+  PixivClient client,
+  PluginViewStore<PixivViewState> view,
+  PixivRankingPinsStore pins,
+) =>
+    ({nextUrl}) => api.ranking(
+      pixivEffectiveRankingMode(view.state.rankingMode, _visibleRankingModes(pins, client)),
+      date: pixivRankingDateParam(view.state.rankingDate),
+      nextUrl: nextUrl,
+    );
+
+List<PixivRankingMode> _visibleRankingModes(PixivRankingPinsStore pins, PixivClient client) =>
+    pixivVisibleRankingModes(pins.state, pixivIllustRankingModes, showR18: client.showR18);
+
+/// The Following filter is a choice for one Home session; the app-wide feed
+/// goes back to every follow when the session ends.
+void _endViewSession(PluginViewStore<PixivViewState> view, PixivIllustListStore feed, PixivDiscoveryApi api) {
+  if (view.state.followRestrict != 'all') feed.useLoader(({nextUrl}) => api.following(nextUrl: nextUrl));
+  view.destroy();
+}
+
 class _PixivScreenState extends State<PixivScreen> {
   late final PluginSessionLease _session;
   late final PluginViewStore<PixivViewState> _view;
-  late final PixivIllustListStore _recommended;
+  late final PixivDiscoveryApi _api;
+  late final PixivHomeStores _home;
+  late final PixivRankingPinsStore _rankingPins;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
-  bool get _signingIn => _view.state.signingIn;
-  String get _rankingMode => _view.state.rankingMode;
-  DateTime? get _rankingDate => _view.state.rankingDate;
-  String get _bookmarksRestrict => _view.state.bookmarksRestrict;
-  int get _homeSource => _view.state.homeSource;
+  late final PixivNovelSession _novels;
 
-  /// Ranking modes Flare pins as first-class feeds, plus XTA's existing set.
-  static const _rankingModes = [
-    'day',
-    'week',
-    'month',
-    'day_male',
-    'day_female',
-    'week_rookie',
-    'week_original',
-    'day_manga',
-  ];
+  /// The account the lists were loaded for; another one empties them.
+  late final PixivSessionAccountStore _account;
+  final _recommendedScroll = ScrollController();
+  final _mangaScroll = ScrollController();
+  final _watchlistScroll = ScrollController();
+  final _rankingScroll = ScrollController();
+  final _favoritesScroll = ScrollController();
+  final _moreScroll = ScrollController();
+  final _novelRankingScroll = ScrollController();
+  final _novelFavoritesScroll = ScrollController();
+  PixivViewState get _state => _view.state;
 
   @override
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'pixiv');
-    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(const PixivViewState()));
-    final view = _view;
+    _obtainStores();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _warmUp());
+  }
+
+  void _obtainStores() {
     final client = context.read<PixivClient>();
+    final feed = context.read<PixivFeedStore>();
     final mute = context.read<PixivMuteStore>();
-    _recommended = _session.obtain(
-      'recommended',
-      () => PixivIllustListStore(({nextUrl}) => client.recommended(nextUrl: nextUrl), filter: mute.filter),
+    final prefs = PrefService.of(context, listen: false);
+    final api = _api = PixivDiscoveryApi.of(context);
+    final view = _view = _session.obtain(
+      'view',
+      () => PluginViewStore<PixivViewState>(PixivViewState(section: _startSection)),
+      dispose: (view) => _endViewSession(view, feed, api),
     );
+    _home = PixivHomeStores.obtain(_session, following: feed, client: client, api: api, mute: mute);
+    final pins = _rankingPins = _session.obtain('rankingPins', () => PixivRankingPinsStore(prefs));
     _ranking = _session.obtain(
       'ranking',
-      () => PixivIllustListStore(
-        ({nextUrl}) => client.ranking(
-          mode: view.state.rankingMode,
-          date: pixivRankingDateParam(view.state.rankingDate),
-          nextUrl: nextUrl,
-        ),
-        filter: mute.filter,
-      ),
+      () => PixivIllustListStore(_rankingLoader(api, client, view, pins), filter: mute.filter),
     );
     _bookmarks = _session.obtain(
       'bookmarks',
-      () => PixivIllustListStore(_bookmarksLoader(_bookmarksRestrict), filter: mute.filter),
+      () => PixivIllustListStore(
+        _bookmarksLoader(_state.bookmarksRestrict, tag: _state.bookmarkTag),
+        filter: mute.filter,
+      ),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      await mute.load();
-      if (!mounted) return;
-      final prefs = PrefService.of(context, listen: false);
-      final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
-      if (hasToken) {
-        // Warm the token once so the first feed call does not serialise behind
-        // a cold refresh, and concurrent tab loads share one in-flight refresh.
-        unawaited(context.read<PixivClient>().ensureAccessToken());
-        _ensureTabLoaded(_view.state.section);
-      }
-    });
+    _novels = PixivNovelSession.obtain(
+      _session.obtain,
+      view: view,
+      api: PixivNovelApi.of(context),
+      client: client,
+      mute: mute,
+      prefs: prefs,
+    );
+    _watchAccount(prefs);
   }
 
-  PixivIllustPageLoader _bookmarksLoader(String restrict) {
+  /// Empties every session list when the reader signs out, switches account
+  /// or changes Show R-18 / Hide AI, including while this screen was away and
+  /// the session kept its lists.
+  void _watchAccount(BasePrefService prefs) {
+    final lists = [..._home.all, _ranking, _bookmarks, ..._novels.all];
+    _account = _session.obtain(
+      'account',
+      () => PixivSessionAccountStore(
+        prefs,
+        onChanged: () {
+          for (final list in lists) {
+            list.clear();
+          }
+        },
+      ),
+    );
+    _account.check();
+  }
+
+  Future<void> _warmUp() async {
+    if (!mounted) return;
+    await context.read<PixivMuteStore>().load();
+    if (!mounted || !_hasToken) return;
+    // Warm the token once so the first feed call does not serialise behind
+    // a cold refresh, and concurrent tab loads share one in-flight refresh.
+    unawaited(context.read<PixivClient>().ensureAccessToken());
+    _ensureTabLoaded(_state.section);
+  }
+
+  int get _startSection =>
+      pixivStartSectionIndex(PrefService.of(context, listen: false).get<String>(optionPluginPixivStartSection));
+
+  bool get _hasToken =>
+      (PrefService.of(context, listen: false).get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
+
+  PixivIllustPageLoader _bookmarksLoader(String restrict, {String? tag}) {
     final client = context.read<PixivClient>();
     return ({nextUrl}) async {
       // Prefer the stored id — verify() always hits the token endpoint and made
       // the Bookmarks tab feel like it loaded forever on every open.
       final userId = await client.ensureUserId();
-      return client.bookmarks(userId: userId, restrict: restrict, nextUrl: nextUrl);
+      return client.bookmarks(userId: userId, restrict: restrict, tag: tag, nextUrl: nextUrl);
     };
   }
 
   @override
   void dispose() {
-    if (_view.state.signingIn) _view.select(_view.state.copyWith(signingIn: false));
+    if (_state.signingIn) _view.select(_state.copyWith(signingIn: false));
+    for (final controller in [
+      _recommendedScroll,
+      _mangaScroll,
+      _watchlistScroll,
+      _rankingScroll,
+      _favoritesScroll,
+      _moreScroll,
+      _novelRankingScroll,
+      _novelFavoritesScroll,
+    ]) {
+      controller.dispose();
+    }
     _session.dispose();
     super.dispose();
   }
 
+  /// The list the reader sees in [section] now; Search keeps its own lists
+  /// and is reached through the route's primary controller.
+  ScrollController? _scrollControllerFor(int section) => switch (section) {
+    0 when _state.novelMode => widget.scrollController,
+    1 when _state.novelMode => _novelRankingScroll,
+    2 when _state.novelMode => _novelFavoritesScroll,
+    0 => switch (_state.homeSource) {
+      PixivHomeSource.following => widget.scrollController,
+      PixivHomeSource.recommended => _recommendedScroll,
+      PixivHomeSource.manga => _mangaScroll,
+      PixivHomeSource.watchlist => _watchlistScroll,
+    },
+    1 => _rankingScroll,
+    2 => _favoritesScroll,
+    4 => _moreScroll,
+    _ => PrimaryScrollController.maybeOf(context),
+  };
+
+  /// Tapping the section or sub-tab already shown brings its list back to the top.
+  Future<void> _scrollToTop() =>
+      scrollToTop(context, pluginInnerScrollController(context, _scrollControllerFor(_state.section)));
+
+  /// After a sign-in, switch or sign-out: lists loaded for another account
+  /// are emptied, and the shown one loads for the account now in use.
+  void _onAuthChanged() {
+    if (!mounted) return;
+    _account.check();
+    _ensureTabLoaded(_state.section);
+    _view.select(_state.copyWith());
+  }
+
+  /// An account or a content choice changed somewhere this screen did not
+  /// hear of, such as the plugin's page in Settings.
+  void _followAccount() {
+    if (mounted && _account.behind) _onAuthChanged();
+  }
+
+  List<PixivPagedListStore<Object>> _storesFor(int section) => switch (section) {
+    _ when _state.novelMode => _novels.storesFor(section),
+    0 => _home.storesFor(_state.homeSource),
+    1 => [_ranking],
+    2 => [_bookmarks],
+    _ => const [],
+  };
+
   void _ensureTabLoaded(int index) {
-    final prefs = PrefService.of(context, listen: false);
-    if ((prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isEmpty) {
+    if (!_hasToken) return;
+    for (final store in _storesFor(index)) {
+      if (store.state.isEmpty) store.refresh();
+    }
+  }
+
+  void _selectTab(int index) {
+    if (_state.section == index) {
+      _scrollToTop();
       return;
     }
-    switch (index) {
-      case 0:
-        if (_homeSource == 0) {
-          if (context.read<PixivFeedStore>().state.isEmpty) {
-            context.read<PixivFeedStore>().refresh();
-          }
-        } else if (_recommended.state.isEmpty) {
-          _recommended.refresh();
-        }
-      case 1:
-        if (_ranking.state.isEmpty) {
-          _ranking.refresh();
-        }
-      case 2:
-        if (_bookmarks.state.isEmpty) {
-          _bookmarks.refresh();
-        }
+    _view.select(_state.copyWith(section: index));
+    _ensureTabLoaded(index);
+  }
+
+  /// Switches the sections between illustrations and novels; each mode keeps its own lists and choices.
+  void _changeMode(PixivContentMode mode) {
+    _view.select(_state.copyWith(mode: mode));
+    _ensureTabLoaded(_state.section);
+  }
+
+  void _selectHomeSource(PixivHomeSource source) {
+    if (source == _state.homeSource) {
+      _scrollToTop();
+      return;
     }
+    _view.select(_state.copyWith(homeSource: source));
+    _ensureTabLoaded(0);
   }
 
-  /// `YYYY-MM-DD` for the archive request, or null for today's board.
-  String? get _rankingDateParam => pixivRankingDateParam(_rankingDate);
+  void _useFollowRestrict(String restrict) =>
+      _home.following.useLoader(({nextUrl}) => _api.following(restrict: restrict, nextUrl: nextUrl));
 
-  /// Shaft-style archive picker: any past day's board, one call away.
-  Future<void> _pickRankingDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _rankingDate ?? now.subtract(const Duration(days: 1)),
-      // Rankings began in 2007; boards settle a day behind the calendar.
-      firstDate: DateTime(2007, 9, 13),
-      lastDate: now,
-    );
-    if (picked == null || !mounted) return;
-    _view.select(_view.state.copyWith(rankingDate: picked));
-    await _reloadRanking();
+  Future<void> _changeFollowRestrict(String restrict) async {
+    if (restrict == _state.followRestrict) return;
+    _view.select(_state.copyWith(followRestrict: restrict));
+    _useFollowRestrict(restrict);
+    await _home.following.refresh();
   }
 
-  Future<void> _clearRankingDate() async {
-    if (_rankingDate == null) return;
-    _view.select(_view.state.copyWith(clearRankingDate: true));
-    await _reloadRanking();
-  }
+  List<PixivRankingMode> get _rankingModes => _visibleRankingModes(_rankingPins, context.read<PixivClient>());
+
+  String get _rankingMode => pixivEffectiveRankingMode(_state.rankingMode, _rankingModes);
+
+  void _useRankingLoader() =>
+      _ranking.useLoader(_rankingLoader(_api, context.read<PixivClient>(), _view, _rankingPins));
 
   Future<void> _reloadRanking() async {
-    final client = context.read<PixivClient>();
-    final mode = _rankingMode;
-    final date = _rankingDateParam;
-    _ranking.useLoader(({nextUrl}) => client.ranking(mode: mode, date: date, nextUrl: nextUrl));
+    _useRankingLoader();
     await _ranking.refresh();
   }
 
   Future<void> _changeRankingMode(String mode) async {
-    if (mode == _rankingMode) return;
-    _view.select(_view.state.copyWith(rankingMode: mode));
+    if (mode == _state.rankingMode) {
+      await _scrollToTop();
+      return;
+    }
+    _view.select(_state.copyWith(rankingMode: mode));
     await _reloadRanking();
   }
 
-  Future<void> _changeBookmarksRestrict(String restrict) async {
-    if (restrict == _bookmarksRestrict) return;
-    _view.select(_view.state.copyWith(bookmarksRestrict: restrict));
-    _bookmarks.useLoader(_bookmarksLoader(restrict));
+  /// Runs after any build that finds the shown board without its chip:
+  /// unpinned, or hidden by Show R-18 going off from whichever settings entry.
+  void _scheduleRankingSync() {
+    if (_rankingMode == _state.rankingMode && !_novels.rankingBehind) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _syncRankingMode();
+    });
+  }
+
+  /// Moves to the first chip and drops the old board's works or novels; they
+  /// reload now if Rankings is on screen, else when it is next opened.
+  void _syncRankingMode() {
+    final mode = _rankingMode;
+    final illustMoved = mode != _state.rankingMode;
+    if (illustMoved) {
+      _view.select(_state.copyWith(rankingMode: mode));
+      _useRankingLoader();
+    }
+    final novelMoved = _novels.syncRankingMode();
+    final shownMoved = _state.novelMode ? novelMoved : illustMoved;
+    if (shownMoved && _state.section == 1) _ensureTabLoaded(1);
+  }
+
+  Future<void> _editRankingModes() {
+    final offered = pixivRankingModesOffered(pixivIllustRankingModes, showR18: context.read<PixivClient>().showR18);
+    return showPixivRankingModeSheet(context, pins: _rankingPins, offered: offered);
+  }
+
+  Future<void> _changeRankingDate(DateTime? date) async {
+    if (!mounted || (date == null && _state.rankingDate == null)) return;
+    _view.select(date == null ? _state.copyWith(clearRankingDate: true) : _state.copyWith(rankingDate: date));
+    await _reloadRanking();
+  }
+
+  Future<void> _filterBookmarks(PixivBookmarkFilter filter) async {
+    if (filter.restrict == _state.bookmarksRestrict && filter.tag == _state.bookmarkTag) {
+      await _scrollToTop();
+      return;
+    }
+    _view.select(
+      _state.copyWith(
+        bookmarksRestrict: filter.restrict,
+        bookmarkTag: filter.tag,
+        clearBookmarkTag: filter.tag == null,
+      ),
+    );
+    _bookmarks.useLoader(_bookmarksLoader(filter.restrict, tag: filter.tag));
     await _bookmarks.refresh();
   }
 
-  void _selectTab(int index) {
-    if (_view.state.section == index) return;
-    _view.select(_view.state.copyWith(section: index));
-    _ensureTabLoaded(index);
+  Future<void> _signIn() async {
+    _view.select(_state.copyWith(signingIn: true));
+    try {
+      await runPixivSignIn(context);
+      _onAuthChanged();
+    } finally {
+      if (mounted) _view.select(_state.copyWith(signingIn: false));
+    }
   }
-
-  String _rankingLabel(L10n l10n, String mode) => switch (mode) {
-    'week' => l10n.plugin_pixiv_ranking_week,
-    'month' => l10n.plugin_pixiv_ranking_month,
-    'day_male' => l10n.plugin_pixiv_ranking_day_male,
-    'day_female' => l10n.plugin_pixiv_ranking_day_female,
-    'week_rookie' => l10n.plugin_pixiv_ranking_rookie,
-    'week_original' => l10n.plugin_pixiv_ranking_week_original,
-    'day_manga' => l10n.plugin_pixiv_ranking_day_manga,
-    _ => l10n.plugin_pixiv_ranking_day,
-  };
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     if (_view.restore(context, 'pixiv')) {
-      _bookmarks.useLoader(_bookmarksLoader(_bookmarksRestrict));
+      _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict, tag: _state.bookmarkTag));
+      if (_state.followRestrict != 'all') _useFollowRestrict(_state.followRestrict);
     }
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
+    if (_account.behind) WidgetsBinding.instance.addPostFrameCallback((_) => _followAccount());
+    _scheduleRankingSync();
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<PluginViewStore<PixivViewState>, PixivViewState>(
         store: _view,
-        onState: (context, _) => Column(
+        onState: (context, state) => Column(
           children: [
-            PixivHomeChrome(index: _view.state.section, onSelect: _selectTab),
+            PixivHomeChrome(index: state.section, onSelect: _selectTab, mode: state.mode, onMode: _changeMode),
             const Divider(height: 1),
             Expanded(
-              child: !hasToken && _view.state.section != 4
-                  ? _signInBody(l10n)
+              child: !hasToken && state.section != 4
+                  ? PixivSignInBody(signingIn: state.signingIn, onSignIn: _signIn)
                   : PluginLazyTabs(
-                    onSelected: _selectTab,
-                      index: _view.state.section,
-                      children: [
-                        (_) => _homeTab(l10n),
-                        (_) => _rankingTab(l10n),
-                        (_) => _bookmarksTab(l10n),
-                        (_) => const PixivSearchScreen(embedded: true),
-                        (_) => PixivMorePane(
-                          onAuthChanged: () {
-                            if (mounted) _view.select(_view.state.copyWith());
-                          },
-                        ),
-                      ],
+                      onSelected: _selectTab,
+                      index: state.section,
+                      children: state.novelMode ? _novelSections(state) : _sections(state),
                     ),
             ),
           ],
@@ -250,286 +402,82 @@ class _PixivScreenState extends State<PixivScreen> {
     );
   }
 
-  Widget _homeTab(L10n l10n) {
-    return Column(
-      children: [
-        PluginFilterRow(
-          children: [
-            ChoiceChip(
-              label: Text(l10n.plugin_pixiv_tab_following),
-              selected: _homeSource == 0,
-              onSelected: (_) {
-                if (_homeSource == 0) return;
-                _view.select(_view.state.copyWith(homeSource: 0));
-                _ensureTabLoaded(0);
-              },
-            ),
-            IconButton(
-              tooltip: l10n.following,
-              icon: const Icon(Icons.people_outline),
-              onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const PixivFollowingScreen())),
-            ),
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: Text(l10n.plugin_pixiv_tab_recommended),
-              selected: _homeSource == 1,
-              onSelected: (_) {
-                if (_homeSource == 1) return;
-                _view.select(_view.state.copyWith(homeSource: 1));
-                _ensureTabLoaded(0);
-              },
-            ),
-          ],
-        ),
-        Expanded(
-          child: _homeSource == 0
-              ? _feedTab(store: context.read<PixivFeedStore>(), empty: l10n.plugin_pixiv_empty)
-              : _feedTab(store: _recommended, empty: l10n.plugin_pixiv_recommended_empty),
-        ),
-      ],
-    );
-  }
-
-  Widget _signInBody(L10n l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l10n.plugin_pixiv_not_configured, textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: _signingIn
-                  ? null
-                  : () async {
-                      _view.select(_view.state.copyWith(signingIn: true));
-                      try {
-                        final feed = context.read<PixivFeedStore>();
-                        await runPixivSignIn(context);
-                        if (mounted) {
-                          _view.select(_view.state.copyWith());
-                          await feed.refresh();
-                        }
-                      } finally {
-                        if (mounted) _view.select(_view.state.copyWith(signingIn: false));
-                      }
-                    },
-              child: _signingIn
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.plugin_pixiv_sign_in),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _rankingTab(L10n l10n) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: PopupMenuButton<String>(
-                  initialValue: _rankingMode,
-                  onSelected: _changeRankingMode,
-                  itemBuilder: (_) => [
-                    for (final mode in _rankingModes)
-                      CheckedPopupMenuItem(
-                        value: mode,
-                        checked: _rankingMode == mode,
-                        child: Text(_rankingLabel(l10n, mode)),
-                      ),
-                  ],
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 48),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.bar_chart, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(_rankingLabel(l10n, _rankingMode), maxLines: 1, overflow: TextOverflow.ellipsis),
-                        ),
-                        const Icon(Icons.expand_more),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              if (_rankingDate != null)
-                Flexible(
-                  child: Text(
-                    MaterialLocalizations.of(context).formatCompactDate(_rankingDate!),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              IconButton(
-                style: pluginActionButtonStyle,
-                icon: const Icon(Icons.calendar_today),
-                tooltip: l10n.plugin_pixiv_ranking_pick_date,
-                onPressed: _pickRankingDate,
-              ),
-              if (_rankingDate != null)
-                IconButton(
-                  style: pluginActionButtonStyle,
-                  icon: const Icon(Icons.close),
-                  tooltip: l10n.plugin_pixiv_ranking_back_to_today,
-                  onPressed: _clearRankingDate,
-                ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: _feedTab(store: _ranking, empty: l10n.plugin_pixiv_ranking_empty),
-        ),
-      ],
-    );
-  }
-
-  Widget _bookmarksTab(L10n l10n) {
-    return Column(
-      children: [
-        PluginFilterRow(
-          children: [
-            ChoiceChip(
-              label: Text(l10n.plugin_pixiv_bookmarks_public),
-              selected: _bookmarksRestrict == 'public',
-              onSelected: (_) => _changeBookmarksRestrict('public'),
-            ),
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: Text(l10n.plugin_pixiv_bookmarks_private),
-              selected: _bookmarksRestrict == 'private',
-              onSelected: (_) => _changeBookmarksRestrict('private'),
-            ),
-          ],
-        ),
-        Expanded(
-          child: _feedTab(
-            store: _bookmarks,
-            empty: _bookmarksRestrict == 'private'
-                ? l10n.plugin_pixiv_bookmarks_private_empty
-                : l10n.plugin_pixiv_bookmarks_empty,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _feedTab({required PixivIllustListStore store, required String empty}) {
-    final l10n = L10n.of(context);
-    return ScopedBuilder<PixivIllustListStore, List<PixivIllust>>(
-      store: store,
-      onLoading: (context) {
-        // Soft refresh keeps prior tiles; only the first load blanks the tab.
-        if (store.state.isNotEmpty) {
-          return _illustList(context, store, store.state);
-        }
-        return const PluginGridSkeleton(columns: 2);
-      },
-      onError: (context, error) {
-        if (store.state.isNotEmpty) {
-          return _illustList(context, store, store.state);
-        }
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: pixivErrorMessage(l10n, error ?? Exception()),
-            onRetry: store.refresh,
+  List<WidgetBuilder> _sections(PixivViewState state) => [
+    (_) => PixivHomeSection(
+      source: state.homeSource,
+      onSource: _selectHomeSource,
+      followRestrict: state.followRestrict,
+      onFollowRestrict: _changeFollowRestrict,
+      stores: _home,
+      scrollController: widget.scrollController,
+      recommendedScrollController: _recommendedScroll,
+      mangaScrollController: _mangaScroll,
+      watchlistScrollController: _watchlistScroll,
+    ),
+    (_) => ScopedBuilder<PixivRankingPinsStore, List<String>>(
+      store: _rankingPins,
+      onState: (_, _) {
+        _scheduleRankingSync();
+        return PixivRankingSection(
+          modes: _rankingModes,
+          mode: _rankingMode,
+          date: state.rankingDate,
+          onMode: _changeRankingMode,
+          onEditModes: _editRankingModes,
+          onDate: _changeRankingDate,
+          feed: PixivIllustFeed(
+            store: _ranking,
+            emptyMessage: L10n.of(context).plugin_pixiv_ranking_empty,
+            scrollController: _rankingScroll,
           ),
         );
       },
-      onState: (context, illusts) {
-        if (illusts.isEmpty) {
-          // Refreshable even when empty: re-selecting the tab does not reload,
-          // so a transient empty page used to strand the reader with no
-          // gesture that asks again.
-          return EmptyPane(
-            icon: Icons.photo_outlined,
-            message: empty,
-            onRefresh: store.refresh,
-            action: FilledButton.icon(
-              onPressed: store.refresh,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.retry),
-            ),
-          );
-        }
-        return _illustList(context, store, illusts);
-      },
-    );
-  }
+    ),
+    (_) => PixivFavoritesSection(
+      restrict: state.bookmarksRestrict,
+      tag: state.bookmarkTag,
+      onFilter: _filterBookmarks,
+      store: _bookmarks,
+      scrollController: _favoritesScroll,
+    ),
+    (_) => const PixivSearchScreen(embedded: true),
+    (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll, mode: state.mode),
+  ];
 
-  Widget _illustList(BuildContext context, PixivIllustListStore store, List<PixivIllust> illusts) {
-    return _ThumbPrefetch(
-      illusts: illusts,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (n) {
-          // Prefetch the next API page well before the footer — Pixez-style.
-          if (n.metrics.pixels > n.metrics.maxScrollExtent - 1400) {
-            store.loadMore();
-          }
-          return false;
-        },
-        child: PixivIllustGrid(
-          illusts: illusts,
-          scrollController: store == context.read<PixivFeedStore>() ? widget.scrollController : null,
-          padding: pluginFeedPadding(context, extra: const EdgeInsets.all(4)),
-          onRefresh: store.refresh,
-          loadingMore: store.loadingMore,
-        ),
-      ),
-    );
-  }
-}
+  /// Novel mode's sections; More is the one the illustrations have.
+  List<WidgetBuilder> _novelSections(PixivViewState state) => [
+    for (final body in _novelBodies(state)) (context) => _novelStorage(body(context)),
+    ..._sections(state).skip(4),
+  ];
 
-/// Prefetches thumbs only when the list grows — not on every mute/loading tick.
-class _ThumbPrefetch extends StatefulWidget {
-  final List<PixivIllust> illusts;
-  final Widget child;
+  /// Lists under the section's storage key share their saved offsets, so each
+  /// novel body gets a key of its own: without it, switching mode opened the
+  /// novel list at the illustration list's offset, and back.
+  Widget _novelStorage(Widget body) =>
+      KeyedSubtree(key: const PageStorageKey<PixivContentMode>(PixivContentMode.novel), child: body);
 
-  const _ThumbPrefetch({required this.illusts, required this.child});
-
-  @override
-  State<_ThumbPrefetch> createState() => _ThumbPrefetchState();
-}
-
-class _ThumbPrefetchState extends State<_ThumbPrefetch> {
-  var _lastCount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybePrefetch());
-  }
-
-  @override
-  void didUpdateWidget(covariant _ThumbPrefetch oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.illusts.length != oldWidget.illusts.length) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _maybePrefetch());
-    }
-  }
-
-  void _maybePrefetch() {
-    if (!mounted || widget.illusts.length <= _lastCount) {
-      return;
-    }
-    final from = _lastCount;
-    _lastCount = widget.illusts.length;
-    unawaited(prefetchPixivThumbs(context, widget.illusts.skip(from)));
-  }
-
-  @override
-  Widget build(BuildContext context) => widget.child;
+  List<WidgetBuilder> _novelBodies(PixivViewState state) => [
+    (_) => PixivNovelHomeSection(
+      session: _novels,
+      view: state.novel,
+      onReselect: _scrollToTop,
+      scrollController: widget.scrollController,
+    ),
+    (_) => PixivNovelRankingSection(
+      session: _novels,
+      view: state.novel,
+      onReselect: _scrollToTop,
+      onPinsChanged: _scheduleRankingSync,
+      scrollController: _novelRankingScroll,
+    ),
+    (_) => PixivNovelFavoritesSection(
+      session: _novels,
+      view: state.novel,
+      onReselect: _scrollToTop,
+      scrollController: _novelFavoritesScroll,
+    ),
+    (_) => const PixivNovelSearchScreen(embedded: true),
+  ];
 }
 
 /// Icon tabs matching Flare's Home / Rankings / Favorites / Search / More,
@@ -538,7 +486,19 @@ class PixivHomeChrome extends StatelessWidget {
   final int index;
   final ValueChanged<int> onSelect;
 
-  const PixivHomeChrome({super.key, required this.index, required this.onSelect});
+  /// Whether the sections show illustrations or novels.
+  final PixivContentMode mode;
+
+  /// Switches [mode]; without it there is no mode button.
+  final ValueChanged<PixivContentMode>? onMode;
+
+  const PixivHomeChrome({
+    super.key,
+    required this.index,
+    required this.onSelect,
+    this.mode = PixivContentMode.illust,
+    this.onMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -547,6 +507,10 @@ class PixivHomeChrome extends StatelessWidget {
       title: l10n.plugin_pixiv_title,
       mark: pluginMark(PixivPlugin(), size: 24),
       accent: const Color(0xFF0096FA),
+      actions: [if (onMode case final onMode?) _modeButton(context, onMode)],
+      // At phone widths the mode button would fold the five tabs into the
+      // section picker; the mark makes room for it instead.
+      markGivesWay: true,
       tabs: [
         PluginHomeTab(icon: Icons.home_outlined, label: l10n.home, selected: index == 0, onTap: () => onSelect(0)),
         PluginHomeTab(
@@ -571,10 +535,18 @@ class PixivHomeChrome extends StatelessWidget {
       ],
     );
   }
-}
 
-String? pixivRankingDateParam(DateTime? date) {
-  if (date == null) return null;
-  String pad(int value) => '$value'.padLeft(2, '0');
-  return '${date.year}-${pad(date.month)}-${pad(date.day)}';
+  /// One 48 dp button naming the mode it switches to, so Home's dock can list
+  /// it in its sheet. Lit while novels show.
+  IconButton _modeButton(BuildContext context, ValueChanged<PixivContentMode> onMode) {
+    final l10n = L10n.of(context);
+    final novels = mode == PixivContentMode.novel;
+    return IconButton(
+      key: const ValueKey('pixiv-mode-toggle'),
+      tooltip: novels ? l10n.plugin_pixiv_mode_illusts : l10n.plugin_pixiv_mode_novels,
+      color: novels ? Theme.of(context).colorScheme.primary : null,
+      icon: Icon(novels ? Icons.image_outlined : Icons.menu_book_outlined),
+      onPressed: () => onMode(novels ? PixivContentMode.illust : PixivContentMode.novel),
+    );
+  }
 }

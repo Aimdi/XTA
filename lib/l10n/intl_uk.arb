@@ -2219,8 +2219,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "У закладки",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Тека закладок",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "На цьому акаунті ще немає публічних закладок",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Приватні",
@@ -2341,7 +2339,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Назва/опис",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Цей приватний плагін читає Pixiv як галерею: стрічка, рейтинги, ваші публічні закладки й пошук. Натисніть «Увійти», щоб увійти в Pixiv у браузері, або вставте refresh-токен нижче. Звідси нічого не публікується, не додається в закладки й не підписується на Pixiv.",
+  "plugin_pixiv_settings_intro": "Цей приватний плагін читає Pixiv як галерею: ілюстрації, манґа, романи, рейтинги, ваші закладки й пошук. Натисніть «Увійти», щоб увійти в Pixiv у браузері, або вставте refresh-токен нижче. До вашого облікового запису Pixiv надсилаються лише закладки, підписки й зміни списку відстеження, які ви робите самі. Публікації, коментарі й скарги звідси ніколи не надсилаються.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Показувати роботи R-18",
   "@plugin_pixiv_show_r18": {},
@@ -3934,5 +3932,1038 @@
   "subscribers_only_post": "Продовження доступне лише платним підписникам @{screenName} в X",
   "@subscribers_only_post": {},
   "subscribers_only_post_of_author": "Цей твіт доступний лише платним підписникам автора в X.",
-  "@subscribers_only_post_of_author": {}
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Активний обліковий запис",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Обліковий запис Pixiv: роботи, створені ШІ",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Не вдалося прочитати це налаштування з Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Частково приховані",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Перевіряємо ваше налаштування Pixiv…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Показуються",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Видалити обліковий запис",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Видалити {name} з цього пристрою?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "Показувати значок ШІ",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "У сітках позначає роботи, які автори позначили як створені ШІ.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Уже збережено",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Цю сторінку вже збережено. Зберегти її знову?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} з {total} сторінок уже збережена.} few{{saved} з {total} сторінок уже збережені.} many{{saved} з {total} сторінок уже збережені.} other{{saved} з {total} сторінок уже збережені.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Додати в закладки",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Додавати в закладки під час збереження",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Збереження роботи з її сторінки також додає її в закладки, якщо її там ще немає.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Автоматично додавати теги до закладок",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Закладки, додані без редактора, отримують теги самої роботи, окрім тегів популярності на кшталт 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Зняти всі",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Приватні закладки за замовчуванням",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Закладки, додані без редактора, приватні. У редакторі будь-яку можна зробити публічною.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Змінити закладку",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Підписуватися під час додавання в закладки",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Нова закладка також публічно підписує вас на автора, якщо ви ще не підписані.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Ви підписалися на {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Приватна закладка",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Бачите лише ви",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Зберігати під час додавання в закладки",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Нова закладка також зберігає всі сторінки роботи.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Вибрати всі",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Закладки",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Додати тег",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Усі",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Показати всі закладки",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Немає закладок із цим тегом",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Фільтр за тегом",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Додайте тег",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Знайдіть або введіть тег",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Без категорії",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "Використати «{tag}»",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Теги",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Тегів поки немає. Додайте свої вище.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Тут поки немає тегів закладок",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Змінити на pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Автоматично",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Стовпці сітки в альбомній орієнтації",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Стовпці сітки в портретній орієнтації",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Приховано: посилання за межі Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Приховати цей коментар",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "Приховати користувача {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Параметри коментаря",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Відповідь для {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Показати",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Стікер",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Невідомий користувач",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Показати відповіді",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Коментарів поки немає",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Відповідей поки немає",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Відповіді",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Коментарі",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Показати коментарі",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Показати коментарі ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Скопійовано",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Скопіювати ID роботи",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Копіювати відомості",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Шаблон «Копіювати відомості»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Посилання на роботу",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Назва: {title}\nАвтор: {artist}\nID роботи: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Що «Копіювати відомості» кладе в буфер обміну. Заповнювачі замінюються даними роботи.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Вставити",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Скинути до типового",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Посилання на автора",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Макет роботи",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Поруч на широких екранах",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Зображення поруч з описом",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Зображення над описом",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Одночасні завантаження",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Скільки файлів завантажується одночасно",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Збережені сторінки",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Поки немає запам’ятованих сторінок} one{Запам’ятовано {count} сторінку} few{Запам’ятовано {count} сторінки} many{Запам’ятовано {count} сторінок} other{Запам’ятовано {count} сторінки}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Збережені роботи позначаються галочкою, а перед повторним збереженням сторінки з’являється запитання",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Забути",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Забути, які сторінки було збережено? Самі файли залишаться на пристрої.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Збережено — завантажити знову",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Завантаження",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Назва файлу",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Торкніться елемента, щоб вставити його в позицію курсора. Кожен файл зберігає своє розширення.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Додайте {token}, щоб кожна сторінка роботи мала власну назву",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Приклад: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Скинути",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID роботи",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Номер сторінки",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Назва",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID автора",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Ім’я автора",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Папка для кожного автора",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Складає роботи кожного автора в папку з його іменем усередині папки завантажень",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Окрема папка для R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Складає роботи R-18 у папку «R-18» усередині папки завантажень",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Приватні",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Підписатися приватно",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Про підписку знатимете лише ви",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Публічні",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Усі підписки",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Приватні підписки",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Публічні підписки",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} підписка} few{{shown} підписки} many{{shown} підписок} other{{shown} підписки}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Тактильний відгук",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Коротка вібрація під час додавання в закладки або довгого натискання.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Історія переглядів",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Очистити історію",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Очистити історію ілюстрацій?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Тут з’являються відкриті роботи. Історія зберігається лише на цьому пристрої.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Фільтр за назвою або автором",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "В історії немає відповідних робіт",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Очистити історію романів?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Тут з’являються відкриті романи. Історія зберігається лише на цьому пристрої.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Фільтр за назвою або автором",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "В історії немає відповідних романів",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Призупинити історію переглядів",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Поки увімкнено, відкриті роботи й романи не додаються до історії",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Видалити «{title}» з історії?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "ID роботи {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "ID роботи скопійовано",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Сервер зображень",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Адреса сервера",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Ваш сервер",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Звідки завантажуються зображення робіт. Дзеркало допомагає там, де сервер зображень Pixiv повільний або заблокований.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Наприклад, img.example.com або https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Введіть коректну адресу без пробілів, наприклад img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Публічне дзеркало",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Власний сервер Pixiv",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Дзеркало або ваш сервер бачить кожне зображення, яке ви відкриваєте, зокрема R-18, і вашу IP-адресу.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Повернути типовий",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Відомості скопійовано",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Керувати обліковим записом на pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Поки немає рекомендованої манґи — потягніть, щоб оновити",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Перейти до ілюстрацій",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Перейти до романів",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Коментарі",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Ви приховали її автора, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Показати цього разу",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Ви приховали її тег {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Цю роботу приховано",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Ви приховали цю роботу.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Приховати цей роман",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Новели",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Налаштування приховування",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Приховати тег",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Напишіть r'шаблон', щоб приховувати кожен тег, що відповідає регулярному виразу. Шаблони також бачать усі теги роботи, з’єднані як #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Тег для приховування",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Цей шаблон не є коректним регулярним виразом",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Теги",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Автори",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Роботи",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} друг у My pixiv} few{{shown} друзі в My pixiv} many{{shown} друзів у My pixiv} other{{shown} друга в My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Роман",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Романи автора",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Додати до приватних закладок",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Тут з’являться романи, додані до публічних закладок",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Тут з’являться романи, додані до приватних закладок",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "№ {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} розділ} few{{shown} розділи} many{{shown} розділів} other{{shown} розділу}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} знак} few{{shown} знаки} many{{shown} знаків} other{{shown} знака}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Експортувати як текст",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Не вдалося експортувати роман",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "З розміткою Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Текст точно так, як його зберігає Pixiv, з тегами на кшталт [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Звичайний текст",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Без розмітки Pixiv, рубі записано як основа(рубі)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Збережено: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Тут з’являться нові романи авторів, на яких ви підписані",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Зображення в романі",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Відкрити роботу",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Зберегти зображення",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Переглянути на весь екран",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Перейти на сторінку {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Залишити Pixiv, щоб відкрити {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Відкрити посилання",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Наступний розділ",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Сторінка {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Попередній розділ",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Зараз у рейтингу немає романів",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Поки немає рекомендованих романів — потягніть, щоб оновити",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Теги романів, назви або користувачі",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Сортування за популярністю потребує Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Шукайте романи або користувачів",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Серія романів",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Завершена",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "У цій серії немає доступних вам розділів",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Триває",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Почати з першого",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Поділитися посиланням на профіль",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Поділитися посиланням на серію",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Тут з’являться серії романів, додані до списку відстеження",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Відкривати посилання pixiv у XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "На сторінці Android «Відкривати за замовчуванням» додайте pixiv.net і pixiv.me як підтримувані посилання",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Оригінальна якість",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Не вдалося завантажити більше робіт",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Більше робіт немає",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Статті Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Поки немає статей Pixivision",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Роботи в статті",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "День народження",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Публічних закладок поки немає",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Копіювати дані профілю",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Підписники",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Немає підписників для показу",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Підписки",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Поки немає підписок",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Стать",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "ID користувача скопійовано",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Ілюстрації",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Відомості",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Дані профілю скопійовано",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Рід занять",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Манга",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Ви приховали цього автора",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "Друзі в My pixiv",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Псевдонім",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Публічних закладок на романи поки немає",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Романи",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Поки немає романів",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Акаунт Pawoo",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Учасник Premium",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Публічні закладки",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Регіон",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Зберегти фото профілю",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Зберегти обкладинку",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Усе одно показати",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "Акаунт X",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "ID користувача",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Вебсайт",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Роботи",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Тут поки немає робіт",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Сторінки роботи",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Зображення в сітці",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Велика",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Середня",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Оригінал",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Сторінки на весь екран",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "ШІ",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 денний",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 ШІ",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Змінити",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Закріплені рейтинги показуються вкладками. Рейтинги R-18 доступні, поки ввімкнено «Показувати роботи R-18».",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Вкладки рейтингу",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 тижневий",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G тижневий",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Поки немає рекомендованих авторів",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} пкс",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Вибрати інше зображення",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Немає робіт Pixiv, схожих на це зображення",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO не зміг виконати пошук за цим зображенням",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Вибрати зображення",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Увійдіть у Pixiv знову, щоб бачити прев’ю",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Вибране зображення завантажується на saucenao.com, щоб знайти схожі роботи на Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Пошук у SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Схожість {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Пошук за зображенням",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Зберегти знову",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Лише нові сторінки",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Зберегти {count} сторінку} few{Зберегти {count} сторінки} many{Зберегти {count} сторінок} other{Зберегти {count} сторінки}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Збережено на цьому пристрої",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Кількість закладок",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Будь-яка кількість закладок",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ закладок",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} закладок",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Дата",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "За весь час",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Власні дати…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "За останній день",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "За останні 6 місяців",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "За останній місяць",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "За останній тиждень",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "За останній рік",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Додати до улюблених тегів",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Додано до улюблених тегів",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Прибрати з улюблених тегів",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Прибрано з улюблених тегів",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Улюблені теги",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Завершити редагування",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Редагувати улюблені теги",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Перетягніть тег, щоб перемістити його. Змахніть убік, щоб прибрати.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Улюблених тегів поки немає. Натисніть і утримуйте тег у роботі, щоб додати його.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Фільтри пошуку",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Показати всі ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Очистити нещодавні пошуки",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Очистити всі нещодавні пошуки?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Показати менше",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Відкрити роботу #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Відкрити роман #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Відкрити серію романів #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Відкрити статтю Pixivision #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Відкрити користувача #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Вставити",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Популярність",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Будь-яка популярність",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Сортування за популярністю серед чоловіків або жінок потребує Pixiv Premium. Без нього «Популярні» показують безкоштовний попередній перегляд Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Дата публікації не звужує попередній перегляд.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Це безкоштовний попередній перегляд популярного від Pixiv. Щоб сортувати всі результати за популярністю, потрібен Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Запам’ятати ці фільтри",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Сортування",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Найстаріші",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Популярні серед жінок",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Популярні серед чоловіків",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Тег скопійовано",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Скопіювати тег",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Де шукати",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Теги, назва, опис",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Текст твору",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Усі роботи",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Без ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Лише ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "У закладках у {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Показати всі",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Зняти всі",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Вибрати сторінки",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Сторінки не вибрано} one{Вибрано {count} сторінку} few{Вибрано {count} сторінки} many{Вибрано {count} сторінок} other{Вибрано {count} сторінки}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Серія",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "У цій серії немає доступних вам робіт",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Серія: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Наступна в серії",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "№ {order} з {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Попередня в серії",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Розпочато {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Поділитися зображенням",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Не вдалося поділитися зображенням",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "Вийти з облікового запису {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Вийти з Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Змінити розмір зображень і опису",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv відкривається на",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Гортати роботи свайпом",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Гортайте вбік, щоб перейти до наступної роботи в списку. У багатосторінкових роботах гортайте далі за першу чи останню сторінку.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Змінити обліковий запис",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Манґа",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Список відстеження",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Кодування кадру {current} з {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Не вдалося зберегти анімацію",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Отримання кадрів…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Зберегти як GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Зберегти кадри в ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Анімацію збережено як GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Кадри збережено в ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Збереження…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Кодування може тривати хвилину",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "Більше не приховувати {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Перегляд",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Увійдіть, щоб відкрити цю роботу",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Популярне на Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Додати до списку відстеження",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Тут з’являться серії манґи, додані до списку відстеження",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Прибрати зі списку відстеження",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Оновлено {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Відкрити останню",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} робота} few{{shown} роботи} many{{shown} робіт} other{{shown} роботи}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  }
 }

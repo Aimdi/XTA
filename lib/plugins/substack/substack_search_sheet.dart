@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/plugin_pending_actions.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
@@ -43,7 +44,7 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
   late final TextEditingController _query;
   late final SubstackSearchStore _store;
   late final _SearchHistoryStore _history;
-  final _actions = _FollowActions();
+  final _actions = PluginPendingActions<String>();
 
   @override
   void initState() {
@@ -303,7 +304,7 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
           ),
   );
 
-  Widget _publication(SubstackPublication publication) => ScopedBuilder<_FollowActions, Set<String>>(
+  Widget _publication(SubstackPublication publication) => ScopedBuilder<PluginPendingActions<String>, Set<String>>(
     store: _actions,
     onState: (context, busy) => SubstackDiscoveryPublicationTile(
       publication: publication,
@@ -401,27 +402,4 @@ class SubstackDiscoveryPublicationTile extends StatelessWidget {
 
 class _SearchHistoryStore extends Store<List<String>> {
   _SearchHistoryStore(super.initialState);
-}
-
-class _FollowActions extends Store<Set<String>> {
-  var _closed = false;
-  _FollowActions() : super(const {});
-  Future<bool> run(String id, Future<void> Function() action) async {
-    if (_closed || state.contains(id)) return false;
-    update({...state, id});
-    try {
-      await action();
-      return true;
-    } catch (_) {
-      return false;
-    } finally {
-      if (!_closed) update({...state}..remove(id));
-    }
-  }
-
-  @override
-  Future<void> destroy() {
-    _closed = true;
-    return super.destroy();
-  }
 }

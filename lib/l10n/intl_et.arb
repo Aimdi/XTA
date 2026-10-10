@@ -2219,8 +2219,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Järjehoidja",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Järjehoidjate kaust",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Sellel kontol pole veel avalikke järjehoidjaid",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privaatsed",
@@ -2341,7 +2339,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Pealkiri/kirjeldus",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "See privaatne plugin loeb Pixivi nagu galeriiäppi: jälgimine, edetabelid, sinu avalikud järjehoidjad ja otsing. Puuduta Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Siit ei postitata, ei märgita ega jälgita midagi Pixivis.",
+  "plugin_pixiv_settings_intro": "See privaatne plugin loeb Pixivi nagu galeriiäppi: illustratsioonid, manga, romaanid, edetabelid, sinu järjehoidjad ja otsing. Puuduta Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Sinu Pixivi kontole saadetakse ainult järjehoidjad, jälgimised ja jälgimisnimekirja muudatused, mille ise teed. Siit ei postitata, kommenteerita ega teatata kunagi midagi.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Näita R-18 teoseid",
   "@plugin_pixiv_show_r18": {},
@@ -3934,5 +3932,1038 @@
   "subscribers_only_post": "Ülejäänut saavad lugeda ainult @{screenName} tasulised tellijad X-is",
   "@subscribers_only_post": {},
   "subscribers_only_post_of_author": "See säuts on ainult autori tasulistele tellijatele X-is.",
-  "@subscribers_only_post_of_author": {}
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Aktiivne konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixivi konto: tehisintellekti loodud teosed",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Seda seadet ei õnnestunud Pixivist lugeda",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Osaliselt peidetud",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontrollin sinu Pixivi seadet…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Näidatakse",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Eemalda konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Kas eemaldada {name} sellest seadmest?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "Näita TI-märki",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "Märgib ruudustikus teosed, mille autorid on märkinud tehisintellekti loodud teosteks.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Juba salvestatud",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "See leht on juba salvestatud. Kas salvestada uuesti?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{total} lehest {saved} on juba salvestatud.} other{{total} lehest {saved} on juba salvestatud.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Lisa järjehoidja",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Lisa salvestamisel järjehoidjatesse",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Teose salvestamine selle lehelt lisab selle ka järjehoidjatesse, kui seda seal veel pole.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Sildista järjehoidjad automaatselt",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Ilma redaktorita tehtud järjehoidjad saavad teose enda sildid, välja arvatud populaarsussildid nagu 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Tühista kõik",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Vaikimisi privaatsed järjehoidjad",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Ilma redaktorita tehtud järjehoidjad on privaatsed. Redaktoris saad mis tahes neist avalikuks teha.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Muuda järjehoidjat",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Jälgi järjehoidjasse lisamisel",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Uus järjehoidja hakkab ka kunstnikku avalikult jälgima, kui sa teda veel ei jälgi.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Jälgid nüüd: {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Privaatne järjehoidja",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Seda näed ainult sina",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Salvesta järjehoidjasse lisamisel",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Uus järjehoidja salvestab ka teose kõik leheküljed.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Vali kõik",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Järjehoidjad",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Lisa silt",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Kõik",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Näita kõiki järjehoidjaid",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Selle sildiga järjehoidjaid pole",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Filtreeri sildi järgi",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Lisa silt",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Otsi või sisesta silt",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Kategoriseerimata",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "Kasuta „{tag}“",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Sildid",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Silte veel pole. Lisa ülal oma sildid.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Siin pole veel järjehoidjate silte",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Muuda saidil pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Automaatne",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Ruudustiku veerud rõhtpaigutuses",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Ruudustiku veerud püstpaigutuses",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Peidetud: lingid väljaspool Pixivit",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Vaigista see kommentaar",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "Vaigista {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Kommentaari valikud",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Vastus kasutajale {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Näita",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Kleebis",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Tundmatu kasutaja",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Näita vastuseid",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Kommentaare veel pole",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Vastuseid veel pole",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Vastused",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Kommentaarid",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Vaata kommentaare",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Vaata kommentaare ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Kopeeritud",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Kopeeri teose ID",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Kopeeri info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "„Kopeeri info” mall",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Teose link",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Pealkiri: {title}\nKunstnik: {artist}\nTeose ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Mida „Kopeeri info” lõikelauale paneb. Kohatäited asendatakse teose andmetega.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Lisa",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Lähtesta vaikeväärtusele",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Kunstniku link",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Teose paigutus",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Laial ekraanil kõrvuti",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Pildid üksikasjade kõrval",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Pildid üksikasjade kohal",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Samaaegsed allalaadimised",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Mitu faili korraga alla laaditakse",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Salvestatud lehed",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Ühtegi lehte pole veel meelde jäetud} one{{count} leht meelde jäetud} other{{count} lehte meelde jäetud}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Salvestatud teosed saavad linnukese ja enne lehe teistkordset salvestamist küsitakse üle",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Unusta",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Kas unustada, millised lehed on salvestatud? Failid ise jäävad seadmesse.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Salvestatud – laadi uuesti alla",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Allalaadimised",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Failinimi",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Puuduta andmevälja, et lisada see kursori kohale. Iga fail säilitab oma laiendi.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Lisa {token}, et teose igal lehel oleks oma nimi",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Eelvaade: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Lähtesta",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Teose ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Lehekülje number",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Pealkiri",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Kunstniku ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Kunstniku nimi",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Iga kunstniku jaoks kaust",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Paneb iga kunstniku teosed allalaadimiste kausta sees tema nimega kausta",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Eraldi kaust R-18 jaoks",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Paneb R-18 teosed allalaadimiste kausta sees olevasse kausta „R-18”",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Privaatsed",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Jälgi privaatselt",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Ainult sina näed, et jälgid",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Avalikud",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Kõik jälgitavad loojad",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Privaatselt jälgitavad loojad",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Avalikult jälgitavad loojad",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} jälgitav} other{{shown} jälgitavat}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Haptiline tagasiside",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Lühike värin järjehoidja lisamisel või pikal vajutusel.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Ajalugu",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Tühjenda ajalugu",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Kas tühjendada illustratsioonide ajalugu?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Avatud teosed ilmuvad siia. Ajalugu jääb sellesse seadmesse.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtreeri pealkirja või kunstniku järgi",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Ükski ajaloo teos ei sobi",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Kas tühjendada romaanide ajalugu?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Avatud romaanid ilmuvad siia. Ajalugu jääb sellesse seadmesse.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Filtreeri pealkirja või autori järgi",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Ükski ajaloo romaan ei sobi",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Peata ajalugu",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Kui see on sees, ei lisata avatud teoseid ega romaane ajalukku",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Kas eemaldada „{title}” ajaloost?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Teose ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Teose ID kopeeritud",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Piltide server",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Serveri aadress",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Oma server",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Kust teoste pildid laaditakse. Peegel aitab seal, kus Pixivi pildiserver on aeglane või blokeeritud.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Näiteks img.example.com või https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Sisesta kehtiv tühikuteta aadress, näiteks img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Avalik peegel",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Pixivi enda server",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Peegel või sinu oma server näeb iga pilti, mille avad, ka R-18 pilte, ja sinu IP-aadressi.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Taasta vaikimisi",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Info kopeeritud",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Halda kontot saidil pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Praegu soovitatud mangat pole — tõmba värskendamiseks",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Lülitu illustratsioonidele",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Lülitu romaanidele",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Kommentaarid",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Sa vaigistasid selle kunstniku, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Näita seekord",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Sa vaigistasid selle sildi {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "See teos on vaigistatud",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Sa vaigistasid selle teose.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Vaigista see romaan",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romaanid",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Vaigistuse seaded",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Vaigista silt",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Kirjuta r'muster', et vaigistada iga silt, millele regulaaravaldis sobib. Mustrid näevad ka teose kõiki silte ühendatuna kujul #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Vaigistatav silt",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "See muster ei ole kehtiv regulaaravaldis",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Sildid",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kunstnikud",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Teosed",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixivi sõber} other{{shown} My pixivi sõpra}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Romaan",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Vaata tema romaane",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Lisa privaatselt järjehoidjatesse",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Siin on romaanid, mille lisad avalikult järjehoidjatesse",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Siin on romaanid, mille lisad privaatselt järjehoidjatesse",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Nr {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} peatükk} other{{shown} peatükki}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} märk} other{{shown} märki}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Ekspordi tekstina",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Romaani ei õnnestunud eksportida",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixivi märgendusega",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Tekst täpselt nii, nagu Pixiv selle salvestab, koos siltidega nagu [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Lihttekst",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Ilma Pixivi märgenduseta, ruby kujul alus(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} salvestatud",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Siin on jälgitavate autorite uued romaanid",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Pilt romaanis",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Ava teos",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Salvesta pilt",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Vaata täisekraanil",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Mine leheküljele {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Kas lahkuda Pixivist, et avada {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Ava link",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Järgmine peatükk",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Lehekülg {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Eelmine peatükk",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Edetabelis pole praegu romaane",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Praegu soovitatud romaane pole — tõmba värskendamiseks",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Romaanide sildid, pealkirjad või kasutajad",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Populaarsuse järgi sortimine nõuab Pixiv Premiumit.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Otsi romaane või kasutajaid",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Romaanisari",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Lõpetatud",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "Selles sarjas pole teile nähtavaid peatükke",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Jätkub",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Alusta esimesest",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Jaga profiili linki",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Jaga sarja linki",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Siin on romaanisarjad, mille lisad jälgimisnimekirja",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Ava pixivi lingid XTA-s",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Lisa Androidi lehel „Ava vaikimisi” pixiv.net ja pixiv.me toetatud linkidena",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Algne kvaliteet",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Rohkem teoseid ei õnnestunud laadida",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Rohkem teoseid pole",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivisioni artiklid",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Praegu Pixivisioni artikleid pole",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Esiletõstetud teosed",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Sünnipäev",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Avalikke järjehoidjaid veel pole",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Kopeeri profiili teave",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Jälgijad",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Pole jälgijaid, keda näidata",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Jälgib",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Ei jälgi veel kedagi",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Sugu",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Kasutaja ID kopeeritud",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Illustratsioonid",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Teave",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profiili teave kopeeritud",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Amet",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Oled selle looja vaigistanud",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My pixivi sõbrad",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Hüüdnimi",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Avalikke romaanide järjehoidjaid veel pole",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romaanid",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Romaane veel pole",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo konto",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium-liige",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Avalikud järjehoidjad",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Piirkond",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Salvesta profiilipilt",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Salvesta päisepilt",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Näita ikkagi",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X-i konto",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Kasutaja ID",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Veebisait",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Teosed",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Siin pole veel teoseid",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Teose lehed",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Ruudustiku pildid",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Suur",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Keskmine",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Originaal",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Täisekraanil lehed",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "TI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 päevane",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 TI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Muuda",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Kinnitatud edetabelid on vahekaartidena. R-18 edetabelid on valikus, kui „Näita R-18 teoseid“ on sees.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Edetabelite vahekaardid",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 nädalane",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G nädalane",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Praegu soovitatud loojaid pole",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Vali teine pilt",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Selle pildiga ei sobi ükski Pixivi teos",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO ei saanud selle pildiga otsida",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Vali pilt",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Eelvaadete nägemiseks logi uuesti Pixivisse sisse",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Valitud pilt laaditakse üles saitile saucenao.com, et leida sobivaid Pixivi teoseid.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Otsin SauceNAO-st…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} sarnane",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Otsi pildi järgi",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Salvesta uuesti",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Ainult uued lehed",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Salvesta {count} leht} other{Salvesta {count} lehte}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Salvestatud selles seadmes",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Järjehoidjate arv",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Ükskõik mitu järjehoidjat",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ järjehoidjat",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} järjehoidjat",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Kuupäev",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Igal ajal",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Kohandatud kuupäevad…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Viimane päev",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Viimased 6 kuud",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Viimane kuu",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Viimane nädal",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Viimane aasta",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Lisa lemmiksiltide hulka",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Lisatud lemmiksiltide hulka",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Eemalda lemmiksiltide hulgast",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Eemaldatud lemmiksiltide hulgast",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Lemmiksildid",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Lõpeta muutmine",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Muuda lemmiksilte",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Sildi teisaldamiseks lohista seda. Eemaldamiseks libista see kõrvale.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Lemmiksilte veel pole. Lisamiseks vajuta teose sildil pikalt.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Otsingufiltrid",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Näita kõiki ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Kustuta hiljutised otsingud",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Kas kustutada kõik hiljutised otsingud?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Näita vähem",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Ava teos #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Ava romaan #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Ava romaanisari #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Ava Pixivisioni artikkel #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Ava kasutaja #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Kleebi",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Populaarsus",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Mis tahes populaarsus",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Populaarsus meeste või naiste seas nõuab Pixiv Premiumit. Ilma selleta näitab „Populaarsed” Pixivi tasuta eelvaadet.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Postitamise kuupäevad eelvaadet ei kitsenda.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "See on Pixivi tasuta populaarsete teoste eelvaade. Kõigi tulemuste sortimiseks populaarsuse järgi on vaja Pixiv Premiumit.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Jäta need filtrid meelde",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sortimine",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Vanimad",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Populaarsed naiste seas",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populaarsed meeste seas",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Silt kopeeritud",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopeeri silt",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Otsingu ulatus",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Sildid, pealkiri, kirjeldus",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Põhitekst",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Kõik teosed",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Ilma ugoirata",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Ainult ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Järjehoidjates {count}+ korda",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Näita kõiki",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Mitte ühtegi",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Vali lehed",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Ühtegi lehte pole valitud} one{{count} leht valitud} other{{count} lehte valitud}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Sari",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "Selles sarjas pole teile nähtavaid teoseid",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Sari: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Järgmine sarjas",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr {order} / {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Eelmine sarjas",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Alustatud {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Jaga pilti",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Pilti ei õnnestunud jagada",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "Kas logida {name} välja?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Kas logida Pixivist välja?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Muuda piltide ja üksikasjade suurust",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv avaneb jaotisega",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Teoste vahel libistamine",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Libista külgsuunas loendi järgmise teose juurde. Mitme lehega teoste puhul libista edasi üle esimese või viimase lehe.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Vaheta kontot",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Jälgimisnimekiri",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Kodeerin kaadrit {current}/{total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Animatsiooni ei õnnestunud salvestada",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Laadin kaadreid…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Salvesta GIF-ina",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Salvesta kaadrid ZIP-ina",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animatsioon salvestati GIF-ina",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kaadrid salvestati ZIP-ina",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Salvestan…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodeerimine võib võtta minuti",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "Kas tühistada {name} vaigistus?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Vaatamine",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Selle teose avamiseks logi sisse",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Populaarne Pixivis",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Lisa jälgimisnimekirja",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Siin on mangasarjad, mille lisad jälgimisnimekirja",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Eemalda jälgimisnimekirjast",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Uuendatud {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Vaata uusimat",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} teos} other{{shown} teost}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -33,6 +33,7 @@ import 'package:xta/client/headers.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/downloads/download_destination.dart';
+import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
@@ -65,9 +66,19 @@ import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
+import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
@@ -478,6 +489,7 @@ Future<void> main() async {
       optionTextScaleFactor: 1.0,
       optionDisableScreenshots: false,
       ...downloadPrefDefaults,
+      optionDownloadConcurrency: downloadConcurrencyDefault,
       optionHomePages: defaultHomePages.map((e) => e.id).toList(),
       optionLocale: optionLocaleDefault,
       optionHomeInitialTab: 'feed',
@@ -612,12 +624,38 @@ Future<void> main() async {
       optionPluginPixivAccessToken: '',
       optionPluginPixivAccessExpiresAt: '',
       optionPluginPixivShowR18: false,
+      optionPluginPixivHideAi: false,
       optionPluginPixivUserId: 0,
+      optionPluginPixivIsPremium: false,
       optionPluginPixivMutedAuthors: '[]',
       optionPluginPixivMutedTags: '[]',
       optionPluginPixivMutedIllusts: '[]',
+      optionPluginPixivMutedComments: '[]',
+      optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginPixivRankingModes: jsonEncode(pixivDefaultRankingPins),
+      optionPluginPixivNovelRankingModes: jsonEncode(pixivDefaultNovelRankingPins),
+      optionPluginPixivSearchFilters: '',
+      optionPluginPixivNovelSearchFilters: '',
+      optionPluginPixivNovelSearchHistory: '[]',
+      optionPluginPixivFavoriteTags: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
+      optionPluginPixivAccounts: '[]',
+      optionPluginPixivStartSection: 'home',
+      optionPluginPixivCopyTemplate: '',
+      optionPluginPixivHistoryPaused: false,
+      optionPluginPixivDefaultPrivateBookmark: false,
+      optionPluginPixivAutoTagBookmarks: false,
+      optionPluginPixivFollowAfterBookmark: false,
+      optionPluginPixivDownloadAfterBookmark: false,
+      optionPluginPixivBookmarkAfterDownload: false,
+      optionPluginPixivHaptics: true,
+      ...pixivViewingDefaults,
+      optionPluginPixivFileNameTemplate: pixivFileNameTemplateDefault,
+      optionPluginPixivFolderPerArtist: false,
+      optionPluginPixivFolderR18: false,
+      optionPluginPixivDownloadIndex: '[]',
+      optionPluginPixivNovelReading: '{}',
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,
       optionPluginBooruEngine: 'danbooru',
@@ -709,6 +747,11 @@ Future<void> main() async {
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
 
   CrashReporter.install(prefService);
+  // A restored backup changes the setting too, so the queue follows the setting itself.
+  void applyDownloadConcurrency() =>
+      DownloadStore.shared.setConcurrency(prefService.get<int>(optionDownloadConcurrency) ?? downloadConcurrencyDefault);
+  applyDownloadConcurrency();
+  prefService.addKeyListener(optionDownloadConcurrency, applyDownloadConcurrency);
 
   // Apply the last known query ids before the first request goes out; the
   // network refresh runs unawaited so a slow or blocked fetch never delays
@@ -834,9 +877,16 @@ Future<void> main() async {
     );
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
-    final pixivSearchHistory = PixivSearchHistoryStore(prefService);
+    final pixivSearchHistory = PixivSearchHistory(prefService);
+    final pixivNovelSearchHistory = PixivNovelSearchHistory(prefService);
+    final pixivFavoriteTags = PixivFavoriteTagsStore(prefService);
+    final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
+    final pixivNovelBookmarks = PixivNovelBookmarkStore();
+    final pixivDownloads = PixivDownloadIndex(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
+    final pixivHistory = PixivHistoryStore();
+    final pixivNovelHistory = PixivNovelHistoryStore();
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
     final booruMute = BooruMuteStore(prefService);
@@ -915,7 +965,6 @@ Future<void> main() async {
           stocksWatchlist.load(),
         if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
           pixivMute.load(),
-          pixivSearchHistory.load(),
         ],
         if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
           booruTags.load(),
@@ -1064,8 +1113,15 @@ Future<void> main() async {
                 Provider(create: (_) => pixivClient),
                 Provider(create: (_) => pixivMute),
                 Provider(create: (_) => pixivSearchHistory),
+                Provider(create: (_) => pixivNovelSearchHistory),
+                Provider(create: (_) => pixivFavoriteTags),
+                Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
+                Provider(create: (_) => pixivNovelBookmarks),
+                Provider(create: (_) => pixivDownloads),
                 Provider(create: (_) => pixivFeed),
+                Provider(create: (_) => pixivHistory),
+                Provider(create: (_) => pixivNovelHistory),
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),
                 Provider(create: (_) => booruMute),
@@ -1419,8 +1475,13 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Future<void> _handleSharedText(String text) async {
     try {
-      await switch (sharedTargetOf(text)) {
-        SharedXTarget() => _openSharedXLink(text),
+      final pixiv = PrefService.of(context, listen: false).get<bool>(optionPluginPixivEnabled) == true;
+      await switch (sharedTargetOf(text, pixiv: pixiv)) {
+        SharedXTarget() => _openSharedLink(text, pixiv: pixiv),
+        SharedPixivIdTarget(id: final id) => Navigator.push(
+          context,
+          MaterialPageRoute<void>(builder: (_) => PixivSearchScreen(initialQuery: id)),
+        ),
         SharedWebTarget(link: final link) => openPostLink(
           context,
           link.toString(),
@@ -1437,8 +1498,8 @@ class _DefaultPageState extends State<DefaultPage> {
     }
   }
 
-  Future<void> _openSharedXLink(String text) async {
-    final link = await resolveSharedXLink(text);
+  Future<void> _openSharedLink(String text, {required bool pixiv}) async {
+    final link = await resolveSharedLink(text, pixiv: pixiv);
     if (!mounted) return;
     if (link == null) return _cannotOpenShare();
     await handleInitialLink(link);
@@ -1455,6 +1516,10 @@ class _DefaultPageState extends State<DefaultPage> {
       return;
     }
     if (!mounted) {
+      return;
+    }
+    if (!readsAsXLink(link)) {
+      await openUri(context, link.toString());
       return;
     }
     final parsed = await parseUri(link);

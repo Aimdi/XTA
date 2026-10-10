@@ -88,8 +88,11 @@ void main() {
     await _openFromCounter(tester, 'pixiv-reader-counter');
     await tester.tap(find.byKey(const ValueKey('pixiv-overview-downloadAll')));
     await settlePixiv(tester);
+    expect(find.text('1 of 8 pages is already saved.'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
+    await settlePixiv(tester);
     expect(harness.downloader.requests.map((request) => request.fileName), [
-      for (var page = 0; page < 8; page++) 'pixiv-120_p$page.png',
+      for (var page = 0; page < 8; page++) '120_p$page.png',
     ]);
 
     await _openFromCounter(tester, 'pixiv-reader-counter');
@@ -114,9 +117,31 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Download all pages'), findsOneWidget);
       expect(find.byKey(const ValueKey('pixiv-overview-page-20')), findsOneWidget);
-      await tester.drag(find.byType(PixivPageThumb).first, const Offset(0, -2000));
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -2000));
       await settlePixiv(tester);
       expect(find.byKey(const ValueKey('pixiv-overview-page-24')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+  }
+
+  for (final size in [const Size(568, 320), const Size(640, 360)]) {
+    testWidgets('a landscape phone at twice the text size keeps room for pages ($size)', (tester) async {
+      await pumpPixiv(tester, PixivReaderScreen(illust: pixivWork(pages: 25)), size: size, textScale: 2);
+      await _openFromCounter(tester, 'pixiv-reader-counter');
+
+      final grid = tester.getSize(find.byType(CustomScrollView)).height;
+      final bar = find.ancestor(
+        of: find.byKey(const ValueKey('pixiv-overview-downloadPage')),
+        matching: find.byType(Scrollable),
+      );
+      expect(grid, greaterThan(tester.getSize(bar).height), reason: 'the pages get more of the sheet than the actions');
+      expect(
+        tester.getTopLeft(find.byKey(const ValueKey('pixiv-overview-downloadAll'))).dy,
+        tester.getTopLeft(find.byKey(const ValueKey('pixiv-overview-downloadPage'))).dy,
+        reason: 'two actions to a row on a wide sheet',
+      );
+      await tester.dragUntilVisible(find.byKey(const ValueKey('pixiv-overview-direction')), bar, const Offset(0, -40));
       expect(tester.takeException(), isNull);
       await disposePixiv(tester);
     });

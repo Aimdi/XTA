@@ -2219,8 +2219,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "إضافة إلى الإشارات",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "مجلد الإشارات",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "لا إشارات عامة على هذا الحساب بعد",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "خاص",
@@ -2341,7 +2339,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "العنوان/الوصف",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "هذه الإضافة الخاصة تقرأ Pixiv كمعرض: المتابعة والترتيب وإشاراتك العامة والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُنشَر شيء ولا تُضاف إشارات ولا متابعات على Pixiv من هنا.",
+  "plugin_pixiv_settings_intro": "تقرأ هذه الإضافة الخاصة Pixiv كتطبيق معرض: الرسوم والمانجا والروايات والترتيب وإشاراتك المرجعية والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُرسَل إلى حسابك على Pixiv إلا ما تُجريه بنفسك من إشارات ومتابعات وتغييرات على قائمة المتابعة. ولا يُنشَر من هنا أي شيء ولا يُعلَّق عليه ولا يُبلَّغ عنه أبدًا.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "إظهار أعمال R-18",
   "@plugin_pixiv_show_r18": {},
@@ -3934,5 +3932,1038 @@
   "subscribers_only_post": "لا يقرأ البقية إلا المشتركون المدفوعون لدى @{screenName} على X",
   "@subscribers_only_post": {},
   "subscribers_only_post_of_author": "هذه التغريدة مخصصة للمشتركين المدفوعين لدى كاتبها على X فقط.",
-  "@subscribers_only_post_of_author": {}
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "الحساب النشط",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "حساب Pixiv: الأعمال المولّدة بالذكاء الاصطناعي",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "تعذّرت قراءة هذا الإعداد من Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "مخفية جزئيًا",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "جارٍ التحقق من إعداد Pixiv لديك…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "معروضة",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "إزالة الحساب",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "هل تريد إزالة {name} من هذا الجهاز؟",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "إظهار شارة الذكاء الاصطناعي",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "يميّز في الشبكات الأعمال التي وسمها مبدعوها بأنها مولّدة بالذكاء الاصطناعي.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "محفوظ مسبقًا",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "هذه الصفحة محفوظة مسبقًا. هل تريد حفظها مرة أخرى؟",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, zero{لا توجد صفحات محفوظة من أصل {total}.} one{صفحة واحدة من أصل {total} محفوظة مسبقًا.} two{صفحتان من أصل {total} محفوظتان مسبقًا.} few{{saved} صفحات من أصل {total} محفوظة مسبقًا.} many{{saved} صفحة من أصل {total} محفوظة مسبقًا.} other{{saved} صفحة من أصل {total} محفوظة مسبقًا.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "إضافة إشارة",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "الإضافة إلى الإشارات عند الحفظ",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "حفظ عمل من صفحته يضيفه أيضًا إلى الإشارات إن لم يكن مضافًا بعد.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "وسم الإشارات تلقائيًا",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "الإشارات التي تضيفها دون المحرر تحمل وسوم العمل نفسه، باستثناء وسوم الشعبية مثل 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "إلغاء تحديد الكل",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "إشارات خاصة افتراضيًا",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "الإشارات التي تضيفها دون المحرر تكون خاصة. يمكنك جعل أي منها عامة من المحرر.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "تعديل الإشارة",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "المتابعة عند الإضافة إلى الإشارات",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "الإشارة الجديدة تتابع الفنان علنًا أيضًا إن لم تكن تتابعه بعد.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "تمت متابعة {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "إشارة خاصة",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "لا يراها أحد غيرك",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "الحفظ عند الإضافة إلى الإشارات",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "الإشارة الجديدة تحفظ أيضًا كل صفحات العمل.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "تحديد الكل",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "الإشارات",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "إضافة وسم",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "الكل",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "عرض كل الإشارات",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "لا إشارات بهذا الوسم",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "التصفية حسب الوسم",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "أضف وسمًا",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "ابحث عن وسم أو اكتبه",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "غير مصنّفة",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "استخدام «{tag}»",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "الوسوم",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "لا وسوم بعد. أضف وسومك في الأعلى.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "لا وسوم إشارات هنا بعد",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "التغيير على pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "تلقائي",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "أعمدة الشبكة في الوضع الأفقي",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "أعمدة الشبكة في الوضع العمودي",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "مخفي: روابط خارج Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "كتم هذا التعليق",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "كتم {name}",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "خيارات التعليق",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "ردًا على {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "إظهار",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "ملصق",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "مستخدم غير معروف",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "عرض الردود",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "لا توجد تعليقات بعد",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "لا توجد ردود بعد",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "الردود",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "التعليقات",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "عرض التعليقات",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "عرض التعليقات ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "تم النسخ",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "نسخ معرّف العمل",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "نسخ المعلومات",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "قالب «نسخ المعلومات»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "رابط العمل",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "العنوان: {title}\nالفنان: {artist}\nمعرّف العمل: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "ما يضعه «نسخ المعلومات» في الحافظة. تُستبدل العناصر النائبة بتفاصيل العمل.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "إدراج",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "استعادة الافتراضي",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "رابط الفنان",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "تخطيط صفحة العمل",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "جنبًا إلى جنب على الشاشات العريضة",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "الصور بجانب التفاصيل",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "الصور فوق التفاصيل",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "التنزيلات المتزامنة",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "عدد الملفات التي تُنزَّل في الوقت نفسه",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "الصفحات المحفوظة",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{لم تُسجَّل أي صفحة بعد} one{صفحة واحدة مسجّلة} two{صفحتان مسجّلتان} few{{count} صفحات مسجّلة} many{{count} صفحة مسجّلة} other{{count} صفحة مسجّلة}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "تحصل الأعمال المحفوظة على علامة اختيار، ويُطلب التأكيد قبل حفظ صفحة للمرة الثانية",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "نسيان",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "هل تريد نسيان الصفحات التي حُفظت؟ تبقى الملفات نفسها على جهازك.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "محفوظة – نزّلها مرة أخرى",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "التنزيلات",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "اسم الملف",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "اضغط على معلومة لإدراجها في موضع المؤشر. يحتفظ كل ملف بامتداده الأصلي.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "أضف {token} لتحصل كل صفحة من العمل على اسمها الخاص",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "معاينة: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "إعادة تعيين",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "معرّف العمل",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "رقم الصفحة",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "العنوان",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "معرّف الفنان",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "اسم الفنان",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "مجلد لكل فنان",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "يضع أعمال كل فنان في مجلد باسمه داخل مجلد التنزيلات",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "مجلد منفصل لأعمال R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "يضع أعمال R-18 في مجلد «R-18» داخل مجلد التنزيلات",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "خاصة",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "متابعة بشكل خاص",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "لن يرى أحد غيرك أنك تتابعه",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "عامة",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "كل المبدعين المتابَعين",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "المبدعون المتابَعون بشكل خاص",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "المبدعون المتابَعون علنًا",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, zero{لا متابَعين} one{متابَع واحد} two{متابَعان} few{{shown} متابَعين} many{{shown} متابَعًا} other{{shown} متابَع}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "الاهتزاز عند اللمس",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "اهتزاز قصير عند الإضافة إلى الإشارات أو الضغط المطوّل.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "سجل المشاهدة",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "مسح السجل",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "هل تريد مسح سجل الرسوم التوضيحية؟",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "تظهر هنا الأعمال التي تفتحها. يبقى السجل على هذا الجهاز.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "التصفية حسب العنوان أو الفنان",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "لا يوجد عمل في السجل يطابق",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "هل تريد مسح سجل الروايات؟",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "تظهر هنا الروايات التي تفتحها. يبقى السجل على هذا الجهاز.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "التصفية حسب العنوان أو المؤلف",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "لا توجد رواية في السجل تطابق",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "إيقاف سجل المشاهدة مؤقتًا",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "أثناء التفعيل، لا تُضاف الأعمال والروايات المفتوحة إلى السجل",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "هل تريد إزالة «{title}» من السجل؟",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "معرّف العمل {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "تم نسخ معرّف العمل",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "خادم الصور",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "عنوان الخادم",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "خادمك الخاص",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "المكان الذي تُحمَّل منه صور الأعمال. تفيد المرآة حيث يكون خادم صور Pixiv بطيئًا أو محجوبًا.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "مثلًا img.example.com أو https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "أدخل عنوانًا صالحًا بلا مسافات، مثل img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "مرآة عامة",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "خادم Pixiv نفسه",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "ترى المرآة أو خادمك الخاص كل صورة تفتحها، بما فيها صور R-18، وعنوان IP الخاص بك.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "استعادة الافتراضي",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "تم نسخ المعلومات",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "إدارة الحساب على pixiv.net",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "لا مانجا مقترحة حالياً — اسحب للتحديث",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "التبديل إلى الرسوم التوضيحية",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "التبديل إلى الروايات",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "التعليقات",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "لقد كتمت فنانه، {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "اعرضه هذه المرة",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "لقد كتمت وسمه {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "هذا العمل مكتوم",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "لقد كتمت هذا العمل.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "كتم هذه الرواية",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "الروايات",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "إعدادات الكتم",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "كتم الوسم",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "اكتب r'نمط' لكتم كل وسم يطابقه تعبير نمطي. ترى الأنماط أيضًا كل وسوم العمل مجموعة بالشكل #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "وسم لكتمه",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "هذا النمط ليس تعبيرًا نمطيًا صالحًا",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "الوسوم",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "الفنانون",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "الأعمال",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, zero{لا أصدقاء في My pixiv} one{صديق واحد في My pixiv} two{صديقان في My pixiv} few{{shown} أصدقاء في My pixiv} many{{shown} صديقًا في My pixiv} other{{shown} صديق في My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "رواية",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "عرض رواياته",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "إضافة إشارة مرجعية خاصة",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "تظهر هنا الروايات التي تضيف لها إشارة مرجعية عامة",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "تظهر هنا الروايات التي تضيف لها إشارة مرجعية خاصة",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "الفصل {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, zero{لا فصول} one{فصل واحد} two{فصلان} few{{shown} فصول} many{{shown} فصلًا} other{{shown} فصل}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, zero{لا أحرف} one{حرف واحد} two{حرفان} few{{shown} أحرف} many{{shown} حرفًا} other{{shown} حرف}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "تصدير كنص",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "تعذّر تصدير الرواية",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "مع تنسيق Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "النص كما يخزّنه Pixiv تمامًا، مع وسوم مثل [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "نص عادي",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "بلا تنسيق Pixiv، وتُكتب قراءة الروبي بين قوسين بعد النص",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "تم حفظ {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "تظهر هنا الروايات الجديدة من المبدعين الذين تتابعهم",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "صورة في الرواية",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "فتح العمل",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "حفظ الصورة",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "عرض بملء الشاشة",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "الانتقال إلى الصفحة {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "هل تريد مغادرة Pixiv لفتح {url}؟",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "فتح الرابط",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "الفصل التالي",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "الصفحة {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "الفصل السابق",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "لا روايات في الترتيب الآن",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "لا روايات موصى بها حالياً — اسحب للتحديث",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "وسوم الروايات أو عناوينها أو مستخدمون",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "يتطلب الترتيب حسب الشعبية اشتراك Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "ابحث عن روايات أو مستخدمين",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "سلسلة روايات",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "مكتملة",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "لا فصول يمكنك رؤيتها في هذه السلسلة",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "مستمرة",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "ابدأ من الفصل الأول",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "مشاركة رابط الملف الشخصي",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "مشاركة رابط السلسلة",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "تظهر هنا سلاسل الروايات التي تضيفها إلى قائمة المتابعة",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "فتح روابط pixiv في XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "في صفحة «الفتح تلقائيًا» في Android، أضف pixiv.net وpixiv.me كروابط مدعومة",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "الجودة الأصلية",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "تعذّر تحميل المزيد من الأعمال",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "لا توجد أعمال أخرى",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "مقالات Pixivision",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "لا مقالات Pixivision حالياً",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "الأعمال المختارة",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "تاريخ الميلاد",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "لا إشارات عامة بعد",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "نسخ معلومات الملف الشخصي",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "المتابِعون",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "لا متابِعين لعرضهم",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "يتابع",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "لا يتابع أحدًا بعد",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "الجنس",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "تم نسخ معرّف المستخدم",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "الرسوم التوضيحية",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "معلومات",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "تم نسخ معلومات الملف الشخصي",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "المهنة",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "مانغا",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "لقد كتمت هذا المبدع",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "أصدقاء My pixiv",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "الاسم المستعار",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "لا إشارات مرجعية عامة لروايات بعد",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "الروايات",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "لا روايات بعد",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "حساب Pawoo",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "عضو مميز",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "الإشارات العامة",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "المنطقة",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "حفظ صورة الملف الشخصي",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "حفظ صورة الغلاف",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "عرض على أي حال",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "حساب X",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "معرّف المستخدم",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "الموقع الإلكتروني",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "الأعمال",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "لا أعمال هنا بعد",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "صفحات العمل",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "صور الشبكة",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "كبيرة",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "متوسطة",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "الأصلية",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "الصفحات بملء الشاشة",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "ذكاء اصطناعي",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 يومي",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 ذكاء اصطناعي",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "تعديل",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "تظهر التصنيفات المثبّتة كتبويبات. تُعرض تصنيفات R-18 عند تفعيل «إظهار أعمال R-18».",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "تبويبات التصنيف",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 أسبوعي",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G أسبوعي",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "لا مبدعين مقترَحين حالياً",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} بكسل",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "اختر صورة أخرى",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "لا توجد أعمال على Pixiv تطابق هذه الصورة",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "تعذّر على SauceNAO البحث عن هذه الصورة",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "اختر صورة",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "سجّل الدخول إلى Pixiv مجددًا لعرض المعاينات",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "تُرفع الصورة التي تختارها إلى saucenao.com للبحث عن أعمال مطابقة على Pixiv.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "جارٍ البحث في SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "تشابه {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "البحث بالصورة",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "الحفظ مرة أخرى",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "الصفحات الجديدة فقط",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, zero{حفظ الصفحات} one{حفظ صفحة واحدة} two{حفظ صفحتين} few{حفظ {count} صفحات} many{حفظ {count} صفحة} other{حفظ {count} صفحة}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "محفوظ على هذا الجهاز",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "عدد الإشارات",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "أي عدد من الإشارات",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ إشارة",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} إشارة",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "التاريخ",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "أي وقت",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "تواريخ مخصّصة…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "آخر يوم",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "آخر 6 أشهر",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "آخر شهر",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "آخر أسبوع",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "آخر سنة",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "إضافة إلى الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "أُضيف إلى الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "إزالة من الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "أُزيل من الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "إنهاء التعديل",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "تعديل الوسوم المفضلة",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "اسحب وسمًا لنقله، واسحبه جانبًا لإزالته.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "لا توجد وسوم مفضلة بعد. اضغط مطولًا على وسم في أي عمل لإضافته.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "عوامل تصفية البحث",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "عرض الكل ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "مسح عمليات البحث الأخيرة",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "هل تريد مسح كل عمليات البحث الأخيرة؟",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "عرض أقل",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "فتح العمل #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "فتح الرواية #{id}",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "فتح سلسلة الروايات #{id}",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "فتح مقال Pixivision #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "فتح المستخدم #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "لصق",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "الشعبية",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "أي شعبية",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "يتطلب الترتيب حسب الشعبية لدى الرجال أو النساء اشتراك Pixiv Premium. بدونه يعرض خيار «الأكثر شعبية» المعاينة المجانية من Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "لا يُضيّق تاريخ النشر نطاق المعاينة.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "هذه معاينة Pixiv المجانية للأعمال الرائجة. يتطلب ترتيب كل النتائج حسب الشعبية اشتراك Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "تذكّر عوامل التصفية هذه",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "الترتيب حسب",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "الأقدم",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "الأكثر شعبية لدى النساء",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "الأكثر شعبية لدى الرجال",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "نُسخ الوسم",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "نسخ الوسم",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "البحث في",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "الوسوم والعنوان والوصف",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "نص الرواية",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "كل الأعمال",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "بدون Ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Ugoira فقط",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "أضافه {count}+ إلى إشاراتهم",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "عرض الكل",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "إلغاء التحديد",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "تحديد الصفحات",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{لم تُحدَّد أي صفحة} one{صفحة واحدة محددة} two{صفحتان محددتان} few{{count} صفحات محددة} many{{count} صفحة محددة} other{{count} صفحة محددة}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "سلسلة",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "لا أعمال يمكنك رؤيتها في هذه السلسلة",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "السلسلة: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "التالي في السلسلة",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "رقم {order} من {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "السابق في السلسلة",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "بدأت في {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "مشاركة الصورة",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "تعذّرت مشاركة هذه الصورة",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "هل تريد تسجيل خروج {name}؟",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "هل تريد تسجيل الخروج من Pixiv؟",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "تغيير حجم الصور والتفاصيل",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "يفتح Pixiv على",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "التمرير بين الأعمال",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "مرّر جانبيًا إلى العمل التالي في القائمة. في الأعمال متعددة الصفحات، واصل التمرير بعد الصفحة الأولى أو الأخيرة.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "تبديل الحساب",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "مانجا",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "قائمة المتابعة",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "جارٍ ترميز الإطار {current} من {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "تعذّر حفظ الرسوم المتحركة",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "جارٍ جلب الإطارات…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "حفظ بصيغة GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "حفظ الإطارات بصيغة ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "حُفظت الرسوم المتحركة بصيغة GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "حُفظت الإطارات بصيغة ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "جارٍ الحفظ…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "قد يستغرق الترميز دقيقة",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "هل تريد إلغاء كتم {name}؟",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "العرض",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "سجّل الدخول لفتح هذا العمل",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "الرائج على Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "إضافة إلى قائمة المتابعة",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "تظهر هنا سلاسل المانجا التي تضيفها إلى قائمة المتابعة",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "إزالة من قائمة المتابعة",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "آخر تحديث {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "عرض الأحدث",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, zero{لا أعمال} one{عمل واحد} two{عملان} few{{shown} أعمال} many{{shown} عملًا} other{{shown} عمل}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  }
 }

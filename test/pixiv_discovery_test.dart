@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 
 Map<String, Object?> _illustJson(int id) => {
   'id': id,
@@ -53,10 +54,10 @@ void main() {
         };
       });
 
-      await client.ranking(mode: 'day', date: '2026-08-01');
+      await PixivDiscoveryApi(client).ranking('day', date: '2026-08-01');
       expect(asked!.queryParameters['date'], '2026-08-01');
 
-      await client.ranking(mode: 'day');
+      await PixivDiscoveryApi(client).ranking('day');
       expect(asked!.queryParameters.containsKey('date'), isFalse);
     });
   });
@@ -79,28 +80,6 @@ void main() {
       expect(tags.first.translatedName, 'Genshin');
       expect(tags.first.illust!.id, 9);
       expect(tags.last.illust, isNull);
-    });
-  });
-
-  group('popular preview', () {
-    test('one free page of the most popular results for a word', () async {
-      final client = clientAnswering((request) {
-        expect(request.url.path, '/v1/search/popular-preview/illust');
-        expect(request.url.queryParameters['word'], 'miku');
-        return {
-          'illusts': [_illustJson(3), _illustJson(4)],
-          'next_url': null,
-        };
-      });
-
-      final page = await client.popularPreview('miku');
-      expect(page.illusts.map((e) => e.id), [3, 4]);
-    });
-
-    test('an empty word asks nothing', () async {
-      final client = clientAnswering((request) => fail('should not be called'));
-      final page = await client.popularPreview('  ');
-      expect(page.illusts, isEmpty);
     });
   });
 

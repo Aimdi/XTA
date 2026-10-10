@@ -103,6 +103,7 @@ const optionDownloadPath = 'download.path';
 // Android document tree for the download folder. The legacy path above is kept
 // only so an existing setting can still be shown and migrated.
 const optionDownloadTreeUri = 'download.tree_uri';
+const optionDownloadConcurrency = 'download.concurrency';
 
 const optionDownloadTypeDirectory = 'directory';
 const optionDownloadTypeAsk = 'ask';
@@ -380,13 +381,69 @@ const optionPluginPixivRefreshToken = 'plugin.pixiv.refresh_token';
 const optionPluginPixivAccessToken = 'plugin.pixiv.access_token';
 const optionPluginPixivAccessExpiresAt = 'plugin.pixiv.access_expires_at';
 const optionPluginPixivUserId = 'plugin.pixiv.user_id';
+const optionPluginPixivIsPremium = 'plugin.pixiv.is_premium';
 const optionPluginPixivShowR18 = 'plugin.pixiv.show_r18';
 const optionPluginPixivHideAi = 'plugin.pixiv.hide_ai';
 const optionPluginPixivMutedAuthors = 'plugin.pixiv.muted_authors';
 const optionPluginPixivMutedTags = 'plugin.pixiv.muted_tags';
 const optionPluginPixivMutedIllusts = 'plugin.pixiv.muted_illusts';
+const optionPluginPixivMutedComments = 'plugin.pixiv.muted_comments';
+const optionPluginPixivMutedNovels = 'plugin.pixiv.muted_novels';
 const optionPluginPixivGroupSubscriptions = 'plugin.pixiv.group_subscriptions';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
+const optionPluginPixivDefaultPrivateBookmark = 'plugin.pixiv.default_private_bookmark';
+const optionPluginPixivAutoTagBookmarks = 'plugin.pixiv.auto_tag_bookmarks';
+const optionPluginPixivFollowAfterBookmark = 'plugin.pixiv.follow_after_bookmark';
+const optionPluginPixivDownloadAfterBookmark = 'plugin.pixiv.download_after_bookmark';
+const optionPluginPixivBookmarkAfterDownload = 'plugin.pixiv.bookmark_after_download';
+const optionPluginPixivHaptics = 'plugin.pixiv.haptics';
+
+/// Every Pixiv account signed in on this device, refresh tokens included; the
+/// active one is also copied into the single-account keys above.
+const optionPluginPixivAccounts = 'plugin.pixiv.accounts';
+
+/// The section the Pixiv screen opens on: `home`, `ranking`, `favorites` or `search`.
+const optionPluginPixivStartSection = 'plugin.pixiv.start_section';
+const optionPluginPixivCopyTemplate = 'plugin.pixiv.copy_template';
+
+/// While on, opened works are not added to the on-device viewing history.
+const optionPluginPixivHistoryPaused = 'plugin.pixiv.history_paused';
+
+/// Where the reader stopped in each novel, and when: viewing history, so it
+/// stays on the device (see [secretPrefKeys]).
+const optionPluginPixivNovelReading = 'plugin.pixiv.novel_reading';
+
+/// Pixiv viewing preferences: image server, image sizes, grid columns, work layout.
+const optionPluginPixivImageHost = 'plugin.pixiv.image_host';
+const optionPluginPixivQualityFeed = 'plugin.pixiv.quality_feed';
+const optionPluginPixivQualityDetail = 'plugin.pixiv.quality_detail';
+const optionPluginPixivQualityReader = 'plugin.pixiv.quality_reader';
+const optionPluginPixivGridColumnsPortrait = 'plugin.pixiv.grid_columns_portrait';
+const optionPluginPixivGridColumnsLandscape = 'plugin.pixiv.grid_columns_landscape';
+const optionPluginPixivSwipeBetweenWorks = 'plugin.pixiv.swipe_between_works';
+const optionPluginPixivDetailLayout = 'plugin.pixiv.detail_layout';
+const optionPluginPixivDetailSplit = 'plugin.pixiv.detail_split';
+const optionPluginPixivAiBadge = 'plugin.pixiv.ai_badge';
+const optionPluginPixivFileNameTemplate = 'plugin.pixiv.file_name_template';
+const optionPluginPixivFolderPerArtist = 'plugin.pixiv.folder_per_artist';
+const optionPluginPixivFolderR18 = 'plugin.pixiv.folder_r18';
+const optionPluginPixivDownloadIndex = 'plugin.pixiv.download_index';
+
+/// The ranking boards pinned as chips, a JSON list of Pixiv mode names.
+const optionPluginPixivRankingModes = 'plugin.pixiv.ranking_modes';
+
+/// The novel ranking boards pinned as chips, in the same shape.
+const optionPluginPixivNovelRankingModes = 'plugin.pixiv.novel_ranking_modes';
+
+/// The search filters the reader chose to remember, as JSON; empty for none.
+const optionPluginPixivSearchFilters = 'plugin.pixiv.search_filters';
+
+/// Novel search's own remembered filters and recent searches, in the same shapes.
+const optionPluginPixivNovelSearchFilters = 'plugin.pixiv.novel_search_filters';
+const optionPluginPixivNovelSearchHistory = 'plugin.pixiv.novel_search_history';
+
+/// Tags pinned as saved searches, in the reader's order, as JSON.
+const optionPluginPixivFavoriteTags = 'plugin.pixiv.favorite_tags';
 
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
@@ -774,6 +831,15 @@ const secretPrefKeys = {
   optionPluginThreadsDirectBearer,
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
+  // Whose the tokens above are, and what that account may do: beside another
+  // device's tokens they would name the wrong account.
+  optionPluginPixivUserId,
+  optionPluginPixivIsPremium,
+  optionPluginPixivAccessExpiresAt,
+  optionPluginPixivAccounts,
+  optionPluginPixivNovelReading,
+  // The pages saved to this device's storage, which another device does not have.
+  optionPluginPixivDownloadIndex,
   optionPluginEhCookies,
   optionPluginTiktokCookies,
   optionPluginInstagramCookies,

@@ -9,6 +9,7 @@
 library;
 
 import 'package:intl/intl.dart';
+import 'package:xta/utils/number_locale.dart';
 
 final Map<String, NumberFormat> _compactByLocale = {};
 
@@ -16,6 +17,6 @@ final Map<String, NumberFormat> _compactByLocale = {};
 String compactCount(num value) {
   final locale = Intl.getCurrentLocale();
   return _compactByLocale
-      .putIfAbsent(locale, () => NumberFormat.compact(locale: locale))
+      .putIfAbsent(locale, () => NumberFormat.compact(locale: verifiedNumberLocale(locale)))
       .format(value);
 }

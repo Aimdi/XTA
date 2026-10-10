@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/downloads/download_destination.dart';
@@ -13,9 +14,13 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
+import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 
 String _page(int id, int page, String size) =>
     'https://i.pximg.net/$size/img/2026/07/01/00/00/00/${id}_p${page}_master1200.jpg';
@@ -76,22 +81,22 @@ class FakePixivClient extends PixivClient {
       const PixivIllustPage(illusts: []);
 
   @override
-  Future<PixivIllustPage> userIllusts(int userId, {String? nextUrl}) async {
+  Future<PixivIllustPage> userIllusts(
+    int userId, {
+    PixivWorkType type = PixivWorkType.illust,
+    bool ownList = false,
+    String? nextUrl,
+  }) async {
     calls.add('userIllusts:$userId');
     await authorWorksGate;
     return PixivIllustPage(illusts: authorWorks);
   }
 
   @override
-  Future<PixivUser> userDetail(int userId) async => PixivUser(id: userId, name: 'Mika', account: 'mika', comment: '');
+  Future<void> followUser(int userId, {String restrict = 'public'}) async => calls.add('follow:$userId:$restrict');
 
   @override
-  Future<List<String>> bookmarkFolders() async => const ['Favs'];
-
-  @override
-  Future<void> addBookmark(int illustId, {String restrict = 'public', String? folder}) async {
-    calls.add('bookmark:$illustId:$restrict:${folder ?? '-'}');
-  }
+  Future<void> unfollowUser(int userId) async => calls.add('unfollow:$userId');
 
   @override
   Future<PixivUgoira> ugoiraMetadata(int illustId) async {
@@ -117,12 +122,29 @@ class FakePixivDownloader extends PixivDownloader {
   FakePixivDownloader();
 
   @override
-  Future<void> savePage(BuildContext context, PixivIllust illust, int page) async => pages.add(page);
+  Future<bool> savePage(BuildContext context, PixivIllust illust, int page) async {
+    pages.add(page);
+    return true;
+  }
 
   @override
   Future<bool> save(DownloadRequest request) async {
     requests.add(request);
     return onSave?.call(request) ?? true;
+  }
+
+  /// Files written whole, such as ugoira exports.
+  final files = <({String treeUri, String fileName, String? subfolder, Uint8List bytes})>[];
+
+  @override
+  Future<bool> saveBytes({
+    required String treeUri,
+    required String fileName,
+    required Uint8List bytes,
+    String? subfolder,
+  }) async {
+    files.add((treeUri: treeUri, fileName: fileName, subfolder: subfolder, bytes: bytes));
+    return true;
   }
 
   @override
@@ -137,8 +159,9 @@ class PixivHarness {
   final PrefServiceCache prefs;
   final FakePixivClient client;
   final FakePixivDownloader downloader;
+  final PixivDownloadIndex downloads;
 
-  PixivHarness(this.prefs, this.client, this.downloader);
+  PixivHarness(this.prefs, this.client, this.downloader, this.downloads);
 }
 
 Future<PixivHarness> pumpPixiv(
@@ -148,6 +171,9 @@ Future<PixivHarness> pumpPixiv(
   Size size = const Size(390, 844),
   double textScale = 1,
   TextDirection direction = TextDirection.ltr,
+
+  /// Fakes for a feature's own API classes, so a batch need not edit this harness.
+  List<SingleChildWidget> extraProviders = const [],
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -158,11 +184,21 @@ Future<PixivHarness> pumpPixiv(
   VisibilityDetectorController.instance.updateInterval = Duration.zero;
   addTearDown(() => VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500));
   final prefs = PrefServiceCache(defaults: {optionPluginPixivRefreshToken: 'fixture-only'});
-  final harness = PixivHarness(prefs, client?.call(prefs) ?? FakePixivClient(prefs), FakePixivDownloader());
+  final harness = PixivHarness(
+    prefs,
+    client?.call(prefs) ?? FakePixivClient(prefs),
+    FakePixivDownloader(),
+    PixivDownloadIndex(prefs),
+  );
   final mute = PixivMuteStore(prefs);
   final bookmarks = PixivBookmarkStore();
+  final follows = PixivFollowStore(harness.client);
+  final history = PixivSearchHistory(prefs);
   addTearDown(mute.destroy);
   addTearDown(bookmarks.destroy);
+  addTearDown(follows.destroy);
+  addTearDown(history.destroy);
+  addTearDown(harness.downloads.destroy);
   await tester.pumpWidget(
     PrefService(
       service: prefs,
@@ -171,7 +207,11 @@ Future<PixivHarness> pumpPixiv(
           Provider<PixivClient>.value(value: harness.client),
           Provider<PixivMuteStore>.value(value: mute),
           Provider<PixivBookmarkStore>.value(value: bookmarks),
+          Provider<PixivFollowStore>.value(value: follows),
+          Provider<PixivSearchHistory>.value(value: history),
           Provider<PixivDownloader>.value(value: harness.downloader),
+          Provider<PixivDownloadIndex>.value(value: harness.downloads),
+          ...extraProviders,
         ],
         child: MaterialApp(
           localizationsDelegates: const [

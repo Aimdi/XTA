@@ -2219,8 +2219,6 @@
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Lesezeichen",
   "@plugin_pixiv_bookmark": {},
-  "plugin_pixiv_bookmark_folder": "Lesezeichenordner",
-  "@plugin_pixiv_bookmark_folder": {},
   "plugin_pixiv_bookmarks_empty": "Noch keine öffentlichen Lesezeichen auf diesem Konto",
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privat",
@@ -2341,7 +2339,7 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titel/Beschreibung",
   "@plugin_pixiv_search_target_title": {},
-  "plugin_pixiv_settings_intro": "Dieses private Plugin liest Pixiv wie eine Galerie-App: Folge-Feed, Rankings, deine öffentlichen Lesezeichen und Suche. Tippe auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. Von hier aus wird auf Pixiv nichts gepostet, geliked oder gefolgt.",
+  "plugin_pixiv_settings_intro": "Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und Suche. Tippe auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. An dein Pixiv-Konto gehen nur die Lesezeichen, Follows und Änderungen an der Merkliste, die du selbst vornimmst. Von hier aus wird nie etwas gepostet, kommentiert oder gemeldet.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18-Werke anzeigen",
   "@plugin_pixiv_show_r18": {},
@@ -3934,5 +3932,1038 @@
   "subscribers_only_post": "Nur zahlende Abonnenten von @{screenName} auf X können weiterlesen",
   "@subscribers_only_post": {},
   "subscribers_only_post_of_author": "Dieser Tweet ist nur für zahlende Abonnenten seines Autors auf X.",
-  "@subscribers_only_post_of_author": {}
+  "@subscribers_only_post_of_author": {},
+  "plugin_pixiv_account_active": "Aktives Konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-Konto: KI-generierte Werke",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Diese Einstellung konnte nicht von Pixiv gelesen werden",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Teilweise ausgeblendet",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Deine Pixiv-Einstellung wird geprüft …",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Angezeigt",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Konto entfernen",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} von diesem Gerät entfernen?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ai_badge": "KI-Kennzeichen anzeigen",
+  "@plugin_pixiv_ai_badge": {},
+  "plugin_pixiv_ai_badge_description": "Kennzeichnet in Rastern Werke, die ihre Urheber als KI-generiert markiert haben.",
+  "@plugin_pixiv_ai_badge_description": {},
+  "plugin_pixiv_already_saved": "Bereits gespeichert",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Diese Seite ist bereits gespeichert. Erneut speichern?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} von {total} Seiten ist bereits gespeichert.} other{{saved} von {total} Seiten sind bereits gespeichert.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_add": "Lesezeichen hinzufügen",
+  "@plugin_pixiv_bookmark_add": {},
+  "plugin_pixiv_bookmark_after_save": "Beim Speichern als Lesezeichen merken",
+  "@plugin_pixiv_bookmark_after_save": {},
+  "plugin_pixiv_bookmark_after_save_description": "Speicherst du ein Werk auf seiner Seite, wird es auch als Lesezeichen gemerkt, falls es noch keins ist.",
+  "@plugin_pixiv_bookmark_after_save_description": {},
+  "plugin_pixiv_bookmark_auto_tag": "Lesezeichen automatisch taggen",
+  "@plugin_pixiv_bookmark_auto_tag": {},
+  "plugin_pixiv_bookmark_auto_tag_description": "Lesezeichen, die du ohne den Editor setzt, bekommen die Tags des Werks – ohne Beliebtheits-Tags wie 1000users入り.",
+  "@plugin_pixiv_bookmark_auto_tag_description": {},
+  "plugin_pixiv_bookmark_clear_all": "Alle abwählen",
+  "@plugin_pixiv_bookmark_clear_all": {},
+  "plugin_pixiv_bookmark_default_private": "Lesezeichen privat anlegen",
+  "@plugin_pixiv_bookmark_default_private": {},
+  "plugin_pixiv_bookmark_default_private_description": "Lesezeichen, die du ohne den Editor setzt, sind privat. Im Editor kannst du jedes trotzdem öffentlich machen.",
+  "@plugin_pixiv_bookmark_default_private_description": {},
+  "plugin_pixiv_bookmark_edit": "Lesezeichen bearbeiten",
+  "@plugin_pixiv_bookmark_edit": {},
+  "plugin_pixiv_bookmark_follow_after": "Beim Merken folgen",
+  "@plugin_pixiv_bookmark_follow_after": {},
+  "plugin_pixiv_bookmark_follow_after_description": "Ein neues Lesezeichen folgt auch öffentlich dem Künstler, falls du ihm noch nicht folgst.",
+  "@plugin_pixiv_bookmark_follow_after_description": {},
+  "plugin_pixiv_bookmark_followed_author": "Du folgst jetzt {name}",
+  "@plugin_pixiv_bookmark_followed_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_private": "Privates Lesezeichen",
+  "@plugin_pixiv_bookmark_private": {},
+  "plugin_pixiv_bookmark_private_hint": "Nur du kannst es sehen",
+  "@plugin_pixiv_bookmark_private_hint": {},
+  "plugin_pixiv_bookmark_save_after": "Beim Merken speichern",
+  "@plugin_pixiv_bookmark_save_after": {},
+  "plugin_pixiv_bookmark_save_after_description": "Ein neues Lesezeichen speichert auch alle Seiten des Werks.",
+  "@plugin_pixiv_bookmark_save_after_description": {},
+  "plugin_pixiv_bookmark_select_all": "Alle auswählen",
+  "@plugin_pixiv_bookmark_select_all": {},
+  "plugin_pixiv_bookmark_settings": "Lesezeichen",
+  "@plugin_pixiv_bookmark_settings": {},
+  "plugin_pixiv_bookmark_tag_add": "Tag hinzufügen",
+  "@plugin_pixiv_bookmark_tag_add": {},
+  "plugin_pixiv_bookmark_tag_all": "Alle",
+  "@plugin_pixiv_bookmark_tag_all": {},
+  "plugin_pixiv_bookmark_tag_clear": "Alle Lesezeichen zeigen",
+  "@plugin_pixiv_bookmark_tag_clear": {},
+  "plugin_pixiv_bookmark_tag_empty": "Keine Lesezeichen mit diesem Tag",
+  "@plugin_pixiv_bookmark_tag_empty": {},
+  "plugin_pixiv_bookmark_tag_filter": "Nach Tag filtern",
+  "@plugin_pixiv_bookmark_tag_filter": {},
+  "plugin_pixiv_bookmark_tag_hint": "Tag hinzufügen",
+  "@plugin_pixiv_bookmark_tag_hint": {},
+  "plugin_pixiv_bookmark_tag_search": "Tag suchen oder eingeben",
+  "@plugin_pixiv_bookmark_tag_search": {},
+  "plugin_pixiv_bookmark_tag_unclassified": "Ohne Kategorie",
+  "@plugin_pixiv_bookmark_tag_unclassified": {},
+  "plugin_pixiv_bookmark_tag_use": "„{tag}“ verwenden",
+  "@plugin_pixiv_bookmark_tag_use": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_bookmark_tags": "Tags",
+  "@plugin_pixiv_bookmark_tags": {},
+  "plugin_pixiv_bookmark_tags_empty": "Noch keine Tags. Füge oben eigene hinzu.",
+  "@plugin_pixiv_bookmark_tags_empty": {},
+  "plugin_pixiv_bookmark_tags_none": "Hier gibt es noch keine Lesezeichen-Tags",
+  "@plugin_pixiv_bookmark_tags_none": {},
+  "plugin_pixiv_change_on_pixiv": "Auf pixiv.net ändern",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_columns_auto": "Automatisch",
+  "@plugin_pixiv_columns_auto": {},
+  "plugin_pixiv_columns_landscape": "Rasterspalten im Querformat",
+  "@plugin_pixiv_columns_landscape": {},
+  "plugin_pixiv_columns_portrait": "Rasterspalten im Hochformat",
+  "@plugin_pixiv_columns_portrait": {},
+  "plugin_pixiv_comment_hidden_link": "Ausgeblendet: Links außerhalb von Pixiv",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "Diesen Kommentar stummschalten",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "{name} stummschalten",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "Kommentaroptionen",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "Antwort an {name}",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "Anzeigen",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "Sticker",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "Unbekannter Nutzer",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "Antworten anzeigen",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "Noch keine Kommentare",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "Noch keine Antworten",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "Antworten",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "Kommentare",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "Kommentare anzeigen",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "Kommentare anzeigen ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copied": "Kopiert",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_illust_id": "Werk-ID kopieren",
+  "@plugin_pixiv_copy_illust_id": {},
+  "plugin_pixiv_copy_info": "Infos kopieren",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_template": "Vorlage für „Infos kopieren“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Werk-Link",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Titel: {title}\nKünstler: {artist}\nWerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Was „Infos kopieren“ in die Zwischenablage legt. Platzhalter werden durch die Angaben des Werks ersetzt.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Einfügen",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Auf Standard zurücksetzen",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Künstler-Link",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_detail_layout": "Layout eines Werks",
+  "@plugin_pixiv_detail_layout": {},
+  "plugin_pixiv_detail_layout_auto": "Nebeneinander auf breiten Bildschirmen",
+  "@plugin_pixiv_detail_layout_auto": {},
+  "plugin_pixiv_detail_layout_split": "Bilder neben den Details",
+  "@plugin_pixiv_detail_layout_split": {},
+  "plugin_pixiv_detail_layout_vertical": "Bilder über den Details",
+  "@plugin_pixiv_detail_layout_vertical": {},
+  "plugin_pixiv_download_concurrency": "Gleichzeitige Downloads",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Wie viele Dateien gleichzeitig heruntergeladen werden",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Gespeicherte Seiten",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Noch keine Seiten gemerkt} one{1 Seite gemerkt} other{{count} Seiten gemerkt}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Gespeicherte Werke bekommen ein Häkchen, und bevor eine Seite ein zweites Mal gespeichert wird, wird nachgefragt",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Vergessen",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Vergessen, welche Seiten gespeichert wurden? Die Dateien selbst bleiben auf deinem Gerät.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Gespeichert – erneut herunterladen",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Downloads",
+  "@plugin_pixiv_downloads_section": {},
+  "plugin_pixiv_file_name": "Dateiname",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Tippe auf eine Angabe, um sie an der Cursorposition einzufügen. Jede Datei behält ihre eigene Endung.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Füge {token} ein, damit jede Seite eines Werks ihren eigenen Namen bekommt",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Vorschau: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Zurücksetzen",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Werk-ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Seitenzahl",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titel",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Künstler-ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Künstlername",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Ordner pro Künstler",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Legt die Werke jedes Künstlers in einem nach ihm benannten Ordner im Download-Ordner ab",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Eigener Ordner für R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Legt R-18-Werke in einem Ordner „R-18“ im Download-Ordner ab",
+  "@plugin_pixiv_folder_r18_description": {},
+  "plugin_pixiv_follow_private": "Privat",
+  "@plugin_pixiv_follow_private": {},
+  "plugin_pixiv_follow_privately": "Privat folgen",
+  "@plugin_pixiv_follow_privately": {},
+  "plugin_pixiv_follow_privately_hint": "Nur du siehst, dass du folgst",
+  "@plugin_pixiv_follow_privately_hint": {},
+  "plugin_pixiv_follow_public": "Öffentlich",
+  "@plugin_pixiv_follow_public": {},
+  "plugin_pixiv_follow_restrict_all": "Alle Künstler, denen du folgst",
+  "@plugin_pixiv_follow_restrict_all": {},
+  "plugin_pixiv_follow_restrict_private": "Privat gefolgte Künstler",
+  "@plugin_pixiv_follow_restrict_private": {},
+  "plugin_pixiv_follow_restrict_public": "Öffentlich gefolgte Künstler",
+  "@plugin_pixiv_follow_restrict_public": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} gefolgt} other{{shown} gefolgt}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_haptics": "Haptisches Feedback",
+  "@plugin_pixiv_haptics": {},
+  "plugin_pixiv_haptics_description": "Eine kurze Vibration beim Merken oder langen Drücken.",
+  "@plugin_pixiv_haptics_description": {},
+  "plugin_pixiv_history": "Verlauf",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Verlauf löschen",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Den Illustrationsverlauf löschen?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Geöffnete Werke erscheinen hier. Der Verlauf bleibt auf diesem Gerät.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Nach Titel oder Künstler filtern",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Kein Werk im Verlauf passt",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_novels_clear_question": "Den Romanverlauf löschen?",
+  "@plugin_pixiv_history_novels_clear_question": {},
+  "plugin_pixiv_history_novels_empty": "Geöffnete Romane erscheinen hier. Der Verlauf bleibt auf diesem Gerät.",
+  "@plugin_pixiv_history_novels_empty": {},
+  "plugin_pixiv_history_novels_filter_hint": "Nach Titel oder Autor filtern",
+  "@plugin_pixiv_history_novels_filter_hint": {},
+  "plugin_pixiv_history_novels_no_match": "Kein Roman im Verlauf passt",
+  "@plugin_pixiv_history_novels_no_match": {},
+  "plugin_pixiv_history_pause": "Verlauf pausieren",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Solange aktiv, werden geöffnete Werke und Romane nicht in den Verlauf aufgenommen",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "„{title}“ aus dem Verlauf entfernen?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id": "Werk-ID {id}",
+  "@plugin_pixiv_illust_id": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_illust_id_copied": "Werk-ID kopiert",
+  "@plugin_pixiv_illust_id_copied": {},
+  "plugin_pixiv_image_host": "Bildserver",
+  "@plugin_pixiv_image_host": {},
+  "plugin_pixiv_image_host_address": "Serveradresse",
+  "@plugin_pixiv_image_host_address": {},
+  "plugin_pixiv_image_host_custom": "Eigener Server",
+  "@plugin_pixiv_image_host_custom": {},
+  "plugin_pixiv_image_host_description": "Woher die Bilder der Werke geladen werden. Ein Spiegelserver hilft, wo der Bildserver von Pixiv langsam oder gesperrt ist.",
+  "@plugin_pixiv_image_host_description": {},
+  "plugin_pixiv_image_host_example": "Zum Beispiel img.example.com oder https://example.com:8443/pixiv",
+  "@plugin_pixiv_image_host_example": {},
+  "plugin_pixiv_image_host_invalid": "Gib eine gültige Adresse ohne Leerzeichen ein, etwa img.example.com",
+  "@plugin_pixiv_image_host_invalid": {},
+  "plugin_pixiv_image_host_mirror": "Öffentlicher Spiegelserver",
+  "@plugin_pixiv_image_host_mirror": {},
+  "plugin_pixiv_image_host_pixiv": "Pixivs eigener Server",
+  "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Ein Spiegelserver oder dein eigener Server sieht jedes Bild, das du öffnest, auch R-18-Werke, und deine IP-Adresse.",
+  "@plugin_pixiv_image_host_privacy": {},
+  "plugin_pixiv_image_host_reset": "Auf Standard zurücksetzen",
+  "@plugin_pixiv_image_host_reset": {},
+  "plugin_pixiv_info_copied": "Infos kopiert",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_manage_account": "Konto auf pixiv.net verwalten",
+  "@plugin_pixiv_manage_account": {},
+  "plugin_pixiv_manga_empty": "Gerade keine empfohlenen Manga — zum Aktualisieren ziehen",
+  "@plugin_pixiv_manga_empty": {},
+  "plugin_pixiv_mode_illusts": "Zu Illustrationen wechseln",
+  "@plugin_pixiv_mode_illusts": {},
+  "plugin_pixiv_mode_novels": "Zu Romanen wechseln",
+  "@plugin_pixiv_mode_novels": {},
+  "plugin_pixiv_mute_comments": "Kommentare",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Du hast den Künstler stummgeschaltet: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Diesmal anzeigen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Du hast den Tag {tag} stummgeschaltet.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dieses Werk ist stummgeschaltet",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Du hast dieses Werk stummgeschaltet.",
+  "@plugin_pixiv_mute_gate_work": {},
+  "plugin_pixiv_mute_novel": "Diesen Roman stummschalten",
+  "@plugin_pixiv_mute_novel": {},
+  "plugin_pixiv_mute_novels": "Romane",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Stummschalt-Einstellungen",
+  "@plugin_pixiv_mute_settings": {},
+  "plugin_pixiv_mute_tag_add": "Tag stummschalten",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Schreibe r'Muster', um jeden Tag stummzuschalten, auf den ein regulärer Ausdruck passt. Muster sehen auch alle Tags eines Werks verbunden als #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tag zum Stummschalten",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dieses Muster ist kein gültiger regulärer Ausdruck",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tags",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Künstler",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Werke",
+  "@plugin_pixiv_mute_works": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My-pixiv-Freund} other{{shown} My-pixiv-Freunde}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel": "Roman",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Weitere Romane ansehen",
+  "@plugin_pixiv_novel_author_novels": {},
+  "plugin_pixiv_novel_bookmark_private": "Privat als Lesezeichen speichern",
+  "@plugin_pixiv_novel_bookmark_private": {},
+  "plugin_pixiv_novel_bookmarks_empty": "Romane mit öffentlichem Lesezeichen erscheinen hier",
+  "@plugin_pixiv_novel_bookmarks_empty": {},
+  "plugin_pixiv_novel_bookmarks_private_empty": "Romane mit privatem Lesezeichen erscheinen hier",
+  "@plugin_pixiv_novel_bookmarks_private_empty": {},
+  "plugin_pixiv_novel_chapter_number": "Nr. {order}",
+  "@plugin_pixiv_novel_chapter_number": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_chapters_count": "{count, plural, one{{shown} Kapitel} other{{shown} Kapitel}}",
+  "@plugin_pixiv_novel_chapters_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_characters": "{count, plural, one{{shown} Zeichen} other{{shown} Zeichen}}",
+  "@plugin_pixiv_novel_characters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_export": "Als Text exportieren",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Roman konnte nicht exportiert werden",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Mit Pixiv-Markup",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Der Text genau so, wie Pixiv ihn speichert, mit Tags wie [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Reiner Text",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Ohne Pixiv-Markup, Ruby als Basis(Ruby) geschrieben",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} gespeichert",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_following_empty": "Neue Romane von Leuten, denen du folgst, erscheinen hier",
+  "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Bild im Roman",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Werk öffnen",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Bild speichern",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Im Vollbild ansehen",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Zu Seite {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Pixiv verlassen und {url} öffnen?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Link öffnen",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Nächster Teil",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Seite {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Vorheriger Teil",
+  "@plugin_pixiv_novel_previous": {},
+  "plugin_pixiv_novel_ranking_empty": "Gerade keine Romane im Ranking",
+  "@plugin_pixiv_novel_ranking_empty": {},
+  "plugin_pixiv_novel_recommended_empty": "Gerade keine empfohlenen Romane — zum Aktualisieren ziehen",
+  "@plugin_pixiv_novel_recommended_empty": {},
+  "plugin_pixiv_novel_search_hint": "Roman-Tags, Titel oder Nutzer",
+  "@plugin_pixiv_novel_search_hint": {},
+  "plugin_pixiv_novel_search_premium_note": "Sortieren nach Beliebtheit erfordert Pixiv Premium.",
+  "@plugin_pixiv_novel_search_premium_note": {},
+  "plugin_pixiv_novel_search_prompt": "Romane oder Nutzer suchen",
+  "@plugin_pixiv_novel_search_prompt": {},
+  "plugin_pixiv_novel_series": "Roman-Reihe",
+  "@plugin_pixiv_novel_series": {},
+  "plugin_pixiv_novel_series_concluded": "Abgeschlossen",
+  "@plugin_pixiv_novel_series_concluded": {},
+  "plugin_pixiv_novel_series_empty": "In dieser Reihe gibt es keine Kapitel, die du sehen kannst",
+  "@plugin_pixiv_novel_series_empty": {},
+  "plugin_pixiv_novel_series_ongoing": "Laufend",
+  "@plugin_pixiv_novel_series_ongoing": {},
+  "plugin_pixiv_novel_series_start": "Ab Teil 1 lesen",
+  "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Profillink teilen",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Link zur Reihe teilen",
+  "@plugin_pixiv_novel_share_series": {},
+  "plugin_pixiv_novel_watchlist_empty": "Roman-Reihen auf deiner Merkliste erscheinen hier",
+  "@plugin_pixiv_novel_watchlist_empty": {},
+  "plugin_pixiv_open_links_in_app": "Pixiv-Links in XTA öffnen",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Füge auf Androids Seite „Standardmäßig öffnen“ pixiv.net und pixiv.me als unterstützte Links hinzu",
+  "@plugin_pixiv_open_links_in_app_description": {},
+  "plugin_pixiv_original_quality": "Originalqualität",
+  "@plugin_pixiv_original_quality": {},
+  "plugin_pixiv_pager_load_failed": "Weitere Werke konnten nicht geladen werden",
+  "@plugin_pixiv_pager_load_failed": {},
+  "plugin_pixiv_pager_no_more": "Keine weiteren Werke",
+  "@plugin_pixiv_pager_no_more": {},
+  "plugin_pixiv_pixivision_articles": "Pixivision-Artikel",
+  "@plugin_pixiv_pixivision_articles": {},
+  "plugin_pixiv_pixivision_empty": "Gerade keine Pixivision-Artikel",
+  "@plugin_pixiv_pixivision_empty": {},
+  "plugin_pixiv_pixivision_featured": "Vorgestellte Werke",
+  "@plugin_pixiv_pixivision_featured": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
+  "plugin_pixiv_profile_birthday": "Geburtstag",
+  "@plugin_pixiv_profile_birthday": {},
+  "plugin_pixiv_profile_bookmarks_empty": "Noch keine öffentlichen Lesezeichen",
+  "@plugin_pixiv_profile_bookmarks_empty": {},
+  "plugin_pixiv_profile_copy_info": "Profilinfos kopieren",
+  "@plugin_pixiv_profile_copy_info": {},
+  "plugin_pixiv_profile_followers": "Follower",
+  "@plugin_pixiv_profile_followers": {},
+  "plugin_pixiv_profile_followers_empty": "Keine Follower anzuzeigen",
+  "@plugin_pixiv_profile_followers_empty": {},
+  "plugin_pixiv_profile_following": "Folgt",
+  "@plugin_pixiv_profile_following": {},
+  "plugin_pixiv_profile_following_empty": "Folgt noch niemandem",
+  "@plugin_pixiv_profile_following_empty": {},
+  "plugin_pixiv_profile_gender": "Geschlecht",
+  "@plugin_pixiv_profile_gender": {},
+  "plugin_pixiv_profile_id_copied": "Nutzer-ID kopiert",
+  "@plugin_pixiv_profile_id_copied": {},
+  "plugin_pixiv_profile_illusts": "Illustrationen",
+  "@plugin_pixiv_profile_illusts": {},
+  "plugin_pixiv_profile_info": "Infos",
+  "@plugin_pixiv_profile_info": {},
+  "plugin_pixiv_profile_info_copied": "Profilinfos kopiert",
+  "@plugin_pixiv_profile_info_copied": {},
+  "plugin_pixiv_profile_job": "Beruf",
+  "@plugin_pixiv_profile_job": {},
+  "plugin_pixiv_profile_manga": "Manga",
+  "@plugin_pixiv_profile_manga": {},
+  "plugin_pixiv_profile_muted": "Du hast diesen Account stummgeschaltet",
+  "@plugin_pixiv_profile_muted": {},
+  "plugin_pixiv_profile_mypixiv": "My-pixiv-Freunde",
+  "@plugin_pixiv_profile_mypixiv": {},
+  "plugin_pixiv_profile_nickname": "Spitzname",
+  "@plugin_pixiv_profile_nickname": {},
+  "plugin_pixiv_profile_novel_bookmarks_empty": "Noch keine öffentlichen Roman-Lesezeichen",
+  "@plugin_pixiv_profile_novel_bookmarks_empty": {},
+  "plugin_pixiv_profile_novels": "Romane",
+  "@plugin_pixiv_profile_novels": {},
+  "plugin_pixiv_profile_novels_empty": "Noch keine Romane",
+  "@plugin_pixiv_profile_novels_empty": {},
+  "plugin_pixiv_profile_pawoo": "Pawoo-Konto",
+  "@plugin_pixiv_profile_pawoo": {},
+  "plugin_pixiv_profile_premium": "Premium-Mitglied",
+  "@plugin_pixiv_profile_premium": {},
+  "plugin_pixiv_profile_public_bookmarks": "Öffentliche Lesezeichen",
+  "@plugin_pixiv_profile_public_bookmarks": {},
+  "plugin_pixiv_profile_region": "Region",
+  "@plugin_pixiv_profile_region": {},
+  "plugin_pixiv_profile_save_avatar": "Profilbild speichern",
+  "@plugin_pixiv_profile_save_avatar": {},
+  "plugin_pixiv_profile_save_background": "Titelbild speichern",
+  "@plugin_pixiv_profile_save_background": {},
+  "plugin_pixiv_profile_show_anyway": "Trotzdem anzeigen",
+  "@plugin_pixiv_profile_show_anyway": {},
+  "plugin_pixiv_profile_twitter": "X-Konto",
+  "@plugin_pixiv_profile_twitter": {},
+  "plugin_pixiv_profile_user_id": "Nutzer-ID",
+  "@plugin_pixiv_profile_user_id": {},
+  "plugin_pixiv_profile_website": "Website",
+  "@plugin_pixiv_profile_website": {},
+  "plugin_pixiv_profile_works": "Werke",
+  "@plugin_pixiv_profile_works": {},
+  "plugin_pixiv_profile_works_empty": "Hier gibt es noch keine Werke",
+  "@plugin_pixiv_profile_works_empty": {},
+  "plugin_pixiv_quality_detail": "Seiten eines Werks",
+  "@plugin_pixiv_quality_detail": {},
+  "plugin_pixiv_quality_feed": "Bilder im Raster",
+  "@plugin_pixiv_quality_feed": {},
+  "plugin_pixiv_quality_large": "Groß",
+  "@plugin_pixiv_quality_large": {},
+  "plugin_pixiv_quality_medium": "Mittel",
+  "@plugin_pixiv_quality_medium": {},
+  "plugin_pixiv_quality_original": "Originalgröße",
+  "@plugin_pixiv_quality_original": {},
+  "plugin_pixiv_quality_reader": "Seiten im Vollbild",
+  "@plugin_pixiv_quality_reader": {},
+  "plugin_pixiv_r18g": "R-18G",
+  "@plugin_pixiv_r18g": {},
+  "plugin_pixiv_ranking_day_ai": "KI",
+  "@plugin_pixiv_ranking_day_ai": {},
+  "plugin_pixiv_ranking_day_r18": "R-18 täglich",
+  "@plugin_pixiv_ranking_day_r18": {},
+  "plugin_pixiv_ranking_day_r18_ai": "R-18 KI",
+  "@plugin_pixiv_ranking_day_r18_ai": {},
+  "plugin_pixiv_ranking_edit": "Bearbeiten",
+  "@plugin_pixiv_ranking_edit": {},
+  "plugin_pixiv_ranking_edit_hint": "Angeheftete Rankings erscheinen als Tabs. R-18-Rankings stehen zur Wahl, solange „R-18-Werke anzeigen“ an ist.",
+  "@plugin_pixiv_ranking_edit_hint": {},
+  "plugin_pixiv_ranking_edit_title": "Ranking-Tabs",
+  "@plugin_pixiv_ranking_edit_title": {},
+  "plugin_pixiv_ranking_week_r18": "R-18 wöchentlich",
+  "@plugin_pixiv_ranking_week_r18": {},
+  "plugin_pixiv_ranking_week_r18g": "R-18G wöchentlich",
+  "@plugin_pixiv_ranking_week_r18g": {},
+  "plugin_pixiv_recommended_users_empty": "Gerade keine vorgeschlagenen Künstler",
+  "@plugin_pixiv_recommended_users_empty": {},
+  "plugin_pixiv_resolution": "{width} × {height} px",
+  "@plugin_pixiv_resolution": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_another": "Anderes Bild wählen",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Keine Pixiv-Werke passen zu diesem Bild",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO konnte dieses Bild nicht durchsuchen",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Bild wählen",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Melde dich erneut bei Pixiv an, um Vorschauen zu sehen",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Das gewählte Bild wird auf saucenao.com hochgeladen, um passende Pixiv-Werke zu finden.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "SauceNAO wird durchsucht …",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} ähnlich",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Mit Bild suchen",
+  "@plugin_pixiv_saucenao_title": {},
+  "plugin_pixiv_save_again": "Erneut speichern",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Nur neue Seiten",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{1 Seite speichern} other{{count} Seiten speichern}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Auf diesem Gerät gespeichert",
+  "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Lesezeichenzahl",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Beliebige Lesezeichenzahl",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ Lesezeichen",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} Lesezeichen",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Datum",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Beliebiger Zeitraum",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Eigener Zeitraum …",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Letzter Tag",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Letzte 6 Monate",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Letzter Monat",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Letzte Woche",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Letztes Jahr",
+  "@plugin_pixiv_search_date_year": {},
+  "plugin_pixiv_search_favorite_add": "Zu Lieblings-Tags hinzufügen",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Zu Lieblings-Tags hinzugefügt",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Aus Lieblings-Tags entfernen",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Aus Lieblings-Tags entfernt",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Lieblings-Tags",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Bearbeiten beenden",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Lieblings-Tags bearbeiten",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Ziehe einen Tag, um ihn zu verschieben. Wische ihn zur Seite, um ihn zu entfernen.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Noch keine Lieblings-Tags. Halte bei einem Werk einen Tag gedrückt, um ihn hinzuzufügen.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Suchfilter",
+  "@plugin_pixiv_search_filters_title": {},
+  "plugin_pixiv_search_history_all": "Alle anzeigen ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Letzte Suchen löschen",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Alle letzten Suchen löschen?",
+  "@plugin_pixiv_search_history_clear_question": {},
+  "plugin_pixiv_search_history_fewer": "Weniger anzeigen",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Werk #{id} öffnen",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel": "Roman #{id} öffnen",
+  "@plugin_pixiv_search_open_novel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_novel_series": "Roman-Reihe #{id} öffnen",
+  "@plugin_pixiv_search_open_novel_series": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_pixivision": "Pixivision-Artikel #{id} öffnen",
+  "@plugin_pixiv_search_open_pixivision": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Nutzer #{id} öffnen",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Einfügen",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Beliebtheit",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Beliebige Beliebtheit",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Beliebtheit bei Männern oder Frauen erfordert Pixiv Premium. Ohne Premium zeigt „Beliebt“ die kostenlose Vorschau von Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Das Veröffentlichungsdatum schränkt die Vorschau nicht ein.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Das ist die kostenlose Beliebt-Vorschau von Pixiv. Alle Ergebnisse nach Beliebtheit zu sortieren erfordert Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
+  "plugin_pixiv_search_remember": "Diese Filter merken",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sortieren nach",
+  "@plugin_pixiv_search_sort": {},
+  "plugin_pixiv_search_sort_oldest": "Älteste",
+  "@plugin_pixiv_search_sort_oldest": {},
+  "plugin_pixiv_search_sort_popular_female": "Beliebt bei Frauen",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Beliebt bei Männern",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Tag kopiert",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Tag kopieren",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Suchen in",
+  "@plugin_pixiv_search_target": {},
+  "plugin_pixiv_search_target_keyword": "Tags, Titel, Beschreibung",
+  "@plugin_pixiv_search_target_keyword": {},
+  "plugin_pixiv_search_target_text": "Fließtext",
+  "@plugin_pixiv_search_target_text": {},
+  "plugin_pixiv_search_ugoira_all": "Alle Werke",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Ohne Ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Nur Ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Von {count}+ gemerkt",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_see_all": "Alle anzeigen",
+  "@plugin_pixiv_see_all": {},
+  "plugin_pixiv_select_none": "Keine",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Seiten auswählen",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Keine Seiten ausgewählt} one{1 Seite ausgewählt} other{{count} Seiten ausgewählt}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series": "Reihe",
+  "@plugin_pixiv_series": {},
+  "plugin_pixiv_series_empty": "In dieser Reihe gibt es keine Werke, die du sehen kannst",
+  "@plugin_pixiv_series_empty": {},
+  "plugin_pixiv_series_link": "Reihe: {title}",
+  "@plugin_pixiv_series_link": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_series_next": "Nächstes der Reihe",
+  "@plugin_pixiv_series_next": {},
+  "plugin_pixiv_series_position": "Nr. {order} von {total}",
+  "@plugin_pixiv_series_position": {
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_series_previous": "Vorheriges der Reihe",
+  "@plugin_pixiv_series_previous": {},
+  "plugin_pixiv_series_started": "Begonnen am {date}",
+  "@plugin_pixiv_series_started": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_share_image": "Bild teilen",
+  "@plugin_pixiv_share_image": {},
+  "plugin_pixiv_share_image_failed": "Das Bild konnte nicht geteilt werden",
+  "@plugin_pixiv_share_image_failed": {},
+  "plugin_pixiv_sign_out_named": "Von {name} abmelden?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Von Pixiv abmelden?",
+  "@plugin_pixiv_sign_out_question": {},
+  "plugin_pixiv_split_divider": "Größe von Bildern und Details ändern",
+  "@plugin_pixiv_split_divider": {},
+  "plugin_pixiv_start_section": "Pixiv startet mit",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_swipe_works": "Zwischen Werken wischen",
+  "@plugin_pixiv_swipe_works": {},
+  "plugin_pixiv_swipe_works_description": "Seitlich wischen, um zum nächsten Werk der Liste zu gelangen. Bei Werken mit mehreren Seiten über die erste oder letzte Seite hinaus weiterwischen.",
+  "@plugin_pixiv_swipe_works_description": {},
+  "plugin_pixiv_switch_account": "Konto wechseln",
+  "@plugin_pixiv_switch_account": {},
+  "plugin_pixiv_tab_manga": "Manga",
+  "@plugin_pixiv_tab_manga": {},
+  "plugin_pixiv_tab_watchlist": "Merkliste",
+  "@plugin_pixiv_tab_watchlist": {},
+  "plugin_pixiv_ugoira_encoding": "Einzelbild {current} von {total} wird kodiert…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Die Animation konnte nicht gespeichert werden",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Einzelbilder werden geladen…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Als GIF speichern",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Einzelbilder als ZIP speichern",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animation als GIF gespeichert",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Einzelbilder als ZIP gespeichert",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Wird gespeichert…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Das Kodieren kann eine Minute dauern",
+  "@plugin_pixiv_ugoira_slow": {},
+  "plugin_pixiv_unmute_question": "Stummschaltung für {name} aufheben?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_viewing_section": "Ansicht",
+  "@plugin_pixiv_viewing_section": {},
+  "plugin_pixiv_walkthrough_sign_in": "Melde dich an, um dieses Werk zu öffnen",
+  "@plugin_pixiv_walkthrough_sign_in": {},
+  "plugin_pixiv_walkthrough_title": "Beliebt auf Pixiv",
+  "@plugin_pixiv_walkthrough_title": {},
+  "plugin_pixiv_watchlist_add": "Zur Merkliste hinzufügen",
+  "@plugin_pixiv_watchlist_add": {},
+  "plugin_pixiv_watchlist_empty": "Manga-Reihen auf deiner Merkliste erscheinen hier",
+  "@plugin_pixiv_watchlist_empty": {},
+  "plugin_pixiv_watchlist_remove": "Von der Merkliste entfernen",
+  "@plugin_pixiv_watchlist_remove": {},
+  "plugin_pixiv_watchlist_updated": "Aktualisiert {when}",
+  "@plugin_pixiv_watchlist_updated": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_watchlist_view_latest": "Neuesten Teil ansehen",
+  "@plugin_pixiv_watchlist_view_latest": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} Werk} other{{shown} Werke}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  }
 }

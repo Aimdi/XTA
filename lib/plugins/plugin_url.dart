@@ -272,14 +272,24 @@ PluginLink? parseRedditLink(String url) {
   return _redditSiteLink(pathSegments(uri));
 }
 
+/// A pixiv.net or pixiv.me page, a pixivision.net article, an i.pximg.net
+/// image file, or a `pixiv://` app link — the forms Pixiv's own app opens.
 PluginLink? parsePixivWebLink(String url) {
-  final uri = httpUri(url);
-  if (uri == null || !_isPixivHost(uri.host)) {
-    return null;
+  if (!_isPixivAppLink(url)) {
+    final uri = httpUri(url);
+    if (uri == null || !_isPixivFamilyHost(uri.host)) {
+      return null;
+    }
   }
   final ref = parsePixivLink(url);
   return ref == null ? null : PixivWebLink(ref);
 }
+
+bool _isPixivAppLink(String url) =>
+    Uri.tryParse(url.trim())?.scheme.toLowerCase() == 'pixiv';
+
+bool _isPixivFamilyHost(String host) =>
+    isPixivWebHost(host) || isPixivImageHost(host) || isPixivisionHost(host);
 
 PluginLink? parseMastodonLink(String url, {required Set<String> knownHosts}) {
   final uri = httpUri(url);
@@ -366,14 +376,6 @@ bool _isTikTokHost(String host) {
     return false;
   }
   return normalised == 'tiktok.com' || normalised.endsWith('.tiktok.com');
-}
-
-bool _isPixivHost(String host) {
-  final normalised = host.toLowerCase();
-  return normalised == 'pixiv.net' ||
-      normalised.endsWith('.pixiv.net') ||
-      normalised == 'pixiv.me' ||
-      normalised.endsWith('.pixiv.me');
 }
 
 bool _isRedditSiteHost(String host) {

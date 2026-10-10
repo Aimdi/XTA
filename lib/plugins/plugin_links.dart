@@ -13,10 +13,7 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
-import 'package:xta/plugins/pixiv/pixiv_client.dart';
-import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
-import 'package:xta/plugins/pixiv/pixiv_links.dart';
-import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/plugin_url.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
@@ -172,7 +169,7 @@ Future<bool> _pushLink(BuildContext context, PluginLink link) {
       context,
       MastodonThreadScreen(post: _mastodonStub(link)),
     ),
-    PixivWebLink() => _openPixiv(context, link.ref),
+    PixivWebLink() => openPixivLinkRef(context, link.ref),
     HnStoryLink() => _push(
       context,
       HnStoryScreen(
@@ -186,22 +183,6 @@ Future<bool> _pushLink(BuildContext context, PluginLink link) {
 Future<bool> _push(BuildContext context, Widget screen) async {
   await Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   return true;
-}
-
-Future<bool> _openPixiv(BuildContext context, PixivLinkRef ref) async {
-  if (ref case PixivUserLinkRef(:final id)) {
-    return _push(context, PixivUserScreen(userId: id));
-  }
-  try {
-    final client = context.read<PixivClient>();
-    final illust = await client.illustDetail(ref.id);
-    if (!context.mounted) {
-      return true;
-    }
-    return _push(context, PixivIllustScreen(illust: illust));
-  } catch (_) {
-    return false;
-  }
 }
 
 Future<bool> _openTikTokVideo(

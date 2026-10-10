@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 
 /// A string list from prefs, or null when the key was never set.
 ///
@@ -48,8 +49,12 @@ List<String>? stringListFrom(Object? raw) {
 }
 
 /// [settings] as shared preferences can store them: JSON hands lists back as `List<dynamic>`, which they refuse.
-Map<String, dynamic> prefsForImport(Map<String, dynamic> settings) =>
-    settings.map((key, value) => MapEntry(key, value is List ? stringListFrom(value) : value));
+/// Keys that never leave a device are left out, so a backup written before one
+/// became device-only cannot pair this device's credentials with another's state.
+Map<String, dynamic> prefsForImport(Map<String, dynamic> settings) => {
+  for (final MapEntry(:key, :value) in settings.entries)
+    if (!isSecretPrefKey(key)) key: value is List ? stringListFrom(value) : value,
+};
 
 /// Drops [value] from the string list stored under [key]; an unset list, or one without it, is left alone.
 Future<void> removeFromStringListPref(BasePrefService prefs, String key, String value) async {

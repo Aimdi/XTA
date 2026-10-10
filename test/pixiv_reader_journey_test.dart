@@ -6,10 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+
+import 'support/pixiv_discovery_fakes.dart';
 
 class _Pixiv extends PixivClient {
   _Pixiv(super.prefs);
@@ -31,13 +34,12 @@ class _Pixiv extends PixivClient {
   }
 
   @override
-  Future<PixivIllustPage> ranking({String mode = 'day', String? date, String? nextUrl}) async {
-    calls.add('rank:$mode:$date');
-    return const PixivIllustPage(illusts: []);
-  }
-
-  @override
-  Future<PixivIllustPage> bookmarks({required int userId, String restrict = 'public', String? nextUrl}) async {
+  Future<PixivIllustPage> bookmarks({
+    required int userId,
+    String restrict = 'public',
+    String? tag,
+    String? nextUrl,
+  }) async {
     calls.add('favorites:$restrict');
     return const PixivIllustPage(illusts: []);
   }
@@ -47,6 +49,7 @@ void main() {
   testWidgets('Pixiv descriptor keeps all modes and lazy source/favorites controls reachable', (tester) async {
     final prefs = PrefServiceCache(defaults: {optionPluginPixivRefreshToken: 'fixture-only'});
     final client = _Pixiv(prefs);
+    final discovery = FakePixivDiscoveryApi(client);
     final mute = PixivMuteStore(prefs);
     final feed = PixivFeedStore(client, filter: mute.filter);
     final scroll = ScrollController();
@@ -58,6 +61,7 @@ void main() {
             Provider<PixivClient>.value(value: client),
             Provider<PixivMuteStore>.value(value: mute),
             Provider<PixivFeedStore>.value(value: feed),
+            Provider<PixivDiscoveryApi>.value(value: discovery),
           ],
           child: MaterialApp(
             localizationsDelegates: const [
@@ -77,17 +81,14 @@ void main() {
     await tester.tap(find.text('Recommended'));
     await tester.pumpAndSettle();
     expect(client.calls, ['following', 'recommended']);
+    expect(discovery.calls, containsAll(['spotlight', 'users']));
     await tester.tap(find.descendant(of: find.byType(PluginHomeChrome), matching: find.byTooltip('Ranking')));
     await tester.pumpAndSettle();
-    expect(client.calls.last, 'rank:day:null');
-    await tester.tap(find.text('Daily'));
+    expect(discovery.calls.last, 'rank:day:null');
+    expect(find.byType(ChoiceChip), findsNWidgets(8));
+    await tester.tap(find.byKey(const ValueKey('pixiv-ranking-mode-week')));
     await tester.pumpAndSettle();
-    expect(find.byType(CheckedPopupMenuItem<String>), findsNWidgets(8));
-    await tester.tap(
-      find.byWidgetPredicate((widget) => widget is CheckedPopupMenuItem<String> && widget.value == 'week'),
-    );
-    await tester.pumpAndSettle();
-    expect(client.calls.last, 'rank:week:null');
+    expect(discovery.calls.last, 'rank:week:null');
     final date = find.byIcon(Icons.calendar_today);
     expect(tester.getSize(find.ancestor(of: date, matching: find.byType(IconButton))).height, greaterThanOrEqualTo(48));
     await tester.tap(date);

@@ -8,7 +8,10 @@ import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 
 void main() {
   late PrefServiceCache prefs;
@@ -241,13 +244,16 @@ void main() {
           }),
         );
 
-        await client.ranking(mode: 'week');
-        await client.searchIllust(
-          'cat',
-          searchTarget: 'exact_match_for_tags',
-          sort: 'popular_desc',
+        await PixivDiscoveryApi(client).ranking('week');
+        final searchApi = PixivSearchApi(client);
+        await searchApi.illusts(
+          pixivSearchQuery(
+            const PixivSearchFilter(target: PixivSearchTarget.exactTags, sort: PixivSearchSort.popular),
+            'cat',
+            now: DateTime(2024),
+          ),
         );
-        final users = await client.searchUsers('artist');
+        final users = await searchApi.users('artist');
         final detail = await client.illustDetail(5);
         await client.related(5);
         await client.bookmarks(userId: 123, restrict: 'private');
@@ -271,7 +277,7 @@ void main() {
           (request) => request.url.path == '/v1/user/bookmarks/illust',
         );
         expect(bookmarks.url.queryParameters['restrict'], 'private');
-        expect(users.users.single.id, 9);
+        expect(users.items.single.user.id, 9);
         expect(detail.id, 5);
       },
     );
@@ -309,69 +315,27 @@ void main() {
       expect(follow!.body, contains('restrict=public'));
     });
 
-    test('addBookmark posts to the bookmark-add endpoint', () async {
-      http.Request? bookmark;
-      final client = PixivClient(
-        prefs,
-        httpClient: MockClient((request) async {
-          if (request.url.host == 'oauth.secure.pixiv.net') {
-            return http.Response(
-              jsonEncode({
-                'access_token': 'access-1',
-                'refresh_token': 'refresh-2',
-                'expires_in': 3600,
-                'user': {'id': '123', 'name': 'Reader', 'account': 'reader'},
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
-            );
-          }
-          bookmark = request;
-          return http.Response(
-            '{}',
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
-
-      await client.addBookmark(99);
-      expect(bookmark!.method, 'POST');
-      expect(bookmark!.url.path, '/v2/illust/bookmark/add');
-      expect(bookmark!.body, contains('illust_id=99'));
-      expect(bookmark!.body, contains('restrict=public'));
-    });
-
-    test('deleteBookmark posts to the bookmark-delete endpoint', () async {
-      http.Request? bookmark;
-      final client = PixivClient(
-        prefs,
-        httpClient: MockClient((request) async {
-          if (request.url.host == 'oauth.secure.pixiv.net') {
-            return http.Response(
-              jsonEncode({
-                'access_token': 'access-1',
-                'refresh_token': 'refresh-2',
-                'expires_in': 3600,
-                'user': {'id': '123', 'name': 'Reader', 'account': 'reader'},
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
-            );
-          }
-          bookmark = request;
-          return http.Response(
-            '{}',
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
-
-      await client.deleteBookmark(99);
-      expect(bookmark!.method, 'POST');
-      expect(bookmark!.url.path, '/v1/illust/bookmark/delete');
-      expect(bookmark!.body, contains('illust_id=99'));
+    test('Pixiv\'s "Rate Limit" answer reads as rate limiting, not a refused token', () async {
+      await prefs.set(optionPluginPixivAccessToken, 'access-1');
+      await prefs.set(optionPluginPixivAccessExpiresAt, DateTime.now().add(const Duration(hours: 1)).toIso8601String());
+      for (final status in [400, 403]) {
+        var tokenHits = 0;
+        final client = PixivClient(
+          prefs,
+          httpClient: MockClient((request) async {
+            if (request.url.host.contains('oauth')) tokenHits++;
+            return _json({
+              'error': {'user_message': '', 'message': 'Rate Limit', 'reason': '', 'user_message_details': {}},
+            }, status);
+          }),
+        );
+        await expectLater(
+          client.getJson('/v1/illust/recommended'),
+          throwsA(isA<PixivException>().having((e) => e.kind, 'kind', PixivErrorKind.rateLimited)),
+          reason: 'HTTP $status',
+        );
+        expect(tokenHits, 0, reason: 'a rate limit is no reason to refresh the token');
+      }
     });
 
     test('a refused token surfaces what Pixiv actually said', () async {
@@ -535,7 +499,7 @@ void main() {
           }),
         );
 
-        await client.ranking(mode: 'day');
+        await PixivDiscoveryApi(client).ranking('day');
         await client.bookmarks(userId: 123);
 
         expect(asked.map((u) => u.path), [

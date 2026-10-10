@@ -3,6 +3,7 @@ library;
 
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/plugin_query_words.dart';
 
 enum BooruTagOperator {
   none(''),
@@ -76,10 +77,9 @@ class BooruQueryToken {
   };
 }
 
-List<String> booruQueryTokens(String raw) =>
-    raw.trim().split(RegExp(r'\s+')).where((token) => token.isNotEmpty).toList(growable: false);
+List<String> booruQueryTokens(String raw) => queryWords(raw);
 
-String booruQueryText(Iterable<String> tokens) => tokens.join(' ');
+String booruQueryText(Iterable<String> tokens) => queryText(tokens);
 
 /// [tags] followed by [added]. A repeat is skipped and a token takes the place
 /// of the one it competes with (see [BooruQueryToken.slot]).
@@ -112,11 +112,7 @@ String booruTagSetKey(String query) {
 
 /// Text typed into the tag field. Every token followed by whitespace is
 /// finished; whatever follows the last whitespace is still being typed.
-({List<String> done, String rest}) splitBooruInput(String text) {
-  final match = RegExp(r'\s(?=\S*$)').firstMatch(text);
-  if (match == null) return (done: const [], rest: text);
-  return (done: booruQueryTokens(text.substring(0, match.start)), rest: text.substring(match.end));
-}
+({List<String> done, String rest}) splitBooruInput(String text) => splitQueryInput(text);
 
 /// What to ask the host to complete for [input], without its operator. Null
 /// while it is too short or names a metatag, which hosts do not autocomplete.

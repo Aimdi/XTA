@@ -18,6 +18,7 @@ responses over hand-written stubs.
 | `UserTweets/subscriber_previews.json` | x.com/Osemka8 posts tab recorded by QuaX (`UserOriginalsTimeline`), slimmed to a post, a `profile-originals-conversation-` thread of previews, a preview and the bottom cursor | `TimelineParser.createUnconversationedChains` |
 | `UserByScreenName/modern.json` | `UserByScreenName` (`KybxDj9RrADIITXlGG8kpw`) for the QuaX test account `@quax_tests`, recorded by QuaX — no `legacy` left | `UserWithExtra.fromNonLegacyJson` / `pinnedTweetIdsOf` |
 | `UserOriginalsTimeline/page.json` | `UserOriginalsTimeline` (`qtvmQffnepvr0oPe4A8MqQ`) for `@quax_tests_2`, recorded by QuaX, slimmed to two posts + cursors | `TimelineParser.createUnconversationedChains` |
+| `Pixivision/article_en.html`, `Pixivision/article_zh.html` | Hand-shaped pixivision.net article pages in the English and Chinese layouts | `parsePixivisionArticle` |
 
 Guest `TweetDetail` returned 404; tweet shapes were taken from `UserTweets`
 instead. No auth tokens are stored in these files.

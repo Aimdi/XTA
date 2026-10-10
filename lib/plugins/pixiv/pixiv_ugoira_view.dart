@@ -32,6 +32,17 @@ class _PixivUgoiraViewState extends State<PixivUgoiraView> {
     );
   }
 
+  /// A route pushed over this one or a page scrolled off stops ticking; the animation follows.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (TickerMode.valuesOf(context).enabled) {
+      _store.resume();
+    } else {
+      _store.hold();
+    }
+  }
+
   @override
   void dispose() {
     _store.destroy();
