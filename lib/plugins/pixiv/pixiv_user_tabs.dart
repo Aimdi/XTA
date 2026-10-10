@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_loads.dart';
-import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_list.dart';
@@ -65,13 +64,9 @@ List<PixivProfileTab> pixivProfileTabsFor(PixivProfileScope scope) => [
 PixivMuteState pixivMutesShowing(PixivMuteState mute, int creatorId) =>
     mute.authorIds.contains(creatorId) ? mute.copyWith(authorIds: {...mute.authorIds}..remove(creatorId)) : mute;
 
-class _PixivProfileFeedStore extends PixivIllustListStore with PixivTrackedPages<PixivIllust> {
-  _PixivProfileFeedStore(super.loader, {super.filter});
-}
-
 /// A works grid a profile tab owns: it loads when the tab is first shown and
 /// is let go with the tab.
-class PixivProfileFeed extends StatefulWidget {
+class PixivProfileFeed extends StatelessWidget {
   final PixivIllustPageLoader loader;
   final String emptyMessage;
 
@@ -80,31 +75,16 @@ class PixivProfileFeed extends StatefulWidget {
 
   const PixivProfileFeed({super.key, required this.loader, required this.emptyMessage, required this.creatorId});
 
-  @override
-  State<PixivProfileFeed> createState() => _PixivProfileFeedState();
-}
-
-class _PixivProfileFeedState extends State<PixivProfileFeed> {
-  late final _PixivProfileFeedStore _works;
-
-  PixivMuteState _mutes(PixivMuteState mute) => pixivMutesShowing(mute, widget.creatorId);
+  PixivMuteState _mutes(PixivMuteState mute) => pixivMutesShowing(mute, creatorId);
 
   @override
-  void initState() {
-    super.initState();
-    final mute = context.read<PixivMuteStore>();
-    _works = _PixivProfileFeedStore(widget.loader, filter: (illusts) => _mutes(mute.state).filter(illusts))..refresh();
-  }
-
-  @override
-  void dispose() {
-    _works.destroyWhenSettled();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) =>
-      PixivIllustFeed(store: _works, emptyMessage: widget.emptyMessage, mutes: _mutes);
+  Widget build(BuildContext context) => PixivOwnedFeed<PixivTrackedIllustStore>(
+    create: (context) {
+      final mute = context.read<PixivMuteStore>();
+      return PixivTrackedIllustStore(loader, filter: (illusts) => _mutes(mute.state).filter(illusts));
+    },
+    feed: (works) => PixivIllustFeed(store: works, emptyMessage: emptyMessage, mutes: _mutes),
+  );
 }
 
 /// The Works tab: illustrations or manga, starting on whichever the creator

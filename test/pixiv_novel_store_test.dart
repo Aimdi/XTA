@@ -6,6 +6,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
@@ -132,6 +133,43 @@ void main() {
       );
     });
 
+    test('a page asked for before a watchlist change keeps what the change left', () async {
+      api.seriesPages = {
+        null: _seriesPage(chapters: const [], listed: 0, nextUrl: 'n2'),
+        'n2': _seriesPage(chapters: const [], listed: 0),
+      };
+      await store.loadPage();
+      final gate = Completer<void>();
+      api.seriesGate = gate.future;
+      final late = store.loadPage(nextUrl: 'n2');
+      api.seriesGate = null;
+
+      await store.toggleWatchlist();
+      gate.complete();
+      await late;
+      expect(store.state.series!.series.watchlistAdded, isTrue);
+
+      await store.loadPage();
+      expect(store.state.series!.series.watchlistAdded, isFalse, reason: 'a page asked for afterwards is the news');
+    });
+
+    test('a page that lands after its screen closed writes before the stores go', () async {
+      api.seriesPages = {
+        null: _seriesPage(chapters: [PixivNovelChapter(order: 1, novel: pixivNovel(id: 10))], listed: 1),
+      };
+      final gate = Completer<void>();
+      api.seriesGate = gate.future;
+      final series = PixivNovelSeriesStore(api, 77);
+      final chapters = PixivTrackedListStore<PixivNovelChapter>(series.loadPage, keyOf: (chapter) => chapter.novel.id);
+      final load = chapters.refresh();
+
+      chapters.destroyWhenSettled();
+      series.destroyWhenSettled();
+      gate.complete();
+      await load;
+      expect(series.state.series!.series.title, 'Seasons');
+    });
+
     test('the watchlist toggle writes, and a failure leaves it as it was', () async {
       api.seriesPages = {null: _seriesPage(chapters: const [], listed: 0)};
       await store.loadPage();
@@ -218,14 +256,15 @@ void main() {
       expect(session.syncRankingMode(), isFalse);
     });
 
-    test('the novel boards pin under their own preference, with every board R-18 does not gate by default', () {
+    test('the novel boards pin under their own preference, with every board neither R-18 nor AI by default', () {
       final defaults = pixivNovelRankingPinsStore(PrefServiceCache());
       expect(defaults.state, pixivDefaultNovelRankingPins);
       expect(defaults.prefKey, optionPluginPixivNovelRankingModes);
       expect(
-        pixivNovelRankingModes.where((mode) => !mode.r18).map((mode) => mode.id),
+        pixivNovelRankingModes.where((mode) => !mode.r18 && !mode.ai).map((mode) => mode.id),
         unorderedEquals(pixivDefaultNovelRankingPins),
       );
+      expect(pixivDefaultRankingPins.where((id) => pixivRankingModeIsAi(id)), isEmpty, reason: 'as for illustrations');
       defaults.destroy();
     });
   });

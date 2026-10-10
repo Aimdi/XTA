@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
@@ -13,7 +14,6 @@ import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_paged_feed.dart';
 import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
@@ -56,18 +56,24 @@ class PixivNovelSeriesStore extends PixivWatchedSeriesStore<PixivNovelSeriesInfo
 
   /// One page of chapters, numbered across the whole series.
   Future<PixivPage<PixivNovelChapter>> loadPage({String? nextUrl}) async {
-    final page = await api.series(seriesId, nextUrl: nextUrl);
+    final page = await fetchPage(() => api.series(seriesId, nextUrl: nextUrl), _infoOf);
     final before = nextUrl == null ? 0 : _listedBefore[nextUrl] ?? 0;
     if (page.nextUrl case final next?) _listedBefore[next] = before + page.listed;
-    if (page.series case final series?) {
-      final known = state.series;
-      show(
-        PixivNovelSeriesInfo(series: series, first: page.first ?? known?.first, latest: page.latest ?? known?.latest),
-      );
-    }
     return PixivPage([
       for (final chapter in page.chapters) PixivNovelChapter(order: before + chapter.order, novel: chapter.novel),
     ], nextUrl: page.nextUrl);
+  }
+
+  /// The header [page] carries, keeping the first and newest chapters an earlier page named.
+  PixivNovelSeriesInfo? _infoOf(PixivNovelSeriesPage page) {
+    final series = page.series;
+    if (series == null) return null;
+    final known = state.series;
+    return PixivNovelSeriesInfo(
+      series: series,
+      first: page.first ?? known?.first,
+      latest: page.latest ?? known?.latest,
+    );
   }
 
   @override
@@ -95,14 +101,14 @@ class PixivNovelSeriesScreen extends StatefulWidget {
 
 class _PixivNovelSeriesScreenState extends State<PixivNovelSeriesScreen> {
   late final PixivNovelSeriesStore _series;
-  late final PixivPagedListStore<PixivNovelChapter> _chapters;
+  late final PixivTrackedListStore<PixivNovelChapter> _chapters;
 
   @override
   void initState() {
     super.initState();
     final mute = context.read<PixivMuteStore>();
     _series = PixivNovelSeriesStore(PixivNovelApi.of(context), widget.seriesId);
-    _chapters = PixivPagedListStore(
+    _chapters = PixivTrackedListStore(
       _series.loadPage,
       keyOf: (chapter) => chapter.novel.id,
       filter: (chapters) => mute.state.filterNovelsOf(chapters, _novelOf),
@@ -111,8 +117,8 @@ class _PixivNovelSeriesScreenState extends State<PixivNovelSeriesScreen> {
 
   @override
   void dispose() {
-    _chapters.destroy();
-    _series.destroy();
+    _chapters.destroyWhenSettled();
+    _series.destroyWhenSettled();
     super.dispose();
   }
 

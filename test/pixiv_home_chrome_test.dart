@@ -46,6 +46,29 @@ void main() {
     expect(index, 4);
   });
 
+  testWidgets('the mode button keeps the five icon tabs on a phone, the mark making room', (tester) async {
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    tester.view.devicePixelRatio = 1;
+    final chrome = PixivHomeChrome(index: 0, onSelect: (_) {}, onMode: (_) {});
+    for (final (width, pushed, mark) in [(320.0, false, false), (360.0, true, false), (390.0, false, true)]) {
+      tester.view.physicalSize = Size(width, 700);
+      await tester.pumpWidget(_app(pushed ? const SizedBox() : chrome));
+      if (pushed) {
+        tester
+            .state<NavigatorState>(find.byType(Navigator))
+            .push(MaterialPageRoute<void>(builder: (_) => Scaffold(body: chrome)));
+        await tester.pumpAndSettle();
+        expect(find.byType(BackButton), findsOneWidget);
+      }
+      final at = '$width dp${pushed ? ' with a back button' : ''}';
+      expect(find.byType(PluginSectionPicker), findsNothing, reason: at);
+      expect(find.byKey(const ValueKey('pixiv-mode-toggle')), findsOneWidget, reason: at);
+      expect(find.byTooltip('Pixiv'), mark ? findsOneWidget : findsNothing, reason: at);
+    }
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('embedded Pixiv chrome skips a second SafeArea', (tester) async {
     await tester.pumpWidget(
       _app(

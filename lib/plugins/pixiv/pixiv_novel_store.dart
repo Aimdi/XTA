@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -12,6 +13,11 @@ int _novelId(PixivNovel novel) => novel.id;
 /// A paged novel list — recommended, following, rankings, bookmarks.
 class PixivNovelListStore extends PixivPagedListStore<PixivNovel> {
   PixivNovelListStore(super.loader, {super.filter}) : super(keyOf: _novelId);
+}
+
+/// A novel list that tracks its pages, for a screen part that owns it.
+class PixivTrackedNovelStore extends PixivNovelListStore with PixivTrackedPages<PixivNovel> {
+  PixivTrackedNovelStore(super.loader, {super.filter});
 }
 
 /// The novels' bookmark overrides for the session, app-wide like the

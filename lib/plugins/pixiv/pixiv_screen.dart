@@ -433,6 +433,17 @@ class _PixivScreenState extends State<PixivScreen> {
 
   /// Novel mode's sections; Search and More are the illustration ones until novel search lands.
   List<WidgetBuilder> _novelSections(PixivViewState state) => [
+    for (final body in _novelBodies(state)) (context) => _novelStorage(body(context)),
+    ..._sections(state).skip(3),
+  ];
+
+  /// Lists under the section's storage key share their saved offsets, so each
+  /// novel body gets a key of its own: without it, switching mode opened the
+  /// novel list at the illustration list's offset, and back.
+  Widget _novelStorage(Widget body) =>
+      KeyedSubtree(key: const PageStorageKey<PixivContentMode>(PixivContentMode.novel), child: body);
+
+  List<WidgetBuilder> _novelBodies(PixivViewState state) => [
     (_) => PixivNovelHomeSection(
       session: _novels,
       view: state.novel,
@@ -452,7 +463,6 @@ class _PixivScreenState extends State<PixivScreen> {
       onReselect: _scrollToTop,
       scrollController: _novelFavoritesScroll,
     ),
-    ..._sections(state).skip(3),
   ];
 }
 
@@ -484,6 +494,9 @@ class PixivHomeChrome extends StatelessWidget {
       mark: pluginMark(PixivPlugin(), size: 24),
       accent: const Color(0xFF0096FA),
       actions: [if (onMode case final onMode?) _modeButton(context, onMode)],
+      // At phone widths the mode button would fold the five tabs into the
+      // section picker; the mark makes room for it instead.
+      markGivesWay: true,
       tabs: [
         PluginHomeTab(icon: Icons.home_outlined, label: l10n.home, selected: index == 0, onTap: () => onSelect(0)),
         PluginHomeTab(
@@ -509,8 +522,8 @@ class PixivHomeChrome extends StatelessWidget {
     );
   }
 
-  /// One 48 dp button naming the mode it switches to, so the five tabs keep
-  /// their room and Home's dock can list it in its sheet. Lit while novels show.
+  /// One 48 dp button naming the mode it switches to, so Home's dock can list
+  /// it in its sheet. Lit while novels show.
   IconButton _modeButton(BuildContext context, ValueChanged<PixivContentMode> onMode) {
     final l10n = L10n.of(context);
     final novels = mode == PixivContentMode.novel;

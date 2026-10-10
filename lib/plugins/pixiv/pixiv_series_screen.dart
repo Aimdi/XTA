@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -7,10 +9,11 @@ import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_in_flight.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/utils/urls.dart';
@@ -33,30 +36,54 @@ typedef PixivSeriesView = ({PixivIllustSeries? series, bool busy});
 abstract class PixivWatchedSeriesStore<S> extends Store<({S? series, bool busy})> {
   PixivWatchedSeriesStore() : super((series: null, busy: false));
 
+  final _inFlight = PixivInFlight();
+
+  /// Watchlist writes that have landed, so a page asked for before the last
+  /// one is known to carry an outdated watchlist flag.
+  int _writes = 0;
+
   bool isWatched(S series);
   S withWatched(S series, bool watched);
   Future<void> writeWatched(S series, bool watched);
 
-  /// Shows the header a page carried, unless a watchlist change is on its way.
-  void show(S? series) {
-    if (series != null && !state.busy) update((series: series, busy: false));
+  /// Fetches a page with [fetch] and shows the header [headerOf] finds in it.
+  Future<P> fetchPage<P>(Future<P> Function() fetch, S? Function(P page) headerOf) => _inFlight.track(() async {
+    final writes = _writes;
+    final page = await fetch();
+    _show(headerOf(page), outdated: writes != _writes);
+    return page;
+  }());
+
+  /// Shows [series] unless a watchlist change is on its way; a page asked for
+  /// before the last change keeps the watchlist flag that change left.
+  void _show(S? series, {required bool outdated}) {
+    final shown = state.series;
+    if (series == null || state.busy) return;
+    update((series: outdated && shown != null ? withWatched(series, isWatched(shown)) : series, busy: false));
   }
 
   /// Adds the series to the watchlist or takes it off; a failure leaves it as
   /// it was and rethrows.
-  Future<void> toggleWatchlist() async {
+  Future<void> toggleWatchlist() => _inFlight.track(_toggleWatchlist());
+
+  Future<void> _toggleWatchlist() async {
     final series = state.series;
     if (series == null || state.busy) return;
     final adding = !isWatched(series);
     update((series: series, busy: true));
     try {
       await writeWatched(series, adding);
+      _writes++;
       update((series: withWatched(series, adding), busy: false));
     } catch (_) {
       update((series: series, busy: false));
       rethrow;
     }
   }
+
+  /// Destroys the store once the pages and writes it has running land, so
+  /// none of them writes to it afterwards.
+  void destroyWhenSettled() => unawaited(_inFlight.whenSettled(destroy));
 }
 
 /// The watchlist toggle of a series page: [onChanged] after it lands, the
@@ -85,8 +112,7 @@ class PixivSeriesStore extends PixivWatchedSeriesStore<PixivIllustSeries> {
 
   /// One page of the series' works; the header it carries replaces the shown one.
   Future<PixivPage<PixivIllust>> loadPage({String? nextUrl}) async {
-    final page = await api.illustSeries(seriesId, nextUrl: nextUrl);
-    show(page.series);
+    final page = await fetchPage(() => api.illustSeries(seriesId, nextUrl: nextUrl), (page) => page.series);
     return page.works;
   }
 
@@ -114,20 +140,20 @@ class PixivSeriesScreen extends StatefulWidget {
 
 class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
   late final PixivSeriesStore _series;
-  late final PixivIllustListStore _works;
+  late final PixivTrackedIllustStore _works;
 
   @override
   void initState() {
     super.initState();
     _series = PixivSeriesStore(PixivDiscoveryApi.of(context), widget.seriesId);
-    _works = PixivIllustListStore(_series.loadPage, filter: context.read<PixivMuteStore>().filter);
+    _works = PixivTrackedIllustStore(_series.loadPage, filter: context.read<PixivMuteStore>().filter);
     _works.refresh();
   }
 
   @override
   void dispose() {
-    _works.destroy();
-    _series.destroy();
+    _works.destroyWhenSettled();
+    _series.destroyWhenSettled();
     super.dispose();
   }
 

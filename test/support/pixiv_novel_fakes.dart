@@ -49,6 +49,9 @@ class FakePixivNovelApi extends PixivNovelApi {
   /// Thrown by every write when set.
   Object? writeError;
 
+  /// Holds every series page back until it completes, when set.
+  Future<void>? seriesGate;
+
   FakePixivNovelApi(
     super.client, {
     this.recommendedNovels = const [],
@@ -120,6 +123,7 @@ class FakePixivNovelApi extends PixivNovelApi {
   @override
   Future<PixivNovelSeriesPage> series(int seriesId, {String? nextUrl}) async {
     calls.add('series:$seriesId:$nextUrl');
+    await seriesGate;
     final page = seriesPages[nextUrl];
     if (page == null) throw PixivException(PixivErrorKind.notFound, 'series $seriesId');
     return page;

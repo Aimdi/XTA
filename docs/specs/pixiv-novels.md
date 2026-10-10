@@ -58,34 +58,47 @@ is an empty value, never a throw:
 
 - `PixivHomeChrome` takes the mode and a callback; the screen shows one 48 dp
   button beside the five tabs that names the mode it switches to (Switch to
-  novels / Switch to illustrations) and is lit while novels show. One button
-  rather than a two-part control keeps the tabs from collapsing into the
-  section picker on a phone, and Home's dock lists it in its sheet like any
-  icon action.
+  novels / Switch to illustrations) and is lit while novels show. One icon
+  button rather than a two-part control takes the least room, and Home's dock
+  lists it in its sheet like any icon action. On the standalone bar (Pixiv as
+  a root tab, or the full client opened from Home) the 48 dp it takes would
+  fold the five icon tabs into the section picker at 320 dp, and at 360 dp
+  beside a back button, so there the Pixiv mark gives way to it
+  (`PluginHomeChrome.markGivesWay`): the mark goes only when that alone keeps
+  every tab an icon.
 - `PixivViewState.mode` is session state like the section, and Novel mode's
   own choices sit in `PixivViewState.novel` (`PixivNovelView`: Home source,
   follow visibility, ranking board and date, bookmark visibility), so each
-  mode comes back as it was left.
+  mode comes back as it was left. Its section bodies sit under a page
+  storage key of their own, so a novel list never opens at the offset its
+  illustration counterpart was left at, and each comes back where it was.
 - `PixivNovelSession` (`pixiv_novel_session.dart`) obtains Novel mode's
   lists from the Home session and holds what its controls do. Every loader
   reads the session's choices when it runs, so a session restored from page
   storage needs nothing put back. Account switches and sign-outs empty these
   lists with the others.
 - Home: Recommended, Following and Watchlist chips; Following adds a Public /
-  Private switch. Rankings: the novel boards as pinned chips with Edit and
-  the archive date (`PixivRankingSection` now takes its feed). Favorites:
-  the reader's own novel bookmarks, Public / Private. Search and More are the
-  illustration ones until B2c brings novel search.
+  Private switch (`PixivFollowRestrictSwitch`, also the Following list's
+  switch). Rankings: the novel boards as pinned chips with Edit and the
+  archive date (`PixivRankingSection` now takes its feed). Favorites: the
+  reader's own novel bookmarks under Public / Private chips, the same chips
+  (`pixivBookmarkRestrictChips`) as illustration Favorites, so the section
+  keeps its layout when the mode flips. Search and More are the illustration
+  ones until B2c brings novel search.
 - Tapping the source, visibility or board already shown scrolls its list to
-  the top.
+  the top. For the segmented Public / Private switch this goes through
+  `PixivSegmentedSwitch.onReselect`, since a segmented button reports a tap on
+  the segment shown only as that segment being unselected.
 
 ## Novel rankings
 
 `pixivNovelRankingModes` (`pixiv_ranking_modes.dart`) lists daily, weekly,
 male, female, AI (weekly), R-18 daily, R-18 AI, R-18 weekly and R-18G
 weekly; the AI and R-18 labels are the illustration ones. Pins are a JSON
-list in `plugin.pixiv.novel_ranking_modes` (default: every board Show R-18
-does not gate), read by the shared `PixivRankingPinsStore`. R-18 boards are
+list in `plugin.pixiv.novel_ranking_modes` (default: every board that is
+neither R-18 nor AI, as for illustrations: an AI board shows AI novels
+whatever Hide AI says, so it is pinned through Edit), read by the shared
+`PixivRankingPinsStore`. R-18 boards are
 offered and shown only while Show R-18 is on; when the shown board loses its
 chip, the section moves to the first chip and reloads, as the illustration
 rankings do.
@@ -96,14 +109,19 @@ rankings do.
   cards: skeleton first, soft refresh, failed appends kept, retry, empty pane.
   `PixivNovelSliver` filters by the mutes as it draws, so a mute made from a
   card hides the novel at once. `PixivOwnedNovelFeed` is a list a screen part
-  owns and lets go once its loads settle (the profile tab).
+  owns and lets go once its loads settle (the profile tab); it and the works
+  grid of a profile tab (`PixivProfileFeed`) are both `PixivOwnedFeed`
+  (`pixiv_loads.dart`) over a tracked store.
 - `PixivNovelCard` (`pixiv_novel_card.dart`): an 80 dp cover, the title on up
   to three lines, the author, the length (`12.3K characters`), R-18 / R-18G
   and AI labels (the AI badge setting applies), the series as a 48 dp link to
   the novel series page, the tags, and the heart with its count. On a series
   page it carries its chapter number and no series link.
 - A long press on a card opens the shared post sheet with Bookmark, Copy link,
-  Mute author and Mute this novel on top (`pixiv_novel_actions.dart`).
+  Mute author and Mute this novel on top (`pixiv_novel_actions.dart`). The
+  sheet and its Bookmark, Copy link and mute entries are the works' own
+  (`showPixivPageSheet`, `pixivBookmarkEntry`, `pixivCopyLinkEntry`,
+  `pixivMuteEntry` in `pixiv_post_actions.dart`).
 - Opening a novel goes through `openPixivNovel` / `openPixivNovelById`
   (`pixiv_novel_open.dart`), which open it the way a novel link does: the
   browser until B2b's reader routes those links. The reader batch swaps these
@@ -120,7 +138,11 @@ count moves by one with it. Writes go through `PixivNovelBookmarkActions`
 session overrides. That store and the illustrations' `PixivBookmarkStore` are
 both `PixivBookmarkOverrides` (one write per novel at a time, counts adjusted
 by one). A landed write buzzes lightly; a failed one says why in a snack bar
-and leaves the heart as it was. Switching accounts clears the overrides.
+and leaves the heart as it was. Switching accounts clears the overrides. The
+heart itself is the works' `PixivHeart` and `PixivHeartIcon`
+(`pixiv_bookmark_button.dart`: label, long-press hint and buzz, 48 dp target,
+faded while busy), with the count under it, and both hearts report through
+the one `runPixivBookmarkWrite`.
 
 ## Series and watchlist
 
@@ -136,7 +158,11 @@ and leaves the heart as it was. Switching accounts clears the overrides.
 - The watchlist toggle is shared with illustration series:
   `PixivWatchedSeriesStore<S>` (add or remove, busy state, rolled back on
   failure), `togglePixivSeriesWatchlist` and `PixivWatchlistButton` in
-  `pixiv_series_screen.dart`.
+  `pixiv_series_screen.dart`. A page asked for before a watchlist change
+  lands keeps the flag the change left, so a slow page cannot undo the
+  header. Both series pages let their stores go only once the pages and
+  watchlist writes on their way have landed (`destroyWhenSettled`), so
+  closing a page mid-load writes to nothing that is gone.
 - Home › Watchlist in Novel mode is `PixivNovelWatchlistFeed`, B4's
   `PixivWatchlistFeed` and rows with novel openers: a row opens the series
   (and refreshes the list after a watchlist change there), View latest opens
@@ -160,7 +186,7 @@ creator's own novels is B2c's.
 
 | Key | Default | Backed up |
 |---|---|---|
-| `plugin.pixiv.novel_ranking_modes` | `["day","week","day_male","day_female","week_ai"]` | Yes (reset with the plugin) |
+| `plugin.pixiv.novel_ranking_modes` | `["day","week","day_male","day_female"]` | Yes (reset with the plugin) |
 
 ## For the batches that follow
 
@@ -178,7 +204,12 @@ creator's own novels is B2c's.
 filters, series numbering, mutes), `pixiv_novel_api_test.dart` (MockClient:
 paths, parameters, `next_url`, form bodies, filters),
 `pixiv_novel_store_test.dart` (overrides, bookmark actions, series numbering
-across pages and the watchlist toggle, the session's loaders and ranking
-sync) and `pixiv_novel_screens_test.dart` (the mode button swapping every
-section, Home sources, R-18 boards, the card, its heart and long press, large
-text, the series page, the profile switch, account switches).
+across pages, a late page after a watchlist change, a page landing after its
+screen closed, the watchlist toggle, the session's loaders and ranking sync),
+`pixiv_novel_screens_test.dart` (the mode button swapping every section, each
+mode keeping its own place on Rankings and Favorites, tapping the source,
+visibility or board shown to go back to the top, Home sources, View latest,
+R-18 boards, an account switch emptying and reloading the novel lists, the
+card, its heart and long press, large text, the series page, the profile
+switch) and `pixiv_home_chrome_test.dart` (the mode button keeping the five
+icon tabs at 320 and 360 dp).

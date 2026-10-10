@@ -168,25 +168,37 @@ class PixivBookmarkFeedback {
   }
 }
 
-/// Runs one bookmark [write] for [illust] and tells the reader how it went.
-Future<void> runPixivBookmarkWrite(
+/// Runs one bookmark [write], of a work or a novel, and tells the reader how
+/// it went: [landed] with what the write left, the reason when it fails. A
+/// null outcome means nothing was written.
+Future<void> runPixivBookmarkWrite<O extends Object>(
   BuildContext context,
-  PixivIllust illust,
-  Future<PixivBookmarkOutcome?> Function(PixivBookmarkActions actions) write,
+  Future<O?> Function() write,
+  void Function(PixivBookmarkFeedback feedback, O outcome) landed,
 ) async {
   final feedback = PixivBookmarkFeedback.of(context);
   try {
-    final outcome = await write(PixivBookmarkActions.of(context));
-    if (outcome != null) feedback.succeeded(illust, outcome);
+    final outcome = await write();
+    if (outcome != null) landed(feedback, outcome);
   } catch (error) {
     feedback.failed(error);
   }
 }
 
+Future<void> _runWorkWrite(
+  BuildContext context,
+  PixivIllust illust,
+  Future<PixivBookmarkOutcome?> Function(PixivBookmarkActions actions) write,
+) => runPixivBookmarkWrite(
+  context,
+  () => write(PixivBookmarkActions.of(context)),
+  (feedback, outcome) => feedback.succeeded(illust, outcome),
+);
+
 /// What the heart does on a tap.
 Future<void> togglePixivBookmark(BuildContext context, PixivIllust illust) =>
-    runPixivBookmarkWrite(context, illust, (actions) => actions.toggle(illust));
+    _runWorkWrite(context, illust, (actions) => actions.toggle(illust));
 
 /// Bookmarks [illust] after it was saved, when the reader asked for that.
 Future<void> bookmarkPixivAfterSave(BuildContext context, PixivIllust illust) =>
-    runPixivBookmarkWrite(context, illust, (actions) => actions.ensureBookmarked(illust));
+    _runWorkWrite(context, illust, (actions) => actions.ensureBookmarked(illust));

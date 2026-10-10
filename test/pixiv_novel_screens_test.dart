@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorites_section.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
@@ -68,6 +70,49 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
   await settlePixiv(tester);
 }
 
+/// The Pixiv screen's client, with the reader's own illustration bookmarks.
+class _ScreenClient extends FakePixivScreenClient {
+  final List<PixivIllust> bookmarkWorks;
+
+  _ScreenClient(super.prefs, {this.bookmarkWorks = const []});
+
+  @override
+  Future<int> ensureUserId() async => storedUserId ?? 0;
+
+  @override
+  Future<PixivIllustPage> bookmarks({
+    required int userId,
+    String restrict = 'public',
+    String? tag,
+    String? nextUrl,
+  }) async => PixivIllustPage(illusts: bookmarkWorks);
+}
+
+/// Where the list in [feed] is scrolled to.
+ScrollPosition _position(WidgetTester tester, Type feed) => tester
+    .state<ScrollableState>(find.descendant(of: find.byType(feed), matching: find.byType(Scrollable)).first)
+    .position;
+
+Future<void> _scrollTo(WidgetTester tester, Type feed, double offset) async {
+  _position(tester, feed).jumpTo(offset);
+  await tester.pump();
+}
+
+/// Records the pages `openUri` hands the browser.
+List<String> _recordLaunches() {
+  final launched = <String>[];
+  final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+  for (final name in ['plugins.flutter.io/url_launcher', 'browser_resolver']) {
+    final channel = MethodChannel(name);
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      if (call.arguments case {'url': final String url}) launched.add(url);
+      return name == 'browser_resolver' ? null : true;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+  }
+  return launched;
+}
+
 Widget _list(List<PixivNovel> novels) => Scaffold(
   body: ListView(children: [for (final novel in novels) PixivNovelCard(novel: novel)]),
 );
@@ -110,14 +155,20 @@ void main() {
       scroll.dispose();
     });
 
-    Future<PixivHarness> pumpScreen(WidgetTester tester, FakePixivNovelApi api, {bool showR18 = false}) {
+    Future<PixivHarness> pumpScreen(
+      WidgetTester tester,
+      FakePixivNovelApi api, {
+      bool showR18 = false,
+      List<PixivIllust> rankingWorks = const [],
+      List<PixivIllust> bookmarkWorks = const [],
+    }) {
       feed = PixivFeedStore(
         FakePixivScreenClient(
           PrefServiceCache(),
           followingWorks: [pixivWork(id: 600, pages: 1, title: 'Followed work')],
         ),
       );
-      final discovery = FakePixivDiscoveryApi(PixivClient(PrefServiceCache()));
+      final discovery = FakePixivDiscoveryApi(PixivClient(PrefServiceCache()), rankingWorks: rankingWorks);
       return _pump(
         tester,
         PixivScreen(scrollController: scroll),
@@ -125,7 +176,7 @@ void main() {
         client: (prefs) {
           prefs.set(optionPluginPixivUserId, 77);
           prefs.set(optionPluginPixivShowR18, showR18);
-          return FakePixivScreenClient(prefs);
+          return _ScreenClient(prefs, bookmarkWorks: bookmarkWorks);
         },
         more: [
           Provider<PixivFeedStore>.value(value: feed),
@@ -153,7 +204,8 @@ void main() {
       await _tap(tester, find.byTooltip('Ranking'));
       expect(find.text('Ranked tale'), findsOneWidget);
       expect(api.calls, contains('rank:day:null'));
-      expect(find.byKey(const ValueKey('pixiv-ranking-mode-week_ai')), findsOneWidget);
+      expect(find.byKey(const ValueKey('pixiv-ranking-mode-week')), findsOneWidget);
+      expect(find.byKey(const ValueKey('pixiv-ranking-mode-week_ai')), findsNothing, reason: 'AI boards are opt-in');
       expect(find.byKey(const ValueKey('pixiv-ranking-mode-day_r18')), findsNothing, reason: 'Show R-18 is off');
 
       await _tap(tester, find.byTooltip('Favorites'));
@@ -189,6 +241,106 @@ void main() {
       await _tap(tester, find.text('Seasons'));
       expect(find.byType(PixivNovelSeriesScreen), findsOneWidget);
       expect(api.calls.last, 'series:77:null');
+      await disposePixiv(tester);
+    });
+
+    testWidgets('each mode keeps its own place on Rankings and Favorites', (tester) async {
+      final works = [for (var id = 1; id <= 90; id++) pixivWork(id: id, pages: 1, title: 'Work $id')];
+      final novels = [for (var id = 1; id <= 40; id++) pixivNovel(id: id, title: 'Tale $id')];
+      final api = _novelApi(ranking: novels, bookmarks: novels);
+      await pumpScreen(tester, api, rankingWorks: works, bookmarkWorks: works);
+
+      for (final section in ['Ranking', 'Favorites']) {
+        await _tap(tester, find.byTooltip(section));
+        await _scrollTo(tester, PixivIllustFeed, 1000);
+        await _tap(tester, find.byTooltip('Switch to novels'));
+        expect(_position(tester, PixivNovelFeed).pixels, 0, reason: '$section opens the novels at the top');
+        expect(find.text('Tale 1'), findsOneWidget);
+
+        await _scrollTo(tester, PixivNovelFeed, 300);
+        await _tap(tester, find.byTooltip('Switch to illustrations'));
+        expect(_position(tester, PixivIllustFeed).pixels, 1000, reason: '$section works come back as they were left');
+        await _tap(tester, find.byTooltip('Switch to novels'));
+        expect(_position(tester, PixivNovelFeed).pixels, 300, reason: '$section novels come back as they were left');
+        await _tap(tester, find.byTooltip('Switch to illustrations'));
+      }
+      await disposePixiv(tester);
+    });
+
+    testWidgets('tapping the source, visibility or board already shown brings its list to the top', (tester) async {
+      final novels = [for (var id = 1; id <= 40; id++) pixivNovel(id: id, title: 'Tale $id')];
+      final api = _novelApi(recommended: novels, following: novels, ranking: novels, bookmarks: novels);
+      await pumpScreen(tester, api);
+      await _tap(tester, find.byTooltip('Switch to novels'));
+
+      Future<void> expectBackToTop(Finder control) async {
+        await _scrollTo(tester, PixivNovelFeed, 800);
+        await _tap(tester, control);
+        expect(_position(tester, PixivNovelFeed).pixels, 0);
+      }
+
+      await expectBackToTop(find.byKey(const ValueKey('pixiv-novel-home-recommended')));
+      await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-following')));
+      await expectBackToTop(find.byKey(const ValueKey('pixiv-novel-home-following')));
+      await expectBackToTop(find.text('Public'));
+      await _tap(tester, find.byTooltip('Ranking'));
+      await expectBackToTop(find.byKey(const ValueKey('pixiv-ranking-mode-day')));
+      await _tap(tester, find.byTooltip('Favorites'));
+      await expectBackToTop(find.byKey(const ValueKey('pixiv-bookmarks-restrict-public')));
+      expect(
+        [for (final call in api.calls) call.split(':').first],
+        ['recommended', 'following', 'rank', 'own'],
+        reason: 'going back to the top reloads nothing',
+      );
+      await disposePixiv(tester);
+    });
+
+    testWidgets('another account empties the novel lists and reloads the one shown', (tester) async {
+      final api = _novelApi(
+        recommended: [pixivNovel(id: 1, title: 'First account tale')],
+        ranking: [pixivNovel(id: 2, title: 'Ranked tale')],
+      );
+      final harness = await pumpScreen(tester, api);
+      await _tap(tester, find.byTooltip('Switch to novels'));
+      await _tap(tester, find.byTooltip('Ranking'));
+      await _tap(tester, find.byTooltip('Home'));
+      expect(find.text('First account tale'), findsOneWidget);
+
+      api.recommendedNovels = [pixivNovel(id: 3, title: 'Second account tale')];
+      await harness.prefs.set(optionPluginPixivUserId, 78);
+      await settlePixiv(tester);
+      expect(find.text('First account tale'), findsNothing);
+      expect(find.text('Second account tale'), findsOneWidget);
+
+      await _tap(tester, find.byTooltip('Ranking'));
+      expect(
+        api.calls.where((call) => call == 'recommended' || call.startsWith('rank:')),
+        ['recommended', 'rank:day:null', 'recommended', 'rank:day:null'],
+        reason: "the last account's ranking was emptied, so it loads again",
+      );
+      await disposePixiv(tester);
+    });
+
+    testWidgets('View latest opens the newest chapter Pixiv names, else the series', (tester) async {
+      final launched = _recordLaunches();
+      final api = _novelApi(
+        watchlist: const [
+          PixivWatchlistSeries(id: 77, title: 'Seasons', userId: 42, userName: 'Mika', latestContentId: 12),
+          PixivWatchlistSeries(id: 78, title: 'Winter', userId: 42, userName: 'Mika'),
+        ],
+        series: {null: _seriesPage()},
+      );
+      await pumpScreen(tester, api);
+      await _tap(tester, find.byTooltip('Switch to novels'));
+      await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-watchlist')));
+
+      await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-77')));
+      expect(launched.single, contains('novel/show.php?id=12'));
+      expect(find.byType(PixivNovelSeriesScreen), findsNothing);
+
+      await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-78')));
+      expect(find.byType(PixivNovelSeriesScreen), findsOneWidget);
+      expect(api.calls.last, 'series:78:null');
       await disposePixiv(tester);
     });
 

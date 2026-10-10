@@ -66,8 +66,9 @@ final pixivNovelRankingModes = <PixivRankingMode>[
 ];
 
 /// The novel boards pinned until the reader picks their own: every board
-/// Show R-18 does not gate.
-const pixivDefaultNovelRankingPins = ['day', 'week', 'day_male', 'day_female', 'week_ai'];
+/// Show R-18 does not gate, save AI boards, which are pinned through Edit
+/// as for illustrations since they show AI novels whatever Hide AI says.
+const pixivDefaultNovelRankingPins = ['day', 'week', 'day_male', 'day_female'];
 
 /// Whether [id] names an AI board of [table], the illustration boards unless told.
 bool pixivRankingModeIsAi(String id, [List<PixivRankingMode>? table]) =>

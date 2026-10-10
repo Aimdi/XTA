@@ -34,8 +34,11 @@ class PixivFavoritesSection extends StatelessWidget {
       children: [
         PluginFilterRow(
           children: [
-            _chip(l10n.plugin_pixiv_bookmarks_public, 'public'),
-            _chip(l10n.plugin_pixiv_bookmarks_private, 'private'),
+            ...pixivBookmarkRestrictChips(
+              l10n,
+              restrict: restrict,
+              onSelected: (value) => onFilter((restrict: value, tag: restrict == value ? tag : null)),
+            ),
             _tagChip(context, l10n),
           ],
         ),
@@ -50,12 +53,6 @@ class PixivFavoritesSection extends StatelessWidget {
     if (tag != null) return l10n.plugin_pixiv_bookmark_tag_empty;
     return restrict == 'private' ? l10n.plugin_pixiv_bookmarks_private_empty : l10n.plugin_pixiv_bookmarks_empty;
   }
-
-  Widget _chip(String label, String value) => ChoiceChip(
-    label: Text(label),
-    selected: restrict == value,
-    onSelected: (_) => onFilter((restrict: value, tag: restrict == value ? tag : null)),
-  );
 
   Widget _tagChip(BuildContext context, L10n l10n) => InputChip(
     key: const ValueKey('pixiv-favorites-tag'),
@@ -72,3 +69,23 @@ class PixivFavoritesSection extends StatelessWidget {
     deleteButtonTooltipMessage: l10n.plugin_pixiv_bookmark_tag_clear,
   );
 }
+
+/// Public and Private chips for whose bookmarks a list shows, works or
+/// novels. The chip already chosen is offered too, so a tap on it can bring
+/// the list back to the top.
+List<Widget> pixivBookmarkRestrictChips(
+  L10n l10n, {
+  required String restrict,
+  required ValueChanged<String> onSelected,
+}) => [
+  for (final (value, label) in [
+    ('public', l10n.plugin_pixiv_bookmarks_public),
+    ('private', l10n.plugin_pixiv_bookmarks_private),
+  ])
+    ChoiceChip(
+      key: ValueKey('pixiv-bookmarks-restrict-$value'),
+      label: Text(label),
+      selected: restrict == value,
+      onSelected: (_) => onSelected(value),
+    ),
+];

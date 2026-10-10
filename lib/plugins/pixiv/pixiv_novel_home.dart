@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorites_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_list.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_session.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_watchlist.dart';
@@ -9,41 +10,6 @@ import 'package:xta/plugins/pixiv/pixiv_ranking_section.dart';
 import 'package:xta/plugins/pixiv/pixiv_segmented_switch.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
-
-/// Public or Private, for the reader's bookmarks or [follows]: tapping the one
-/// shown again calls [onReselect] instead.
-class PixivRestrictSwitch extends StatelessWidget {
-  final String restrict;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onReselect;
-  final bool follows;
-
-  const PixivRestrictSwitch({
-    super.key,
-    required this.restrict,
-    required this.onChanged,
-    required this.onReselect,
-    this.follows = false,
-  });
-
-  String _label(L10n l10n, String value) => switch ((value == 'private', follows)) {
-    (true, true) => l10n.plugin_pixiv_follow_private,
-    (false, true) => l10n.plugin_pixiv_follow_public,
-    (true, false) => l10n.plugin_pixiv_bookmarks_private,
-    (false, false) => l10n.plugin_pixiv_bookmarks_public,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return PixivSegmentedSwitch<String>(
-      values: const ['public', 'private'],
-      label: (value) => _label(l10n, value),
-      selected: restrict,
-      onSelected: (value) => value == restrict ? onReselect() : onChanged(value),
-    );
-  }
-}
 
 /// Home in Novel mode: Recommended, Following (public or private follows)
 /// and Watchlist.
@@ -78,12 +44,11 @@ class PixivNovelHomeSection extends StatelessWidget {
           ],
         ),
         if (following)
-          PixivRestrictSwitch(
+          PixivFollowRestrictSwitch(
             key: const ValueKey('pixiv-novel-follow-restrict'),
             restrict: view.followRestrict,
             onChanged: session.changeFollowRestrict,
             onReselect: onReselect,
-            follows: true,
           ),
         // Each source keeps its own scroll offset and subscribes to its own store.
         Expanded(
@@ -178,19 +143,20 @@ class PixivNovelFavoritesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final private = view.bookmarksRestrict == 'private';
+    final restrict = view.bookmarksRestrict;
     return Column(
       children: [
-        PixivRestrictSwitch(
-          key: const ValueKey('pixiv-novel-bookmarks-restrict'),
-          restrict: view.bookmarksRestrict,
-          onChanged: session.changeBookmarksRestrict,
-          onReselect: onReselect,
+        PluginFilterRow(
+          children: pixivBookmarkRestrictChips(
+            l10n,
+            restrict: restrict,
+            onSelected: (value) => value == restrict ? onReselect() : session.changeBookmarksRestrict(value),
+          ),
         ),
         Expanded(
           child: PixivNovelFeed(
             store: session.bookmarks,
-            emptyMessage: private
+            emptyMessage: restrict == 'private'
                 ? l10n.plugin_pixiv_novel_bookmarks_private_empty
                 : l10n.plugin_pixiv_novel_bookmarks_empty,
             scrollController: scrollController,

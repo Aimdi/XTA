@@ -69,13 +69,9 @@ class PixivNovelFeed extends StatelessWidget {
   );
 }
 
-class _PixivOwnedNovelStore extends PixivNovelListStore with PixivTrackedPages<PixivNovel> {
-  _PixivOwnedNovelStore(super.loader, {super.filter});
-}
-
 /// A novel list a screen part owns, such as a profile tab: it loads when
 /// first shown and is let go, once its loads settle, with the part.
-class PixivOwnedNovelFeed extends StatefulWidget {
+class PixivOwnedNovelFeed extends StatelessWidget {
   final PixivPageLoader<PixivNovel> loader;
   final String emptyMessage;
   final PixivMuteView? mutes;
@@ -83,27 +79,12 @@ class PixivOwnedNovelFeed extends StatefulWidget {
   const PixivOwnedNovelFeed({super.key, required this.loader, required this.emptyMessage, this.mutes});
 
   @override
-  State<PixivOwnedNovelFeed> createState() => _PixivOwnedNovelFeedState();
-}
-
-class _PixivOwnedNovelFeedState extends State<PixivOwnedNovelFeed> {
-  late final _PixivOwnedNovelStore _novels;
-
-  @override
-  void initState() {
-    super.initState();
-    final mute = context.read<PixivMuteStore>();
-    PixivMuteState mutes() => widget.mutes?.call(mute.state) ?? mute.state;
-    _novels = _PixivOwnedNovelStore(widget.loader, filter: (novels) => mutes().filterNovels(novels))..refresh();
-  }
-
-  @override
-  void dispose() {
-    _novels.destroyWhenSettled();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) =>
-      PixivNovelFeed(store: _novels, emptyMessage: widget.emptyMessage, mutes: widget.mutes);
+  Widget build(BuildContext context) => PixivOwnedFeed<PixivTrackedNovelStore>(
+    create: (context) {
+      final mute = context.read<PixivMuteStore>();
+      PixivMuteState shown() => mutes?.call(mute.state) ?? mute.state;
+      return PixivTrackedNovelStore(loader, filter: (novels) => shown().filterNovels(novels));
+    },
+    feed: (novels) => PixivNovelFeed(store: novels, emptyMessage: emptyMessage, mutes: mutes),
+  );
 }
