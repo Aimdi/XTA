@@ -5,20 +5,15 @@ import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_settings.dart';
+import 'package:xta/plugins/pixiv/pixiv_paged_feed.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
-import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
-import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/ui/empty_pane.dart';
-import 'package:xta/ui/errors.dart';
 
 export 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 
@@ -29,16 +24,38 @@ typedef PixivMuteView = PixivMuteState Function(PixivMuteState mute);
 /// Builds the cell for the work at [index] of the works a grid shows.
 typedef PixivIllustTileBuilder = Widget Function(BuildContext context, List<PixivIllust> illusts, int index);
 
-/// Pixez-style staggered gallery of illust thumbnails.
-class PixivIllustGrid extends StatelessWidget {
-  final List<PixivIllust> illusts;
-  final ScrollController? scrollController;
-  final Future<void> Function()? onRefresh;
-  final bool loadingMore;
-  final EdgeInsetsGeometry padding;
+/// How far past the screen a works grid builds its tiles ahead.
+const pixivGridCacheExtent = ScrollCacheExtent.pixels(1200);
 
-  /// Slivers scrolled above the works, such as a carousel or a header row.
-  final List<Widget> leadingSlivers;
+/// Builds [builder] with the column count for a works grid as wide as this
+/// widget, again when a grid setting changes.
+///
+/// Measured as a box around the scroll view: a sliver measurement sees every
+/// scroll frame as a new layout and would rebuild every built tile with it.
+class PixivGridColumns extends StatelessWidget {
+  final Widget Function(BuildContext context, int columns) builder;
+
+  const PixivGridColumns({super.key, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => PixivPrefsBuilder(
+    keys: pixivGridPrefKeys,
+    builder: (context) => LayoutBuilder(
+      builder: (context, constraints) => builder(context, pixivGridColumnsFor(context, constraints.maxWidth)),
+    ),
+  );
+}
+
+/// Works as a staggered sliver in [columns] columns, without the works the
+/// reader muted. Built under a [PixivGridColumns], which also rebuilds it when
+/// a grid setting the tiles read changes.
+class PixivIllustSliverGrid extends StatelessWidget {
+  final List<PixivIllust> illusts;
+
+  /// From the [PixivGridColumns] around the scroll view.
+  final int columns;
+
+  final EdgeInsetsGeometry padding;
 
   /// The reader's mutes as this list applies them; all of them when null.
   final PixivMuteView? mutes;
@@ -53,12 +70,70 @@ class PixivIllustGrid extends StatelessWidget {
   /// The store [illusts] come from, handed to tiles so a work opens among its neighbours.
   final PixivIllustListStore? source;
 
+  const PixivIllustSliverGrid({
+    super.key,
+    required this.illusts,
+    required this.columns,
+    this.padding = EdgeInsets.zero,
+    this.mutes,
+    this.hideMuted = true,
+    this.tileBuilder,
+    this.source,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!hideMuted) return _layout(illusts);
+    // Plain ScopedBuilder (not .transition): mute changes must not animate the
+    // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
+    return ScopedBuilder<PixivMuteStore, PixivMuteState>(
+      store: context.read<PixivMuteStore>(),
+      onState: (context, mute) => _layout((mutes?.call(mute) ?? mute).filter(illusts)),
+    );
+  }
+
+  Widget _layout(List<PixivIllust> shown) => SliverPadding(
+    padding: padding,
+    sliver: SliverMasonryGrid.count(
+      crossAxisCount: columns,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childCount: shown.length,
+      itemBuilder: (context, index) => _tile(context, shown, index),
+    ),
+  );
+
+  Widget _tile(BuildContext context, List<PixivIllust> illusts, int index) =>
+      tileBuilder?.call(context, illusts, index) ??
+      PixivIllustTile(illust: illusts[index], siblings: illusts, index: index, source: source);
+}
+
+/// Pixez-style staggered gallery of a fixed list of works, such as the
+/// viewing history; a paged list is a [PixivIllustFeed].
+class PixivIllustGrid extends StatelessWidget {
+  final List<PixivIllust> illusts;
+  final ScrollController? scrollController;
+  final EdgeInsetsGeometry padding;
+
+  /// Slivers scrolled above the works, such as a carousel or a header row.
+  final List<Widget> leadingSlivers;
+
+  /// The reader's mutes as this list applies them; all of them when null.
+  final PixivMuteView? mutes;
+
+  /// Whether muted works are left out; see [PixivIllustSliverGrid.hideMuted].
+  final bool hideMuted;
+
+  /// A plain tile opening among its neighbours (and [source]'s next pages) when null.
+  final PixivIllustTileBuilder? tileBuilder;
+
+  /// The store [illusts] come from, handed to tiles so a work opens among its neighbours.
+  final PixivIllustListStore? source;
+
   const PixivIllustGrid({
     super.key,
     required this.illusts,
     this.scrollController,
-    this.onRefresh,
-    this.loadingMore = false,
     this.padding = const EdgeInsets.all(4),
     this.leadingSlivers = const [],
     this.mutes,
@@ -68,64 +143,29 @@ class PixivIllustGrid extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PixivPrefsBuilder(
-    keys: pixivGridPrefKeys,
-    builder: (context) {
-      if (!hideMuted) return _layout(illusts);
-      // Plain ScopedBuilder (not .transition): mute changes must not animate the
-      // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
-      return ScopedBuilder<PixivMuteStore, PixivMuteState>(
-        store: context.read<PixivMuteStore>(),
-        onState: (context, mute) => _layout((mutes?.call(mute) ?? mute).filter(illusts)),
-      );
-    },
-  );
-
-  Widget _layout(List<PixivIllust> shown) => LayoutBuilder(
-    builder: (context, constraints) => _grid(context, shown, pixivGridColumnsFor(context, constraints.maxWidth)),
-  );
-
-  Widget _tile(BuildContext context, List<PixivIllust> illusts, int index) =>
-      tileBuilder?.call(context, illusts, index) ??
-      PixivIllustTile(illust: illusts[index], siblings: illusts, index: index, source: source);
-
-  Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts, int columns) {
-    final grid = CustomScrollView(
-      controller: pluginInnerScrollController(context, scrollController),
-      primary: PluginEmbedded.maybeOf(context) ? false : null,
-      scrollCacheExtent: const ScrollCacheExtent.pixels(1200),
-      physics: const AlwaysScrollableScrollPhysics(),
+  Widget build(BuildContext context) => PixivGridColumns(
+    builder: (context, columns) => pixivScrollView(
+      context,
+      controller: scrollController,
+      cacheExtent: pixivGridCacheExtent,
       slivers: [
         ...leadingSlivers,
-        SliverPadding(
+        PixivIllustSliverGrid(
+          illusts: illusts,
+          columns: columns,
           padding: padding,
-          sliver: SliverMasonryGrid.count(
-            crossAxisCount: columns,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childCount: visibleIllusts.length,
-            itemBuilder: (context, index) => _tile(context, visibleIllusts, index),
-          ),
+          mutes: mutes,
+          hideMuted: hideMuted,
+          tileBuilder: tileBuilder,
+          source: source,
         ),
-        if (loadingMore)
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
       ],
-    );
-
-    if (onRefresh == null) {
-      return grid;
-    }
-    return RefreshIndicator(onRefresh: onRefresh!, child: grid);
-  }
+    ),
+  );
 }
 
-/// A paged works list as a section shows it: skeleton first, the grid kept
-/// through soft refreshes and failed appends, a retry when empty or failed.
+/// A paged works list as a section shows it: [PixivPagedFeed] over the
+/// masonry grid, with a skeleton first and thumbnails fetched ahead.
 class PixivIllustFeed extends StatelessWidget {
   final PixivIllustListStore store;
   final String emptyMessage;
@@ -145,68 +185,29 @@ class PixivIllustFeed extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return ScopedBuilder<PixivIllustListStore, List<PixivIllust>>(
+  Widget build(BuildContext context) => PixivGridColumns(
+    builder: (context, columns) => PixivPagedFeed<PixivIllust>(
       store: store,
-      onLoading: (context) {
-        // Soft refresh keeps prior tiles; only the first load blanks the tab.
-        if (store.state.isNotEmpty) {
-          return _list(context, store.state);
-        }
-        return const PluginGridSkeleton(columns: 2);
-      },
-      onError: (context, error) {
-        if (store.state.isNotEmpty) {
-          return _list(context, store.state);
-        }
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: pixivErrorMessage(l10n, error ?? Exception()),
-            onRetry: store.refresh,
-          ),
-        );
-      },
-      onState: (context, illusts) => illusts.isEmpty ? _empty(l10n) : _list(context, illusts),
-    );
-  }
-
-  /// Refreshable even when empty: re-selecting the tab does not reload, so a
-  /// transient empty page used to strand the reader with no gesture that asks again.
-  Widget _empty(L10n l10n) => EmptyPane(
-    icon: Icons.photo_outlined,
-    message: emptyMessage,
-    onRefresh: store.refresh,
-    action: FilledButton.icon(onPressed: store.refresh, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-  );
-
-  Widget _list(BuildContext context, List<PixivIllust> illusts) {
-    return _ThumbPrefetch(
-      illusts: illusts,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (n) {
-          // Prefetch the next API page well before the footer — Pixez-style.
-          if (n.metrics.pixels > n.metrics.maxScrollExtent - 1400) {
-            store.loadMore();
-          }
-          return false;
-        },
-        child: PixivIllustGrid(
+      emptyMessage: emptyMessage,
+      emptyIcon: Icons.photo_outlined,
+      placeholder: const PluginGridSkeleton(columns: 2),
+      scrollController: scrollController,
+      leadingSlivers: leadingSlivers,
+      // The next API page is asked for well before the footer — Pixez-style.
+      loadAhead: 1400,
+      cacheExtent: pixivGridCacheExtent,
+      sliver: (context, illusts) => _ThumbPrefetch(
+        illusts: illusts,
+        child: PixivIllustSliverGrid(
           illusts: illusts,
-          scrollController: scrollController,
-          padding: pluginFeedPadding(context, extra: const EdgeInsets.all(4)),
-          onRefresh: store.refresh,
-          loadingMore: store.loadingMore,
-          leadingSlivers: leadingSlivers,
+          columns: columns,
+          padding: const EdgeInsets.all(4),
           mutes: mutes,
           source: store,
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 /// Prefetches thumbs only when the list grows — not on every mute/loading tick.

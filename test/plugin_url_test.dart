@@ -187,11 +187,43 @@ void main() {
       );
     });
 
+    test('opens pixivision.net articles and series pages', () {
+      expect(
+        parsePixivWebLink('https://www.pixivision.net/en/a/9876'),
+        isA<PixivWebLink>().having(
+          (link) => link.ref,
+          'ref',
+          isA<PixivisionLinkRef>()
+              .having((ref) => ref.id, 'id', 9876)
+              .having((ref) => ref.language, 'language', 'en'),
+        ),
+      );
+      expect(
+        parsePixivWebLink('pixivision.net/zh-tw/a/12'),
+        isA<PixivWebLink>().having((link) => link.ref, 'ref', isA<PixivisionLinkRef>()),
+      );
+      expect(
+        parsePixivWebLink('https://www.pixiv.net/user/42/series/266067'),
+        isA<PixivWebLink>().having(
+          (link) => link.ref,
+          'ref',
+          isA<PixivSeriesLinkRef>().having((ref) => ref.id, 'id', 266067).having((ref) => ref.userId, 'userId', 42),
+        ),
+      );
+      expect(parsePluginLink('https://www.pixivision.net/ja/a/1'), isA<PixivWebLink>());
+    });
+
+    test('leaves pixivision.net pages that are not articles alone', () {
+      expect(parsePixivWebLink('https://www.pixivision.net/en/'), isNull);
+      expect(parsePixivWebLink('https://www.pixivision.net/en/c/illustration'), isNull);
+    });
+
     test('leaves other hosts and schemes alone', () {
       expect(parsePixivWebLink('https://example.com/artworks/123'), isNull);
       expect(parsePixivWebLink('ftp://www.pixiv.net/artworks/123'), isNull);
       expect(parsePixivWebLink('https://i.pximg.net.evil.example/img-original/123_p0.png'), isNull);
-      expect(parsePixivWebLink('https://www.pixivision.net/en/a/1'), isNull);
+      expect(parsePixivWebLink('https://pixivision.net.evil.example/en/a/1'), isNull);
+      expect(parsePixivWebLink('https://notpixivision.net/en/a/1'), isNull);
     });
   });
 

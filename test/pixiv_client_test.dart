@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
 void main() {
@@ -241,7 +242,7 @@ void main() {
           }),
         );
 
-        await client.ranking(mode: 'week');
+        await PixivDiscoveryApi(client).ranking('week');
         await client.searchIllust(
           'cat',
           searchTarget: 'exact_match_for_tags',
@@ -470,7 +471,7 @@ void main() {
           }),
         );
 
-        await client.ranking(mode: 'day');
+        await PixivDiscoveryApi(client).ranking('day');
         await client.bookmarks(userId: 123);
 
         expect(asked.map((u) => u.path), [

@@ -127,9 +127,10 @@ the work and artist links, and a reset.
 
 A pixiv.me link is resolved with one request that does not follow the
 redirect; only a pixiv.net `Location` is trusted, else it opens in the
-browser. Series, novels and pixivision articles open in the browser until
-their screens exist. `plugin_url.dart` lets pixiv.net, pixiv.me, i.pximg.net
-and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
+browser. Series open on the series screen and pixivision articles on the
+article screen (see `pixiv-discovery.md`); novels and novel series open in the
+browser until their screens exist. `plugin_url.dart` lets pixiv.net, pixiv.me,
+pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 
 ## Opening links from other apps
 
@@ -145,8 +146,12 @@ and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
 - `openUri` asks Android who would open a Pixiv page; when that is XTA itself
   or a chooser that lists it, the page goes to a named browser instead, so a
   link XTA cannot show never comes straight back.
-- Shared text (`shared_links.dart`) yields Pixiv links while the plugin is
-  on; a share that is only a number opens Pixiv search with it.
+- Shared text (`shared_links.dart`) yields Pixiv and pixivision.net links
+  while the plugin is on; a share that is only a number opens Pixiv search
+  with it. `readsAsXLink` keeps pixivision pages from X's parser too.
+- pixivision.net is not in the manifest's VIEW filter yet, so Android does
+  not offer XTA for a pixivision link; one reaches the article screen when
+  tapped inside XTA or shared to it.
 
 ## More hub and navigation
 

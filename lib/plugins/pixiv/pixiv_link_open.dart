@@ -12,9 +12,11 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_gate.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
+import 'package:xta/plugins/pixiv/pixivision_article_screen.dart';
 import 'package:xta/utils/shared_links.dart';
 import 'package:xta/utils/urls.dart';
 
@@ -68,8 +70,8 @@ Future<void> openPixivUser(BuildContext context, int userId) =>
 /// Opens what a Pixiv link or ID names. False when the work could not be
 /// fetched, so the caller can fall back to the browser or say so.
 ///
-/// Series, novels and pixivision articles open in the browser until XTA has
-/// screens for them.
+/// Series and pixivision articles open on their own screens; novels and novel
+/// series open in the browser until XTA has screens for them.
 Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
   switch (ref) {
     case PixivUserLinkRef(:final id):
@@ -82,6 +84,12 @@ Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
       return true;
     case PixivShortLinkRef():
       return _openShortLink(context, ref);
+    case PixivSeriesLinkRef(:final id, :final webUrl):
+      await openPixivSeries(context, id, webUrl: webUrl);
+      return true;
+    case PixivisionLinkRef(:final id, :final webUrl):
+      await openPixivisionArticle(context, id, webUrl: webUrl);
+      return true;
     case PixivWebPageLinkRef(:final webUrl):
       await openUri(context, webUrl);
       return true;

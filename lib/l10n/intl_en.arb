@@ -3197,6 +3197,15 @@
       }
     }
   },
+  "plugin_pixiv_search_open_pixivision": "Open Pixivision article #{id}",
+  "@plugin_pixiv_search_open_pixivision": {
+    "description": "Shortcut shown when the search text is a number: open the Pixivision article with that id.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_search_open_user": "Open user #{id}",
   "@plugin_pixiv_search_open_user": {
     "description": "Shortcut shown when the search text is a number: open the Pixiv user with that id.",

@@ -12,6 +12,7 @@ import 'package:xta/plugins/pixiv/pixiv_image_source.dart';
 import 'package:xta/plugins/pixiv/pixiv_lru_cache.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
 import 'package:xta/utils/json.dart';
 
 enum PixivErrorKind {
@@ -518,23 +519,6 @@ class PixivClient {
     return parsePixivUserPreviews(json, includeR18: includeR18 ?? showR18, includeAi: includeAi ?? !hideAi);
   }
 
-  /// Daily / weekly / monthly ranking — Pixez's discovery surface.
-  ///
-  /// This is the popular board. Pixiv has no `/v1/ranking/illust`.
-  /// [date] (`YYYY-MM-DD`) opens that day's archived board; null is today's.
-  Future<PixivIllustPage> ranking({
-    String mode = 'day',
-    String? date,
-    String? nextUrl,
-  }) async {
-    final json = await _firstOrNext('/v1/illust/ranking', {
-      'mode': mode,
-      if (date != null && date.isNotEmpty) 'date': date,
-      'filter': 'for_android',
-    }, nextUrl);
-    return illustPageFrom(json);
-  }
-
   /// What Pixiv is drawing right now — each tag ships a representative illust.
   Future<List<PixivTrendTag>> trendingTags() async {
     final json = await getJson('/v1/trending-tags/illust', query: {
@@ -711,12 +695,19 @@ class PixivClient {
     return illustPageFrom(json, includeR18: includeR18 ?? showR18);
   }
 
-  Future<PixivIllustPage> userIllusts(int userId, {String? nextUrl}) async {
+  /// One kind of [userId]'s works, the one request every works list makes.
+  /// [ownList] keeps everything the reader posted, R-18 and AI works included.
+  Future<PixivIllustPage> userIllusts(
+    int userId, {
+    PixivWorkType type = PixivWorkType.illust,
+    bool ownList = false,
+    String? nextUrl,
+  }) async {
     final json = await _firstOrNext('/v1/user/illusts', {
       'user_id': '$userId',
-      'type': 'illust',
+      'type': type.name,
       'filter': 'for_android',
     }, nextUrl);
-    return illustPageFrom(json);
+    return illustPageFrom(json, ownList: ownList);
   }
 }

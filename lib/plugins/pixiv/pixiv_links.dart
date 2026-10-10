@@ -34,7 +34,8 @@ class PixivShortLinkRef extends PixivLinkRef {
   Uri get uri => Uri.https('pixiv.me', '/$name');
 }
 
-/// A link XTA has no screen for yet; it still knows the page to hand the browser.
+/// A page that also lives on the web: it knows the address to share or hand
+/// the browser, which is where the ones without a screen in XTA open.
 sealed class PixivWebPageLinkRef extends PixivLinkRef {
   const PixivWebPageLinkRef();
 
@@ -244,6 +245,9 @@ bool isPixivWebHost(String host) => _isPixivHost(host.toLowerCase());
 
 /// The image CDN, whose file names start with the work's ID.
 bool isPixivImageHost(String host) => _isImageHost(host.toLowerCase());
+
+/// pixivision.net, Pixiv's magazine, with any subdomain.
+bool isPixivisionHost(String host) => _isPixivisionHost(host.toLowerCase());
 
 bool _isPixivHost(String host) =>
     host == 'pixiv.net' || host.endsWith('.pixiv.net') || host == 'pixiv.me' || host.endsWith('.pixiv.me');

@@ -21,10 +21,10 @@ All of them live in `PixivSocialApi` (`pixiv_social_api.dart`), read through
 | (writes) | `POST /v1/user/follow/add` (`restrict`), `POST /v1/user/follow/delete` | Through `PixivFollowStore` |
 
 `PixivClient.userDetail`, `followedUsers` and `PixivUserPage` are gone, since
-these calls replace them. `PixivClient.userIllusts` (illustrations only) still
-serves the detail's More by strip and group posts; folding it into `userWorks`
-is left for the wave-1 merge, because those callers and their tests belong to
-other batches.
+these calls replace them. `/v1/user/illusts` has one request,
+`PixivClient.userIllusts(userId, type:, ownList:)`: `userWorks` hands it the
+type and whether the list is the reader's own, and the detail's More by strip
+and group posts call it for illustrations under the reader's filters.
 
 ## Model
 
@@ -89,8 +89,9 @@ follow button and Add to group, loading the next page as the list nears its
 end. A null `userId` is the signed-in reader; their following list has a
 Public / Private switch. Creators the reader muted are left out (pages that
 only held muted creators are skipped). The list body, `PixivUserList`, is also
-the profile's Following tab. `PixivFollowingScreen`, which Home's people icon
-opens, is now this list for the reader.
+the profile's Following tab. Home's people icon opens it through
+`openPixivUserList(context, PixivUserListKind.following)`, the reader's own
+follows; the old `PixivFollowingScreen` wrapper is gone.
 
 ## Following privately
 

@@ -9,8 +9,8 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 typedef PixivNumericShortcut = Widget Function(BuildContext context, int id);
 
 /// What a query of digits offers to open, in order. A feature with its own
-/// numbered pages (such as Pixivision articles) adds its tile here.
-const List<PixivNumericShortcut> pixivNumericShortcuts = [pixivArtworkShortcut, pixivUserShortcut];
+/// numbered pages adds its tile here.
+const List<PixivNumericShortcut> pixivNumericShortcuts = [pixivArtworkShortcut, pixivUserShortcut, pixivisionShortcut];
 
 Widget pixivArtworkShortcut(BuildContext context, int id) => ListTile(
   key: ValueKey('pixiv-open-artwork-$id'),
@@ -24,6 +24,13 @@ Widget pixivUserShortcut(BuildContext context, int id) => ListTile(
   leading: const Icon(Icons.person_outline),
   title: Text(L10n.of(context).plugin_pixiv_search_open_user('$id')),
   onTap: () => openPixivLinkOrSay(context, PixivLinkRef.user(id)),
+);
+
+Widget pixivisionShortcut(BuildContext context, int id) => ListTile(
+  key: ValueKey('pixiv-open-pixivision-$id'),
+  leading: const Icon(Icons.article_outlined),
+  title: Text(L10n.of(context).plugin_pixiv_search_open_pixivision('$id')),
+  onTap: () => openPixivLinkOrSay(context, PixivisionLinkRef(id)),
 );
 
 /// Opens [link], saying so when Pixiv could not find what it names.

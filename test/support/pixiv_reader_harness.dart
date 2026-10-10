@@ -18,6 +18,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 
 String _page(int id, int page, String size) =>
@@ -79,7 +80,12 @@ class FakePixivClient extends PixivClient {
       const PixivIllustPage(illusts: []);
 
   @override
-  Future<PixivIllustPage> userIllusts(int userId, {String? nextUrl}) async {
+  Future<PixivIllustPage> userIllusts(
+    int userId, {
+    PixivWorkType type = PixivWorkType.illust,
+    bool ownList = false,
+    String? nextUrl,
+  }) async {
     calls.add('userIllusts:$userId');
     await authorWorksGate;
     return PixivIllustPage(illusts: authorWorks);

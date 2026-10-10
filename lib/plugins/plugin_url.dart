@@ -272,13 +272,12 @@ PluginLink? parseRedditLink(String url) {
   return _redditSiteLink(pathSegments(uri));
 }
 
-/// A pixiv.net or pixiv.me page, an i.pximg.net image file, or a `pixiv://`
-/// app link — the forms Pixiv's own app opens.
+/// A pixiv.net or pixiv.me page, a pixivision.net article, an i.pximg.net
+/// image file, or a `pixiv://` app link — the forms Pixiv's own app opens.
 PluginLink? parsePixivWebLink(String url) {
   if (!_isPixivAppLink(url)) {
     final uri = httpUri(url);
-    if (uri == null ||
-        !(isPixivWebHost(uri.host) || isPixivImageHost(uri.host))) {
+    if (uri == null || !_isPixivFamilyHost(uri.host)) {
       return null;
     }
   }
@@ -288,6 +287,9 @@ PluginLink? parsePixivWebLink(String url) {
 
 bool _isPixivAppLink(String url) =>
     Uri.tryParse(url.trim())?.scheme.toLowerCase() == 'pixiv';
+
+bool _isPixivFamilyHost(String host) =>
+    isPixivWebHost(host) || isPixivImageHost(host) || isPixivisionHost(host);
 
 PluginLink? parseMastodonLink(String url, {required Set<String> knownHosts}) {
   final uri = httpUri(url);

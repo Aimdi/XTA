@@ -5,12 +5,12 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_following_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_recommended_users_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/pixiv/pixiv_watchlist.dart';
 import 'package:xta/plugins/pixiv/pixivision_list_screen.dart';
@@ -129,9 +129,10 @@ class PixivHomeSection extends StatelessWidget {
             if (source == PixivHomeSource.following)
               PixivFollowRestrictControl(restrict: followRestrict, onChanged: onFollowRestrict),
             IconButton(
+              key: const ValueKey('pixiv-home-following-list'),
               tooltip: l10n.following,
               icon: const Icon(Icons.people_outline),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PixivFollowingScreen())),
+              onPressed: () => openPixivUserList(context, PixivUserListKind.following),
             ),
             _chip(l10n.plugin_pixiv_tab_recommended, PixivHomeSource.recommended),
             _chip(l10n.plugin_pixiv_tab_manga, PixivHomeSource.manga),

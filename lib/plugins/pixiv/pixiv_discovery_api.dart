@@ -40,8 +40,10 @@ class PixivDiscoveryApi {
   Future<PixivIllustPage> following({String restrict = 'all', String? nextUrl}) async =>
       client.illustPageFrom(await _page('/v2/illust/follow', {'restrict': restrict}, nextUrl));
 
-  /// One ranking board. AI boards keep their AI works even with Hide AI on:
-  /// the reader asked for that board by name.
+  /// One ranking board (Pixiv has no `/v1/ranking/illust`). [date]
+  /// (`YYYY-MM-DD`) opens that day's archived board; null is the latest. AI
+  /// boards keep their AI works even with Hide AI on: the reader asked for
+  /// that board by name.
   Future<PixivIllustPage> ranking(String mode, {String? date, String? nextUrl}) async {
     final json = await _page('/v1/illust/ranking', {
       'mode': mode,
