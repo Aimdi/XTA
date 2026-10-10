@@ -85,8 +85,9 @@ works only and keeps no history, which is how a favourite tag's tab uses it.
   searches when it is the only one; a long press copies the tag. Enter
   searches the raw text.
 - A query of digits shows the tiles from `pixivNumericShortcuts` (Open artwork,
-  Open user) above the suggestions instead of opening anything. Enter searches
-  the number as a keyword. A later feature adds its tile to that list. A
+  Open user, Open Pixivision article) above the suggestions instead of opening
+  anything. Enter searches the number as a keyword. A later feature adds its
+  tile to that list. A
   screen opened with a bare number (from XTA's global search or a shared id)
   shows those tiles, with the landing loaded behind them, instead of
   searching the digits.

@@ -161,10 +161,17 @@ rather than overflow at large text sizes.
 
 ## Shared pieces
 
-- `PixivPagedFeed<T>` (`pixiv_paged_feed.dart`) is the paged list for
-  anything that is not a works grid — creators, articles, watchlist rows:
-  placeholder, soft refresh, failed appends kept, retry, and the next page
-  asked for near the end of its own scroll (not a sideways strip inside it).
+- `PixivPagedFeed<T>` (`pixiv_paged_feed.dart`) is the one paged list —
+  works grids, creators, articles, watchlist rows: placeholder, soft refresh,
+  failed appends kept, retry, leading slivers, and the next page asked for
+  `loadAhead` pixels before the end of its own scroll (not a sideways strip
+  inside it). `PixivIllustFeed` is it over `PixivIllustSliverGrid` with the
+  grid skeleton, a 1400 px look-ahead, a 1200 px build-ahead and the
+  thumbnail prefetch. `PixivIllustSliverGrid` (`pixiv_grid.dart`) measures its
+  columns outside its own padding, so the count follows the list's whole
+  width; the fixed `PixivIllustGrid` (viewing history) draws the same sliver.
+  Both scroll in `pixivScrollView`, which takes the Home shell's inner
+  controller when embedded.
 - `PixivRecommendedUsersStrip` takes plain users and a padding, so any
   creator strip can use it.
 - `PixivUserLink` (`pixiv_user_link.dart`) is a creator's avatar and name as a
@@ -174,27 +181,19 @@ rather than overflow at large text sizes.
   keys whose action is on its way; it was Substack's private follow store,
   now shared by Substack follows and the watchlist's View latest.
 
-## Left for later batches
+## Links and shortcuts
 
-- pixivision.net/<lang>/a/<id> and pixiv.net/user/<uid>/series/<sid> links:
-  B7 owns `pixiv_links.dart` and `pixiv_link_open.dart`; wave 2 routes those
-  refs to `openPixivisionArticle(context, id)` and `openPixivSeries(context, id)`.
-- The Pixivision-ID tile in search's numeric shortcuts: the shortcut list is
-  B1's, which has not landed; it calls `openPixivisionArticle`.
+- pixivision.net/<lang>/a/<id> links open `openPixivisionArticle(context, id)`
+  and pixiv.net/user/<uid>/series/<sid> links open `openPixivSeries(context, id)`
+  wherever `openPixivLinkRef` opens a link: work captions, search and links
+  XTA opens itself (`plugin_url.dart` lets pixivision.net through).
+  The article loads in the reader's language whatever the link's.
+- Search's numeric shortcuts end with *Open Pixivision article #<id>*
+  (`pixivisionShortcut`).
 
-## Wave-2 merge items
+## Remaining duplication
 
-Duplication this batch could not remove without editing another batch's file:
-
-- `pixiv_search_screen.dart` (B1) keeps a private `_recommendedUsersStrip`
-  that repeats `PixivRecommendedUsersStrip`. Wave 2 points the search landing
-  at the public strip (`users:`, `padding: EdgeInsets.zero`) and deletes the
-  copy.
-- `PixivIllustFeed` (`pixiv_grid.dart`, B6) repeats `PixivPagedFeed`'s state
-  handling. Wave 2 rebuilds it on `PixivPagedFeed` with the masonry grid as
-  its sliver, keeping the thumbnail prefetch, and gives its scroll listener
-  the same own-scroll check.
-- `PixivClient.ranking` (`pixiv_client.dart`, B0; no other wave-1 batch
-  edits it) is no longer called by the app; `PixivDiscoveryApi.ranking` is
-  the one in use. Wave 2 removes `PixivClient.ranking` and points
-  `pixiv_client_test` and `pixiv_discovery_test` at the API.
+- `pixiv_search_landing.dart` (B1) keeps a private `_PixivCreatorStrip` that
+  repeats `PixivRecommendedUsersStrip`; pointing the landing at the public
+  strip (`users:`, `padding: EdgeInsets.zero`) and deleting the copy is still
+  open.

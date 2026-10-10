@@ -127,9 +127,10 @@ the work and artist links, and a reset.
 
 A pixiv.me link is resolved with one request that does not follow the
 redirect; only a pixiv.net `Location` is trusted, else it opens in the
-browser. Series, novels and pixivision articles open in the browser until
-their screens exist. `plugin_url.dart` lets pixiv.net, pixiv.me, i.pximg.net
-and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
+browser. Series open on the series screen and pixivision articles on the
+article screen (see `pixiv-discovery.md`); novels and novel series open in the
+browser until their screens exist. `plugin_url.dart` lets pixiv.net, pixiv.me,
+pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 
 ## Opening links from other apps
 

@@ -34,6 +34,7 @@ once those are in.
 | B6a | Viewing: mirror, quality, columns, loading, zoom, swipe, split layout | Built |
 | B6b | Saving: naming, folders, index, multi-select, ugoira export | Built |
 | B7 | Settings, accounts, history, mute, links | Built |
+| B8 | Wave-1 follow-ups: link wiring and de-duplication | Built |
 
 ### B0 — shared seams (built)
 
@@ -111,9 +112,8 @@ article reader; illustration ranking with all modes, pinned tabs and date;
 Following feed with public / private filter; follow hub (new works,
 bookmarks, watchlist, followed); illust / manga series page and series
 context; manga watchlist; signed-out preview; artwork ID and resolution.
-Described in `pixiv-discovery.md`. Series and Pixivision links are routed
-once B7's link refs land; the Pixivision-ID search tile joins B1's
-shortcuts.
+Described in `pixiv-discovery.md`. Series and Pixivision links and the
+Pixivision-ID search tile were wired in B8.
 
 ### B5a — profiles and follows (built)
 
@@ -161,10 +161,20 @@ artist names and `r'pattern'` rules (single tags and `#a#b` combinations);
 muted-work notice with *Show this time*; the account's AI setting, read only
 with a link to pixiv.net (the AI badge toggle moved to B6a); multiple accounts
 kept out of backups; caption with tappable links and selection; Copy info with
-a template; every Pixiv link form routed (series, novels and pixivision open in
-the browser until B2 and B4); pixiv links shared to or opened by default in
-XTA; the More hub; start section and tap-again-to-top. Details in
-`pixiv-settings.md`.
+a template; every Pixiv link form routed (series and pixivision open their
+screens since B8; novels open in the browser until B2); pixiv links shared to
+or opened by default in XTA; the More hub; start section and tap-again-to-top.
+Details in `pixiv-settings.md`.
+
+### B8 — wave-1 follow-ups (built)
+
+pixivision.net links open the article screen and illust series links the
+series screen; search's numeric shortcuts offer the Pixivision article; Home's
+people icon opens the reader's following list (`PixivUserListScreen`). One
+paged feed (`PixivPagedFeed`, with `PixivIllustFeed` on top), one ranking call
+(`PixivDiscoveryApi.ranking`) and one `/v1/user/illusts` request
+(`PixivClient.userIllusts`, which `PixivSocialApi.userWorks` calls). Described
+in `pixiv-discovery.md` and `pixiv-profiles.md`.
 
 ## Already on par
 
