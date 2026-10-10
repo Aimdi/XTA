@@ -6,4 +6,4 @@ Source: .agents/skills/impeccable
 
 Vendored skill files, references and helpers. UPSTREAM_SKILL.md is the original
 manifest. SKILL.md adds the XTA brief and, for UI UX Pro Max, adapts plugin-root
-command examples to the repository-local .agents path. No runtime hooks installed.
+command examples to the repository-local .claude path. No runtime hooks installed.

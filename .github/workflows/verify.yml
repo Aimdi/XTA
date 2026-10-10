@@ -37,9 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Neither Flutter nor Python needed: .claude/skills and .grok/skills are
-      # hand-mirrored, and drift makes the two agents follow different rules.
-      - name: Check .claude/skills and .grok/skills are identical
+      # Neither Flutter nor Python needed: every skill in .claude/skills must
+      # have a SKILL.md whose frontmatter would load.
+      - name: Check every skill in .claude/skills is well-formed
         run: bash scripts/check_skill_sync.sh
 
   linux:
