@@ -10,7 +10,16 @@ class PixivIllustDetailStore extends Store<PixivIllust> {
 
   PixivIllustDetailStore(this.client, super.seed);
 
-  Future<void> load() => execute(() => client.illustDetail(state.id));
+  /// Fetches the whole work; true once it arrived.
+  Future<bool> load() async {
+    var loaded = false;
+    await execute(() async {
+      final illust = await client.illustDetail(state.id);
+      loaded = true;
+      return illust;
+    });
+    return loaded;
+  }
 }
 
 /// The works Pixiv relates to [seed], paged like any other list.

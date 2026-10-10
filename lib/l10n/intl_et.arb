@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Koos loetakse veel {count}",
   "@group_combined_count": {},
-  "group_discovery_ai": "Leia sarnaseid kontosid tehisintellektiga",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Avasta kontosid, mida sa ei jälgi, selle rühma liikmete põhjal. Ava profiil, et seda jälgida või rühma lisada.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Sarnaseid jälgimata kontosid pole veel leitud. Proovi uuesti, kui rühma liikmed on jaganud rohkem postitusi.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Mõnda allikat ei saanud laadida. Uuesti proovimiseks tõmba alla.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Põhineb {read} liikmel 1-st} other{Põhineb {read} liikmel {total}-st}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Otsi veel",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Jagas: {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Tsiteeris: {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Vastas: {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Mainis: {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Jälgib 1 liige} other{Jälgib {count} liiget}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky soovitab seda kasutajale {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Sarnane kasutaja {names} töödega",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{ja veel 1} other{ja veel {count}}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Lisa rühma „{group}“",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Lisatud",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Teised rühmad…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Ava profiil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Lähtesta soovitused",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Näita postitust",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Leia sarnaseid kontosid tehisintellektiga",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{ja veel 1} other{ja veel {count}}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Põhineb {read} liikmel 1-st} other{Põhineb {read} liikmel {total}-st}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Avasta kontosid, mida sa ei jälgi, selle rühma liikmete põhjal. Ava profiil, et seda jälgida või rühma lisada.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Sarnaseid jälgimata kontosid pole veel leitud. Proovi uuesti, kui rühma liikmed on jaganud rohkem postitusi.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Soovitused uuendatud",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Jälgib 1 liige} other{Jälgib {count} liiget}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Mainis: {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Ava profiil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Teised rühmad…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Mõnda allikat ei saanud laadida. Uuesti proovimiseks tõmba alla.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Tsiteeris: {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Sarnane kasutaja {names} töödega",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Vastas: {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Jagas: {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Lähtesta soovitused",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Otsi veel",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Näita postitust",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky soovitab seda kasutajale {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Lugemata",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Vähemalt üks konto peab jääma sisse",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Hoia juhtnupud nähtaval",
   "home_networks": "Võrgustikud",
   "@home_networks": {},
   "home_networks_all": "Kõik võrgustikud",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "Ava {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktiivne konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixivi konto: tehisintellekti loodud teosed",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Seda seadet ei õnnestunud Pixivist lugeda",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Osaliselt peidetud",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontrollin sinu Pixivi seadet…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Näidatakse",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Eemalda konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Kas eemaldada {name} sellest seadmest?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Täpsem: kleebi värskendustoken",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "TI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Kõik lehed",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Järjehoidja",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Järjehoidjate kaust",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Avalikud",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Muuda saidil pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopeeritud",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopeeri info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "Kopeeri link",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "„Kopeeri info” mall",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Teose link",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Pealkiri: {title}\nKunstnik: {artist}\nTeose ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Mida „Kopeeri info” lõikelauale paneb. Kohatäited asendatakse teose andmetega.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Lisa",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Lähtesta vaikeväärtusele",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Kunstniku link",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "Leht {current}/{total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Privaatne Pixivi lugeja — jälgimine, edetabel, järjehoidjad ja otsing. Ilma postitamiseta",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Laadi kõik lehed alla",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Laadi see leht alla",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Laadin alla lehte {current}/{total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Jälgimisvoos pole veel midagi",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Pixiviga ei õnnestunud ühendust saada",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "Peida tehisintellekti loodud teosed",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Peidab teosed, mille autorid on märkinud tehisintellekti loodud teosteks. Sinu järjehoidjad jäävad alati nähtavaks.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "Ajalugu",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Tühjenda ajalugu",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Kas tühjendada kogu ajalugu?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Avatud teosed ilmuvad siia. Ajalugu jääb sellesse seadmesse.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtreeri pealkirja või kunstniku järgi",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Ükski ajaloo teos ei sobi",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Peata ajalugu",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Kui see on sees, ei lisata avatud teoseid ajalukku",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Kas eemaldada „{title}” ajaloost?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Info kopeeritud",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "Link kopeeritud",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "Halda kontot saidil pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Teave",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Rohkem toiminguid",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Veel autorilt {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Vaigistus",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Eelistused",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Vaigista autor",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Kommentaarid",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Sa vaigistasid selle kunstniku, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Näita seekord",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Sa vaigistasid selle sildi {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "See teos on vaigistatud",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Sa vaigistasid selle teose.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Vaigista see teos",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romaanid",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Vaigistuse seaded",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Vaigista silt \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Vaigista silt",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Kirjuta r'muster', et vaigistada iga silt, millele regulaaravaldis sobib. Mustrid näevad ka teose kõiki silte ühendatuna kujul #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Vaigistatav silt",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "See muster ei ole kehtiv regulaaravaldis",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Sildid",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kunstnikud",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Teosed",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Vaigistatud Pixivi üksusi pole",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Vaigistatud Pixivi üksused",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Seda Pixivi linki ei saanud avada",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Ava pixivi lingid XTA-s",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Lisa Androidi lehel „Ava vaikimisi” pixiv.net ja pixiv.me toetatud linkidena",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Ava Pixivis",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "Kõige populaarsemad",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "Sünnipäev",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "Avalikke järjehoidjaid veel pole",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Logi välja",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Kas logida {name} välja?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Kas logida Pixivist välja?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Sisse logitud kasutajana {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv avaneb jaotisega",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Vaheta kontot",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Järjehoidjad",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Lemmikud",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Peata animatsioon",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Esita animatsioon",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Eemalda järjehoidja",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Lõpeta jälgimine",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Tühista vaigistus",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Kas tühistada {name} vaigistus?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} teos} other{{shown} teost}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 piiras päringuid",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Proovin uuesti {time} pärast…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Proovin uuesti {seconds} s pärast…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Artiklite esiletõsted, sildid ja märkmed",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Kontrollitud pakette: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Allika uuendamise ajal kuvatakse salvestatud koopiat.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Muudatused salvestatud",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Ühendus nurjus",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Mustand taastatud",
+  "@reader_draft_restored": {},
+  "reader_extract": "Tuvasta kuvatõmmise tekst",
+  "@reader_extract": {},
+  "reader_extract_notice": "Valitud PNG- või JPEG-pilt saadetakse teenusele {host} sinu seadistatud tehisintellektimudeliga. Tuvastatud tekst võib sisaldada vigu.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Tõsta esile ja lisa märkus",
+  "@reader_highlight": {},
+  "reader_less_like": "Vähem sellist",
+  "@reader_less_like": {},
+  "reader_link_posts": "Veel sama lingiga postitusi: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Rohkem sellist",
+  "@reader_more_like": {},
+  "reader_new_posts": "Uued postitused",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "See allikas piirab päringuid. Proovi hiljem uuesti.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Hiljutised lugemistoimingud",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Proovi uuesti {time} pärast",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Otsi oma kogust",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Otsi laaditud postitustest",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Otsi teksti, linke või autoreid juba laaditud postitustest.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Jätkamiseks logi uuesti sisse",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "See allikas alles laadib. Teised postitused on juba loetavad.",
+  "@reader_source_loading": {},
+  "reader_undo": "Võta tagasi",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Tagasivõtmine ebaõnnestus. Andmed võivad olla muutunud.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Lugemiskohad",
   "@reading_positions": {},
   "recent": "Hiljutised",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "Sünkroonimine",
   "@sync": {},
+  "sync_conflict": "Serveri varukoopia on muutunud. Enne üleslaadimist taasta see ja vaata üle.",
+  "@sync_conflict": {},
   "sync_description": "Kopeerib tellimused, rühmad ja salvestatud postitused sinu enda WebDAV-serverisse",
   "@sync_description": {},
   "sync_download": "Taasta serverist",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Server lükkas need andmed tagasi",
   "@sync_error_unauthorized": {},
+  "sync_history": "Varasemad varukoopiad",
+  "@sync_history": {},
   "sync_include_accounts": "Kaasa 𝕏 sisselogimised",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Vaikimisi väljas. Sisselogimised on 𝕏 seansiload; laadi need üles ainult siis, kui usaldad serverit ja selle varukoopiaid.",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "See server ei saa varukoopiaid samaaegsete muudatuste eest turvaliselt kaitsta.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Laadi üles",
   "@sync_upload": {},
   "sync_uploaded": "Üles laaditud",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Veel sama lingiga postitusi: {count}",
-  "reader_connection_failed": "Ühendus nurjus",
-  "reader_sign_in_needed": "Jätkamiseks logi uuesti sisse",
-  "reader_rate_limit_hint": "See allikas piirab päringuid. Proovi hiljem uuesti.",
-  "reader_new_posts": "Uued postitused",
-  "reader_source_loading": "See allikas alles laadib. Teised postitused on juba loetavad.",
-  "reader_cached_content": "Allika uuendamise ajal kuvatakse salvestatud koopiat.",
-  "reader_draft_restored": "Mustand taastatud",
-  "reader_search_all": "Otsi oma kogust",
-  "reader_highlight": "Tõsta esile ja lisa märkus",
-  "reader_extract": "Tuvasta kuvatõmmise tekst",
-  "reader_extract_notice": "Valitud PNG- või JPEG-pilt saadetakse teenusele {host} sinu seadistatud tehisintellektimudeliga. Tuvastatud tekst võib sisaldada vigu.",
-  "reader_more_like": "Rohkem sellist",
-  "reader_less_like": "Vähem sellist",
-  "reader_undo": "Võta tagasi",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Kontrollitud pakette: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Artiklite esiletõsted, sildid ja märkmed",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Muudatused salvestatud",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Tagasivõtmine ebaõnnestus. Andmed võivad olla muutunud.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Hiljutised lugemistoimingud",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Otsi laaditud postitustest",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Otsi teksti, linke või autoreid juba laaditud postitustest.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Proovi uuesti {time} pärast",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Serveri varukoopia on muutunud. Enne üleslaadimist taasta see ja vaata üle.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "See server ei saa varukoopiaid samaaegsete muudatuste eest turvaliselt kaitsta.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Varasemad varukoopiad",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Hoia juhtnupud nähtaval",
-  "reader_auto_retry_seconds": "Proovin uuesti {seconds} s pärast…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Proovin uuesti {time} pärast…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Laadi see leht alla",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Laadi kõik lehed alla",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Kõik lehed",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Kopeeri link",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Link kopeeritud",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Rohkem toiminguid",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Leht {current}/{total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Laadin alla lehte {current}/{total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Veel autorilt {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Esita animatsioon",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Peata animatsioon",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Peida tehisintellekti loodud teosed",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Peidab teosed, mille autorid on märkinud tehisintellekti loodud teosteks. Sinu järjehoidjad jäävad alati nähtavaks.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "TI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

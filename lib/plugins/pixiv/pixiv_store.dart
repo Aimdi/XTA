@@ -46,6 +46,9 @@ class PixivPagedListStore<T> extends Store<List<T>> {
     update(const []);
   }
 
+  /// Empties the list; a page still in flight for it never lands.
+  void clear() => useLoader(_loader);
+
   int _restart() {
     _loadingMore = false;
     return ++_generation;

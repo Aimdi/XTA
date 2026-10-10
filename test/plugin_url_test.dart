@@ -163,6 +163,36 @@ void main() {
       );
       expect(parsePixivWebLink('123'), isNull);
     });
+
+    test('opens the pixiv:// app scheme and i.pximg.net image files', () {
+      expect(
+        parsePixivWebLink('pixiv://illusts/123'),
+        isA<PixivWebLink>().having((link) => link.ref, 'ref', isA<PixivArtworkLinkRef>()),
+      );
+      expect(
+        parsePixivWebLink('https://i.pximg.net/img-original/img/2026/07/01/00/00/00/123_p0.png'),
+        isA<PixivWebLink>().having(
+          (link) => link.ref,
+          'ref',
+          isA<PixivArtworkLinkRef>().having((ref) => ref.id, 'id', 123),
+        ),
+      );
+      expect(
+        parsePixivWebLink('https://pixiv.me/mika'),
+        isA<PixivWebLink>().having((link) => link.ref, 'ref', isA<PixivShortLinkRef>()),
+      );
+      expect(
+        parsePixivWebLink('https://www.pixiv.net/tags/cat'),
+        isA<PixivWebLink>().having((link) => link.ref, 'ref', isA<PixivTagLinkRef>()),
+      );
+    });
+
+    test('leaves other hosts and schemes alone', () {
+      expect(parsePixivWebLink('https://example.com/artworks/123'), isNull);
+      expect(parsePixivWebLink('ftp://www.pixiv.net/artworks/123'), isNull);
+      expect(parsePixivWebLink('https://i.pximg.net.evil.example/img-original/123_p0.png'), isNull);
+      expect(parsePixivWebLink('https://www.pixivision.net/en/a/1'), isNull);
+    });
   });
 
   group('parseMastodonLink', () {

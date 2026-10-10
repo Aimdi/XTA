@@ -65,6 +65,7 @@ import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -612,6 +613,10 @@ Future<void> main() async {
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
+      optionPluginPixivAccounts: '[]',
+      optionPluginPixivStartSection: 'home',
+      optionPluginPixivCopyTemplate: '',
+      optionPluginPixivHistoryPaused: false,
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,
       optionPluginBooruEngine: 'danbooru',
@@ -828,6 +833,7 @@ Future<void> main() async {
     final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
+    final pixivHistory = PixivHistoryStore();
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
     final booruMute = BooruMuteStore(prefService);
@@ -1054,6 +1060,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
                 Provider(create: (_) => pixivFeed),
+                Provider(create: (_) => pixivHistory),
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),
                 Provider(create: (_) => booruMute),
@@ -1407,15 +1414,20 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Future<void> _handleSharedText(String text) async {
     try {
-      final link = await resolveSharedXLink(text);
+      final pixiv = PrefService.of(context, listen: false).get<bool>(optionPluginPixivEnabled) == true;
+      final link = await resolveSharedLink(text, pixiv: pixiv);
       if (!mounted) return;
-      if (link == null) {
-        showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
+      if (link != null) {
+        await handleInitialLink(link);
         return;
       }
-      await handleInitialLink(link);
+      if (sharedPixivId(text) case final id? when pixiv) {
+        await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivSearchScreen(initialQuery: id)));
+        return;
+      }
+      showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
     } catch (error, stackTrace) {
-      log.warning('Unable to open shared X link', error, stackTrace);
+      log.warning('Unable to open a shared link', error, stackTrace);
       if (mounted) {
         showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
       }
@@ -1427,6 +1439,10 @@ class _DefaultPageState extends State<DefaultPage> {
       return;
     }
     if (!mounted) {
+      return;
+    }
+    if (!readsAsXLink(link)) {
+      await openUri(context, link.toString());
       return;
     }
     final parsed = await parseUri(link);

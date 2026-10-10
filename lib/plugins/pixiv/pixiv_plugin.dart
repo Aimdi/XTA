@@ -13,12 +13,11 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
-import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -138,17 +137,22 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivMutedComments, '[]');
     await prefs.set(optionPluginPixivMutedNovels, '[]');
     await prefs.set(optionPluginPixivSearchHistory, '[]');
+    await prefs.set(optionPluginPixivAccounts, '[]');
+    await prefs.set(optionPluginPixivStartSection, 'home');
+    await prefs.set(optionPluginPixivCopyTemplate, '');
+    await prefs.set(optionPluginPixivHistoryPaused, false);
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
       where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);
     await prefs.set(optionPluginPixivGroupSubscriptions, '[]');
   }
 
+  /// Also empties the viewing history: it lives in a file on the device, not
+  /// in the preferences the reset above clears.
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
-    context.read<PixivFeedStore>().update(const []);
-    context.read<PixivBookmarkStore>().update(const {});
-    context.read<PixivFollowStore>().clear();
+    pixivAccountDataForgetter(context)();
     context.read<PixivSearchHistory>().load();
+    await context.read<PixivHistoryStore?>()?.clear();
   }
 }

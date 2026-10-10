@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "正在一起阅读另外 {count} 个",
   "@group_combined_count": {},
-  "group_discovery_ai": "用 AI 寻找相似账号",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "根据本组成员发现你尚未关注的账号。打开个人资料即可关注或加入群组。",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "尚未发现你未关注的相似账号。请在群组成员分享更多帖子后重试。",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "部分来源无法加载。下拉重试。",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, other{基于 {total} 位成员中的 {read} 位}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "继续扫描",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "{names} 转发",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "{names} 引用",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "{names} 回复过",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "{names} 提及",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, other{{count} 位成员关注}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky 为 {names} 推荐",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "与 {names} 的作品相似",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, other{及其他 {count} 位}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "添加到“{group}”",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "已添加",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "其他订阅组…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "打开个人资料",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "重置推荐",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "显示帖子",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "用 AI 寻找相似账号",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, other{及其他 {count} 位}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, other{基于 {total} 位成员中的 {read} 位}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "根据本组成员发现你尚未关注的账号。打开个人资料即可关注或加入群组。",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "尚未发现你未关注的相似账号。请在群组成员分享更多帖子后重试。",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "推荐已更新",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, other{{count} 位成员关注}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "{names} 提及",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "打开个人资料",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "其他订阅组…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "部分来源无法加载。下拉重试。",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "{names} 引用",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "与 {names} 的作品相似",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "{names} 回复过",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "{names} 转发",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "重置推荐",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "继续扫描",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "显示帖子",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky 为 {names} 推荐",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "未读",
   "@group_has_unread": {},
   "group_mark_style_auto": "自动",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "至少需要保留一个账号开启",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "始终显示控件",
   "home_networks": "网络",
   "@home_networks": {},
   "home_networks_all": "全部网络",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "打开{plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "当前账号",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv 账号：AI 生成作品",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "无法从 Pixiv 读取此设置",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "部分隐藏",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "正在检查你的 Pixiv 设置…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "显示",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "移除账号",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "从此设备移除 {name}？",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "高级：粘贴刷新令牌",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "全部页面",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "收藏",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "收藏文件夹",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "公开",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "在 pixiv.net 更改",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "已复制",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "复制作品信息",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "复制链接",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "“复制作品信息”模板",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "作品链接",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "标题：{title}\n画师：{artist}\n作品 ID：{work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "“复制作品信息”放入剪贴板的内容。占位符会替换为作品的信息。",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "插入",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "恢复默认",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "画师链接",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "第 {current} 页，共 {total} 页",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "私有 Pixiv 阅读器 — 关注、排行榜、收藏与搜索。不发帖",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "下载全部页面",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "下载本页",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "正在下载第 {current} 页，共 {total} 页…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "关注动态里还没有内容",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "无法连接 Pixiv",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "隐藏 AI 生成作品",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "隐藏作者标注为 AI 生成的作品。你自己的收藏始终可见。",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "浏览历史",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "清除历史",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "清除全部浏览历史？",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "打开过的作品会显示在这里。历史只保存在这台设备上。",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "按标题或画师筛选",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "历史中没有匹配的作品",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "暂停记录浏览历史",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "开启时，打开的作品不会加入历史",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "从历史中移除“{title}”？",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "已复制作品信息",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "已复制链接",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "在 pixiv.net 管理账号",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "关于",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "账号",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "更多操作",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "{name} 的更多作品",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "屏蔽设置",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "偏好设置",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "屏蔽作者",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "评论",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "你屏蔽了它的画师 {name}。",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "本次显示",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "你屏蔽了它的标签 {tag}。",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "此作品已屏蔽",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "你屏蔽了此作品。",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "屏蔽此作品",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "小说",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "屏蔽设置",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "屏蔽标签“{tag}”",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "屏蔽标签",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "写成 r'规则' 即可屏蔽所有与该正则表达式匹配的标签。规则还会检查作品全部标签连接成的 #tag1#tag2。",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "要屏蔽的标签",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "该规则不是有效的正则表达式",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "标签",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "画师",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "作品",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "没有已屏蔽的 Pixiv 项目",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "已屏蔽的 Pixiv 项目",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "无法打开该 Pixiv 链接",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "在 XTA 中打开 pixiv 链接",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "在 Android 的“默认打开”页面中，将 pixiv.net 和 pixiv.me 添加为支持的链接",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "在 Pixiv 打开",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "最受欢迎",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "高级会员",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "生日",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "暂无公开收藏",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "退出登录",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "退出 {name} 的登录？",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "退出 Pixiv 登录？",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "已登录为 {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv 启动页",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "切换账号",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "收藏",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "收藏",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "动图",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "暂停动图",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "播放动图",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "取消收藏",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "取消关注",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "取消屏蔽",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "取消屏蔽 {name}？",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, other{{shown} 件作品}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "被 𝕏 限流",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "{time} 后重试…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "{seconds} 秒后重试…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "文章高亮、标签和笔记",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "已检查批次：{done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "正在更新此来源，暂时显示已保存的副本。",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "更改已保存",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "连接失败",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "已恢复草稿",
+  "@reader_draft_restored": {},
+  "reader_extract": "提取截图文字",
+  "@reader_extract": {},
+  "reader_extract_notice": "所选 PNG 或 JPEG 图片将通过你配置的 AI 模型发送到 {host}。提取的文字可能有误。",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "标记并添加笔记",
+  "@reader_highlight": {},
+  "reader_less_like": "少推荐类似内容",
+  "@reader_less_like": {},
+  "reader_link_posts": "分享此链接的其他帖子：{count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "多推荐类似内容",
+  "@reader_more_like": {},
+  "reader_new_posts": "新帖子",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "此来源正在限制请求。请稍后重试。",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "最近的读取操作",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "{time} 后重试",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "搜索资料库",
+  "@reader_search_all": {},
+  "reader_search_loaded": "搜索已加载的帖子",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "在已加载的帖子中搜索文字、链接或作者。",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "请重新登录以继续",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "此来源仍在加载。其他帖子已可阅读。",
+  "@reader_source_loading": {},
+  "reader_undo": "撤销",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "无法撤销。数据可能已更改。",
+  "@reader_undo_unavailable": {},
   "reading_positions": "阅读位置",
   "@reading_positions": {},
   "recent": "最新",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "同步",
   "@sync": {},
+  "sync_conflict": "服务器上的备份已更改。请先恢复并检查，再上传。",
+  "@sync_conflict": {},
   "sync_description": "把订阅、分组和收藏的帖子复制到你自己的 WebDAV 服务器",
   "@sync_description": {},
   "sync_download": "从服务器恢复",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "服务器拒绝了该凭据",
   "@sync_error_unauthorized": {},
+  "sync_history": "以前的备份",
+  "@sync_history": {},
   "sync_include_accounts": "包含 𝕏 登录信息",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "默认关闭。登录信息是 𝕏 的会话令牌；只有在你信任该服务器及其备份时才上传。",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "此服务器无法安全地保护备份免受同时更改的影响。",
+  "@sync_unsafe_server": {},
   "sync_upload": "立即上传",
   "@sync_upload": {},
   "sync_uploaded": "已上传",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "分享此链接的其他帖子：{count}",
-  "reader_connection_failed": "连接失败",
-  "reader_sign_in_needed": "请重新登录以继续",
-  "reader_rate_limit_hint": "此来源正在限制请求。请稍后重试。",
-  "reader_new_posts": "新帖子",
-  "reader_source_loading": "此来源仍在加载。其他帖子已可阅读。",
-  "reader_cached_content": "正在更新此来源，暂时显示已保存的副本。",
-  "reader_draft_restored": "已恢复草稿",
-  "reader_search_all": "搜索资料库",
-  "reader_highlight": "标记并添加笔记",
-  "reader_extract": "提取截图文字",
-  "reader_extract_notice": "所选 PNG 或 JPEG 图片将通过你配置的 AI 模型发送到 {host}。提取的文字可能有误。",
-  "reader_more_like": "多推荐类似内容",
-  "reader_less_like": "少推荐类似内容",
-  "reader_undo": "撤销",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "已检查批次：{done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "文章高亮、标签和笔记",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "更改已保存",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "无法撤销。数据可能已更改。",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "最近的读取操作",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "搜索已加载的帖子",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "在已加载的帖子中搜索文字、链接或作者。",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "{time} 后重试",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "服务器上的备份已更改。请先恢复并检查，再上传。",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "此服务器无法安全地保护备份免受同时更改的影响。",
-  "@sync_unsafe_server": {},
-  "sync_history": "以前的备份",
-  "@sync_history": {},
-  "home_keep_controls_visible": "始终显示控件",
-  "reader_auto_retry_seconds": "{seconds} 秒后重试…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "{time} 后重试…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "下载本页",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "下载全部页面",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "全部页面",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "复制链接",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "已复制链接",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "更多操作",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "第 {current} 页，共 {total} 页",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "正在下载第 {current} 页，共 {total} 页…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "{name} 的更多作品",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "播放动图",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "暂停动图",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "隐藏 AI 生成作品",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "隐藏作者标注为 AI 生成的作品。你自己的收藏始终可见。",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

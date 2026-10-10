@@ -1,6 +1,16 @@
 /// Which list Home shows under its source chips.
 enum PixivHomeSource { following, recommended }
 
+/// The sections the Pixiv screen can open on, as the start-section setting
+/// stores them, in tab order.
+const pixivStartSections = ['home', 'ranking', 'favorites', 'search'];
+
+/// The tab index for a stored start section; Home for anything unknown.
+int pixivStartSectionIndex(String? stored) => switch (pixivStartSections.indexOf(stored ?? '')) {
+  final index when index >= 0 => index,
+  _ => 0,
+};
+
 /// Session-only choices for the illustration reader, independent of feed data.
 class PixivViewState {
   final int section;

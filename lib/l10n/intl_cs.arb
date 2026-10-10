@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Společně se čte ještě {count}",
   "@group_combined_count": {},
-  "group_discovery_ai": "Najít podobné účty pomocí AI",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Objevujte účty, které nesledujete, na základě členů této skupiny. Otevřete profil a začněte jej sledovat nebo jej přidejte do skupiny.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Zatím nebyly nalezeny podobné účty, které nesledujete. Zkuste to znovu, až členové skupiny nasdílí další příspěvky.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Některé zdroje se nepodařilo načíst. Tažením dolů to zkuste znovu.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Na základě {read} z 1 člena} few{Na základě {read} ze {total} členů} many{Na základě {read} z {total} člena} other{Na základě {read} z {total} členů}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Prohledat další",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Sdílí {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Cituje {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Odpovídá {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Zmiňuje {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Sleduje 1 člen} few{Sledují {count} členové} many{Sleduje {count} člena} other{Sleduje {count} členů}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky to navrhuje pro {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Podobné dílům od {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{a 1 další} few{a {count} další} many{a {count} dalšího} other{a {count} dalších}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Přidat do „{group}“",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Přidáno",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Další skupiny…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Otevřít profil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Obnovit návrhy",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Zobrazit příspěvek",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Najít podobné účty pomocí AI",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{a 1 další} few{a {count} další} many{a {count} dalšího} other{a {count} dalších}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Na základě {read} z 1 člena} few{Na základě {read} ze {total} členů} many{Na základě {read} z {total} člena} other{Na základě {read} z {total} členů}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Objevujte účty, které nesledujete, na základě členů této skupiny. Otevřete profil a začněte jej sledovat nebo jej přidejte do skupiny.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Zatím nebyly nalezeny podobné účty, které nesledujete. Zkuste to znovu, až členové skupiny nasdílí další příspěvky.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Návrhy aktualizovány",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Sleduje 1 člen} few{Sledují {count} členové} many{Sleduje {count} člena} other{Sleduje {count} členů}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Zmiňuje {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Otevřít profil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Další skupiny…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Některé zdroje se nepodařilo načíst. Tažením dolů to zkuste znovu.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Cituje {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Podobné dílům od {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Odpovídá {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Sdílí {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Obnovit návrhy",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Prohledat další",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Zobrazit příspěvek",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky to navrhuje pro {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Nepřečteno",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Alespoň jeden účet musí zůstat zapnutý",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Vždy zobrazovat ovládací prvky",
   "home_networks": "Sítě",
   "@home_networks": {},
   "home_networks_all": "Všechny sítě",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "Otevřít {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktivní účet",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Účet Pixiv: díla vytvořená AI",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Toto nastavení se z Pixivu nepodařilo načíst",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Částečně skryta",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Kontroluje se vaše nastavení Pixivu…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Zobrazena",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Odebrat účet",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Odebrat {name} z tohoto zařízení?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Pokročilé: vložit refresh token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Všechny stránky",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Přidat záložku",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Složka záložek",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Veřejné",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Změnit na pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Zkopírováno",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopírovat informace",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "Kopírovat odkaz",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "Šablona pro „Kopírovat informace“",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Odkaz na dílo",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Název: {title}\nUmělec: {artist}\nID díla: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Co „Kopírovat informace“ vloží do schránky. Zástupné symboly se nahradí údaji díla.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Vložit",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Obnovit výchozí",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Odkaz na umělce",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "Stránka {current} z {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Soukromá čtečka Pixivu — sledování, žebříčky, záložky a vyhledávání. Bez publikování",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Stáhnout všechny stránky",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Stáhnout tuto stránku",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Stahuje se stránka {current} z {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Ve feedu sledování zatím nic není",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Nepodařilo se spojit s Pixiv",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "Skrýt díla vytvořená AI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Skryje díla, která autoři označili jako vytvořená AI. Vaše vlastní záložky zůstávají vždy viditelné.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "Historie prohlížení",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Vymazat historii",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Vymazat celou historii prohlížení?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Otevřená díla se zobrazí zde. Historie zůstává v tomto zařízení.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrovat podle názvu nebo umělce",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Žádné dílo v historii neodpovídá",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Pozastavit historii prohlížení",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Když je zapnuto, otevřená díla se do historie nepřidávají",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Odebrat „{title}“ z historie?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informace zkopírovány",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "Odkaz zkopírován",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "Spravovat účet na pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "O aplikaci",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Účet",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Další akce",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Další od {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Ztlumení",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Předvolby",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Ztlumit autora",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Komentáře",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Ztlumili jste jeho umělce, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Tentokrát zobrazit",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Ztlumili jste jeho štítek {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Toto dílo je ztlumené",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Ztlumili jste toto dílo.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Ztlumit toto dílo",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romány",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Nastavení ztlumení",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Ztlumit štítek „{tag}“",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Ztlumit štítek",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Napište r'vzor' a ztlumíte každý štítek, kterému odpovídá regulární výraz. Vzory vidí také všechny štítky díla spojené jako #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Štítek ke ztlumení",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Tento vzor není platný regulární výraz",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Štítky",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Umělci",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Díla",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Žádné ztlumené položky Pixiv",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Ztlumené položky Pixiv",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Tento odkaz Pixiv se nepodařilo otevřít",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Otevírat odkazy pixiv v XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Na stránce Androidu „Otevírat ve výchozím nastavení“ přidejte pixiv.net a pixiv.me jako podporované odkazy",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Otevřít na Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "Nejoblíbenější",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "Narozeniny",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "Zatím žádné veřejné záložky",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Odhlásit se",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Odhlásit účet {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Odhlásit se z Pixivu?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Přihlášen jako {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv se otevře na",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Přepnout účet",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Záložky",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Oblíbené",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Pozastavit animaci",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Přehrát animaci",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Odebrat záložku",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Přestat sledovat",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Zrušit ztlumení",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Zrušit ztlumení {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} dílo} few{{shown} díla} many{{shown} díla} other{{shown} děl}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 omezuje počet požadavků",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Další pokus za {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Další pokus za {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Zvýraznění, štítky a poznámky k článkům",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Zkontrolované dávky: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Během aktualizace zdroje se zobrazuje uložená kopie.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Změny uloženy",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Připojení selhalo",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Koncept obnoven",
+  "@reader_draft_restored": {},
+  "reader_extract": "Získat text ze snímku obrazovky",
+  "@reader_extract": {},
+  "reader_extract_notice": "Vybraný obrázek PNG nebo JPEG bude odeslán na {host} pomocí nastaveného modelu AI. Rozpoznaný text může obsahovat chyby.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Zvýraznit a přidat poznámku",
+  "@reader_highlight": {},
+  "reader_less_like": "Méně podobného",
+  "@reader_less_like": {},
+  "reader_link_posts": "Další příspěvky s tímto odkazem: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Více podobného",
+  "@reader_more_like": {},
+  "reader_new_posts": "Nové příspěvky",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Tento zdroj omezuje požadavky. Zkuste to později.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Nedávné operace čtení",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Zkusit znovu za {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Prohledat knihovnu",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Prohledat načtené příspěvky",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Hledejte text, odkazy nebo autory v již načtených příspěvcích.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Pro pokračování se znovu přihlaste",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.",
+  "@reader_source_loading": {},
+  "reader_undo": "Zpět",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Akci nelze vrátit zpět. Data se mohla změnit.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Pozice čtení",
   "@reading_positions": {},
   "recent": "Nejnovější",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "Synchronizace",
   "@sync": {},
+  "sync_conflict": "Záloha na serveru se změnila. Před nahráním ji obnovte a zkontrolujte.",
+  "@sync_conflict": {},
   "sync_description": "Zkopíruje odběry, skupiny a uložené příspěvky na váš vlastní server WebDAV",
   "@sync_description": {},
   "sync_download": "Obnovit ze serveru",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Server tyto přihlašovací údaje odmítl",
   "@sync_error_unauthorized": {},
+  "sync_history": "Předchozí zálohy",
+  "@sync_history": {},
   "sync_include_accounts": "Zahrnout přihlášení k 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Ve výchozím stavu vypnuto. Přihlášení jsou tokeny relací 𝕏; nahrávejte je jen tehdy, když serveru a jeho zálohám důvěřujete.",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Tento server nedokáže bezpečně chránit zálohy před souběžnými změnami.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Nahrát nyní",
   "@sync_upload": {},
   "sync_uploaded": "Nahráno",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Další příspěvky s tímto odkazem: {count}",
-  "reader_connection_failed": "Připojení selhalo",
-  "reader_sign_in_needed": "Pro pokračování se znovu přihlaste",
-  "reader_rate_limit_hint": "Tento zdroj omezuje požadavky. Zkuste to později.",
-  "reader_new_posts": "Nové příspěvky",
-  "reader_source_loading": "Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.",
-  "reader_cached_content": "Během aktualizace zdroje se zobrazuje uložená kopie.",
-  "reader_draft_restored": "Koncept obnoven",
-  "reader_search_all": "Prohledat knihovnu",
-  "reader_highlight": "Zvýraznit a přidat poznámku",
-  "reader_extract": "Získat text ze snímku obrazovky",
-  "reader_extract_notice": "Vybraný obrázek PNG nebo JPEG bude odeslán na {host} pomocí nastaveného modelu AI. Rozpoznaný text může obsahovat chyby.",
-  "reader_more_like": "Více podobného",
-  "reader_less_like": "Méně podobného",
-  "reader_undo": "Zpět",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Zkontrolované dávky: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Zvýraznění, štítky a poznámky k článkům",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Změny uloženy",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Akci nelze vrátit zpět. Data se mohla změnit.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Nedávné operace čtení",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Prohledat načtené příspěvky",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Hledejte text, odkazy nebo autory v již načtených příspěvcích.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Zkusit znovu za {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Záloha na serveru se změnila. Před nahráním ji obnovte a zkontrolujte.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Tento server nedokáže bezpečně chránit zálohy před souběžnými změnami.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Předchozí zálohy",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Vždy zobrazovat ovládací prvky",
-  "reader_auto_retry_seconds": "Další pokus za {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Další pokus za {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Stáhnout tuto stránku",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Stáhnout všechny stránky",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Všechny stránky",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Kopírovat odkaz",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Odkaz zkopírován",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Další akce",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Stránka {current} z {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Stahuje se stránka {current} z {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Další od {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Přehrát animaci",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Pozastavit animaci",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Skrýt díla vytvořená AI",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Skryje díla, která autoři označili jako vytvořená AI. Vaše vlastní záložky zůstávají vždy viditelné.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

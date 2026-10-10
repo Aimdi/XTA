@@ -43,6 +43,7 @@ class PixivRankingSection extends StatelessWidget {
   /// A picked day, or null to go back to today's board.
   final ValueChanged<DateTime?> onDate;
   final PixivIllustListStore store;
+  final ScrollController? scrollController;
 
   const PixivRankingSection({
     super.key,
@@ -51,6 +52,7 @@ class PixivRankingSection extends StatelessWidget {
     required this.onMode,
     required this.onDate,
     required this.store,
+    this.scrollController,
   });
 
   @override
@@ -69,7 +71,11 @@ class PixivRankingSection extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: PixivIllustFeed(store: store, emptyMessage: l10n.plugin_pixiv_ranking_empty),
+          child: PixivIllustFeed(
+            store: store,
+            emptyMessage: l10n.plugin_pixiv_ranking_empty,
+            scrollController: scrollController,
+          ),
         ),
       ],
     );
@@ -77,9 +83,8 @@ class PixivRankingSection extends StatelessWidget {
 
   Widget _modePicker(L10n l10n) => PopupMenuButton<String>(
     initialValue: mode,
-    onSelected: (next) {
-      if (next != mode) onMode(next);
-    },
+    // Picking the mode already shown scrolls its board to the top.
+    onSelected: onMode,
     itemBuilder: (_) => [
       for (final value in pixivRankingModes)
         CheckedPopupMenuItem(value: value, checked: mode == value, child: Text(pixivRankingLabel(l10n, value))),

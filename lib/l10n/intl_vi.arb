@@ -656,48 +656,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Đang đọc thêm {count} nhóm cùng lúc",
   "@group_combined_count": {},
-  "group_discovery_ai": "Tìm tài khoản tương tự bằng AI",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Khám phá các tài khoản bạn chưa theo dõi dựa trên thành viên nhóm này. Mở hồ sơ để theo dõi hoặc thêm vào nhóm.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Chưa tìm thấy tài khoản tương tự mà bạn chưa theo dõi. Hãy thử lại khi thành viên nhóm chia sẻ thêm bài viết.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Không thể tải một số nguồn. Kéo xuống để thử lại.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, other{Dựa trên {read} trong {total} thành viên}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Quét thêm",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Được đăng lại bởi {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Được trích dẫn bởi {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Được trả lời bởi {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Được nhắc đến bởi {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, other{Được {count} thành viên theo dõi}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky gợi ý cho {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Tương tự tác phẩm của {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, other{và {count} người khác}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Thêm vào “{group}”",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Đã thêm",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Nhóm khác…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Mở hồ sơ",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Đặt lại gợi ý",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Hiện bài đăng",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Tìm tài khoản tương tự bằng AI",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, other{và {count} người khác}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, other{Dựa trên {read} trong {total} thành viên}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Khám phá các tài khoản bạn chưa theo dõi dựa trên thành viên nhóm này. Mở hồ sơ để theo dõi hoặc thêm vào nhóm.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Chưa tìm thấy tài khoản tương tự mà bạn chưa theo dõi. Hãy thử lại khi thành viên nhóm chia sẻ thêm bài viết.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Đã cập nhật gợi ý",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, other{Được {count} thành viên theo dõi}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Được nhắc đến bởi {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Mở hồ sơ",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Nhóm khác…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Không thể tải một số nguồn. Kéo xuống để thử lại.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Được trích dẫn bởi {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Tương tự tác phẩm của {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Được trả lời bởi {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Được đăng lại bởi {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Đặt lại gợi ý",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Quét thêm",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Hiện bài đăng",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky gợi ý cho {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Chưa đọc",
   "@group_has_unread": {},
   "group_mark_style_auto": "Tự động",
@@ -756,6 +756,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Phải để ít nhất một tài khoản bật",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển",
   "home_networks": "Mạng",
   "@home_networks": {},
   "home_networks_all": "Tất cả mạng",
@@ -2212,8 +2213,34 @@
   "@plugin_open": {},
   "plugin_open_client": "Mở {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Tài khoản đang dùng",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Tài khoản Pixiv: tác phẩm do AI tạo",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Không đọc được cài đặt này từ Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Ẩn một phần",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Đang kiểm tra cài đặt Pixiv của bạn…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Hiển thị",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Xóa tài khoản",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Xóa {name} khỏi thiết bị này?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Nâng cao: dán refresh token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Tất cả các trang",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Đánh dấu",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Thư mục đánh dấu",
@@ -2226,8 +2253,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Công khai",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Thay đổi trên pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Đã sao chép",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Sao chép thông tin",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "Sao chép liên kết",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "Mẫu “Sao chép thông tin”",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Liên kết tác phẩm",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Tiêu đề: {title}\nTác giả: {artist}\nID tác phẩm: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Nội dung “Sao chép thông tin” đưa vào bộ nhớ tạm. Các chỗ giữ chỗ được thay bằng thông tin của tác phẩm.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Chèn",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Khôi phục mặc định",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Liên kết tác giả",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "Trang {current}/{total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Trình đọc Pixiv riêng — đang theo dõi, xếp hạng, dấu trang và tìm kiếm. Không đăng bài",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Tải tất cả các trang xuống",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Tải trang này xuống",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Đang tải trang {current}/{total} xuống…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Chưa có gì trong bảng tin theo dõi",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Không thể kết nối tới Pixiv",
@@ -2261,20 +2330,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "Ẩn tác phẩm do AI tạo",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Ẩn các tác phẩm được tác giả đánh dấu là do AI tạo. Dấu trang của bạn luôn hiển thị.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "Lịch sử xem",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Xóa lịch sử",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Xóa toàn bộ lịch sử xem?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Tác phẩm bạn mở sẽ xuất hiện ở đây. Lịch sử chỉ lưu trên thiết bị này.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Lọc theo tiêu đề hoặc tác giả",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Không có tác phẩm nào trong lịch sử khớp",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Tạm dừng lịch sử xem",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Khi bật, tác phẩm đã mở sẽ không được thêm vào lịch sử",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Xóa “{title}” khỏi lịch sử?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Đã sao chép thông tin",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "Đã sao chép liên kết",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "Quản lý tài khoản trên pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Giới thiệu",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Tài khoản",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Thao tác khác",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Thêm từ {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Cài đặt ẩn",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Tuỳ chọn",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Ẩn tác giả",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Bình luận",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Bạn đã ẩn tác giả của nó, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Hiện lần này",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Bạn đã ẩn thẻ {tag} của nó.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Tác phẩm này đã bị ẩn",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Bạn đã ẩn tác phẩm này.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Ẩn tác phẩm này",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Tiểu thuyết",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Cài đặt ẩn",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Ẩn thẻ \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Ẩn thẻ",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Viết r'mẫu' để ẩn mọi thẻ khớp với một biểu thức chính quy. Mẫu cũng xét toàn bộ thẻ của tác phẩm được nối thành #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Thẻ cần ẩn",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Mẫu này không phải biểu thức chính quy hợp lệ",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Thẻ",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Tác giả",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Tác phẩm",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Chưa có mục Pixiv nào bị ẩn",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Mục Pixiv đã ẩn",
@@ -2294,6 +2443,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Không thể mở liên kết Pixiv đó",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Mở liên kết pixiv trong XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Trong trang “Mở theo mặc định” của Android, thêm pixiv.net và pixiv.me làm liên kết được hỗ trợ",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Mở trên Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2308,6 +2461,8 @@
   },
   "plugin_pixiv_popular_title": "Phổ biến nhất",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "Sinh nhật",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "Chưa có dấu trang công khai",
@@ -2440,6 +2595,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Đăng xuất",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Đăng xuất {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Đăng xuất khỏi Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Đã đăng nhập với tên {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2448,6 +2613,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv mở ở",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Chuyển tài khoản",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Dấu trang",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Yêu thích",
@@ -2480,12 +2649,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Tạm dừng hoạt ảnh",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Phát hoạt ảnh",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Bỏ đánh dấu",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Bỏ theo dõi",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Bỏ ẩn",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Bỏ ẩn {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, other{{shown} tác phẩm}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3229,6 +3410,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "Bị 𝕏 giới hạn",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Sẽ thử lại sau {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Sẽ thử lại sau {seconds} giây…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Đoạn đánh dấu, thẻ và ghi chú của bài viết",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Lô đã kiểm tra: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Đang hiển thị bản đã lưu trong khi cập nhật nguồn.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Đã lưu thay đổi",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Kết nối thất bại",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Đã khôi phục bản nháp",
+  "@reader_draft_restored": {},
+  "reader_extract": "Trích xuất chữ từ ảnh chụp màn hình",
+  "@reader_extract": {},
+  "reader_extract_notice": "Ảnh PNG hoặc JPEG đã chọn sẽ được gửi đến {host} bằng mô hình AI bạn đã cấu hình. Văn bản trích xuất có thể có lỗi.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Đánh dấu và ghi chú",
+  "@reader_highlight": {},
+  "reader_less_like": "Bớt nội dung tương tự",
+  "@reader_less_like": {},
+  "reader_link_posts": "Bài đăng khác chia sẻ liên kết này: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Thêm nội dung tương tự",
+  "@reader_more_like": {},
+  "reader_new_posts": "Bài đăng mới",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Nguồn này đang giới hạn yêu cầu. Hãy thử lại sau.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Các thao tác đọc gần đây",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Thử lại sau {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Tìm trong thư viện",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Tìm trong bài viết đã tải",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Tìm văn bản, liên kết hoặc tác giả trong các bài viết đã tải.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Đăng nhập lại để tiếp tục",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Nguồn này vẫn đang tải. Bạn có thể đọc các bài đăng khác.",
+  "@reader_source_loading": {},
+  "reader_undo": "Hoàn tác",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Không thể hoàn tác. Dữ liệu có thể đã thay đổi.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Vị trí đọc",
   "@reading_positions": {},
   "recent": "Gần đây",
@@ -3459,6 +3733,8 @@
   "@switch_group": {},
   "sync": "Đồng bộ",
   "@sync": {},
+  "sync_conflict": "Bản sao lưu trên máy chủ đã thay đổi. Hãy khôi phục và kiểm tra trước khi tải lên.",
+  "@sync_conflict": {},
   "sync_description": "Sao chép các đăng ký, nhóm và bài đã lưu sang máy chủ WebDAV của riêng bạn",
   "@sync_description": {},
   "sync_download": "Khôi phục từ máy chủ",
@@ -3475,6 +3751,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Máy chủ đã từ chối thông tin đăng nhập này",
   "@sync_error_unauthorized": {},
+  "sync_history": "Các bản sao lưu trước",
+  "@sync_history": {},
   "sync_include_accounts": "Kèm theo phiên đăng nhập 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Mặc định tắt. Phiên đăng nhập của bạn là token phiên của 𝕏; chỉ tải lên nếu bạn tin tưởng máy chủ và các bản sao lưu của nó.",
@@ -3489,6 +3767,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Máy chủ này không thể bảo vệ bản sao lưu an toàn trước các thay đổi đồng thời.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Tải lên ngay",
   "@sync_upload": {},
   "sync_uploaded": "Đã tải lên",
@@ -3736,133 +4016,5 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Bài đăng khác chia sẻ liên kết này: {count}",
-  "reader_connection_failed": "Kết nối thất bại",
-  "reader_sign_in_needed": "Đăng nhập lại để tiếp tục",
-  "reader_rate_limit_hint": "Nguồn này đang giới hạn yêu cầu. Hãy thử lại sau.",
-  "reader_new_posts": "Bài đăng mới",
-  "reader_source_loading": "Nguồn này vẫn đang tải. Bạn có thể đọc các bài đăng khác.",
-  "reader_cached_content": "Đang hiển thị bản đã lưu trong khi cập nhật nguồn.",
-  "reader_draft_restored": "Đã khôi phục bản nháp",
-  "reader_search_all": "Tìm trong thư viện",
-  "reader_highlight": "Đánh dấu và ghi chú",
-  "reader_extract": "Trích xuất chữ từ ảnh chụp màn hình",
-  "reader_extract_notice": "Ảnh PNG hoặc JPEG đã chọn sẽ được gửi đến {host} bằng mô hình AI bạn đã cấu hình. Văn bản trích xuất có thể có lỗi.",
-  "reader_more_like": "Thêm nội dung tương tự",
-  "reader_less_like": "Bớt nội dung tương tự",
-  "reader_undo": "Hoàn tác",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Lô đã kiểm tra: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Đoạn đánh dấu, thẻ và ghi chú của bài viết",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Đã lưu thay đổi",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Không thể hoàn tác. Dữ liệu có thể đã thay đổi.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Các thao tác đọc gần đây",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Tìm trong bài viết đã tải",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Tìm văn bản, liên kết hoặc tác giả trong các bài viết đã tải.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Thử lại sau {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Bản sao lưu trên máy chủ đã thay đổi. Hãy khôi phục và kiểm tra trước khi tải lên.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Máy chủ này không thể bảo vệ bản sao lưu an toàn trước các thay đổi đồng thời.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Các bản sao lưu trước",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển",
-  "reader_auto_retry_seconds": "Sẽ thử lại sau {seconds} giây…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Sẽ thử lại sau {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Tải trang này xuống",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Tải tất cả các trang xuống",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Tất cả các trang",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Sao chép liên kết",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Đã sao chép liên kết",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Thao tác khác",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Trang {current}/{total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Đang tải trang {current}/{total} xuống…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Thêm từ {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Phát hoạt ảnh",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Tạm dừng hoạt ảnh",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Ẩn tác phẩm do AI tạo",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Ẩn các tác phẩm được tác giả đánh dấu là do AI tạo. Dấu trang của bạn luôn hiển thị.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

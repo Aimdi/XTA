@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Razam čytajecca jašče: {count}",
   "@group_combined_count": {},
-  "group_discovery_ai": "Znajsci padobnyja akaŭnty z dapamohaj ŠI",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Znachodźcie akaŭnty, na jakija vy nie padpisany, na asnovie ŭdzielnikaŭ hrupy. Adkryjcie profil, kab padpisacca abo dadać jaho ŭ hrupu.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Padobnyja akaŭnty, na jakija vy nie padpisany, pakuĺ nie znojdzieny. Pasprabujcie znoŭ, kali ŭdzielniki hrupy padzieliacca novymi dopisami.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Nie atrymalasia zahruzić niekatoryja krynicy. Paciahniecie ŭniz, kab paŭtaryć.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Na asnove {read} z {total} udzielnika} few{Na asnove {read} z {total} udzielnikaŭ} many{Na asnove {read} z {total} udzielnikaŭ} other{Na asnove {read} z {total} udzielnika}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Pravieryć jašče",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Repost ad {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Cytuje {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Adkaz ad {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Zhadvaje {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Sočyć {count} udzielnik} few{Sočać {count} udzielniki} many{Sočać {count} udzielnikaŭ} other{Sočać {count} udzielnika}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky prapanuje dla {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Padobna na pracy {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{i jašče {count}} few{i jašče {count}} many{i jašče {count}} other{i jašče {count}}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Dadać u «{group}»",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Dadadziena",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Inšyja hrupy…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Adkryć profil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Skinuć rekamendacyi",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Pakazać post",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Znajsci padobnyja akaŭnty z dapamohaj ŠI",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{i jašče {count}} few{i jašče {count}} many{i jašče {count}} other{i jašče {count}}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Na asnove {read} z {total} udzielnika} few{Na asnove {read} z {total} udzielnikaŭ} many{Na asnove {read} z {total} udzielnikaŭ} other{Na asnove {read} z {total} udzielnika}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Znachodźcie akaŭnty, na jakija vy nie padpisany, na asnovie ŭdzielnikaŭ hrupy. Adkryjcie profil, kab padpisacca abo dadać jaho ŭ hrupu.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Padobnyja akaŭnty, na jakija vy nie padpisany, pakuĺ nie znojdzieny. Pasprabujcie znoŭ, kali ŭdzielniki hrupy padzieliacca novymi dopisami.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Rekamendacyi abnoŭleny",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Sočyć {count} udzielnik} few{Sočać {count} udzielniki} many{Sočać {count} udzielnikaŭ} other{Sočać {count} udzielnika}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Zhadvaje {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Adkryć profil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Inšyja hrupy…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Nie atrymalasia zahruzić niekatoryja krynicy. Paciahniecie ŭniz, kab paŭtaryć.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Cytuje {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Padobna na pracy {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Adkaz ad {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Repost ad {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Skinuć rekamendacyi",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Pravieryć jašče",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Pakazać post",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky prapanuje dla {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Nepracytanae",
   "@group_has_unread": {},
   "group_mark_style_auto": "Aŭta",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Choć adzin ulikovy zapis musi zastacca ŭkliučanym",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Zaŭsiody pakazvać elementy kiravannia",
   "home_networks": "Sietki",
   "@home_networks": {},
   "home_networks_all": "Usie sietki",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "Adkryć {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktyŭny ŭlikovy zapis",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Ulikovy zapis Pixiv: tvory, stvoranyja ŠI",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Nie ŭdałosia pračytać hetu naladu z Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Častkova schavanyja",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Praviarajem vašu naladu Pixiv…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Pakazvajucca",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Vydalić ulikovy zapis",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Vydalić {name} z hetaj prylady?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Dadatkova: ustaŭic refresh-token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "ŠI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Usie staronki",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "U zakladki",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Papka zakladak",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publičnyja",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Zmianić na pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Skapijavana",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kapijavać zviestki",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "Skapijavać spasyłku",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "Šablon «Kapijavać zviestki»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Spasyłka na tvor",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Nazva: {title}\nAŭtar: {artist}\nID tvora: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Što «Kapijavać zviestki» kładzie ŭ bufier abmienu. Zapaŭniaĺniki zamianiajucca zviestkami tvora.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Ustavić",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Skinuć da pradvyznačanaha",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Spasyłka na aŭtara",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "Staronka {current} z {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Pryvatny čytač Pixiv — stužka, rejtynh, zakladki i pošuk. Bez publikacyj",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Sćahnuć usie staronki",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Sćahnuć hetu staronku",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Spampoŭvajecca staronka {current} z {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "U stuzcy padpisak pakul nicoho niama",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Nie udalosia zlucycca z Pixiv",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "Chavać pracy, stvoranyja ŠI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Chavaje pracy, jakija aŭtary paznačyli jak stvoranyja ŠI. Ułasnyja zakladki zaŭsiody zastajucca bačnymi.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "Historyja prahladaŭ",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Ačyscić historyju",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Ačyscić usiu historyju prahladaŭ?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Tut zjaŭlajucca adkrytyja tvory. Historyja zachoŭvajecca toĺki na hetaj pryładzie.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Fiĺtr pa nazvie abo aŭtary",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "U historyi niama adpaviednych tvoraŭ",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Prypynić historyju prahladaŭ",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Pakuĺ uklučana, adkrytyja tvory nie dadajucca ŭ historyju",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Vydalić «{title}» z historyi?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Zviestki skapijavany",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "Spasyłka skapijavana",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "Kiravać ulikovym zapisam na pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Pra prahramu",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Ulikovy zapis",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Inšyja dziejanni",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Jašče ad {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Nalady zahlušennia",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Nalady",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Schavać aŭtara",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Kamientaryi",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Vy schavali jaho aŭtara, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Pakazać hety raz",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Vy schavali jaho teh {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Hety tvor schavany",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Vy schavali hety tvor.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Schavać hety tvor",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Ramany",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Nalady chavannia",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Schavać teh \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Schavać teh",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Napišycie r'šablon', kab chavać kožny teh, jaki adpaviadaje rehularnamu vyrazu. Šablony taksama bačać usie tehi tvora, złučanyja jak #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Teh, jaki treba schavać",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Hety šablon nie zjaŭlajecca praviĺnym rehularnym vyrazam",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tehi",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Aŭtary",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Tvory",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Niama schavanych elementaŭ Pixiv",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Schavanyja elementy Pixiv",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Nie ŭdalosia adkryć hetuju spasylku Pixiv",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Adkryvać spasyłki pixiv u XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Na staroncy Android «Adkryvać pa zmaŭčanni» dadajcie pixiv.net i pixiv.me jak padtrymlivajemyja spasyłki",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Adkryc na Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "Samaje papuliarnaje",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "Dzień naradžennia",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "Publičnych zakladak pakul niama",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Vyjsci",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Vyjsci z ulikovaha zapisu {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Vyjsci z Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Uvajšli jak {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv adkryvajecca na",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Zmianić ulikovy zapis",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Zakladki",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Abranae",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Prypynić animacyju",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Prajhrać animacyju",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Prybrać zakladku",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Adpisacca",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Pakazvać znoŭ",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Boĺš nie chavać {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} praca} few{{shown} pracy} many{{shown} prac} other{{shown} pracy}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 abmiežavaŭ častatu zapytaŭ",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Paŭtor praz {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Paŭtor praz {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Vylučenni, tehi i natatki da artykulaŭ",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Pravierana pakietaŭ: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Pakuĺ krynica abnaŭlajecca, pakazvajecca zachavanaja kopija.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Zmieny zachavany",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Pamylka złučennia",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Čarnavik adnoŭleny",
+  "@reader_draft_restored": {},
+  "reader_extract": "Raspaznać tekst sa zdymka ekrana",
+  "@reader_extract": {},
+  "reader_extract_notice": "Vybranaja vyjava PNG abo JPEG budzie adpraŭlena na {host} z naładžanaj madellu ŠI. Raspaznany tekst moža źmiaščać pamyłki.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Vyłučyć i dadać natatku",
+  "@reader_highlight": {},
+  "reader_less_like": "Mienš padobnaha",
+  "@reader_less_like": {},
+  "reader_link_posts": "Inšyja dopisy z hetaj spasylkaj: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Boĺš padobnaha",
+  "@reader_more_like": {},
+  "reader_new_posts": "Novyja dopisy",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Hetaja krynica abmiažoŭvaje zapyty. Pasprabujcie paźniej.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Apošnija aperacyi čytańnia",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Paŭtaryć praz {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Pošuk u biblijatecy",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Pošuk u zahružanych dopisach",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Šukajcie tekst, spasylki ci aŭtaraŭ va ŭžo zahružanych dopisach.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Uvajdzicie znoŭ, kab praciahnuć",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Hetaja krynica jašče zahružajecca. Inšyja dopisy ŭžo dastupnyja.",
+  "@reader_source_loading": {},
+  "reader_undo": "Admianić",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Nie ŭdałosia admianić. Mahčyma, danyja źmianilisia.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Miescy čytannia",
   "@reading_positions": {},
   "recent": "Apošnija",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "Synchranizacyja",
   "@sync": {},
+  "sync_conflict": "Rezervovaja kopija na servery źmianilasia. Pierad adpraŭkaj adnavićie i praviercie jaje.",
+  "@sync_conflict": {},
   "sync_description": "Kapirujcie svaje padpiski, hrupy i zachavanyja dopisy na ŭlasny server WebDAV",
   "@sync_description": {},
   "sync_download": "Adnavić z servera",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Server adchiliŭ hetyja danyja",
   "@sync_error_unauthorized": {},
+  "sync_history": "Papiarednija rezervovyja kopii",
+  "@sync_history": {},
   "sync_include_accounts": "Uklučyć uvachody ŭ 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Vyklučana pa zmaŭčanni. Vašy uvachody — heta sieansavyja tokieny 𝕏; vyhružajcie ich, tolki kali daviarajecie serveru i jaho rezervovym kopijam.",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Hety server nie moža biaśpiečna abaranić rezervovyja kopii ad adnačasovych źmien.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Vyhruzić zaraz",
   "@sync_upload": {},
   "sync_uploaded": "Vyhružana",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Inšyja dopisy z hetaj spasylkaj: {count}",
-  "reader_connection_failed": "Pamylka złučennia",
-  "reader_sign_in_needed": "Uvajdzicie znoŭ, kab praciahnuć",
-  "reader_rate_limit_hint": "Hetaja krynica abmiažoŭvaje zapyty. Pasprabujcie paźniej.",
-  "reader_new_posts": "Novyja dopisy",
-  "reader_source_loading": "Hetaja krynica jašče zahružajecca. Inšyja dopisy ŭžo dastupnyja.",
-  "reader_cached_content": "Pakuĺ krynica abnaŭlajecca, pakazvajecca zachavanaja kopija.",
-  "reader_draft_restored": "Čarnavik adnoŭleny",
-  "reader_search_all": "Pošuk u biblijatecy",
-  "reader_highlight": "Vyłučyć i dadać natatku",
-  "reader_extract": "Raspaznać tekst sa zdymka ekrana",
-  "reader_extract_notice": "Vybranaja vyjava PNG abo JPEG budzie adpraŭlena na {host} z naładžanaj madellu ŠI. Raspaznany tekst moža źmiaščać pamyłki.",
-  "reader_more_like": "Boĺš padobnaha",
-  "reader_less_like": "Mienš padobnaha",
-  "reader_undo": "Admianić",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Pravierana pakietaŭ: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Vylučenni, tehi i natatki da artykulaŭ",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Zmieny zachavany",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Nie ŭdałosia admianić. Mahčyma, danyja źmianilisia.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Apošnija aperacyi čytańnia",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Pošuk u zahružanych dopisach",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Šukajcie tekst, spasylki ci aŭtaraŭ va ŭžo zahružanych dopisach.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Paŭtaryć praz {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Rezervovaja kopija na servery źmianilasia. Pierad adpraŭkaj adnavićie i praviercie jaje.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Hety server nie moža biaśpiečna abaranić rezervovyja kopii ad adnačasovych źmien.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Papiarednija rezervovyja kopii",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Zaŭsiody pakazvać elementy kiravannia",
-  "reader_auto_retry_seconds": "Paŭtor praz {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Paŭtor praz {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Sćahnuć hetu staronku",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Sćahnuć usie staronki",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Usie staronki",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Skapijavać spasyłku",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Spasyłka skapijavana",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Inšyja dziejanni",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Staronka {current} z {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Spampoŭvajecca staronka {current} z {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Jašče ad {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Prajhrać animacyju",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Prypynić animacyju",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Chavać pracy, stvoranyja ŠI",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Chavaje pracy, jakija aŭtary paznačyli jak stvoranyja ŠI. Ułasnyja zakladki zaŭsiody zastajucca bačnymi.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "ŠI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

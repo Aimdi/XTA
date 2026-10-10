@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_login_webview.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_browsing.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
 import 'package:xta/ui/errors.dart';
@@ -26,10 +28,14 @@ String pixivErrorMessage(L10n l10n, Object error) {
   };
 }
 
-/// Opens the Pixiv login webview and stores tokens on success.
+/// Opens the Pixiv login webview and stores tokens on success. The account
+/// joins the stored ones and becomes the active one; when it replaces another,
+/// what was loaded for that one is dropped first.
 ///
 /// Returns the signed-in user, or null when cancelled or failed.
 Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
+  final client = context.read<PixivClient>();
+  final forget = pixivAccountDataForgetter(context);
   final pkce = PixivAuth.generatePkce();
   final code = await Navigator.push<String>(
     context,
@@ -38,13 +44,26 @@ Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
   if (code == null || !context.mounted) {
     return null;
   }
+  return _signInWithCode(context, client, code: code, verifier: pkce.verifier, onReplace: forget);
+}
 
+/// Trades the login code for tokens and keeps the account, saying how it went.
+Future<PixivAuthUser?> _signInWithCode(
+  BuildContext context,
+  PixivClient client, {
+  required String code,
+  required String verifier,
+  required VoidCallback onReplace,
+}) async {
   try {
-    final tokens = await PixivAuth().exchangeCode(code: code, codeVerifier: pkce.verifier);
+    final tokens = await PixivAuth().exchangeCode(code: code, codeVerifier: verifier);
     if (!context.mounted) {
       return null;
     }
-    final user = await context.read<PixivClient>().applyLoginTokens(tokens);
+    await _keepSignedInAccount(client);
+    if (tokens.user.id != client.storedUserId) onReplace();
+    final user = await client.applyLoginTokens(tokens);
+    await rememberPixivAccount(client.prefs, user);
     if (context.mounted) {
       showSnackBar(context, icon: '✅', message: L10n.of(context).plugin_pixiv_signed_in(user.displayName));
     }
@@ -57,9 +76,21 @@ Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
   }
 }
 
+/// Keeps the account signed in now before a new one replaces it. A pasted
+/// token nobody checked yet has no owner on record, so it is checked first.
+Future<void> _keepSignedInAccount(PixivClient client) async {
+  if (client.storedUserId == null && pixivSignedIn(client.prefs)) await pixivVerifiedName(client);
+  await keepActivePixivToken(client.prefs);
+}
+
 /// The plugin's settings page: an intro over one section per concern. A
 /// feature with settings of its own adds its section to this list.
-const pixivSettingsSections = <Widget>[PixivAccountSettings(), PixivContentSettings(), PixivMuteSettings()];
+const pixivSettingsSections = <Widget>[
+  PixivAccountSettings(),
+  PixivContentSettings(),
+  PixivBrowsingSettings(),
+  PixivMuteSettings(),
+];
 
 class PixivSettingsScreen extends StatelessWidget {
   const PixivSettingsScreen({super.key});

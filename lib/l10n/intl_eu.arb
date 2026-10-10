@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Beste {count} batera irakurtzen",
   "@group_combined_count": {},
-  "group_discovery_ai": "Bilatu antzeko kontuak AArekin",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Aurkitu jarraitzen ez dituzun kontuak talde honetako kideetan oinarrituta. Ireki profila jarraitzeko edo talde batera gehitzeko.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Oraindik ez da aurkitu jarraitzen ez duzun antzeko konturik. Saiatu berriro taldekideek argitalpen gehiago partekatzen dituztenean.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Ezin izan dira iturri batzuk kargatu. Tira beherantz berriro saiatzeko.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Kide 1etik {read} oinarri hartuta} other{{total} kidetik {read} oinarri hartuta}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Gehiago aztertu",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Partekatu du: {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Aipatu du: {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Erantzun du: {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Aipamena: {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Kide 1ek jarraitzen du} other{{count} kidek jarraitzen dute}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky-k {names} erabiltzailearentzat proposatua",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "{names} erabiltzailearen lanen antzekoa",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{eta beste 1} other{eta beste {count}}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Gehitu “{group}” taldean",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Gehituta",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Beste talde batzuk…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Ireki profila",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Berrezarri proposamenak",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Erakutsi argitalpena",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Bilatu antzeko kontuak AArekin",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{eta beste 1} other{eta beste {count}}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Kide 1etik {read} oinarri hartuta} other{{total} kidetik {read} oinarri hartuta}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Aurkitu jarraitzen ez dituzun kontuak talde honetako kideetan oinarrituta. Ireki profila jarraitzeko edo talde batera gehitzeko.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Oraindik ez da aurkitu jarraitzen ez duzun antzeko konturik. Saiatu berriro taldekideek argitalpen gehiago partekatzen dituztenean.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Proposamenak eguneratu dira",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Kide 1ek jarraitzen du} other{{count} kidek jarraitzen dute}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Aipamena: {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Ireki profila",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Beste talde batzuk…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Ezin izan dira iturri batzuk kargatu. Tira beherantz berriro saiatzeko.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Aipatu du: {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "{names} erabiltzailearen lanen antzekoa",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Erantzun du: {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Partekatu du: {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Berrezarri proposamenak",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Gehiago aztertu",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Erakutsi argitalpena",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky-k {names} erabiltzailearentzat proposatua",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Irakurri gabe",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Gutxienez kontu bat piztuta utzi behar da",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Mantendu kontrolak ikusgai",
   "home_networks": "Sareak",
   "@home_networks": {},
   "home_networks_all": "Sare guztiak",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "Ireki {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Kontu aktiboa",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv kontua: AAk sortutako lanak",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Ezin izan da ezarpen hau Pixiv-etik irakurri",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Partzialki ezkutatuta",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Zure Pixiv ezarpena egiaztatzen…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Erakusten dira",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Kendu kontua",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} gailu honetatik kendu nahi duzu?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Aurreratua: itsatsi freskatze-tokena",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AA",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Orrialde guztiak",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Laster-marka",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Laster-marken karpeta",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Publikoak",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Aldatu pixiv.net-en",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopiatu da",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopiatu informazioa",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "Kopiatu esteka",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "«Kopiatu informazioa» txantiloia",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Lanaren esteka",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Izenburua: {title}\nArtista: {artist}\nLanaren IDa: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "«Kopiatu informazioa»k arbelean jartzen duena. Leku-markak lanaren datuekin ordezten dira.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Txertatu",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Berrezarri lehenetsia",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Artistaren esteka",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "{current}. orrialdea, guztira {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Pixiv irakurle pribatua — jarraipena, sailkapena, laster-markak eta bilaketa. Argitaratu gabe",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Deskargatu orrialde guztiak",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Deskargatu orrialde hau",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "{current}. orrialdea deskargatzen, guztira {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Oraindik ez dago ezer jarraipen-jarioan",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Ezin izan da Pixivrekin konektatu",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "Ezkutatu AAk sortutako lanak",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Egileek AAk sortutzat markatutako lanak ezkutatzen ditu. Zure laster-markak beti ikusgai geratzen dira.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "Historia",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Garbitu historia",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Historia osoa garbitu nahi duzu?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Irekitzen dituzun lanak hemen agertzen dira. Historia gailu honetan geratzen da.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Iragazi izenburuaren edo artistaren arabera",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Historiako lanik ez dator bat",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Pausatu historia",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Aktibatuta dagoen bitartean, irekitako lanak ez dira historiara gehitzen",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "«{title}» historiatik kendu nahi duzu?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Informazioa kopiatu da",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "Esteka kopiatu da",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "Kudeatu kontua pixiv.net-en",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Honi buruz",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Kontua",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Ekintza gehiago",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "{name}(r)en lan gehiago",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Isiltzea",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Hobespenak",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Isilarazi egilea",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Iruzkinak",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Haren artista isilarazi duzu: {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Erakutsi oraingoan",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Haren {tag} etiketa isilarazi duzu.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Lan hau isilarazita dago",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Lan hau isilarazi duzu.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Isilarazi lan hau",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Eleberriak",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Isilarazteko ezarpenak",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Isilarazi \"{tag}\" etiketa",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Isilarazi etiketa",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Idatzi r'eredua' adierazpen erregular batekin bat datozen etiketa guztiak isilarazteko. Ereduek lan baten etiketa guztiak ere ikusten dituzte, #tag1#tag2 gisa elkartuta.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Isilarazteko etiketa",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Eredu hau ez da adierazpen erregular baliozkoa",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Etiketak",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Artistak",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Lanak",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Ez dago isilarazitako Pixiv elementurik",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Isilarazitako Pixiv elementuak",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Ezin izan da Pixiv esteka hori ireki",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Ireki pixiv estekak XTAn",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Androideko «Ireki modu lehenetsian» orrian, gehitu pixiv.net eta pixiv.me esteka onartu gisa",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Ireki Pixiven",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "Ezagunenak",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "Urtebetetzea",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "Oraindik ez dago laster-marka publikorik",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Itxi saioa",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "{name} kontuaren saioa itxi nahi duzu?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv-eko saioa itxi nahi duzu?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Saioa hasita {name} gisa",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv hemen irekitzen da",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Aldatu kontua",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Laster-markak",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Gogokoak",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Pausatu animazioa",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Erreproduzitu animazioa",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Kendu laster-marka",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Jarraitzeari utzi",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Kendu isilaraztea",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "{name} isilarazteari utzi nahi diozu?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{lan {shown}} other{{shown} lan}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏-ek eskaerak mugatu ditu",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "{time} barru saiatuko da berriro…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "{seconds} s barru saiatuko da berriro…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Artikuluen nabarmendutako zatiak, etiketak eta oharrak",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Egiaztatutako sortak: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Gordetako kopia bat erakusten da iturria eguneratzen den bitartean.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Aldaketak gorde dira",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Konexioak huts egin du",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Zirriborroa leheneratu da",
+  "@reader_draft_restored": {},
+  "reader_extract": "Atera testua pantaila-argazkitik",
+  "@reader_extract": {},
+  "reader_extract_notice": "Hautatutako PNG edo JPEG irudia {host} zerbitzura bidaliko da konfiguratutako AA ereduarekin. Ateratako testuak akatsak izan ditzake.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Nabarmendu eta gehitu oharra",
+  "@reader_highlight": {},
+  "reader_less_like": "Antzeko gutxiago",
+  "@reader_less_like": {},
+  "reader_link_posts": "Esteka hau duten argitalpen gehiago: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Antzeko gehiago",
+  "@reader_more_like": {},
+  "reader_new_posts": "Argitalpen berriak",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Iturri honek eskaerak mugatzen ditu. Saiatu geroago.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Azken irakurketa-eragiketak",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Saiatu berriro {time} barru",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Bilatu zure liburutegian",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Bilatu kargatutako argitalpenetan",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Bilatu testua, estekak edo egileak dagoeneko kargatutako argitalpenetan.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Hasi saioa berriro jarraitzeko",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Iturri hau kargatzen ari da oraindik. Beste argitalpenak irakurgai daude.",
+  "@reader_source_loading": {},
+  "reader_undo": "Desegin",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Ezin izan da desegin. Baliteke datuak aldatu izana.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Irakurketa-posizioak",
   "@reading_positions": {},
   "recent": "Azkenak",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "Sinkronizazioa",
   "@sync": {},
+  "sync_conflict": "Zerbitzariko babeskopia aldatu da. Leheneratu eta berrikusi beste bat igo aurretik.",
+  "@sync_conflict": {},
   "sync_description": "Kopiatu zure harpidetzak, taldeak eta gordetako argitalpenak zeuk kudeatzen duzun WebDAV zerbitzari batera",
   "@sync_description": {},
   "sync_download": "Berreskuratu zerbitzaritik",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Zerbitzariak kredentzial horiek baztertu ditu",
   "@sync_error_unauthorized": {},
+  "sync_history": "Aurreko babeskopiak",
+  "@sync_history": {},
   "sync_include_accounts": "Sartu 𝕏-ko saioak",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Lehenetsita desaktibatuta. Zure saioak 𝕏-ko saio-tokenak dira; igo itzazu zerbitzariaz eta bere babeskopiez fidatzen bazara soilik.",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Zerbitzari honek ezin ditu babeskopiak aldi bereko aldaketetatik modu seguruan babestu.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Igo orain",
   "@sync_upload": {},
   "sync_uploaded": "Igota",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Esteka hau duten argitalpen gehiago: {count}",
-  "reader_connection_failed": "Konexioak huts egin du",
-  "reader_sign_in_needed": "Hasi saioa berriro jarraitzeko",
-  "reader_rate_limit_hint": "Iturri honek eskaerak mugatzen ditu. Saiatu geroago.",
-  "reader_new_posts": "Argitalpen berriak",
-  "reader_source_loading": "Iturri hau kargatzen ari da oraindik. Beste argitalpenak irakurgai daude.",
-  "reader_cached_content": "Gordetako kopia bat erakusten da iturria eguneratzen den bitartean.",
-  "reader_draft_restored": "Zirriborroa leheneratu da",
-  "reader_search_all": "Bilatu zure liburutegian",
-  "reader_highlight": "Nabarmendu eta gehitu oharra",
-  "reader_extract": "Atera testua pantaila-argazkitik",
-  "reader_extract_notice": "Hautatutako PNG edo JPEG irudia {host} zerbitzura bidaliko da konfiguratutako AA ereduarekin. Ateratako testuak akatsak izan ditzake.",
-  "reader_more_like": "Antzeko gehiago",
-  "reader_less_like": "Antzeko gutxiago",
-  "reader_undo": "Desegin",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Egiaztatutako sortak: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Artikuluen nabarmendutako zatiak, etiketak eta oharrak",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Aldaketak gorde dira",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Ezin izan da desegin. Baliteke datuak aldatu izana.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Azken irakurketa-eragiketak",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Bilatu kargatutako argitalpenetan",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Bilatu testua, estekak edo egileak dagoeneko kargatutako argitalpenetan.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Saiatu berriro {time} barru",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Zerbitzariko babeskopia aldatu da. Leheneratu eta berrikusi beste bat igo aurretik.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Zerbitzari honek ezin ditu babeskopiak aldi bereko aldaketetatik modu seguruan babestu.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Aurreko babeskopiak",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Mantendu kontrolak ikusgai",
-  "reader_auto_retry_seconds": "{seconds} s barru saiatuko da berriro…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "{time} barru saiatuko da berriro…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Deskargatu orrialde hau",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Deskargatu orrialde guztiak",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Orrialde guztiak",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Kopiatu esteka",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Esteka kopiatu da",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Ekintza gehiago",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "{current}. orrialdea, guztira {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "{current}. orrialdea deskargatzen, guztira {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "{name}(r)en lan gehiago",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Erreproduzitu animazioa",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Pausatu animazioa",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Ezkutatu AAk sortutako lanak",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Egileek AAk sortutzat markatutako lanak ezkutatzen ditu. Zure laster-markak beti ikusgai geratzen dira.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AA",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

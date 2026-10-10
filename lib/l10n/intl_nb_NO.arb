@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "Leser {count} til samtidig",
   "@group_combined_count": {},
-  "group_discovery_ai": "Finn lignende kontoer med KI",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "Oppdag kontoer du ikke følger, basert på medlemmene i denne gruppen. Åpne en profil for å følge den eller legge den til i en gruppe.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "Ingen lignende kontoer du ikke følger er funnet ennå. Prøv igjen når gruppemedlemmene har delt flere innlegg.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "Noen kilder kunne ikke lastes. Dra ned for å prøve igjen.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, one{Basert på {read} av 1 medlem} other{Basert på {read} av {total} medlemmer}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "Søk gjennom flere",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "Delt av {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "Sitert av {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "Besvart av {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "Nevnt av {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, one{Fulgt av 1 medlem} other{Fulgt av {count} medlemmer}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky foreslår dette for {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "Ligner på verk av {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, one{og 1 til} other{og {count} til}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "Legg til i «{group}»",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "Lagt til",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "Andre grupper…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "Åpne profil",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "Tilbakestill forslag",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "Vis innlegg",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "Finn lignende kontoer med KI",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, one{og 1 til} other{og {count} til}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, one{Basert på {read} av 1 medlem} other{Basert på {read} av {total} medlemmer}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "Oppdag kontoer du ikke følger, basert på medlemmene i denne gruppen. Åpne en profil for å følge den eller legge den til i en gruppe.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "Ingen lignende kontoer du ikke følger er funnet ennå. Prøv igjen når gruppemedlemmene har delt flere innlegg.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "Forslag oppdatert",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, one{Fulgt av 1 medlem} other{Fulgt av {count} medlemmer}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "Nevnt av {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "Åpne profil",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "Andre grupper…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "Noen kilder kunne ikke lastes. Dra ned for å prøve igjen.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "Sitert av {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "Ligner på verk av {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "Besvart av {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "Delt av {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "Tilbakestill forslag",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "Søk gjennom flere",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "Vis innlegg",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky foreslår dette for {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "Ulest",
   "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "Minst én konto må stå på",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "Hold kontrollene synlige",
   "home_networks": "Nettverk",
   "@home_networks": {},
   "home_networks_all": "Alle nettverk",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "Åpne {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "Aktiv konto",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv-konto: KI-genererte verk",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "Kunne ikke lese denne innstillingen fra Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "Delvis skjult",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Sjekker Pixiv-innstillingen din …",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "Vises",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "Fjern konto",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "Fjerne {name} fra denne enheten?",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "Avansert: lim inn oppfriskningstoken",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "KI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "Alle sider",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "Bokmerke",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Bokmerkemappe",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "Offentlige",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "Endre på pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "Kopiert",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "Kopier info",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "Kopier lenke",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "Mal for «Kopier info»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "Lenke til verket",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "Tittel: {title}\nKunstner: {artist}\nVerk-ID: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "Det «Kopier info» legger på utklippstavlen. Plassholderne erstattes med verkets detaljer.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "Sett inn",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "Tilbakestill til standard",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "Lenke til kunstneren",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "Side {current} av {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "Privat Pixiv-leser — følging, rangering, bokmerker og søk. Uten posting",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "Last ned alle sidene",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "Last ned denne siden",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "Laster ned side {current} av {total} …",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "Ingenting i følgefeeden ennå",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Kunne ikke nå Pixiv",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "Skjul KI-genererte verk",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Skjuler verk som skaperne har merket som KI-genererte. Dine egne bokmerker vises alltid.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "Historikk",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "Tøm historikk",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "Tømme hele historikken?",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "Verk du åpner vises her. Historikken blir på denne enheten.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "Filtrer etter tittel eller kunstner",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "Ingen verk i historikken passer",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "Sett historikken på pause",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "Når dette er på, legges åpnede verk ikke til i historikken",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "Fjerne «{title}» fra historikken?",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "Info kopiert",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "Lenke kopiert",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "Administrer kontoen på pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "Om",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "Flere handlinger",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "Mer fra {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "Demping",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "Innstillinger",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "Demp forfatter",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "Kommentarer",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "Du har dempet kunstneren, {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "Vis denne gangen",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "Du har dempet taggen {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "Dette verket er dempet",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "Du har dempet dette verket.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "Demp dette verket",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "Romaner",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "Innstillinger for demping",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "Demp taggen «{tag}»",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "Demp tagg",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "Skriv r'mønster' for å dempe alle tagger et regulært uttrykk treffer. Mønstre ser også alle taggene til et verk satt sammen som #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "Tagg som skal dempes",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "Dette mønsteret er ikke et gyldig regulært uttrykk",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "Tagger",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "Kunstnere",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "Verk",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "Ingen dempede Pixiv-elementer",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Dempede Pixiv-elementer",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Kunne ikke åpne denne Pixiv-lenken",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "Åpne pixiv-lenker i XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "På Android-siden «Åpne som standard» legger du til pixiv.net og pixiv.me som støttede lenker",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Åpne på Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "Mest populære",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "Bursdag",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "Ingen offentlige bokmerker ennå",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "Logg ut",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "Logge ut av {name}?",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Logge ut av Pixiv?",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "Innlogget som {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv åpner på",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "Bytt konto",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "Bokmerker",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "Favoritter",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "Sett animasjonen på pause",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "Spill av animasjonen",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "Fjern bokmerke",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Slutt å følge",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Opphev demping",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "Oppheve demping av {name}?",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, one{{shown} verk} other{{shown} verk}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "Begrenset av 𝕏",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "Prøver igjen om {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "Prøver igjen om {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Uthevinger, emneknagger og notater i artikler",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "Kontrollerte grupper: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "Viser en lagret kopi mens denne kilden oppdateres.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "Endringer lagret",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "Tilkoblingen mislyktes",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "Utkast gjenopprettet",
+  "@reader_draft_restored": {},
+  "reader_extract": "Hent tekst fra skjermbilde",
+  "@reader_extract": {},
+  "reader_extract_notice": "Det valgte PNG- eller JPEG-bildet sendes til {host} med den konfigurerte KI-modellen. Teksten kan inneholde feil.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "Marker og skriv notat",
+  "@reader_highlight": {},
+  "reader_less_like": "Mindre som dette",
+  "@reader_less_like": {},
+  "reader_link_posts": "Flere innlegg med denne lenken: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "Mer som dette",
+  "@reader_more_like": {},
+  "reader_new_posts": "Nye innlegg",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "Denne kilden begrenser forespørsler. Prøv igjen senere.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "Nylige leseoperasjoner",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "Prøv igjen om {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "Søk i biblioteket",
+  "@reader_search_all": {},
+  "reader_search_loaded": "Søk i innlastede innlegg",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Søk etter tekst, lenker eller forfattere i innlegg som allerede er lastet inn.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "Logg inn på nytt for å fortsette",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "Denne kilden lastes fortsatt. Andre innlegg er klare til å leses.",
+  "@reader_source_loading": {},
+  "reader_undo": "Angre",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "Kunne ikke angre. Dataene kan ha blitt endret.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "Leseposisjoner",
   "@reading_positions": {},
   "recent": "Nylige",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "Synkronisering",
   "@sync": {},
+  "sync_conflict": "Sikkerhetskopien på serveren er endret. Gjenopprett og kontroller den før opplasting.",
+  "@sync_conflict": {},
   "sync_description": "Kopierer abonnementer, grupper og lagrede innlegg til en WebDAV-tjener du selv driver",
   "@sync_description": {},
   "sync_download": "Gjenopprett fra tjeneren",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "Tjeneren avviste denne påloggingen",
   "@sync_error_unauthorized": {},
+  "sync_history": "Tidligere sikkerhetskopier",
+  "@sync_history": {},
   "sync_include_accounts": "Ta med 𝕏-innloggingene",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "Av som standard. Innloggingene er øktnøkler for 𝕏; last dem bare opp hvis du stoler på tjeneren og sikkerhetskopiene dens.",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "Denne serveren kan ikke beskytte sikkerhetskopier mot samtidige endringer.",
+  "@sync_unsafe_server": {},
   "sync_upload": "Last opp nå",
   "@sync_upload": {},
   "sync_uploaded": "Lastet opp",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "Flere innlegg med denne lenken: {count}",
-  "reader_connection_failed": "Tilkoblingen mislyktes",
-  "reader_sign_in_needed": "Logg inn på nytt for å fortsette",
-  "reader_rate_limit_hint": "Denne kilden begrenser forespørsler. Prøv igjen senere.",
-  "reader_new_posts": "Nye innlegg",
-  "reader_source_loading": "Denne kilden lastes fortsatt. Andre innlegg er klare til å leses.",
-  "reader_cached_content": "Viser en lagret kopi mens denne kilden oppdateres.",
-  "reader_draft_restored": "Utkast gjenopprettet",
-  "reader_search_all": "Søk i biblioteket",
-  "reader_highlight": "Marker og skriv notat",
-  "reader_extract": "Hent tekst fra skjermbilde",
-  "reader_extract_notice": "Det valgte PNG- eller JPEG-bildet sendes til {host} med den konfigurerte KI-modellen. Teksten kan inneholde feil.",
-  "reader_more_like": "Mer som dette",
-  "reader_less_like": "Mindre som dette",
-  "reader_undo": "Angre",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "Kontrollerte grupper: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "Uthevinger, emneknagger og notater i artikler",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "Endringer lagret",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "Kunne ikke angre. Dataene kan ha blitt endret.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "Nylige leseoperasjoner",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "Søk i innlastede innlegg",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "Søk etter tekst, lenker eller forfattere i innlegg som allerede er lastet inn.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "Prøv igjen om {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "Sikkerhetskopien på serveren er endret. Gjenopprett og kontroller den før opplasting.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "Denne serveren kan ikke beskytte sikkerhetskopier mot samtidige endringer.",
-  "@sync_unsafe_server": {},
-  "sync_history": "Tidligere sikkerhetskopier",
-  "@sync_history": {},
-  "home_keep_controls_visible": "Hold kontrollene synlige",
-  "reader_auto_retry_seconds": "Prøver igjen om {seconds} s…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "Prøver igjen om {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "Last ned denne siden",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "Last ned alle sidene",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "Alle sider",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "Kopier lenke",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "Lenke kopiert",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "Flere handlinger",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "Side {current} av {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "Laster ned side {current} av {total} …",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "Mer fra {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "Spill av animasjonen",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "Sett animasjonen på pause",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "Skjul KI-genererte verk",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "Skjuler verk som skaperne har merket som KI-genererte. Dine egne bokmerker vises alltid.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "KI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

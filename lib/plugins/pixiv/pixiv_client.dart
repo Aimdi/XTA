@@ -240,6 +240,7 @@ class PixivClient {
       throw PixivException(PixivErrorKind.notConfigured, 'no refresh token');
     }
 
+    final sent = _refreshToken;
     final response = await _send(
       () => httpClient.post(
         Uri.parse(PixivAuth.authTokenUrl),
@@ -252,13 +253,22 @@ class PixivClient {
           'client_secret': PixivAuth.clientSecret,
           'grant_type': 'refresh_token',
           'include_policy': 'true',
-          'refresh_token': _refreshToken,
+          'refresh_token': sent,
         },
       ),
     );
 
     _throwForAuthStatus(response);
     final json = Json(_decode(response, Uri.parse(PixivAuth.authTokenUrl)));
+    // The reader switched accounts while this was in flight: the answer
+    // belongs to the old one, so the caller gets the account now in use.
+    if (sent != _refreshToken) {
+      return _refreshAccessTokenBody();
+    }
+    return _storeRefreshed(json);
+  }
+
+  Future<PixivAuthUser> _storeRefreshed(Json json) async {
     final access = json['access_token'].string;
     final refresh = json['refresh_token'].string;
     final expiresIn = json['expires_in'].integer ?? 3600;
@@ -348,8 +358,21 @@ class PixivClient {
           .add(Duration(seconds: tokens.expiresIn - 60))
           .toIso8601String(),
     );
+    // Even an answer without a user id must not leave the last account's id
+    // beside this token.
+    await prefs.set(optionPluginPixivUserId, tokens.user.id);
     await _rememberUser(tokens.user);
     return tokens.user;
+  }
+
+  /// Makes [account] the one every request uses. Its access token is not
+  /// kept, so the next request refreshes one from its refresh token.
+  Future<void> switchTo(PixivAccount account) async {
+    await prefs.set(optionPluginPixivRefreshToken, account.refreshToken);
+    await prefs.set(optionPluginPixivAccessToken, '');
+    await prefs.set(optionPluginPixivAccessExpiresAt, '');
+    await prefs.set(optionPluginPixivUserId, account.userId);
+    await prefs.set(optionPluginPixivIsPremium, account.isPremium);
   }
 
   Future<void> signOut() async {

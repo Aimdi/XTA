@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "تُقرأ {count} أخرى معها",
   "@group_combined_count": {},
-  "group_discovery_ai": "العثور على حسابات مشابهة بالذكاء الاصطناعي",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "اكتشف حسابات لا تتابعها بناءً على أعضاء هذه المجموعة. افتح الملف الشخصي لمتابعته أو إضافته إلى مجموعة.",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "لم تُعثر على حسابات مشابهة لا تتابعها بعد. حاول مجددًا بعد أن يشارك أعضاء المجموعة المزيد من المنشورات.",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "تعذر تحميل بعض المصادر. اسحب لأسفل لإعادة المحاولة.",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, zero{بناءً على {read} من {total} أعضاء} one{بناءً على {read} من عضو واحد} two{بناءً على {read} من عضوين} few{بناءً على {read} من {total} أعضاء} many{بناءً على {read} من {total} عضوًا} other{بناءً على {read} من {total} عضو}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "فحص المزيد",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "أعاد نشره {names}",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "اقتبسه {names}",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "رد عليه {names}",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "ذكره {names}",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, zero{لا يتابعه أي عضو} one{يتابعه عضو واحد} two{يتابعه عضوان} few{يتابعه {count} أعضاء} many{يتابعه {count} عضوًا} other{يتابعه {count} عضو}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "يقترحه Bluesky لـ {names}",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "مشابه لأعمال {names}",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, zero{ولا أحد غيره} one{وواحد آخر} two{واثنان آخران} few{و{count} آخرين} many{و{count} آخرين} other{و{count} آخرين}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "إضافة إلى ”{group}“",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "تمت الإضافة",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "مجموعات أخرى…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "فتح الملف الشخصي",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "إعادة تعيين الاقتراحات",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "عرض المنشور",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "العثور على حسابات مشابهة بالذكاء الاصطناعي",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, zero{ولا أحد غيره} one{وواحد آخر} two{واثنان آخران} few{و{count} آخرين} many{و{count} آخرين} other{و{count} آخرين}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, zero{بناءً على {read} من {total} أعضاء} one{بناءً على {read} من عضو واحد} two{بناءً على {read} من عضوين} few{بناءً على {read} من {total} أعضاء} many{بناءً على {read} من {total} عضوًا} other{بناءً على {read} من {total} عضو}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "اكتشف حسابات لا تتابعها بناءً على أعضاء هذه المجموعة. افتح الملف الشخصي لمتابعته أو إضافته إلى مجموعة.",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "لم تُعثر على حسابات مشابهة لا تتابعها بعد. حاول مجددًا بعد أن يشارك أعضاء المجموعة المزيد من المنشورات.",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "تم تحديث الاقتراحات",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, zero{لا يتابعه أي عضو} one{يتابعه عضو واحد} two{يتابعه عضوان} few{يتابعه {count} أعضاء} many{يتابعه {count} عضوًا} other{يتابعه {count} عضو}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "ذكره {names}",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "فتح الملف الشخصي",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "مجموعات أخرى…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "تعذر تحميل بعض المصادر. اسحب لأسفل لإعادة المحاولة.",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "اقتبسه {names}",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "مشابه لأعمال {names}",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "رد عليه {names}",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "أعاد نشره {names}",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "إعادة تعيين الاقتراحات",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "فحص المزيد",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "عرض المنشور",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "يقترحه Bluesky لـ {names}",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "غير مقروء",
   "@group_has_unread": {},
   "group_mark_style_auto": "تلقائي",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "يجب أن يبقى حساب واحد على الأقل مفعّلاً",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "إبقاء عناصر التحكم ظاهرة",
   "home_networks": "الشبكات",
   "@home_networks": {},
   "home_networks_all": "كل الشبكات",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "فتح {plugin}",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "الحساب النشط",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "حساب Pixiv: الأعمال المولّدة بالذكاء الاصطناعي",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "تعذّرت قراءة هذا الإعداد من Pixiv",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "مخفية جزئيًا",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "جارٍ التحقق من إعداد Pixiv لديك…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "معروضة",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "إزالة الحساب",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "هل تريد إزالة {name} من هذا الجهاز؟",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "متقدم: الصق رمز التحديث",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "ذكاء اصطناعي",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "كل الصفحات",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "إضافة إلى الإشارات",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "مجلد الإشارات",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "عام",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "التغيير على pixiv.net",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "تم النسخ",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "نسخ المعلومات",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "نسخ الرابط",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "قالب «نسخ المعلومات»",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "رابط العمل",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "العنوان: {title}\nالفنان: {artist}\nمعرّف العمل: {work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "ما يضعه «نسخ المعلومات» في الحافظة. تُستبدل العناصر النائبة بتفاصيل العمل.",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "إدراج",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "استعادة الافتراضي",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "رابط الفنان",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "الصفحة {current} من {total}",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "قارئ Pixiv خاص — المتابعة والترتيب والإشارات والبحث. بلا نشر",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "تنزيل كل الصفحات",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "تنزيل هذه الصفحة",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "جارٍ تنزيل الصفحة {current} من {total}…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "لا شيء في خلاصة المتابعة بعد",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "تعذّر الوصول إلى Pixiv",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "إخفاء الأعمال المولّدة بالذكاء الاصطناعي",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "يُخفي الأعمال التي وسمها أصحابها بأنها مولّدة بالذكاء الاصطناعي. تبقى إشاراتك ظاهرة دائمًا.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "سجل المشاهدة",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "مسح السجل",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "هل تريد مسح سجل المشاهدة كله؟",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "تظهر هنا الأعمال التي تفتحها. يبقى السجل على هذا الجهاز.",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "التصفية حسب العنوان أو الفنان",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "لا يوجد عمل في السجل يطابق",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "إيقاف سجل المشاهدة مؤقتًا",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "أثناء التفعيل، لا تُضاف الأعمال المفتوحة إلى السجل",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "هل تريد إزالة «{title}» من السجل؟",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "تم نسخ المعلومات",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "تم نسخ الرابط",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "إدارة الحساب على pixiv.net",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "حول",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "الحساب",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "إجراءات أخرى",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "المزيد من {name}",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "إعدادات الكتم",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "التفضيلات",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "كتم المؤلف",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "التعليقات",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "لقد كتمت فنانه، {name}.",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "اعرضه هذه المرة",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "لقد كتمت وسمه {tag}.",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "هذا العمل مكتوم",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "لقد كتمت هذا العمل.",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "كتم هذا العمل",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "الروايات",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "إعدادات الكتم",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "كتم الوسم \"{tag}\"",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "كتم الوسم",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "اكتب r'نمط' لكتم كل وسم يطابقه تعبير نمطي. ترى الأنماط أيضًا كل وسوم العمل مجموعة بالشكل #tag1#tag2.",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "وسم لكتمه",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "هذا النمط ليس تعبيرًا نمطيًا صالحًا",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "الوسوم",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "الفنانون",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "الأعمال",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "لا توجد عناصر Pixiv مكتومة",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "عناصر Pixiv المكتومة",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "تعذر فتح رابط Pixiv هذا",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "فتح روابط pixiv في XTA",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "في صفحة «الفتح تلقائيًا» في Android، أضف pixiv.net وpixiv.me كروابط مدعومة",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "فتح على Pixiv",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "الأكثر شعبية",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "Premium",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "تاريخ الميلاد",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "لا إشارات عامة بعد",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "تسجيل الخروج",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "هل تريد تسجيل خروج {name}؟",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "هل تريد تسجيل الخروج من Pixiv؟",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "تم تسجيل الدخول باسم {name}",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "يفتح Pixiv على",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "تبديل الحساب",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "الإشارات",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "المفضلة",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "إيقاف الرسم المتحرك مؤقتًا",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "تشغيل الرسم المتحرك",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "إزالة الإشارة المرجعية",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "إلغاء المتابعة",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "إلغاء الكتم",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "هل تريد إلغاء كتم {name}؟",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, zero{لا أعمال} one{عمل واحد} two{عملان} few{{shown} أعمال} many{{shown} عملًا} other{{shown} عمل}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "تم تقييدك من قبل 𝕏",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "ستتم إعادة المحاولة بعد {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "ستتم إعادة المحاولة بعد {seconds} ث…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "تمييزات المقالات ووسومها وملاحظاتها",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "الدفعات المفحوصة: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "تُعرض نسخة محفوظة أثناء تحديث هذا المصدر.",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "تم حفظ التغييرات",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "فشل الاتصال",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "تمت استعادة المسودة",
+  "@reader_draft_restored": {},
+  "reader_extract": "استخراج نص لقطة الشاشة",
+  "@reader_extract": {},
+  "reader_extract_notice": "ستُرسل صورة PNG أو JPEG المختارة إلى {host} باستخدام نموذج الذكاء الاصطناعي الذي أعددته. قد يحتوي النص المستخرج على أخطاء.",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "تمييز وإضافة ملاحظة",
+  "@reader_highlight": {},
+  "reader_less_like": "أقل مثل هذا",
+  "@reader_less_like": {},
+  "reader_link_posts": "منشورات أخرى تشارك هذا الرابط: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "المزيد مثل هذا",
+  "@reader_more_like": {},
+  "reader_new_posts": "منشورات جديدة",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "يحد هذا المصدر من الطلبات. حاول لاحقًا.",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "عمليات القراءة الأخيرة",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "إعادة المحاولة بعد {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "ابحث في مكتبتك",
+  "@reader_search_all": {},
+  "reader_search_loaded": "البحث في المنشورات المحمّلة",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "ابحث عن نص أو روابط أو كتّاب في المنشورات التي حُمّلت بالفعل.",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "سجّل الدخول مجددًا للمتابعة",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "لا يزال هذا المصدر قيد التحميل. المنشورات الأخرى جاهزة للقراءة.",
+  "@reader_source_loading": {},
+  "reader_undo": "تراجع",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "تعذّر التراجع. ربما تغيّرت البيانات.",
+  "@reader_undo_unavailable": {},
   "reading_positions": "مواضع القراءة",
   "@reading_positions": {},
   "recent": "الأحدث",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "المزامنة",
   "@sync": {},
+  "sync_conflict": "تغيّرت النسخة الاحتياطية على الخادم. استعدها وراجعها قبل الرفع.",
+  "@sync_conflict": {},
   "sync_description": "انسخ اشتراكاتك ومجموعاتك ومنشوراتك المحفوظة إلى خادم WebDAV تديره بنفسك",
   "@sync_description": {},
   "sync_download": "استعادة من الخادم",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "رفض الخادم بيانات الاعتماد هذه",
   "@sync_error_unauthorized": {},
+  "sync_history": "النسخ الاحتياطية السابقة",
+  "@sync_history": {},
   "sync_include_accounts": "تضمين تسجيلات الدخول إلى 𝕏",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "معطّل افتراضيًا. تسجيلات الدخول هي رموز جلسات لـ 𝕏؛ لا ترفعها إلا إذا كنت تثق بالخادم ونسخه الاحتياطية.",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "لا يستطيع هذا الخادم حماية النسخ الاحتياطية بأمان من التغييرات المتزامنة.",
+  "@sync_unsafe_server": {},
   "sync_upload": "رفع الآن",
   "@sync_upload": {},
   "sync_uploaded": "تم الرفع",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "منشورات أخرى تشارك هذا الرابط: {count}",
-  "reader_connection_failed": "فشل الاتصال",
-  "reader_sign_in_needed": "سجّل الدخول مجددًا للمتابعة",
-  "reader_rate_limit_hint": "يحد هذا المصدر من الطلبات. حاول لاحقًا.",
-  "reader_new_posts": "منشورات جديدة",
-  "reader_source_loading": "لا يزال هذا المصدر قيد التحميل. المنشورات الأخرى جاهزة للقراءة.",
-  "reader_cached_content": "تُعرض نسخة محفوظة أثناء تحديث هذا المصدر.",
-  "reader_draft_restored": "تمت استعادة المسودة",
-  "reader_search_all": "ابحث في مكتبتك",
-  "reader_highlight": "تمييز وإضافة ملاحظة",
-  "reader_extract": "استخراج نص لقطة الشاشة",
-  "reader_extract_notice": "ستُرسل صورة PNG أو JPEG المختارة إلى {host} باستخدام نموذج الذكاء الاصطناعي الذي أعددته. قد يحتوي النص المستخرج على أخطاء.",
-  "reader_more_like": "المزيد مثل هذا",
-  "reader_less_like": "أقل مثل هذا",
-  "reader_undo": "تراجع",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "الدفعات المفحوصة: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "تمييزات المقالات ووسومها وملاحظاتها",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "تم حفظ التغييرات",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "تعذّر التراجع. ربما تغيّرت البيانات.",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "عمليات القراءة الأخيرة",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "البحث في المنشورات المحمّلة",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "ابحث عن نص أو روابط أو كتّاب في المنشورات التي حُمّلت بالفعل.",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "إعادة المحاولة بعد {time}",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "تغيّرت النسخة الاحتياطية على الخادم. استعدها وراجعها قبل الرفع.",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "لا يستطيع هذا الخادم حماية النسخ الاحتياطية بأمان من التغييرات المتزامنة.",
-  "@sync_unsafe_server": {},
-  "sync_history": "النسخ الاحتياطية السابقة",
-  "@sync_history": {},
-  "home_keep_controls_visible": "إبقاء عناصر التحكم ظاهرة",
-  "reader_auto_retry_seconds": "ستتم إعادة المحاولة بعد {seconds} ث…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "ستتم إعادة المحاولة بعد {time}…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "تنزيل هذه الصفحة",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "تنزيل كل الصفحات",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "كل الصفحات",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "نسخ الرابط",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "تم نسخ الرابط",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "إجراءات أخرى",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "الصفحة {current} من {total}",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "جارٍ تنزيل الصفحة {current} من {total}…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "المزيد من {name}",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "تشغيل الرسم المتحرك",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "إيقاف الرسم المتحرك مؤقتًا",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "إخفاء الأعمال المولّدة بالذكاء الاصطناعي",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "يُخفي الأعمال التي وسمها أصحابها بأنها مولّدة بالذكاء الاصطناعي. تبقى إشاراتك ظاهرة دائمًا.",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "ذكاء اصطناعي",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

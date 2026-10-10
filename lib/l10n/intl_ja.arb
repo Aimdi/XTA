@@ -659,48 +659,48 @@
   "@group_combine_hint": {},
   "group_combined_count": "他に {count} 件を一緒に表示中",
   "@group_combined_count": {},
-  "group_discovery_ai": "AIで似たアカウントを探す",
-  "@group_discovery_ai": {},
-  "group_discovery_description": "このグループのメンバーをもとに、まだフォローしていないアカウントを探します。プロフィールを開くと、フォローやグループへの追加ができます。",
-  "@group_discovery_description": {},
-  "group_discovery_empty": "まだフォローしていない類似アカウントは見つかりませんでした。グループのメンバーがさらに投稿を共有してから、もう一度お試しください。",
-  "@group_discovery_empty": {},
-  "group_discovery_partial": "一部のソースを読み込めませんでした。下に引いて再試行してください。",
-  "@group_discovery_partial": {},
-  "group_discovery_coverage": "{total, plural, other{{total}人中{read}人のメンバーに基づく}}",
-  "@group_discovery_coverage": {},
-  "group_discovery_scan_more": "さらにスキャン",
-  "@group_discovery_scan_more": {},
-  "group_discovery_reposted_by": "{names} がリポスト",
-  "@group_discovery_reposted_by": {},
-  "group_discovery_quoted_by": "{names} が引用",
-  "@group_discovery_quoted_by": {},
-  "group_discovery_replied_by": "{names} が返信",
-  "@group_discovery_replied_by": {},
-  "group_discovery_mentioned_by": "{names} がメンション",
-  "@group_discovery_mentioned_by": {},
-  "group_discovery_followed_by": "{count, plural, other{メンバー{count}人がフォロー中}}",
-  "@group_discovery_followed_by": {},
-  "group_discovery_suggested_for": "Bluesky が {names} に関連しておすすめ",
-  "@group_discovery_suggested_for": {},
-  "group_discovery_related_to": "{names} の作品に似ています",
-  "@group_discovery_related_to": {},
-  "group_discovery_and_more": "{count, plural, other{他{count}人}}",
-  "@group_discovery_and_more": {},
   "group_discovery_add_to_group": "「{group}」に追加",
   "@group_discovery_add_to_group": {},
   "group_discovery_added": "追加済み",
   "@group_discovery_added": {},
-  "group_discovery_other_groups": "他のグループ…",
-  "@group_discovery_other_groups": {},
-  "group_discovery_open_profile": "プロフィールを開く",
-  "@group_discovery_open_profile": {},
-  "group_discovery_reset": "おすすめをリセット",
-  "@group_discovery_reset": {},
-  "group_discovery_show_post": "投稿を表示",
-  "@group_discovery_show_post": {},
+  "group_discovery_ai": "AIで似たアカウントを探す",
+  "@group_discovery_ai": {},
+  "group_discovery_and_more": "{count, plural, other{他{count}人}}",
+  "@group_discovery_and_more": {},
+  "group_discovery_coverage": "{total, plural, other{{total}人中{read}人のメンバーに基づく}}",
+  "@group_discovery_coverage": {},
+  "group_discovery_description": "このグループのメンバーをもとに、まだフォローしていないアカウントを探します。プロフィールを開くと、フォローやグループへの追加ができます。",
+  "@group_discovery_description": {},
+  "group_discovery_empty": "まだフォローしていない類似アカウントは見つかりませんでした。グループのメンバーがさらに投稿を共有してから、もう一度お試しください。",
+  "@group_discovery_empty": {},
   "group_discovery_feedback_saved": "おすすめを更新しました",
   "@group_discovery_feedback_saved": {},
+  "group_discovery_followed_by": "{count, plural, other{メンバー{count}人がフォロー中}}",
+  "@group_discovery_followed_by": {},
+  "group_discovery_mentioned_by": "{names} がメンション",
+  "@group_discovery_mentioned_by": {},
+  "group_discovery_open_profile": "プロフィールを開く",
+  "@group_discovery_open_profile": {},
+  "group_discovery_other_groups": "他のグループ…",
+  "@group_discovery_other_groups": {},
+  "group_discovery_partial": "一部のソースを読み込めませんでした。下に引いて再試行してください。",
+  "@group_discovery_partial": {},
+  "group_discovery_quoted_by": "{names} が引用",
+  "@group_discovery_quoted_by": {},
+  "group_discovery_related_to": "{names} の作品に似ています",
+  "@group_discovery_related_to": {},
+  "group_discovery_replied_by": "{names} が返信",
+  "@group_discovery_replied_by": {},
+  "group_discovery_reposted_by": "{names} がリポスト",
+  "@group_discovery_reposted_by": {},
+  "group_discovery_reset": "おすすめをリセット",
+  "@group_discovery_reset": {},
+  "group_discovery_scan_more": "さらにスキャン",
+  "@group_discovery_scan_more": {},
+  "group_discovery_show_post": "投稿を表示",
+  "@group_discovery_show_post": {},
+  "group_discovery_suggested_for": "Bluesky が {names} に関連しておすすめ",
+  "@group_discovery_suggested_for": {},
   "group_has_unread": "未読",
   "@group_has_unread": {},
   "group_mark_style_auto": "自動",
@@ -759,6 +759,7 @@
   "@home_feed_include_in_for_you": {},
   "home_feed_keep_one_account": "少なくとも 1 つのアカウントはオンのままにしてください",
   "@home_feed_keep_one_account": {},
+  "home_keep_controls_visible": "操作ボタンを常に表示",
   "home_networks": "ネットワーク",
   "@home_networks": {},
   "home_networks_all": "すべてのネットワーク",
@@ -2215,8 +2216,34 @@
   "@plugin_open": {},
   "plugin_open_client": "{plugin}を開く",
   "@plugin_open_client": {},
+  "plugin_pixiv_account_active": "使用中のアカウント",
+  "@plugin_pixiv_account_active": {},
+  "plugin_pixiv_account_ai": "Pixiv アカウント：AI生成作品",
+  "@plugin_pixiv_account_ai": {},
+  "plugin_pixiv_account_ai_failed": "この設定を Pixiv から読み込めませんでした",
+  "@plugin_pixiv_account_ai_failed": {},
+  "plugin_pixiv_account_ai_hidden": "一部非表示",
+  "@plugin_pixiv_account_ai_hidden": {},
+  "plugin_pixiv_account_ai_loading": "Pixiv の設定を確認しています…",
+  "@plugin_pixiv_account_ai_loading": {},
+  "plugin_pixiv_account_ai_shown": "表示する",
+  "@plugin_pixiv_account_ai_shown": {},
+  "plugin_pixiv_account_remove": "アカウントを削除",
+  "@plugin_pixiv_account_remove": {},
+  "plugin_pixiv_account_remove_question": "{name} をこの端末から削除しますか？",
+  "@plugin_pixiv_account_remove_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_advanced_token": "詳細: リフレッシュトークンを貼り付け",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {},
+  "plugin_pixiv_all_pages": "すべてのページ",
+  "@plugin_pixiv_all_pages": {},
   "plugin_pixiv_bookmark": "ブックマーク",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "ブックマークフォルダ",
@@ -2229,8 +2256,50 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "公開",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_change_on_pixiv": "pixiv.net で変更",
+  "@plugin_pixiv_change_on_pixiv": {},
+  "plugin_pixiv_copied": "コピーしました",
+  "@plugin_pixiv_copied": {},
+  "plugin_pixiv_copy_info": "作品情報をコピー",
+  "@plugin_pixiv_copy_info": {},
+  "plugin_pixiv_copy_link": "リンクをコピー",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_copy_template": "「作品情報をコピー」のテンプレート",
+  "@plugin_pixiv_copy_template": {},
+  "plugin_pixiv_copy_template_artwork_url": "作品のリンク",
+  "@plugin_pixiv_copy_template_artwork_url": {},
+  "plugin_pixiv_copy_template_default": "タイトル：{title}\n作者：{artist}\n作品ID：{work}",
+  "@plugin_pixiv_copy_template_default": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "artist": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_copy_template_help": "「作品情報をコピー」でクリップボードに入る内容です。プレースホルダーは作品の情報に置き換わります。",
+  "@plugin_pixiv_copy_template_help": {},
+  "plugin_pixiv_copy_template_insert": "挿入",
+  "@plugin_pixiv_copy_template_insert": {},
+  "plugin_pixiv_copy_template_reset": "初期設定に戻す",
+  "@plugin_pixiv_copy_template_reset": {},
+  "plugin_pixiv_copy_template_user_url": "作者のリンク",
+  "@plugin_pixiv_copy_template_user_url": {},
+  "plugin_pixiv_current_page": "{current} / {total} ページ",
+  "@plugin_pixiv_current_page": {},
   "plugin_pixiv_description": "プライベートなPixivリーダー — フォロー・ランキング・ブックマーク・検索。投稿なし",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_all": "全ページを保存",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_page": "このページを保存",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_downloading_page": "{current} / {total} ページを保存中…",
+  "@plugin_pixiv_downloading_page": {},
   "plugin_pixiv_empty": "フォローフィードにまだ何もありません",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Pixiv に接続できませんでした",
@@ -2264,20 +2333,100 @@
       }
     }
   },
+  "plugin_pixiv_hide_ai": "AI生成作品を非表示",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "作者がAI生成と申告した作品を表示しません。自分のブックマークは常に表示されます。",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_history": "閲覧履歴",
+  "@plugin_pixiv_history": {},
+  "plugin_pixiv_history_clear": "履歴を消去",
+  "@plugin_pixiv_history_clear": {},
+  "plugin_pixiv_history_clear_question": "閲覧履歴をすべて消去しますか？",
+  "@plugin_pixiv_history_clear_question": {},
+  "plugin_pixiv_history_empty": "開いた作品がここに表示されます。履歴はこの端末にだけ保存されます。",
+  "@plugin_pixiv_history_empty": {},
+  "plugin_pixiv_history_filter_hint": "タイトルや作者で絞り込む",
+  "@plugin_pixiv_history_filter_hint": {},
+  "plugin_pixiv_history_no_match": "一致する作品は履歴にありません",
+  "@plugin_pixiv_history_no_match": {},
+  "plugin_pixiv_history_pause": "閲覧履歴を一時停止",
+  "@plugin_pixiv_history_pause": {},
+  "plugin_pixiv_history_pause_description": "オンの間は、開いた作品を履歴に追加しません",
+  "@plugin_pixiv_history_pause_description": {},
+  "plugin_pixiv_history_remove_question": "「{title}」を履歴から削除しますか？",
+  "@plugin_pixiv_history_remove_question": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_info_copied": "作品情報をコピーしました",
+  "@plugin_pixiv_info_copied": {},
+  "plugin_pixiv_link_copied": "リンクをコピーしました",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_manage_account": "pixiv.net でアカウントを管理",
+  "@plugin_pixiv_manage_account": {},
   "plugin_pixiv_more_about": "このアプリについて",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "アカウント",
   "@plugin_pixiv_more_account": {},
+  "plugin_pixiv_more_actions": "その他の操作",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_more_by": "{name}さんの他の作品",
+  "@plugin_pixiv_more_by": {},
   "plugin_pixiv_more_mute": "ミュート設定",
   "@plugin_pixiv_more_mute": {},
   "plugin_pixiv_more_preferences": "設定",
   "@plugin_pixiv_more_preferences": {},
   "plugin_pixiv_mute_author": "作者をミュート",
   "@plugin_pixiv_mute_author": {},
+  "plugin_pixiv_mute_comments": "コメント",
+  "@plugin_pixiv_mute_comments": {},
+  "plugin_pixiv_mute_gate_author": "作者 {name} をミュートしています。",
+  "@plugin_pixiv_mute_gate_author": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_show": "今回だけ表示",
+  "@plugin_pixiv_mute_gate_show": {},
+  "plugin_pixiv_mute_gate_tag": "タグ {tag} をミュートしています。",
+  "@plugin_pixiv_mute_gate_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_mute_gate_title": "この作品はミュート中です",
+  "@plugin_pixiv_mute_gate_title": {},
+  "plugin_pixiv_mute_gate_work": "この作品をミュートしています。",
+  "@plugin_pixiv_mute_gate_work": {},
   "plugin_pixiv_mute_illust": "この作品をミュート",
   "@plugin_pixiv_mute_illust": {},
+  "plugin_pixiv_mute_novels": "小説",
+  "@plugin_pixiv_mute_novels": {},
+  "plugin_pixiv_mute_settings": "ミュート設定",
+  "@plugin_pixiv_mute_settings": {},
   "plugin_pixiv_mute_tag": "タグ「{tag}」をミュート",
   "@plugin_pixiv_mute_tag": {},
+  "plugin_pixiv_mute_tag_add": "タグをミュート",
+  "@plugin_pixiv_mute_tag_add": {},
+  "plugin_pixiv_mute_tag_help": "r'パターン' と書くと、正規表現に一致するすべてのタグをミュートします。パターンは作品のタグをつなげた #tag1#tag2 にも適用されます。",
+  "@plugin_pixiv_mute_tag_help": {},
+  "plugin_pixiv_mute_tag_hint": "ミュートするタグ",
+  "@plugin_pixiv_mute_tag_hint": {},
+  "plugin_pixiv_mute_tag_invalid": "このパターンは正しい正規表現ではありません",
+  "@plugin_pixiv_mute_tag_invalid": {},
+  "plugin_pixiv_mute_tags": "タグ",
+  "@plugin_pixiv_mute_tags": {},
+  "plugin_pixiv_mute_users": "ユーザー",
+  "@plugin_pixiv_mute_users": {},
+  "plugin_pixiv_mute_works": "作品",
+  "@plugin_pixiv_mute_works": {},
   "plugin_pixiv_muted_empty": "ミュート中のPixiv項目はありません",
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "ミュート中のPixiv項目",
@@ -2297,6 +2446,10 @@
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "そのPixivリンクを開けませんでした",
   "@plugin_pixiv_open_link_failed": {},
+  "plugin_pixiv_open_links_in_app": "pixiv のリンクを XTA で開く",
+  "@plugin_pixiv_open_links_in_app": {},
+  "plugin_pixiv_open_links_in_app_description": "Android の「デフォルトで開く」画面で、pixiv.net と pixiv.me を対応リンクとして追加してください",
+  "@plugin_pixiv_open_links_in_app_description": {},
   "plugin_pixiv_open_on_pixiv": "Pixiv で開く",
   "@plugin_pixiv_open_on_pixiv": {},
   "plugin_pixiv_page_of": "{current} / {total}",
@@ -2311,6 +2464,8 @@
   },
   "plugin_pixiv_popular_title": "人気順",
   "@plugin_pixiv_popular_title": {},
+  "plugin_pixiv_premium": "プレミアム",
+  "@plugin_pixiv_premium": {},
   "plugin_pixiv_profile_birthday": "誕生日",
   "@plugin_pixiv_profile_birthday": {},
   "plugin_pixiv_profile_bookmarks_empty": "公開ブックマークはまだありません",
@@ -2443,6 +2598,16 @@
   "@plugin_pixiv_sign_in_failed": {},
   "plugin_pixiv_sign_out": "サインアウト",
   "@plugin_pixiv_sign_out": {},
+  "plugin_pixiv_sign_out_named": "{name} からサインアウトしますか？",
+  "@plugin_pixiv_sign_out_named": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_sign_out_question": "Pixiv からサインアウトしますか？",
+  "@plugin_pixiv_sign_out_question": {},
   "plugin_pixiv_signed_in": "{name} としてサインイン中",
   "@plugin_pixiv_signed_in": {
     "placeholders": {
@@ -2451,6 +2616,10 @@
       }
     }
   },
+  "plugin_pixiv_start_section": "Pixiv の起動画面",
+  "@plugin_pixiv_start_section": {},
+  "plugin_pixiv_switch_account": "アカウントを切り替え",
+  "@plugin_pixiv_switch_account": {},
   "plugin_pixiv_tab_bookmarks": "ブックマーク",
   "@plugin_pixiv_tab_bookmarks": {},
   "plugin_pixiv_tab_favorites": "お気に入り",
@@ -2483,12 +2652,24 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "うごイラ",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_pause": "アニメーションを一時停止",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_ugoira_play": "アニメーションを再生",
+  "@plugin_pixiv_ugoira_play": {},
   "plugin_pixiv_unbookmark": "ブックマークを外す",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "フォロー解除",
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "ミュート解除",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_unmute_question": "{name} のミュートを解除しますか？",
+  "@plugin_pixiv_unmute_question": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_works_count": "{count, plural, other{作品 {shown}}}",
   "@plugin_pixiv_works_count": {
     "placeholders": {
@@ -3232,6 +3413,99 @@
   "@rate_limited_message": {},
   "rate_limited_title": "𝕏 によりレート制限中",
   "@rate_limited_title": {},
+  "reader_auto_retry_in": "{time} 後に再試行します…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_auto_retry_seconds": "{seconds} 秒後に再試行します…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "記事のハイライト、タグ、メモ",
+  "@reader_backup_annotations": {},
+  "reader_batch_progress": "確認済みのバッチ: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_cached_content": "ソースの更新中は保存済みの内容を表示しています。",
+  "@reader_cached_content": {},
+  "reader_changes_saved": "変更を保存しました",
+  "@reader_changes_saved": {},
+  "reader_connection_failed": "接続に失敗しました",
+  "@reader_connection_failed": {},
+  "reader_draft_restored": "下書きを復元しました",
+  "@reader_draft_restored": {},
+  "reader_extract": "スクリーンショットから文字を抽出",
+  "@reader_extract": {},
+  "reader_extract_notice": "選択したPNGまたはJPEG画像を、設定済みのAIモデルで{host}に送信します。抽出した文字には誤りが含まれる場合があります。",
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_highlight": "ハイライトしてメモ",
+  "@reader_highlight": {},
+  "reader_less_like": "似た内容を減らす",
+  "@reader_less_like": {},
+  "reader_link_posts": "同じリンクを含む他の投稿: {count}",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_more_like": "似た内容を増やす",
+  "@reader_more_like": {},
+  "reader_new_posts": "新しい投稿",
+  "@reader_new_posts": {},
+  "reader_rate_limit_hint": "このソースではリクエストが制限されています。後でもう一度お試しください。",
+  "@reader_rate_limit_hint": {},
+  "reader_recent_reads": "最近の読み込み処理",
+  "@reader_recent_reads": {},
+  "reader_retry_in": "{time} 後に再試行",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reader_search_all": "ライブラリを検索",
+  "@reader_search_all": {},
+  "reader_search_loaded": "読み込み済みの投稿を検索",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "読み込み済みの投稿から本文、リンク、投稿者を検索します。",
+  "@reader_search_loaded_hint": {},
+  "reader_sign_in_needed": "続けるには再ログインしてください",
+  "@reader_sign_in_needed": {},
+  "reader_source_loading": "このソースは読み込み中です。他の投稿はすでに読めます。",
+  "@reader_source_loading": {},
+  "reader_undo": "元に戻す",
+  "@reader_undo": {},
+  "reader_undo_unavailable": "元に戻せませんでした。データが変更された可能性があります。",
+  "@reader_undo_unavailable": {},
   "reading_positions": "読書位置",
   "@reading_positions": {},
   "recent": "最新",
@@ -3462,6 +3736,8 @@
   "@switch_group": {},
   "sync": "同期",
   "@sync": {},
+  "sync_conflict": "サーバーのバックアップが変更されています。アップロードする前に復元して内容を確認してください。",
+  "@sync_conflict": {},
   "sync_description": "購読・グループ・保存した投稿を、自分で用意した WebDAV サーバーにコピーします",
   "@sync_description": {},
   "sync_download": "サーバーから復元",
@@ -3478,6 +3754,8 @@
   "@sync_error_server": {},
   "sync_error_unauthorized": "サーバーがこの認証情報を拒否しました",
   "@sync_error_unauthorized": {},
+  "sync_history": "以前のバックアップ",
+  "@sync_history": {},
   "sync_include_accounts": "𝕏 のログインを含める",
   "@sync_include_accounts": {},
   "sync_include_accounts_description": "既定ではオフです。ログイン情報は 𝕏 のセッショントークンです。サーバーとそのバックアップを信頼できる場合のみアップロードしてください。",
@@ -3492,6 +3770,8 @@
   "@sync_server_url": {},
   "sync_server_url_hint": "https://cloud.example.org/dav/xta/backup.json",
   "@sync_server_url_hint": {},
+  "sync_unsafe_server": "このサーバーでは、同時に行われる変更からバックアップを安全に保護できません。",
+  "@sync_unsafe_server": {},
   "sync_upload": "今すぐアップロード",
   "@sync_upload": {},
   "sync_uploaded": "アップロードしました",
@@ -3739,133 +4019,5 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {},
-  "reader_link_posts": "同じリンクを含む他の投稿: {count}",
-  "reader_connection_failed": "接続に失敗しました",
-  "reader_sign_in_needed": "続けるには再ログインしてください",
-  "reader_rate_limit_hint": "このソースではリクエストが制限されています。後でもう一度お試しください。",
-  "reader_new_posts": "新しい投稿",
-  "reader_source_loading": "このソースは読み込み中です。他の投稿はすでに読めます。",
-  "reader_cached_content": "ソースの更新中は保存済みの内容を表示しています。",
-  "reader_draft_restored": "下書きを復元しました",
-  "reader_search_all": "ライブラリを検索",
-  "reader_highlight": "ハイライトしてメモ",
-  "reader_extract": "スクリーンショットから文字を抽出",
-  "reader_extract_notice": "選択したPNGまたはJPEG画像を、設定済みのAIモデルで{host}に送信します。抽出した文字には誤りが含まれる場合があります。",
-  "reader_more_like": "似た内容を増やす",
-  "reader_less_like": "似た内容を減らす",
-  "reader_undo": "元に戻す",
-  "@reader_link_posts": {
-    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "@reader_connection_failed": {},
-  "@reader_sign_in_needed": {},
-  "@reader_rate_limit_hint": {},
-  "@reader_new_posts": {},
-  "@reader_source_loading": {},
-  "@reader_cached_content": {},
-  "@reader_draft_restored": {},
-  "@reader_search_all": {},
-  "@reader_highlight": {},
-  "@reader_extract": {},
-  "@reader_extract_notice": {
-    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
-    "placeholders": {
-      "host": {
-        "type": "String"
-      }
-    }
-  },
-  "@reader_more_like": {},
-  "@reader_less_like": {},
-  "@reader_undo": {},
-  "reader_batch_progress": "確認済みのバッチ: {done}/{total}",
-  "@reader_batch_progress": {
-    "placeholders": {
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_backup_annotations": "記事のハイライト、タグ、メモ",
-  "@reader_backup_annotations": {},
-  "reader_changes_saved": "変更を保存しました",
-  "@reader_changes_saved": {},
-  "reader_undo_unavailable": "元に戻せませんでした。データが変更された可能性があります。",
-  "@reader_undo_unavailable": {},
-  "reader_recent_reads": "最近の読み込み処理",
-  "@reader_recent_reads": {},
-  "reader_search_loaded": "読み込み済みの投稿を検索",
-  "@reader_search_loaded": {},
-  "reader_search_loaded_hint": "読み込み済みの投稿から本文、リンク、投稿者を検索します。",
-  "@reader_search_loaded_hint": {},
-  "reader_retry_in": "{time} 後に再試行",
-  "@reader_retry_in": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sync_conflict": "サーバーのバックアップが変更されています。アップロードする前に復元して内容を確認してください。",
-  "@sync_conflict": {},
-  "sync_unsafe_server": "このサーバーでは、同時に行われる変更からバックアップを安全に保護できません。",
-  "@sync_unsafe_server": {},
-  "sync_history": "以前のバックアップ",
-  "@sync_history": {},
-  "home_keep_controls_visible": "操作ボタンを常に表示",
-  "reader_auto_retry_seconds": "{seconds} 秒後に再試行します…",
-  "@reader_auto_retry_seconds": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
-  "reader_auto_retry_in": "{time} 後に再試行します…",
-  "@reader_auto_retry_in": {
-    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "plugin_pixiv_download_page": "このページを保存",
-  "@plugin_pixiv_download_page": {},
-  "plugin_pixiv_download_all": "全ページを保存",
-  "@plugin_pixiv_download_all": {},
-  "plugin_pixiv_all_pages": "すべてのページ",
-  "@plugin_pixiv_all_pages": {},
-  "plugin_pixiv_copy_link": "リンクをコピー",
-  "@plugin_pixiv_copy_link": {},
-  "plugin_pixiv_link_copied": "リンクをコピーしました",
-  "@plugin_pixiv_link_copied": {},
-  "plugin_pixiv_more_actions": "その他の操作",
-  "@plugin_pixiv_more_actions": {},
-  "plugin_pixiv_current_page": "{current} / {total} ページ",
-  "@plugin_pixiv_current_page": {},
-  "plugin_pixiv_downloading_page": "{current} / {total} ページを保存中…",
-  "@plugin_pixiv_downloading_page": {},
-  "plugin_pixiv_more_by": "{name}さんの他の作品",
-  "@plugin_pixiv_more_by": {},
-  "plugin_pixiv_ugoira_play": "アニメーションを再生",
-  "@plugin_pixiv_ugoira_play": {},
-  "plugin_pixiv_ugoira_pause": "アニメーションを一時停止",
-  "@plugin_pixiv_ugoira_pause": {},
-  "plugin_pixiv_hide_ai": "AI生成作品を非表示",
-  "@plugin_pixiv_hide_ai": {},
-  "plugin_pixiv_hide_ai_description": "作者がAI生成と申告した作品を表示しません。自分のブックマークは常に表示されます。",
-  "@plugin_pixiv_hide_ai_description": {},
-  "plugin_pixiv_ai": "AI",
-  "@plugin_pixiv_ai": {}
+  "@zen_mode_page_cap_description": {}
 }

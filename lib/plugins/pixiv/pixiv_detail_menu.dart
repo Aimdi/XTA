@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_folder_sheet.dart';
+import 'package:xta/plugins/pixiv/pixiv_copy_info.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_overflow_menu.dart';
@@ -44,6 +45,8 @@ Future<void> _bookmarkIntoFolder(PixivPageSurface surface) =>
 Future<void> _copyLink(PixivPageSurface surface) =>
     surface.runPageAction(PixivPageAction.copyLink, surface.currentPage);
 
+Future<void> _copyInfo(PixivPageSurface surface) => copyPixivInfo(surface.context, surface.pageIllust);
+
 Future<void> _openOnPixiv(PixivPageSurface surface) => openUri(surface.context, surface.pageIllust.url);
 
 Future<void> _mute(PixivPageSurface surface) => showPixivMuteSheet(surface.context, surface.pageIllust);
@@ -65,6 +68,12 @@ final pixivDetailMenuEntries = <PixivDetailMenuEntry>[
     run: _bookmarkIntoFolder,
   ),
   PixivDetailMenuEntry(id: 'copyLink', icon: Icons.link, label: (l10n) => l10n.plugin_pixiv_copy_link, run: _copyLink),
+  PixivDetailMenuEntry(
+    id: 'copyInfo',
+    icon: Icons.content_copy_outlined,
+    label: (l10n) => l10n.plugin_pixiv_copy_info,
+    run: _copyInfo,
+  ),
   PixivDetailMenuEntry(
     id: 'open',
     icon: Icons.open_in_new,

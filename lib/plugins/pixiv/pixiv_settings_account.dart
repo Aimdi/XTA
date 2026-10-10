@@ -4,11 +4,10 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_account_list.dart';
+import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/plugins/pixiv/pixiv_store.dart';
-import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
 /// What the account controls show while the reader signs in, tests the token
@@ -33,26 +32,20 @@ class PixivAccountView {
 bool pixivSignedIn(BasePrefService prefs) => (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
 
 /// The signed-in account's name, or null when the token does not work now.
+/// A working account is kept among the stored ones, which is how an account
+/// signed in before several were kept joins them.
 Future<String?> pixivVerifiedName(PixivClient client) async {
   try {
-    return (await client.verify()).displayName;
+    final user = await client.verify();
+    await rememberPixivAccount(client.prefs, user);
+    return user.displayName;
   } catch (_) {
     return null;
   }
 }
 
-/// Forgets the account and everything loaded with it.
-Future<void> pixivSignOut(BuildContext context) async {
-  final feed = context.read<PixivFeedStore>();
-  final bookmarks = context.read<PixivBookmarkStore>();
-  final follows = context.read<PixivFollowStore>();
-  await context.read<PixivClient>().signOut();
-  feed.update(const []);
-  bookmarks.update(const {});
-  follows.clear();
-}
-
-/// Sign in or out, and the refresh token for readers who paste one.
+/// The stored accounts with switching, adding and signing out, and the
+/// refresh token for readers who paste one.
 class PixivAccountSettings extends StatefulWidget {
   const PixivAccountSettings({super.key});
 
@@ -62,6 +55,7 @@ class PixivAccountSettings extends StatefulWidget {
 
 class _PixivAccountSettingsState extends State<PixivAccountSettings> {
   late final TextEditingController _token;
+  late final PixivAccountsStore _accounts;
   final _view = PluginViewStore(const PixivAccountView());
 
   BasePrefService get _prefs => PrefService.of(context, listen: false);
@@ -69,6 +63,7 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
   @override
   void initState() {
     super.initState();
+    _accounts = PixivAccountsStore(context.read<PixivClient>())..load();
     _token = TextEditingController(text: _prefs.get<String>(optionPluginPixivRefreshToken) ?? '');
     _loadSignedInName();
   }
@@ -77,43 +72,51 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
   void dispose() {
     _token.dispose();
     _view.destroy();
+    _accounts.destroy();
     super.dispose();
   }
 
   void _syncToken() => _token.text = _prefs.get<String>(optionPluginPixivRefreshToken) ?? '';
 
+  void _syncAccounts() {
+    if (!mounted) return;
+    _accounts.load();
+    _view.select(_view.state.copyWith(name: _accounts.active?.displayName, clearName: _accounts.active == null));
+    _syncToken();
+  }
+
   Future<void> _loadSignedInName() async {
     if (!pixivSignedIn(_prefs)) return;
     final name = await pixivVerifiedName(context.read<PixivClient>());
     if (!mounted || name == null) return;
+    _accounts.load();
     _view.select(_view.state.copyWith(name: name));
     _syncToken();
   }
 
+  /// A typed or pasted token may be another account's: the stored id is
+  /// cleared until a token check names its owner, so no stored account takes it.
   Future<void> _saveToken() async {
-    await _prefs.set(optionPluginPixivRefreshToken, _token.text.trim());
+    final token = _token.text.trim();
+    if (token == (_prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim()) return;
+    await _prefs.set(optionPluginPixivRefreshToken, token);
     await _prefs.set(optionPluginPixivAccessToken, '');
     await _prefs.set(optionPluginPixivAccessExpiresAt, '');
+    await _prefs.set(optionPluginPixivUserId, 0);
   }
 
   Future<void> _signIn() async {
     _view.select(_view.state.copyWith(signingIn: true));
     try {
       final user = await runPixivSignIn(context);
-      if (mounted) {
-        _view.select(_view.state.copyWith(name: user?.displayName, clearName: user == null));
-        _syncToken();
-      }
+      if (mounted && user != null) _syncAccounts();
     } finally {
       if (mounted) _view.select(_view.state.copyWith(signingIn: false));
     }
   }
 
   Future<void> _signOut() async {
-    await pixivSignOut(context);
-    if (!mounted) return;
-    _view.select(_view.state.copyWith(clearName: true));
-    _token.text = '';
+    if (await confirmPixivSignOut(context, _accounts)) _syncAccounts();
   }
 
   Future<void> _test() async {
@@ -125,6 +128,7 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
     String message;
     try {
       final user = await client.verify();
+      await _accounts.remember(user);
       message = l10n.plugin_pixiv_signed_in(user.displayName);
       if (mounted) _view.select(_view.state.copyWith(name: user.displayName));
     } catch (e) {
@@ -155,15 +159,23 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(l10n.plugin_pixiv_signed_in(name), style: Theme.of(context).textTheme.titleSmall),
         ),
+      PixivAccountList(store: _accounts, onChanged: _syncAccounts),
       Wrap(
         spacing: 12,
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          FilledButton(
-            onPressed: view.signingIn || signedIn ? null : _signIn,
-            child: view.signingIn ? const _Spinner() : Text(l10n.plugin_pixiv_sign_in),
-          ),
+          if (signedIn)
+            OutlinedButton.icon(
+              onPressed: view.signingIn ? null : _signIn,
+              icon: view.signingIn ? const _Spinner() : const Icon(Icons.person_add_alt_1_outlined),
+              label: Text(l10n.add_account),
+            )
+          else
+            FilledButton(
+              onPressed: view.signingIn ? null : _signIn,
+              child: view.signingIn ? const _Spinner() : Text(l10n.plugin_pixiv_sign_in),
+            ),
           if (signedIn) TextButton(onPressed: _signOut, child: Text(l10n.plugin_pixiv_sign_out)),
         ],
       ),
@@ -184,7 +196,10 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
           hintText: l10n.plugin_pixiv_refresh_token_hint,
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(
-            icon: Icon(view.tokenShown ? Icons.visibility_off : Icons.visibility),
+            tooltip: l10n.plugin_pixiv_reveal,
+            isSelected: view.tokenShown,
+            icon: const Icon(Icons.visibility),
+            selectedIcon: const Icon(Icons.visibility_off),
             onPressed: () => _view.select(view.copyWith(tokenShown: !view.tokenShown)),
           ),
         ),

@@ -20,7 +20,10 @@ class PixivIllustTile extends StatelessWidget {
   final List<PixivIllust>? siblings;
   final int index;
 
-  const PixivIllustTile({super.key, required this.illust, this.siblings, this.index = 0});
+  /// In place of the work's actions sheet.
+  final VoidCallback? onLongPress;
+
+  const PixivIllustTile({super.key, required this.illust, this.siblings, this.index = 0, this.onLongPress});
 
   void _open(BuildContext context) {
     final list = siblings;
@@ -37,7 +40,7 @@ class PixivIllustTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onLongPress: () => showPixivPostActions(context, illust),
+        onLongPress: onLongPress ?? () => showPixivPostActions(context, illust),
         onTap: () => _open(context),
         child: Column(
           mainAxisSize: MainAxisSize.min,
