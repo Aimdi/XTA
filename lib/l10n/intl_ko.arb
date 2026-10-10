@@ -2229,6 +2229,54 @@
   "@plugin_pixiv_bookmarks_private_empty": {},
   "plugin_pixiv_bookmarks_public": "공개",
   "@plugin_pixiv_bookmarks_public": {},
+  "plugin_pixiv_comment_hidden_link": "숨김: Pixiv 외부 링크 포함",
+  "@plugin_pixiv_comment_hidden_link": {},
+  "plugin_pixiv_comment_mute": "이 댓글 뮤트",
+  "@plugin_pixiv_comment_mute": {},
+  "plugin_pixiv_comment_mute_user": "{name} 뮤트",
+  "@plugin_pixiv_comment_mute_user": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_options": "댓글 옵션",
+  "@plugin_pixiv_comment_options": {},
+  "plugin_pixiv_comment_reply_to": "{name}님에게 답글",
+  "@plugin_pixiv_comment_reply_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_comment_show": "보기",
+  "@plugin_pixiv_comment_show": {},
+  "plugin_pixiv_comment_sticker": "스탬프",
+  "@plugin_pixiv_comment_sticker": {},
+  "plugin_pixiv_comment_unknown_user": "알 수 없는 사용자",
+  "@plugin_pixiv_comment_unknown_user": {},
+  "plugin_pixiv_comment_view_replies": "답글 보기",
+  "@plugin_pixiv_comment_view_replies": {},
+  "plugin_pixiv_comments_empty": "아직 댓글이 없습니다",
+  "@plugin_pixiv_comments_empty": {},
+  "plugin_pixiv_comments_replies_empty": "아직 답글이 없습니다",
+  "@plugin_pixiv_comments_replies_empty": {},
+  "plugin_pixiv_comments_replies_title": "답글",
+  "@plugin_pixiv_comments_replies_title": {},
+  "plugin_pixiv_comments_title": "댓글",
+  "@plugin_pixiv_comments_title": {},
+  "plugin_pixiv_comments_view": "댓글 보기",
+  "@plugin_pixiv_comments_view": {},
+  "plugin_pixiv_comments_view_count": "댓글 보기 ({shown})",
+  "@plugin_pixiv_comments_view_count": {
+    "placeholders": {
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_description": "비공개 Pixiv 리더 — 팔로잉, 랭킹, 북마크, 검색. 게시 없음",
   "@plugin_pixiv_description": {},
   "plugin_pixiv_empty": "팔로잉 피드에 아직 아무것도 없습니다",
