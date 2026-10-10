@@ -17,6 +17,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/links/link_opening.dart';
 
 const double kTikTokAvatarSize = 48;
 
@@ -188,9 +189,10 @@ class _Cover extends StatelessWidget {
         child: Material(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           child: InkWell(
-            onTap: () => Navigator.push(
+            onTap: () => pushWebViewScreen(
               context,
-              MaterialPageRoute(builder: (_) => TikTokPlayerScreen(post: post)),
+              url: post.webUri().toString(),
+              screen: () => TikTokPlayerScreen(post: post),
             ),
             child: Stack(
               fit: StackFit.expand,

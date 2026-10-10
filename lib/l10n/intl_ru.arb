@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Показать ещё 1 ответ} few{Показать ещё {count} ответа} many{Показать ещё {count} ответов} other{Показать ещё {count} ответа}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Показать ещё 1 пост из этой ветки} few{Показать ещё {count} поста из этой ветки} many{Показать ещё {count} постов из этой ветки} other{Показать ещё {count} поста из этой ветки}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie с x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Войдите на x.com в браузере, откройте инструменты разработчика (F12) и скопируйте cookie auth_token и ct0 из раздела «Хранилище» → «Cookie». Вставьте их ниже в виде auth_token=…; ct0=…. Они хранятся только на этом компьютере и никому не передаются.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Для входа здесь нужен встроенный браузер приложения для Android, которого нет в версии для компьютера.",
+  "@sign_in_needs_android": {}
 }

@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Показати ще 1 відповідь} few{Показати ще {count} відповіді} many{Показати ще {count} відповідей} other{Показати ще {count} відповіді}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Показати ще 1 допис із цієї гілки} few{Показати ще {count} дописи з цієї гілки} many{Показати ще {count} дописів із цієї гілки} other{Показати ще {count} допису з цієї гілки}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie з x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Увійдіть на x.com у браузері, відкрийте інструменти розробника (F12) і скопіюйте cookie auth_token і ct0 з розділу «Сховище» → «Cookie». Вставте їх нижче у вигляді auth_token=…; ct0=…. Вони зберігаються лише на цьому комп'ютері й нікому не передаються.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Для входу тут потрібен вбудований браузер застосунку для Android, якого немає у версії для комп'ютера.",
+  "@sign_in_needs_android": {}
 }

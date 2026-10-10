@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{1 और जवाब दिखाएँ} other{{count} और जवाब दिखाएँ}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{इस थ्रेड की 1 और पोस्ट दिखाएँ} other{इस थ्रेड की {count} और पोस्ट दिखाएँ}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "x.com की कुकीज़",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "अपने ब्राउज़र में x.com पर साइन इन करें, डेवलपर टूल (F12) खोलें और स्टोरेज → कुकीज़ से auth_token और ct0 कुकीज़ कॉपी करें। उन्हें नीचे auth_token=…; ct0=… के रूप में चिपकाएँ। ये केवल इसी कंप्यूटर पर रहती हैं और कभी साझा नहीं की जातीं।",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "यहाँ साइन इन करने के लिए Android ऐप का बिल्ट-इन ब्राउज़र चाहिए, जो डेस्कटॉप ऐप में नहीं है।",
+  "@sign_in_needs_android": {}
 }

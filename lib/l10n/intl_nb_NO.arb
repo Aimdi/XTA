@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Vis 1 svar til} other{Vis {count} svar til}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Vis 1 innlegg til i denne tråden} other{Vis {count} innlegg til i denne tråden}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Informasjonskapsler fra x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Logg inn på x.com i nettleseren, åpne utviklerverktøyene (F12) og kopier informasjonskapslene auth_token og ct0 fra Lagring → Informasjonskapsler. Lim dem inn nedenfor som auth_token=…; ct0=…. De lagres bare på denne datamaskinen og deles aldri.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Innlogging her krever den innebygde nettleseren i Android-appen, som skrivebordsappen ikke har.",
+  "@sign_in_needs_android": {}
 }

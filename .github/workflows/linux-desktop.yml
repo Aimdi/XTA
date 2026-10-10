@@ -1,0 +1,54 @@
+name: Linux desktop release
+
+# Builds the Linux desktop bundle for a release tag and attaches it beside the
+# APKs: the portable tarball, the Arch package and the PKGBUILD that builds
+# it. The two APK publishers call this once their release exists; run it by
+# hand to (re)attach the desktop build of a tag. See docs/desktop.md.
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (it must already have a release)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  linux-desktop:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out the requested release tag
+        id: tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          cp scripts/release_integrity.py "$RUNNER_TEMP/xta-release-integrity.py"
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" checkout -- "$RELEASE_TAG"
+
+      - name: Build and package
+        uses: ./.github/actions/build-linux
+        with:
+          release-tag: ${{ steps.tag.outputs.tag }}
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          cd build/linux-release
+          sha256sum xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD > SHA256SUMS-linux
+          cat SHA256SUMS-linux
+          gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
+            xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD SHA256SUMS-linux

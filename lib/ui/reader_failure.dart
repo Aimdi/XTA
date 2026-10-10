@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/ui/read_failure_kind.dart';
 export 'package:xta/ui/read_failure_kind.dart';
-import 'package:xta/client/login_webview.dart';
+import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
@@ -236,7 +236,7 @@ class _ReaderFailureDetails extends StatelessWidget {
               if (kind == ReadFailureKind.session && source == 'x')
                 TextButton.icon(
                   onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview())),
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => xLoginScreen())),
                   icon: const Icon(Icons.login),
                   label: Text(l10n.add_account),
                 ),

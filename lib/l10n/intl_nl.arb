@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Nog 1 reactie tonen} other{Nog {count} reacties tonen}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Nog 1 bericht in dit draadje tonen} other{Nog {count} berichten in dit draadje tonen}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookies van x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Log in op x.com in je browser, open de ontwikkelaarstools (F12) en kopieer de cookies auth_token en ct0 via Opslag → Cookies. Plak ze hieronder als auth_token=…; ct0=…. Ze blijven alleen op deze computer en worden nooit gedeeld.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Inloggen kan hier alleen met de ingebouwde browser van de Android-app, en die heeft de desktopapp niet.",
+  "@sign_in_needs_android": {}
 }

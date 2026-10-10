@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Afficher 1 autre réponse} other{Afficher {count} autres réponses}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Afficher 1 autre publication de ce fil} other{Afficher {count} autres publications de ce fil}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookies de x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Connectez-vous à x.com dans votre navigateur, ouvrez les outils de développement (F12) et copiez les cookies auth_token et ct0 depuis Stockage → Cookies. Collez-les ci-dessous sous la forme auth_token=…; ct0=…. Ils restent uniquement sur cet ordinateur et ne sont jamais partagés.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "La connexion ici nécessite le navigateur intégré de l'app Android, que l'app de bureau n'a pas.",
+  "@sign_in_needs_android": {}
 }

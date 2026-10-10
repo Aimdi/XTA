@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Mostra 1 altra risposta} other{Mostra altre {count} risposte}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Mostra 1 altro post di questa discussione} other{Mostra altri {count} post di questa discussione}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie di x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Accedi a x.com nel browser, apri gli strumenti per sviluppatori (F12) e copia i cookie auth_token e ct0 da Archiviazione → Cookie. Incollali qui sotto nel formato auth_token=…; ct0=…. Restano solo su questo computer e non vengono mai condivisi.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Per accedere qui serve il browser integrato dell'app Android, che l'app desktop non ha.",
+  "@sign_in_needs_android": {}
 }

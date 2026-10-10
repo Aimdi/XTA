@@ -5640,5 +5640,17 @@
   "plugin_threads_more_replies": "{count, plural, one{Show 1 more reply} other{Show {count} more replies}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Show 1 more post in this thread} other{Show {count} more posts in this thread}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookies from x.com",
+  "@x_cookie_login_field": {
+    "description": "Desktop sign-in: label of the text field where the reader pastes their x.com session cookies"
+  },
+  "x_cookie_login_help": "Sign in to x.com in your web browser, open its developer tools (F12) and copy the auth_token and ct0 cookies from Storage → Cookies. Paste them below as auth_token=…; ct0=…. They are stored only on this computer and never shared.",
+  "@x_cookie_login_help": {
+    "description": "Desktop sign-in instructions. auth_token, ct0, F12 and the auth_token=…; ct0=… format are literal and must not be translated"
+  },
+  "sign_in_needs_android": "Signing in here needs the Android app's built-in browser, which the desktop app doesn't have.",
+  "@sign_in_needs_android": {
+    "description": "Shown on the Linux desktop app when a source's sign-in needs a web view that only the Android app has"
+  }
 }

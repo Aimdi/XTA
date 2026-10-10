@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client_regular_account.dart';
-import 'package:xta/client/login_webview.dart';
+import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/client/accounts.dart';
@@ -107,7 +107,7 @@ class _SettingsAccountFragment extends State<SettingsAccountFragment> {
           tooltip: L10n.of(context).add_account,
           onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),
+            MaterialPageRoute(builder: (_) => xLoginScreen()),
           ),
           icon: const Icon(Icons.add),
         ),

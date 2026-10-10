@@ -7,6 +7,7 @@ import 'package:xta/offline/offline_ui.dart';
 import 'package:xta/plugins/rss/rss_reader_screen.dart';
 import 'package:xta/plugins/substack/substack_reader_screen.dart';
 import 'package:xta/utils/browsers.dart';
+import 'package:xta/links/link_opening.dart';
 
 class OfflineLibraryScreen extends StatelessWidget {
   final OfflineStore? store;
@@ -44,9 +45,9 @@ class OfflineLibraryScreen extends StatelessWidget {
     final rss = article?.rssItem;
     final substack = article?.substackPost;
     if (rss != null) {
-      await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => RssReaderScreen(item: rss)));
+      await pushWebViewScreen(context, url: rss.link, screen: () => RssReaderScreen(item: rss));
     } else if (substack != null) {
-      await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SubstackReaderScreen(post: substack)));
+      await pushWebViewScreen(context, url: substack.canonicalUrl, screen: () => SubstackReaderScreen(post: substack));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).offline_unavailable)));
       await model.refresh();

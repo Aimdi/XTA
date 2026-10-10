@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, other{Hiện thêm {count} câu trả lời}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, other{Hiện thêm {count} bài trong chuỗi này}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie từ x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Đăng nhập x.com trong trình duyệt, mở công cụ dành cho nhà phát triển (F12) và sao chép cookie auth_token và ct0 trong mục Bộ nhớ → Cookie. Dán chúng vào bên dưới theo dạng auth_token=…; ct0=…. Chúng chỉ được lưu trên máy tính này và không bao giờ được chia sẻ.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Đăng nhập ở đây cần trình duyệt tích hợp của ứng dụng Android, mà ứng dụng máy tính không có.",
+  "@sign_in_needs_android": {}
 }

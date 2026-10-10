@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, other{Tampilkan {count} balasan lagi}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, other{Tampilkan {count} postingan lagi di utas ini}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie dari x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Masuk ke x.com di browser, buka alat pengembang (F12), lalu salin cookie auth_token dan ct0 dari Penyimpanan → Cookie. Tempelkan di bawah dengan format auth_token=…; ct0=…. Cookie ini hanya disimpan di komputer ini dan tidak pernah dibagikan.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Masuk di sini memerlukan browser bawaan aplikasi Android, yang tidak dimiliki aplikasi desktop.",
+  "@sign_in_needs_android": {}
 }

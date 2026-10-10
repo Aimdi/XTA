@@ -27,7 +27,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/endpoint_overrides.dart';
-import 'package:xta/client/login_webview.dart';
+import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/client/headers.dart';
 
 import 'package:xta/constants.dart';
@@ -154,6 +154,9 @@ import 'package:xta/speech/speech_bar.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/utils/desktop.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 Future checkForUpdates(BuildContext context) async {
   Logger.root.info('Checking for updates');
@@ -244,7 +247,7 @@ Future checkForAccounts(BuildContext context) async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const TwitterLoginWebview(),
+                    builder: (_) => xLoginScreen(),
                   ),
                 );
               },
@@ -444,12 +447,15 @@ Future<void> main() async {
     log(event.message, error: event.error, stackTrace: event.stackTrace);
   });
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   if (Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+    // FFI resolves a bare database name against the working directory, so the
+    // reader's data would follow wherever XTA was launched from.
+    await databaseFactory.setDatabasesPath(p.join((await getApplicationSupportDirectory()).path, 'databases'));
   }
-
-  WidgetsFlutterBinding.ensureInitialized();
 
   // Flutter's 100 MiB default is a lot of decoded bitmaps next to a video
   // player. Mixed plugin feeds (Substack covers, Reddit, Bluesky) evicted
@@ -1377,7 +1383,8 @@ class _FritterAppState extends State<FritterApp> {
         builder: (lightDynamic, darkDynamic) {
           return Portal(
             child: SecureWidget(
-              isSecure: _isSecure,
+              // Android's FLAG_SECURE; a desktop window cannot refuse a screenshot.
+              isSecure: _isSecure && !isDesktop,
               builder: (BuildContext context, a, b) => MaterialApp(
                 navigatorKey: _navigatorKey,
                 navigatorObservers: [readRouteObserver],
@@ -1640,6 +1647,8 @@ class _DefaultPageState extends State<DefaultPage> {
 
       unawaited(context.read<SavedTweetModel>().listSavedTweets());
       unawaited(context.read<LikedTweetModel>().listLikedTweets());
+      // Shares arrive through an Android intent; the desktop has no share target.
+      if (isDesktop) return;
       _shareSub = sharedTextChannel.receiveBroadcastStream().listen(
         (text) => _handleSharedText(text is String ? text : ''),
         onError: (Object error, StackTrace stackTrace) {

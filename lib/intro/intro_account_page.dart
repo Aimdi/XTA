@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/client/login_webview.dart';
+import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/intro/intro_illustrations.dart';
@@ -95,7 +95,7 @@ class IntroAccountPage extends StatelessWidget {
   }
 
   Future<void> _addAccount(BuildContext context) async {
-    await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const TwitterLoginWebview()));
+    await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => xLoginScreen()));
     await accounts.refresh();
   }
 
