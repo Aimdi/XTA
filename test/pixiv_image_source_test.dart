@@ -70,7 +70,7 @@ void main() {
     test('downloads fetch from the picked server under Pixiv\'s file names', () {
       final requests = pixivPageRequests(pixivWork(pages: 2), 'content://tree/x', imageHost: pixivMirrorHost);
       expect(requests.map((request) => request.uri.host).toSet(), {pixivMirrorHost});
-      expect(requests.map((request) => request.fileName), ['pixiv-120_p0.png', 'pixiv-120_p1.png']);
+      expect(requests.map((request) => request.fileName), ['120_p0.png', '120_p1.png']);
       final media = pixivPageMedia(pixivWork(), 1, imageHost: pixivMirrorHost);
       expect(
         [Uri.parse(media.url).host, Uri.parse(media.resolvedDownloadUrl).host],

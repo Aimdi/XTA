@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Усі сторінки",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Уже збережено",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Цю сторінку вже збережено. Зберегти її знову?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} з {total} сторінок уже збережена.} few{{saved} з {total} сторінок уже збережені.} many{{saved} з {total} сторінок уже збережені.} other{{saved} з {total} сторінок уже збережені.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "У закладки",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Додати в закладки",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Завантажити всі сторінки",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Одночасні завантаження",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Скільки файлів завантажується одночасно",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Збережені сторінки",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Поки немає запам’ятованих сторінок} one{Запам’ятовано {count} сторінку} few{Запам’ятовано {count} сторінки} many{Запам’ятовано {count} сторінок} other{Запам’ятовано {count} сторінки}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Збережені роботи позначаються галочкою, а перед повторним збереженням сторінки з’являється запитання",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Забути",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Забути, які сторінки було збережено? Самі файли залишаться на пристрої.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Завантажити цю сторінку",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Збережено — завантажити знову",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "Завантаження сторінки {current} з {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Завантаження",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "У стрічці підписок поки нічого немає",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Не вдалося з’єднатися з Pixiv",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Refresh-токен Pixiv відхилено",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Назва файлу",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Торкніться елемента, щоб вставити його в позицію курсора. Кожен файл зберігає своє розширення.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Додайте {token}, щоб кожна сторінка роботи мала власну назву",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Приклад: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Скинути",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID роботи",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Номер сторінки",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Назва",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID автора",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Ім’я автора",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Папка для кожного автора",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Складає роботи кожного автора в папку з його іменем усередині папки завантажень",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Окрема папка для R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Складає роботи R-18 у папку «R-18» усередині папки завантажень",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Підписатися",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Приватні",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Показати",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Зберегти знову",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Лише нові сторінки",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Зберегти {count} сторінку} few{Зберегти {count} сторінки} many{Зберегти {count} сторінок} other{Зберегти {count} сторінки}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Збережено на цьому пристрої",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Нічого не знайдено",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Теги, назви або користувачі",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Назва/опис",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Зняти всі",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Вибрати сторінки",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Сторінки не вибрано} one{Вибрано {count} сторінку} few{Вибрано {count} сторінки} many{Вибрано {count} сторінок} other{Вибрано {count} сторінки}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Цей приватний плагін читає Pixiv як галерею: стрічка, рейтинги, ваші публічні закладки й пошук. Натисніть «Увійти», щоб увійти в Pixiv у браузері, або вставте refresh-токен нижче. Звідси нічого не публікується, не додається в закладки й не підписується на Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Поділитися зображенням",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Кодування кадру {current} з {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Не вдалося зберегти анімацію",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Отримання кадрів…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Призупинити анімацію",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Відтворити анімацію",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Зберегти як GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Зберегти кадри в ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Анімацію збережено як GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Кадри збережено в ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Збереження…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Кодування може тривати хвилину",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Прибрати з закладок",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Відписатися",

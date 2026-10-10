@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
+import 'package:xta/plugins/pixiv/pixiv_downloaded_badge.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -68,6 +69,8 @@ class PixivIllustTile extends StatelessWidget {
                     child: RepaintBoundary(child: _image(context)),
                   ),
                   PixivTileBadges(illust: illust),
+                  // Above the heart, so the R-18 and AI labels keep the bottom row on a narrow tile.
+                  Positioned(right: 9, bottom: 48, child: PixivDownloadedBadge(illust: illust)),
                   Positioned(right: 0, bottom: 0, child: PixivBookmarkButton(illust: illust, compact: true)),
                 ],
               ),

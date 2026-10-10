@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Totes les pàgines",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Ja desat",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Aquesta pàgina ja està desada. La vols tornar a desar?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} de {total} pàgines ja està desada.} other{{saved} de {total} pàgines ja estan desades.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Marcador",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Afegeix un marcador",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Baixa totes les pàgines",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Baixades simultànies",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Quants fitxers es baixen alhora",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Pàgines desades",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Encara no s’ha recordat cap pàgina} one{1 pàgina recordada} other{{count} pàgines recordades}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Les obres desades porten una marca, i abans de desar una pàgina per segona vegada se’t pregunta",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Oblida",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Vols oblidar quines pàgines s’han desat? Els fitxers es queden al dispositiu.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Baixa aquesta pàgina",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Desada: torna-la a baixar",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "S’està baixant la pàgina {current} de {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Baixades",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Encara no hi ha res al fil de seguiments",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "No s’ha pogut contactar amb Pixiv",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "S’ha rebutjat el testimoni d’actualització de Pixiv",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Nom del fitxer",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Toca una dada per inserir-la on hi ha el cursor. Cada fitxer conserva la seva extensió.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Inclou {token} perquè cada pàgina d’una obra tingui un nom propi",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Previsualització: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Restableix",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID de l’obra",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Número de pàgina",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Títol",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID de l’artista",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Nom de l’artista",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Una carpeta per artista",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Desa les obres de cada artista en una carpeta amb el seu nom dins de la carpeta de baixades",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Carpeta a part per a R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Desa les obres R-18 en una carpeta «R-18» dins de la carpeta de baixades",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Segueix",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Privats",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Mostra",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Torna a desar",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Només pàgines noves",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Desa 1 pàgina} other{Desa {count} pàgines}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Desada en aquest dispositiu",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Sense resultats",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Etiquetes, títols o usuaris",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Títol/descripció",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Cap",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Selecciona pàgines",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Cap pàgina seleccionada} one{1 pàgina seleccionada} other{{count} pàgines seleccionades}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Aquest connector privat llegeix Pixiv com una galeria: seguiment, rànquings, els vostres marcadors públics i la cerca. Tocau Inicia la sessió per entrar amb el compte de Pixiv al navegador, o enganxeu un token de renovació a sota. Des d’aquí no es publica, es marca ni se segueix res a Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Comparteix la imatge",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "S’està codificant el fotograma {current} de {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "No s’ha pogut desar l’animació",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "S’estan obtenint els fotogrames…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Posa en pausa l’animació",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Reprodueix l’animació",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Desa com a GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Desa els fotogrames com a ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animació desada com a GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Fotogrames desats com a ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "S’està desant…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "La codificació pot trigar un minut",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Treu el marcador",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Deixa de seguir",

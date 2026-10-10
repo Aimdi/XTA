@@ -64,7 +64,7 @@ page; all are off by default except haptics, and all are reset with the plugin:
 | Tag bookmarks automatically | `plugin.pixiv.auto_tag_bookmarks` | Bookmarks made without the editor carry the work's tags; the editor pre-checks them on a work not bookmarked yet |
 | Follow when bookmarking | `plugin.pixiv.follow_after_bookmark` | A new bookmark follows an author the reader does not follow yet, publicly (never the reader themself); a failed follow leaves the bookmark |
 | Save when bookmarking | `plugin.pixiv.download_after_bookmark` | A new bookmark saves every page through `downloadAllPixivPages` |
-| Bookmark when saving | `plugin.pixiv.bookmark_after_download` | A page or all-pages save from the work's page (detail or reader) that saved something bookmarks a work not bookmarked yet, with the default visibility, auto-tags and follow-after, and never saves again |
+| Bookmark when saving | `plugin.pixiv.bookmark_after_download` | Any save that saved something — one page, all pages, picked pages, an ugoira GIF or ZIP, or a tile's long-press Download — bookmarks a work not bookmarked yet (`savePixivThenBookmark`), with the default visibility, auto-tags and follow-after, and never saves again |
 | Haptic feedback | `plugin.pixiv.haptics` | Light when a bookmark or follow lands, medium when a long press opens the bookmark editor or a page's actions |
 
 None of these are secrets; they travel with settings backups like the other

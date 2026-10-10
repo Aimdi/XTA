@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Kõik lehed",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Juba salvestatud",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "See leht on juba salvestatud. Kas salvestada uuesti?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{total} lehest {saved} on juba salvestatud.} other{{total} lehest {saved} on juba salvestatud.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Järjehoidja",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Lisa järjehoidja",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Laadi kõik lehed alla",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Samaaegsed allalaadimised",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Mitu faili korraga alla laaditakse",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Salvestatud lehed",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Ühtegi lehte pole veel meelde jäetud} one{{count} leht meelde jäetud} other{{count} lehte meelde jäetud}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Salvestatud teosed saavad linnukese ja enne lehe teistkordset salvestamist küsitakse üle",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Unusta",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Kas unustada, millised lehed on salvestatud? Failid ise jäävad seadmesse.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Laadi see leht alla",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Salvestatud – laadi uuesti alla",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "Laadin alla lehte {current}/{total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Allalaadimised",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Jälgimisvoos pole veel midagi",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Pixiviga ei õnnestunud ühendust saada",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Sinu Pixivi värskendustoken lükati tagasi",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Failinimi",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Puuduta andmevälja, et lisada see kursori kohale. Iga fail säilitab oma laiendi.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Lisa {token}, et teose igal lehel oleks oma nimi",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Eelvaade: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Lähtesta",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Teose ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Lehekülje number",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Pealkiri",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Kunstniku ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Kunstniku nimi",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Iga kunstniku jaoks kaust",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Paneb iga kunstniku teosed allalaadimiste kausta sees tema nimega kausta",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Eraldi kaust R-18 jaoks",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Paneb R-18 teosed allalaadimiste kausta sees olevasse kausta „R-18”",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Jälgi",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Privaatsed",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Näita",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Salvesta uuesti",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Ainult uued lehed",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Salvesta {count} leht} other{Salvesta {count} lehte}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Salvestatud selles seadmes",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Tulemusi pole",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Sildid, pealkirjad või kasutajad",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Pealkiri/kirjeldus",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Mitte ühtegi",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Vali lehed",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Ühtegi lehte pole valitud} one{{count} leht valitud} other{{count} lehte valitud}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "See privaatne plugin loeb Pixivi nagu galeriiäppi: jälgimine, edetabelid, sinu avalikud järjehoidjad ja otsing. Puuduta Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Siit ei postitata, ei märgita ega jälgita midagi Pixivis.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Jaga pilti",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Kodeerin kaadrit {current}/{total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Animatsiooni ei õnnestunud salvestada",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Laadin kaadreid…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Peata animatsioon",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Esita animatsioon",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Salvesta GIF-ina",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Salvesta kaadrid ZIP-ina",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animatsioon salvestati GIF-ina",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kaadrid salvestati ZIP-ina",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Salvestan…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodeerimine võib võtta minuti",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Eemalda järjehoidja",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Lõpeta jälgimine",

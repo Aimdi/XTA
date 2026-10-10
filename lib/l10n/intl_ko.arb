@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "전체 페이지",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "이미 저장됨",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "이 페이지는 이미 저장되어 있습니다. 다시 저장할까요?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{{total}페이지 중 {saved}페이지가 이미 저장되어 있습니다.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "북마크",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "북마크 추가",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "모든 페이지 다운로드",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "동시 다운로드",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "한 번에 다운로드할 파일 수",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "저장한 페이지",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{아직 기록된 페이지가 없습니다} other{{count}페이지 기록됨}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "저장한 작품에는 체크 표시가 붙고, 같은 페이지를 다시 저장할 때는 먼저 확인합니다",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "지우기",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "저장한 페이지 기록을 지울까요? 파일은 기기에 그대로 남습니다.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "이 페이지 다운로드",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "저장됨 – 다시 다운로드",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "{total}페이지 중 {current}페이지 다운로드 중…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "다운로드",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "팔로잉 피드에 아직 아무것도 없습니다",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Pixiv에 연결할 수 없습니다",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Pixiv 리프레시 토큰이 거부되었습니다",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "파일 이름",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "항목을 탭하면 커서 위치에 삽입됩니다. 각 파일은 원래 확장자를 유지합니다.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "작품의 각 페이지가 서로 다른 이름을 갖도록 {token}을(를) 넣으세요",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "미리보기: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "초기화",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "작품 ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "페이지 번호",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "제목",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "작가 ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "작가 이름",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "작가별 폴더",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "다운로드 폴더 안에 작가 이름으로 된 폴더를 만들어 그 작가의 작품을 넣습니다",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18 전용 폴더",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 작품을 다운로드 폴더 안의 ‘R-18’ 폴더에 넣습니다",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "팔로우",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "비공개",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "표시",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "다시 저장",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "새 페이지만",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, other{{count}페이지 저장}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "이 기기에 저장됨",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "결과 없음",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "태그, 제목 또는 사용자",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "제목/캡션",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "선택 해제",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "페이지 선택",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{선택한 페이지 없음} other{{count}페이지 선택됨}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "이 비공개 플러그인은 갤러리 앱처럼 Pixiv를 읽습니다. 팔로잉, 랭킹, 공개 북마크, 검색. 로그인으로 브라우저에서 Pixiv에 접속하거나 아래에 리프레시 토큰을 붙여 넣으세요. 여기서는 Pixiv에 게시·북마크·팔로우하지 않습니다.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "이미지 공유",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "우고이라",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "{total}개 중 {current}번째 프레임 인코딩 중…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "애니메이션을 저장하지 못했습니다",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "프레임 가져오는 중…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "애니메이션 일시정지",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "애니메이션 재생",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "GIF로 저장",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "프레임을 ZIP으로 저장",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "애니메이션을 GIF로 저장했습니다",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "프레임을 ZIP으로 저장했습니다",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "저장 중…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "인코딩에 1분 정도 걸릴 수 있습니다",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "북마크 해제",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "팔로우 취소",

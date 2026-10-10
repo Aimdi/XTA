@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 
@@ -66,6 +67,28 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('pixiv-illust-download')));
       await settlePixiv(tester);
       expect([...api.writes, ...off.writes], isEmpty);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('saving from a tile\'s long-press bookmarks it too', (tester) async {
+      final api = FakePixivBookmarkApi();
+      final harness = await pumpPixiv(
+        tester,
+        Scaffold(
+          body: SizedBox(width: 180, child: PixivIllustTile(illust: pixivWork(pages: 2))),
+        ),
+        client: (prefs) {
+          prefs.set(optionPluginPixivBookmarkAfterDownload, true);
+          return FakePixivClient(prefs);
+        },
+        extraProviders: [api.provider],
+      );
+      await tester.longPress(find.byType(PixivIllustTile));
+      await settlePixiv(tester);
+      await tester.tap(find.byKey(const ValueKey('plugin-post-action-pixiv-download')));
+      await settlePixiv(tester);
+      expect(harness.downloader.requests, hasLength(2));
+      expect(api.writes, ['add:120:public:']);
       await disposePixiv(tester);
     });
 

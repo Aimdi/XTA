@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
+import 'package:xta/downloads/download_entry.dart';
 
 /// The folder media is auto-saved into, addressed as an Android document tree
 /// rather than a filesystem path.
@@ -44,13 +45,20 @@ class DownloadDirectory {
     });
   }
 
-  /// Copies a staged file without sending its contents through the platform channel.
+  /// Copies a staged file without sending its contents through the platform
+  /// channel, into [subfolder] inside the chosen folder when there is one
+  /// (made when missing, reused after).
   static Future<String?> saveFile({required String treeUri, required String fileName,
-      required String sourcePath, required String operationId}) =>
+      required String sourcePath, required String operationId, String? subfolder}) =>
     _channel.invokeMethod<String>('saveFileToDownloadDirectory', {
       'treeUri': treeUri, 'fileName': fileName, 'mimeType': mimeTypeFor(fileName),
-      'sourcePath': sourcePath, 'operationId': operationId,
+      'sourcePath': sourcePath, 'operationId': operationId, ..._subfolderArgument(subfolder),
     });
+
+  static Map<String, String> _subfolderArgument(String? subfolder) {
+    final folder = subfolder == null ? null : safeDownloadFolder(subfolder);
+    return folder == null ? const {} : {'subfolder': folder};
+  }
 
   static Future<void> cancelSave(String operationId) =>
     _channel.invokeMethod<void>('cancelDownloadSave', {'operationId': operationId});
@@ -103,6 +111,8 @@ String mimeTypeFor(String fileName) {
       return 'audio/mpeg';
     case '.m4a':
       return 'audio/mp4';
+    case '.zip':
+      return 'application/zip';
     default:
       return 'application/octet-stream';
   }

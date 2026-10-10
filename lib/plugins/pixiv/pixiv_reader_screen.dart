@@ -5,6 +5,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_downloaded_badge.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
@@ -132,11 +133,11 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> with PixivPageSur
               onPressed: _toggleDirection,
               icon: Icon(state.vertical ? Icons.swipe_outlined : Icons.arrow_downward),
             ),
-            IconButton(
+            PixivSavePageButton(
               key: const ValueKey('pixiv-reader-download'),
-              tooltip: l10n.plugin_pixiv_download_page,
+              illust: widget.illust,
+              page: state.pageIndex,
               onPressed: () => runPageAction(PixivPageAction.downloadPage, state.pageIndex),
-              icon: const Icon(Icons.download_outlined),
             ),
             IconButton(
               key: const ValueKey('pixiv-reader-more'),

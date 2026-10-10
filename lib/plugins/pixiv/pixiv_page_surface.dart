@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/pixiv/pixiv_download.dart';
 import 'package:xta/plugins/pixiv/pixiv_haptics.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
@@ -14,18 +15,21 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
   void showPage(int page);
   void changeDirection();
 
-  Future<void> openPageOverview() async {
+  /// [selecting] opens it ready to tick pages to save.
+  Future<void> openPageOverview({bool selecting = false}) async {
     final page = currentPage;
     final choice = await showPixivPageOverview(
       context,
       illust: pageIllust,
       currentPage: page,
       readVertically: offersVertical,
+      selecting: selecting,
     );
     if (!mounted || choice == null) return;
-    final target = choice.page;
-    if (target != null) {
+    if (choice.page case final target?) {
       showPage(target);
+    } else if (choice.pages case final pages?) {
+      await savePixivThenBookmark(context, pageIllust, savePixivPages(context, pageIllust, pages));
     } else {
       await runPageAction(choice.action!, page);
     }
@@ -46,6 +50,7 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
   Future<void> runPageAction(PixivPageAction action, int page) async {
     if (await runPixivPageAction(context, action, pageIllust, page) || !mounted) return;
     if (action == PixivPageAction.allPages) await openPageOverview();
+    if (action == PixivPageAction.selectPages) await openPageOverview(selecting: true);
     if (action == PixivPageAction.direction) changeDirection();
   }
 }

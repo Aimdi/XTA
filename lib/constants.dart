@@ -100,6 +100,7 @@ const optionDownloadPath = 'download.path';
 // Android document tree for the download folder. The legacy path above is kept
 // only so an existing setting can still be shown and migrated.
 const optionDownloadTreeUri = 'download.tree_uri';
+const optionDownloadConcurrency = 'download.concurrency';
 
 const optionDownloadTypeDirectory = 'directory';
 const optionDownloadTypeAsk = 'ask';
@@ -406,6 +407,10 @@ const optionPluginPixivSwipeBetweenWorks = 'plugin.pixiv.swipe_between_works';
 const optionPluginPixivDetailLayout = 'plugin.pixiv.detail_layout';
 const optionPluginPixivDetailSplit = 'plugin.pixiv.detail_split';
 const optionPluginPixivAiBadge = 'plugin.pixiv.ai_badge';
+const optionPluginPixivFileNameTemplate = 'plugin.pixiv.file_name_template';
+const optionPluginPixivFolderPerArtist = 'plugin.pixiv.folder_per_artist';
+const optionPluginPixivFolderR18 = 'plugin.pixiv.folder_r18';
+const optionPluginPixivDownloadIndex = 'plugin.pixiv.download_index';
 
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';

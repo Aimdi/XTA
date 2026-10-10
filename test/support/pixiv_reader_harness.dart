@@ -13,6 +13,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
+import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
@@ -125,6 +126,20 @@ class FakePixivDownloader extends PixivDownloader {
     return onSave?.call(request) ?? true;
   }
 
+  /// Files written whole, such as ugoira exports.
+  final files = <({String treeUri, String fileName, String? subfolder, Uint8List bytes})>[];
+
+  @override
+  Future<bool> saveBytes({
+    required String treeUri,
+    required String fileName,
+    required Uint8List bytes,
+    String? subfolder,
+  }) async {
+    files.add((treeUri: treeUri, fileName: fileName, subfolder: subfolder, bytes: bytes));
+    return true;
+  }
+
   @override
   void cancel(Uri uri) => cancelled.add(uri);
 
@@ -136,8 +151,9 @@ class PixivHarness {
   final PrefServiceCache prefs;
   final FakePixivClient client;
   final FakePixivDownloader downloader;
+  final PixivDownloadIndex downloads;
 
-  PixivHarness(this.prefs, this.client, this.downloader);
+  PixivHarness(this.prefs, this.client, this.downloader, this.downloads);
 }
 
 Future<PixivHarness> pumpPixiv(
@@ -160,7 +176,12 @@ Future<PixivHarness> pumpPixiv(
   VisibilityDetectorController.instance.updateInterval = Duration.zero;
   addTearDown(() => VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500));
   final prefs = PrefServiceCache(defaults: {optionPluginPixivRefreshToken: 'fixture-only'});
-  final harness = PixivHarness(prefs, client?.call(prefs) ?? FakePixivClient(prefs), FakePixivDownloader());
+  final harness = PixivHarness(
+    prefs,
+    client?.call(prefs) ?? FakePixivClient(prefs),
+    FakePixivDownloader(),
+    PixivDownloadIndex(prefs),
+  );
   final mute = PixivMuteStore(prefs);
   final bookmarks = PixivBookmarkStore();
   final follows = PixivFollowStore(harness.client);
@@ -169,6 +190,7 @@ Future<PixivHarness> pumpPixiv(
   addTearDown(bookmarks.destroy);
   addTearDown(follows.destroy);
   addTearDown(history.destroy);
+  addTearDown(harness.downloads.destroy);
   await tester.pumpWidget(
     PrefService(
       service: prefs,
@@ -180,6 +202,7 @@ Future<PixivHarness> pumpPixiv(
           Provider<PixivFollowStore>.value(value: follows),
           Provider<PixivSearchHistory>.value(value: history),
           Provider<PixivDownloader>.value(value: harness.downloader),
+          Provider<PixivDownloadIndex>.value(value: harness.downloads),
           ...extraProviders,
         ],
         child: MaterialApp(

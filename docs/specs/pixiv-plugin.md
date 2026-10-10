@@ -72,11 +72,12 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 
 | Feature | Detail |
 |---|---|
-| Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), viewing (image server, image sizes, columns, work layout, swipe between works, AI badge — `pixiv-viewing.md`), bookmarking (default visibility, auto-tag, follow / save after bookmarking, bookmark after saving, haptics), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` and `pixiv-bookmarks.md` |
+| Settings | One page of section widgets (`pixivSettingsSections`): account (stored accounts, switch, add, sign out, refresh-token paste, test), content (Show R-18, Hide AI, the account's AI setting read from Pixiv), browsing (start section, viewing history, Copy info template, open pixiv links in XTA), viewing (image server, image sizes, columns, work layout, swipe between works, AI badge — `pixiv-viewing.md`), bookmarking (default visibility, auto-tag, follow / save after bookmarking, bookmark after saving, haptics), downloads (file-name template, folders, saved pages — `pixiv-downloads.md`), mute (tags with patterns, artists, works, comments, novels) — see `pixiv-settings.md` and `pixiv-bookmarks.md` |
 | Home | Shell (`pixiv_screen.dart`) over Home (Following / Recommended), Rankings (modes and archive date), Favorites (public / private bookmarks, all or one bookmark tag), Search and More (`pixiv_more_pane.dart`, the account hub). Opens on the chosen start section; tapping the shown section or sub-tab scrolls it to the top |
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
+| Saving | File-name template, per-artist and R-18 subfolders, saved-pages index with tile check and re-save question, picking pages, ugoira GIF / ZIP export, tile long-press actions (`pixiv-downloads.md`) |
 | Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
 | Profile | Header (image, avatar, counts, bio, follow, Add to group) over Works (illustrations / manga), Bookmarks, Following and Info tabs; share, follow privately, copy info, mute; muted creators show a placeholder. See `pixiv-profiles.md` |
 | Follow lists | `PixivUserListScreen`: whom anyone follows or who follows them, as preview cards; your own following list switches public / private |
@@ -123,6 +124,7 @@ its illust case.
 | Related users | `GET /v1/user/related` |
 | Illust detail | `GET /v1/illust/detail` |
 | Ugoira metadata | `GET /v1/ugoira/metadata` |
+| Ugoira frames | `GET zip_urls.medium` (image CDN, Pixiv Referer) |
 | Related | `GET /v2/illust/related` |
 | User detail | `GET /v1/user/detail` |
 | User illusts | `GET /v1/user/illusts` (`type=illust` or `manga`) |

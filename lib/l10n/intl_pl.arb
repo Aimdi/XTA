@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Wszystkie strony",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Już zapisano",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Ta strona jest już zapisana. Zapisać ją ponownie?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} z {total} stron jest już zapisana.} few{{saved} z {total} stron są już zapisane.} many{{saved} z {total} stron jest już zapisanych.} other{{saved} z {total} stron jest już zapisanych.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Dodaj zakładkę",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Dodaj zakładkę",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Pobierz wszystkie strony",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Jednoczesne pobierania",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Ile plików pobiera się naraz",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Zapisane strony",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Brak zapamiętanych stron} one{Zapamiętano {count} stronę} few{Zapamiętano {count} strony} many{Zapamiętano {count} stron} other{Zapamiętano {count} strony}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Zapisane prace dostają znacznik, a przed ponownym zapisaniem strony pojawia się pytanie",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Zapomnij",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Zapomnieć, które strony zostały zapisane? Same pliki pozostaną na urządzeniu.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Pobierz tę stronę",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Zapisano – pobierz ponownie",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "Pobieranie strony {current} z {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Pobieranie",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "W feedzie obserwowanych nic jeszcze nie ma",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Nie udało się połączyć z Pixiv",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Twój refresh token Pixiv został odrzucony",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Nazwa pliku",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Stuknij element, aby wstawić go w miejscu kursora. Każdy plik zachowuje własne rozszerzenie.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Dodaj {token}, aby każda strona pracy miała własną nazwę",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Podgląd: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Przywróć",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID pracy",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Numer strony",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Tytuł",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID artysty",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Nazwa artysty",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Folder dla każdego artysty",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Umieszcza prace każdego artysty w folderze z jego nazwą wewnątrz folderu pobierania",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Osobny folder dla R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Umieszcza prace R-18 w folderze „R-18” wewnątrz folderu pobierania",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Obserwuj",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Prywatne",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Pokaż",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Zapisz ponownie",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Tylko nowe strony",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Zapisz {count} stronę} few{Zapisz {count} strony} many{Zapisz {count} stron} other{Zapisz {count} strony}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Zapisano na tym urządzeniu",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Brak wyników",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Tagi, tytuły lub użytkownicy",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tytuł/opis",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Odznacz wszystkie",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Zaznacz strony",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Nie zaznaczono stron} one{Zaznaczono {count} stronę} few{Zaznaczono {count} strony} many{Zaznaczono {count} stron} other{Zaznaczono {count} strony}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Ta prywatna wtyczka czyta Pixiv jak galerię: obserwowani, rankingi, twoje publiczne zakładki i wyszukiwanie. Dotknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Stąd nic nie jest publikowane, dodawane do zakładek ani obserwowane na Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Udostępnij obraz",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Kodowanie klatki {current} z {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Nie udało się zapisać animacji",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Pobieranie klatek…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Wstrzymaj animację",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Odtwórz animację",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Zapisz jako GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Zapisz klatki jako ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animację zapisano jako GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Klatki zapisano jako ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Zapisywanie…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodowanie może potrwać minutę",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Usuń zakładkę",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Przestań obserwować",

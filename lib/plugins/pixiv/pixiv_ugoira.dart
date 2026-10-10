@@ -37,6 +37,21 @@ PixivUgoira? parsePixivUgoira(Object? json) {
   return zip == null || zip.isEmpty || frames.isEmpty ? null : PixivUgoira(zipUrl: zip, frames: frames);
 }
 
+/// One frame's encoded image and how long it stays up.
+typedef PixivFrameBytes = ({Uint8List bytes, Duration delay});
+
+/// The frames of [archive] in [meta]'s order, each with its delay; frames the
+/// archive lacks are skipped. Throws when none are left.
+List<PixivFrameBytes> pixivUgoiraFrames(PixivUgoira meta, Uint8List archive) {
+  final files = readPixivZip(archive);
+  final frames = [
+    for (final frame in meta.frames)
+      if (files[frame.file] case final bytes?) (bytes: bytes, delay: frame.delay),
+  ];
+  if (frames.isEmpty) throw const FormatException('No ugoira frames');
+  return frames;
+}
+
 const _centralEntry = 0x02014b50;
 const _localEntry = 0x04034b50;
 const _endOfDirectory = 0x06054b50;
@@ -110,7 +125,7 @@ class PixivUgoiraStore extends Store<PixivUgoiraState> {
   final Future<PixivUgoira> Function() metadata;
   final Future<Uint8List> Function(String url) archive;
   final PixivFrameDecoder decode;
-  List<({Uint8List bytes, Duration delay})> _frames = const [];
+  List<PixivFrameBytes> _frames = const [];
   var _index = 0;
   var _run = 0;
   var _closed = false;
@@ -165,12 +180,7 @@ class PixivUgoiraStore extends Store<PixivUgoiraState> {
     update(PixivUgoiraState(phase: PixivUgoiraPhase.loading, frame: state.frame));
     try {
       final meta = await metadata();
-      final files = readPixivZip(await archive(meta.zipUrl));
-      _frames = [
-        for (final frame in meta.frames)
-          if (files[frame.file] case final bytes?) (bytes: bytes, delay: frame.delay),
-      ];
-      if (_frames.isEmpty) throw const FormatException('No ugoira frames');
+      _frames = pixivUgoiraFrames(meta, await archive(meta.zipUrl));
       return !_closed;
     } catch (error) {
       if (!_closed) {

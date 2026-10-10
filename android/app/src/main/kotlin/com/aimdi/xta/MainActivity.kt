@@ -20,6 +20,9 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : AudioServiceActivity() {
     private val CHANNEL = "browser_resolver"
     private val downloadCopies = ConcurrentHashMap<String, AtomicBoolean>()
+    // Saves run on several threads; one lock keeps two of them from both
+    // creating the same new subfolder.
+    private val downloadFolderLock = Any()
     private val REQUEST_PICK_DIRECTORY = 0xD17
 
     // Set while the document-tree picker is open, so its result can be handed
@@ -242,13 +245,18 @@ class MainActivity : AudioServiceActivity() {
         val sourcePath = call.argument<String>("sourcePath")
         val operationId = call.argument<String>("operationId")
         val mimeType = call.argument<String>("mimeType") ?: "application/octet-stream"
+        val subfolder = call.argument<String>("subfolder")
         if (treeUri.isNullOrEmpty() || fileName.isNullOrEmpty() || sourcePath.isNullOrEmpty() || operationId.isNullOrEmpty()) {
             result.error("INVALID_ARGUMENT", "A tree, name, staged file and operation are required", null)
             return
         }
         val source = File(sourcePath).canonicalFile
-        if (!source.path.startsWith(cacheDir.canonicalPath + File.separator) || !source.isFile) {
-            result.error("INVALID_SOURCE", "Expected a staged file in app cache", null)
+        // Downloads stage under files/ so a partial one survives a cache clear
+        // and can resume; files made on the device stage in the cache.
+        val stagingRoots = listOf(cacheDir, File(filesDir, "xta-download-staging"))
+            .map { it.canonicalPath + File.separator }
+        if (stagingRoots.none { source.path.startsWith(it) } || !source.isFile) {
+            result.error("INVALID_SOURCE", "Expected a staged file in app storage", null)
             return
         }
         val cancelled = AtomicBoolean(false)
@@ -259,8 +267,7 @@ class MainActivity : AudioServiceActivity() {
         Thread {
             var document: Uri? = null
             try {
-                val tree = Uri.parse(treeUri)
-                val directory = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
+                val directory = downloadDestination(Uri.parse(treeUri), subfolder)
                 synchronized(cancelled) {
                     if (cancelled.get()) throw InterruptedIOException()
                     document = DocumentsContract.createDocument(contentResolver, directory, mimeType, fileName)
@@ -296,6 +303,46 @@ class MainActivity : AudioServiceActivity() {
                 }
             }
         }.start()
+    }
+
+    /**
+     * The folder a save lands in: the picked tree, or [subfolder] inside it
+     * ("R-18/Mika_42"), each level found by name or made the first time.
+     */
+    private fun downloadDestination(tree: Uri, subfolder: String?): Uri {
+        var directory = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
+        val names = subfolder.orEmpty().split('/').map { it.trim() }.filter { it.isNotEmpty() && it != "." && it != ".." }
+        if (names.isEmpty()) return directory
+        synchronized(downloadFolderLock) {
+            for (name in names) {
+                directory = childFolder(tree, directory, name)
+                    ?: DocumentsContract.createDocument(
+                        contentResolver, directory, DocumentsContract.Document.MIME_TYPE_DIR, name
+                    )
+                    ?: throw java.io.IOException("Could not create folder $name")
+            }
+        }
+        return directory
+    }
+
+    /** An existing folder called [name] directly inside [parent], or null. */
+    private fun childFolder(tree: Uri, parent: Uri, name: String): Uri? {
+        val children = DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getDocumentId(parent))
+        val columns = arrayOf(
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE
+        )
+        contentResolver.query(children, columns, null, null, null)?.use { cursor ->
+            while (cursor.moveToNext()) {
+                // Shared storage ignores case, so "mika" already is "Mika".
+                val sameName = cursor.getString(1)?.equals(name, ignoreCase = true) == true
+                if (sameName && cursor.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) {
+                    return DocumentsContract.buildDocumentUriUsingTree(tree, cursor.getString(0))
+                }
+            }
+        }
+        return null
     }
 
     private fun cancelDownloadSave(call: MethodCall, result: MethodChannel.Result) {

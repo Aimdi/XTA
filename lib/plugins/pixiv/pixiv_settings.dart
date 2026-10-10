@@ -10,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_bookmarks.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_browsing.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_downloads.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_viewing.dart';
 import 'package:xta/ui/errors.dart';
@@ -93,6 +94,7 @@ const pixivSettingsSections = <Widget>[
   PixivBrowsingSettings(),
   PixivViewingSettings(),
   PixivBookmarkSettings(),
+  PixivDownloadSettings(),
   PixivMuteSettings(),
 ];
 

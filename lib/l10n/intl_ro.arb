@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Toate paginile",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Deja salvat",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Această pagină este deja salvată. O salvezi din nou?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{Pagini deja salvate: {saved} din {total}.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Semn de carte",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Adaugă semn de carte",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Descarcă toate paginile",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Descărcări simultane",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Câte fișiere se descarcă în același timp",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Pagini salvate",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Nicio pagină reținută încă} one{O pagină reținută} few{{count} pagini reținute} other{{count} de pagini reținute}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Lucrările salvate primesc o bifă, iar înainte de a salva o pagină a doua oară ești întrebat",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Uită",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Uiți ce pagini au fost salvate? Fișierele rămân pe dispozitiv.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Descarcă această pagină",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Salvată – descarcă din nou",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "Se descarcă pagina {current} din {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Descărcări",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Nimic încă în fluxul de urmăriri",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Nu s-a putut contacta Pixiv",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Tokenul de reînnoire Pixiv a fost respins",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Numele fișierului",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Atinge o informație ca s-o inserezi la cursor. Fiecare fișier își păstrează extensia.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Include {token} ca fiecare pagină a unei lucrări să aibă propriul nume",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Previzualizare: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Resetează",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID-ul lucrării",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Numărul paginii",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titlu",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID-ul artistului",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Numele artistului",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Un dosar pentru fiecare artist",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Pune lucrările fiecărui artist într-un dosar cu numele lui, în dosarul de descărcări",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Dosar separat pentru R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Pune lucrările R-18 într-un dosar „R-18”, în dosarul de descărcări",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Urmărește",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Private",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Afișează",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Salvează din nou",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Doar paginile noi",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Salvează o pagină} few{Salvează {count} pagini} other{Salvează {count} de pagini}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Salvată pe acest dispozitiv",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Niciun rezultat",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Etichete, titluri sau utilizatori",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titlu/descriere",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Niciuna",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Selectează pagini",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Nicio pagină selectată} one{O pagină selectată} few{{count} pagini selectate} other{{count} de pagini selectate}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Acest plugin privat citește Pixiv ca o galerie: urmăriți, clasamente, semnele dvs. publice și căutarea. Atingeți Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. De aici nu se publică, marchează sau urmărește nimic pe Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Partajează imaginea",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Se codifică cadrul {current} din {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Animația nu a putut fi salvată",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Se preiau cadrele…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Întrerupe animația",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Redă animația",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Salvează ca GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Salvează cadrele ca ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animație salvată ca GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Cadre salvate ca ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Se salvează…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Codificarea poate dura un minut",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Elimină semnul de carte",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Nu mai urmări",

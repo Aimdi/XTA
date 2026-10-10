@@ -10,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_bookmarks.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_browsing.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_downloads.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_viewing.dart';
@@ -19,30 +20,32 @@ import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'support/pixiv_reader_harness.dart';
 
 void main() {
-  testWidgets('settings are the account, content, browsing, viewing, bookmarking and mute sections in order', (
-    tester,
-  ) async {
-    await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 4800));
+  testWidgets(
+    'settings are the account, content, browsing, viewing, bookmarking, downloads and mute sections in order',
+    (tester) async {
+      await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 5600));
 
-    final sections = [
-      PixivAccountSettings,
-      PixivContentSettings,
-      PixivBrowsingSettings,
-      PixivViewingSettings,
-      PixivBookmarkSettings,
-      PixivMuteSettings,
-    ];
-    final tops = [for (final type in sections) tester.getTopLeft(find.byType(type)).dy];
-    expect(tops, orderedEquals([...tops]..sort()));
-    expect(find.byKey(const ValueKey('pixiv-hide-ai')), findsOneWidget);
-    await disposePixiv(tester);
-  });
+      final sections = [
+        PixivAccountSettings,
+        PixivContentSettings,
+        PixivBrowsingSettings,
+        PixivViewingSettings,
+        PixivBookmarkSettings,
+        PixivDownloadSettings,
+        PixivMuteSettings,
+      ];
+      final tops = [for (final type in sections) tester.getTopLeft(find.byType(type)).dy];
+      expect(tops, orderedEquals([...tops]..sort()));
+      expect(find.byKey(const ValueKey('pixiv-hide-ai')), findsOneWidget);
+      await disposePixiv(tester);
+    },
+  );
 
   testWidgets('muted comments and novels are listed and can be unmuted', (tester) async {
     await pumpPixiv(
       tester,
       const PixivSettingsScreen(),
-      size: const Size(390, 4800),
+      size: const Size(390, 5600),
       client: (prefs) {
         prefs.set(optionPluginPixivMutedComments, '[5]');
         prefs.set(optionPluginPixivMutedNovels, '[6]');

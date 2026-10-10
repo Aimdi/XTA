@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "كل الصفحات",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "محفوظ مسبقًا",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "هذه الصفحة محفوظة مسبقًا. هل تريد حفظها مرة أخرى؟",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, zero{لا توجد صفحات محفوظة من أصل {total}.} one{صفحة واحدة من أصل {total} محفوظة مسبقًا.} two{صفحتان من أصل {total} محفوظتان مسبقًا.} few{{saved} صفحات من أصل {total} محفوظة مسبقًا.} many{{saved} صفحة من أصل {total} محفوظة مسبقًا.} other{{saved} صفحة من أصل {total} محفوظة مسبقًا.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "إضافة إلى الإشارات",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "إضافة إشارة",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "تنزيل كل الصفحات",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "التنزيلات المتزامنة",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "عدد الملفات التي تُنزَّل في الوقت نفسه",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "الصفحات المحفوظة",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{لم تُسجَّل أي صفحة بعد} one{صفحة واحدة مسجّلة} two{صفحتان مسجّلتان} few{{count} صفحات مسجّلة} many{{count} صفحة مسجّلة} other{{count} صفحة مسجّلة}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "تحصل الأعمال المحفوظة على علامة اختيار، ويُطلب التأكيد قبل حفظ صفحة للمرة الثانية",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "نسيان",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "هل تريد نسيان الصفحات التي حُفظت؟ تبقى الملفات نفسها على جهازك.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "تنزيل هذه الصفحة",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "محفوظة – نزّلها مرة أخرى",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "جارٍ تنزيل الصفحة {current} من {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "التنزيلات",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "لا شيء في خلاصة المتابعة بعد",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "تعذّر الوصول إلى Pixiv",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "رُفض رمز تحديث Pixiv",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "اسم الملف",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "اضغط على معلومة لإدراجها في موضع المؤشر. يحتفظ كل ملف بامتداده الأصلي.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "أضف {token} لتحصل كل صفحة من العمل على اسمها الخاص",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "معاينة: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "إعادة تعيين",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "معرّف العمل",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "رقم الصفحة",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "العنوان",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "معرّف الفنان",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "اسم الفنان",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "مجلد لكل فنان",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "يضع أعمال كل فنان في مجلد باسمه داخل مجلد التنزيلات",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "مجلد منفصل لأعمال R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "يضع أعمال R-18 في مجلد «R-18» داخل مجلد التنزيلات",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "متابعة",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "خاصة",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "إظهار",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "الحفظ مرة أخرى",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "الصفحات الجديدة فقط",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, zero{حفظ الصفحات} one{حفظ صفحة واحدة} two{حفظ صفحتين} few{حفظ {count} صفحات} many{حفظ {count} صفحة} other{حفظ {count} صفحة}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "محفوظ على هذا الجهاز",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "لا نتائج",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "وسوم أو عناوين أو مستخدمون",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "العنوان/الوصف",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "إلغاء التحديد",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "تحديد الصفحات",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{لم تُحدَّد أي صفحة} one{صفحة واحدة محددة} two{صفحتان محددتان} few{{count} صفحات محددة} many{{count} صفحة محددة} other{{count} صفحة محددة}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "هذه الإضافة الخاصة تقرأ Pixiv كمعرض: المتابعة والترتيب وإشاراتك العامة والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُنشَر شيء ولا تُضاف إشارات ولا متابعات على Pixiv من هنا.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "مشاركة الصورة",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "جارٍ ترميز الإطار {current} من {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "تعذّر حفظ الرسوم المتحركة",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "جارٍ جلب الإطارات…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "إيقاف الرسم المتحرك مؤقتًا",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "تشغيل الرسم المتحرك",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "حفظ بصيغة GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "حفظ الإطارات بصيغة ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "حُفظت الرسوم المتحركة بصيغة GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "حُفظت الإطارات بصيغة ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "جارٍ الحفظ…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "قد يستغرق الترميز دقيقة",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "إزالة الإشارة المرجعية",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "إلغاء المتابعة",

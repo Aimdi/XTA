@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Orrialde guztiak",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Gordeta dago jada",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Orrialde hau gordeta dago jada. Berriro gorde nahi duzu?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{total} orrialdetatik {saved} gordeta dago jada.} other{{total} orrialdetatik {saved} gordeta daude jada.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Laster-marka",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Gehitu laster-marka",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Deskargatu orrialde guztiak",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Aldi bereko deskargak",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Zenbat fitxategi deskargatzen diren aldi berean",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Gordetako orrialdeak",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Oraindik ez dago gogoratutako orrialderik} one{Orrialde {count} gogoratuta} other{{count} orrialde gogoratuta}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Gordetako lanek marka bat dute, eta orrialde bat bigarren aldiz gorde aurretik galdetu egiten da",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Ahaztu",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Zein orrialde gorde diren ahaztu nahi duzu? Fitxategiak gailuan geratuko dira.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Deskargatu orrialde hau",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Gordeta – deskargatu berriro",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "{current}. orrialdea deskargatzen, guztira {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Deskargak",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Oraindik ez dago ezer jarraipen-jarioan",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Ezin izan da Pixivrekin konektatu",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Zure Pixiv freskatze-tokena baztertu da",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Fitxategi-izena",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Sakatu datu bat kurtsorearen lekuan txertatzeko. Fitxategi bakoitzak bere luzapena gordetzen du.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Gehitu {token}, lan baten orrialde bakoitzak bere izena izan dezan",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Aurrebista: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Berrezarri",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Lanaren IDa",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Orrialde-zenbakia",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Izenburua",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Artistaren IDa",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Artistaren izena",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Karpeta bat artista bakoitzeko",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Artista bakoitzaren lanak haren izena duen karpeta batean jartzen ditu, deskargen karpetaren barruan",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18rako karpeta bereizia",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 lanak «R-18» karpetan jartzen ditu, deskargen karpetaren barruan",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Jarraitu",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Pribatuak",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Erakutsi",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Gorde berriro",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Orrialde berriak soilik",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Gorde orrialde {count}} other{Gorde {count} orrialde}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Gailu honetan gordeta",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Ez dago emaitzarik",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Etiketak, izenburuak edo erabiltzaileak",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Izenburua/deskribapena",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Bat ere ez",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Hautatu orrialdeak",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Ez da orrialderik hautatu} one{Orrialde {count} hautatuta} other{{count} orrialde hautatuta}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Plugin pribatu honek Pixiv galeria gisa irakurtzen du: jarraipena, sailkapenak, zure laster-marka publikoak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Hemendik ez da ezer argitaratzen, markatzen edo jarraitzen Pixiv-en.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Partekatu irudia",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "{current}. fotograma kodetzen, guztira {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Ezin izan da animazioa gorde",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Fotogramak eskuratzen…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Pausatu animazioa",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Erreproduzitu animazioa",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Gorde GIF gisa",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Gorde fotogramak ZIP gisa",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animazioa GIF gisa gorde da",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Fotogramak ZIP gisa gorde dira",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Gordetzen…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodetzeak minutu bat iraun dezake",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Kendu laster-marka",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Jarraitzeari utzi",

@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Semua halaman",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Sudah disimpan",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Halaman ini sudah disimpan. Simpan lagi?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{{saved} dari {total} halaman sudah disimpan.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Markah",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Tambah markah",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Unduh semua halaman",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Unduhan bersamaan",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Berapa banyak file yang diunduh sekaligus",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Halaman tersimpan",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Belum ada halaman yang diingat} other{{count} halaman diingat}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Karya yang disimpan diberi tanda centang, dan sebelum menyimpan halaman untuk kedua kalinya akan ditanyakan dulu",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Lupakan",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Lupakan halaman mana saja yang sudah disimpan? File-nya tetap ada di perangkat Anda.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Unduh halaman ini",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Tersimpan – unduh lagi",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "Mengunduh halaman {current} dari {total}…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Unduhan",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Belum ada apa pun di feed mengikuti",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Tidak dapat menjangkau Pixiv",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Refresh token Pixiv Anda ditolak",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Nama file",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Ketuk sebuah detail untuk menyisipkannya di posisi kursor. Setiap file tetap memakai ekstensinya sendiri.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Sertakan {token} agar setiap halaman karya punya nama sendiri",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Pratinjau: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Atur ulang",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID karya",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Nomor halaman",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Judul",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID artis",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Nama artis",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Folder per artis",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Menaruh karya setiap artis dalam folder bernama artis itu di dalam folder unduhan",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Folder terpisah untuk R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Menaruh karya R-18 dalam folder “R-18” di dalam folder unduhan",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Ikuti",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Pribadi",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Tampilkan",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Simpan lagi",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Hanya halaman baru",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, other{Simpan {count} halaman}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Tersimpan di perangkat ini",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Tidak ada hasil",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Tag, judul, atau pengguna",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Judul/takarir",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Tidak ada",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Pilih halaman",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Tidak ada halaman dipilih} other{{count} halaman dipilih}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Plugin pribadi ini membaca Pixiv seperti galeri: mengikuti, peringkat, penanda publik Anda, dan pencarian. Ketuk Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Dari sini tidak ada yang diposting, ditandai, atau diikuti di Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Bagikan gambar",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Mengenkode bingkai {current} dari {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Tidak dapat menyimpan animasi",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Mengambil bingkai…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Jeda animasi",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Putar animasi",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Simpan sebagai GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Simpan bingkai sebagai ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animasi disimpan sebagai GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Bingkai disimpan sebagai ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Menyimpan…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Pengodean bisa memakan waktu semenit",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Hapus markah",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Berhenti mengikuti",

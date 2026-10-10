@@ -2248,6 +2248,21 @@
   "@plugin_pixiv_ai_badge_description": {},
   "plugin_pixiv_all_pages": "Alle pagina’s",
   "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_already_saved": "Al opgeslagen",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Deze pagina is al opgeslagen. Opnieuw opslaan?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} van de {total} pagina’s is al opgeslagen.} other{{saved} van de {total} pagina’s zijn al opgeslagen.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Bladwijzer",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_add": "Bladwijzer toevoegen",
@@ -2384,10 +2399,34 @@
   "@plugin_pixiv_detail_layout_vertical": {},
   "plugin_pixiv_download_all": "Alle pagina’s downloaden",
   "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_download_concurrency": "Gelijktijdige downloads",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Hoeveel bestanden tegelijk worden gedownload",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Opgeslagen pagina’s",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Nog geen pagina’s onthouden} one{1 pagina onthouden} other{{count} pagina’s onthouden}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Opgeslagen werken krijgen een vinkje, en voordat een pagina een tweede keer wordt opgeslagen, wordt het eerst gevraagd",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Vergeten",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Vergeten welke pagina’s zijn opgeslagen? De bestanden zelf blijven op je apparaat.",
+  "@plugin_pixiv_download_index_forget_question": {},
   "plugin_pixiv_download_page": "Deze pagina downloaden",
   "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_page_saved": "Opgeslagen – opnieuw downloaden",
+  "@plugin_pixiv_download_page_saved": {},
   "plugin_pixiv_downloading_page": "Pagina {current} van {total} downloaden…",
   "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_downloads_section": "Downloads",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Nog niets in je volgfeed",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Kon Pixiv niet bereiken",
@@ -2400,6 +2439,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Je Pixiv-refresh-token is geweigerd",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Bestandsnaam",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Tik op een gegeven om het bij de cursor in te voegen. Elk bestand houdt zijn eigen extensie.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Voeg {token} toe zodat elke pagina van een werk een eigen naam krijgt",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Voorbeeld: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Herstellen",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Werk-ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Paginanummer",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titel",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Artiest-ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Artiestnaam",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Map per artiest",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Zet de werken van elke artiest in een map met diens naam, binnen de downloadmap",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Aparte map voor R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Zet R-18-werken in een map ‘R-18’ binnen de downloadmap",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Volgen",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_follow_private": "Privé",
@@ -2694,6 +2773,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Tonen",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Opnieuw opslaan",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Alleen nieuwe pagina’s",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{1 pagina opslaan} other{{count} pagina’s opslaan}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Opgeslagen op dit apparaat",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Geen resultaten",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Tags, titels of gebruikers",
@@ -2714,6 +2807,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titel/bijschrift",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Geen",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Pagina’s selecteren",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Geen pagina’s geselecteerd} one{1 pagina geselecteerd} other{{count} pagina’s geselecteerd}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Deze privéplug-in leest Pixiv als een galerij-app: volgend, ranglijsten, je openbare bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Hier vanuit wordt niets op Pixiv gepost, gebookmarkt of gevolgd.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Afbeelding delen",
@@ -2790,10 +2895,37 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Frame {current} van {total} coderen…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Kan de animatie niet opslaan",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Frames ophalen…",
+  "@plugin_pixiv_ugoira_fetching": {},
   "plugin_pixiv_ugoira_pause": "Animatie pauzeren",
   "@plugin_pixiv_ugoira_pause": {},
   "plugin_pixiv_ugoira_play": "Animatie afspelen",
   "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_save_gif": "Opslaan als GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Frames opslaan als ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animatie opgeslagen als GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Frames opgeslagen als ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Opslaan…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Coderen kan een minuut duren",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Bladwijzer verwijderen",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Ontvolgen",
