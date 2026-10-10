@@ -128,7 +128,12 @@ void main() {
         cache: {optionPluginPixivFileNameTemplate: '{title}_p{part}', optionPluginPixivFolderPerArtist: true},
       ),
     );
-    final requests = pixivPageRequests(pixivWork(pages: 3), const DownloadDestination.folder('content://tree/x'), naming: naming, pages: [2, 0]);
+    final requests = pixivPageRequests(
+      pixivWork(pages: 3),
+      const DownloadDestination.folder('content://tree/x'),
+      naming: naming,
+      pages: [2, 0],
+    );
     expect(requests.map((request) => request.fileName), ['Sommerfest_p2.png', 'Sommerfest_p0.png']);
     expect(requests.map((request) => request.subfolder).toSet(), {'Mika_42'});
     expect(requests.first.uri.path, endsWith('120_p2.png'));

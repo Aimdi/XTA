@@ -76,7 +76,11 @@ void main() {
 
   group('where the mirror applies', () {
     test('downloads fetch from the picked server under Pixiv\'s file names', () {
-      final requests = pixivPageRequests(pixivWork(pages: 2), const DownloadDestination.folder('content://tree/x'), imageHost: pixivMirrorHost);
+      final requests = pixivPageRequests(
+        pixivWork(pages: 2),
+        const DownloadDestination.folder('content://tree/x'),
+        imageHost: pixivMirrorHost,
+      );
       expect(requests.map((request) => request.uri.host).toSet(), {pixivMirrorHost});
       expect(requests.map((request) => request.fileName), ['120_p0.png', '120_p1.png']);
       final media = pixivPageMedia(pixivWork(), 1, imageHost: pixivMirrorHost);
