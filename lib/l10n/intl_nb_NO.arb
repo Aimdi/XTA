@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Hvilken som helst popularitet",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Eldste først og popularitet blant menn eller kvinner krever Pixiv Premium. Uten det viser «Populære» Pixivs gratis forhåndsvisning.",
+  "plugin_pixiv_search_premium_note": "Popularitet blant menn eller kvinner krever Pixiv Premium. Uten det viser «Populære» Pixivs gratis forhåndsvisning.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Publiseringsdatoer avgrenser ikke forhåndsvisningen.",
   "@plugin_pixiv_search_preview_dates": {},

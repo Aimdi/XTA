@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Edozein ospe",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Zaharrenak lehenik ordenatzeko eta gizonen edo emakumeen arteko ospearen arabera ordenatzeko Pixiv Premium behar da. Hura gabe, «Ospetsuak» aukerak Pixiv-en doako aurrebista erakusten du.",
+  "plugin_pixiv_search_premium_note": "Gizonen edo emakumeen arteko ospearen arabera ordenatzeko Pixiv Premium behar da. Hura gabe, «Ospetsuak» aukerak Pixiv-en doako aurrebista erakusten du.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Argitaratze-datek ez dute aurrebista murrizten.",
   "@plugin_pixiv_search_preview_dates": {},

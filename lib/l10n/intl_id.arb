@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Popularitas apa pun",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Urutan terlama dan popularitas di kalangan pria atau wanita memerlukan Pixiv Premium. Tanpanya, \"Populer\" menampilkan pratinjau gratis dari Pixiv.",
+  "plugin_pixiv_search_premium_note": "Urutan popularitas di kalangan pria atau wanita memerlukan Pixiv Premium. Tanpanya, \"Populer\" menampilkan pratinjau gratis dari Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Tanggal unggah tidak menyaring pratinjau.",
   "@plugin_pixiv_search_preview_dates": {},

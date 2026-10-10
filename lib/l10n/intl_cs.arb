@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Libovolná popularita",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Řazení od nejstarších a podle obliby u mužů nebo žen vyžaduje Pixiv Premium. Bez něj volba Populární zobrazí bezplatný náhled Pixivu.",
+  "plugin_pixiv_search_premium_note": "Řazení podle obliby u mužů nebo žen vyžaduje Pixiv Premium. Bez něj volba Populární zobrazí bezplatný náhled Pixivu.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Datum zveřejnění náhled nezužuje.",
   "@plugin_pixiv_search_preview_dates": {},

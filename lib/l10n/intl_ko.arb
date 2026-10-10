@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "인기도 제한 없음",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "오래된순과 남성·여성 인기순 정렬에는 pixiv 프리미엄이 필요합니다. 프리미엄이 없으면 '인기순'은 Pixiv의 무료 미리보기를 보여 줍니다.",
+  "plugin_pixiv_search_premium_note": "남성·여성 인기순 정렬에는 pixiv 프리미엄이 필요합니다. 프리미엄이 없으면 '인기순'은 Pixiv의 무료 미리보기를 보여 줍니다.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "게시 날짜는 미리보기에 적용되지 않습니다.",
   "@plugin_pixiv_search_preview_dates": {},

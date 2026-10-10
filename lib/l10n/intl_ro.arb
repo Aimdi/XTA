@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Orice popularitate",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Sortarea de la cele mai vechi și după popularitatea la bărbați sau femei necesită Pixiv Premium. Fără el, „Populare” arată previzualizarea gratuită Pixiv.",
+  "plugin_pixiv_search_premium_note": "Sortarea după popularitatea la bărbați sau femei necesită Pixiv Premium. Fără el, „Populare” arată previzualizarea gratuită Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Datele de publicare nu restrâng previzualizarea.",
   "@plugin_pixiv_search_preview_dates": {},

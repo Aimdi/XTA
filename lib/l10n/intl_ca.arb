@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Qualsevol popularitat",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Ordenar de més antic a més recent i per popularitat entre homes o dones requereix Pixiv Premium. Sense Premium, «Populars» mostra la previsualització gratuïta de Pixiv.",
+  "plugin_pixiv_search_premium_note": "Ordenar per popularitat entre homes o dones requereix Pixiv Premium. Sense Premium, «Populars» mostra la previsualització gratuïta de Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Les dates de publicació no filtren la previsualització.",
   "@plugin_pixiv_search_preview_dates": {},

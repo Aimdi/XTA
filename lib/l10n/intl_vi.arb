@@ -3197,7 +3197,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Mọi độ phổ biến",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Sắp xếp cũ nhất trước và phổ biến với nam hoặc nữ cần Pixiv Premium. Nếu không có, \"Phổ biến\" sẽ hiển thị bản xem trước miễn phí của Pixiv.",
+  "plugin_pixiv_search_premium_note": "Sắp xếp phổ biến với nam hoặc nữ cần Pixiv Premium. Nếu không có, \"Phổ biến\" sẽ hiển thị bản xem trước miễn phí của Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Ngày đăng không thu hẹp bản xem trước.",
   "@plugin_pixiv_search_preview_dates": {},

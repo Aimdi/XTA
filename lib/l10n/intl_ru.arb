@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Любая популярность",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Сортировка от старых к новым и по популярности у мужчин или женщин требует Pixiv Premium. Без него «Популярные» показывают бесплатный предпросмотр Pixiv.",
+  "plugin_pixiv_search_premium_note": "Сортировка по популярности у мужчин или женщин требует Pixiv Premium. Без него «Популярные» показывают бесплатный предпросмотр Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Дата публикации не сужает предпросмотр.",
   "@plugin_pixiv_search_preview_dates": {},

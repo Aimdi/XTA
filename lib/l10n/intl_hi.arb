@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "कोई भी लोकप्रियता",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "सबसे पुराने पहले और पुरुषों या महिलाओं में लोकप्रियता के क्रम के लिए Pixiv Premium चाहिए। इसके बिना \"लोकप्रिय\" Pixiv का मुफ़्त प्रीव्यू दिखाता है।",
+  "plugin_pixiv_search_premium_note": "पुरुषों या महिलाओं में लोकप्रियता के क्रम के लिए Pixiv Premium चाहिए। इसके बिना \"लोकप्रिय\" Pixiv का मुफ़्त प्रीव्यू दिखाता है।",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "पोस्ट करने की तारीखें प्रीव्यू को सीमित नहीं करतीं।",
   "@plugin_pixiv_search_preview_dates": {},

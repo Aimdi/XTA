@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Elke populariteit",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Oudste eerst en populariteit bij mannen of vrouwen vereisen Pixiv Premium. Zonder Premium toont ‘Populair’ de gratis preview van Pixiv.",
+  "plugin_pixiv_search_premium_note": "Populariteit bij mannen of vrouwen vereist Pixiv Premium. Zonder Premium toont ‘Populair’ de gratis preview van Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Plaatsingsdatums beperken de preview niet.",
   "@plugin_pixiv_search_preview_dates": {},

@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "不限熱門程度",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "依最舊排序以及依男性或女性熱門排序需要 Pixiv 高級會員。沒有高級會員時，「熱門」會顯示 Pixiv 的免費預覽。",
+  "plugin_pixiv_search_premium_note": "依男性或女性熱門排序需要 Pixiv 高級會員。沒有高級會員時，「熱門」會顯示 Pixiv 的免費預覽。",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "投稿日期不會篩選預覽。",
   "@plugin_pixiv_search_preview_dates": {},

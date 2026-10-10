@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Будь-яка популярність",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Сортування від найстаріших і за популярністю серед чоловіків або жінок потребує Pixiv Premium. Без нього «Популярні» показують безкоштовний попередній перегляд Pixiv.",
+  "plugin_pixiv_search_premium_note": "Сортування за популярністю серед чоловіків або жінок потребує Pixiv Premium. Без нього «Популярні» показують безкоштовний попередній перегляд Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Дата публікації не звужує попередній перегляд.",
   "@plugin_pixiv_search_preview_dates": {},

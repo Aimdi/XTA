@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "不限热度",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "按最旧排序以及按男性或女性热门排序需要 Pixiv 高级会员。没有高级会员时，“热门”会显示 Pixiv 的免费预览。",
+  "plugin_pixiv_search_premium_note": "按男性或女性热门排序需要 Pixiv 高级会员。没有高级会员时，“热门”会显示 Pixiv 的免费预览。",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "投稿日期不会筛选预览。",
   "@plugin_pixiv_search_preview_dates": {},

@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Beliebige Beliebtheit",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Älteste zuerst und Beliebtheit bei Männern oder Frauen erfordern Pixiv Premium. Ohne Premium zeigt „Beliebt“ die kostenlose Vorschau von Pixiv.",
+  "plugin_pixiv_search_premium_note": "Beliebtheit bei Männern oder Frauen erfordert Pixiv Premium. Ohne Premium zeigt „Beliebt“ die kostenlose Vorschau von Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Das Veröffentlichungsdatum schränkt die Vorschau nicht ein.",
   "@plugin_pixiv_search_preview_dates": {},

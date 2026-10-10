@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "人気度の指定なし",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "古い順と、男性・女性に人気の順にはpixivプレミアムが必要です。プレミアムでない場合、「人気順」ではPixivの無料プレビューを表示します。",
+  "plugin_pixiv_search_premium_note": "男性・女性に人気の順にはpixivプレミアムが必要です。プレミアムでない場合、「人気順」ではPixivの無料プレビューを表示します。",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "投稿日はプレビューには反映されません。",
   "@plugin_pixiv_search_preview_dates": {},

@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "أي شعبية",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "يتطلب الترتيب من الأقدم والترتيب حسب الشعبية لدى الرجال أو النساء اشتراك Pixiv Premium. بدونه يعرض خيار «الأكثر شعبية» المعاينة المجانية من Pixiv.",
+  "plugin_pixiv_search_premium_note": "يتطلب الترتيب حسب الشعبية لدى الرجال أو النساء اشتراك Pixiv Premium. بدونه يعرض خيار «الأكثر شعبية» المعاينة المجانية من Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "لا يُضيّق تاريخ النشر نطاق المعاينة.",
   "@plugin_pixiv_search_preview_dates": {},

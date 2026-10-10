@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Herhangi bir popülerlik",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Eskiden yeniye sıralama ve erkekler ya da kadınlar arasındaki popülerliğe göre sıralama Pixiv Premium gerektirir. Premium olmadan “Popüler”, Pixiv’in ücretsiz önizlemesini gösterir.",
+  "plugin_pixiv_search_premium_note": "Erkekler ya da kadınlar arasındaki popülerliğe göre sıralama Pixiv Premium gerektirir. Premium olmadan “Popüler”, Pixiv’in ücretsiz önizlemesini gösterir.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Yayın tarihleri önizlemeyi daraltmaz.",
   "@plugin_pixiv_search_preview_dates": {},

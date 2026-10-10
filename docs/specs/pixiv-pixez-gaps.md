@@ -26,7 +26,7 @@ once those are in.
 | B1 | Search: filters, shortcuts, favourite tags, SauceNAO | Built |
 | B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Built |
 | B2b | Novels: reader | Built |
-| B2c | Novels: search, profiles, history, deep links | Planned |
+| B2c | Novels: search, profiles, history, deep links | Built |
 | B3 | Comments (reading only) | Built |
 | B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Built |
 | B5a | Profiles and follows | Built |
@@ -69,7 +69,7 @@ once those are in.
 ### B1 — search (built)
 
 Search state lives in `PixivSearchStore`. A filter bar and sheet cover target,
-sort (oldest and the audience sorts for Premium), posting-date presets and a
+sort (oldest first for everyone; the audience sorts for Premium), posting-date presets and a
 custom range, users入り popularity, the Premium bookmark bracket, AI
 (`search_ai_type`) and ugoira, and Remember keeps the filter. Popular without
 Premium shows Pixiv's free preview as the grid; date sorts keep it as a strip.

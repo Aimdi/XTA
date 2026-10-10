@@ -3200,7 +3200,7 @@
   "@plugin_pixiv_search_popularity": {},
   "plugin_pixiv_search_popularity_any": "Cualquier popularidad",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Ordenar de más antiguo a más reciente y por popularidad entre hombres o mujeres requiere Pixiv Premium. Sin Premium, «Populares» muestra la vista previa gratuita de Pixiv.",
+  "plugin_pixiv_search_premium_note": "Ordenar por popularidad entre hombres o mujeres requiere Pixiv Premium. Sin Premium, «Populares» muestra la vista previa gratuita de Pixiv.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Las fechas de publicación no filtran la vista previa.",
   "@plugin_pixiv_search_preview_dates": {},

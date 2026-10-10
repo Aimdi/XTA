@@ -3387,7 +3387,7 @@
   },
   "plugin_pixiv_search_popularity_any": "Any popularity",
   "@plugin_pixiv_search_popularity_any": {},
-  "plugin_pixiv_search_premium_note": "Oldest first and popularity with men or women need Pixiv Premium. Without it, Popular shows Pixiv's free preview.",
+  "plugin_pixiv_search_premium_note": "Popularity with men or women needs Pixiv Premium. Without it, Popular shows Pixiv's free preview.",
   "@plugin_pixiv_search_premium_note": {},
   "plugin_pixiv_search_preview_dates": "Posting dates do not narrow the preview.",
   "@plugin_pixiv_search_preview_dates": {},
