@@ -173,7 +173,7 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
       onState: (context, view) => Scaffold(
         appBar: AppBar(
           title: Text(view.series?.title ?? l10n.plugin_pixiv_series, maxLines: 1, overflow: TextOverflow.ellipsis),
-          actions: [if (view.series?.url ?? widget.webUrl case final url?) ..._actions(l10n, url)],
+          actions: [if (view.series?.url ?? widget.webUrl case final url?) ...pixivSeriesPageActions(context, url)],
         ),
         // The header sits outside the works list, so it and its watchlist
         // toggle stay when every work is filtered out or a page fails.
@@ -189,8 +189,12 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
       ),
     );
   }
+}
 
-  List<Widget> _actions(L10n l10n, String url) => [
+/// Share and Open on Pixiv for a series page at [url], in its app bar.
+List<Widget> pixivSeriesPageActions(BuildContext context, String url) {
+  final l10n = L10n.of(context);
+  return [
     IconButton(
       tooltip: l10n.share_link,
       icon: const Icon(Icons.share_outlined),

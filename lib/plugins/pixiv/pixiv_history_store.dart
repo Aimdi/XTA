@@ -38,6 +38,10 @@ class PixivHistoryEntry {
   /// A novel's length in characters, for its card.
   final int textLength;
 
+  /// A novel's age rating and AI mark, so its card keeps its R-18, R-18G and AI chips.
+  final int xRestrict;
+  final bool isAi;
+
   const PixivHistoryEntry({
     required this.id,
     required this.title,
@@ -51,6 +55,8 @@ class PixivHistoryEntry {
     this.bookmarks = 0,
     this.bookmarked = false,
     this.textLength = 0,
+    this.xRestrict = 0,
+    this.isAi = false,
   });
 
   factory PixivHistoryEntry.of(PixivIllust illust, DateTime viewedAt) => PixivHistoryEntry(
@@ -79,6 +85,8 @@ class PixivHistoryEntry {
     bookmarks: novel.totalBookmarks,
     bookmarked: novel.isBookmarked,
     textLength: novel.textLength,
+    xRestrict: novel.xRestrict,
+    isAi: novel.isAi,
   );
 
   /// A stored entry, or null when it lacks the id or, where [needsThumb] says
@@ -103,6 +111,8 @@ class PixivHistoryEntry {
       bookmarks: json['bookmarks'].integer ?? 0,
       bookmarked: json['bookmarked'].boolean == true,
       textLength: json['textLength'].integer ?? 0,
+      xRestrict: json['xRestrict'].integer ?? 0,
+      isAi: json['isAi'].boolean == true,
     );
   }
 
@@ -119,6 +129,8 @@ class PixivHistoryEntry {
     'bookmarks': bookmarks,
     'bookmarked': bookmarked,
     if (textLength > 0) 'textLength': textLength,
+    if (xRestrict > 0) 'xRestrict': xRestrict,
+    if (isAi) 'isAi': true,
   };
 
   /// Whether the title or the author's name contains [query], ignoring case.
@@ -155,6 +167,8 @@ class PixivHistoryEntry {
     textLength: textLength,
     totalBookmarks: bookmarks,
     isBookmarked: bookmarked,
+    xRestrict: xRestrict,
+    isAi: isAi,
   );
 }
 

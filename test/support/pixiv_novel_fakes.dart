@@ -54,6 +54,9 @@ class FakePixivNovelApi extends PixivNovelApi {
   /// The queries [search] was asked, first pages only.
   final queries = <Map<String, String>>[];
 
+  /// The AI choice each [search] was handed.
+  final searchAiChoices = <bool?>[];
+
   /// Series pages by the `nextUrl` that asks for them; null is the first.
   Map<String?, PixivNovelSeriesPage> seriesPages;
 
@@ -154,7 +157,11 @@ class FakePixivNovelApi extends PixivNovelApi {
   Future<PixivNovelPage> search(Map<String, String> query, {String? nextUrl, bool? includeAi}) async {
     calls.add('search:${query['word']}');
     queries.add(query);
-    return PixivPage(searchNovels);
+    searchAiChoices.add(includeAi);
+    return PixivPage([
+      for (final novel in searchNovels)
+        if (includeAi != false || !novel.isAi) novel,
+    ]);
   }
 
   @override

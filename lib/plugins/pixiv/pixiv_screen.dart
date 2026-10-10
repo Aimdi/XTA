@@ -429,7 +429,7 @@ class _PixivScreenState extends State<PixivScreen> {
       scrollController: _favoritesScroll,
     ),
     (_) => const PixivSearchScreen(embedded: true),
-    (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll),
+    (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll, mode: state.mode),
   ];
 
   /// Novel mode's sections; More is the one the illustrations have.

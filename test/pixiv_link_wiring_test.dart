@@ -160,6 +160,29 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('a novel series link that cannot be read still offers its page on pixiv.net', (tester) async {
+      final novels = FakePixivNovelApi(PixivClient(PrefServiceCache()));
+      final launched = _recordLaunches();
+      final opened = <bool>[];
+      await pumpPixiv(
+        tester,
+        _linkButton(parsePixivLink('https://www.pixiv.net/novel/series/55')!, opened),
+        extraProviders: novels.providers,
+      );
+
+      await tester.tap(find.text('open'));
+      await settlePixiv(tester);
+      expect(find.byType(PixivNovelSeriesScreen), findsOneWidget);
+      expect(novels.calls, ['series:55:null']);
+      expect(find.text('Retry'), findsOneWidget);
+      expect(find.byTooltip('Share link'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Open on Pixiv'));
+      await settlePixiv(tester);
+      expect(launched, ['https://www.pixiv.net/novel/series/55']);
+      await disposePixiv(tester);
+    });
+
     testWidgets('a novel link opens the novel and joins the history; a novel series link opens its screen', (
       tester,
     ) async {

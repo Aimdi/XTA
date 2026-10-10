@@ -173,6 +173,17 @@ void main() {
       expect(prefs.get<String>(optionPluginPixivSearchFilters), '');
     });
 
+    test('Hide AI reaches the novel search, which then leaves AI novels out', () async {
+      novels.searchNovels = [pixivNovel(id: 1, title: 'Rain'), pixivNovel(id: 3, title: 'Generated', ai: true)];
+      final store = build();
+      await store.search('rain');
+      expect([for (final novel in store.novels.state) novel.id], [1, 3]);
+
+      await store.applyFilter(store.state.filter.copyWith(hideAi: true));
+      expect(novels.searchAiChoices, [true, false]);
+      expect([for (final novel in store.novels.state) novel.id], [1]);
+    });
+
     test('the landing loads the novel trending tags and no suggested creators', () async {
       final store = build();
       await store.loadLanding();

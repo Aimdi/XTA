@@ -31,8 +31,9 @@ plugin as a whole is described in `pixiv-plugin.md`.
 - A visit is recorded in `pixivIllustRoute` (`pixiv_link_open.dart`) once the
   work's detail has loaded — not while it waits behind the mute notice, and
   not for a work Pixiv no longer has.
-- `plugin.pixiv.history_paused` stops recording. The history screen (More →
-  Viewing history, or Settings) is the shared `PixivIllustGrid` (mute filter
+- `plugin.pixiv.history_paused` stops recording works and novels alike. The
+  history screen (More → Viewing history, on the kind the sections show, or
+  Settings) is the shared `PixivIllustGrid` (mute filter
   off, long press forgets a work) under a header with the title/artist filter
   and the pause switch, all in one scroll view so large text never squeezes
   the works out. Forgetting a work and Clear history both ask first.

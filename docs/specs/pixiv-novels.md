@@ -162,7 +162,10 @@ the one `runPixivBookmarkWrite`.
   the caption with links, Start from #1 (the series' first chapter), View
   latest (`novel_series_latest_novel`, the real newest chapter rather than the
   last one loaded), the watchlist toggle, share and open on Pixiv
-  (`https://www.pixiv.net/novel/series/{id}`), then the numbered chapters as
+  (`https://www.pixiv.net/novel/series/{id}`, worked out from the id, so a
+  series Pixiv cannot hand over still offers its page beside Retry; the two
+  buttons are `pixivSeriesPageActions`, shared with illustration series),
+  then the numbered chapters as
   cards with their hearts. Start or View latest is off when the filters hide
   that chapter. The header sits outside the chapter list, so it stays when
   every chapter is filtered out or a page fails.
@@ -244,15 +247,19 @@ under `pixiv-history:novels`, beside the works' history and like it never in
 preferences, so settings backups never carry it (the design's "the backup
 carries it" gives way to that rule). An entry is the works' history entry
 with the cover as its thumbnail (a novel without a cover is kept and shows a
-plain book) and the length in characters: id, title, author, cover, tags,
-time, bookmarks. `openPixivNovel` records each opening under the history's
+plain book), the length in characters and the R-18 / R-18G and AI marks,
+so the card keeps its chips: id, title, author, cover, tags, time,
+bookmarks. `openPixivNovel` records each opening under the history's
 pause switch; reopening moves the novel to the top.
 
-The history screen (More › Viewing history) has an Illustrations / Novels
-switch (`PixivContentModeSwitch`, also the profile Bookmarks tab's): Novels
+The history screen (More › Viewing history, opening on Novels in Novel
+mode: `PixivMorePane` is handed the sections' mode and passes it to every
+More entry) has an Illustrations / Novels switch (`PixivContentModeSwitch`, also the profile Bookmarks tab's): Novels
 lists the cards newest first, filtered by title or author with the field the
 works use (its words stay when the switch flips). A tap opens the novel, a
-long press forgets it after asking, and Clear all empties the history shown.
+long press forgets it after asking, and Clear all empties the history shown,
+asking "Clear the novel history?" or "Clear the illustration history?". The
+one pause switch stops both histories, and says so.
 Muted novels stay listed, as muted works do. Removing the plugin's data
 empties both histories.
 
@@ -268,7 +275,8 @@ View latest goes the same way and says so when the chapter is gone.
 ## Comments (B2c)
 
 A novel's long press offers *View comments (N)* (or *View comments* when the
-novel came without a count), opening `PixivCommentsScreen` on
+novel came without a count, the label `pixivCommentsLabel` shared with the
+artwork detail), opening `PixivCommentsScreen` on
 `PixivCommentTarget.novel(id)`. The reader adds its own button in B2b.
 
 ## Preferences added
@@ -310,14 +318,22 @@ a reshaped answer), a creator's novels and the detail (withheld, reshaped and
 missing novels are not found). `pixiv_novel_search_test.dart`: novel
 targets, orders and Premium, the novel query, carried-over filters, the
 separate remembered filter, pasted numbers, and the store's search, filter
-change and landing. `pixiv_novel_search_screen_test.dart`: the landing's own
+change, Hide AI reaching the search and leaving AI novels out, and the
+landing. `pixiv_novel_search_screen_test.dart`: the landing's own
 history and trending tags, results and creator cards with novel covers, the
 sheet's novel choices with and without Premium, the id shortcuts opening a
-series, large text at 320 dp, and Novel mode's Search section.
-`pixiv_novel_history_test.dart`: entries without covers, the novel history
-file, recording and the pause, and the history screen's switch, filter,
-forget, Clear all, muted novels and large text. `pixiv_novel_profile_test.dart`:
+series, a novel id Pixiv does not have saying so, large text at 320 dp, and
+Novel mode's Search section.
+`pixiv_novel_history_test.dart`: entries without covers and with their
+ratings, the novel history file, recording and the pause, and the history
+screen's switch, filter, forget, Clear all and its question per kind, the
+R-18 and AI chips, muted novels, More opening on the mode's kind, large text,
+and forgetting the plugin's data emptying the novel history and reloading
+the novel searches. `pixiv_novel_profile_test.dart`:
 the Novels tab and when it is offered, a muted creator shown anyway, large
 text, the preview novel picks, and the comments entry.
 `pixiv_link_wiring_test.dart`: novel links open the novel and join the
-history, a missing one answers false, and novel series links open the page.
+history, a missing one answers false, novel series links open the page, and
+one that cannot be read still offers its page on pixiv.net.
+`pixiv_novel_screens_test.dart` also checks View latest saying so when the
+chapter is gone.

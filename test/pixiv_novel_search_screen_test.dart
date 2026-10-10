@@ -198,6 +198,15 @@ void main() {
     await disposePixiv(tester);
   });
 
+  testWidgets('a novel number Pixiv does not have says so', (tester) async {
+    final novels = _novelApi();
+    await _pump(tester, query: '4321', novels: novels);
+    await _tap(tester, find.byKey(const ValueKey('pixiv-open-novel-4321')));
+    expect(novels.calls, contains('detail:4321'));
+    expect(find.text('Could not open that Pixiv link'), findsOneWidget);
+    await disposePixiv(tester);
+  });
+
   testWidgets('the shortcuts and creator cards fit a narrow phone at large text', (tester) async {
     await _pump(tester, query: '1234567890', size: const Size(320, 640), textScale: 2);
     expect(find.byKey(const ValueKey('pixiv-open-novel-series-1234567890')), findsOneWidget);

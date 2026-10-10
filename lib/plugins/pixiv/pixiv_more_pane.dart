@@ -13,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/pixiv/pixivision_list_screen.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
@@ -26,7 +27,10 @@ class PixivMoreEntry {
   final String id;
   final IconData icon;
   final String Function(L10n l10n) label;
-  final Future<void> Function(BuildContext context) open;
+
+  /// Opens the line's screen; [mode] is the one the five sections show, so a
+  /// screen with both kinds can start on the kind being browsed.
+  final Future<void> Function(BuildContext context, PixivContentMode mode) open;
 
   /// Shown only while an account is signed in.
   final bool needsAccount;
@@ -43,17 +47,22 @@ class PixivMoreEntry {
 Future<void> _push(BuildContext context, Widget screen) =>
     Navigator.push(context, MaterialPageRoute<void>(builder: (_) => screen));
 
-Future<void> _openHistory(BuildContext context) => _push(context, const PixivHistoryScreen());
+Future<void> _openHistory(BuildContext context, PixivContentMode mode) =>
+    _push(context, PixivHistoryScreen(initialKind: mode));
 
-Future<void> _openFavoriteTags(BuildContext context) => _push(context, const PixivFavoriteTagsScreen());
+Future<void> _openFavoriteTags(BuildContext context, PixivContentMode _) =>
+    _push(context, const PixivFavoriteTagsScreen());
 
-Future<void> _openDownloads(BuildContext context) => _push(context, const DownloadsScreen());
+Future<void> _openPixivision(BuildContext context, PixivContentMode _) => openPixivisionList(context);
 
-Future<void> _openPreferences(BuildContext context) => _push(context, const PixivSettingsScreen());
+Future<void> _openDownloads(BuildContext context, PixivContentMode _) => _push(context, const DownloadsScreen());
 
-Future<void> _openMute(BuildContext context) => _push(context, const PixivMuteScreen());
+Future<void> _openPreferences(BuildContext context, PixivContentMode _) => _push(context, const PixivSettingsScreen());
 
-Future<void> _manageOnPixiv(BuildContext context) => openUri(context, 'https://www.pixiv.net/settings/account');
+Future<void> _openMute(BuildContext context, PixivContentMode _) => _push(context, const PixivMuteScreen());
+
+Future<void> _manageOnPixiv(BuildContext context, PixivContentMode _) =>
+    openUri(context, 'https://www.pixiv.net/settings/account');
 
 final pixivMoreEntries = <PixivMoreEntry>[
   PixivMoreEntry(id: 'history', icon: Icons.history, label: (l10n) => l10n.plugin_pixiv_history, open: _openHistory),
@@ -67,7 +76,7 @@ final pixivMoreEntries = <PixivMoreEntry>[
     id: 'pixivision',
     icon: Icons.article_outlined,
     label: (l10n) => l10n.plugin_pixiv_pixivision_articles,
-    open: openPixivisionList,
+    open: _openPixivision,
     needsAccount: true,
   ),
   PixivMoreEntry(
@@ -102,10 +111,18 @@ final pixivMoreEntries = <PixivMoreEntry>[
 class PixivMorePane extends StatefulWidget {
   final VoidCallback onAuthChanged;
 
+  /// What the five sections show, which History opens on.
+  final PixivContentMode mode;
+
   /// The pane's list controller, so tapping More again scrolls it to the top.
   final ScrollController? scrollController;
 
-  const PixivMorePane({super.key, required this.onAuthChanged, this.scrollController});
+  const PixivMorePane({
+    super.key,
+    required this.onAuthChanged,
+    this.scrollController,
+    this.mode = PixivContentMode.illust,
+  });
 
   @override
   State<PixivMorePane> createState() => _PixivMorePaneState();
@@ -176,7 +193,7 @@ class _PixivMorePaneState extends State<PixivMorePane> {
   }
 
   Future<void> _open(PixivMoreEntry entry) async {
-    await entry.open(context);
+    await entry.open(context, widget.mode);
     _changed();
   }
 

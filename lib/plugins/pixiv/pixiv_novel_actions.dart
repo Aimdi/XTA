@@ -3,13 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_comment_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_comments_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_detail_comments.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
-import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
 
 /// Muting one novel by its id.
@@ -27,14 +27,11 @@ Future<void> showPixivNovelActions(BuildContext context, PixivNovel novel) => sh
   extras: pixivNovelActions(context, novel),
 );
 
-/// "View comments (N)", opening what readers wrote about [novel]; a novel
-/// listed without a count shows no number rather than a misleading zero.
+/// "View comments (N)", opening what readers wrote about [novel].
 PluginPostExtraAction pixivNovelCommentsEntry(L10n l10n, PixivNovel novel) => PluginPostExtraAction(
   id: 'pixiv-novel-comments',
   icon: Icons.forum_outlined,
-  label: novel.totalComments > 0
-      ? l10n.plugin_pixiv_comments_view_count(compactCount(novel.totalComments))
-      : l10n.plugin_pixiv_comments_view,
+  label: pixivCommentsLabel(l10n, novel.totalComments),
   run: (context) => openPixivComments(context, PixivCommentTarget.novel(novel.id)),
 );
 

@@ -344,6 +344,25 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('View latest says so when Pixiv no longer has the chapter', (tester) async {
+      final launched = _recordLaunches();
+      final api = _novelApi(
+        watchlist: const [
+          PixivWatchlistSeries(id: 77, title: 'Seasons', userId: 42, userName: 'Mika', latestContentId: 12),
+        ],
+      );
+      await pumpScreen(tester, api);
+      await _tap(tester, find.byTooltip('Switch to novels'));
+      await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-watchlist')));
+
+      await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-77')));
+      expect(api.calls.last, 'detail:12');
+      expect(find.text('Could not open that Pixiv link'), findsOneWidget);
+      expect(launched, isEmpty);
+      expect(find.byType(PixivNovelSeriesScreen), findsNothing);
+      await disposePixiv(tester);
+    });
+
     testWidgets('R-18 boards are offered while Show R-18 is on, and the shown one goes with it', (tester) async {
       final api = _novelApi();
       final harness = await pumpScreen(tester, api, showR18: true);

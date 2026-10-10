@@ -5,13 +5,17 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/utils/json.dart';
 
@@ -57,6 +61,12 @@ void main() {
         (31, 'Letters', 42, 'Mika', novel.coverUrl, 4321),
       );
       expect((back.tags.single.name, back.totalBookmarks, back.isBookmarked), ('秋', 12, true));
+      expect((back.xRestrict, back.isAi), (0, false));
+
+      final rated = PixivHistoryEntry.ofNovel(pixivNovel(id: 32, xRestrict: 2, ai: true), DateTime.utc(2026));
+      final ratedBack = PixivHistoryEntry.fromJson(Json(rated.toJson()), needsThumb: false)!.toNovel();
+      expect((ratedBack.isR18, ratedBack.isR18G, ratedBack.isAi), (true, true, true));
+      expect(entry.toJson().keys, isNot(contains('xRestrict')), reason: 'an all-ages novel stores no rating');
 
       const bare = Json({'id': 8, 'title': 'No cover'});
       expect(PixivHistoryEntry.fromJson(bare), isNull, reason: 'a work cannot show without its thumbnail');
@@ -137,6 +147,7 @@ void main() {
       PixivContentMode initialKind = PixivContentMode.illust,
       double textScale = 1,
       Size size = const Size(390, 844),
+      Widget? home,
     }) async {
       final storage = MemoryJsonStore()
         ..values[pixivIllustHistoryKey] = [PixivHistoryEntry.of(pixivWork(id: 1), DateTime.utc(2026)).toJson()]
@@ -150,7 +161,7 @@ void main() {
       addTearDown(novels.destroy);
       await pumpPixiv(
         tester,
-        PixivHistoryScreen(initialKind: initialKind),
+        home ?? PixivHistoryScreen(initialKind: initialKind),
         textScale: textScale,
         size: size,
         extraProviders: [
@@ -202,11 +213,45 @@ void main() {
 
       await tester.tap(find.byKey(const ValueKey('pixiv-history-clear')));
       await settlePixiv(tester);
+      expect(find.text('Clear the novel history?'), findsOneWidget);
       await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text('Clear history')));
       await settlePixiv(tester);
       expect(novels.state, isEmpty);
       expect(works.state, hasLength(1));
       expect(find.text('Novels you open appear here. The history stays on this device.'), findsOneWidget);
+
+      await tester.tap(find.text('Illustrations'));
+      await settlePixiv(tester);
+      await tester.tap(find.byKey(const ValueKey('pixiv-history-clear')));
+      await settlePixiv(tester);
+      expect(find.text('Clear the illustration history?'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a novel keeps its R-18 and AI marks in the history', (tester) async {
+      final storage = MemoryJsonStore()
+        ..values[pixivNovelHistoryKey] = [
+          PixivHistoryEntry.ofNovel(
+            pixivNovel(id: 7, title: 'Night', xRestrict: 1, ai: true),
+            DateTime.utc(2026),
+          ).toJson(),
+        ];
+      final novels = PixivNovelHistoryStore(storage: storage);
+      final works = PixivHistoryStore(storage: storage);
+      addTearDown(novels.destroy);
+      addTearDown(works.destroy);
+      await pumpPixiv(
+        tester,
+        const PixivHistoryScreen(initialKind: PixivContentMode.novel),
+        extraProviders: [
+          ...FakePixivNovelApi(PixivClient(PrefServiceCache())).providers,
+          Provider<PixivHistoryStore>.value(value: works),
+          Provider<PixivNovelHistoryStore>.value(value: novels),
+        ],
+      );
+      expect(find.widgetWithText(PixivNovelCard, 'Night'), findsOneWidget);
+      expect(find.widgetWithText(PixivNovelRating, 'R-18'), findsOneWidget);
+      expect(find.widgetWithText(PixivNovelRating, 'AI'), findsOneWidget);
       await disposePixiv(tester);
     });
 
@@ -225,11 +270,77 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('More opens the history on the kind the sections show', (tester) async {
+      await pump(
+        tester,
+        home: Scaffold(
+          body: PixivMorePane(onAuthChanged: () {}, mode: PixivContentMode.novel),
+        ),
+      );
+      await tester.tap(find.byKey(const ValueKey('pixiv-more-history')));
+      await settlePixiv(tester);
+      expect(titles(tester), ['Rain', 'Letters']);
+      expect(find.byType(PixivIllustTile), findsNothing);
+      await disposePixiv(tester);
+
+      await pump(
+        tester,
+        home: Scaffold(body: PixivMorePane(onAuthChanged: () {})),
+      );
+      await tester.tap(find.byKey(const ValueKey('pixiv-more-history')));
+      await settlePixiv(tester);
+      expect(find.byType(PixivIllustTile), findsOneWidget);
+      expect(find.byType(PixivNovelCard), findsNothing);
+      await disposePixiv(tester);
+    });
+
     testWidgets('the switch and the novels fit a narrow phone at large text', (tester) async {
       await pump(tester, initialKind: PixivContentMode.novel, textScale: 2, size: const Size(320, 640));
       expect(find.byKey(const ValueKey('pixiv-history-kind')), findsOneWidget);
       expect(tester.takeException(), isNull);
       await disposePixiv(tester);
     });
+  });
+  testWidgets('forgetting what was loaded empties the novel history and reloads the novel searches', (tester) async {
+    final storage = MemoryJsonStore()..values[pixivNovelHistoryKey] = [_novelEntry(1, 'Letters', 'Mika').toJson()];
+    final works = PixivHistoryStore(storage: storage);
+    final novels = PixivNovelHistoryStore(storage: storage);
+    addTearDown(works.destroy);
+    addTearDown(novels.destroy);
+    final harness = await pumpPixiv(
+      tester,
+      Scaffold(
+        body: Builder(
+          builder: (context) =>
+              TextButton(onPressed: () => PixivPlugin().forgetLoadedData(context), child: const Text('forget')),
+        ),
+      ),
+      extraProviders: [
+        Provider<PixivNovelSearchHistory>(
+          create: (context) => PixivNovelSearchHistory(PrefService.of(context, listen: false)),
+          dispose: (_, store) => store.destroy(),
+        ),
+        Provider<PixivFavoriteTagsStore>(
+          create: (context) => PixivFavoriteTagsStore(PrefService.of(context, listen: false)),
+          dispose: (_, store) => store.destroy(),
+        ),
+        Provider<PixivHistoryStore>.value(value: works),
+        Provider<PixivNovelHistoryStore>.value(value: novels),
+      ],
+    );
+    novels.load();
+    await settlePixiv(tester);
+    expect(novels.state, hasLength(1));
+    final searches = Provider.of<PixivNovelSearchHistory>(tester.element(find.text('forget')), listen: false);
+    await searches.remember('rain');
+    await harness.prefs.set(optionPluginPixivNovelSearchHistory, '[]');
+    expect(searches.state, ['rain'], reason: 'the reset preferences are not read back on their own');
+
+    await tester.tap(find.text('forget'));
+    await settlePixiv(tester);
+    expect(searches.state, isEmpty);
+    expect(novels.state, isEmpty);
+    expect(storage.values[pixivNovelHistoryKey], isEmpty);
+    await disposePixiv(tester);
   });
 }

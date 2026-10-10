@@ -67,8 +67,12 @@ class _PixivHistoryScreenState extends State<PixivHistoryScreen> {
 
   Future<void> _clearAll() async {
     final l10n = L10n.of(context);
-    final history = _historyOf(_kind.state);
-    if (await confirmPixivAction(context, l10n.plugin_pixiv_history_clear_question, l10n.plugin_pixiv_history_clear)) {
+    final kind = _kind.state;
+    final history = _historyOf(kind);
+    final question = kind == PixivContentMode.novel
+        ? l10n.plugin_pixiv_history_novels_clear_question
+        : l10n.plugin_pixiv_history_clear_question;
+    if (await confirmPixivAction(context, question, l10n.plugin_pixiv_history_clear)) {
       await history.clear();
     }
   }
@@ -225,7 +229,7 @@ class _HistoryHeader extends StatelessWidget {
   }
 }
 
-/// The switch that stops, and resumes, adding opened works to the history.
+/// The switch that stops, and resumes, adding opened works and novels to the history.
 class _PausedNote extends StatelessWidget {
   const _PausedNote();
 
