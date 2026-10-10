@@ -78,7 +78,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
 | Saving | File-name template, per-artist and R-18 subfolders, saved-pages index with tile check and re-save question, picking pages, ugoira GIF / ZIP export, tile long-press actions (`pixiv-downloads.md`) |
-| Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
+| Search | Works and creators with a filter bar and sheet (target, sort, dates, users入り, Premium bookmark bracket, AI, ugoira, Remember), the free popular preview for non-Premium readers, last-word tag suggestions, id shortcuts, paste, trending tags and suggested creators with pull-to-refresh, favourite tags and SauceNAO. State in `PixivSearchStore`, endpoints in `pixiv_search_api.dart`; see `pixiv-search.md`. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
 | Profile | Header (image, avatar, counts, bio, follow, Add to group) over Works (illustrations / manga), Bookmarks, Following and Info tabs; share, follow privately, copy info, mute; muted creators show a placeholder. See `pixiv-profiles.md` |
 | Follow lists | `PixivUserListScreen`: whom anyone follows or who follows them, as preview cards; your own following list switches public / private |
 | User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large (`PixivFollowHeader`, also on profiles and the work's author row). A long press opens the follow dialog to follow privately. `onFollowChanged` lets a list update its copy |
@@ -118,7 +118,7 @@ its illust case.
 | Trending tags | `GET /v1/trending-tags/illust` |
 | Popular preview | `GET /v1/search/popular-preview/illust` |
 | Autocomplete | `GET /v2/search/autocomplete` |
-| Search illust | `GET /v1/search/illust` |
+| Search illust | `GET /v1/search/illust` (filters in `pixiv-search.md`) |
 | Search user | `GET /v1/search/user` |
 | Recommended users | `GET /v1/user/recommended` |
 | Related users | `GET /v1/user/related` |
@@ -139,6 +139,7 @@ its illust case.
 | Bookmark detail | `GET /v2/illust/bookmark/detail` |
 | AI display setting (read only) | `GET /v1/user/ai-show-settings` |
 | Short link | `GET https://pixiv.me/<name>` (redirect read, not followed) |
+| SauceNAO (not Pixiv) | `POST https://saucenao.com/search.php` |
 
 Rankings, recommended manga and creators, Pixivision, series, the manga
 watchlist and the walkthrough are listed in `pixiv-discovery.md`.

@@ -2828,6 +2828,30 @@
   },
   "plugin_pixiv_reveal": "Tampilkan",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Pilih gambar lain",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Tidak ada karya Pixiv yang cocok dengan gambar ini",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO tidak dapat mencari gambar ini",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Pilih gambar",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Masuk lagi ke Pixiv untuk melihat pratinjau",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Gambar yang Anda pilih diunggah ke saucenao.com untuk mencari karya Pixiv yang cocok.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Mencari di SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "Kemiripan {percent}",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Cari dengan gambar",
+  "@plugin_pixiv_saucenao_title": {},
   "plugin_pixiv_save_again": "Simpan lagi",
   "@plugin_pixiv_save_again": {},
   "plugin_pixiv_save_new_only": "Hanya halaman baru",
@@ -2842,26 +2866,168 @@
   },
   "plugin_pixiv_saved_badge": "Tersimpan di perangkat ini",
   "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Jumlah markah",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Berapa pun jumlah markah",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ markah",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} markah",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Tanggal",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Kapan saja",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Tanggal khusus…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Sehari terakhir",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "6 bulan terakhir",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Sebulan terakhir",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Seminggu terakhir",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Setahun terakhir",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Tidak ada hasil",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Tambahkan ke tag favorit",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Ditambahkan ke tag favorit",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Hapus dari tag favorit",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Dihapus dari tag favorit",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Tag favorit",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Selesai mengedit",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Edit tag favorit",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Seret tag untuk memindahkannya. Geser ke samping untuk menghapusnya.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Belum ada tag favorit. Tekan lama tag pada sebuah karya untuk menambahkannya.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filter pencarian",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Tag, judul, atau pengguna",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Pencarian terbaru",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Tampilkan semua ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Hapus pencarian terbaru",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Hapus semua pencarian terbaru?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Belum ada pencarian terbaru",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Tampilkan lebih sedikit",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Buka karya #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Buka pengguna #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Tempel",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularitas",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Popularitas apa pun",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Urutan terlama dan popularitas di kalangan pria atau wanita memerlukan Pixiv Premium. Tanpanya, \"Populer\" menampilkan pratinjau gratis dari Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Tanggal unggah tidak menyaring pratinjau.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Ini adalah pratinjau populer gratis dari Pixiv. Mengurutkan semua hasil berdasarkan popularitas memerlukan Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Cari ilustrasi atau pengguna",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Ingat filter ini",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Urutkan",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Terbaru",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Terlama",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populer",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Populer di kalangan wanita",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populer di kalangan pria",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Tag disalin",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Salin tag",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Cari di",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tag (persis)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Tag (sebagian)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Judul/takarir",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Semua karya",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Tanpa ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Hanya ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Dimarkahi {count}+ orang",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_see_all": "Lihat semua",
   "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Tidak ada",

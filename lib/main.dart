@@ -68,6 +68,7 @@ import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
@@ -619,6 +620,8 @@ Future<void> main() async {
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
       optionPluginPixivRankingModes: jsonEncode(pixivDefaultRankingPins),
+      optionPluginPixivSearchFilters: '',
+      optionPluginPixivFavoriteTags: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
       optionPluginPixivAccounts: '[]',
       optionPluginPixivStartSection: 'home',
@@ -853,6 +856,7 @@ Future<void> main() async {
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistory(prefService);
+    final pixivFavoriteTags = PixivFavoriteTagsStore(prefService);
     final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
     final pixivDownloads = PixivDownloadIndex(prefService);
@@ -1081,6 +1085,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivClient),
                 Provider(create: (_) => pixivMute),
                 Provider(create: (_) => pixivSearchHistory),
+                Provider(create: (_) => pixivFavoriteTags),
                 Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
                 Provider(create: (_) => pixivDownloads),

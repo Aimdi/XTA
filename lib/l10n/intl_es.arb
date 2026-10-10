@@ -2828,6 +2828,30 @@
   },
   "plugin_pixiv_reveal": "Mostrar",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Elegir otra imagen",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Ninguna obra de Pixiv coincide con esta imagen",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO no pudo buscar esta imagen",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Elegir una imagen",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Vuelve a iniciar sesión en Pixiv para ver las vistas previas",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "La imagen que elijas se sube a saucenao.com para buscar obras de Pixiv que coincidan.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Buscando en SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} de similitud",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Buscar por imagen",
+  "@plugin_pixiv_saucenao_title": {},
   "plugin_pixiv_save_again": "Guardar otra vez",
   "@plugin_pixiv_save_again": {},
   "plugin_pixiv_save_new_only": "Solo páginas nuevas",
@@ -2842,26 +2866,168 @@
   },
   "plugin_pixiv_saved_badge": "Guardada en este dispositivo",
   "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Número de marcadores",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Cualquier número de marcadores",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ marcadores",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} marcadores",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Fecha",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Cualquier fecha",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Fechas personalizadas…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Último día",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Últimos 6 meses",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Último mes",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Última semana",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Último año",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Sin resultados",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Añadir a etiquetas favoritas",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Añadida a etiquetas favoritas",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Quitar de etiquetas favoritas",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Quitada de etiquetas favoritas",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Etiquetas favoritas",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Terminar de editar",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Editar etiquetas favoritas",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Arrastra una etiqueta para moverla. Deslízala hacia un lado para quitarla.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Aún no tienes etiquetas favoritas. Mantén pulsada una etiqueta de una obra para añadirla.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filtros de búsqueda",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Etiquetas, títulos o usuarios",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Búsquedas recientes",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Mostrar todas ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Borrar búsquedas recientes",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "¿Borrar todas las búsquedas recientes?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "No hay búsquedas recientes",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Mostrar menos",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Abrir obra #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Abrir usuario #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Pegar",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularidad",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Cualquier popularidad",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Ordenar de más antiguo a más reciente y por popularidad entre hombres o mujeres requiere Pixiv Premium. Sin Premium, «Populares» muestra la vista previa gratuita de Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Las fechas de publicación no filtran la vista previa.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Esta es la vista previa gratuita de populares de Pixiv. Ordenar todos los resultados por popularidad requiere Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Busca ilustraciones o usuarios",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Recordar estos filtros",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Ordenar por",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Más recientes",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Más antiguos",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populares",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Populares entre mujeres",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populares entre hombres",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Etiqueta copiada",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Copiar etiqueta",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Buscar en",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiquetas (exacta)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Etiquetas (parcial)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Título/descripción",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Todas las obras",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Sin ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Solo ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Guardado por {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_see_all": "Ver todo",
   "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Ninguna",

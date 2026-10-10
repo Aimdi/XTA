@@ -152,8 +152,8 @@ and `pixiv://` links reach the plugin (pixivision.net joins with its screen).
 
 - More is a hub: the account header (avatar, name, @account, Premium badge,
   switcher sheet with Add account), then `pixivMoreEntries` — Viewing
-  history, Pixivision articles, Downloads, Preferences, Mute, Manage account on
-  pixiv.net — About
+  history, Favorite tags, Pixivision articles, Downloads, Preferences, Mute,
+  Manage account on pixiv.net — About
   and Sign out. A batch adds its line to `pixivMoreEntries`.
 - `plugin.pixiv.start_section` (`home`, `ranking`, `favorites`, `search`)
   picks the section the Pixiv screen opens on.

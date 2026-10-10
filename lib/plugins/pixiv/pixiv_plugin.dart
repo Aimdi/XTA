@@ -18,6 +18,7 @@ import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
@@ -161,6 +162,8 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivFolderR18, false);
     await prefs.set(optionPluginPixivDownloadIndex, '[]');
     await prefs.set(optionPluginPixivRankingModes, jsonEncode(pixivDefaultRankingPins));
+    await prefs.set(optionPluginPixivSearchFilters, '');
+    await prefs.set(optionPluginPixivFavoriteTags, '[]');
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
       where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);
@@ -173,6 +176,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
   Future<void> forgetLoadedData(BuildContext context) async {
     pixivAccountDataForgetter(context)();
     context.read<PixivSearchHistory>().load();
+    context.read<PixivFavoriteTagsStore>().load();
     context.read<PixivDownloadIndex?>()?.update(const {});
     await context.read<PixivHistoryStore?>()?.clear();
   }

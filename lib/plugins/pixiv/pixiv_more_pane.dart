@@ -7,6 +7,7 @@ import 'package:xta/plugins/pixiv/pixiv_account_list.dart';
 import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_favorite_tags_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
@@ -44,6 +45,8 @@ Future<void> _push(BuildContext context, Widget screen) =>
 
 Future<void> _openHistory(BuildContext context) => _push(context, const PixivHistoryScreen());
 
+Future<void> _openFavoriteTags(BuildContext context) => _push(context, const PixivFavoriteTagsScreen());
+
 Future<void> _openDownloads(BuildContext context) => _push(context, const DownloadsScreen());
 
 Future<void> _openPreferences(BuildContext context) => _push(context, const PixivSettingsScreen());
@@ -54,6 +57,12 @@ Future<void> _manageOnPixiv(BuildContext context) => openUri(context, 'https://w
 
 final pixivMoreEntries = <PixivMoreEntry>[
   PixivMoreEntry(id: 'history', icon: Icons.history, label: (l10n) => l10n.plugin_pixiv_history, open: _openHistory),
+  PixivMoreEntry(
+    id: 'favorite-tags',
+    icon: Icons.label_outline,
+    label: (l10n) => l10n.plugin_pixiv_search_favorite_tags,
+    open: _openFavoriteTags,
+  ),
   PixivMoreEntry(
     id: 'pixivision',
     icon: Icons.article_outlined,

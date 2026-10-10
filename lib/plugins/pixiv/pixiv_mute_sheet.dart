@@ -24,13 +24,14 @@ List<PixivMuteChoice> pixivMuteChoices(L10n l10n, PixivIllust illust) => [
     mute: (store) => store.muteAuthor(illust.userId, name: illust.userName),
   ),
   (icon: Icons.hide_image_outlined, label: l10n.plugin_pixiv_mute_illust, mute: (store) => store.muteIllust(illust.id)),
-  for (final tag in illust.tags)
-    (
-      icon: Icons.label_off_outlined,
-      label: l10n.plugin_pixiv_mute_tag(tag.displayName),
-      mute: (store) => store.muteTag(tag.name),
-    ),
+  for (final tag in illust.tags) pixivTagMuteChoice(l10n, tag),
 ];
+
+PixivMuteChoice pixivTagMuteChoice(L10n l10n, PixivTag tag) => (
+  icon: Icons.label_off_outlined,
+  label: l10n.plugin_pixiv_mute_tag(tag.displayName),
+  mute: (store) => store.muteTag(tag.name),
+);
 
 /// Offers [pixivMuteChoices] and, once one is confirmed, leaves the work's
 /// screen, since whatever was muted now hides it.

@@ -415,6 +415,12 @@ const optionPluginPixivDownloadIndex = 'plugin.pixiv.download_index';
 /// The ranking boards pinned as chips, a JSON list of Pixiv mode names.
 const optionPluginPixivRankingModes = 'plugin.pixiv.ranking_modes';
 
+/// The search filters the reader chose to remember, as JSON; empty for none.
+const optionPluginPixivSearchFilters = 'plugin.pixiv.search_filters';
+
+/// Tags pinned as saved searches, in the reader's order, as JSON.
+const optionPluginPixivFavoriteTags = 'plugin.pixiv.favorite_tags';
+
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
 const optionPluginBooruShowTab = 'plugin.booru.show_tab';

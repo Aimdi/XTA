@@ -2828,6 +2828,30 @@
   },
   "plugin_pixiv_reveal": "Vis",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Velg et annet bilde",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Ingen Pixiv-verk samsvarer med dette bildet",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO kunne ikke søke etter dette bildet",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Velg et bilde",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Logg på Pixiv igjen for å se forhåndsvisninger",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "Bildet du velger, lastes opp til saucenao.com for å finne samsvarende Pixiv-verk.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "Søker i SauceNAO …",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} likhet",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Søk med bilde",
+  "@plugin_pixiv_saucenao_title": {},
   "plugin_pixiv_save_again": "Lagre på nytt",
   "@plugin_pixiv_save_again": {},
   "plugin_pixiv_save_new_only": "Bare nye sider",
@@ -2842,26 +2866,168 @@
   },
   "plugin_pixiv_saved_badge": "Lagret på denne enheten",
   "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Antall bokmerker",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Hvilket som helst antall bokmerker",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ bokmerker",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} bokmerker",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Dato",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "Når som helst",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Egne datoer …",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Siste døgn",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Siste 6 måneder",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Siste måned",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Siste uke",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Siste år",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Ingen treff",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Legg til i favorittagger",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "Lagt til i favorittagger",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Fjern fra favorittagger",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "Fjernet fra favorittagger",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Favorittagger",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Ferdig med redigering",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Rediger favorittagger",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Dra en tagg for å flytte den. Sveip den til siden for å fjerne den.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Ingen favorittagger ennå. Trykk lenge på en tagg på et verk for å legge den til.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Søkefiltre",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Tagger, titler eller brukere",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Nylige søk",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Vis alle ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Tøm nylige søk",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Vil du tømme alle nylige søk?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "Ingen nylige søk",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Vis færre",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Åpne verk #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Åpne bruker #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Lim inn",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularitet",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Hvilken som helst popularitet",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Eldste først og popularitet blant menn eller kvinner krever Pixiv Premium. Uten det viser «Populære» Pixivs gratis forhåndsvisning.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Publiseringsdatoer avgrenser ikke forhåndsvisningen.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Dette er Pixivs gratis forhåndsvisning av populære verk. Å sortere alle treff etter popularitet krever Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Søk etter illustrasjoner eller brukere",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Husk disse filtrene",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Sorter etter",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Nyeste",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Eldste",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populære",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Populære blant kvinner",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populære blant menn",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "Taggen er kopiert",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Kopier taggen",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Søk i",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Tagger (eksakt)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Tagger (delvis)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tittel/bildetekst",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Alle verk",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Uten ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Bare ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Bokmerket av {count}+",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_see_all": "Se alle",
   "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Ingen",

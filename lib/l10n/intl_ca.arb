@@ -2828,6 +2828,30 @@
   },
   "plugin_pixiv_reveal": "Mostra",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_saucenao_another": "Tria una altra imatge",
+  "@plugin_pixiv_saucenao_another": {},
+  "plugin_pixiv_saucenao_empty": "Cap obra de Pixiv no coincideix amb aquesta imatge",
+  "@plugin_pixiv_saucenao_empty": {},
+  "plugin_pixiv_saucenao_failed": "SauceNAO no ha pogut cercar aquesta imatge",
+  "@plugin_pixiv_saucenao_failed": {},
+  "plugin_pixiv_saucenao_pick": "Tria una imatge",
+  "@plugin_pixiv_saucenao_pick": {},
+  "plugin_pixiv_saucenao_preview_unauthorized": "Torna a iniciar la sessió a Pixiv per veure les previsualitzacions",
+  "@plugin_pixiv_saucenao_preview_unauthorized": {},
+  "plugin_pixiv_saucenao_privacy": "La imatge que triïs es puja a saucenao.com per buscar obres de Pixiv que hi coincideixin.",
+  "@plugin_pixiv_saucenao_privacy": {},
+  "plugin_pixiv_saucenao_searching": "S’està cercant a SauceNAO…",
+  "@plugin_pixiv_saucenao_searching": {},
+  "plugin_pixiv_saucenao_similarity": "{percent} de similitud",
+  "@plugin_pixiv_saucenao_similarity": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_saucenao_title": "Cerca per imatge",
+  "@plugin_pixiv_saucenao_title": {},
   "plugin_pixiv_save_again": "Torna a desar",
   "@plugin_pixiv_save_again": {},
   "plugin_pixiv_save_new_only": "Només pàgines noves",
@@ -2842,26 +2866,168 @@
   },
   "plugin_pixiv_saved_badge": "Desada en aquest dispositiu",
   "@plugin_pixiv_saved_badge": {},
+  "plugin_pixiv_search_bookmarks": "Nombre de marcadors",
+  "@plugin_pixiv_search_bookmarks": {},
+  "plugin_pixiv_search_bookmarks_any": "Qualsevol nombre de marcadors",
+  "@plugin_pixiv_search_bookmarks_any": {},
+  "plugin_pixiv_search_bookmarks_min": "{min}+ marcadors",
+  "@plugin_pixiv_search_bookmarks_min": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_bookmarks_range": "{min}–{max} marcadors",
+  "@plugin_pixiv_search_bookmarks_range": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date": "Data",
+  "@plugin_pixiv_search_date": {},
+  "plugin_pixiv_search_date_any": "En qualsevol moment",
+  "@plugin_pixiv_search_date_any": {},
+  "plugin_pixiv_search_date_custom": "Dates personalitzades…",
+  "@plugin_pixiv_search_date_custom": {},
+  "plugin_pixiv_search_date_day": "Últim dia",
+  "@plugin_pixiv_search_date_day": {},
+  "plugin_pixiv_search_date_half_year": "Últims 6 mesos",
+  "@plugin_pixiv_search_date_half_year": {},
+  "plugin_pixiv_search_date_month": "Últim mes",
+  "@plugin_pixiv_search_date_month": {},
+  "plugin_pixiv_search_date_range": "{start} – {end}",
+  "@plugin_pixiv_search_date_range": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_date_week": "Última setmana",
+  "@plugin_pixiv_search_date_week": {},
+  "plugin_pixiv_search_date_year": "Últim any",
+  "@plugin_pixiv_search_date_year": {},
   "plugin_pixiv_search_empty": "Sense resultats",
   "@plugin_pixiv_search_empty": {},
+  "plugin_pixiv_search_favorite_add": "Afegeix a les etiquetes preferides",
+  "@plugin_pixiv_search_favorite_add": {},
+  "plugin_pixiv_search_favorite_added": "S’ha afegit a les etiquetes preferides",
+  "@plugin_pixiv_search_favorite_added": {},
+  "plugin_pixiv_search_favorite_remove": "Treu de les etiquetes preferides",
+  "@plugin_pixiv_search_favorite_remove": {},
+  "plugin_pixiv_search_favorite_removed": "S’ha tret de les etiquetes preferides",
+  "@plugin_pixiv_search_favorite_removed": {},
+  "plugin_pixiv_search_favorite_tags": "Etiquetes preferides",
+  "@plugin_pixiv_search_favorite_tags": {},
+  "plugin_pixiv_search_favorite_tags_done": "Acaba d’editar",
+  "@plugin_pixiv_search_favorite_tags_done": {},
+  "plugin_pixiv_search_favorite_tags_edit": "Edita les etiquetes preferides",
+  "@plugin_pixiv_search_favorite_tags_edit": {},
+  "plugin_pixiv_search_favorite_tags_edit_hint": "Arrossega una etiqueta per moure-la. Llisca-la cap a un costat per treure-la.",
+  "@plugin_pixiv_search_favorite_tags_edit_hint": {},
+  "plugin_pixiv_search_favorite_tags_empty": "Encara no tens etiquetes preferides. Mantén premuda una etiqueta d’una obra per afegir-la.",
+  "@plugin_pixiv_search_favorite_tags_empty": {},
+  "plugin_pixiv_search_filters_title": "Filtres de cerca",
+  "@plugin_pixiv_search_filters_title": {},
   "plugin_pixiv_search_hint": "Etiquetes, títols o usuaris",
   "@plugin_pixiv_search_hint": {},
   "plugin_pixiv_search_history": "Cerques recents",
   "@plugin_pixiv_search_history": {},
+  "plugin_pixiv_search_history_all": "Mostra-les totes ({count})",
+  "@plugin_pixiv_search_history_all": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_search_history_clear": "Esborra les cerques recents",
+  "@plugin_pixiv_search_history_clear": {},
+  "plugin_pixiv_search_history_clear_question": "Vols esborrar totes les cerques recents?",
+  "@plugin_pixiv_search_history_clear_question": {},
   "plugin_pixiv_search_history_empty": "No hi ha cerques recents",
   "@plugin_pixiv_search_history_empty": {},
+  "plugin_pixiv_search_history_fewer": "Mostra’n menys",
+  "@plugin_pixiv_search_history_fewer": {},
+  "plugin_pixiv_search_open_artwork": "Obre l’obra #{id}",
+  "@plugin_pixiv_search_open_artwork": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_open_user": "Obre l’usuari #{id}",
+  "@plugin_pixiv_search_open_user": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_search_paste": "Enganxa",
+  "@plugin_pixiv_search_paste": {},
+  "plugin_pixiv_search_popularity": "Popularitat",
+  "@plugin_pixiv_search_popularity": {},
+  "plugin_pixiv_search_popularity_any": "Qualsevol popularitat",
+  "@plugin_pixiv_search_popularity_any": {},
+  "plugin_pixiv_search_premium_note": "Ordenar de més antic a més recent i per popularitat entre homes o dones requereix Pixiv Premium. Sense Premium, «Populars» mostra la previsualització gratuïta de Pixiv.",
+  "@plugin_pixiv_search_premium_note": {},
+  "plugin_pixiv_search_preview_dates": "Les dates de publicació no filtren la previsualització.",
+  "@plugin_pixiv_search_preview_dates": {},
+  "plugin_pixiv_search_preview_note": "Aquesta és la previsualització gratuïta de populars de Pixiv. Per ordenar tots els resultats per popularitat cal Pixiv Premium.",
+  "@plugin_pixiv_search_preview_note": {},
   "plugin_pixiv_search_prompt": "Cerqueu il·lustracions o usuaris",
   "@plugin_pixiv_search_prompt": {},
+  "plugin_pixiv_search_remember": "Recorda aquests filtres",
+  "@plugin_pixiv_search_remember": {},
+  "plugin_pixiv_search_sort": "Ordena per",
+  "@plugin_pixiv_search_sort": {},
   "plugin_pixiv_search_sort_newest": "Més recents",
   "@plugin_pixiv_search_sort_newest": {},
+  "plugin_pixiv_search_sort_oldest": "Més antics",
+  "@plugin_pixiv_search_sort_oldest": {},
   "plugin_pixiv_search_sort_popular": "Populars",
   "@plugin_pixiv_search_sort_popular": {},
+  "plugin_pixiv_search_sort_popular_female": "Populars entre dones",
+  "@plugin_pixiv_search_sort_popular_female": {},
+  "plugin_pixiv_search_sort_popular_male": "Populars entre homes",
+  "@plugin_pixiv_search_sort_popular_male": {},
+  "plugin_pixiv_search_tag_copied": "S’ha copiat l’etiqueta",
+  "@plugin_pixiv_search_tag_copied": {},
+  "plugin_pixiv_search_tag_copy": "Copia l’etiqueta",
+  "@plugin_pixiv_search_tag_copy": {},
+  "plugin_pixiv_search_target": "Cerca a",
+  "@plugin_pixiv_search_target": {},
   "plugin_pixiv_search_target_exact": "Etiquetes (exacte)",
   "@plugin_pixiv_search_target_exact": {},
   "plugin_pixiv_search_target_partial": "Etiquetes (parcial)",
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Títol/descripció",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_search_ugoira_all": "Totes les obres",
+  "@plugin_pixiv_search_ugoira_all": {},
+  "plugin_pixiv_search_ugoira_none": "Sense ugoira",
+  "@plugin_pixiv_search_ugoira_none": {},
+  "plugin_pixiv_search_ugoira_only": "Només ugoira",
+  "@plugin_pixiv_search_ugoira_only": {},
+  "plugin_pixiv_search_users_iri": "Desat per {count}+ usuaris",
+  "@plugin_pixiv_search_users_iri": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_see_all": "Mostra-ho tot",
   "@plugin_pixiv_see_all": {},
   "plugin_pixiv_select_none": "Cap",
