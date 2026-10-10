@@ -1785,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "コメント",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "続きから",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookie",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "ブラウザから ipb_member_id と ipb_pass_hash（ExHentaiは igneous も）を貼り付け。端末外には送られません。",

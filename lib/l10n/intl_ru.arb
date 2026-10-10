@@ -1785,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Комментарии",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Продолжить",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
