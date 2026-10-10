@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "फ़ॉलो करें",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} फ़ॉलोइंग} other{{shown} फ़ॉलोइंग}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "परिचय",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "खाता",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "म्यूट किए गए Pixiv आइटम",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixiv मित्र} other{{shown} My pixiv मित्र}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "फ़ॉलोइंग, रैंकिंग और बुकमार्क देखने के लिए Pixiv में साइन इन करें",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "वह Pixiv लिंक नहीं खुल सका",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "म्यूट हटाएँ",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} कृति} other{{shown} कृतियाँ}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "यह सर्वर बिना साइन इन किए यह सूची नहीं दिखाता या इसका समर्थन नहीं करता। आप पोस्ट को अपने ब्राउज़र में खोल सकते हैं।",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "अन्य प्लगइन",

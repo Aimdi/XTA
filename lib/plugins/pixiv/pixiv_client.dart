@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
@@ -29,33 +30,61 @@ class PixivException implements Exception {
   String toString() => 'PixivException{$kind: $message}';
 }
 
-class PixivIllustPage {
-  final List<PixivIllust> illusts;
-  final String? nextUrl;
+class PixivIllustPage extends PixivPage<PixivIllust> {
+  const PixivIllustPage({required List<PixivIllust> illusts, super.nextUrl}) : super(illusts);
 
-  const PixivIllustPage({required this.illusts, this.nextUrl});
+  List<PixivIllust> get illusts => items;
 }
+
+/// The `Accept-Language` Pixiv localises tags and text for, from an XTA
+/// locale such as `ja`, `zh_Hant` or `pt_BR`. Pixiv speaks five languages;
+/// every other locale reads English rather than Pixiv's Japanese default.
+String pixivAcceptLanguage(String locale) {
+  final parts = locale.toLowerCase().split(RegExp('[-_]'));
+  return switch (parts.first) {
+    'ja' => 'ja',
+    'ko' => 'ko',
+    'zh' when parts.skip(1).any(const {'hant', 'tw', 'hk', 'mo'}.contains) => 'zh-TW',
+    'zh' => 'zh-CN',
+    _ => 'en',
+  };
+}
+
+/// Pixiv's edge drops idle keep-alive sockets; the first request on a dead one
+/// fails before any header arrives and succeeds when simply sent again.
+bool _isDroppedConnection(Object error) => '$error'.contains('Connection closed before');
+
+typedef _Send = Future<http.Response> Function(Map<String, String> headers);
 
 /// Client for Pixiv's unofficial app API.
 ///
 /// Auth is a pasted refresh token — same shape community clients use after
 /// password login was removed. Follow and bookmark are the write-backs;
 /// there is no compose.
+///
+/// Feature screens add their endpoints in their own `pixiv_<feature>_api.dart`
+/// over the public transport ([getJson], [getNextJson], [getText], [postForm],
+/// [illustPageFrom]) instead of growing this class.
 class PixivClient {
   final http.Client httpClient;
   final BasePrefService prefs;
   final DateTime Function() clock;
 
+  /// The active XTA locale; Pixiv translates tags into its language.
+  final String Function() locale;
+
   /// Coalesces concurrent refresh calls — opening Following + Ranking used to
   /// stampede the token endpoint and stack several 15s timeouts.
   Future<PixivAuthUser>? _refreshInFlight;
 
-  PixivClient(this.prefs, {http.Client? httpClient, DateTime Function()? clock})
+  PixivClient(this.prefs, {http.Client? httpClient, DateTime Function()? clock, String Function()? locale})
     : httpClient = httpClient ?? http.Client(),
-      clock = clock ?? DateTime.now;
+      clock = clock ?? DateTime.now,
+      locale = locale ?? Intl.getCurrentLocale;
 
   static const _timeout = Duration(seconds: 15);
-  static const _apiBase = 'https://app-api.pixiv.net';
+  static const _apiHost = 'app-api.pixiv.net';
+  static const _apiBase = 'https://$_apiHost';
   static const _userAgent = 'PixivAndroidApp/5.0.234 (Android 11; Pixel 5)';
 
   /// The salt behind `X-Client-Hash`, as widely documented as the id above.
@@ -70,8 +99,10 @@ class PixivClient {
 
   String get _refreshToken =>
       (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim();
+  String get _storedAccessToken => (prefs.get<String>(optionPluginPixivAccessToken) ?? '').trim();
   bool get showR18 => prefs.get<bool>(optionPluginPixivShowR18) == true;
   bool get hideAi => prefs.get<bool>(optionPluginPixivHideAi) == true;
+  bool get isPremium => prefs.get<bool>(optionPluginPixivIsPremium) == true;
 
   static String _pad(int value, [int width = 2]) =>
       '$value'.padLeft(width, '0');
@@ -97,6 +128,7 @@ class PixivClient {
       'App-OS-Version': '11',
       'App-Version': '5.0.234',
       'Accept': 'application/json',
+      'Accept-Language': pixivAcceptLanguage(locale()),
       'X-Client-Time': time,
       'X-Client-Hash': md5
           .convert(utf8.encode('$time$clientHashSalt'))
@@ -104,16 +136,28 @@ class PixivClient {
     };
   }
 
-  Future<http.Response> _send(Future<http.Response> Function() run) async {
+  Map<String, String> _bearer(String token) => {..._baseHeaders, 'Authorization': 'Bearer $token'};
+
+  Future<http.Response> _send(Future<http.Response> Function() run, {bool retried = false}) async {
     try {
       return await run().timeout(_timeout);
     } catch (e) {
+      if (!retried && _isDroppedConnection(e)) {
+        return _send(run, retried: true);
+      }
       throw PixivException(PixivErrorKind.network, '$e');
     }
   }
 
+  /// Pixiv answers an expired or revoked access token with HTTP 400 and an
+  /// `error.message` about "the OAuth process" far more often than with 401.
+  bool _isTokenRefused(http.Response response) =>
+      response.statusCode == 401 ||
+      (response.statusCode == 400 &&
+          (Json(_tryDecode(response))['error']['message'].string ?? '').contains('OAuth'));
+
   void _throwForStatus(http.Response response, Uri uri) {
-    if (response.statusCode == 401 || response.statusCode == 403) {
+    if (_isTokenRefused(response) || response.statusCode == 403) {
       throw PixivException(
         PixivErrorKind.unauthorized,
         '$uri: ${response.statusCode}',
@@ -218,7 +262,6 @@ class PixivClient {
     final access = json['access_token'].string;
     final refresh = json['refresh_token'].string;
     final expiresIn = json['expires_in'].integer ?? 3600;
-    final user = json['user'];
 
     if (access == null || access.isEmpty) {
       throw PixivException(
@@ -236,20 +279,22 @@ class PixivClient {
       clock().add(Duration(seconds: expiresIn - 60)).toIso8601String(),
     );
 
-    final authUser = PixivAuthUser(
-      id: user['id'].integer ?? int.tryParse(user['id'].string ?? '') ?? 0,
-      name: user['name'].string?.trim() ?? '',
-      account: user['account'].string?.trim() ?? '',
-    );
-    if (authUser.id != 0) {
-      await prefs.set(optionPluginPixivUserId, authUser.id);
-    }
+    final authUser = PixivAuthUser.fromJson(json['user'].raw);
+    await _rememberUser(authUser, known: json['user'].exists);
     return authUser;
   }
 
+  Future<void> _rememberUser(PixivAuthUser user, {bool known = true}) async {
+    if (user.id != 0) {
+      await prefs.set(optionPluginPixivUserId, user.id);
+    }
+    if (known) {
+      await prefs.set(optionPluginPixivIsPremium, user.isPremium);
+    }
+  }
+
   Future<String> _accessToken() async {
-    final existing = (prefs.get<String>(optionPluginPixivAccessToken) ?? '')
-        .trim();
+    final existing = _storedAccessToken;
     final expiresRaw =
         prefs.get<String>(optionPluginPixivAccessExpiresAt) ?? '';
     final expires = DateTime.tryParse(expiresRaw);
@@ -257,7 +302,18 @@ class PixivClient {
       return existing;
     }
     await refreshAccessToken();
-    return (prefs.get<String>(optionPluginPixivAccessToken) ?? '').trim();
+    return _storedAccessToken;
+  }
+
+  /// A token for the replay after [refused] was turned away: one another
+  /// request already swapped in is reused instead of refreshing again.
+  Future<String> _reauthorize(String refused) async {
+    final current = _storedAccessToken;
+    if (current.isNotEmpty && current != refused) {
+      return current;
+    }
+    await refreshAccessToken();
+    return _storedAccessToken;
   }
 
   /// Warms a usable access token without forcing a refresh when one is still valid.
@@ -292,9 +348,7 @@ class PixivClient {
           .add(Duration(seconds: tokens.expiresIn - 60))
           .toIso8601String(),
     );
-    if (tokens.user.id != 0) {
-      await prefs.set(optionPluginPixivUserId, tokens.user.id);
-    }
+    await _rememberUser(tokens.user);
     return tokens.user;
   }
 
@@ -303,6 +357,7 @@ class PixivClient {
     await prefs.set(optionPluginPixivAccessToken, '');
     await prefs.set(optionPluginPixivAccessExpiresAt, '');
     await prefs.set(optionPluginPixivUserId, 0);
+    await prefs.set(optionPluginPixivIsPremium, false);
   }
 
   int? get storedUserId {
@@ -310,102 +365,88 @@ class PixivClient {
     return id == 0 ? null : id;
   }
 
-  Future<Object?> _apiGet(String path, [Map<String, String>? query]) async {
-    final token = await _accessToken();
-    final uri = Uri.parse('$_apiBase$path').replace(queryParameters: query);
-    final response = await _send(
-      () => httpClient.get(
-        uri,
-        headers: {..._baseHeaders, 'Authorization': 'Bearer $token'},
-      ),
-    );
+  Uri _uri(String path, Map<String, String>? query) {
+    final uri = Uri.parse(path.startsWith('https://') ? path : '$_apiBase$path');
+    return query == null || query.isEmpty ? uri : uri.replace(queryParameters: query);
+  }
 
-    if (response.statusCode == 401) {
-      await refreshAccessToken();
-      final retryToken = (prefs.get<String>(optionPluginPixivAccessToken) ?? '')
-          .trim();
-      final retry = await _send(
-        () => httpClient.get(
-          uri,
-          headers: {..._baseHeaders, 'Authorization': 'Bearer $retryToken'},
+  /// Sends with the bearer token, refreshing once and replaying when Pixiv
+  /// refuses it. The token only ever goes to the app API's own host.
+  Future<http.Response> _call(Uri uri, _Send send, {required bool auth}) async {
+    if (!auth || uri.host != _apiHost) {
+      final response = await _send(() => send(_baseHeaders));
+      _throwForStatus(response, uri);
+      return response;
+    }
+    final token = await _accessToken();
+    var response = await _send(() => send(_bearer(token)));
+    if (_isTokenRefused(response)) {
+      final fresh = await _reauthorize(token);
+      response = await _send(() => send(_bearer(fresh)));
+    }
+    _throwForStatus(response, uri);
+    return response;
+  }
+
+  /// GETs an app-API [path] (or an absolute app-API URL) and decodes its JSON.
+  /// [auth] false sends no token, for the few endpoints that take none.
+  Future<Object?> getJson(String path, {Map<String, String>? query, bool auth = true}) async {
+    final uri = _uri(path, query);
+    final response = await _call(uri, (headers) => httpClient.get(uri, headers: headers), auth: auth);
+    return _decode(response, uri);
+  }
+
+  /// The page a list's `next_url` points at.
+  Future<Object?> getNextJson(String nextUrl) => getJson(nextUrl);
+
+  /// GETs a page Pixiv answers in HTML, such as a novel's webview text.
+  Future<String> getText(String path, {Map<String, String>? query, bool auth = true}) async {
+    final uri = _uri(path, query);
+    final response = await _call(
+      uri,
+      (headers) => httpClient.get(uri, headers: {...headers, 'Accept': 'text/html'}),
+      auth: auth,
+    );
+    return utf8.decode(response.bodyBytes, allowMalformed: true);
+  }
+
+  /// POSTs a form to an app-API [path]; an empty answer decodes to null.
+  Future<Object?> postForm(String path, Map<String, String> body) async {
+    final uri = _uri(path, null);
+    final response = await _call(
+      uri,
+      (headers) =>
+          httpClient.post(uri, headers: {...headers, 'Content-Type': 'application/x-www-form-urlencoded'}, body: body),
+      auth: true,
+    );
+    return response.bodyBytes.isEmpty ? null : _decode(response, uri);
+  }
+
+  /// A list payload as the reader's filters show it. [ownList] keeps
+  /// everything the reader saved on purpose, R-18 and AI works included.
+  PixivIllustPage illustPageFrom(Object? json, {bool? includeR18, bool? includeAi, bool ownList = false}) =>
+      PixivIllustPage(
+        illusts: parsePixivIllustList(
+          json,
+          includeR18: includeR18 ?? (ownList || showR18),
+          includeAi: includeAi ?? (ownList || !hideAi),
         ),
+        nextUrl: Json(json)['next_url'].string,
       );
-      _throwForStatus(retry, uri);
-      return _decode(retry, uri);
-    }
 
-    _throwForStatus(response, uri);
-    return _decode(response, uri);
-  }
-
-  Future<Object?> _apiGetUrl(String absoluteUrl) async {
-    final token = await _accessToken();
-    final uri = Uri.parse(absoluteUrl);
-    final response = await _send(
-      () => httpClient.get(
-        uri,
-        headers: {..._baseHeaders, 'Authorization': 'Bearer $token'},
-      ),
-    );
-
-    if (response.statusCode == 401) {
-      await refreshAccessToken();
-      final retryToken = (prefs.get<String>(optionPluginPixivAccessToken) ?? '')
-          .trim();
-      final retry = await _send(
-        () => httpClient.get(
-          uri,
-          headers: {..._baseHeaders, 'Authorization': 'Bearer $retryToken'},
-        ),
-      );
-      _throwForStatus(retry, uri);
-      return _decode(retry, uri);
-    }
-
-    _throwForStatus(response, uri);
-    return _decode(response, uri);
-  }
-
-  Future<Object?> _apiPost(String path, Map<String, String> body) async {
-    final token = await _accessToken();
-    final uri = Uri.parse('$_apiBase$path');
-    Future<http.Response> send(String bearer) => _send(
-      () => httpClient.post(
-        uri,
-        headers: {
-          ..._baseHeaders,
-          'Authorization': 'Bearer $bearer',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: body,
-      ),
-    );
-
-    var response = await send(token);
-    if (response.statusCode == 401) {
-      await refreshAccessToken();
-      final retryToken = (prefs.get<String>(optionPluginPixivAccessToken) ?? '')
-          .trim();
-      response = await send(retryToken);
-    }
-
-    _throwForStatus(response, uri);
-    if (response.bodyBytes.isEmpty) {
-      return null;
-    }
-    return _decode(response, uri);
-  }
+  Future<Object?> _firstOrNext(String path, Map<String, String> query, String? nextUrl) =>
+      nextUrl == null ? getJson(path, query: query) : getNextJson(nextUrl);
 
   /// Follow [userId] publicly so their works appear in the Following tab.
   Future<void> followUser(int userId, {String restrict = 'public'}) async {
-    await _apiPost('/v1/user/follow/add', {
+    await postForm('/v1/user/follow/add', {
       'user_id': '$userId',
       'restrict': restrict,
     });
   }
 
   Future<void> unfollowUser(int userId) async {
-    await _apiPost('/v1/user/follow/delete', {'user_id': '$userId'});
+    await postForm('/v1/user/follow/delete', {'user_id': '$userId'});
   }
 
   /// Bookmark [illustId] so it appears in the Bookmarks tab.
@@ -414,7 +455,7 @@ class PixivClient {
     String restrict = 'public',
     String? folder,
   }) async {
-    await _apiPost('/v2/illust/bookmark/add', {
+    await postForm('/v2/illust/bookmark/add', {
       'illust_id': '$illustId',
       'restrict': restrict,
       if (folder != null && folder.trim().isNotEmpty) 'tags[]': folder.trim(),
@@ -423,7 +464,7 @@ class PixivClient {
 
   /// Bookmark-tag folders on this account (`/v1/user/bookmark-tags/illust`).
   Future<List<String>> bookmarkFolders() async {
-    final json = await _apiGet('/v1/user/bookmark-tags/illust', {
+    final json = await getJson('/v1/user/bookmark-tags/illust', query: {
       'restrict': 'public',
     });
     return [
@@ -433,23 +474,12 @@ class PixivClient {
   }
 
   Future<void> deleteBookmark(int illustId) async {
-    await _apiPost('/v1/illust/bookmark/delete', {'illust_id': '$illustId'});
-  }
-
-  /// [ownList] keeps everything the reader saved on purpose, AI works included.
-  PixivIllustPage _illustPage(Object? json, {bool? includeR18, bool ownList = false}) {
-    final root = Json(json);
-    return PixivIllustPage(
-      illusts: parsePixivIllustList(json, includeR18: includeR18 ?? showR18, includeAi: ownList || !hideAi),
-      nextUrl: root['next_url'].string,
-    );
+    await postForm('/v1/illust/bookmark/delete', {'illust_id': '$illustId'});
   }
 
   Future<PixivIllustPage> following({String? nextUrl}) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v2/illust/follow', {'restrict': 'all'})
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json);
+    final json = await _firstOrNext('/v2/illust/follow', {'restrict': 'all'}, nextUrl);
+    return illustPageFrom(json);
   }
 
   /// Personalized For You feed — Flare's Discover "status" surface.
@@ -457,37 +487,34 @@ class PixivClient {
   /// `include_ranking_illusts` mixes today's ranking in when the personalised
   /// set is thin, matching DimensionDev/Flare's `recommendedIllusts` call.
   Future<PixivIllustPage> recommended({String? nextUrl}) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v1/illust/recommended', {
-            'include_ranking_illusts': 'true',
-            'include_privacy_policy': 'true',
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json);
+    final json = await _firstOrNext('/v1/illust/recommended', {
+      'include_ranking_illusts': 'true',
+      'include_privacy_policy': 'true',
+      'filter': 'for_android',
+    }, nextUrl);
+    return illustPageFrom(json);
   }
 
   /// Creators Pixiv suggests — Flare's Discover "users" strip.
   Future<({List<PixivUser> users, String? nextUrl})> recommendedUsers({
     String? nextUrl,
   }) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v1/user/recommended', {'filter': 'for_android'})
-        : await _apiGetUrl(nextUrl);
+    final json = await _firstOrNext('/v1/user/recommended', {'filter': 'for_android'}, nextUrl);
     final root = Json(json);
     return (users: parsePixivUserList(json), nextUrl: root['next_url'].string);
   }
 
   /// Creators Pixiv relates to [seedUserId], each with a few preview works —
-  /// the "similar users" strip under a profile.
+  /// the "similar users" strip under a profile. Previews follow the reader's
+  /// Show R-18 and Hide AI choices unless told otherwise.
   ///
   /// `seed_user_id` stays the last parameter: Pixiv warns clients to put it at the end.
-  Future<List<PixivUserPreview>> relatedUsers(int seedUserId) async {
-    final json = await _apiGet('/v1/user/related', {
+  Future<List<PixivUserPreview>> relatedUsers(int seedUserId, {bool? includeR18, bool? includeAi}) async {
+    final json = await getJson('/v1/user/related', query: {
       'filter': 'for_android',
       'seed_user_id': '$seedUserId',
     });
-    return parsePixivUserPreviews(json);
+    return parsePixivUserPreviews(json, includeR18: includeR18 ?? showR18, includeAi: includeAi ?? !hideAi);
   }
 
   /// Daily / weekly / monthly ranking — Pixez's discovery surface.
@@ -499,19 +526,17 @@ class PixivClient {
     String? date,
     String? nextUrl,
   }) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v1/illust/ranking', {
-            'mode': mode,
-            if (date != null && date.isNotEmpty) 'date': date,
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json);
+    final json = await _firstOrNext('/v1/illust/ranking', {
+      'mode': mode,
+      if (date != null && date.isNotEmpty) 'date': date,
+      'filter': 'for_android',
+    }, nextUrl);
+    return illustPageFrom(json);
   }
 
   /// What Pixiv is drawing right now — each tag ships a representative illust.
   Future<List<PixivTrendTag>> trendingTags() async {
-    final json = await _apiGet('/v1/trending-tags/illust', {
+    final json = await getJson('/v1/trending-tags/illust', query: {
       'filter': 'for_android',
     });
     final r18 = showR18;
@@ -523,7 +548,7 @@ class PixivClient {
             name: name,
             translatedName: entry['translated_name'].string,
             illust: switch (pixivIllustFromJson(entry['illust'].raw)) {
-              final illust? when (r18 || !illust.isR18) && (ai || !illust.isAi) => illust,
+              final illust? when pixivContentAllowed(illust, includeR18: r18, includeAi: ai) => illust,
               _ => null,
             },
           ),
@@ -540,14 +565,14 @@ class PixivClient {
     if (trimmed.isEmpty) {
       return const PixivIllustPage(illusts: []);
     }
-    final json = await _apiGet('/v1/search/popular-preview/illust', {
+    final json = await getJson('/v1/search/popular-preview/illust', query: {
       'word': trimmed,
       'search_target': searchTarget,
       'merge_plain_keyword_results': 'true',
       'include_translated_tag_results': 'true',
       'filter': 'for_android',
     });
-    return _illustPage(json);
+    return illustPageFrom(json);
   }
 
   /// Tag suggestions while typing, with translated names where Pixiv has them.
@@ -556,7 +581,7 @@ class PixivClient {
     if (trimmed.isEmpty) {
       return const [];
     }
-    final json = await _apiGet('/v2/search/autocomplete', {
+    final json = await getJson('/v2/search/autocomplete', query: {
       'word': trimmed,
       'merge_plain_keyword_results': 'true',
     });
@@ -582,14 +607,12 @@ class PixivClient {
     String restrict = 'public',
     String? nextUrl,
   }) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v1/user/bookmarks/illust', {
-            'user_id': '$userId',
-            'restrict': restrict,
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json, includeR18: true, ownList: true);
+    final json = await _firstOrNext('/v1/user/bookmarks/illust', {
+      'user_id': '$userId',
+      'restrict': restrict,
+      'filter': 'for_android',
+    }, nextUrl);
+    return illustPageFrom(json, ownList: true);
   }
 
   Future<PixivIllustPage> searchIllust(
@@ -602,15 +625,13 @@ class PixivClient {
     if (trimmed.isEmpty) {
       return const PixivIllustPage(illusts: []);
     }
-    final json = nextUrl == null
-        ? await _apiGet('/v1/search/illust', {
-            'word': trimmed,
-            'search_target': searchTarget,
-            'sort': sort,
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json);
+    final json = await _firstOrNext('/v1/search/illust', {
+      'word': trimmed,
+      'search_target': searchTarget,
+      'sort': sort,
+      'filter': 'for_android',
+    }, nextUrl);
+    return illustPageFrom(json);
   }
 
   Future<({List<PixivUser> users, String? nextUrl})> searchUsers(
@@ -621,18 +642,16 @@ class PixivClient {
     if (trimmed.isEmpty) {
       return (users: const <PixivUser>[], nextUrl: null);
     }
-    final json = nextUrl == null
-        ? await _apiGet('/v1/search/user', {
-            'word': trimmed,
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
+    final json = await _firstOrNext('/v1/search/user', {
+      'word': trimmed,
+      'filter': 'for_android',
+    }, nextUrl);
     final root = Json(json);
     return (users: parsePixivUserList(json), nextUrl: root['next_url'].string);
   }
 
   Future<PixivIllust> illustDetail(int illustId) async {
-    final json = await _apiGet('/v1/illust/detail', {'illust_id': '$illustId'});
+    final json = await getJson('/v1/illust/detail', query: {'illust_id': '$illustId'});
     final illust = pixivIllustFromJson(Json(json)['illust'].raw);
     if (illust == null) {
       throw PixivException(
@@ -644,7 +663,7 @@ class PixivClient {
   }
 
   Future<PixivUgoira> ugoiraMetadata(int illustId) async {
-    final json = await _apiGet('/v1/ugoira/metadata', {'illust_id': '$illustId'});
+    final json = await getJson('/v1/ugoira/metadata', query: {'illust_id': '$illustId'});
     final ugoira = parsePixivUgoira(json);
     if (ugoira == null) {
       throw PixivException(PixivErrorKind.badResponse, 'empty ugoira $illustId');
@@ -670,25 +689,25 @@ class PixivClient {
     String? nextUrl,
     bool? includeR18,
   }) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v2/illust/related', {
-            'illust_id': '$illustId',
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json, includeR18: includeR18 ?? showR18);
+    final json = await _firstOrNext('/v2/illust/related', {
+      'illust_id': '$illustId',
+      'filter': 'for_android',
+    }, nextUrl);
+    return illustPageFrom(json, includeR18: includeR18 ?? showR18);
   }
 
   Future<PixivUserPage> followedUsers({String? nextUrl, bool private = false}) async {
     final userId = await ensureUserId();
-    final json = nextUrl == null
-        ? await _apiGet('/v1/user/following', {'user_id': '$userId', 'restrict': private ? 'private' : 'public'})
-        : await _apiGetUrl(nextUrl);
+    final json = await _firstOrNext(
+      '/v1/user/following',
+      {'user_id': '$userId', 'restrict': private ? 'private' : 'public'},
+      nextUrl,
+    );
     return PixivUserPage.fromJson(json);
   }
 
   Future<PixivUser> userDetail(int userId) async {
-    final json = await _apiGet('/v1/user/detail', {
+    final json = await getJson('/v1/user/detail', query: {
       'user_id': '$userId',
       'filter': 'for_android',
     });
@@ -700,13 +719,11 @@ class PixivClient {
   }
 
   Future<PixivIllustPage> userIllusts(int userId, {String? nextUrl}) async {
-    final json = nextUrl == null
-        ? await _apiGet('/v1/user/illusts', {
-            'user_id': '$userId',
-            'type': 'illust',
-            'filter': 'for_android',
-          })
-        : await _apiGetUrl(nextUrl);
-    return _illustPage(json);
+    final json = await _firstOrNext('/v1/user/illusts', {
+      'user_id': '$userId',
+      'type': 'illust',
+      'filter': 'for_android',
+    }, nextUrl);
+    return illustPageFrom(json);
   }
 }

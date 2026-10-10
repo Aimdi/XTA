@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
-import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
@@ -46,15 +46,6 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
   void dispose() { _profile.destroy(); _works.destroy(); super.dispose(); }
 
   Future<void> _load() async { await Future.wait([_profile.load(), _works.refresh()]); }
-
-  Future<void> _toggleFollow() async {
-    final l10n = L10n.of(context);
-    try { await _profile.toggleFollow(); }
-    catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(pixivErrorMessage(l10n, error))));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +88,6 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
     if (_profile.isLoading || _user == null) return const Center(child: CircularProgressIndicator());
     final user = _user!;
     final theme = Theme.of(context);
-    final avatar = user.avatarUrl;
 
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
@@ -117,35 +107,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                 children: [
                   Row(
                     children: [
-                      ClipOval(
-                        child: avatar == null
-                            ? FallbackAvatar(
-                                seed: '${user.id}',
-                                displayName: user.name,
-                                size: 64,
-                                accent: theme.colorScheme.primary,
-                              )
-                            : SizedBox(
-                                width: 64,
-                                height: 64,
-                                child: PixivNetworkImage(
-                                  url: avatar,
-                                  fit: BoxFit.cover,
-                                  cacheWidth:
-                                      (64 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                  cacheHeight:
-                                      (64 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                ),
-                              ),
-                      ),
+                      PixivAvatar.user(user, size: 64),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -177,7 +139,11 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   ],
                   const SizedBox(height: 14),
                   Text(
-                    '${compactCount(user.illustsCount)} ${l10n.tweets} · ${compactCount(user.followersCount)} ${l10n.followers}',
+                    [
+                      l10n.plugin_pixiv_works_count(user.worksCount, compactCount(user.worksCount)),
+                      l10n.plugin_pixiv_following_count(user.followingCount, compactCount(user.followingCount)),
+                      l10n.plugin_pixiv_mypixiv_count(user.mypixivCount, compactCount(user.mypixivCount)),
+                    ].join(' · '),
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 12),
@@ -188,19 +154,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: FilledButton.tonalIcon(
-                      onPressed: _profile.followBusy ? null : _toggleFollow,
-                      icon: Icon(
-                        user.isFollowed
-                            ? Icons.person_remove_outlined
-                            : Icons.person_add_alt_1_outlined,
-                      ),
-                      label: Text(
-                        user.isFollowed
-                            ? l10n.plugin_pixiv_unfollow
-                            : l10n.plugin_pixiv_follow,
-                      ),
-                    ),
+                    child: PixivFollowButton(user: user, onChanged: _profile.setFollowed),
                   ),
                 ],
               ),
@@ -214,7 +168,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
               crossAxisSpacing: 4,
               childCount: _works.state.length,
               itemBuilder: (context, index) =>
-                  PixivIllustTile(illust: _works.state[index]),
+                  PixivIllustTile(illust: _works.state[index], siblings: _works.state, index: index),
             ),
           ),
           if (_works.loadingMore)

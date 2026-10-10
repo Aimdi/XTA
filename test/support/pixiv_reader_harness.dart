@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/downloads/download_entry.dart';
@@ -14,7 +15,9 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 
 String _page(int id, int page, String size) =>
     'https://i.pximg.net/$size/img/2026/07/01/00/00/00/${id}_p${page}_master1200.jpg';
@@ -88,6 +91,12 @@ class FakePixivClient extends PixivClient {
   Future<List<String>> bookmarkFolders() async => const ['Favs'];
 
   @override
+  Future<void> followUser(int userId, {String restrict = 'public'}) async => calls.add('follow:$userId:$restrict');
+
+  @override
+  Future<void> unfollowUser(int userId) async => calls.add('unfollow:$userId');
+
+  @override
   Future<void> addBookmark(int illustId, {String restrict = 'public', String? folder}) async {
     calls.add('bookmark:$illustId:$restrict:${folder ?? '-'}');
   }
@@ -146,6 +155,9 @@ Future<PixivHarness> pumpPixiv(
   Size size = const Size(390, 844),
   double textScale = 1,
   TextDirection direction = TextDirection.ltr,
+
+  /// Fakes for a feature's own API classes, so a batch need not edit this harness.
+  List<SingleChildWidget> extraProviders = const [],
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -159,8 +171,12 @@ Future<PixivHarness> pumpPixiv(
   final harness = PixivHarness(prefs, client?.call(prefs) ?? FakePixivClient(prefs), FakePixivDownloader());
   final mute = PixivMuteStore(prefs);
   final bookmarks = PixivBookmarkStore();
+  final follows = PixivFollowStore(harness.client);
+  final history = PixivSearchHistory(prefs);
   addTearDown(mute.destroy);
   addTearDown(bookmarks.destroy);
+  addTearDown(follows.destroy);
+  addTearDown(history.destroy);
   await tester.pumpWidget(
     PrefService(
       service: prefs,
@@ -169,7 +185,10 @@ Future<PixivHarness> pumpPixiv(
           Provider<PixivClient>.value(value: harness.client),
           Provider<PixivMuteStore>.value(value: mute),
           Provider<PixivBookmarkStore>.value(value: bookmarks),
+          Provider<PixivFollowStore>.value(value: follows),
+          Provider<PixivSearchHistory>.value(value: history),
           Provider<PixivDownloader>.value(value: harness.downloader),
+          ...extraProviders,
         ],
         child: MaterialApp(
           localizationsDelegates: const [

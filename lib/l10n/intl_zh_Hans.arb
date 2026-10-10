@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "关注",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, other{关注 {shown}}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "关于",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "账号",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "已屏蔽的 Pixiv 项目",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, other{好P友 {shown}}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "登录 Pixiv 以浏览关注、排行榜与收藏",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "无法打开该 Pixiv 链接",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "取消屏蔽",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, other{{shown} 件作品}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "此服务器需要登录后才能提供此列表，或不支持该功能。你可以在浏览器中打开帖子。",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "其他插件",

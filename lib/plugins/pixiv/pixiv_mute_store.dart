@@ -5,22 +5,29 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
-const pixivSearchHistoryCap = 20;
-
 class PixivMuteState {
   final Set<int> authorIds;
   final Set<String> tags;
   final Set<int> illustIds;
+  final Set<int> commentIds;
+  final Set<int> novelIds;
 
   const PixivMuteState({
     this.authorIds = const {},
     this.tags = const {},
     this.illustIds = const {},
+    this.commentIds = const {},
+    this.novelIds = const {},
   });
 
   static const empty = PixivMuteState();
 
-  bool get isEmpty => authorIds.isEmpty && tags.isEmpty && illustIds.isEmpty;
+  bool get isEmpty =>
+      authorIds.isEmpty && tags.isEmpty && illustIds.isEmpty && commentIds.isEmpty && novelIds.isEmpty;
+
+  bool isCommentMuted(int id) => commentIds.contains(id);
+
+  bool isNovelMuted(int id) => novelIds.contains(id);
 
   bool isMuted(PixivIllust illust) {
     return authorIds.contains(illust.userId) ||
@@ -42,11 +49,15 @@ class PixivMuteState {
     Set<int>? authorIds,
     Set<String>? tags,
     Set<int>? illustIds,
+    Set<int>? commentIds,
+    Set<int>? novelIds,
   }) {
     return PixivMuteState(
       authorIds: Set.unmodifiable(authorIds ?? this.authorIds),
       tags: Set.unmodifiable(tags ?? this.tags),
       illustIds: Set.unmodifiable(illustIds ?? this.illustIds),
+      commentIds: Set.unmodifiable(commentIds ?? this.commentIds),
+      novelIds: Set.unmodifiable(novelIds ?? this.novelIds),
     );
   }
 }
@@ -69,6 +80,8 @@ class PixivMuteStore extends Store<PixivMuteState> {
         illustIds: _readIntSet(
           prefs.get<String>(optionPluginPixivMutedIllusts),
         ),
+        commentIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedComments)),
+        novelIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedNovels)),
       );
     });
   }
@@ -99,6 +112,14 @@ class PixivMuteStore extends Store<PixivMuteState> {
     return _write(illustIds: {...state.illustIds}..remove(id));
   }
 
+  Future<void> muteComment(int id) => _write(commentIds: {...state.commentIds, id});
+
+  Future<void> unmuteComment(int id) => _write(commentIds: {...state.commentIds}..remove(id));
+
+  Future<void> muteNovel(int id) => _write(novelIds: {...state.novelIds, id});
+
+  Future<void> unmuteNovel(int id) => _write(novelIds: {...state.novelIds}..remove(id));
+
   bool isMuted(PixivIllust illust) => state.isMuted(illust);
 
   List<PixivIllust> filter(List<PixivIllust> illusts) => state.filter(illusts);
@@ -107,11 +128,15 @@ class PixivMuteStore extends Store<PixivMuteState> {
     Set<int>? authorIds,
     Set<String>? tags,
     Set<int>? illustIds,
+    Set<int>? commentIds,
+    Set<int>? novelIds,
   }) async {
     final next = state.copyWith(
       authorIds: authorIds,
       tags: tags,
       illustIds: illustIds,
+      commentIds: commentIds,
+      novelIds: novelIds,
     );
     await _save(next);
     update(next);
@@ -130,43 +155,8 @@ class PixivMuteStore extends Store<PixivMuteState> {
       optionPluginPixivMutedIllusts,
       jsonEncode(next.illustIds.toList()..sort()),
     );
-  }
-}
-
-class PixivSearchHistoryStore extends Store<List<String>> {
-  final BasePrefService prefs;
-
-  PixivSearchHistoryStore(this.prefs) : super(const []);
-
-  Future<void> load() async {
-    await execute(() async {
-      return _readStringList(
-        prefs.get<String>(optionPluginPixivSearchHistory),
-      ).take(pixivSearchHistoryCap).toList();
-    });
-  }
-
-  Future<void> add(String query) async {
-    final trimmed = query.trim();
-    if (trimmed.isEmpty) {
-      return;
-    }
-    final next = [
-      trimmed,
-      for (final existing in state)
-        if (existing.toLowerCase() != trimmed.toLowerCase()) existing,
-    ].take(pixivSearchHistoryCap).toList(growable: false);
-    await prefs.set(optionPluginPixivSearchHistory, jsonEncode(next));
-    update(next);
-  }
-
-  Future<void> remove(String query) async {
-    final next = [
-      for (final existing in state)
-        if (existing != query) existing,
-    ];
-    await prefs.set(optionPluginPixivSearchHistory, jsonEncode(next));
-    update(next);
+    await prefs.set(optionPluginPixivMutedComments, jsonEncode(next.commentIds.toList()..sort()));
+    await prefs.set(optionPluginPixivMutedNovels, jsonEncode(next.novelIds.toList()..sort()));
   }
 }
 

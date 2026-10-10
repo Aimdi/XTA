@@ -110,16 +110,11 @@ class PixivAuth {
       throw PixivException(PixivErrorKind.badResponse, 'token response missing tokens');
     }
 
-    final user = json['user'];
     return PixivLoginTokens(
       accessToken: access,
       refreshToken: refresh,
       expiresIn: expiresIn,
-      user: PixivAuthUser(
-        id: user['id'].integer ?? int.tryParse(user['id'].string ?? '') ?? 0,
-        name: user['name'].string?.trim() ?? '',
-        account: user['account'].string?.trim() ?? '',
-      ),
+      user: PixivAuthUser.fromJson(json['user'].raw),
     );
   }
 }

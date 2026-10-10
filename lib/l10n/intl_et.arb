@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Jälgi",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} jälgitav} other{{shown} jälgitavat}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "Teave",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Vaigistatud Pixivi üksused",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My pixivi sõber} other{{shown} My pixivi sõpra}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Logi Pixivisse sisse, et sirvida jälgimist, edetabelit ja järjehoidjaid",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Seda Pixivi linki ei saanud avada",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Tühista vaigistus",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} teos} other{{shown} teost}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "See server ei näita seda loendit ilma sisse logimata või ei toeta seda. Saad postituse brauseris avada.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Muud pluginad",

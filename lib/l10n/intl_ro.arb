@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Urmărește",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} urmărit} few{{shown} urmăriți} other{{shown} de urmăriți}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "Despre",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Cont",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Elemente Pixiv ascunse",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} prieten My pixiv} few{{shown} prieteni My pixiv} other{{shown} de prieteni My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Conectați-vă la Pixiv pentru a vedea urmăriți, clasamente și semne de carte",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Nu s-a putut deschide acel link Pixiv",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Anulează ascunderea",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} lucrare} few{{shown} lucrări} other{{shown} de lucrări}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "Acest server nu oferă această listă fără autentificare sau nu o acceptă. Poți deschide postarea în browser.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Alte module",

@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Suivre",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} abonnement} other{{shown} abonnements}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "À propos",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Compte",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Éléments Pixiv masqués",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} ami My pixiv} other{{shown} amis My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Connectez-vous à Pixiv pour parcourir le suivi, les classements et les favoris",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Impossible d’ouvrir ce lien Pixiv",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Ne plus masquer",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} œuvre} other{{shown} œuvres}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "Ce serveur ne fournit pas cette liste sans connexion ou ne la prend pas en charge. Vous pouvez ouvrir la publication dans votre navigateur.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Autres extensions",

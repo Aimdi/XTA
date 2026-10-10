@@ -18,6 +18,7 @@ import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -128,11 +129,14 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivAccessToken, '');
     await prefs.set(optionPluginPixivAccessExpiresAt, '');
     await prefs.set(optionPluginPixivUserId, 0);
+    await prefs.set(optionPluginPixivIsPremium, false);
     await prefs.set(optionPluginPixivShowR18, false);
     await prefs.set(optionPluginPixivHideAi, false);
     await prefs.set(optionPluginPixivMutedAuthors, '[]');
     await prefs.set(optionPluginPixivMutedTags, '[]');
     await prefs.set(optionPluginPixivMutedIllusts, '[]');
+    await prefs.set(optionPluginPixivMutedComments, '[]');
+    await prefs.set(optionPluginPixivMutedNovels, '[]');
     await prefs.set(optionPluginPixivSearchHistory, '[]');
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
@@ -144,5 +148,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
   Future<void> forgetLoadedData(BuildContext context) async {
     context.read<PixivFeedStore>().update(const []);
     context.read<PixivBookmarkStore>().update(const {});
+    context.read<PixivFollowStore>().clear();
+    context.read<PixivSearchHistory>().load();
   }
 }

@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Folgen",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} gefolgt} other{{shown} gefolgt}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "Über",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Stummgeschaltete Pixiv-Elemente",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} My-pixiv-Freund} other{{shown} My-pixiv-Freunde}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Melde dich bei Pixiv an, um Folge-Feed, Ranking und Lesezeichen zu sehen",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Dieser Pixiv-Link konnte nicht geöffnet werden",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Stummschaltung aufheben",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} Werk} other{{shown} Werke}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "Dieser Server stellt diese Liste nur nach Anmeldung bereit oder unterstützt sie nicht. Du kannst den Beitrag im Browser öffnen.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Weitere Plugins",

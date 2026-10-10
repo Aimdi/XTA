@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "팔로우",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, other{팔로잉 {shown}}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "정보",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "계정",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "뮤트한 Pixiv 항목",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, other{마이픽 {shown}}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Pixiv에 로그인하여 팔로잉, 랭킹, 북마크를 보세요",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "해당 Pixiv 링크를 열 수 없습니다",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "뮤트 해제",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, other{작품 {shown}}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "이 서버는 로그인 없이 이 목록을 제공하지 않거나 지원하지 않습니다. 브라우저에서 게시물을 열 수 있습니다.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "기타 플러그인",

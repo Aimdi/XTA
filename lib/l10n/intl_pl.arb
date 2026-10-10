@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Obserwuj",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} obserwowany} few{{shown} obserwowanych} many{{shown} obserwowanych} other{{shown} obserwowanego}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "O aplikacji",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Konto",
@@ -2263,6 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Wyciszone elementy Pixiv",
   "@plugin_pixiv_muted_section": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} znajomy z My pixiv} few{{shown} znajomych z My pixiv} many{{shown} znajomych z My pixiv} other{{shown} znajomego z My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Zaloguj się do Pixiv, aby przeglądać obserwowanych, rankingi i zakładki",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Nie udało się otworzyć tego linku Pixiv",
@@ -2399,6 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Cofnij wyciszenie",
   "@plugin_pixiv_unmute": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} praca} few{{shown} prace} many{{shown} prac} other{{shown} pracy}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "Ten serwer nie udostępnia tej listy bez logowania lub jej nie obsługuje. Możesz otworzyć wpis w przeglądarce.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Inne wtyczki",
