@@ -2458,7 +2458,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "Zniać usie",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "Vybrać",
+  "plugin_pixiv_select_pages": "Vybrać staronki",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{Staronki nie vybrany} one{Vybrana {count} staronka} few{Vybrany {count} staronki} many{Vybrana {count} staronak} other{Vybrana {count} staronki}}",
   "@plugin_pixiv_selected_pages": {

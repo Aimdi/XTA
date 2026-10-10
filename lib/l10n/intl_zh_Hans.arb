@@ -2458,7 +2458,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "取消全选",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "选择",
+  "plugin_pixiv_select_pages": "选择页面",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{未选择页面} other{已选择 {count} 页}}",
   "@plugin_pixiv_selected_pages": {

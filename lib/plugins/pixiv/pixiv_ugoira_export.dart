@@ -26,14 +26,21 @@ int pixivGifCentiseconds(Duration delay) => (delay.inMilliseconds / 10).round().
 Uint8List encodePixivGif(List<PixivFrameBytes> frames, {void Function(int done)? onFrame}) {
   final encoder = img.GifEncoder(repeat: 0);
   for (final (index, frame) in frames.indexed) {
-    final image = img.decodeImage(frame.bytes);
-    if (image == null) throw const FormatException('Unreadable ugoira frame');
-    encoder.addFrame(image, duration: pixivGifCentiseconds(frame.delay));
+    encoder.addFrame(_decodeFrame(frame.bytes), duration: pixivGifCentiseconds(frame.delay));
     onFrame?.call(index + 1);
   }
   final bytes = encoder.finish();
   if (bytes == null) throw const FormatException('No ugoira frames');
   return bytes;
+}
+
+img.Image _decodeFrame(Uint8List bytes) {
+  try {
+    if (img.decodeImage(bytes) case final image?) return image;
+  } catch (_) {
+    // The decoders throw range errors on truncated data; it is the same broken frame.
+  }
+  throw const FormatException('Unreadable ugoira frame');
 }
 
 class PixivExportCancelled implements Exception {

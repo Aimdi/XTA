@@ -2458,7 +2458,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "Cap",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "Selecciona",
+  "plugin_pixiv_select_pages": "Selecciona pàgines",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{Cap pàgina seleccionada} one{1 pàgina seleccionada} other{{count} pàgines seleccionades}}",
   "@plugin_pixiv_selected_pages": {

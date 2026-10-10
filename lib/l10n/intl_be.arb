@@ -2458,7 +2458,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "Зняць усе",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "Выбраць",
+  "plugin_pixiv_select_pages": "Выбраць старонкі",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{Старонкі не выбраны} one{Выбрана {count} старонка} few{Выбраны {count} старонкі} many{Выбрана {count} старонак} other{Выбрана {count} старонкі}}",
   "@plugin_pixiv_selected_pages": {

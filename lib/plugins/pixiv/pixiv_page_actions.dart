@@ -7,7 +7,7 @@ import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira_export.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira_save.dart';
 
-enum PixivPageAction { downloadPage, downloadAll, saveGif, saveZip, allPages, direction, copyLink, more }
+enum PixivPageAction { downloadPage, downloadAll, selectPages, saveGif, saveZip, allPages, direction, copyLink, more }
 
 /// How a page sheet was closed: a page to show, an action to run, or the pages to save.
 class PixivPageChoice {
@@ -23,6 +23,7 @@ class PixivPageChoice {
 IconData pixivPageActionIcon(PixivPageAction action, {bool readVertically = true}) => switch (action) {
   PixivPageAction.downloadPage => Icons.download_outlined,
   PixivPageAction.downloadAll => Icons.download_for_offline_outlined,
+  PixivPageAction.selectPages => Icons.checklist,
   PixivPageAction.saveGif => Icons.gif_box_outlined,
   PixivPageAction.saveZip => Icons.folder_zip_outlined,
   PixivPageAction.allPages => Icons.grid_view_outlined,
@@ -34,6 +35,7 @@ IconData pixivPageActionIcon(PixivPageAction action, {bool readVertically = true
 String pixivPageActionLabel(L10n l10n, PixivPageAction action, {bool readVertically = true}) => switch (action) {
   PixivPageAction.downloadPage => l10n.plugin_pixiv_download_page,
   PixivPageAction.downloadAll => l10n.plugin_pixiv_download_all,
+  PixivPageAction.selectPages => l10n.plugin_pixiv_select_pages,
   PixivPageAction.saveGif => l10n.plugin_pixiv_ugoira_save_gif,
   PixivPageAction.saveZip => l10n.plugin_pixiv_ugoira_save_zip,
   PixivPageAction.allPages => l10n.plugin_pixiv_all_pages,
@@ -57,7 +59,7 @@ Future<bool> runPixivPageAction(BuildContext context, PixivPageAction action, Pi
       await copyPixivLink(context, illust);
     case PixivPageAction.more:
       await showPixivPostActions(context, illust, workActions: false);
-    case PixivPageAction.allPages || PixivPageAction.direction:
+    case PixivPageAction.allPages || PixivPageAction.selectPages || PixivPageAction.direction:
       return false;
   }
   return true;
@@ -75,7 +77,7 @@ Future<PixivPageAction?> showPixivPageActions(BuildContext context, {required Pi
   final pages = illust.viewerUrls.length;
   final actions = [
     PixivPageAction.downloadPage,
-    if (pages > 1) ...[PixivPageAction.downloadAll, PixivPageAction.allPages],
+    if (pages > 1) ...[PixivPageAction.downloadAll, PixivPageAction.selectPages, PixivPageAction.allPages],
     if (illust.isUgoira && page == 0) ...[PixivPageAction.saveGif, PixivPageAction.saveZip],
     PixivPageAction.copyLink,
     PixivPageAction.more,

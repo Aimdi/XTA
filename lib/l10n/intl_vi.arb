@@ -2455,7 +2455,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "Bỏ chọn",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "Chọn",
+  "plugin_pixiv_select_pages": "Chọn trang",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{Chưa chọn trang nào} other{Đã chọn {count} trang}}",
   "@plugin_pixiv_selected_pages": {

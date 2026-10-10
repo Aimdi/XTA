@@ -2577,9 +2577,9 @@
   "@plugin_pixiv_select_none": {
     "description": "Toggle in the page overview that unticks every page (shown when all are ticked)"
   },
-  "plugin_pixiv_select_pages": "Select",
+  "plugin_pixiv_select_pages": "Select pages",
   "@plugin_pixiv_select_pages": {
-    "description": "Button in the page overview that starts ticking pages to save"
+    "description": "Starts ticking pages of a work to save just those; in the page overview bar and the page sheet"
   },
   "plugin_pixiv_selected_pages": "{count, plural, =0{No pages selected} one{1 page selected} other{{count} pages selected}}",
   "@plugin_pixiv_selected_pages": {

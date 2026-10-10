@@ -117,7 +117,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.text('Download all pages'), findsOneWidget);
       expect(find.byKey(const ValueKey('pixiv-overview-page-20')), findsOneWidget);
-      await tester.drag(find.byType(PixivPageThumb).first, const Offset(0, -2000));
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -2000));
       await settlePixiv(tester);
       expect(find.byKey(const ValueKey('pixiv-overview-page-24')), findsOneWidget);
       expect(tester.takeException(), isNull);

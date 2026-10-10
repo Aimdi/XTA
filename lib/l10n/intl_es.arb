@@ -2458,7 +2458,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "Ninguna",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "Seleccionar",
+  "plugin_pixiv_select_pages": "Seleccionar páginas",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{Ninguna página seleccionada} one{1 página seleccionada} other{{count} páginas seleccionadas}}",
   "@plugin_pixiv_selected_pages": {

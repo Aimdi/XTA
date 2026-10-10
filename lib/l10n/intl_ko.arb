@@ -2458,7 +2458,7 @@
   "@plugin_pixiv_search_target_title": {},
   "plugin_pixiv_select_none": "선택 해제",
   "@plugin_pixiv_select_none": {},
-  "plugin_pixiv_select_pages": "선택",
+  "plugin_pixiv_select_pages": "페이지 선택",
   "@plugin_pixiv_select_pages": {},
   "plugin_pixiv_selected_pages": "{count, plural, =0{선택한 페이지 없음} other{{count}페이지 선택됨}}",
   "@plugin_pixiv_selected_pages": {

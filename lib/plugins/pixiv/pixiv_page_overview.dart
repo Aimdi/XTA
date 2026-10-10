@@ -31,26 +31,36 @@ double pixivOverviewOffset({
 }
 
 /// Every page of a work as a thumbnail grid, with the work's page actions pinned below.
-/// Select turns the grid into a picker whose ticked pages come back as [PixivPageChoice.save].
+/// Select pages turns the grid into a picker (from the start when [selecting]) whose
+/// ticked pages come back as [PixivPageChoice.save].
 Future<PixivPageChoice?> showPixivPageOverview(
   BuildContext context, {
   required PixivIllust illust,
   required int currentPage,
   bool readVertically = true,
+  bool selecting = false,
 }) => showModalBottomSheet<PixivPageChoice>(
   context: context,
   showDragHandle: true,
   isScrollControlled: true,
   useSafeArea: true,
-  builder: (context) => PixivPageOverview(illust: illust, currentPage: currentPage, readVertically: readVertically),
+  builder: (context) =>
+      PixivPageOverview(illust: illust, currentPage: currentPage, readVertically: readVertically, selecting: selecting),
 );
 
 class PixivPageOverview extends StatefulWidget {
   final PixivIllust illust;
   final int currentPage;
   final bool readVertically;
+  final bool selecting;
 
-  const PixivPageOverview({super.key, required this.illust, required this.currentPage, this.readVertically = true});
+  const PixivPageOverview({
+    super.key,
+    required this.illust,
+    required this.currentPage,
+    this.readVertically = true,
+    this.selecting = false,
+  });
 
   @override
   State<PixivPageOverview> createState() => _PixivPageOverviewState();
@@ -67,6 +77,7 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
   @override
   void initState() {
     super.initState();
+    if (widget.selecting) _selection.start();
     WidgetsBinding.instance.addPostFrameCallback((_) => _revealCurrent());
   }
 
@@ -153,54 +164,31 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
     final l10n = L10n.of(context);
     final title = widget.illust.title.isEmpty ? l10n.plugin_pixiv_title : widget.illust.title;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(_gutter, 0, _gutter - 4, 16),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(_gutter, 0, _gutter, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Semantics(
-                  header: true,
-                  child: Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Semantics(
-                  liveRegion: selection.active,
-                  child: Text(
-                    selection.active
-                        ? l10n.plugin_pixiv_selected_pages(selection.pages.length)
-                        : l10n.plugin_pixiv_pages(_pages.length),
-                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
-                ),
-              ],
+          Semantics(
+            header: true,
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
-          if (_pages.length > 1) _selectButton(l10n, selection),
+          const SizedBox(height: 2),
+          Semantics(
+            liveRegion: selection.active,
+            child: Text(
+              selection.active
+                  ? l10n.plugin_pixiv_selected_pages(selection.pages.length)
+                  : l10n.plugin_pixiv_pages(_pages.length),
+              style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _selectButton(L10n l10n, PixivPageSelection selection) {
-    if (!selection.active) {
-      return TextButton.icon(
-        key: const ValueKey('pixiv-overview-select'),
-        onPressed: _selection.start,
-        icon: const Icon(Icons.checklist, size: 18),
-        label: Text(l10n.plugin_pixiv_select_pages),
-      );
-    }
-    return TextButton(
-      key: const ValueKey('pixiv-overview-select-all'),
-      onPressed: _selection.toggleAll,
-      child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
     );
   }
 
@@ -210,7 +198,7 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
   Widget _actionBar(BuildContext context) {
     final actions = [
       PixivPageAction.downloadPage,
-      if (_pages.length > 1) PixivPageAction.downloadAll,
+      if (_pages.length > 1) ...[PixivPageAction.downloadAll, PixivPageAction.selectPages],
       PixivPageAction.direction,
     ];
     final stacked = _stacked(context);
@@ -227,7 +215,10 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
               icon: pixivPageActionIcon(action, readVertically: widget.readVertically),
               label: pixivPageActionLabel(L10n.of(context), action, readVertically: widget.readVertically),
               inline: stacked,
-              onTap: () => Navigator.pop(context, PixivPageChoice.action(action)),
+              // Picking happens right here; every other action closes the sheet first.
+              onTap: action == PixivPageAction.selectPages
+                  ? _selection.start
+                  : () => Navigator.pop(context, PixivPageChoice.action(action)),
             ),
           ),
       ],
@@ -255,6 +246,16 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
           ),
         ),
         Flexible(
+          fit: stacked ? FlexFit.loose : FlexFit.tight,
+          child: OutlinedButton(
+            key: const ValueKey('pixiv-overview-select-all'),
+            style: OutlinedButton.styleFrom(minimumSize: tall),
+            onPressed: _selection.toggleAll,
+            child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
+          ),
+        ),
+        Flexible(
+          flex: 2,
           fit: stacked ? FlexFit.loose : FlexFit.tight,
           child: FilledButton.icon(
             key: const ValueKey('pixiv-overview-save-selected'),

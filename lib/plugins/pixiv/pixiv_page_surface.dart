@@ -14,13 +14,15 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
   void showPage(int page);
   void changeDirection();
 
-  Future<void> openPageOverview() async {
+  /// [selecting] opens it ready to tick pages to save.
+  Future<void> openPageOverview({bool selecting = false}) async {
     final page = currentPage;
     final choice = await showPixivPageOverview(
       context,
       illust: pageIllust,
       currentPage: page,
       readVertically: offersVertical,
+      selecting: selecting,
     );
     if (!mounted || choice == null) return;
     if (choice.page case final target?) {
@@ -40,6 +42,7 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
   Future<void> runPageAction(PixivPageAction action, int page) async {
     if (await runPixivPageAction(context, action, pageIllust, page) || !mounted) return;
     if (action == PixivPageAction.allPages) await openPageOverview();
+    if (action == PixivPageAction.selectPages) await openPageOverview(selecting: true);
     if (action == PixivPageAction.direction) changeDirection();
   }
 }
