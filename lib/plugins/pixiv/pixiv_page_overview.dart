@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
+import 'package:xta/plugins/pixiv/pixiv_page_selection.dart';
 
 const _gutter = 16.0;
 const _spacing = 10.0;
@@ -29,6 +31,7 @@ double pixivOverviewOffset({
 }
 
 /// Every page of a work as a thumbnail grid, with the work's page actions pinned below.
+/// Select turns the grid into a picker whose ticked pages come back as [PixivPageChoice.save].
 Future<PixivPageChoice?> showPixivPageOverview(
   BuildContext context, {
   required PixivIllust illust,
@@ -56,6 +59,7 @@ class PixivPageOverview extends StatefulWidget {
 class _PixivPageOverviewState extends State<PixivPageOverview> {
   final _scroll = ScrollController();
   final _header = GlobalKey();
+  late final _selection = PixivPageSelectionStore(_pages.length);
 
   List<String> get _pages => widget.illust.viewerUrls;
   double get _aspect => widget.illust.aspectRatio.clamp(0.7, 1.0);
@@ -69,6 +73,7 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
   @override
   void dispose() {
     _scroll.dispose();
+    _selection.destroy();
     super.dispose();
   }
 
@@ -92,26 +97,32 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.85),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: LayoutBuilder(
-              builder: (context, constraints) => _pagesGrid(context, pixivOverviewColumns(constraints.maxWidth)),
+      child: ScopedBuilder<PixivPageSelectionStore, PixivPageSelection>(
+        store: _selection,
+        onState: (context, selection) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: LayoutBuilder(
+                builder: (context, constraints) =>
+                    _pagesGrid(context, pixivOverviewColumns(constraints.maxWidth), selection),
+              ),
             ),
-          ),
-          _actionBar(context),
-        ],
+            if (selection.active) _selectionBar(context, selection) else _actionBar(context),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _pagesGrid(BuildContext context, int columns) => CustomScrollView(
+  void _jump(int page) => Navigator.pop(context, PixivPageChoice.jump(page));
+
+  Widget _pagesGrid(BuildContext context, int columns, PixivPageSelection selection) => CustomScrollView(
     controller: _scroll,
     shrinkWrap: true,
     slivers: [
       SliverToBoxAdapter(
-        child: KeyedSubtree(key: _header, child: _headerSection(context)),
+        child: KeyedSubtree(key: _header, child: _headerSection(context, selection)),
       ),
       SliverPadding(
         padding: const EdgeInsets.fromLTRB(_gutter, 0, _gutter, _gutter),
@@ -127,40 +138,74 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
             illust: widget.illust,
             page: index,
             current: index == widget.currentPage,
-            onTap: () => Navigator.pop(context, PixivPageChoice.jump(index)),
+            selected: selection.active ? selection.pages.contains(index) : null,
+            onTap: selection.active ? () => _selection.toggle(index) : () => _jump(index),
+            // Picking keeps a way to the page itself.
+            onLongPress: () => _jump(index),
           ),
         ),
       ),
     ],
   );
 
-  Widget _headerSection(BuildContext context) {
+  Widget _headerSection(BuildContext context, PixivPageSelection selection) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
     final title = widget.illust.title.isEmpty ? l10n.plugin_pixiv_title : widget.illust.title;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(_gutter, 0, _gutter, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.fromLTRB(_gutter, 0, _gutter - 4, 16),
+      child: Row(
         children: [
-          Semantics(
-            header: true,
-            child: Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Semantics(
+                  header: true,
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Semantics(
+                  liveRegion: selection.active,
+                  child: Text(
+                    selection.active
+                        ? l10n.plugin_pixiv_selected_pages(selection.pages.length)
+                        : l10n.plugin_pixiv_pages(_pages.length),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            l10n.plugin_pixiv_pages(_pages.length),
-            style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
+          if (_pages.length > 1) _selectButton(l10n, selection),
         ],
       ),
     );
   }
+
+  Widget _selectButton(L10n l10n, PixivPageSelection selection) {
+    if (!selection.active) {
+      return TextButton.icon(
+        key: const ValueKey('pixiv-overview-select'),
+        onPressed: _selection.start,
+        icon: const Icon(Icons.checklist, size: 18),
+        label: Text(l10n.plugin_pixiv_select_pages),
+      );
+    }
+    return TextButton(
+      key: const ValueKey('pixiv-overview-select-all'),
+      onPressed: _selection.toggleAll,
+      child: Text(_selection.allSelected ? l10n.plugin_pixiv_select_none : l10n.all),
+    );
+  }
+
+  /// Large text gets full-width rows so no label has to be cut short.
+  bool _stacked(BuildContext context) => MediaQuery.textScalerOf(context).scale(10) > 13;
 
   Widget _actionBar(BuildContext context) {
     final actions = [
@@ -168,38 +213,85 @@ class _PixivPageOverviewState extends State<PixivPageOverview> {
       if (_pages.length > 1) PixivPageAction.downloadAll,
       PixivPageAction.direction,
     ];
-    final stacked = MediaQuery.textScalerOf(context).scale(10) > 13;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-          child: Flex(
-            // Large text gets full-width rows so no label has to be cut short.
-            direction: stacked ? Axis.vertical : Axis.horizontal,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: stacked ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
-            children: [
-              for (final action in actions)
-                Flexible(
-                  fit: stacked ? FlexFit.loose : FlexFit.tight,
-                  child: PixivSheetAction(
-                    key: ValueKey('pixiv-overview-${action.name}'),
-                    icon: pixivPageActionIcon(action, readVertically: widget.readVertically),
-                    label: pixivPageActionLabel(L10n.of(context), action, readVertically: widget.readVertically),
-                    inline: stacked,
-                    onTap: () => Navigator.pop(context, PixivPageChoice.action(action)),
-                  ),
-                ),
-            ],
+    final stacked = _stacked(context);
+    return _bar(
+      context,
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+      direction: stacked ? Axis.vertical : Axis.horizontal,
+      children: [
+        for (final action in actions)
+          Flexible(
+            fit: stacked ? FlexFit.loose : FlexFit.tight,
+            child: PixivSheetAction(
+              key: ValueKey('pixiv-overview-${action.name}'),
+              icon: pixivPageActionIcon(action, readVertically: widget.readVertically),
+              label: pixivPageActionLabel(L10n.of(context), action, readVertically: widget.readVertically),
+              inline: stacked,
+              onTap: () => Navigator.pop(context, PixivPageChoice.action(action)),
+            ),
           ),
-        ),
-      ),
+      ],
     );
   }
+
+  Widget _selectionBar(BuildContext context, PixivPageSelection selection) {
+    final l10n = L10n.of(context);
+    final count = selection.pages.length;
+    final stacked = _stacked(context);
+    const tall = Size(0, kMinInteractiveDimension);
+    return _bar(
+      context,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      direction: stacked ? Axis.vertical : Axis.horizontal,
+      spacing: stacked ? 8 : 12,
+      children: [
+        Flexible(
+          fit: stacked ? FlexFit.loose : FlexFit.tight,
+          child: OutlinedButton(
+            key: const ValueKey('pixiv-overview-select-cancel'),
+            style: OutlinedButton.styleFrom(minimumSize: tall),
+            onPressed: _selection.stop,
+            child: Text(l10n.cancel),
+          ),
+        ),
+        Flexible(
+          fit: stacked ? FlexFit.loose : FlexFit.tight,
+          child: FilledButton.icon(
+            key: const ValueKey('pixiv-overview-save-selected'),
+            style: FilledButton.styleFrom(minimumSize: tall),
+            onPressed: count == 0 ? null : () => Navigator.pop(context, PixivPageChoice.save(selection.ordered)),
+            icon: const Icon(Icons.download_outlined),
+            label: Text(l10n.plugin_pixiv_save_pages(count), textAlign: TextAlign.center),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _bar(
+    BuildContext context, {
+    required EdgeInsets padding,
+    required Axis direction,
+    required List<Widget> children,
+    double spacing = 0,
+  }) => DecoratedBox(
+    decoration: BoxDecoration(
+      border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+    ),
+    child: SafeArea(
+      top: false,
+      child: Padding(
+        padding: padding,
+        child: Flex(
+          direction: direction,
+          mainAxisSize: MainAxisSize.min,
+          spacing: spacing,
+          crossAxisAlignment: direction == Axis.vertical ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
+          children: children,
+        ),
+      ),
+    ),
+  );
 }
 
 /// An icon in a soft accent well with its label below (or beside it when [inline]).
@@ -258,12 +350,16 @@ class PixivSheetAction extends StatelessWidget {
   }
 }
 
-/// A rounded page thumbnail with its number; the current page wears an accent ring.
+/// A rounded page thumbnail with its number; the current page wears an accent
+/// ring. While pages are picked, [selected] is non-null and the ring and a
+/// check mark show whether this page is ticked.
 class PixivPageThumb extends StatelessWidget {
   final PixivIllust illust;
   final int page;
   final bool current;
+  final bool? selected;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const PixivPageThumb({
     super.key,
@@ -271,23 +367,28 @@ class PixivPageThumb extends StatelessWidget {
     required this.page,
     required this.current,
     required this.onTap,
+    this.selected,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final pages = illust.viewerUrls.length;
+    final ringed = selected ?? current;
     return Semantics(
       button: true,
-      selected: current,
+      selected: selected == null && current,
+      checked: selected,
       label: L10n.of(context).plugin_pixiv_current_page(page + 1, pages),
       onTap: onTap,
+      onLongPress: onLongPress,
       excludeSemantics: true,
       child: DecoratedBox(
         key: ValueKey('pixiv-overview-page-$page'),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(_radius + 3),
-          border: Border.all(color: current ? scheme.primary : Colors.transparent, width: 2),
+          border: Border.all(color: ringed ? scheme.primary : Colors.transparent, width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.all(3),
@@ -299,9 +400,10 @@ class PixivPageThumb extends StatelessWidget {
                 ColoredBox(color: scheme.surfaceContainerHighest),
                 _image(context),
                 PositionedDirectional(start: 6, bottom: 6, child: _badge(context)),
+                if (selected case final ticked?) PositionedDirectional(top: 6, end: 6, child: _check(context, ticked)),
                 Material(
                   type: MaterialType.transparency,
-                  child: InkWell(onTap: onTap),
+                  child: InkWell(onTap: onTap, onLongPress: onLongPress),
                 ),
               ],
             ),
@@ -316,6 +418,21 @@ class PixivPageThumb extends StatelessWidget {
     fit: BoxFit.cover,
     loadStateChanged: (state) => pixivTileLoadState(context, state),
   );
+
+  Widget _check(BuildContext context, bool ticked) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      key: ValueKey('pixiv-overview-check-$page'),
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: ticked ? scheme.primary : Colors.black.withValues(alpha: 0.45),
+        border: Border.all(color: ticked ? scheme.primary : Colors.white, width: 2),
+      ),
+      child: ticked ? Icon(Icons.check, size: 16, color: scheme.onPrimary) : null,
+    );
+  }
 
   Widget _badge(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;

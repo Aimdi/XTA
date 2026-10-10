@@ -106,7 +106,13 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
     onState: (context, illust) => Scaffold(
       appBar: AppBar(
         title: Text(illust.title.isEmpty ? L10n.of(context).plugin_pixiv_title : illust.title),
-        actions: pixivDetailActions(context, this),
+        actions: [
+          // The save button shows whether the page on screen is saved.
+          ScopedBuilder<PluginViewStore<int>, int>(
+            store: _page,
+            onState: (context, _) => Row(mainAxisSize: MainAxisSize.min, children: pixivDetailActions(context, this)),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _load,

@@ -13,6 +13,10 @@ class DownloadCenterState {
   const DownloadCenterState({this.entries = const [], this.ready = false, this.storageError = false});
 }
 
+/// How many transfers the app runs at once unless the reader changes it.
+const downloadConcurrencyDefault = 2;
+const downloadConcurrencyChoices = [1, 2, 3, 4];
+
 class DownloadStore extends Store<DownloadCenterState> {
   static final shared = DownloadStore();
   final DownloadHistory history;
@@ -27,7 +31,8 @@ class DownloadStore extends Store<DownloadCenterState> {
   final _completion = <String, Completer<DownloadEntry>>{};
   final _cancellation = <String, DownloadCancellation>{};
   final _discarding = <String, Future<void>>{};
-  bool _running = false;
+  final _running = <String>{};
+  int _concurrency = 1;
   bool _closed = false;
   DateTime _lastProgress = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -72,7 +77,20 @@ class DownloadStore extends Store<DownloadCenterState> {
     }
   }
 
-  Future<DownloadEntry> enqueue({required Uri uri, required String fileName, String? treeUri}) async {
+  int get concurrency => _concurrency;
+
+  /// How many downloads may run at once; raising it starts queued ones now.
+  void setConcurrency(int limit) {
+    _concurrency = limit.clamp(1, downloadConcurrencyChoices.last);
+    _pump();
+  }
+
+  Future<DownloadEntry> enqueue({
+    required Uri uri,
+    required String fileName,
+    String? treeUri,
+    String? subfolder,
+  }) async {
     await initialize();
     if (_closed) throw StateError('Downloads store is closed');
     if (!_historyLoaded) await retryHistory();
@@ -86,6 +104,7 @@ class DownloadStore extends Store<DownloadCenterState> {
       uri: uri,
       fileName: safeDownloadName(fileName),
       treeUri: treeUri == null || treeUri.isEmpty ? null : treeUri,
+      subfolder: subfolder == null ? null : safeDownloadFolder(subfolder),
       createdAt: DateTime.now(),
     );
     final completion = Completer<DownloadEntry>();
@@ -93,7 +112,7 @@ class DownloadStore extends Store<DownloadCenterState> {
     _publish([entry, ...state.entries]);
     try {
       await _persist();
-      unawaited(_pump());
+      _pump();
     } catch (_) {
       _finish(entry.copyWith(status: DownloadStatus.failed));
     }
@@ -104,7 +123,12 @@ class DownloadStore extends Store<DownloadCenterState> {
     final completed = await Future.wait(
       requests.map((request) async {
         try {
-          final entry = await enqueue(uri: request.uri, fileName: request.fileName, treeUri: request.treeUri);
+          final entry = await enqueue(
+            uri: request.uri,
+            fileName: request.fileName,
+            treeUri: request.treeUri,
+            subfolder: request.subfolder,
+          );
           return entry.status == DownloadStatus.completed;
         } catch (_) {
           return false;
@@ -125,7 +149,7 @@ class DownloadStore extends Store<DownloadCenterState> {
     _replace(entry.copyWith(status: DownloadStatus.queued));
     try {
       await _persist();
-      unawaited(_pump());
+      _pump();
     } catch (_) {
       _replace(entry.copyWith(status: DownloadStatus.failed));
     }
@@ -149,17 +173,22 @@ class DownloadStore extends Store<DownloadCenterState> {
     await _persistQuietly();
   }
 
-  Future<void> _pump() async {
-    if (_running || _closed) return;
-    _running = true;
-    try {
-      while (!_closed) {
-        final queued = state.entries.reversed.where((entry) => entry.status == DownloadStatus.queued);
-        if (queued.isEmpty) break;
-        await _run(queued.first);
-      }
-    } finally {
-      _running = false;
+  /// Starts the oldest queued downloads until [_concurrency] are running; each
+  /// one that ends frees its slot for the next.
+  void _pump() {
+    while (!_closed && _running.length < _concurrency) {
+      final queued = state.entries.reversed.where(
+        (entry) => entry.status == DownloadStatus.queued && !_running.contains(entry.id),
+      );
+      if (queued.isEmpty) return;
+      final next = queued.first;
+      _running.add(next.id);
+      unawaited(
+        _run(next).whenComplete(() {
+          _running.remove(next.id);
+          _pump();
+        }),
+      );
     }
   }
 

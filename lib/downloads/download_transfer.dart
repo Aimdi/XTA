@@ -233,6 +233,7 @@ class DownloadTransfer {
       fileName: entry.fileName,
       sourcePath: file.path,
       operationId: entry.id,
+      subfolder: entry.subfolder,
     );
     if (cancellation.cancelled && result != null) {
       await DownloadDirectory.deleteDocument(result);

@@ -65,11 +65,13 @@ Future<void> showPluginLinkPostActions(
   required String text,
   List<String> images = const [],
   VoidCallback? onGroup,
+  List<PluginPostExtraAction> extras = const [],
 }) => showPluginPostActions(
   context,
   post: PluginLinkPost(source: source, url: url, author: author, text: text, images: images).archive,
   url: url,
   onGroup: onGroup,
+  extras: extras,
 );
 
 class PluginLinkPostCard extends StatelessWidget {

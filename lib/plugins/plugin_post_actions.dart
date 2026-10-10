@@ -20,6 +20,19 @@ class PluginPostArchive {
 
 enum _PostAction { bookmark, folder, note, group, share, reposts, quotes, browser }
 
+/// A source's own entry, listed above the shared ones in the post sheet.
+class PluginPostExtraAction {
+  /// Stable name; the list tile is keyed `plugin-post-action-<id>`.
+  final String id;
+  final IconData icon;
+  final String label;
+
+  /// Runs once the sheet is closed, with the context that opened it.
+  final Future<void> Function(BuildContext context) run;
+
+  const PluginPostExtraAction({required this.id, required this.icon, required this.label, required this.run});
+}
+
 Future<void> savePluginPost(BuildContext context, PluginPostArchive post) => fileSavedTweet(
   context,
   tweetId: post.id,
@@ -54,11 +67,12 @@ Future<void> showPluginPostActions(
   VoidCallback? onGroup,
   VoidCallback? onReposts,
   VoidCallback? onQuotes,
+  List<PluginPostExtraAction> extras = const [],
 }) async {
   final l10n = L10n.of(context);
   final model = context.read<SavedTweetModel?>();
   final saved = model?.isSaved(post.id) == true;
-  final action = await showModalBottomSheet<_PostAction>(
+  final action = await showModalBottomSheet<Object>(
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
@@ -67,6 +81,14 @@ Future<void> showPluginPostActions(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            for (final extra in extras)
+              ListTile(
+                key: ValueKey('plugin-post-action-${extra.id}'),
+                leading: Icon(extra.icon),
+                title: Text(extra.label),
+                onTap: () => Navigator.pop(context, extra),
+              ),
+            if (extras.isNotEmpty) const Divider(height: 1),
             if (model != null) ...[
               ListTile(
                 leading: Icon(saved ? Icons.bookmark : Icons.bookmark_border),
@@ -119,7 +141,8 @@ Future<void> showPluginPostActions(
     ),
   );
   if (!context.mounted || action == null) return;
-  switch (action) {
+  if (action is PluginPostExtraAction) return action.run(context);
+  switch (action as _PostAction) {
     case _PostAction.bookmark:
       if (saved) {
         await model?.deleteSavedTweet(post.id);

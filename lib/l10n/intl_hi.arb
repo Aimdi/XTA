@@ -2217,6 +2217,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "उन्नत: रिफ़्रेश टोकन चिपकाएँ",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "पहले से सहेजा गया",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "यह पृष्ठ पहले से सहेजा गया है। क्या इसे फिर से सहेजें?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{total} में से {saved} पृष्ठ पहले से सहेजा गया है।} other{{total} में से {saved} पृष्ठ पहले से सहेजे गए हैं।}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "बुकमार्क",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "बुकमार्क फ़ोल्डर",
@@ -2231,6 +2246,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "निजी Pixiv रीडर — फ़ॉलोइंग, रैंकिंग, बुकमार्क और खोज। बिना पोस्टिंग",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "एक साथ डाउनलोड",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "एक समय में कितनी फ़ाइलें डाउनलोड हों",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "सहेजे गए पृष्ठ",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{अभी तक कोई पृष्ठ याद नहीं रखा गया} one{{count} पृष्ठ याद रखा गया} other{{count} पृष्ठ याद रखे गए}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "सहेजे गए कामों पर सही का निशान दिखता है, और किसी पृष्ठ को दोबारा सहेजने से पहले पूछा जाता है",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "भूल जाएँ",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "कौन-से पृष्ठ सहेजे गए थे, यह भूल जाएँ? फ़ाइलें आपके डिवाइस पर ही रहेंगी।",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "सहेजा गया – फिर से डाउनलोड करें",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "डाउनलोड",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "फ़ॉलोइंग फ़ीड में अभी कुछ नहीं",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Pixiv तक पहुँच नहीं सकी",
@@ -2243,6 +2282,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "आपका Pixiv रिफ़्रेश टोकन अस्वीकृत हुआ",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "फ़ाइल का नाम",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "किसी जानकारी को कर्सर की जगह डालने के लिए उस पर टैप करें। हर फ़ाइल अपना एक्सटेंशन बनाए रखती है।",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "{token} जोड़ें ताकि किसी काम के हर पृष्ठ का अपना नाम हो",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "पूर्वावलोकन: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "रीसेट करें",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "काम की ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "पृष्ठ संख्या",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "शीर्षक",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "कलाकार की ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "कलाकार का नाम",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "हर कलाकार के लिए फ़ोल्डर",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "हर कलाकार के कामों को डाउनलोड फ़ोल्डर के अंदर उनके नाम वाले फ़ोल्डर में रखता है",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18 के लिए अलग फ़ोल्डर",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 कामों को डाउनलोड फ़ोल्डर के अंदर “R-18” फ़ोल्डर में रखता है",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "फ़ॉलो करें",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} फ़ॉलोइंग} other{{shown} फ़ॉलोइंग}}",
@@ -2343,6 +2422,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "दिखाएँ",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "फिर से सहेजें",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "केवल नए पृष्ठ",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{{count} पृष्ठ सहेजें} other{{count} पृष्ठ सहेजें}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "इस डिवाइस पर सहेजा गया",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "कोई परिणाम नहीं",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "टैग, शीर्षक या उपयोगकर्ता",
@@ -2363,6 +2456,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "शीर्षक/कैप्शन",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "कोई नहीं",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "चुनें",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{कोई पृष्ठ नहीं चुना गया} one{{count} पृष्ठ चुना गया} other{{count} पृष्ठ चुने गए}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: फ़ॉलोइंग, रैंकिंग, आपके सार्वजनिक बुकमार्क और खोज। ब्राउज़र में Pixiv खाते से साइन इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। यहाँ से Pixiv पर कुछ पोस्ट, बुकमार्क या फ़ॉलो नहीं होता।",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 कृतियाँ दिखाएँ",
@@ -2415,6 +2520,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "{total} में से फ़्रेम {current} एन्कोड हो रहा है…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "एनिमेशन सहेजा नहीं जा सका",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "फ़्रेम लाए जा रहे हैं…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "GIF के रूप में सहेजें",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "फ़्रेम ZIP के रूप में सहेजें",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "एनिमेशन GIF के रूप में सहेजा गया",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "फ़्रेम ZIP के रूप में सहेजे गए",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "सहेजा जा रहा है…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "एन्कोडिंग में एक मिनट लग सकता है",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "बुकमार्क हटाएँ",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "अनफ़ॉलो करें",

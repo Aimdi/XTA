@@ -2217,6 +2217,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avanzate: incolla refresh token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "Già salvato",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Questa pagina è già salvata. Salvarla di nuovo?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} pagina su {total} è già salvata.} other{{saved} pagine su {total} sono già salvate.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Segnalibro",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Cartella segnalibri",
@@ -2231,6 +2246,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Lettore Pixiv privato — seguiti, classifiche, segnalibri e ricerca. Senza pubblicare",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "Download simultanei",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Quanti file vengono scaricati contemporaneamente",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Pagine salvate",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Nessuna pagina memorizzata} one{1 pagina memorizzata} other{{count} pagine memorizzate}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Le opere salvate hanno un segno di spunta e, prima di salvare una pagina una seconda volta, viene chiesta conferma",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Dimentica",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Dimenticare quali pagine sono state salvate? I file restano sul dispositivo.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Salvata – scarica di nuovo",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Download",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Niente ancora nel feed dei seguiti",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Impossibile raggiungere Pixiv",
@@ -2243,6 +2282,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Il refresh token di Pixiv è stato rifiutato",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Nome del file",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Tocca un dato per inserirlo nella posizione del cursore. Ogni file mantiene la propria estensione.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Includi {token} perché ogni pagina di un’opera abbia un nome diverso",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Anteprima: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Ripristina",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID dell’opera",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Numero di pagina",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titolo",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID dell’artista",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Nome dell’artista",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Una cartella per artista",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Mette le opere di ogni artista in una cartella con il suo nome dentro la cartella di download",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Cartella separata per R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Mette le opere R-18 in una cartella «R-18» dentro la cartella di download",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Segui",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} seguito} other{{shown} seguiti}}",
@@ -2343,6 +2422,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Mostra",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Salva di nuovo",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Solo pagine nuove",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Salva 1 pagina} other{Salva {count} pagine}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Salvata su questo dispositivo",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Nessun risultato",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Tag, titoli o utenti",
@@ -2363,6 +2456,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titolo/didascalia",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Nessuna",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Seleziona",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Nessuna pagina selezionata} one{1 pagina selezionata} other{{count} pagine selezionate}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Questo plugin privato legge Pixiv come una galleria: seguiti, classifiche, i tuoi segnalibri pubblici e la ricerca. Tocca Accedi per entrare con l’account Pixiv nel browser, oppure incolla un refresh token sotto. Da qui non si pubblica, non si aggiungono segnalibri e non si seguono account su Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Mostra opere R-18",
@@ -2415,6 +2520,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Codifica del fotogramma {current} di {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Impossibile salvare l’animazione",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Recupero dei fotogrammi…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Salva come GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Salva i fotogrammi come ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animazione salvata come GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Fotogrammi salvati come ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Salvataggio…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "La codifica può richiedere un minuto",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Rimuovi segnalibro",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Smetti di seguire",

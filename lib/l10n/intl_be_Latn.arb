@@ -2217,6 +2217,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Dadatkova: ustaŭic refresh-token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "Užo zachavana",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Heta staronka ŭžo zachavana. Zachavać jaje znoŭ?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} z {total} staronak užo zachavana.} few{{saved} z {total} staronak užo zachavany.} many{{saved} z {total} staronak užo zachavany.} other{{saved} z {total} staronak užo zachavany.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "U zakladki",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Papka zakladak",
@@ -2231,6 +2246,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Pryvatny čytač Pixiv — stužka, rejtynh, zakladki i pošuk. Bez publikacyj",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "Adnačasovyja spampoŭki",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Kolki fajlaŭ spampoŭvajecca adnačasova",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Zachavanyja staronki",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Pakul niama zapomnienych staronak} one{Zapomniena {count} staronka} few{Zapomnieny {count} staronki} many{Zapomniena {count} staronak} other{Zapomniena {count} staronki}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Zachavanyja tvory atrymlivajuć ptušku, a pierad paŭtornym zachavańniem staronki źjaŭliajecca pytańnie",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Zabyć",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Zabyć, jakija staronki byli zachavany? Sami fajly zastanucca na pryładzie.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Zachavana — spampavać znoŭ",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Spampoŭki",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "U stuzcy padpisak pakul nicoho niama",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Nie udalosia zlucycca z Pixiv",
@@ -2243,6 +2282,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Refresh-token Pixiv adchileny",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Nazva fajła",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Naciśnicie na element, kab ustavić jaho ŭ pazicyju kursora. Kožny fajł zachoŭvaje svajo pašyreńnie.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Dadajcie {token}, kab kožnaja staronka tvora mieła ŭłasnuju nazvu",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Prykład: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Skinuć",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID tvora",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Numar staronki",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Nazva",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID aŭtara",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Imia aŭtara",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Papka dla kožnaha aŭtara",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Składvaje tvory kožnaha aŭtara ŭ papku z jaho imiem unutry papki spampovak",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Asobnaja papka dla R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Składvaje tvory R-18 u papku «R-18» unutry papki spampovak",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Padpisacca",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} padpiska} few{{shown} padpiski} many{{shown} padpisak} other{{shown} padpiski}}",
@@ -2343,6 +2422,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Pakazać",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Zachavać znoŭ",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Tolki novyja staronki",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Zachavać {count} staronku} few{Zachavać {count} staronki} many{Zachavać {count} staronak} other{Zachavać {count} staronki}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Zachavana na hetaj pryładzie",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Ničoha nie znojdziena",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Tehi, nazvy ci karystal'niki",
@@ -2363,6 +2456,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Nazva/apisańnie",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Zniać usie",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Vybrać",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Staronki nie vybrany} one{Vybrana {count} staronka} few{Vybrany {count} staronki} many{Vybrana {count} staronak} other{Vybrana {count} staronki}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Hety pryvatny plahin čytaje Pixiv jak galereju: stužka, rejtynhi, vašy publičnyja zakladki i pošuk. Nacisnicie «Uvajsci», kab uvajsci ŭ Pixiv u braŭzery, abo ŭstaŭcie refresh-token nižej. Adsul' ničoha nie publikujecca, nie dadajecca ŭ zakladki i nie padpisvajecca na Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Pakazvac pracy R-18",
@@ -2415,6 +2520,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Kadziravańnie kadra {current} z {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Nie ŭdałosia zachavać animacyju",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Atrymańnie kadraŭ…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Zachavać jak GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Zachavać kadry ŭ ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animacyja zachavana jak GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kadry zachavany ŭ ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Zachavańnie…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kadziravańnie moža zaniać chvilinu",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Prybrać zakladku",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Adpisacca",

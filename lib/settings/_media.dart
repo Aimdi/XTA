@@ -2,6 +2,7 @@ import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/settings/settings_view_store.dart';
@@ -171,10 +172,33 @@ class SettingsMediaFragment extends StatelessWidget {
           ),
           SettingsSection(
             title: L10n.of(context).download_handling,
-            children: [SettingsControlTarget(id: optionDownloadPath, child: DownloadTypeSetting(prefs: prefs))],
+            children: [
+              SettingsControlTarget(id: optionDownloadPath, child: DownloadTypeSetting(prefs: prefs)),
+              const SettingsControlTarget(id: optionDownloadConcurrency, child: DownloadConcurrencySetting()),
+            ],
           ),
         ],
       ),
+    );
+  }
+}
+
+/// How many files download at once; a change applies to the queue at once.
+class DownloadConcurrencySetting extends StatelessWidget {
+  const DownloadConcurrencySetting({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return PrefDropdown<int>(
+      fullWidth: false,
+      title: Text(l10n.plugin_pixiv_download_concurrency),
+      subtitle: Text(l10n.plugin_pixiv_download_concurrency_description),
+      pref: optionDownloadConcurrency,
+      onChange: (value) => DownloadStore.shared.setConcurrency(value ?? downloadConcurrencyDefault),
+      items: [
+        for (final limit in downloadConcurrencyChoices) DropdownMenuItem(value: limit, child: Text('$limit')),
+      ],
     );
   }
 }

@@ -2217,6 +2217,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Gelişmiş: yenileme jetonunu yapıştır",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "Zaten kaydedildi",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Bu sayfa zaten kaydedildi. Tekrar kaydedilsin mi?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{{total} sayfanın {saved} tanesi zaten kaydedildi.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Yer imi",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Yer işareti klasörü",
@@ -2231,6 +2246,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Özel Pixiv okuyucu — takip, sıralama, yer imleri ve arama. Gönderi yok",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "Eşzamanlı indirmeler",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Aynı anda kaç dosyanın indirileceği",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Kaydedilen sayfalar",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Henüz hatırlanan sayfa yok} other{{count} sayfa hatırlanıyor}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Kaydedilen eserlere onay işareti konur ve bir sayfa ikinci kez kaydedilmeden önce sorulur",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Unut",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Hangi sayfaların kaydedildiği unutulsun mu? Dosyaların kendisi cihazınızda kalır.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Kaydedildi – tekrar indir",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "İndirmeler",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Takip akışında henüz bir şey yok",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Pixiv’ye ulaşılamadı",
@@ -2243,6 +2282,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Pixiv yenileme jetonun reddedildi",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Dosya adı",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "İmlecin bulunduğu yere eklemek için bir bilgiye dokunun. Her dosya kendi uzantısını korur.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Bir eserin her sayfasının kendi adı olması için {token} ekleyin",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Önizleme: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Sıfırla",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Eser kimliği",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Sayfa numarası",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Başlık",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Sanatçı kimliği",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Sanatçı adı",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Her sanatçıya ayrı klasör",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Her sanatçının eserlerini indirme klasöründe onun adını taşıyan bir klasöre koyar",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18 için ayrı klasör",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "R-18 eserlerini indirme klasöründeki “R-18” klasörüne koyar",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Takip et",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} takip edilen} other{{shown} takip edilen}}",
@@ -2343,6 +2422,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Göster",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Tekrar kaydet",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Yalnızca yeni sayfalar",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, other{{count} sayfayı kaydet}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Bu cihaza kaydedildi",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Sonuç yok",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Etiketler, başlıklar veya kullanıcılar",
@@ -2363,6 +2456,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Başlık/açıklama",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Hiçbiri",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Seç",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Sayfa seçilmedi} other{{count} sayfa seçildi}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri gibi okur: takip, sıralamalar, herkese açık yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Buradan Pixiv’de hiçbir şey gönderilmez, yer imine eklenmez veya takip edilmez.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "R-18 eserleri göster",
@@ -2415,6 +2520,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Kare {current}/{total} kodlanıyor…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Animasyon kaydedilemedi",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Kareler alınıyor…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "GIF olarak kaydet",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Kareleri ZIP olarak kaydet",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animasyon GIF olarak kaydedildi",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kareler ZIP olarak kaydedildi",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Kaydediliyor…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodlama bir dakika sürebilir",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Yer imini kaldır",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Takibi bırak",

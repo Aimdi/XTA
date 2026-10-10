@@ -7,6 +7,7 @@ import 'package:xta/plugins/pixiv/pixiv_login_webview.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_downloads.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -59,7 +60,12 @@ Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
 
 /// The plugin's settings page: an intro over one section per concern. A
 /// feature with settings of its own adds its section to this list.
-const pixivSettingsSections = <Widget>[PixivAccountSettings(), PixivContentSettings(), PixivMuteSettings()];
+const pixivSettingsSections = <Widget>[
+  PixivAccountSettings(),
+  PixivContentSettings(),
+  PixivDownloadSettings(),
+  PixivMuteSettings(),
+];
 
 class PixivSettingsScreen extends StatelessWidget {
   const PixivSettingsScreen({super.key});

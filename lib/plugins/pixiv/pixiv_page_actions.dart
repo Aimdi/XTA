@@ -4,21 +4,27 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_download.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
+import 'package:xta/plugins/pixiv/pixiv_ugoira_export.dart';
+import 'package:xta/plugins/pixiv/pixiv_ugoira_save.dart';
 
-enum PixivPageAction { downloadPage, downloadAll, allPages, direction, copyLink, more }
+enum PixivPageAction { downloadPage, downloadAll, saveGif, saveZip, allPages, direction, copyLink, more }
 
-/// How a page sheet was closed: a page to show, or an action to run.
+/// How a page sheet was closed: a page to show, an action to run, or the pages to save.
 class PixivPageChoice {
   final int? page;
   final PixivPageAction? action;
+  final List<int>? pages;
 
-  const PixivPageChoice.jump(int this.page) : action = null;
-  const PixivPageChoice.action(PixivPageAction this.action) : page = null;
+  const PixivPageChoice.jump(int this.page) : action = null, pages = null;
+  const PixivPageChoice.action(PixivPageAction this.action) : page = null, pages = null;
+  const PixivPageChoice.save(List<int> this.pages) : page = null, action = null;
 }
 
 IconData pixivPageActionIcon(PixivPageAction action, {bool readVertically = true}) => switch (action) {
   PixivPageAction.downloadPage => Icons.download_outlined,
   PixivPageAction.downloadAll => Icons.download_for_offline_outlined,
+  PixivPageAction.saveGif => Icons.gif_box_outlined,
+  PixivPageAction.saveZip => Icons.folder_zip_outlined,
   PixivPageAction.allPages => Icons.grid_view_outlined,
   PixivPageAction.direction => readVertically ? Icons.arrow_downward : Icons.swipe_outlined,
   PixivPageAction.copyLink => Icons.link,
@@ -28,6 +34,8 @@ IconData pixivPageActionIcon(PixivPageAction action, {bool readVertically = true
 String pixivPageActionLabel(L10n l10n, PixivPageAction action, {bool readVertically = true}) => switch (action) {
   PixivPageAction.downloadPage => l10n.plugin_pixiv_download_page,
   PixivPageAction.downloadAll => l10n.plugin_pixiv_download_all,
+  PixivPageAction.saveGif => l10n.plugin_pixiv_ugoira_save_gif,
+  PixivPageAction.saveZip => l10n.plugin_pixiv_ugoira_save_zip,
   PixivPageAction.allPages => l10n.plugin_pixiv_all_pages,
   PixivPageAction.direction => readVertically ? l10n.plugin_pixiv_read_vertically : l10n.plugin_pixiv_read_horizontally,
   PixivPageAction.copyLink => l10n.plugin_pixiv_copy_link,
@@ -38,13 +46,17 @@ String pixivPageActionLabel(L10n l10n, PixivPageAction action, {bool readVertica
 Future<bool> runPixivPageAction(BuildContext context, PixivPageAction action, PixivIllust illust, int page) async {
   switch (action) {
     case PixivPageAction.downloadPage:
-      await PixivDownloader.of(context).savePage(context, illust, page);
+      await savePixivPages(context, illust, [page]);
     case PixivPageAction.downloadAll:
       await downloadAllPixivPages(context, illust);
+    case PixivPageAction.saveGif:
+      await savePixivUgoira(context, illust, PixivUgoiraFormat.gif);
+    case PixivPageAction.saveZip:
+      await savePixivUgoira(context, illust, PixivUgoiraFormat.zip);
     case PixivPageAction.copyLink:
       await copyPixivLink(context, illust);
     case PixivPageAction.more:
-      showPixivPostActions(context, illust);
+      await showPixivPostActions(context, illust, workActions: false);
     case PixivPageAction.allPages || PixivPageAction.direction:
       return false;
   }
@@ -64,6 +76,7 @@ Future<PixivPageAction?> showPixivPageActions(BuildContext context, {required Pi
   final actions = [
     PixivPageAction.downloadPage,
     if (pages > 1) ...[PixivPageAction.downloadAll, PixivPageAction.allPages],
+    if (illust.isUgoira && page == 0) ...[PixivPageAction.saveGif, PixivPageAction.saveZip],
     PixivPageAction.copyLink,
     PixivPageAction.more,
   ];
@@ -92,6 +105,7 @@ Future<PixivPageAction?> showPixivPageActions(BuildContext context, {required Pi
                   key: ValueKey('pixiv-page-action-${action.name}'),
                   leading: Icon(pixivPageActionIcon(action)),
                   title: Text(pixivPageActionLabel(l10n, action)),
+                  subtitle: action == PixivPageAction.saveGif ? Text(l10n.plugin_pixiv_ugoira_slow) : null,
                   onTap: () => Navigator.pop(context, action),
                 ),
             ],

@@ -2214,6 +2214,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Nâng cao: dán refresh token",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "Đã lưu",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Trang này đã được lưu. Lưu lại lần nữa?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{Đã lưu {saved}/{total} trang.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Đánh dấu",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Thư mục đánh dấu",
@@ -2228,6 +2243,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Trình đọc Pixiv riêng — đang theo dõi, xếp hạng, dấu trang và tìm kiếm. Không đăng bài",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "Tải xuống đồng thời",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Số tệp được tải xuống cùng lúc",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Trang đã lưu",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Chưa ghi nhớ trang nào} other{Đã ghi nhớ {count} trang}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Tác phẩm đã lưu có dấu kiểm, và trước khi lưu một trang lần thứ hai, ứng dụng sẽ hỏi lại",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Quên",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Quên những trang đã lưu? Bản thân các tệp vẫn ở trên thiết bị của bạn.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Đã lưu – tải lại",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Tải xuống",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Chưa có gì trong bảng tin theo dõi",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Không thể kết nối tới Pixiv",
@@ -2240,6 +2279,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Refresh token Pixiv bị từ chối",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Tên tệp",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Chạm vào một thông tin để chèn vào vị trí con trỏ. Mỗi tệp giữ nguyên phần mở rộng của nó.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Thêm {token} để mỗi trang của một tác phẩm có tên riêng",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Xem trước: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Đặt lại",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "ID tác phẩm",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Số trang",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Tiêu đề",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "ID họa sĩ",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Tên họa sĩ",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Mỗi họa sĩ một thư mục",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Đặt tác phẩm của từng họa sĩ vào một thư mục mang tên họ bên trong thư mục tải xuống",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Thư mục riêng cho R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Đặt tác phẩm R-18 vào thư mục “R-18” bên trong thư mục tải xuống",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Theo dõi",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, other{{shown} đang theo dõi}}",
@@ -2340,6 +2419,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Hiện",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Lưu lại",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Chỉ trang mới",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, other{Lưu {count} trang}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Đã lưu trên thiết bị này",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Không có kết quả",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Thẻ, tiêu đề hoặc người dùng",
@@ -2360,6 +2453,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Tiêu đề/chú thích",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Bỏ chọn",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Chọn",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Chưa chọn trang nào} other{Đã chọn {count} trang}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Plugin riêng này đọc Pixiv như một ứng dụng thư viện: đang theo dõi, xếp hạng, dấu trang công khai và tìm kiếm. Chạm Đăng nhập để vào tài khoản Pixiv trên trình duyệt, hoặc dán mã làm mới bên dưới. Từ đây không đăng, đánh dấu hay theo dõi gì trên Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Hiện tác phẩm R-18",
@@ -2412,6 +2517,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Đang mã hóa khung hình {current}/{total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Không thể lưu ảnh động",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Đang lấy khung hình…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Lưu dưới dạng GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Lưu khung hình dưới dạng ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Đã lưu ảnh động dưới dạng GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Đã lưu khung hình dưới dạng ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Đang lưu…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Việc mã hóa có thể mất một phút",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Bỏ đánh dấu",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Bỏ theo dõi",

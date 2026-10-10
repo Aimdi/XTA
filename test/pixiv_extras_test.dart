@@ -240,7 +240,12 @@ void main() {
       expect(harness.downloader.requests, hasLength(8));
       expect(find.text('Files saved: 8 / 8'), findsOneWidget);
 
+      // Every page is saved now, so the page button is filled and asks first.
+      expect(find.byTooltip('Saved – download again'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('pixiv-illust-download')));
+      await settlePixiv(tester);
+      expect(find.text('Already saved'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
       await settlePixiv(tester);
       expect(harness.downloader.pages, [0]);
       await disposePixiv(tester);

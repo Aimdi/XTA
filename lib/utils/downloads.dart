@@ -59,8 +59,11 @@ Future<void> autoDownloadTweetPhotos({
   messenger.showSnackBar(SnackBar(content: Text(L10n.current.downloads_batch_result(result.saved, result.total))));
 }
 
-Future<void> downloadUriToPickedFile(BuildContext context, Uri uri, String fileName,
-    {required BasePrefService prefs, required Function() onStart, required Function() onSuccess}) async {
+/// True once the file is saved. [subfolder] applies only when saving into the
+/// configured download folder; a file picked by the reader goes where they chose.
+Future<bool> downloadUriToPickedFile(BuildContext context, Uri uri, String fileName,
+    {required BasePrefService prefs, required Function() onStart, required Function() onSuccess,
+    String? subfolder}) async {
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
   try {
@@ -68,19 +71,22 @@ Future<void> downloadUriToPickedFile(BuildContext context, Uri uri, String fileN
     final downloadType = prefs.get(optionDownloadType);
     final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
     final result = await DownloadStore.shared.enqueue(uri: uri, fileName: fileName,
-      treeUri: downloadType == optionDownloadTypeAsk || treeUri.isEmpty ? null : treeUri);
+      treeUri: downloadType == optionDownloadTypeAsk || treeUri.isEmpty ? null : treeUri, subfolder: subfolder);
+    final saved = result.status == DownloadStatus.completed;
     if (messenger.mounted) messenger.hideCurrentSnackBar();
-    if (!context.mounted) return;
-    if (result.status == DownloadStatus.completed) {
+    if (!context.mounted) return saved;
+    if (saved) {
       onSuccess();
     } else if (result.status == DownloadStatus.failed) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_retry_hint)));
     }
+    return saved;
   } catch (_) {
     if (messenger.mounted) {
       messenger.hideCurrentSnackBar();
       messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_failed)));
     }
+    return false;
   }
 }
 

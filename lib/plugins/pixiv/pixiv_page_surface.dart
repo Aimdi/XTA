@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/pixiv/pixiv_download.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_overview.dart';
@@ -22,9 +23,10 @@ mixin PixivPageSurface<T extends StatefulWidget> on State<T> {
       readVertically: offersVertical,
     );
     if (!mounted || choice == null) return;
-    final target = choice.page;
-    if (target != null) {
+    if (choice.page case final target?) {
       showPage(target);
+    } else if (choice.pages case final pages?) {
+      await savePixivPages(context, pageIllust, pages);
     } else {
       await runPageAction(choice.action!, page);
     }

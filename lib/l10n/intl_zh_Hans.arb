@@ -2217,6 +2217,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "高级：粘贴刷新令牌",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "已保存",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "此页已保存。要再次保存吗？",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, other{{total} 页中有 {saved} 页已保存。}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "收藏",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "收藏文件夹",
@@ -2231,6 +2246,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "私有 Pixiv 阅读器 — 关注、排行榜、收藏与搜索。不发帖",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "同时下载数",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "同时下载的文件数量",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "已保存的页面",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{尚未记录任何页面} other{已记录 {count} 页}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "已保存的作品会显示勾选标记，再次保存同一页面前会先询问",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "清除",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "要清除已保存页面的记录吗？文件本身仍保留在设备上。",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "已保存 – 再次下载",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "下载",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "关注动态里还没有内容",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "无法连接 Pixiv",
@@ -2243,6 +2282,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "你的 Pixiv 刷新令牌被拒绝",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "文件名",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "点按某项信息即可在光标处插入。每个文件保留其原有扩展名。",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "请包含 {token}，让作品的每一页都有各自的名称",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "预览：{name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "重置",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "作品 ID",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "页码",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "标题",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "画师 ID",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "画师名",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "按画师分文件夹",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "将每位画师的作品存入下载文件夹中以其名字命名的文件夹",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "R-18 单独文件夹",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "将 R-18 作品存入下载文件夹中的“R-18”文件夹",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "关注",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, other{关注 {shown}}}",
@@ -2343,6 +2422,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "显示",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "再次保存",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "仅新页面",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, other{保存 {count} 页}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "已保存到此设备",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "无结果",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "标签、标题或用户",
@@ -2363,6 +2456,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "标题/说明",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "取消全选",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "选择",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{未选择页面} other{已选择 {count} 页}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "此私有插件像图库应用一样阅读 Pixiv：关注、排行榜、公开收藏与搜索。点登录在浏览器中用 Pixiv 账号登录，或在下方粘贴刷新令牌。此处不会在 Pixiv 发帖、收藏或关注。",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "显示 R-18 作品",
@@ -2415,6 +2520,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "动图",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "正在编码第 {current} 帧，共 {total} 帧…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "无法保存动图",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "正在获取帧…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "保存为 GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "将帧保存为 ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "动图已保存为 GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "帧已保存为 ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "正在保存…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "编码可能需要一分钟",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "取消收藏",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "取消关注",

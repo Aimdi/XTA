@@ -88,8 +88,11 @@ void main() {
     await _openFromCounter(tester, 'pixiv-reader-counter');
     await tester.tap(find.byKey(const ValueKey('pixiv-overview-downloadAll')));
     await settlePixiv(tester);
+    expect(find.text('1 of 8 pages is already saved.'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
+    await settlePixiv(tester);
     expect(harness.downloader.requests.map((request) => request.fileName), [
-      for (var page = 0; page < 8; page++) 'pixiv-120_p$page.png',
+      for (var page = 0; page < 8; page++) '120_p$page.png',
     ]);
 
     await _openFromCounter(tester, 'pixiv-reader-counter');

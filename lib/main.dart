@@ -32,6 +32,7 @@ import 'package:xta/client/headers.dart';
 
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
@@ -65,6 +66,8 @@ import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
+import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -470,6 +473,7 @@ Future<void> main() async {
       optionDownloadPath: '',
       optionDownloadTreeUri: '',
       optionDownloadType: optionDownloadTypeAsk,
+      optionDownloadConcurrency: downloadConcurrencyDefault,
       optionHomePages: defaultHomePages.map((e) => e.id).toList(),
       optionLocale: optionLocaleDefault,
       optionHomeInitialTab: 'feed',
@@ -612,6 +616,10 @@ Future<void> main() async {
       optionPluginPixivMutedNovels: '[]',
       optionPluginPixivSearchHistory: '[]',
       optionPluginPixivGroupSubscriptions: '[]',
+      optionPluginPixivFileNameTemplate: pixivFileNameTemplateDefault,
+      optionPluginPixivFolderPerArtist: false,
+      optionPluginPixivFolderR18: false,
+      optionPluginPixivDownloadIndex: '[]',
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,
       optionPluginBooruEngine: 'danbooru',
@@ -702,6 +710,7 @@ Future<void> main() async {
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
 
   CrashReporter.install(prefService);
+  DownloadStore.shared.setConcurrency(prefService.get<int>(optionDownloadConcurrency) ?? downloadConcurrencyDefault);
 
   // Apply the last known query ids before the first request goes out; the
   // network refresh runs unawaited so a slow or blocked fetch never delays
@@ -827,6 +836,7 @@ Future<void> main() async {
     final pixivSearchHistory = PixivSearchHistory(prefService);
     final pixivFollows = PixivFollowStore(pixivClient);
     final pixivBookmarks = PixivBookmarkStore();
+    final pixivDownloads = PixivDownloadIndex(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
@@ -1053,6 +1063,7 @@ Future<void> main() async {
                 Provider(create: (_) => pixivSearchHistory),
                 Provider(create: (_) => pixivFollows),
                 Provider(create: (_) => pixivBookmarks),
+                Provider(create: (_) => pixivDownloads),
                 Provider(create: (_) => pixivFeed),
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),

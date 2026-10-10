@@ -2217,6 +2217,21 @@
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Altnivela: alglui refreshan ĵetonon",
   "@plugin_pixiv_advanced_token": {},
+  "plugin_pixiv_already_saved": "Jam konservita",
+  "@plugin_pixiv_already_saved": {},
+  "plugin_pixiv_already_saved_page": "Ĉi tiu paĝo jam estas konservita. Ĉu konservi ĝin denove?",
+  "@plugin_pixiv_already_saved_page": {},
+  "plugin_pixiv_already_saved_pages": "{saved, plural, one{{saved} el {total} paĝoj jam estas konservita.} other{{saved} el {total} paĝoj jam estas konservitaj.}}",
+  "@plugin_pixiv_already_saved_pages": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_bookmark": "Legosigno",
   "@plugin_pixiv_bookmark": {},
   "plugin_pixiv_bookmark_folder": "Legosignilo-dosierujo",
@@ -2231,6 +2246,30 @@
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Privata Pixiv-legilo — sekvado, rangigo, legosignoj kaj serĉo. Sen afiŝado",
   "@plugin_pixiv_description": {},
+  "plugin_pixiv_download_concurrency": "Samtempaj elŝutoj",
+  "@plugin_pixiv_download_concurrency": {},
+  "plugin_pixiv_download_concurrency_description": "Kiom da dosieroj elŝutiĝas samtempe",
+  "@plugin_pixiv_download_concurrency_description": {},
+  "plugin_pixiv_download_index": "Konservitaj paĝoj",
+  "@plugin_pixiv_download_index": {},
+  "plugin_pixiv_download_index_count": "{count, plural, =0{Ankoraŭ neniu paĝo memorita} one{{count} paĝo memorita} other{{count} paĝoj memoritaj}}",
+  "@plugin_pixiv_download_index_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_download_index_description": "Konservitaj verkoj ricevas markon, kaj antaŭ ol konservi paĝon duan fojon, vi estas demandata",
+  "@plugin_pixiv_download_index_description": {},
+  "plugin_pixiv_download_index_forget": "Forgesi",
+  "@plugin_pixiv_download_index_forget": {},
+  "plugin_pixiv_download_index_forget_question": "Ĉu forgesi, kiuj paĝoj estis konservitaj? La dosieroj mem restas en via aparato.",
+  "@plugin_pixiv_download_index_forget_question": {},
+  "plugin_pixiv_download_page_saved": "Konservita – elŝuti denove",
+  "@plugin_pixiv_download_page_saved": {},
+  "plugin_pixiv_downloads_section": "Elŝutoj",
+  "@plugin_pixiv_downloads_section": {},
   "plugin_pixiv_empty": "Ankoraŭ nenio en la sekva fluo",
   "@plugin_pixiv_empty": {},
   "plugin_pixiv_error_network": "Ne eblis atingi Pixiv",
@@ -2243,6 +2282,46 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Via Pixiv-refresha ĵetono estis rifuzita",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_file_name": "Dosiernomo",
+  "@plugin_pixiv_file_name": {},
+  "plugin_pixiv_file_name_help": "Tuŝetu detalon por enmeti ĝin ĉe la kursoro. Ĉiu dosiero konservas sian propran sufikson.",
+  "@plugin_pixiv_file_name_help": {},
+  "plugin_pixiv_file_name_part_required": "Enmetu {token}, por ke ĉiu paĝo de verko havu propran nomon",
+  "@plugin_pixiv_file_name_part_required": {
+    "placeholders": {
+      "token": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_preview": "Antaŭvido: {name}",
+  "@plugin_pixiv_file_name_preview": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_file_name_reset": "Restarigi",
+  "@plugin_pixiv_file_name_reset": {},
+  "plugin_pixiv_file_name_token_illust_id": "Identigilo de verko",
+  "@plugin_pixiv_file_name_token_illust_id": {},
+  "plugin_pixiv_file_name_token_part": "Paĝnumero",
+  "@plugin_pixiv_file_name_token_part": {},
+  "plugin_pixiv_file_name_token_title": "Titolo",
+  "@plugin_pixiv_file_name_token_title": {},
+  "plugin_pixiv_file_name_token_user_id": "Identigilo de artisto",
+  "@plugin_pixiv_file_name_token_user_id": {},
+  "plugin_pixiv_file_name_token_user_name": "Nomo de artisto",
+  "@plugin_pixiv_file_name_token_user_name": {},
+  "plugin_pixiv_folder_per_artist": "Dosierujo por ĉiu artisto",
+  "@plugin_pixiv_folder_per_artist": {},
+  "plugin_pixiv_folder_per_artist_description": "Metas la verkojn de ĉiu artisto en dosierujon nomitan laŭ la artisto, ene de la elŝuta dosierujo",
+  "@plugin_pixiv_folder_per_artist_description": {},
+  "plugin_pixiv_folder_r18": "Aparta dosierujo por R-18",
+  "@plugin_pixiv_folder_r18": {},
+  "plugin_pixiv_folder_r18_description": "Metas R-18-verkojn en dosierujon “R-18” ene de la elŝuta dosierujo",
+  "@plugin_pixiv_folder_r18_description": {},
   "plugin_pixiv_follow": "Sekvi",
   "@plugin_pixiv_follow": {},
   "plugin_pixiv_following_count": "{count, plural, one{{shown} abono} other{{shown} abonoj}}",
@@ -2343,6 +2422,20 @@
   "@plugin_pixiv_related": {},
   "plugin_pixiv_reveal": "Montri",
   "@plugin_pixiv_reveal": {},
+  "plugin_pixiv_save_again": "Konservi denove",
+  "@plugin_pixiv_save_again": {},
+  "plugin_pixiv_save_new_only": "Nur novajn paĝojn",
+  "@plugin_pixiv_save_new_only": {},
+  "plugin_pixiv_save_pages": "{count, plural, one{Konservi {count} paĝon} other{Konservi {count} paĝojn}}",
+  "@plugin_pixiv_save_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_saved_badge": "Konservita en ĉi tiu aparato",
+  "@plugin_pixiv_saved_badge": {},
   "plugin_pixiv_search_empty": "Neniuj rezultoj",
   "@plugin_pixiv_search_empty": {},
   "plugin_pixiv_search_hint": "Etikedoj, titoloj aŭ uzantoj",
@@ -2363,6 +2456,18 @@
   "@plugin_pixiv_search_target_partial": {},
   "plugin_pixiv_search_target_title": "Titolo/priskribo",
   "@plugin_pixiv_search_target_title": {},
+  "plugin_pixiv_select_none": "Neniun",
+  "@plugin_pixiv_select_none": {},
+  "plugin_pixiv_select_pages": "Elekti",
+  "@plugin_pixiv_select_pages": {},
+  "plugin_pixiv_selected_pages": "{count, plural, =0{Neniu paĝo elektita} one{{count} paĝo elektita} other{{count} paĝoj elektitaj}}",
+  "@plugin_pixiv_selected_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_pixiv_settings_intro": "Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: sekvado, rangigoj, viaj publikaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refresĥĵetonon sube. De ĉi tie nenio estas afiŝita, legosignita aŭ sekvata sur Pixiv.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_show_r18": "Montri R-18 verkojn",
@@ -2415,6 +2520,33 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_ugoira_encoding": "Kodigas kadron {current} el {total}…",
+  "@plugin_pixiv_ugoira_encoding": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_export_failed": "Ne eblis konservi la animacion",
+  "@plugin_pixiv_ugoira_export_failed": {},
+  "plugin_pixiv_ugoira_fetching": "Prenas kadrojn…",
+  "@plugin_pixiv_ugoira_fetching": {},
+  "plugin_pixiv_ugoira_save_gif": "Konservi kiel GIF",
+  "@plugin_pixiv_ugoira_save_gif": {},
+  "plugin_pixiv_ugoira_save_zip": "Konservi kadrojn kiel ZIP",
+  "@plugin_pixiv_ugoira_save_zip": {},
+  "plugin_pixiv_ugoira_saved_gif": "Animacio konservita kiel GIF",
+  "@plugin_pixiv_ugoira_saved_gif": {},
+  "plugin_pixiv_ugoira_saved_zip": "Kadroj konservitaj kiel ZIP",
+  "@plugin_pixiv_ugoira_saved_zip": {},
+  "plugin_pixiv_ugoira_saving": "Konservado…",
+  "@plugin_pixiv_ugoira_saving": {},
+  "plugin_pixiv_ugoira_slow": "Kodigado povas daŭri minuton",
+  "@plugin_pixiv_ugoira_slow": {},
   "plugin_pixiv_unbookmark": "Forigi legosignon",
   "@plugin_pixiv_unbookmark": {},
   "plugin_pixiv_unfollow": "Ĉesi sekvi",

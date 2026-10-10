@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_folder_sheet.dart';
+import 'package:xta/plugins/pixiv/pixiv_downloaded_badge.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
@@ -84,11 +85,11 @@ final pixivDetailMenuEntries = <PixivDetailMenuEntry>[
 /// A work's AppBar actions: bookmark, save this page, and the overflow menu.
 List<Widget> pixivDetailActions(BuildContext context, PixivPageSurface surface) => [
   PixivBookmarkButton(illust: surface.pageIllust),
-  IconButton(
+  PixivSavePageButton(
     key: const ValueKey('pixiv-illust-download'),
-    tooltip: L10n.of(context).plugin_pixiv_download_page,
+    illust: surface.pageIllust,
+    page: surface.currentPage,
     onPressed: () => surface.runPageAction(PixivPageAction.downloadPage, surface.currentPage),
-    icon: const Icon(Icons.download_outlined),
   ),
   PixivDetailMenu(surface: surface),
 ];

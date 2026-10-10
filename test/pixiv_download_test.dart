@@ -164,24 +164,31 @@ void main() {
     await disposePixiv(tester);
   });
 
-  testWidgets('the reader download button and a long-press save the page on screen', (tester) async {
+  testWidgets('the reader download button and a long-press save the page on screen, asking the second time', (
+    tester,
+  ) async {
     final harness = await pumpPixiv(tester, PixivReaderScreen(illust: pixivWork(), initialPage: 2, vertical: false));
 
     await tester.tap(find.byKey(const ValueKey('pixiv-reader-download')));
     await settlePixiv(tester);
+    expect(harness.downloads.isSaved(120, 2), isTrue);
     await tester.longPressAt(tester.getTopLeft(find.byType(PageView)) + const Offset(40, 40));
     await settlePixiv(tester);
     expect(find.text('Page 3 of 8'), findsOneWidget);
     await tester.tap(find.byKey(ValueKey('pixiv-page-action-${PixivPageAction.downloadPage.name}')));
+    await settlePixiv(tester);
+    expect(find.text('This page is already saved. Save it again?'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('pixiv-resave-all')));
     await settlePixiv(tester);
 
     expect(harness.downloader.pages, [2, 2]);
     await disposePixiv(tester);
   });
 
-  test('page requests save the originals under Pixiv-style names', () {
+  test('page requests save the originals under the default {illust_id}_p{part} names', () {
     final requests = pixivPageRequests(pixivWork(pages: 2), 'content://tree/x');
-    expect(requests.map((request) => request.fileName), ['pixiv-120_p0.png', 'pixiv-120_p1.png']);
+    expect(requests.map((request) => request.fileName), ['120_p0.png', '120_p1.png']);
+    expect(requests.map((request) => request.subfolder).toSet(), {null});
     expect(requests.first.uri.toString(), 'https://i.pximg.net/img-original/img/2026/07/01/00/00/00/120_p0.png');
     expect(requests.map((request) => request.treeUri).toSet(), {'content://tree/x'});
     expect(pixivPageMedia(pixivWork(), 3).url, contains('120_p3_master1200'));

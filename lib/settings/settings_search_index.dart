@@ -253,6 +253,12 @@ List<SettingsControlResult> settingsControls(L10n l10n) => [
   ),
   SettingsControlResult(SearchableSettingsSection.media, optionDownloadPath, l10n.download_path, ''),
   SettingsControlResult(
+    SearchableSettingsSection.media,
+    optionDownloadConcurrency,
+    l10n.plugin_pixiv_download_concurrency,
+    l10n.plugin_pixiv_download_concurrency_description,
+  ),
+  SettingsControlResult(
     SearchableSettingsSection.theme,
     optionXLookBackground,
     l10n.theme_background,
