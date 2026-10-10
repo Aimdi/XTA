@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Odpovědi autora",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Skrýt opětovná sdílení",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Zobrazit 1 další odpověď} few{Zobrazit {count} další odpovědi} many{Zobrazit {count} další odpovědi} other{Zobrazit {count} dalších odpovědí}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Zobrazit 1 další příspěvek z tohoto vlákna} few{Zobrazit {count} další příspěvky z tohoto vlákna} many{Zobrazit {count} dalšího příspěvku z tohoto vlákna} other{Zobrazit {count} dalších příspěvků z tohoto vlákna}}",
+  "@plugin_threads_show_thread": {}
 }

@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Respostes de l'autor",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Amaga les republicacions",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Mostra 1 resposta més} other{Mostra {count} respostes més}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Mostra 1 publicació més d'aquest fil} other{Mostra {count} publicacions més d'aquest fil}}",
+  "@plugin_threads_show_thread": {}
 }

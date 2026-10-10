@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "लेखक के जवाब",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "रीपोस्ट छिपाएँ",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{1 और जवाब दिखाएँ} other{{count} और जवाब दिखाएँ}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{इस थ्रेड की 1 और पोस्ट दिखाएँ} other{इस थ्रेड की {count} और पोस्ट दिखाएँ}}",
+  "@plugin_threads_show_thread": {}
 }

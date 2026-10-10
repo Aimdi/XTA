@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "作者的回复",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "隐藏转帖",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, other{显示另外 {count} 条回复}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, other{显示此讨论串中的另外 {count} 条帖子}}",
+  "@plugin_threads_show_thread": {}
 }

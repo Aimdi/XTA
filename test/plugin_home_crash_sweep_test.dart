@@ -38,6 +38,7 @@ import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_screen.dart';
+import 'package:xta/plugins/threads/threads_feed_options.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/ui/empty_pane.dart';
@@ -820,6 +821,7 @@ void main() {
               Provider<ThreadsAccountsStore>.value(value: accounts),
               Provider<ThreadsLikesStore>.value(value: likes),
               Provider<ThreadsFeedStore>.value(value: feed),
+              Provider<ThreadsFeedOptionsStore>.value(value: ThreadsFeedOptionsStore(prefs)),
               Provider<ThreadsClient>.value(value: client),
               Provider<ThreadsDirectClient>.value(value: direct),
             ],
@@ -863,6 +865,7 @@ void main() {
               Provider<ThreadsAccountsStore>.value(value: accounts),
               Provider<ThreadsLikesStore>.value(value: likes),
               Provider<ThreadsFeedStore>.value(value: feed),
+              Provider<ThreadsFeedOptionsStore>.value(value: ThreadsFeedOptionsStore(prefs)),
               Provider<ThreadsClient>.value(value: client),
               Provider<ThreadsDirectClient>.value(value: direct),
             ],

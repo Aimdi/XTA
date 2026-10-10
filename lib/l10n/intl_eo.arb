@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Respondoj de la aŭtoro",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Kaŝi reafiŝojn",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Montri 1 plian respondon} other{Montri {count} pliajn respondojn}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Montri 1 plian afiŝon en ĉi tiu fadeno} other{Montri {count} pliajn afiŝojn en ĉi tiu fadeno}}",
+  "@plugin_threads_show_thread": {}
 }

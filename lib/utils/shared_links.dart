@@ -38,6 +38,14 @@ Iterable<Uri> _sharedLinks(String text) sync* {
   }
 }
 
+/// Every http(s) link in shared text, trailing punctuation removed, in order.
+///
+/// Shares often contain the post's caption before the actual link.
+List<String> sharedTextUrls(String text) => [
+  for (final uri in _sharedLinks(text))
+    if (uri.scheme == 'https' || uri.scheme == 'http') uri.toString(),
+];
+
 bool _supported(Uri uri, {required bool pixiv}) {
   final web = uri.scheme == 'https' || uri.scheme == 'http';
   return (web || uri.scheme == 'pixiv') &&

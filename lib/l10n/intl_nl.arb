@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Reacties van de auteur",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Reposts verbergen",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Nog 1 reactie tonen} other{Nog {count} reacties tonen}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Nog 1 bericht in dit draadje tonen} other{Nog {count} berichten in dit draadje tonen}}",
+  "@plugin_threads_show_thread": {}
 }

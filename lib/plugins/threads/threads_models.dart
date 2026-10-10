@@ -43,6 +43,39 @@ class ThreadsLinkCard {
   }
 }
 
+/// What one run of a caption is, as Meta's `text_fragments` split it.
+enum ThreadsFragmentKind { text, mention, link, tag }
+
+/// One run of a caption: the words shown, and where tapping them goes.
+///
+/// Meta already resolves mentions to accounts and links to their real
+/// destination; reading those beats guessing with a pattern, which cannot tell
+/// a shortened `example.com/a…` display from the address behind it.
+class ThreadsTextFragment {
+  final ThreadsFragmentKind kind;
+  final String text;
+
+  /// The handle, the unwrapped URL or the tag name — null for plain text.
+  final String? target;
+
+  const ThreadsTextFragment(this.kind, this.text, [this.target]);
+
+  Map<String, dynamic> toJson() => {'kind': kind.name, 'text': text, 'target': target};
+
+  static ThreadsTextFragment? fromSnapshot(Object? raw) {
+    if (raw is! Map) {
+      return null;
+    }
+    final kind = ThreadsFragmentKind.values.asNameMap()[raw['kind']];
+    final text = raw['text'];
+    if (kind == null || text is! String) {
+      return null;
+    }
+    final target = raw['target'];
+    return ThreadsTextFragment(kind, text, target is String ? target : null);
+  }
+}
+
 /// One Threads post, as much of it as a feed carries.
 ///
 /// Meta guest/cookie payloads can also carry likes, reply/repost counts, and a
@@ -61,8 +94,16 @@ class ThreadsPost {
 
   final String? avatarUrl;
   final String text;
+
+  /// Still pictures and video posters, in the order the post shows them.
   final List<String> images;
   final List<double?> imageAspects;
+
+  /// Meta's description of each picture, aligned with [images].
+  final List<String?> imageAlts;
+
+  /// The playable file behind each entry of [images] — null for a still.
+  final List<String?> videoUrls;
   final DateTime? publishedAt;
 
   /// Where the post lives on Threads, for opening it there.
@@ -71,7 +112,21 @@ class ThreadsPost {
   final int? likeCount;
   final int? replyCount;
   final int? repostCount;
+  final int? quoteCount;
   final ThreadsLinkCard? linkCard;
+
+  /// The post this one quotes, one level deep.
+  final ThreadsPost? quoted;
+
+  /// The topic the author filed the post under (Threads' one tag per post).
+  final String? topicTag;
+
+  /// The caption as Meta split it; empty when it did not, or when the split no
+  /// longer spells [text].
+  final List<ThreadsTextFragment> fragments;
+
+  /// How many more posts the author chained under this one.
+  final int selfThreadCount;
 
   /// When set, this row is a repost: [repostedByHandle] shared [handle]'s post.
   final String? repostedByHandle;
@@ -90,12 +145,19 @@ class ThreadsPost {
     this.avatarUrl,
     this.images = const [],
     this.imageAspects = const [],
+    this.imageAlts = const [],
+    this.videoUrls = const [],
     this.publishedAt,
     this.url,
     this.likeCount,
     this.replyCount,
     this.repostCount,
+    this.quoteCount,
     this.linkCard,
+    this.quoted,
+    this.topicTag,
+    this.fragments = const [],
+    this.selfThreadCount = 0,
     this.repostedByHandle,
     this.repostedByName,
     this.isVerified = false,
@@ -103,15 +165,40 @@ class ThreadsPost {
     this.isReply = false,
   });
 
+  /// A post known only by its link — what a pasted or shared URL gives. The
+  /// conversation screen reads the rest from the page.
+  factory ThreadsPost.linkStub(String url, {String handle = ''}) =>
+      ThreadsPost(id: url, handle: handle, authorName: handle, text: '', url: url);
+
   bool get hasMedia => images.isNotEmpty;
 
-  List<PluginMediaItem> get mediaItems =>
-      pluginMediaItemsFrom(urls: images, aspects: imageAspects);
+  bool get hasVideo => videoUrls.any((url) => url != null && url.isNotEmpty);
+
+  List<PluginMediaItem> get mediaItems => [
+    for (var i = 0; i < images.length; i++)
+      PluginMediaItem(
+        url: images[i],
+        aspectRatio: i < imageAspects.length ? imageAspects[i] : null,
+        alt: i < imageAlts.length ? imageAlts[i] : null,
+        isVideo: i < videoUrls.length && (videoUrls[i]?.isNotEmpty ?? false),
+        videoUrl: i < videoUrls.length ? videoUrls[i] : null,
+        shareUrl: url,
+      ),
+  ];
 
   bool get hasEngagement =>
-      likeCount != null || replyCount != null || repostCount != null;
+      likeCount != null ||
+      replyCount != null ||
+      repostCount != null ||
+      quoteCount != null;
 
   bool get isRepost => repostedByHandle != null && repostedByHandle!.isNotEmpty;
+
+  /// The account whose page this row came from: the reposter for a repost.
+  String get sourceHandle => isRepost ? repostedByHandle! : handle;
+
+  /// The post's short code, read off its permalink.
+  String? get shortcode => threadsShortcodeOf(url);
 
   /// Who to show on a "X reposted" line.
   String get reposterDisplayName {
@@ -122,6 +209,55 @@ class ThreadsPost {
     return repostedByHandle ?? '';
   }
 
+  /// This post as [handle]'s repost of it, under the repost's own id and time.
+  ThreadsPost repostedBy({
+    required String id,
+    required String handle,
+    required String name,
+    DateTime? at,
+  }) => _copy(
+    id: id,
+    publishedAt: at ?? publishedAt,
+    repostedByHandle: handle,
+    repostedByName: name,
+  );
+
+  ThreadsPost withSelfThreadCount(int count) => _copy(selfThreadCount: count);
+
+  ThreadsPost _copy({
+    String? id,
+    DateTime? publishedAt,
+    String? repostedByHandle,
+    String? repostedByName,
+    int? selfThreadCount,
+  }) => ThreadsPost(
+    id: id ?? this.id,
+    handle: handle,
+    authorName: authorName,
+    text: text,
+    avatarUrl: avatarUrl,
+    images: images,
+    imageAspects: imageAspects,
+    imageAlts: imageAlts,
+    videoUrls: videoUrls,
+    publishedAt: publishedAt ?? this.publishedAt,
+    url: url,
+    likeCount: likeCount,
+    replyCount: replyCount,
+    repostCount: repostCount,
+    quoteCount: quoteCount,
+    linkCard: linkCard,
+    quoted: quoted,
+    topicTag: topicTag,
+    fragments: fragments,
+    selfThreadCount: selfThreadCount ?? this.selfThreadCount,
+    repostedByHandle: repostedByHandle ?? this.repostedByHandle,
+    repostedByName: repostedByName ?? this.repostedByName,
+    isVerified: isVerified,
+    replyToHandle: replyToHandle,
+    isReply: isReply,
+  );
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'handle': handle,
@@ -130,18 +266,31 @@ class ThreadsPost {
     'text': text,
     'images': images,
     'imageAspects': imageAspects,
+    'imageAlts': imageAlts,
+    'videoUrls': videoUrls,
     'publishedAt': publishedAt?.toIso8601String(),
     'url': url,
     'likeCount': likeCount,
     'replyCount': replyCount,
     'repostCount': repostCount,
+    'quoteCount': quoteCount,
     'linkCard': linkCard?.toJson(),
+    // One level is all a card shows; a quote of a quote would only grow every
+    // saved snapshot.
+    'quoted': quoted?._copyWithoutQuote().toJson(),
+    'topicTag': topicTag,
+    'fragments': [for (final fragment in fragments) fragment.toJson()],
+    'selfThreadCount': selfThreadCount,
     'repostedByHandle': repostedByHandle,
     'repostedByName': repostedByName,
     'isVerified': isVerified,
     'replyToHandle': replyToHandle,
     'isReply': isReply,
   };
+
+  ThreadsPost _copyWithoutQuote() => quoted == null
+      ? this
+      : ThreadsPost.fromSnapshot({...toJson(), 'quoted': null});
 
   factory ThreadsPost.fromSnapshot(Object? raw) {
     final json = raw is Map
@@ -152,6 +301,10 @@ class ThreadsPost {
     final linkCard = linkCardRaw == null
         ? null
         : ThreadsLinkCard.fromSnapshot(linkCardRaw);
+    final quotedRaw = json['quoted'];
+    final quoted = quotedRaw is Map
+        ? ThreadsPost.fromSnapshot({...quotedRaw, 'quoted': null})
+        : null;
 
     return ThreadsPost(
       id: json['id'] as String? ?? '',
@@ -168,6 +321,8 @@ class ThreadsPost {
         for (final value in (json['imageAspects'] as List? ?? const []))
           value is num ? value.toDouble() : null,
       ],
+      imageAlts: _snapshotStrings(json['imageAlts']),
+      videoUrls: _snapshotStrings(json['videoUrls']),
       publishedAt: DateTime.tryParse(
         json['publishedAt'] as String? ?? '',
       )?.toLocal(),
@@ -175,7 +330,15 @@ class ThreadsPost {
       likeCount: _snapshotCount(json['likeCount']),
       replyCount: _snapshotCount(json['replyCount']),
       repostCount: _snapshotCount(json['repostCount']),
+      quoteCount: _snapshotCount(json['quoteCount']),
       linkCard: linkCard == null || linkCard.url.isEmpty ? null : linkCard,
+      quoted: quoted == null || quoted.id.isEmpty ? null : quoted,
+      topicTag: json['topicTag'] as String?,
+      fragments: [
+        for (final raw in (json['fragments'] as List? ?? const []))
+          ?ThreadsTextFragment.fromSnapshot(raw),
+      ],
+      selfThreadCount: _snapshotCount(json['selfThreadCount']) ?? 0,
       repostedByHandle: json['repostedByHandle'] as String?,
       repostedByName: json['repostedByName'] as String?,
       isVerified: json['isVerified'] as bool? ?? false,
@@ -203,6 +366,30 @@ class ThreadsPost {
 
   static String listToPrefs(List<ThreadsPost> posts) =>
       jsonEncode(posts.map((e) => e.toJson()).toList());
+}
+
+List<String?> _snapshotStrings(Object? value) => [
+  for (final item in (value is List ? value : const []))
+    item is String ? item : null,
+];
+
+/// The short code in a Threads permalink — `/@x/post/CODE` or `/t/CODE`.
+///
+/// The one identifier a pasted link, a shared link and a parsed post all
+/// agree on: ids differ by source, hosts by era (`.net` / `.com`), and query
+/// strings by whoever shared it.
+String? threadsShortcodeOf(String? url) {
+  final uri = url == null ? null : Uri.tryParse(url.trim());
+  if (uri == null || !uri.host.contains('threads.')) {
+    return null;
+  }
+  final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
+  for (var i = 0; i < segments.length - 1; i++) {
+    if (segments[i] == 'post' || segments[i] == 't') {
+      return segments[i + 1];
+    }
+  }
+  return null;
 }
 
 int? _snapshotCount(Object? value) => value is num ? value.toInt() : null;

@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "작성자의 답글",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "재게시물 숨기기",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, other{답글 {count}개 더 보기}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, other{이 스레드의 게시물 {count}개 더 보기}}",
+  "@plugin_threads_show_thread": {}
 }

@@ -94,6 +94,7 @@ import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/plugins/threads/threads_feed_options.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
@@ -846,6 +847,7 @@ Future<void> main() async {
     final threadsApi = ThreadsApi();
     final threadsAccounts = ThreadsAccountsStore();
     final threadsLikes = ThreadsLikesStore(prefService);
+    final threadsFeedOptions = ThreadsFeedOptionsStore(prefService);
     final threadsFeed = ThreadsFeedStore(
       threadsClient,
       threadsDirect,
@@ -946,7 +948,8 @@ Future<void> main() async {
         substackSaved.load(),
       ],
       if (prefService.get<bool>(optionPluginThreadsEnabled) == true) ...[
-        threadsAccounts.load(),
+        // The tab paints the last feed it showed before Meta is asked anything.
+        threadsAccounts.load().then((_) => threadsFeed.restore()),
         threadsLikes.load(),
       ],
       if (prefService.get<bool>(optionPluginBlueskyEnabled) == true) ...[
@@ -1098,6 +1101,7 @@ Future<void> main() async {
                 Provider(create: (_) => threadsAccounts),
                 Provider(create: (_) => threadsLikes),
                 Provider(create: (_) => threadsFeed),
+                Provider(create: (_) => threadsFeedOptions),
                 Provider(create: (_) => blueskyClient),
                 Provider(create: (_) => blueskyAccounts),
                 Provider(create: (_) => blueskyLikes),
@@ -1475,6 +1479,14 @@ class _DefaultPageState extends State<DefaultPage> {
 
   Future<void> _handleSharedText(String text) async {
     try {
+      // A Threads, Bluesky or Mastodon post shared from its own app opens in
+      // its plugin, the same as a tapped link would.
+      for (final url in sharedTextUrls(text)) {
+        if (await openWithPlugins(context, url)) {
+          return;
+        }
+        if (!mounted) return;
+      }
       final pixiv = PrefService.of(context, listen: false).get<bool>(optionPluginPixivEnabled) == true;
       await switch (sharedTargetOf(text, pixiv: pixiv)) {
         SharedXTarget() => _openSharedLink(text, pixiv: pixiv),

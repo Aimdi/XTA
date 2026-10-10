@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Adkazy aŭtara",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Schavać reposty",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Pakazać jašče 1 adkaz} few{Pakazać jašče {count} adkazy} many{Pakazać jašče {count} adkazaŭ} other{Pakazać jašče {count} adkazu}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Pakazać jašče 1 dopis u hetaj halincy} few{Pakazać jašče {count} dopisy ŭ hetaj halincy} many{Pakazać jašče {count} dopisaŭ u hetaj halincy} other{Pakazać jašče {count} dopisu ŭ hetaj halincy}}",
+  "@plugin_threads_show_thread": {}
 }

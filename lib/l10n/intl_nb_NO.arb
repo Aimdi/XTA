@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Forfatterens svar",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Skjul republiseringer",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Vis 1 svar til} other{Vis {count} svar til}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Vis 1 innlegg til i denne tråden} other{Vis {count} innlegg til i denne tråden}}",
+  "@plugin_threads_show_thread": {}
 }

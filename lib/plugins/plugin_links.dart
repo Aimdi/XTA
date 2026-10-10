@@ -288,13 +288,7 @@ BlueskyPost _blueskyStub(BlueskyPostLink link) {
   );
 }
 
-ThreadsPost _threadsStub(ThreadsPostLink link) => ThreadsPost(
-  id: link.url,
-  handle: link.handle,
-  authorName: link.handle,
-  text: '',
-  url: link.url,
-);
+ThreadsPost _threadsStub(ThreadsPostLink link) => ThreadsPost.linkStub(link.url, handle: link.handle);
 
 RedditPost _redditStub(RedditThreadLink link) => RedditPost(
   id: link.id,

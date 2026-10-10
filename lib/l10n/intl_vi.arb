@@ -4962,5 +4962,17 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {},
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Câu trả lời của tác giả",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Ẩn bài đăng lại",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, other{Hiện thêm {count} câu trả lời}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, other{Hiện thêm {count} bài trong chuỗi này}}",
+  "@plugin_threads_show_thread": {}
 }

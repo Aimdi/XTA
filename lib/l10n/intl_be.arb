@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Адказы аўтара",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Схаваць рэпосты",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Паказаць яшчэ 1 адказ} few{Паказаць яшчэ {count} адказы} many{Паказаць яшчэ {count} адказаў} other{Паказаць яшчэ {count} адказу}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Паказаць яшчэ 1 допіс у гэтай галінцы} few{Паказаць яшчэ {count} допісы ў гэтай галінцы} many{Паказаць яшчэ {count} допісаў у гэтай галінцы} other{Паказаць яшчэ {count} допісу ў гэтай галінцы}}",
+  "@plugin_threads_show_thread": {}
 }

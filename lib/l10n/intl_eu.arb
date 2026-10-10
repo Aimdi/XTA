@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Egilearen erantzunak",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Ezkutatu birargitalpenak",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Erakutsi erantzun 1 gehiago} other{Erakutsi {count} erantzun gehiago}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Erakutsi hari honetako argitalpen 1 gehiago} other{Erakutsi hari honetako {count} argitalpen gehiago}}",
+  "@plugin_threads_show_thread": {}
 }

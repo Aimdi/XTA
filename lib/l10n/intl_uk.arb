@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Відповіді автора",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Сховати репости",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Показати ще 1 відповідь} few{Показати ще {count} відповіді} many{Показати ще {count} відповідей} other{Показати ще {count} відповіді}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Показати ще 1 допис із цієї гілки} few{Показати ще {count} дописи з цієї гілки} many{Показати ще {count} дописів із цієї гілки} other{Показати ще {count} допису з цієї гілки}}",
+  "@plugin_threads_show_thread": {}
 }

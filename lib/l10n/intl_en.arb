@@ -5325,5 +5325,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Author’s replies",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Hide reposts",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Show 1 more reply} other{Show {count} more replies}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Show 1 more post in this thread} other{Show {count} more posts in this thread}}",
+  "@plugin_threads_show_thread": {}
 }

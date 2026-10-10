@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Autori vastused",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Peida taaspostitused",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Näita veel 1 vastust} other{Näita veel {count} vastust}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Näita veel 1 postitust sellest lõimest} other{Näita veel {count} postitust sellest lõimest}}",
+  "@plugin_threads_show_thread": {}
 }

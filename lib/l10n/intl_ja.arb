@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "投稿者の返信",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "リポストを非表示",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, other{返信をあと {count} 件表示}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, other{このスレッドの投稿をあと {count} 件表示}}",
+  "@plugin_threads_show_thread": {}
 }

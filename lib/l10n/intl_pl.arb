@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Odpowiedzi autora",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Ukryj udostępnione wpisy",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Pokaż jeszcze 1 odpowiedź} few{Pokaż jeszcze {count} odpowiedzi} many{Pokaż jeszcze {count} odpowiedzi} other{Pokaż jeszcze {count} odpowiedzi}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Pokaż jeszcze 1 wpis z tego wątku} few{Pokaż jeszcze {count} wpisy z tego wątku} many{Pokaż jeszcze {count} wpisów z tego wątku} other{Pokaż jeszcze {count} wpisu z tego wątku}}",
+  "@plugin_threads_show_thread": {}
 }

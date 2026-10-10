@@ -82,7 +82,7 @@ List<InterleavedItem> threadsInterleavedItems(
                     'url': post.url ?? '',
                     'author': post.authorName,
                     'text': post.text,
-                    'images': <String>[],
+                    'images': post.images,
                   },
             build: (_) => ThreadsPostCard(post: post, showSourceBadge: false),
           ),

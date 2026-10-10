@@ -16,6 +16,8 @@ import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_plugin.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_discovery.dart';
+import 'package:xta/plugins/threads/threads_feed_filters.dart';
+import 'package:xta/plugins/threads/threads_feed_options.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
@@ -86,6 +88,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     // only delayed the first paint. Remounts from the home strip already have
     // both from startup (or the last visit) — don't hit SQLite again.
     await Future.wait([if (accounts.state.isEmpty) accounts.load(), if (likes.state.isEmpty) likes.load()]);
+    feed.restore();
     await feed.refresh(force: force);
   }
 
@@ -209,7 +212,52 @@ class _HomePane extends StatelessWidget {
     required this.onRefresh,
   });
 
-  Widget _feed(BuildContext context, L10n l10n, List<ThreadsPost> posts) {
+  Widget _feed(BuildContext context, L10n l10n, List<ThreadsPost> loaded) {
+    final options = context.read<ThreadsFeedOptionsStore>();
+    return ScopedBuilder<ThreadsFeedOptionsStore, ThreadsFeedOptions>(
+      store: options,
+      onState: (context, chosen) {
+        final posts = filterThreadsFeed(loaded, chosen);
+        if (loaded.isNotEmpty && posts.isEmpty) {
+          return _filteredOut(context, options);
+        }
+        return _visibleFeed(context, l10n, posts);
+      },
+    );
+  }
+
+  /// Every loaded post is hidden by the reader's filters — say so, rather than
+  /// look like Threads returned nothing.
+  Widget _filteredOut(BuildContext context, ThreadsFeedOptionsStore options) {
+    final l10n = L10n.of(context);
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
+        controller: pluginInnerScrollController(context, scrollController),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
+        children: [
+          Icon(Icons.filter_alt_outlined, size: 52, color: Theme.of(context).colorScheme.outline),
+          const SizedBox(height: 16),
+          Text(
+            l10n.plugin_reader_empty_filter,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: FilledButton.tonalIcon(
+              onPressed: options.reset,
+              icon: const Icon(Icons.filter_alt_off_outlined),
+              label: Text(l10n.plugin_reader_reset_filters),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _visibleFeed(BuildContext context, L10n l10n, List<ThreadsPost> posts) {
     final handles = context.read<ThreadsAccountsStore>().state.map((e) => e.handle).toList(growable: false);
     final pending = context.read<ThreadsFeedStore>().pending(handles);
 
@@ -305,6 +353,7 @@ class _HomePane extends StatelessWidget {
             ),
           ),
         ThreadsFollowingStrip(onAddAccount: onAddAccount),
+        ThreadsFeedFilterControl(store: context.read<ThreadsFeedOptionsStore>()),
         Expanded(
           child: ScopedBuilder<ThreadsFeedStore, List<ThreadsPost>>(
             store: feed,

@@ -4965,5 +4965,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "@home_keep_controls_visible": {},
+  "plugin_threads_author_replies": "Răspunsurile autorului",
+  "@plugin_threads_author_replies": {},
+  "plugin_threads_hide_reposts": "Ascunde redistribuirile",
+  "@plugin_threads_hide_reposts": {},
+  "plugin_threads_more_replies": "{count, plural, one{Arată încă 1 răspuns} few{Arată încă {count} răspunsuri} other{Arată încă {count} de răspunsuri}}",
+  "@plugin_threads_more_replies": {},
+  "plugin_threads_show_thread": "{count, plural, one{Arată încă 1 postare din acest fir} few{Arată încă {count} postări din acest fir} other{Arată încă {count} de postări din acest fir}}",
+  "@plugin_threads_show_thread": {}
 }
