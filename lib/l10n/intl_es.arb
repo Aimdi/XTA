@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Seguir",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, one{{shown} seguido} other{{shown} seguidos}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "Acerca de",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Cuenta",
@@ -2263,8 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Elementos de Pixiv silenciados",
   "@plugin_pixiv_muted_section": {},
-  "plugin_pixiv_mypixiv": "Amigos de My pixiv",
-  "@plugin_pixiv_mypixiv": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, one{{shown} amigo de My pixiv} other{{shown} amigos de My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Inicia sesión en Pixiv para ver el seguimiento, el ranking y los marcadores",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "No se pudo abrir ese enlace de Pixiv",
@@ -2401,8 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Dejar de silenciar",
   "@plugin_pixiv_unmute": {},
-  "plugin_pixiv_works": "Obras",
-  "@plugin_pixiv_works": {},
+  "plugin_pixiv_works_count": "{count, plural, one{{shown} obra} other{{shown} obras}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "Este servidor no ofrece esta lista sin iniciar sesión o no la admite. Puedes abrir la publicación en el navegador.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Otros complementos",

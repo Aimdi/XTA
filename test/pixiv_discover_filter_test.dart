@@ -25,6 +25,8 @@ Map<String, Object?> _work(int id, {int restrict = 0, int ai = 1}) => {
 /// Group Discover suggests a creator through one of their preview works; the
 /// work must be one the reader's Show R-18 and Hide AI choices let through.
 void main() {
+  var requests = 0;
+
   Future<List<DiscoveryAccount>> discover({required bool showR18, required bool hideAi, required int seed}) async {
     final prefs = PrefServiceCache(
       cache: {
@@ -39,6 +41,7 @@ void main() {
       prefs,
       httpClient: MockClient((request) async {
         expect(request.url.path, '/v1/user/related');
+        requests++;
         return http.Response(
           jsonEncode({
             'user_previews': [
@@ -76,5 +79,12 @@ void main() {
   test('the reader\'s own choices let them back in', () async {
     expect(shownWork(await discover(showR18: true, hideAi: false, seed: 102)), 1);
     expect(shownWork(await discover(showR18: false, hideAi: false, seed: 103)), 2);
+  });
+
+  test('a choice changed since the last scan applies to the cached creators at once', () async {
+    expect(shownWork(await discover(showR18: true, hideAi: false, seed: 104)), 1);
+    final fetched = requests;
+    expect(shownWork(await discover(showR18: false, hideAi: true, seed: 104)), 3);
+    expect(requests, fetched, reason: 'the second scan reads the cache');
   });
 }

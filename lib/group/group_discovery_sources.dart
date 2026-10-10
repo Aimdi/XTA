@@ -16,6 +16,7 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/subscriptions/users_model.dart';
 
@@ -222,15 +223,24 @@ DiscoveryRead mastodonDiscoveryReader(
 }
 
 /// Creators Pixiv relates to a rotating sample of the group's creators.
+///
+/// Related users are cached unfiltered and the reader's Show R-18 / Hide AI
+/// choices apply on every read, so flipping one shows at once, not after the
+/// cache expires.
 DiscoveryRead pixivDiscoveryReader(PixivClient client, List<Subscription> members, PixivMuteState mute) {
   final seeds = {
     for (final member in members)
       if (pixivDiscoveryId(member) case final id?) '$id': member,
   };
-  DiscoveryBatch batch(RotatingRead<PixivRelation> read) =>
-      DiscoveryBatch(pixivDiscoveryAccounts(read.rows, seeds: seeds, mute: mute), read: read.read);
+  DiscoveryBatch batch(RotatingRead<PixivRelation> read) => DiscoveryBatch(
+    pixivDiscoveryAccounts(read.rows, seeds: seeds, mute: mute, showR18: client.showR18, hideAi: client.hideAi),
+    read: read.read,
+  );
   Future<List<PixivRelation>> fetch(String seed, Duration budget) async => [
-    for (final preview in await client.relatedUsers(int.parse(seed)).timeout(budget)) (seed: seed, preview: preview),
+    for (final preview in await client
+        .relatedUsers(int.parse(seed), includeR18: true, includeAi: true)
+        .timeout(budget))
+      (seed: seed, preview: preview),
   ];
 
   return (scan) async => batch(
@@ -246,18 +256,24 @@ DiscoveryRead pixivDiscoveryReader(PixivClient client, List<Subscription> member
 }
 
 /// Related creators who are not followed, not in the group and not muted, each
-/// shown through their first preview work the reader has not muted either.
+/// shown through their first preview work the reader has not muted or hidden.
 List<DiscoveryAccount> pixivDiscoveryAccounts(
   Iterable<PixivRelation> rows, {
   required Map<String, Subscription> seeds,
   required PixivMuteState mute,
+  required bool showR18,
+  required bool hideAi,
 }) => [
   for (final row in rows)
     if (seeds[row.seed] case final member?
         when !row.preview.user.isFollowed &&
             !seeds.containsKey('${row.preview.user.id}') &&
             !mute.authorIds.contains(row.preview.user.id))
-      _pixivAccount(row.preview.user, mute.filter(row.preview.illusts).firstOrNull, member),
+      _pixivAccount(
+        row.preview.user,
+        pixivVisiblePreviewWorks(row.preview.illusts, mute: mute, showR18: showR18, hideAi: hideAi).firstOrNull,
+        member,
+      ),
 ];
 
 DiscoveryAccount _pixivAccount(PixivUser user, PixivIllust? work, Subscription member) => DiscoveryAccount(

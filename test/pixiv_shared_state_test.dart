@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
+
+import 'support/pixiv_reader_harness.dart';
 
 PrefServiceCache _prefs([Map<String, Object> cache = const {}]) => PrefServiceCache(
   cache: {
@@ -88,7 +93,7 @@ void main() {
       final prefs = _prefs({
         optionPluginPixivSearchHistory: jsonEncode(['初音ミク', 'landscape']),
       });
-      final history = pixivSearchHistory(prefs);
+      final history = PixivSearchHistory(prefs);
       addTearDown(history.destroy);
       expect(history.state, ['初音ミク', 'landscape']);
     });
@@ -97,7 +102,7 @@ void main() {
       final prefs = _prefs({
         optionPluginPixivSearchHistory: jsonEncode(['Landscape', 'cat']),
       });
-      final history = pixivSearchHistory(prefs);
+      final history = PixivSearchHistory(prefs);
       addTearDown(history.destroy);
 
       await history.remember('landscape');
@@ -105,5 +110,45 @@ void main() {
       await history.forget('cat');
       expect(jsonDecode(prefs.get<String>(optionPluginPixivSearchHistory)!), ['landscape']);
     });
+
+    testWidgets('a search made on a pushed screen already shows on the one underneath', (tester) async {
+      await pumpPixiv(tester, const PixivSearchScreen(), client: _QuietSearch.new);
+      final navigator = Navigator.of(tester.element(find.byType(PixivSearchScreen)));
+      navigator.push(MaterialPageRoute<void>(builder: (_) => const PixivSearchScreen(initialQuery: 'sunflower')));
+      await settlePixiv(tester);
+
+      navigator.pop();
+      await settlePixiv(tester);
+      expect(find.widgetWithText(ActionChip, 'sunflower'), findsOneWidget);
+      await disposePixiv(tester);
+    });
   });
+}
+
+/// Answers every search with nothing, so the screens settle without a network.
+class _QuietSearch extends FakePixivClient {
+  _QuietSearch(super.prefs);
+
+  static const _noUsers = (users: <PixivUser>[], nextUrl: null);
+
+  @override
+  Future<List<PixivTrendTag>> trendingTags() async => const [];
+
+  @override
+  Future<({List<PixivUser> users, String? nextUrl})> recommendedUsers({String? nextUrl}) async => _noUsers;
+
+  @override
+  Future<({List<PixivUser> users, String? nextUrl})> searchUsers(String word, {String? nextUrl}) async => _noUsers;
+
+  @override
+  Future<PixivIllustPage> popularPreview(String word, {String searchTarget = 'partial_match_for_tags'}) async =>
+      const PixivIllustPage(illusts: []);
+
+  @override
+  Future<PixivIllustPage> searchIllust(
+    String word, {
+    String searchTarget = 'partial_match_for_tags',
+    String sort = 'date_desc',
+    String? nextUrl,
+  }) async => const PixivIllustPage(illusts: []);
 }

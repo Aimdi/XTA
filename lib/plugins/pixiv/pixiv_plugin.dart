@@ -18,6 +18,7 @@ import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -147,5 +148,7 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
   Future<void> forgetLoadedData(BuildContext context) async {
     context.read<PixivFeedStore>().update(const []);
     context.read<PixivBookmarkStore>().update(const {});
+    context.read<PixivFollowStore>().clear();
+    context.read<PixivSearchHistory>().load();
   }
 }

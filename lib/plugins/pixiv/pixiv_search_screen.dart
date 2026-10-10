@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
@@ -17,12 +18,15 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 
-/// Recent searches, newest first; one differing only in case replaces the older.
-PluginSearchHistoryStore pixivSearchHistory(BasePrefService prefs) =>
-    PluginSearchHistoryStore(prefs, optionPluginPixivSearchHistory, identity: (query) => query.toLowerCase());
+/// Recent Pixiv searches, newest first; one differing only in case replaces
+/// the older. One instance serves the app, so a search made on a pushed screen
+/// already shows on the search screen underneath.
+class PixivSearchHistory extends PluginSearchHistoryStore {
+  PixivSearchHistory(BasePrefService prefs)
+    : super(prefs, optionPluginPixivSearchHistory, identity: (query) => query.toLowerCase());
+}
 
 /// Tag / keyword / user search — Pixez's second home.
 class PixivSearchScreen extends StatefulWidget {
@@ -69,7 +73,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
   void initState() {
     super.initState();
     _query = TextEditingController(text: widget.initialQuery ?? '');
-    _history = pixivSearchHistory(PrefService.of(context, listen: false));
+    _history = context.read<PixivSearchHistory>();
     _tabs = TabController(length: 2, vsync: this);
     _illusts = PixivIllustListStore(({nextUrl}) {
       return context.read<PixivClient>().searchIllust(
@@ -81,6 +85,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     }, filter: context.read<PixivMuteStore>().filter);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      _history.load();
       if ((widget.initialQuery ?? '').trim().isNotEmpty) {
         _search();
       } else {
@@ -95,7 +100,6 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     _query.dispose();
     _tabs.dispose();
     _illusts.destroy();
-    _history.destroy();
     super.dispose();
   }
 
@@ -440,33 +444,13 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
         itemBuilder: (context, index) {
           final user = _recommendedUsers[index];
           final theme = Theme.of(context);
-          final avatar = user.avatarUrl;
           return InkWell(
             onTap: () => openPixivUser(context, user.id),
             child: SizedBox(
               width: 72,
               child: Column(
                 children: [
-                  ClipOval(
-                    child: avatar == null || avatar.isEmpty
-                        ? FallbackAvatar(
-                            seed: '${user.id}',
-                            displayName: user.name,
-                            size: 56,
-                            accent: theme.colorScheme.primary,
-                          )
-                        : SizedBox(
-                            width: 56,
-                            height: 56,
-                            child: PixivNetworkImage(
-                              url: avatar,
-                              fit: BoxFit.cover,
-                              cacheWidth:
-                                  (56 * MediaQuery.devicePixelRatioOf(context))
-                                      .ceil(),
-                            ),
-                          ),
-                  ),
+                  PixivAvatar.user(user, size: 56),
                   const SizedBox(height: 6),
                   Text(
                     user.name,
@@ -691,7 +675,6 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
       );
     }
 
-    final theme = Theme.of(context);
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         if (n.metrics.pixels > n.metrics.maxScrollExtent - 400) {
@@ -710,31 +693,8 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
             );
           }
           final user = _users[index];
-          final avatar = user.avatarUrl;
           return ListTile(
-            leading: ClipOval(
-              child: avatar == null
-                  ? FallbackAvatar(
-                      seed: '${user.id}',
-                      displayName: user.name,
-                      size: 44,
-                      accent: theme.colorScheme.primary,
-                    )
-                  : SizedBox(
-                      width: 44,
-                      height: 44,
-                      child: PixivNetworkImage(
-                        url: avatar,
-                        fit: BoxFit.cover,
-                        cacheWidth:
-                            (44 * MediaQuery.devicePixelRatioOf(context))
-                                .ceil(),
-                        cacheHeight:
-                            (44 * MediaQuery.devicePixelRatioOf(context))
-                                .ceil(),
-                      ),
-                    ),
-            ),
+            leading: PixivAvatar.user(user, size: 44),
             title: Text(user.name),
             subtitle: Text('@${user.account}'),
             onTap: () => openPixivUser(context, user.id),

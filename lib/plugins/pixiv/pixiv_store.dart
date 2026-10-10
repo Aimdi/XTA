@@ -25,6 +25,11 @@ class PixivPagedListStore<T> extends Store<List<T>> {
   String? _nextUrl;
   bool _loadingMore = false;
 
+  /// Bumped by every refresh and source swap; a page that lands for an older
+  /// generation is dropped, so a slow page from the old ranking mode or a
+  /// pre-refresh loadMore never lands in the new list.
+  int _generation = 0;
+
   PixivPagedListStore(this._loader, {required this.keyOf, this.filter}) : super(const []);
 
   bool get hasMore => _nextUrl != null && _nextUrl!.isNotEmpty;
@@ -37,26 +42,36 @@ class PixivPagedListStore<T> extends Store<List<T>> {
   void useLoader(PixivPageLoader<T> loader) {
     _loader = loader;
     _nextUrl = null;
+    _restart();
     update(const []);
+  }
+
+  int _restart() {
+    _loadingMore = false;
+    return ++_generation;
   }
 
   /// First load shows the store loading state; later pulls keep the grid up
   /// (Pixez-style soft refresh — no decode waterfall from a blank spinner).
   Future<void> refresh() async {
+    final generation = _restart();
+    bool current() => generation == _generation;
     if (state.isNotEmpty) {
       try {
         final page = await _loadVisiblePage();
+        if (!current()) return;
         _nextUrl = page.nextUrl;
         update(page.items);
       } catch (_) {
         // Keep the healthy grid — soft refresh must never blank or stick.
-        update(state);
+        if (current()) update(state);
       }
       return;
     }
 
     await execute(() async {
       final page = await _loadVisiblePage();
+      if (!current()) return state;
       _nextUrl = page.nextUrl;
       return page.items;
     });
@@ -66,13 +81,16 @@ class PixivPagedListStore<T> extends Store<List<T>> {
     if (_loadingMore || !hasMore) {
       return;
     }
+    final generation = _generation;
     _loadingMore = true;
     update(state);
     try {
       final page = await _loadVisiblePage(nextUrl: _nextUrl);
+      if (generation != _generation) return;
       _nextUrl = page.nextUrl;
       update(mergePixivPage(state, page.items, keyOf));
     } catch (e) {
+      if (generation != _generation) return;
       // Keep a healthy grid — only first-page failures become full errors.
       if (state.isEmpty) {
         setError(e);
@@ -80,9 +98,11 @@ class PixivPagedListStore<T> extends Store<List<T>> {
         update(state);
       }
     } finally {
-      _loadingMore = false;
-      if (state.isNotEmpty) {
-        update(state);
+      if (generation == _generation) {
+        _loadingMore = false;
+        if (state.isNotEmpty) {
+          update(state);
+        }
       }
     }
   }

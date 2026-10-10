@@ -548,7 +548,7 @@ class PixivClient {
             name: name,
             translatedName: entry['translated_name'].string,
             illust: switch (pixivIllustFromJson(entry['illust'].raw)) {
-              final illust? when (r18 || !illust.isR18) && (ai || !illust.isAi) => illust,
+              final illust? when pixivContentAllowed(illust, includeR18: r18, includeAi: ai) => illust,
               _ => null,
             },
           ),

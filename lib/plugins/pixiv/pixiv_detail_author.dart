@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:xta/plugins/pixiv/pixiv_image.dart';
+import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 /// The work's author — avatar, name and @account — opening their profile.
 class PixivDetailAuthor extends StatelessWidget {
@@ -17,7 +16,7 @@ class PixivDetailAuthor extends StatelessWidget {
       onTap: () => openPixivUser(context, illust.userId),
       child: Row(
         children: [
-          ClipOval(child: _avatar(context)),
+          PixivAvatar(userId: illust.userId, name: illust.userName, url: illust.userAvatarUrl),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -33,24 +32,6 @@ class PixivDetailAuthor extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _avatar(BuildContext context) {
-    const size = 40.0;
-    final avatar = illust.userAvatarUrl;
-    if (avatar == null) {
-      return FallbackAvatar(
-        seed: '${illust.userId}',
-        displayName: illust.userName,
-        size: size,
-        accent: Theme.of(context).colorScheme.primary,
-      );
-    }
-    final pixels = (size * MediaQuery.devicePixelRatioOf(context)).ceil();
-    return SizedBox.square(
-      dimension: size,
-      child: PixivNetworkImage(url: avatar, fit: BoxFit.cover, cacheWidth: pixels, cacheHeight: pixels),
     );
   }
 }

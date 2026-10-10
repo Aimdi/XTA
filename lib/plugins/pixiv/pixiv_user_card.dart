@@ -1,53 +1,29 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 
 const pixivPreviewWorks = 3;
 
-typedef PixivFollowState = ({bool followed, bool busy});
+/// How much of the creator's name, in em, must stay readable beside the follow
+/// button; with less room the button moves under the name.
+const pixivCardNameMinEm = 8.0;
 
-/// Whether the reader follows one creator, and whether a change is on its way.
-class PixivFollowStore extends Store<PixivFollowState> {
-  final PixivClient client;
-  final int userId;
+/// The button's padding, icon and gap around its label (Material 3 tonal icon button).
+const _followButtonChrome = 66.0;
 
-  var _closed = false;
-
-  PixivFollowStore(this.client, this.userId, {required bool followed}) : super((followed: followed, busy: false));
-
-  /// Follows publicly or unfollows; a failure puts the button back and rethrows.
-  Future<void> toggle() async {
-    if (state.busy) return;
-    final was = state.followed;
-    _set((followed: was, busy: true));
-    try {
-      await (was ? client.unfollowUser(userId) : client.followUser(userId));
-      _set((followed: !was, busy: false));
-    } catch (_) {
-      _set((followed: was, busy: false));
-      rethrow;
-    }
-  }
-
-  /// A follow still on its way when the button goes away lands nowhere.
-  void _set(PixivFollowState next) {
-    if (!_closed) update(next);
-  }
-
-  @override
-  Future<void> destroy() {
-    _closed = true;
-    return super.destroy();
-  }
-}
+/// The avatar and the gaps either side of the name in the card header.
+const _headerChrome = 40.0 + 12 + 8;
 
 /// The works a preview row may show: none the reader muted, and none their
 /// Show R-18 / Hide AI choices keep out of the feeds — dropped, not blurred.
@@ -56,88 +32,76 @@ List<PixivIllust> pixivVisiblePreviewWorks(
   required PixivMuteState mute,
   required bool showR18,
   required bool hideAi,
-}) => [
-  for (final work in mute.filter(works))
-    if ((showR18 || !work.isR18) && !(hideAi && work.isAi)) work,
-].take(pixivPreviewWorks).toList();
+}) => mute
+    .filter(works)
+    .where((work) => pixivContentAllowed(work, includeR18: showR18, includeAi: !hideAi))
+    .take(pixivPreviewWorks)
+    .toList();
+
+/// How wide the follow button gets with the longer of its two labels at the
+/// reader's text size, so the layout does not jump when the follow flips.
+double pixivFollowButtonWidth(BuildContext context) {
+  final l10n = L10n.of(context);
+  final style = Theme.of(context).textTheme.labelLarge;
+  double measure(String label) {
+    final painter = TextPainter(
+      text: TextSpan(text: label, style: style),
+      textScaler: MediaQuery.textScalerOf(context),
+      textDirection: Directionality.of(context),
+      maxLines: 1,
+    )..layout();
+    final width = painter.width;
+    painter.dispose();
+    return width;
+  }
+
+  return max(measure(l10n.plugin_pixiv_follow), measure(l10n.plugin_pixiv_unfollow)) + _followButtonChrome;
+}
 
 /// Follow / Unfollow for one creator, public follows only, with a 48dp target
-/// and a spinner while Pixiv answers.
-class PixivFollowButton extends StatefulWidget {
+/// and a spinner while Pixiv answers. The state lives in the app-wide
+/// [PixivFollowStore]; [onChanged] lets the list holding [user] update its copy.
+class PixivFollowButton extends StatelessWidget {
   final PixivUser user;
   final ValueChanged<bool>? onChanged;
 
   const PixivFollowButton({super.key, required this.user, this.onChanged});
 
-  @override
-  State<PixivFollowButton> createState() => _PixivFollowButtonState();
-}
-
-class _PixivFollowButtonState extends State<PixivFollowButton> {
-  late PixivFollowStore _store;
-
-  @override
-  void initState() {
-    super.initState();
-    _store = _storeFor(widget.user);
-  }
-
-  PixivFollowStore _storeFor(PixivUser user) =>
-      PixivFollowStore(context.read<PixivClient>(), user.id, followed: user.isFollowed);
-
-  /// A new creator, or a reload that says otherwise about this one, starts over.
-  @override
-  void didUpdateWidget(covariant PixivFollowButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final state = _store.state;
-    if (oldWidget.user.id != widget.user.id || (!state.busy && state.followed != widget.user.isFollowed)) {
-      _store.destroy();
-      _store = _storeFor(widget.user);
-    }
-  }
-
-  @override
-  void dispose() {
-    _store.destroy();
-    super.dispose();
-  }
-
-  Future<void> _toggle() async {
+  Future<void> _toggle(BuildContext context) async {
     final l10n = L10n.of(context);
     final messenger = ScaffoldMessenger.of(context);
-    final store = _store;
+    final changed = onChanged;
     try {
-      await store.toggle();
-      if (mounted) widget.onChanged?.call(store.state.followed);
+      final followed = await context.read<PixivFollowStore>().toggle(user);
+      if (context.mounted) changed?.call(followed);
     } catch (error) {
       messenger.showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, error))));
     }
   }
 
   @override
-  Widget build(BuildContext context) => ScopedBuilder<PixivFollowStore, PixivFollowState>(
-    key: ObjectKey(_store),
-    store: _store,
-    onState: (context, state) => _button(context, state),
-  );
+  Widget build(BuildContext context) {
+    final follows = context.read<PixivFollowStore>();
+    return ScopedBuilder<PixivFollowStore, PixivFollows>(
+      store: follows,
+      onState: (context, _) => _button(context, followed: follows.isFollowed(user), busy: follows.isBusy(user.id)),
+    );
+  }
 
-  Widget _button(BuildContext context, PixivFollowState state) {
+  Widget _button(BuildContext context, {required bool followed, required bool busy}) {
     final l10n = L10n.of(context);
-    final icon = state.busy
+    final icon = busy
         ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-        : Icon(state.followed ? Icons.person_remove_outlined : Icons.person_add_alt_1_outlined);
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 180),
-      child: FilledButton.tonalIcon(
-        key: ValueKey('pixiv-follow-${widget.user.id}'),
-        style: FilledButton.styleFrom(minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension)),
-        onPressed: state.busy ? null : _toggle,
-        icon: icon,
-        label: Text(
-          state.followed ? l10n.plugin_pixiv_unfollow : l10n.plugin_pixiv_follow,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        : Icon(followed ? Icons.person_remove_outlined : Icons.person_add_alt_1_outlined);
+    return FilledButton.tonalIcon(
+      key: ValueKey('pixiv-follow-${user.id}'),
+      style: FilledButton.styleFrom(minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension)),
+      onPressed: busy ? null : () => _toggle(context),
+      icon: icon,
+      label: Text(
+        followed ? l10n.plugin_pixiv_unfollow : l10n.plugin_pixiv_follow,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -148,7 +112,10 @@ class _PixivFollowButtonState extends State<PixivFollowButton> {
 class PixivUserPreviewCard extends StatelessWidget {
   final PixivUserPreview preview;
 
-  const PixivUserPreviewCard({super.key, required this.preview});
+  /// Hears the card's follow button, so the list can update its preview.
+  final ValueChanged<bool>? onFollowChanged;
+
+  const PixivUserPreviewCard({super.key, required this.preview, this.onFollowChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +132,7 @@ class PixivUserPreviewCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _header(context, user),
+              LayoutBuilder(builder: (context, constraints) => _header(context, user, constraints.maxWidth)),
               ScopedBuilder<PixivMuteStore, PixivMuteState>(
                 store: context.read<PixivMuteStore>(),
                 onState: (context, mute) => _works(context, _visibleWorks(context, mute)),
@@ -182,53 +149,49 @@ class PixivUserPreviewCard extends StatelessWidget {
     return pixivVisiblePreviewWorks(preview.illusts, mute: mute, showR18: client.showR18, hideAi: client.hideAi);
   }
 
-  Widget _header(BuildContext context, PixivUser user) {
-    final theme = Theme.of(context);
-    return Row(
+  /// The follow button sits beside the name while the name keeps room to be
+  /// read, and under it on a narrow screen or with large text.
+  Widget _header(BuildContext context, PixivUser user, double width) {
+    final identity = Row(
       children: [
-        _avatar(context, user),
+        PixivAvatar.user(user),
         const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                user.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
-              ),
-              Text(
-                '@${user.account}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        PixivFollowButton(user: user),
+        Expanded(child: _names(context, user)),
       ],
     );
+    final follow = PixivFollowButton(user: user, onChanged: onFollowChanged);
+    final nameSize = Theme.of(context).textTheme.titleSmall?.fontSize ?? 14;
+    final nameMin = MediaQuery.textScalerOf(context).scale(nameSize) * pixivCardNameMinEm;
+    if (width - pixivFollowButtonWidth(context) - _headerChrome >= nameMin) {
+      return Row(
+        children: [
+          Expanded(child: identity),
+          const SizedBox(width: 8),
+          follow,
+        ],
+      );
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: 8, children: [identity, follow]);
   }
 
-  Widget _avatar(BuildContext context, PixivUser user) {
-    const size = 40.0;
-    final avatar = user.avatarUrl;
-    final pixels = (size * MediaQuery.devicePixelRatioOf(context)).ceil();
-    return ClipOval(
-      child: avatar == null
-          ? FallbackAvatar(
-              seed: '${user.id}',
-              displayName: user.name,
-              size: size,
-              accent: Theme.of(context).colorScheme.primary,
-            )
-          : SizedBox.square(
-              dimension: size,
-              child: PixivNetworkImage(url: avatar, fit: BoxFit.cover, cacheWidth: pixels, cacheHeight: pixels),
-            ),
+  Widget _names(BuildContext context, PixivUser user) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          user.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
+        ),
+        Text(
+          '@${user.account}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+      ],
     );
   }
 
@@ -253,9 +216,12 @@ class PixivUserPreviewCard extends StatelessWidget {
 
   Widget _work(BuildContext context, List<PixivIllust> works, int index) {
     final work = works[index];
+    void open() => openPixivIllustFromList(context, works, index);
     return Semantics(
+      container: true,
       button: true,
       label: work.title,
+      onTap: open,
       excludeSemantics: true,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
@@ -266,10 +232,7 @@ class PixivUserPreviewCard extends StatelessWidget {
             PixivNetworkImage(url: work.thumbnailUrl, fit: BoxFit.cover),
             Material(
               type: MaterialType.transparency,
-              child: InkWell(
-                key: ValueKey('pixiv-user-card-work-${work.id}'),
-                onTap: () => openPixivIllustFromList(context, works, index),
-              ),
+              child: InkWell(key: ValueKey('pixiv-user-card-work-${work.id}'), onTap: open),
             ),
           ],
         ),

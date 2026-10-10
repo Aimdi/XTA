@@ -2245,6 +2245,17 @@
   "@plugin_pixiv_error_unauthorized": {},
   "plugin_pixiv_follow": "Ikuti",
   "@plugin_pixiv_follow": {},
+  "plugin_pixiv_following_count": "{count, plural, other{{shown} mengikuti}}",
+  "@plugin_pixiv_following_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_more_about": "Tentang",
   "@plugin_pixiv_more_about": {},
   "plugin_pixiv_more_account": "Akun",
@@ -2263,8 +2274,17 @@
   "@plugin_pixiv_muted_empty": {},
   "plugin_pixiv_muted_section": "Item Pixiv yang dibisukan",
   "@plugin_pixiv_muted_section": {},
-  "plugin_pixiv_mypixiv": "Teman My pixiv",
-  "@plugin_pixiv_mypixiv": {},
+  "plugin_pixiv_mypixiv_count": "{count, plural, other{{shown} teman My pixiv}}",
+  "@plugin_pixiv_mypixiv_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_not_configured": "Masuk ke Pixiv untuk melihat mengikuti, peringkat, dan penanda",
   "@plugin_pixiv_not_configured": {},
   "plugin_pixiv_open_link_failed": "Tidak dapat membuka tautan Pixiv itu",
@@ -2401,8 +2421,17 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Batal bisukan",
   "@plugin_pixiv_unmute": {},
-  "plugin_pixiv_works": "Karya",
-  "@plugin_pixiv_works": {},
+  "plugin_pixiv_works_count": "{count, plural, other{{shown} karya}}",
+  "@plugin_pixiv_works_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_post_activity_unavailable": "Server ini tidak menyediakan daftar ini tanpa masuk atau tidak mendukungnya. Anda dapat membuka postingan di browser.",
   "@plugin_post_activity_unavailable": {},
   "plugin_post_other_sources": "Plugin lainnya",

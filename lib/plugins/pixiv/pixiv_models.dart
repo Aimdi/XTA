@@ -467,6 +467,10 @@ double pixivDetailViewerHeight({
   return (screenWidth / ratio).clamp(160.0, screenHeight * 0.70);
 }
 
+/// Whether the reader's Show R-18 and Hide AI choices let [illust] through.
+bool pixivContentAllowed(PixivIllust illust, {required bool includeR18, required bool includeAi}) =>
+    (includeR18 || !illust.isR18) && (includeAi || !illust.isAi);
+
 /// Pure parse of a following / ranking / bookmarks / search list payload.
 List<PixivIllust> parsePixivIllustList(
   Object? json, {
@@ -478,7 +482,7 @@ List<PixivIllust> parsePixivIllustList(
   return [
     for (final item in list)
       if (pixivIllustFromJson(item.raw) case final illust?)
-        if ((includeR18 || !illust.isR18) && (includeAi || !illust.isAi)) illust,
+        if (pixivContentAllowed(illust, includeR18: includeR18, includeAi: includeAi)) illust,
   ];
 }
 

@@ -77,11 +77,13 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Gallery | Staggered grid; each tile (`pixiv_illust_tile.dart`) has a badge row (pages, ugoira, R-18, AI) and a caption with the bookmark count; `PixivIllustGrid` takes leading slivers |
 | Detail | Shell (`pixiv_illust_screen.dart`) over the page viewer, page bar, meta (author, stats, caption, tags), the author's other works, related works and the AppBar actions; overflow entries are a list in `pixiv_detail_menu.dart` |
 | Reader | Horizontal / vertical page reader, page overview, page actions, ugoira playback, downloads |
-| Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries (`PluginSearchHistoryStore` under `plugin.pixiv.search_history`), open by link or ID |
-| Profile | User detail with works (illustrations + manga), following and My pixiv counts, public follow, works grid |
-| User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow, 48 dp follow toggle |
+| Search | Illusts and users, trending tags, popular preview, tag autocomplete, recent queries, open by link or ID. Recent queries are one app-wide `PixivSearchHistory` (a `PluginSearchHistoryStore` under `plugin.pixiv.search_history`), so a search made on a pushed screen shows on the one underneath |
+| Profile | User detail with works (illustrations + manga), following and My pixiv counts as plural phrases, public follow, works grid |
+| User cards | `PixivUserPreviewCard` and `PixivFollowButton` (`pixiv_user_card.dart`) for user lists: avatar, name, three works the reader's filters allow (each one its own screen-reader button), 48 dp follow toggle that moves under the name when the screen is narrow or the text large. `onFollowChanged` lets a list update its copy |
+| Follow state | One app-wide `PixivFollowStore` (`pixiv_user_store.dart`): the follows changed this session and the ones in flight, read by every follow button, so a follow survives list rebuilds and recycled rows and shows the same on cards and profiles. Signing out or uninstalling clears it |
+| Avatars | `PixivAvatar` (`pixiv_avatar.dart`): the round avatar, decoded at its painted size, or initials when Pixiv sends none |
 | Local mute | Author ids, tag names, work ids, comment ids and novel ids in prefs; works are filtered from every grid |
-| Group Discover | Related creators (`/v1/user/related`), each shown through a preview work that passes mute, Show R-18 and Hide AI |
+| Group Discover | Related creators (`/v1/user/related`), cached unfiltered for 10 minutes; each is shown through a preview work that passes mute, Show R-18 and Hide AI as they are at read time |
 
 Every way into a work goes through `pixiv_link_open.dart`: `openPixivLinkRef`
 for links (used by `plugin_links.dart`), `openPixivIllust` and
@@ -90,7 +92,10 @@ for links (used by `plugin_links.dart`), `openPixivIllust` and
 
 Paged lists use `PixivPagedListStore<T>` (`pixiv_store.dart`): first load,
 soft refresh, `next_url` paging with de-duplication, a filter, and skipping
-pages the filter empties. `PixivIllustListStore` is its illust case.
+pages the filter empties. Every refresh and `useLoader` starts a new
+generation, and a page that lands for an older one is dropped, so a slow page
+from the old ranking mode never joins the new list. `PixivIllustListStore` is
+its illust case.
 
 ## Endpoints
 

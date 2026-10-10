@@ -8,6 +8,7 @@ import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
 /// What the account controls show while the reader signs in, tests the token
@@ -44,9 +45,11 @@ Future<String?> pixivVerifiedName(PixivClient client) async {
 Future<void> pixivSignOut(BuildContext context) async {
   final feed = context.read<PixivFeedStore>();
   final bookmarks = context.read<PixivBookmarkStore>();
+  final follows = context.read<PixivFollowStore>();
   await context.read<PixivClient>().signOut();
   feed.update(const []);
   bookmarks.update(const {});
+  follows.clear();
 }
 
 /// Sign in or out, and the refresh token for readers who paste one.
@@ -144,7 +147,7 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
 
   List<Widget> _signInControls(BuildContext context, PixivAccountView view) {
     final l10n = L10n.of(context);
-    final signedIn = pixivSignedIn(_prefs);
+    final signedIn = pixivSignedIn(PrefService.of(context));
     final name = view.name;
     return [
       if (signedIn && name != null && name.isNotEmpty)

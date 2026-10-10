@@ -6,14 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
-import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
@@ -89,7 +88,6 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
     if (_profile.isLoading || _user == null) return const Center(child: CircularProgressIndicator());
     final user = _user!;
     final theme = Theme.of(context);
-    final avatar = user.avatarUrl;
 
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
@@ -109,35 +107,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                 children: [
                   Row(
                     children: [
-                      ClipOval(
-                        child: avatar == null
-                            ? FallbackAvatar(
-                                seed: '${user.id}',
-                                displayName: user.name,
-                                size: 64,
-                                accent: theme.colorScheme.primary,
-                              )
-                            : SizedBox(
-                                width: 64,
-                                height: 64,
-                                child: PixivNetworkImage(
-                                  url: avatar,
-                                  fit: BoxFit.cover,
-                                  cacheWidth:
-                                      (64 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                  cacheHeight:
-                                      (64 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                ),
-                              ),
-                      ),
+                      PixivAvatar.user(user, size: 64),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -169,9 +139,11 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   ],
                   const SizedBox(height: 14),
                   Text(
-                    '${compactCount(user.worksCount)} ${l10n.plugin_pixiv_works} · '
-                    '${compactCount(user.followingCount)} ${l10n.following} · '
-                    '${compactCount(user.mypixivCount)} ${l10n.plugin_pixiv_mypixiv}',
+                    [
+                      l10n.plugin_pixiv_works_count(user.worksCount, compactCount(user.worksCount)),
+                      l10n.plugin_pixiv_following_count(user.followingCount, compactCount(user.followingCount)),
+                      l10n.plugin_pixiv_mypixiv_count(user.mypixivCount, compactCount(user.mypixivCount)),
+                    ].join(' · '),
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 12),

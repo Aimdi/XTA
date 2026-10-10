@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -107,4 +108,122 @@ void main() {
     expect(tester.takeException(), isNull);
     await disposePixiv(tester);
   });
+
+  group('follow state', () {
+    testWidgets('survives the list rebuilding its rows with the follow it loaded', (tester) async {
+      late StateSetter rebuild;
+      var tick = 0;
+      final heard = <bool>[];
+      await pumpPixiv(
+        tester,
+        Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return ListView(
+                children: [
+                  Text('page $tick'),
+                  PixivUserPreviewCard(preview: _preview(), onFollowChanged: heard.add),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(const ValueKey('pixiv-follow-9')));
+      await settlePixiv(tester);
+      expect(heard, [true]);
+
+      rebuild(() => tick++);
+      await tester.pump();
+      expect(find.text('Unfollow'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('survives the row being recycled and is shared with every card of the creator', (tester) async {
+      late StateSetter rebuild;
+      var shown = true;
+      final harness = await pumpPixiv(
+        tester,
+        Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              rebuild = setState;
+              return ListView(
+                children: [
+                  if (shown) PixivUserPreviewCard(key: const ValueKey('first'), preview: _preview()),
+                  PixivUserPreviewCard(key: const ValueKey('second'), preview: _preview()),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(const ValueKey('pixiv-follow-9')).first);
+      await settlePixiv(tester);
+      expect(find.text('Unfollow'), findsNWidgets(2));
+
+      rebuild(() => shown = false);
+      await tester.pump();
+      rebuild(() => shown = true);
+      await tester.pump();
+      expect(find.text('Unfollow'), findsNWidgets(2));
+      expect(harness.client.calls, ['follow:9:public']);
+      await disposePixiv(tester);
+    });
+  });
+
+  testWidgets('a screen reader can open each preview work on its own', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await pumpPixiv(tester, _host(_preview()));
+    final work = find.semantics.byLabel('Work 3');
+    expect(work, findsOne);
+    expect(work.evaluate().single.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+
+    tester.semantics.tap(work);
+    await settlePixiv(tester);
+    expect(find.byWidgetPredicate((w) => w is PixivIllustScreen && w.illust.id == 3), findsOneWidget);
+    semantics.dispose();
+    await disposePixiv(tester);
+  });
+
+  testWidgets('the profile counts read as whole phrases, singular where the count is one', (tester) async {
+    await pumpPixiv(tester, const PixivUserScreen(userId: 9), client: _CountedProfile.new);
+    expect(find.text('1 work · 1.5K following · 2 My pixiv friends'), findsOneWidget);
+    await disposePixiv(tester);
+  });
+
+  group('header layout', () {
+    Rect nameRect(WidgetTester tester) => tester.getRect(find.text('Painter'));
+    Rect buttonRect(WidgetTester tester) => tester.getRect(find.byKey(const ValueKey('pixiv-follow-9')));
+
+    testWidgets('puts the follow button under the name when beside it would squeeze the name', (tester) async {
+      await pumpPixiv(tester, _host(_preview()), size: const Size(320, 640), textScale: 2);
+      expect(nameRect(tester).width, greaterThanOrEqualTo(7 * 14 * 2));
+      expect(buttonRect(tester).top, greaterThan(nameRect(tester).bottom));
+      await disposePixiv(tester);
+    });
+
+    testWidgets('keeps the follow button beside the name when there is room', (tester) async {
+      await pumpPixiv(tester, _host(_preview()), size: const Size(700, 800));
+      expect(buttonRect(tester).left, greaterThan(nameRect(tester).right));
+      expect(buttonRect(tester).top, lessThan(nameRect(tester).bottom));
+      await disposePixiv(tester);
+    });
+  });
+}
+
+class _CountedProfile extends FakePixivClient {
+  _CountedProfile(super.prefs);
+
+  @override
+  Future<PixivUser> userDetail(int userId) async => PixivUser(
+    id: userId,
+    name: 'Mika',
+    account: 'mika',
+    comment: '',
+    worksCount: 1,
+    followingCount: 1500,
+    mypixivCount: 2,
+  );
 }

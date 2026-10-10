@@ -47,16 +47,20 @@ once those are in.
   else `en`).
 - **User preview cards.** `PixivUserPreviewCard` (avatar, name, @account, three
   works, follow) and `PixivFollowButton` for user search, recommended users and
-  follow lists.
+  follow lists. Follow state lives in the app-wide `PixivFollowStore`, so a
+  follow holds through list reloads and recycled rows and matches the profile.
 - **R-18 and AI filtering in previews.** User previews follow Show R-18 and
   Hide AI like the feeds, which also fixes group Discover suggesting creators
-  through works the reader hid.
+  through works the reader hid. Discover applies both at read time, so a
+  change shows on the next scan rather than after its cache expires.
 - **Profile counts.** `/v1/user/detail` has no follower count; the profile
-  shows works (illustrations + manga), following and My pixiv friends.
+  shows works (illustrations + manga), following and My pixiv friends, each a
+  plural phrase in every language.
 - **Seams for the other batches:** model fields (series, comment count,
   author followed, raw caption HTML, sanity level, premium), the generic paged
-  list store, comment and novel mutes, the follow-restrict / Home-source /
-  bookmark-tag view state, search history on the app-wide store, the
+  list store (which drops pages that land after a refresh or source swap),
+  comment and novel mutes, the follow-restrict / Home-source / bookmark-tag
+  view state, one app-wide search history, the shared `PixivAvatar`, the
   `pixiv_link_open.dart` routes, a leading-slivers grid, `pumpPixiv`
   `extraProviders`, and the home, settings, tile and detail screens split into
   section files.
