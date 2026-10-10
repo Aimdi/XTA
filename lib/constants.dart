@@ -377,6 +377,12 @@ const optionPluginPixivMutedComments = 'plugin.pixiv.muted_comments';
 const optionPluginPixivMutedNovels = 'plugin.pixiv.muted_novels';
 const optionPluginPixivGroupSubscriptions = 'plugin.pixiv.group_subscriptions';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
+const optionPluginPixivDefaultPrivateBookmark = 'plugin.pixiv.default_private_bookmark';
+const optionPluginPixivAutoTagBookmarks = 'plugin.pixiv.auto_tag_bookmarks';
+const optionPluginPixivFollowAfterBookmark = 'plugin.pixiv.follow_after_bookmark';
+const optionPluginPixivDownloadAfterBookmark = 'plugin.pixiv.download_after_bookmark';
+const optionPluginPixivBookmarkAfterDownload = 'plugin.pixiv.bookmark_after_download';
+const optionPluginPixivHaptics = 'plugin.pixiv.haptics';
 
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';

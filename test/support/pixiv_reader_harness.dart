@@ -88,18 +88,10 @@ class FakePixivClient extends PixivClient {
   Future<PixivUser> userDetail(int userId) async => PixivUser(id: userId, name: 'Mika', account: 'mika', comment: '');
 
   @override
-  Future<List<String>> bookmarkFolders() async => const ['Favs'];
-
-  @override
   Future<void> followUser(int userId, {String restrict = 'public'}) async => calls.add('follow:$userId:$restrict');
 
   @override
   Future<void> unfollowUser(int userId) async => calls.add('unfollow:$userId');
-
-  @override
-  Future<void> addBookmark(int illustId, {String restrict = 'public', String? folder}) async {
-    calls.add('bookmark:$illustId:$restrict:${folder ?? '-'}');
-  }
 
   @override
   Future<PixivUgoira> ugoiraMetadata(int illustId) async {
@@ -125,7 +117,10 @@ class FakePixivDownloader extends PixivDownloader {
   FakePixivDownloader();
 
   @override
-  Future<void> savePage(BuildContext context, PixivIllust illust, int page) async => pages.add(page);
+  Future<bool> savePage(BuildContext context, PixivIllust illust, int page) async {
+    pages.add(page);
+    return true;
+  }
 
   @override
   Future<bool> save(DownloadRequest request) async {

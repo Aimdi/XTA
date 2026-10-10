@@ -138,6 +138,12 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivMutedComments, '[]');
     await prefs.set(optionPluginPixivMutedNovels, '[]');
     await prefs.set(optionPluginPixivSearchHistory, '[]');
+    await prefs.set(optionPluginPixivDefaultPrivateBookmark, false);
+    await prefs.set(optionPluginPixivAutoTagBookmarks, false);
+    await prefs.set(optionPluginPixivFollowAfterBookmark, false);
+    await prefs.set(optionPluginPixivDownloadAfterBookmark, false);
+    await prefs.set(optionPluginPixivBookmarkAfterDownload, false);
+    await prefs.set(optionPluginPixivHaptics, true);
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
       where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);

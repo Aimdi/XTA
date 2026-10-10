@@ -59,8 +59,8 @@ typedef _Send = Future<http.Response> Function(Map<String, String> headers);
 /// Client for Pixiv's unofficial app API.
 ///
 /// Auth is a pasted refresh token — same shape community clients use after
-/// password login was removed. Follow and bookmark are the write-backs;
-/// there is no compose.
+/// password login was removed. Follow and bookmark (`pixiv_bookmark_api.dart`)
+/// are the write-backs; there is no compose.
 ///
 /// Feature screens add their endpoints in their own `pixiv_<feature>_api.dart`
 /// over the public transport ([getJson], [getNextJson], [getText], [postForm],
@@ -449,34 +449,6 @@ class PixivClient {
     await postForm('/v1/user/follow/delete', {'user_id': '$userId'});
   }
 
-  /// Bookmark [illustId] so it appears in the Bookmarks tab.
-  Future<void> addBookmark(
-    int illustId, {
-    String restrict = 'public',
-    String? folder,
-  }) async {
-    await postForm('/v2/illust/bookmark/add', {
-      'illust_id': '$illustId',
-      'restrict': restrict,
-      if (folder != null && folder.trim().isNotEmpty) 'tags[]': folder.trim(),
-    });
-  }
-
-  /// Bookmark-tag folders on this account (`/v1/user/bookmark-tags/illust`).
-  Future<List<String>> bookmarkFolders() async {
-    final json = await getJson('/v1/user/bookmark-tags/illust', query: {
-      'restrict': 'public',
-    });
-    return [
-      for (final tag in Json(json)['bookmark_tags'].list)
-        if ((tag['name'].string ?? '').trim().isNotEmpty) tag['name'].string!,
-    ];
-  }
-
-  Future<void> deleteBookmark(int illustId) async {
-    await postForm('/v1/illust/bookmark/delete', {'illust_id': '$illustId'});
-  }
-
   Future<PixivIllustPage> following({String? nextUrl}) async {
     final json = await _firstOrNext('/v2/illust/follow', {'restrict': 'all'}, nextUrl);
     return illustPageFrom(json);
@@ -602,14 +574,17 @@ class PixivClient {
   ///
   /// Own bookmarks always keep R-18 works: the reader saved them on purpose,
   /// and filtering them out left only Pixiv's "deleted or private" stubs.
+  /// [tag] narrows them to one bookmark tag (`未分類` for untagged ones).
   Future<PixivIllustPage> bookmarks({
     required int userId,
     String restrict = 'public',
+    String? tag,
     String? nextUrl,
   }) async {
     final json = await _firstOrNext('/v1/user/bookmarks/illust', {
       'user_id': '$userId',
       'restrict': restrict,
+      if (tag != null && tag.isNotEmpty) 'tag': tag,
       'filter': 'for_android',
     }, nextUrl);
     return illustPageFrom(json, ownList: true);

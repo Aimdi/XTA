@@ -7,6 +7,7 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_account.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_bookmarks.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
@@ -16,10 +17,10 @@ import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'support/pixiv_reader_harness.dart';
 
 void main() {
-  testWidgets('settings are the account, content and mute sections in order', (tester) async {
-    await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 1400));
+  testWidgets('settings are the account, content, bookmarking and mute sections in order', (tester) async {
+    await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 2400));
 
-    final sections = [PixivAccountSettings, PixivContentSettings, PixivMuteSettings];
+    final sections = [PixivAccountSettings, PixivContentSettings, PixivBookmarkSettings, PixivMuteSettings];
     final tops = [for (final type in sections) tester.getTopLeft(find.byType(type)).dy];
     expect(tops, orderedEquals([...tops]..sort()));
     expect(find.byKey(const ValueKey('pixiv-hide-ai')), findsOneWidget);
@@ -30,7 +31,7 @@ void main() {
     await pumpPixiv(
       tester,
       const PixivSettingsScreen(),
-      size: const Size(390, 1400),
+      size: const Size(390, 2400),
       client: (prefs) {
         prefs.set(optionPluginPixivMutedComments, '[5]');
         prefs.set(optionPluginPixivMutedNovels, '[6]');

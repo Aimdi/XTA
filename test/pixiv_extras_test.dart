@@ -209,20 +209,6 @@ void main() {
   });
 
   group('detail menu', () {
-    testWidgets('bookmarks privately, publicly or into a folder', (tester) async {
-      final harness = await pumpPixiv(tester, PixivIllustScreen(illust: pixivWork()));
-      for (final choice in ['pixiv-bookmark-private', 'Favs']) {
-        await _openDetailMenu(tester, 'folder');
-        await tester.tap(choice.startsWith('pixiv') ? find.byKey(ValueKey(choice)) : find.text(choice));
-        await settlePixiv(tester);
-      }
-      expect(harness.client.calls.where((call) => call.startsWith('bookmark')), [
-        'bookmark:120:private:-',
-        'bookmark:120:public:Favs',
-      ]);
-      await disposePixiv(tester);
-    });
-
     testWidgets('copies the link and downloads every page', (tester) async {
       String? copied;
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {

@@ -37,7 +37,12 @@ class _Pixiv extends PixivClient {
   }
 
   @override
-  Future<PixivIllustPage> bookmarks({required int userId, String restrict = 'public', String? nextUrl}) async {
+  Future<PixivIllustPage> bookmarks({
+    required int userId,
+    String restrict = 'public',
+    String? tag,
+    String? nextUrl,
+  }) async {
     calls.add('favorites:$restrict');
     return const PixivIllustPage(illusts: []);
   }
