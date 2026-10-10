@@ -97,17 +97,20 @@ tabbed screen with an edit mode; SauceNAO searches by image. Details in
   illustrations and uploaded images; font size and spacing; reading position;
   selectable text with Translate; menu with author and previous / next
   chapter; share links; export as .txt.
-- **B2c:** novel search with filters; novel search landing (trending, ID jump,
-  history); profile Novels tab and novel author cards; novel reading history;
-  novel deep links.
+- **B2c (built):** novel search with the shared filters (novel places to
+  look, popular for Premium); its landing (own recent searches, trending novel
+  tags, novel / series / author id shortcuts); the profile Novels tab and
+  novel covers in creator cards; novel reading history on the device behind
+  the history screen's switch; novel and novel series links opening in the
+  app; View comments on a novel's long press. Details in `pixiv-novels.md`.
 
 ### B3 — comments (reading only) (built)
 
 Artwork comments; reply threads; Pixiv emoji and stickers; comment mute and
 spam handling; selectable comment text with Translate; novel comments and
-replies. Described in `pixiv-comments.md`. The novel reader's comments button
-arrives with the novel batches through `PixivCommentTarget.novel`; Report is
-not offered.
+replies. Described in `pixiv-comments.md`. Novels open theirs from a card's
+long press (B2c) and, with B2b, from the reader, through
+`PixivCommentTarget.novel`; Report is not offered.
 
 ### B4 — discovery (built)
 
@@ -166,7 +169,7 @@ muted-work notice with *Show this time*; the account's AI setting, read only
 with a link to pixiv.net (the AI badge toggle moved to B6a); multiple accounts
 kept out of backups; caption with tappable links and selection; Copy info with
 a template; every Pixiv link form routed (series and pixivision open their
-screens since B8; novels open in the browser until B2); pixiv links shared to
+screens since B8, novels and novel series since B2c); pixiv links shared to
 or opened by default in XTA; the More hub; start section and tap-again-to-top.
 Details in `pixiv-settings.md`.
 

@@ -2,6 +2,8 @@
 
 How the Pixiv plugin searches works, creators and images, and how readers keep
 the searches they like. Built in parity batch B1 (see `pixiv-pixez-gaps.md`).
+Novel search (B2c) is the same screen and store of another kind,
+`PixivSearchKind.novels`; what differs for novels is in `pixiv-novels.md`.
 PixEz was used only to learn what each feature does and which endpoints and
 parameters exist; the code is written fresh.
 
@@ -9,14 +11,15 @@ parameters exist; the code is written fresh.
 
 | File | Holds |
 |---|---|
-| `pixiv_search_filters.dart` | Pure pieces: `PixivSearchTarget`, `PixivSearchSort` (with its Premium flag), `PixivDatePreset` and `pixivPresetRange`, users入り thresholds, Premium bookmark brackets, `PixivUgoiraFilter`, the immutable `PixivSearchFilter` (JSON, `forAccount`), `pixivSearchQuery`, `pixivPopularPreviewQuery`, last-word editing and `pixivNumericQuery` |
+| `pixiv_search_filters.dart` | Pure pieces: `PixivSearchTarget`, `PixivSearchSort`, `PixivSearchKind` (each kind's places to look, orders, Premium orders and remembered-filter key), `PixivDatePreset` and `pixivPresetRange`, users入り thresholds, Premium bookmark brackets, `PixivUgoiraFilter`, the immutable `PixivSearchFilter` (JSON, `forAccount`), `pixivSearchQuery`, `pixivPopularPreviewQuery`, last-word editing and `pixivNumericQuery` |
 | `pixiv_search_api.dart` | `PixivSearchApi` over the client transport: illust search, user search with previews, the popular preview (paged), trending tags, suggested creators, autocomplete. `PixivSearchApi.of(context)` prefers a provided fake |
 | `pixiv_search_store.dart` | `PixivSearchStore` and its immutable `PixivSearchState`; `pixivVisibleTrendTags` |
 | `pixiv_fetch_store.dart` | `PixivFetchStore<T>`, a one-call fetch with its own loading, error and retry (each landing list, each SauceNAO row's work) |
 | `pixiv_confirm.dart` | `confirmPixivAction`, the shared question-and-action dialog |
-| `pixiv_search_screen.dart` | The field, tabs and body switch; the app-wide `PixivSearchHistory` |
+| `pixiv_search_screen.dart` | The field, tabs and body switch, for works or novels; the app-wide `PixivSearchHistory` |
+| `pixiv_novel_search_screen.dart` | `PixivNovelSearchScreen`, the app-wide `PixivNovelSearchHistory`, the novel results and the novel id shortcuts |
 | `pixiv_search_landing.dart` | Recent searches, suggested creators, trending tags |
-| `pixiv_search_results.dart` | Works under the filter bar, the popular strip, `PixivSearchPreviewNote`, creator cards |
+| `pixiv_search_results.dart` | `PixivSearchFilterHeader` (the bar and its sheet, for either kind), works under it, the popular strip, `PixivSearchPreviewNote`, creator cards |
 | `pixiv_search_filter_sheet.dart` | `PixivSearchFilterBar`, `showPixivSearchFilterSheet` and the label helpers |
 | `pixiv_search_shortcuts.dart` | `pixivNumericShortcuts` (the list of id shortcut builders) and the picker over the results |
 | `pixiv_detail_tags.dart` | Tag chips on a work and the long-press tag sheet |
@@ -54,8 +57,9 @@ works only and keeps no history, which is how a favourite tag's tab uses it.
   narrows the search; the bar scrolls sideways rather than overflow.
 - **Sheet:** target (partial tags, exact tags, title and caption), sort
   (newest, popular; oldest, popular with men, popular with women for Premium),
-  ugoira (all, only, none), Hide AI and Remember. Novel search can pass its own
-  target list.
+  ugoira (all, only, none), Hide AI and Remember. The sheet and the bar take
+  the search's `PixivSearchKind`, which gives novels their own targets and
+  orders and leaves out the ugoira choice and the bookmark bracket.
 - **Dates:** any time, past day, week, month, 6 months, year, or a custom range
   picked between 2007-09-13 and today. Presets resolve on each search, so a
   remembered "past week" always means the week before it; months clamp to the
@@ -74,7 +78,8 @@ works only and keeps no history, which is how a favourite tag's tab uses it.
   starts from the plugin's Hide AI setting, and the page filter follows the
   search's choice.
 - **Remember:** the whole filter is saved as JSON in
-  `plugin.pixiv.search_filters` (empty for none). While remembered, every
+  `plugin.pixiv.search_filters` (empty for none); novel search keeps its own
+  in `plugin.pixiv.novel_search_filters`. While remembered, every
   change is saved; turning Remember off clears it. Unknown or reshaped fields
   fall back to defaults.
 
@@ -149,6 +154,8 @@ out after 45 seconds as a network error with Retry.
 | Search creators | `GET /v1/search/user` `word, filter` |
 | Autocomplete | `GET /v2/search/autocomplete` `word, merge_plain_keyword_results` |
 | Trending tags | `GET /v1/trending-tags/illust` |
+| Search novels | `GET /v1/search/novel` `word, search_target, sort, start_date, end_date, merge_plain_keyword_results, filter` (`PixivNovelApi.search`) |
+| Trending novel tags | `GET /v1/trending-tags/novel` `filter` (`PixivNovelApi.trendingTags`) |
 | Suggested creators | `GET /v1/user/recommended` |
 | Work preview | `GET /v1/illust/detail` `illust_id` |
 | SauceNAO | `POST https://saucenao.com/search.php` multipart `file` |
