@@ -378,6 +378,17 @@ const optionPluginPixivMutedNovels = 'plugin.pixiv.muted_novels';
 const optionPluginPixivGroupSubscriptions = 'plugin.pixiv.group_subscriptions';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
 
+/// Every Pixiv account signed in on this device, refresh tokens included; the
+/// active one is also copied into the single-account keys above.
+const optionPluginPixivAccounts = 'plugin.pixiv.accounts';
+
+/// The section the Pixiv screen opens on: `home`, `ranking`, `favorites` or `search`.
+const optionPluginPixivStartSection = 'plugin.pixiv.start_section';
+const optionPluginPixivCopyTemplate = 'plugin.pixiv.copy_template';
+
+/// While on, opened works are not added to the on-device viewing history.
+const optionPluginPixivHistoryPaused = 'plugin.pixiv.history_paused';
+
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
 const optionPluginBooruShowTab = 'plugin.booru.show_tab';
@@ -764,6 +775,7 @@ const secretPrefKeys = {
   optionPluginThreadsDirectBearer,
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
+  optionPluginPixivAccounts,
   optionPluginEhCookies,
   optionPluginTiktokCookies,
   optionPluginInstagramCookies,

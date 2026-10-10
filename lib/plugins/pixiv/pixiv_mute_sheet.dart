@@ -30,7 +30,7 @@ List<PixivMuteChoice> pixivMuteChoices(L10n l10n, PixivIllust illust) => [
   (
     icon: Icons.person_off_outlined,
     label: l10n.plugin_pixiv_mute_author,
-    mute: (store) => store.muteAuthor(illust.userId),
+    mute: (store) => store.muteAuthor(illust.userId, name: illust.userName),
   ),
   (icon: Icons.hide_image_outlined, label: l10n.plugin_pixiv_mute_illust, mute: (store) => store.muteIllust(illust.id)),
   for (final tag in illust.tags)

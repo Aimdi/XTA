@@ -9,8 +9,15 @@ class PixivFavoritesSection extends StatelessWidget {
   final String restrict;
   final ValueChanged<String> onRestrict;
   final PixivIllustListStore store;
+  final ScrollController? scrollController;
 
-  const PixivFavoritesSection({super.key, required this.restrict, required this.onRestrict, required this.store});
+  const PixivFavoritesSection({
+    super.key,
+    required this.restrict,
+    required this.onRestrict,
+    required this.store,
+    this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +37,7 @@ class PixivFavoritesSection extends StatelessWidget {
             emptyMessage: restrict == 'private'
                 ? l10n.plugin_pixiv_bookmarks_private_empty
                 : l10n.plugin_pixiv_bookmarks_empty,
+            scrollController: scrollController,
           ),
         ),
       ],

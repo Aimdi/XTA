@@ -189,26 +189,96 @@ class PixivAuthUser {
   final String name;
   final String account;
   final bool isPremium;
+  final String? avatarUrl;
 
   const PixivAuthUser({
     required this.id,
     required this.name,
     required this.account,
     this.isPremium = false,
+    this.avatarUrl,
   });
 
   /// The token response's `user` object.
   factory PixivAuthUser.fromJson(Object? json) {
     final user = Json(json);
+    final images = user['profile_image_urls'];
+    final avatar = images['px_170x170'].string ?? images['px_50x50'].string ?? images['medium'].string;
     return PixivAuthUser(
       id: user['id'].integer ?? 0,
       name: user['name'].string?.trim() ?? '',
       account: user['account'].string?.trim() ?? '',
       isPremium: user['is_premium'].boolean == true,
+      avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
     );
   }
 
   String get displayName => name.isEmpty ? account : name;
+}
+
+/// A Pixiv account signed in on this device, kept so the reader can switch
+/// back to it. Its refresh token makes this a credential.
+class PixivAccount {
+  final int userId;
+  final String name;
+  final String account;
+  final String? avatarUrl;
+  final bool isPremium;
+  final String refreshToken;
+
+  const PixivAccount({
+    required this.userId,
+    required this.name,
+    required this.account,
+    required this.refreshToken,
+    this.avatarUrl,
+    this.isPremium = false,
+  });
+
+  factory PixivAccount.of(PixivAuthUser user, String refreshToken) => PixivAccount(
+    userId: user.id,
+    name: user.name,
+    account: user.account,
+    avatarUrl: user.avatarUrl,
+    isPremium: user.isPremium,
+    refreshToken: refreshToken,
+  );
+
+  /// A stored account, or null without the id or token needed to use it.
+  static PixivAccount? fromJson(Json json) {
+    final id = json['userId'].integer ?? 0;
+    final token = json['refreshToken'].string?.trim() ?? '';
+    if (id <= 0 || token.isEmpty) return null;
+    final avatar = json['avatar'].string;
+    return PixivAccount(
+      userId: id,
+      name: json['name'].string ?? '',
+      account: json['account'].string ?? '',
+      avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
+      isPremium: json['isPremium'].boolean == true,
+      refreshToken: token,
+    );
+  }
+
+  Map<String, Object> toJson() => {
+    'userId': userId,
+    'name': name,
+    'account': account,
+    'avatar': avatarUrl ?? '',
+    'isPremium': isPremium,
+    'refreshToken': refreshToken,
+  };
+
+  PixivAccount withRefreshToken(String token) => PixivAccount(
+    userId: userId,
+    name: name,
+    account: account,
+    avatarUrl: avatarUrl,
+    isPremium: isPremium,
+    refreshToken: token,
+  );
+
+  String get displayName => name.isEmpty ? (account.isEmpty ? '$userId' : account) : name;
 }
 
 /// A Pixiv user profile from `/v1/user/detail` or search.

@@ -29,7 +29,7 @@ class LivePlayerScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.open_in_browser),
               tooltip: l10n.open_in_browser,
-              onPressed: () => openLiveUrl(context, request.watchUrl!),
+              onPressed: () => openInRealBrowser(context, request.watchUrl!),
             ),
         ],
       ),
@@ -54,7 +54,7 @@ Future<void> openLivePlayer(BuildContext context, LivePlayRequest request) {
   if (!request.canResolve) {
     final url = request.watchUrl;
     if (url != null) {
-      return openLiveUrl(context, url);
+      return openInRealBrowser(context, url);
     }
     return Future.value();
   }

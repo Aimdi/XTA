@@ -18,11 +18,13 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_sign_in_body.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/ui/scroll_to_top.dart';
 
 /// Flare-style Pixiv home: Home / Rankings / Favorites / Search / More.
 ///
@@ -43,15 +45,26 @@ class _PixivScreenState extends State<PixivScreen> {
   late final PixivIllustListStore _recommended;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
+
+  /// The account the lists were loaded for; another one empties them.
+  late final PluginViewStore<int> _account;
+  final _recommendedScroll = ScrollController();
+  final _rankingScroll = ScrollController();
+  final _favoritesScroll = ScrollController();
+  final _moreScroll = ScrollController();
   PixivViewState get _state => _view.state;
 
   @override
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'pixiv');
-    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(const PixivViewState()));
+    final start = pixivStartSectionIndex(
+      PrefService.of(context, listen: false).get<String>(optionPluginPixivStartSection),
+    );
+    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(PixivViewState(section: start)));
     final view = _view;
     final client = context.read<PixivClient>();
+    _account = _session.obtain('account', () => PluginViewStore<int>(client.storedUserId ?? 0));
     final mute = context.read<PixivMuteStore>();
     _recommended = _session.obtain(
       'recommended',
@@ -99,8 +112,42 @@ class _PixivScreenState extends State<PixivScreen> {
   @override
   void dispose() {
     if (_state.signingIn) _view.select(_state.copyWith(signingIn: false));
+    for (final controller in [_recommendedScroll, _rankingScroll, _favoritesScroll, _moreScroll]) {
+      controller.dispose();
+    }
     _session.dispose();
     super.dispose();
+  }
+
+  /// The list the reader sees in [section] now; Search keeps its own lists
+  /// and is reached through the route's primary controller.
+  ScrollController? _scrollControllerFor(int section) => switch (section) {
+    0 when _state.homeSource == PixivHomeSource.following => widget.scrollController,
+    0 => _recommendedScroll,
+    1 => _rankingScroll,
+    2 => _favoritesScroll,
+    4 => _moreScroll,
+    _ => PrimaryScrollController.maybeOf(context),
+  };
+
+  /// Tapping the section or sub-tab already shown brings its list back to the top.
+  Future<void> _scrollToTop() =>
+      scrollToTop(context, pluginInnerScrollController(context, _scrollControllerFor(_state.section)));
+
+  /// After a sign-in, switch or sign-out: lists loaded for another account
+  /// are emptied and the shown one loads for the account now in use.
+  void _onAuthChanged() {
+    if (!mounted) return;
+    final client = context.read<PixivClient>();
+    final now = client.storedUserId ?? 0;
+    if (now != _account.state) {
+      _account.select(now);
+      _recommended.useLoader(({nextUrl}) => client.recommended(nextUrl: nextUrl));
+      _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict));
+      _ranking.useLoader(_rankingLoader());
+      _ensureTabLoaded(_state.section);
+    }
+    _view.select(_state.copyWith());
   }
 
   void _ensureTabLoaded(int index) {
@@ -118,25 +165,40 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   void _selectTab(int index) {
-    if (_state.section == index) return;
+    if (_state.section == index) {
+      _scrollToTop();
+      return;
+    }
     _view.select(_state.copyWith(section: index));
     _ensureTabLoaded(index);
   }
 
   void _selectHomeSource(PixivHomeSource source) {
+    if (source == _state.homeSource) {
+      _scrollToTop();
+      return;
+    }
     _view.select(_state.copyWith(homeSource: source));
     _ensureTabLoaded(0);
   }
 
-  Future<void> _reloadRanking() async {
+  PixivIllustPageLoader _rankingLoader() {
     final client = context.read<PixivClient>();
     final mode = _state.rankingMode;
     final date = pixivRankingDateParam(_state.rankingDate);
-    _ranking.useLoader(({nextUrl}) => client.ranking(mode: mode, date: date, nextUrl: nextUrl));
+    return ({nextUrl}) => client.ranking(mode: mode, date: date, nextUrl: nextUrl);
+  }
+
+  Future<void> _reloadRanking() async {
+    _ranking.useLoader(_rankingLoader());
     await _ranking.refresh();
   }
 
   Future<void> _changeRankingMode(String mode) async {
+    if (mode == _state.rankingMode) {
+      await _scrollToTop();
+      return;
+    }
     _view.select(_state.copyWith(rankingMode: mode));
     await _reloadRanking();
   }
@@ -148,7 +210,10 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   Future<void> _changeBookmarksRestrict(String restrict) async {
-    if (restrict == _state.bookmarksRestrict) return;
+    if (restrict == _state.bookmarksRestrict) {
+      await _scrollToTop();
+      return;
+    }
     _view.select(_state.copyWith(bookmarksRestrict: restrict));
     _bookmarks.useLoader(_bookmarksLoader(restrict));
     await _bookmarks.refresh();
@@ -157,11 +222,10 @@ class _PixivScreenState extends State<PixivScreen> {
   Future<void> _signIn() async {
     _view.select(_state.copyWith(signingIn: true));
     try {
-      final feed = context.read<PixivFeedStore>();
       await runPixivSignIn(context);
       if (mounted) {
-        _view.select(_state.copyWith());
-        await feed.refresh();
+        _onAuthChanged();
+        _ensureTabLoaded(_state.section);
       }
     } finally {
       if (mounted) _view.select(_state.copyWith(signingIn: false));
@@ -202,6 +266,7 @@ class _PixivScreenState extends State<PixivScreen> {
       following: context.read<PixivFeedStore>(),
       recommended: _recommended,
       scrollController: widget.scrollController,
+      recommendedScrollController: _recommendedScroll,
     ),
     (_) => PixivRankingSection(
       mode: state.rankingMode,
@@ -209,18 +274,16 @@ class _PixivScreenState extends State<PixivScreen> {
       onMode: _changeRankingMode,
       onDate: _changeRankingDate,
       store: _ranking,
+      scrollController: _rankingScroll,
     ),
     (_) => PixivFavoritesSection(
       restrict: state.bookmarksRestrict,
       onRestrict: _changeBookmarksRestrict,
       store: _bookmarks,
+      scrollController: _favoritesScroll,
     ),
     (_) => const PixivSearchScreen(embedded: true),
-    (_) => PixivMorePane(
-      onAuthChanged: () {
-        if (mounted) _view.select(_state.copyWith());
-      },
-    ),
+    (_) => PixivMorePane(onAuthChanged: _onAuthChanged, scrollController: _moreScroll),
   ];
 }
 

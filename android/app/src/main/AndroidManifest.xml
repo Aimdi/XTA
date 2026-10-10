@@ -134,6 +134,21 @@
                     android:scheme="https" />
 
             </intent-filter>
+            <!-- Pixiv pages, read by the Pixiv plugin. Android only sends them
+                 here once the reader adds these links under "Open by default";
+                 links XTA cannot show go to a named browser, never back here. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="pixiv.net" />
+                <data android:host="www.pixiv.net" />
+                <data android:host="pixiv.me" />
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

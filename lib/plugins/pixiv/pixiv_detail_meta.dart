@@ -26,7 +26,10 @@ class PixivDetailMeta extends StatelessWidget {
           ],
           const SizedBox(height: 8),
           PixivDetailStats(illust: illust),
-          if (illust.caption.isNotEmpty) ...[const SizedBox(height: 12), PixivDetailCaption(illust: illust)],
+          if (illust.caption.isNotEmpty || illust.captionHtml.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            PixivDetailCaption(illust: illust),
+          ],
           if (illust.tags.isNotEmpty) ...[const SizedBox(height: 12), PixivDetailTags(tags: illust.tags)],
         ],
       ),

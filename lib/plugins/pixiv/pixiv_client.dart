@@ -240,6 +240,7 @@ class PixivClient {
       throw PixivException(PixivErrorKind.notConfigured, 'no refresh token');
     }
 
+    final sent = _refreshToken;
     final response = await _send(
       () => httpClient.post(
         Uri.parse(PixivAuth.authTokenUrl),
@@ -252,7 +253,7 @@ class PixivClient {
           'client_secret': PixivAuth.clientSecret,
           'grant_type': 'refresh_token',
           'include_policy': 'true',
-          'refresh_token': _refreshToken,
+          'refresh_token': sent,
         },
       ),
     );
@@ -268,6 +269,11 @@ class PixivClient {
         PixivErrorKind.badResponse,
         'token response missing access_token',
       );
+    }
+    // The reader switched accounts while this was in flight: the answer
+    // belongs to the old one and must not replace the new one's tokens.
+    if (sent != _refreshToken) {
+      return PixivAuthUser.fromJson(json['user'].raw);
     }
 
     await prefs.set(optionPluginPixivAccessToken, access);
@@ -350,6 +356,16 @@ class PixivClient {
     );
     await _rememberUser(tokens.user);
     return tokens.user;
+  }
+
+  /// Makes [account] the one every request uses. Its access token is not
+  /// kept, so the next request refreshes one from its refresh token.
+  Future<void> switchTo(PixivAccount account) async {
+    await prefs.set(optionPluginPixivRefreshToken, account.refreshToken);
+    await prefs.set(optionPluginPixivAccessToken, '');
+    await prefs.set(optionPluginPixivAccessExpiresAt, '');
+    await prefs.set(optionPluginPixivUserId, account.userId);
+    await prefs.set(optionPluginPixivIsPremium, account.isPremium);
   }
 
   Future<void> signOut() async {

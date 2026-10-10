@@ -56,7 +56,7 @@ void main() {
       for (final entry in pixivDetailMenuEntries)
         if (tester.any(find.byKey(ValueKey('pixiv-illust-menu-${entry.id}')))) entry.id,
     ];
-    expect(offered, ['folder', 'copyLink', 'open', 'mute', 'more']);
+    expect(offered, ['folder', 'copyLink', 'copyInfo', 'open', 'mute', 'more']);
     await disposePixiv(tester);
   });
 
@@ -121,13 +121,13 @@ void main() {
 
   testWidgets('a Pixiv link opens the work or the creator, and says when the work will not load', (tester) async {
     final opened = <bool>[];
-    Widget link(PixivLinkRef ref) => Builder(
+    Widget link(PixivLinkRef ref, String label) => Builder(
       builder: (context) =>
-          TextButton(onPressed: () async => opened.add(await openPixivLinkRef(context, ref)), child: Text('${ref.id}')),
+          TextButton(onPressed: () async => opened.add(await openPixivLinkRef(context, ref)), child: Text(label)),
     );
     final harness = await pumpPixiv(
       tester,
-      Scaffold(body: Column(children: [link(const PixivLinkRef.artwork(120)), link(const PixivLinkRef.user(42))])),
+      Scaffold(body: Column(children: [link(const PixivLinkRef.artwork(120), '120'), link(const PixivLinkRef.user(42), '42')])),
       client: _FlakyPixivClient.new,
     );
 

@@ -18,37 +18,56 @@ const _shareHosts = {
   'www.fixupx.com',
 };
 
-bool _supported(Uri uri) =>
-    (uri.scheme == 'https' || uri.scheme == 'http') &&
-    uri.userInfo.isEmpty &&
-    !uri.hasPort &&
-    _shareHosts.contains(uri.host.toLowerCase());
+/// Taken only while the Pixiv plugin is on; nothing else in XTA reads them.
+const _pixivShareHosts = {'pixiv.net', 'www.pixiv.net', 'touch.pixiv.net', 'pixiv.me'};
 
-/// Shares often contain the post's caption before the actual link.
-Uri? extractSharedXLink(String text) {
-  final urls = RegExp(r'''https?://[^\s<>"\u200b]+''', caseSensitive: false);
+bool _supported(Uri uri, {required bool pixiv}) {
+  final host = uri.host.toLowerCase();
+  return (uri.scheme == 'https' || uri.scheme == 'http') &&
+      uri.userInfo.isEmpty &&
+      !uri.hasPort &&
+      (_shareHosts.contains(host) || (pixiv && _pixivShareHosts.contains(host)));
+}
+
+/// The first X link in a share — or Pixiv link, when [pixiv] is on. Shares
+/// often carry the post's caption before the actual link.
+Uri? extractSharedLink(String text, {bool pixiv = false}) {
+  final urls = RegExp(r'''https?://[^\s<>"​]+''', caseSensitive: false);
   for (final match in urls.allMatches(text)) {
     final candidate = match.group(0)!.replaceFirst(RegExp(r'''[)\]}>.,!?;:'"]+$'''), '');
     final uri = Uri.tryParse(candidate);
-    if (uri != null && _supported(uri)) return uri;
+    if (uri != null && _supported(uri, pixiv: pixiv)) return uri;
   }
   return null;
 }
 
-/// Resolve only X short links, without following redirects to arbitrary hosts.
-Future<Uri?> resolveSharedXLink(String text, {http.Client? client}) async {
-  var uri = extractSharedXLink(text);
+/// A share that is only a number, which Pixiv reads as a work's ID.
+String? sharedPixivId(String text) {
+  final trimmed = text.trim();
+  return RegExp(r'^\d{1,12}$').hasMatch(trimmed) ? trimmed : null;
+}
+
+/// Where [uri] redirects, from one request that does not follow it; null when
+/// the answer is not a redirect.
+Future<Uri?> redirectLocation(http.Client transport, Uri uri) async {
+  final request = http.Request('GET', uri)..followRedirects = false;
+  final response = await transport.send(request).timeout(const Duration(seconds: 8));
+  await response.stream.listen((_) {}).cancel();
+  final location = response.headers['location'];
+  if (response.statusCode < 300 || response.statusCode >= 400 || location == null) return null;
+  return uri.resolve(location);
+}
+
+/// [extractSharedLink], with X short links resolved, without following
+/// redirects to arbitrary hosts. Pixiv short links are resolved where they open.
+Future<Uri?> resolveSharedLink(String text, {bool pixiv = false, http.Client? client}) async {
+  var uri = extractSharedLink(text, pixiv: pixiv);
   if (uri == null || uri.host != 't.co') return uri;
   final transport = client ?? http.Client();
   try {
     for (var hop = 0; hop < 3 && uri != null && uri.host == 't.co'; hop++) {
-      final request = http.Request('GET', uri)..followRedirects = false;
-      final response = await transport.send(request).timeout(const Duration(seconds: 8));
-      await response.stream.listen((_) {}).cancel();
-      final location = response.headers['location'];
-      if (response.statusCode < 300 || response.statusCode >= 400 || location == null) return null;
-      uri = uri.resolve(location);
-      if (!_supported(uri)) return null;
+      uri = await redirectLocation(transport, uri);
+      if (uri == null || !_supported(uri, pixiv: false)) return null;
     }
     return uri?.host == 't.co' ? null : uri;
   } finally {

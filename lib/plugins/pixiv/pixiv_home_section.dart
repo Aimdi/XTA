@@ -15,6 +15,7 @@ class PixivHomeSection extends StatelessWidget {
 
   /// The Home tab's own controller, so tapping Home scrolls Following to the top.
   final ScrollController scrollController;
+  final ScrollController? recommendedScrollController;
 
   const PixivHomeSection({
     super.key,
@@ -23,6 +24,7 @@ class PixivHomeSection extends StatelessWidget {
     required this.following,
     required this.recommended,
     required this.scrollController,
+    this.recommendedScrollController,
   });
 
   @override
@@ -47,13 +49,9 @@ class PixivHomeSection extends StatelessWidget {
     );
   }
 
-  Widget _chip(String label, PixivHomeSource value) => ChoiceChip(
-    label: Text(label),
-    selected: source == value,
-    onSelected: (_) {
-      if (source != value) onSource(value);
-    },
-  );
+  /// Tapping the chosen chip again scrolls its list to the top.
+  Widget _chip(String label, PixivHomeSource value) =>
+      ChoiceChip(label: Text(label), selected: source == value, onSelected: (_) => onSource(value));
 
   Widget _feed(L10n l10n) => switch (source) {
     PixivHomeSource.following => PixivIllustFeed(
@@ -64,6 +62,7 @@ class PixivHomeSection extends StatelessWidget {
     PixivHomeSource.recommended => PixivIllustFeed(
       store: recommended,
       emptyMessage: l10n.plugin_pixiv_recommended_empty,
+      scrollController: recommendedScrollController,
     ),
   };
 }
