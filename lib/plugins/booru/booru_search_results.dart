@@ -40,6 +40,7 @@ class BooruSearchResults extends StatelessWidget {
             Expanded(
               child: BooruPostGrid(
                 posts: posts,
+                feed: results,
                 onRefresh: results.refresh,
                 loadingMore: results.loadingMore,
                 onNearEnd: results.loadMore,

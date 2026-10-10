@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Hägusta küsitava ja eksplitsiitse sisuga pisipildid",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Postituse avamisel kuvatakse see hägustamata",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Tühjenda sildid",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Kommentaarid",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Kopeeritud lõikelauale",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Kopeeri link",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Kopeeri silt",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Kopeeri sildid",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Muuda tekstina",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Selle kuupäeva kohta populaarseid postitusi pole",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Välista praegusest otsingust",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Välista",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Vanem- ja alampostitused",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} lemmik} other{{count} lemmikut}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Jälgi silti",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Ava täisekraanil",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Ruudustiku veerud",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Mahuta ekraanile",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Peida selle sildiga postitused",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Veel kunstnikult {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Kui ühes kirjes on mitu silti, peidetakse ainult postitused, millel on need kõik. Töötavad ka -tag ja rating:e",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Kommentaare veel pole",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Kõrgeim skoor",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Originaalfailid täisekraanil",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Täisekraanil laaditakse hosti vähendatud versiooni asemel täissuuruses fail. Kasutab rohkem andmesidet",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Vali kuupäev",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Päev",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Eelmine",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Järgmine",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Kuu",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Sellel saidil pole populaarsete loendit, seega näidatakse kõrgeima skooriga postitusi",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Nädal",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Postitatud {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Otsi seda silti",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Kuvamine",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Näita kõiki",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Kuvatav nimi",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Väiksemad pisipildid",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Laadib ruudustikku hosti väikesed eelvaated. Kiirem ja säästab andmesidet, kuid pildid on hägusamad",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Puuduta silti, et seda otsida, jälgida, peita või lugeda selle vikit",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Kunstnik",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Tegelane",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Sordi silte",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Enim kasutatud",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Liik",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Sildid",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Üksikasjad pisipiltide all",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Host, esimesed sildid ja skoor iga ruudustiku postituse all",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Lõpeta sildi jälgimine",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Lõpeta selle sildi peitmine",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Eemalda salvestatud otsingutest",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Üles laadis {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} poolt, {down} vastu",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Viki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Sellel sildil pole vikilehte",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Kuvatakse viimane saabunud loend",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Pluginate loendit ei õnnestunud hankida",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Kommentaarid",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Jätka",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Näita {count} kommentaari} other{Näita kõiki {count} kommentaari}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Skoor {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Jätka lehelt {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Kopeeri silt",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Pole kordagi lemmikuks lisatud} one{Lemmikuks lisatud korra} other{Lemmikuks lisatud {count} korda}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Failide suurus: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Keel: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Keel: {language}, tõlge",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} lehekülg} other{{count} lehekülge}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Postitatud {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Hinne {rating} 5-st, {count} hääl} other{Hinne {rating} 5-st, {count} häält}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} kopeeritud",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Üleslaadija",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, pole veel kinnitatud",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Mine",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minimaalne hinne",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Kunstnik",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Tegelane",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Naine",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Grupp",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Keel",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Mees",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Segatud",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Muu",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Paroodia",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Ümberliigitus",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Ajutine",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Selle lehe pilt ei laadinud",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Lugemisviis",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Vasakult paremale",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Paremalt vasakule (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Vertikaalne kerimine (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Ava originaal",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Proovi teist serverit",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Laadi pilt uuesti",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Розмивати сумнівні й відверті ескізи",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Відкритий допис показується без розмиття",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Очистити теги",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Коментарі",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Скопійовано до буфера обміну",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Копіювати посилання",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Копіювати тег",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Копіювати теги",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Змінити як текст",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Немає популярних дописів за цю дату",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Виключити з поточного пошуку",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Виключити",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Батьківський і дочірні дописи",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{В обраному у {count} користувача} few{В обраному у {count} користувачів} many{В обраному у {count} користувачів} other{В обраному у {count} користувача}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Підписатися на тег",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Відкрити на весь екран",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Стовпці сітки",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "За шириною екрана",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Приховати дописи з цим тегом",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Більше від {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Кілька тегів в одному записі приховують лише дописи, де є всі вони. Також працюють -tag і rating:e",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Коментарів поки немає",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Найвища оцінка",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Оригінали в повноекранному режимі",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "У повноекранному режимі завантажується файл повного розміру замість зменшеної копії з сайту. Використовує більше трафіку",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Виберіть дату",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "День",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Раніше",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Пізніше",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Місяць",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Цей сайт не має списку популярного, тому показано дописи з найвищою оцінкою",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Тиждень",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Опубліковано {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Шукати за цим тегом",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Відображення",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Показати всі",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Ім’я для показу",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Менші ескізи",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Завантажує в сітку маленькі ескізи з сайту. Швидше й ощадливіше для трафіку, але менш чітко",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Торкніться тегу, щоб шукати його, підписатися, приховати або відкрити вікі",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Художник",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Персонаж",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Копірайт",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Метадані",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Сортувати теги",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "За популярністю",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "За абеткою",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Вид",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Теги",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Відомості під ескізами",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Сайт, перші теги й оцінка під кожним дописом у сітці",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Відписатися від тегу",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Більше не приховувати цей тег",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Видалити зі збережених пошуків",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Завантажено користувачем {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "За: {up}, проти: {down}",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Вікі",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Цей тег не має вікі-сторінки",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Показано останній отриманий список",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Не вдалося отримати список плагінів",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Коментарі",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Продовжити",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Показати {count} коментар} few{Показати всі {count} коментарі} many{Показати всі {count} коментарів} other{Показати всі {count} коментаря}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Рейтинг {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Продовжити зі сторінки {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Копіювати тег",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Ніхто не додав до обраного} one{В обраному у {count} користувача} few{В обраному у {count} користувачів} many{В обраному у {count} користувачів} other{В обраному у {count} користувача}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Розмір: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Мова: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Мова: {language}, переклад",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} сторінка} few{{count} сторінки} many{{count} сторінок} other{{count} сторінки}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Опубліковано {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Рейтинг {rating} з 5 на основі {count} оцінки} few{Рейтинг {rating} з 5 на основі {count} оцінок} many{Рейтинг {rating} з 5 на основі {count} оцінок} other{Рейтинг {rating} з 5 на основі {count} оцінки}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "Скопійовано: {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Автор галереї",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, ще не підтверджений",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Перейти",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Мінімальний рейтинг",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Художник",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Персонаж",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Косплеєр",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Жіноче",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Група",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Мова",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Чоловіче",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Змішане",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Інше",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Пародія",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Перекласифікація",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Тимчасове",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Зображення цієї сторінки не завантажилося",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Режим читання",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Зліва направо",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Справа наліво (манґа)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Вертикальне прокручування (вебтун)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Відкрити оригінал",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Спробувати інший сервер",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Перезавантажити зображення",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

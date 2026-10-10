@@ -5,6 +5,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/plugins/ehviewer/eh_reader_store.dart';
 import 'package:xta/plugins/ehviewer/eh_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_search_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_settings.dart';
@@ -106,6 +107,7 @@ class EhViewerPlugin extends XtaPlugin {
     await prefs.set(optionPluginEhSearchHistory, '[]');
     await prefs.set(optionPluginEhPreferJapanese, true);
     await prefs.set(optionPluginEhKeepScreenOn, true);
+    await prefs.set(optionPluginEhReadingMode, EhReadingMode.leftToRight.name);
   }
 
   @override

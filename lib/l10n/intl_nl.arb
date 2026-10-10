@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Twijfelachtige en expliciete miniaturen vervagen",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Open je de post, dan zie je hem zonder vervaging",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Tags wissen",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Reacties",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Gekopieerd naar klembord",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Link kopiëren",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Tag kopiëren",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Tags kopiëren",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Als tekst bewerken",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Geen populaire posts op deze datum",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Uitsluiten van huidige zoekopdracht",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Uitsluiten",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Ouder- en kindposts",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} favoriet} other{{count} favorieten}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Tag volgen",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Openen op volledig scherm",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Kolommen in raster",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Aanpassen aan scherm",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Posts met deze tag verbergen",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Meer van {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Meerdere tags in één regel verbergen alleen posts die ze allemaal hebben. -tag en rating:e werken ook",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Nog geen reacties",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Hoogste score",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Originele bestanden op volledig scherm",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Volledig scherm laadt het bestand op ware grootte in plaats van de verkleinde versie van de host. Gebruikt meer data",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Kies een datum",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Dag",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Eerder",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Later",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Maand",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Deze site heeft geen lijst met populaire posts, dus zie je de posts met de hoogste score",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Week",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Geplaatst op {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Zoeken op deze tag",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Weergave",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Alles bekijken",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Weergavenaam",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Kleinere miniaturen",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Laadt de kleine voorbeelden van de host in het raster. Sneller en zuiniger met data, maar waziger",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Tik op een tag om erop te zoeken, hem te volgen of te verbergen, of om de wiki te lezen",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Kunstenaar",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Personage",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Serie",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Tags sorteren",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Meest gebruikt",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Soort",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tags",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Details onder miniaturen",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Host, eerste tags en score onder elke post in het raster",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Tag ontvolgen",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Deze tag niet meer verbergen",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Verwijderen uit opgeslagen zoekopdrachten",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Geüpload door {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} upvotes, {down} downvotes",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Deze tag heeft geen wikipagina",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "De laatst opgehaalde lijst wordt getoond",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "De pluginlijst kon niet worden opgehaald",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Reacties",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Verder lezen",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{{count} reactie tonen} other{Alle {count} reacties tonen}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Score {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Verder lezen vanaf pagina {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Tag kopiëren",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Geen favorieten} one{{count} favoriet} other{{count} favorieten}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Bestandsgrootte {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Taal: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Taal: {language}, vertaald",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} pagina} other{{count} pagina's}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Geplaatst op {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Score {rating} van 5, op basis van {count} stem} other{Score {rating} van 5, op basis van {count} stemmen}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} gekopieerd",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Uploader",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, nog niet bevestigd",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Ga",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minimumscore",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Kunstenaar",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Personage",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Vrouwelijk",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Groep",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Taal",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Mannelijk",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Gemengd",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Overig",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodie",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Herclassificatie",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Tijdelijk",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "De afbeelding van deze pagina is niet geladen",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Leesmodus",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Links naar rechts",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Rechts naar links (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Verticaal scrollen (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Origineel openen",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Andere server proberen",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Afbeelding opnieuw laden",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

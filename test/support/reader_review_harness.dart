@@ -212,6 +212,8 @@ class _ImageClient extends Fake implements HttpClient {
 class _ImageHeaders extends Fake implements HttpHeaders {
   @override
   void set(String name, Object value, {bool preserveHeaderCase = false}) {}
+  @override
+  void add(String name, Object value, {bool preserveHeaderCase = false}) {}
 }
 
 class _ImageRequest extends Fake implements HttpClientRequest {

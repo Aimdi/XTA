@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,6 +20,8 @@ import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+
+import 'fixture_images.dart';
 
 String _page(int id, int page, String size) =>
     'https://i.pximg.net/$size/img/2026/07/01/00/00/00/${id}_p${page}_master1200.jpg';
@@ -182,8 +183,8 @@ Future<PixivHarness> pumpPixiv(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  failPixivImageCache();
-  _ignoreFixtureImageFailures();
+  failImageDiskCache();
+  ignoreFixtureImageFailures();
   VisibilityDetectorController.instance.updateInterval = Duration.zero;
   addTearDown(() => VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500));
   final prefs = PrefServiceCache(defaults: {optionPluginPixivRefreshToken: 'fixture-only'});
@@ -237,37 +238,6 @@ Future<PixivHarness> pumpPixiv(
   return harness;
 }
 
-/// The image disk cache asks a platform channel for its folder; refusing at once keeps
-/// every fetch inside the test clock (the test HTTP client then answers 400).
-void failPixivImageCache() {
-  const pathProvider = MethodChannel('plugins.flutter.io/path_provider');
-  final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  messenger.setMockMethodCallHandler(pathProvider, (_) async => throw PlatformException(code: 'unavailable'));
-  addTearDown(() => messenger.setMockMethodCallHandler(pathProvider, null));
-}
+Future<void> settlePixiv(WidgetTester tester) => settleFixtureImages(tester);
 
-FlutterExceptionHandler? _testErrorHandler;
-
-/// Every fixture image fails (the test HTTP client answers 400); a page scrolled away
-/// before its failure arrives would otherwise be reported as a test error.
-void _ignoreFixtureImageFailures() {
-  final handler = _testErrorHandler = FlutterError.onError;
-  FlutterError.onError = (details) {
-    if (details.library != 'image resource service') handler?.call(details);
-  };
-}
-
-/// Lets failed image fetches and their single retry finish, then the UI settle.
-Future<void> settlePixiv(WidgetTester tester) async {
-  for (var i = 0; i < 4; i++) {
-    await tester.pump(const Duration(milliseconds: 150));
-  }
-  await tester.pumpAndSettle();
-}
-
-/// Ends a test: unmounts, drains timers and gives the test its error handler back.
-Future<void> disposePixiv(WidgetTester tester) async {
-  await tester.pumpWidget(const SizedBox());
-  await tester.pump(const Duration(seconds: 1));
-  FlutterError.onError = _testErrorHandler;
-}
+Future<void> disposePixiv(WidgetTester tester) => disposeFixtureScreen(tester);

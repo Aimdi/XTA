@@ -23,13 +23,13 @@ class PixivTag {
 
   const PixivTag({required this.name, this.translatedName});
 
-  String get displayName {
-    final translated = translatedName?.trim();
-    if (translated != null && translated.isNotEmpty) {
-      return translated;
-    }
-    return name;
+  /// The translation, when Pixiv sent one that differs from [name].
+  String? get translation {
+    final translated = translatedName?.trim() ?? '';
+    return translated.isEmpty || translated == name ? null : translated;
   }
+
+  String get displayName => translation ?? name;
 }
 
 /// A work's page on pixiv.net.

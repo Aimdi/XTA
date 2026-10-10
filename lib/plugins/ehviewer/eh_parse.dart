@@ -33,7 +33,9 @@ final _previewAnchor = RegExp(
   r'(.*?)</a>',
   dotAll: true,
 );
-final _previewThumb = RegExp(r'url\(([^)]+)\)\s*(-?\d+)px');
+final _previewThumb = RegExp(r'url\(([^)]+)\)(?:\s*(-?\d+)(?:px)?)?');
+final _previewImg = RegExp(r'<img[^>]+src="([^"]+)"');
+final _previewSize = RegExp(r'(?:^|[\s;"])(width|height):\s*(\d+)px');
 final _previewSheetLink = RegExp(r'[?&]p=(\d+)');
 final _imgSrcAfterId = RegExp(r'<img[^>]+id="img"[^>]+src="([^"]+)"');
 final _imgSrcBeforeId = RegExp(r'<img[^>]+src="([^"]+)"[^>]+id="img"');
@@ -78,6 +80,11 @@ EhGalleryPage parseEhGalleryList(String html) {
         pageCount: int.tryParse(_pagesInRow.firstMatch(row)?.group(1) ?? ''),
         postedAt: _parsePosted(_posted.firstMatch(row)?.group(1)),
         uploader: _decode(_uploader.firstMatch(row)?.group(1) ?? ''),
+        rating: parseEhListRating(row),
+        tags: [
+          for (final tag in _listTag.allMatches(row))
+            _decode(tag.group(1) ?? tag.group(2)!),
+        ],
       ),
     );
   }
@@ -90,6 +97,25 @@ EhGalleryPage parseEhGalleryList(String html) {
     nextUrl: nextUrl,
     hasMore: nextUrl != null && nextUrl.isNotEmpty,
   );
+}
+
+final _listStars = RegExp(
+  r'class="ir[^"]*"[^>]*background-position:\s*(-?\d+)px\s+(-?\d+)px',
+);
+final _listTag = RegExp(
+  r'<div[^>]*class="gt[lw]?"[^>]*title="([^"]+)"'
+  r'|<div[^>]*title="([^"]+)"[^>]*class="gt[lw]?"',
+);
+
+/// A list row draws its rating as a sprite of stars: each 16px left is a
+/// star less, and the lower row (-21px) takes off a half.
+double? parseEhListRating(String row) {
+  final match = _listStars.firstMatch(row);
+  final x = int.tryParse(match?.group(1) ?? '');
+  final y = int.tryParse(match?.group(2) ?? '');
+  if (x == null || y == null) return null;
+  final rating = 5 + x / 16 - (y == -21 ? 0.5 : 0);
+  return rating.clamp(0, 5).toDouble();
 }
 
 EhGalleryDetail? parseEhGalleryDetail(
@@ -137,11 +163,8 @@ EhGalleryDetail? parseEhGalleryDetail(
         dotAll: true,
       ).firstMatch(html)?.group(1);
 
-  final tags = [
-    for (final m in RegExp(r'id="td_([^"]+)"').allMatches(html))
-      _decode(m.group(1)!.replaceAll('+', ' ')),
-  ];
-
+  final tags = parseEhDetailTags(html);
+  final facts = parseEhDetailFacts(html);
   final previews = parseEhPreviewSheet(html);
   final sheetMeta = parseEhPreviewSheetMeta(html);
 
@@ -156,13 +179,100 @@ EhGalleryDetail? parseEhGalleryDetail(
     postedAt: posted,
     pageCount: pageCount,
     rating: rating,
-    tags: tags,
+    tags: [for (final tag in tags) tag.raw],
+    weakTags: {
+      for (final tag in tags)
+        if (tag.weak) tag.raw,
+    },
     previews: previews,
     comments: parseEhComments(html),
     previewSheetIndex: sheetMeta.index,
     previewSheetCount: sheetMeta.count,
+    language: facts.language,
+    translated: facts.translated,
+    fileSizeBytes: facts.fileSizeBytes,
+    favoritedCount: facts.favoritedCount,
+    ratingCount: int.tryParse(
+      RegExp(r'id="rating_count"[^>]*>(\d+)<').firstMatch(html)?.group(1) ?? '',
+    ),
   );
 }
+
+final _tagCell = RegExp(
+  r'<div[^>]*\bid="td_([^"]+)"[^>]*>(.*?)</div>',
+  dotAll: true,
+);
+final _tagClass = RegExp(r'class="(gt[lw]?)"');
+final _tagText = RegExp(r'<a[^>]*>([^<]+)</a>');
+
+/// A gallery's tags as listed on its page. Element ids write spaces as
+/// underscores, so the name comes from the link text when there is one;
+/// dashed (`gtl`, `gtw`) tags are the ones not yet settled by votes.
+List<({String raw, bool weak})> parseEhDetailTags(String html) => [
+  for (final cell in _tagCell.allMatches(html)) _detailTag(cell),
+];
+
+({String raw, bool weak}) _detailTag(RegExpMatch cell) {
+  final id = _decode(cell.group(1)!.replaceAll('+', ' '));
+  final colon = id.indexOf(':');
+  final namespace = colon > 0 ? id.substring(0, colon + 1) : '';
+  final text = _tagText.firstMatch(cell.group(2) ?? '')?.group(1);
+  final name = text == null
+      ? id.substring(namespace.length).replaceAll('_', ' ')
+      : _decode(text);
+  final kind = _tagClass.firstMatch(cell.group(0)!)?.group(1);
+  return (raw: '$namespace$name', weak: kind == 'gtl' || kind == 'gtw');
+}
+
+final _factRow = RegExp(
+  r'class="gdt1">([^<]+)</td>\s*<td class="gdt2"[^>]*>(.*?)</td>',
+  dotAll: true,
+);
+
+/// The detail table: language (and whether it is a translation), file size
+/// and how often the gallery was favorited.
+({String? language, bool translated, int? fileSizeBytes, int? favoritedCount})
+parseEhDetailFacts(String html) {
+  final rows = {
+    for (final row in _factRow.allMatches(html))
+      _decode(row.group(1)!).replaceAll(':', '').toLowerCase(): row.group(2)!,
+  };
+  final language = rows['language'];
+  return (
+    language: language == null
+        ? null
+        : _nonEmpty(
+            _stripHtml(language).replaceAll(RegExp(r'\b(TR|RW)\b'), ''),
+          ),
+    translated: language != null && RegExp(r'>\s*TR\s*<').hasMatch(language),
+    fileSizeBytes: ehParseFileSize(_stripHtml(rows['file size'] ?? '')),
+    favoritedCount: ehParseFavorited(_stripHtml(rows['favorited'] ?? '')),
+  );
+}
+
+String? _nonEmpty(String value) => value.trim().isEmpty ? null : value.trim();
+
+const _sizeUnits = {
+  'B': 1,
+  'KiB': 1024,
+  'MiB': 1024 * 1024,
+  'GiB': 1024 * 1024 * 1024,
+};
+
+/// `96.57 MiB` → bytes.
+int? ehParseFileSize(String raw) {
+  final match = RegExp(r'([\d.]+)\s*(B|KiB|MiB|GiB)').firstMatch(raw);
+  final value = double.tryParse(match?.group(1) ?? '');
+  final unit = _sizeUnits[match?.group(2)];
+  return value == null || unit == null ? null : (value * unit).round();
+}
+
+/// `Never`, `Once` or `123 times`.
+int? ehParseFavorited(String raw) => switch (raw.trim().toLowerCase()) {
+  'never' => 0,
+  'once' => 1,
+  final text => int.tryParse(RegExp(r'\d+').firstMatch(text)?.group(0) ?? ''),
+};
 
 /// Preview tiles from one gallery HTML sheet (`?p=N`).
 List<EhPreview> parseEhPreviewSheet(String html) {
@@ -171,13 +281,22 @@ List<EhPreview> parseEhPreviewSheet(String html) {
   for (final m in _previewAnchor.allMatches(html)) {
     final page = int.tryParse(m.group(3) ?? '');
     if (page == null || !seenPages.add(page)) continue;
-    final thumb = _previewThumb.firstMatch(m.group(4) ?? '');
+    final tile = m.group(4) ?? '';
+    final thumb = _previewThumb.firstMatch(tile);
+    final size = {
+      for (final s in _previewSize.allMatches(tile))
+        s.group(1)!: double.parse(s.group(2)!),
+    };
     previews.add(
       EhPreview(
         pageToken: m.group(1)!,
         page: page,
-        thumbUrl: _decodeAttr(thumb?.group(1)),
+        thumbUrl: _decodeAttr(
+          thumb?.group(1) ?? _previewImg.firstMatch(tile)?.group(1),
+        ),
         thumbOffsetX: double.tryParse(thumb?.group(2) ?? ''),
+        thumbWidth: size['width'],
+        thumbHeight: size['height'],
       ),
     );
   }
@@ -461,4 +580,28 @@ String _decode(String raw) => raw
 String? _decodeAttr(String? raw) {
   if (raw == null || raw.isEmpty) return null;
   return _decode(raw);
+}
+
+/// `tagsuggest` answers with its tags keyed by id (or an empty list). An
+/// alias carries its master tag (`mns`, `mtn`), which is the one to search.
+List<EhTag> parseEhTagSuggestions(Object? raw) {
+  final tags = Json(raw)['tags'];
+  final items = tags.raw is Map
+      ? (tags.raw as Map).values.map(Json.new)
+      : tags.list;
+  final seen = <String>{};
+  return [
+    for (final item in items)
+      if (_suggestion(item) case final tag? when seen.add(tag.raw)) tag,
+  ];
+}
+
+EhTag? _suggestion(Json item) {
+  final alias = item['mtn'].string != null;
+  final name = (alias ? item['mtn'] : item['tn']).string?.trim();
+  if (name == null || name.isEmpty) return null;
+  return EhTag(
+    EhNamespace.tryParse((alias ? item['mns'] : item['ns']).string),
+    name,
+  );
 }

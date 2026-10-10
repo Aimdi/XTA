@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Buramkan thumbnail yang meragukan dan eksplisit",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Postingan tampil tanpa buram saat dibuka",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Hapus tag",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Komentar",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Disalin ke papan klip",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Salin tautan",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Salin tag",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Salin semua tag",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Edit sebagai teks",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Tidak ada postingan populer pada tanggal ini",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Kecualikan dari pencarian saat ini",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Kecualikan",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Postingan induk dan anak",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, other{{count} favorit}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Ikuti tag",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Buka layar penuh",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Kolom kisi",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Sesuaikan dengan layar",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Sembunyikan postingan dengan tag ini",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Lainnya dari {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Beberapa tag dalam satu entri hanya menyembunyikan postingan yang memiliki semuanya. -tag dan rating:e juga bisa dipakai",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Belum ada komentar",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Skor tertinggi",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "File asli di layar penuh",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Layar penuh memuat file ukuran penuh, bukan versi kecil dari host. Memakai lebih banyak data",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Pilih tanggal",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Hari",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Sebelumnya",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Berikutnya",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Bulan",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Situs ini tidak punya daftar populer, jadi yang ditampilkan adalah postingan dengan skor tertinggi",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Minggu",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Diposting pada {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Cari tag ini",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Tampilan",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Lihat semua",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nama tampilan",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Thumbnail lebih kecil",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Memuat pratinjau kecil dari host di kisi. Lebih cepat dan hemat data, tetapi lebih buram",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Ketuk tag untuk mencarinya, mengikutinya, menyembunyikannya, atau membaca wikinya",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artis",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Karakter",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Urutkan tag",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Paling sering dipakai",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Spesies",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tag",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Detail di bawah thumbnail",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Host, tag pertama, dan skor di bawah setiap postingan di kisi",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Berhenti mengikuti tag",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Berhenti menyembunyikan tag ini",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Hapus dari pencarian tersimpan",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Diunggah oleh {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} vote positif, {down} vote negatif",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Tag ini tidak punya halaman wiki",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Menampilkan daftar terakhir yang diterima",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Daftar plugin tidak bisa diambil",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Komentar",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Lanjutkan",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, other{Tampilkan {count} komentar}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Skor {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Lanjutkan dari halaman {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Salin tag",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Belum pernah difavoritkan} other{Difavoritkan {count} kali}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Ukuran file: {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Bahasa: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Bahasa: {language}, terjemahan",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, other{{count} halaman}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Diposting pada {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, other{Rating {rating} dari 5 berdasarkan {count} suara}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "{tag} disalin",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Pengunggah",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, belum dikonfirmasi",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Buka",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Rating minimum",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Artis",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Karakter",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Wanita",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Grup",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Bahasa",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Pria",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Campuran",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Lainnya",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodi",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Reklasifikasi",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Sementara",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Gambar halaman ini tidak termuat",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Mode baca",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "Kiri ke kanan",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "Kanan ke kiri (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Gulir vertikal (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Buka asli",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Coba server lain",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Muat ulang gambar",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

@@ -1471,6 +1471,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Blur questionable and explicit thumbnails",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Opening the post shows it unblurred",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1483,6 +1487,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Clear tags",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Comments",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Copied to clipboard",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Copy link",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Copy tag",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Copy tags",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Edit as text",
@@ -1497,6 +1511,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "No popular posts for this date",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1521,10 +1537,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Exclude from current search",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Exclude",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Parent and child posts",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{1 favorite} other{{count} favorites}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Follow tag",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Open full screen",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Grid columns",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Fit to screen",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Hide posts with this tag",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1545,38 +1583,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "More from {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "Several tags in one entry hide only posts that have all of them. -tag and rating:e work too",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "No comments yet",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Highest score",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Original files in full screen",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Full screen loads the full-size file instead of the host's sample. Uses more data",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Pick a date",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Day",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Earlier",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Later",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Month",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "This site keeps no popular list, so its highest-scored posts are shown",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Week",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Posted {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1613,12 +1679,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Search this tag",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Display",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "See all",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1629,12 +1701,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Display name",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Smaller thumbnails",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Loads the host's small previews in the grid. Faster and lighter on data, but blurrier",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Tap a tag to search it, follow it, hide it or read its wiki",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artist",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Character",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1643,8 +1727,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Sort tags",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Most used",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Species",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1653,6 +1745,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Tags",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1671,12 +1765,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Details under thumbnails",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Host, first tags and score below each post in the grid",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Unfollow tag",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Stop hiding this tag",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Remove from saved searches",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Uploaded by {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "{up} up, {down} down",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "This tag has no wiki page",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Showing the last list that arrived",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "The plugin list could not be fetched",
@@ -1753,8 +1878,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Comments",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Continue",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1791,6 +1914,137 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Show {count} comment} other{Show all {count} comments}}",
+  "@plugin_eh_gallery_all_comments": {
+    "description": "Button under the first few comments of an EH gallery; opens every comment in a sheet.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Score {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "description": "Read aloud for a gallery comment's vote score, e.g. \"Score +30\".",
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Continue from page {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "description": "Button that reopens an EH gallery at the page the reader last reached.",
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Copy tag",
+  "@plugin_eh_gallery_copy_tag": {
+    "description": "Screen reader hint for long-pressing a gallery tag, which copies it."
+  },
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Never favorited} one{Favorited once} other{Favorited {count} times}}",
+  "@plugin_eh_gallery_favorited": {
+    "description": "Read aloud for how many people on the site favorited the gallery.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "File size {size}",
+  "@plugin_eh_gallery_file_size": {
+    "description": "Read aloud for the gallery's total file size, e.g. \"File size 96.6 MB\".",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Language: {language}",
+  "@plugin_eh_gallery_language": {
+    "description": "Read aloud for the gallery's language as the site names it, e.g. \"Language: English\".",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Language: {language}, translated",
+  "@plugin_eh_gallery_language_translated": {
+    "description": "Read aloud for the gallery's language when the gallery is a translation into it.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} page} other{{count} pages}}",
+  "@plugin_eh_gallery_pages": {
+    "description": "How many pages an EH gallery has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Posted {date}",
+  "@plugin_eh_gallery_posted": {
+    "description": "Read aloud for the date the gallery was posted.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Rated {rating} out of 5 from {count} rating} other{Rated {rating} out of 5 from {count} ratings}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "description": "Read aloud for the gallery's average star rating and how many people rated it.",
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "description": "Shown beside the rating stars: the average, then how many ratings, e.g. \"4.62 (321)\".",
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "Copied {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "description": "Snackbar after long-pressing a gallery tag copied it, e.g. \"Copied female:big breasts\".",
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Uploader",
+  "@plugin_eh_gallery_uploader_comment": {
+    "description": "Badge on a gallery comment written by the gallery's uploader."
+  },
+  "plugin_eh_gallery_weak_tag": "{tag}, not yet confirmed",
+  "@plugin_eh_gallery_weak_tag": {
+    "description": "Read aloud for a gallery tag that has too few votes to be settled; the site shows it dashed.",
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Go",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1825,6 +2079,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Minimum rating",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Artist",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Character",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Female",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Group",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Language",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Male",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Mixed",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Other",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parody",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Reclass",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Temporary",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1862,6 +2140,34 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "This page's image did not load",
+  "@plugin_eh_reader_image_failed": {
+    "description": "Reader page error: the gallery page was found, but its picture failed to download"
+  },
+  "plugin_eh_reader_mode": "Reading mode",
+  "@plugin_eh_reader_mode": {
+    "description": "Title of the setting and the reader sheet that pick how pages are laid out"
+  },
+  "plugin_eh_reader_mode_ltr": "Left to right",
+  "@plugin_eh_reader_mode_ltr": {
+    "description": "Reading mode: one page at a time, the next page is to the right"
+  },
+  "plugin_eh_reader_mode_rtl": "Right to left (manga)",
+  "@plugin_eh_reader_mode_rtl": {
+    "description": "Reading mode: one page at a time, the next page is to the left, as in Japanese manga"
+  },
+  "plugin_eh_reader_mode_vertical": "Vertical scroll (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {
+    "description": "Reading mode: all pages in one continuous top-to-bottom scroll, as in webtoons"
+  },
+  "plugin_eh_reader_open_original": "Open original",
+  "@plugin_eh_reader_open_original": {
+    "description": "Page action: open the full-size original image file in the browser"
+  },
+  "plugin_eh_reader_try_another_server": "Try another server",
+  "@plugin_eh_reader_try_another_server": {
+    "description": "Button on a page whose image failed: ask the site for the same image from a different image server"
+  },
   "plugin_eh_reload_image": "Reload image",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

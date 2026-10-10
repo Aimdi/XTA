@@ -1378,6 +1378,10 @@
   "@plugin_booru_api_key_help": {},
   "plugin_booru_api_key_help_gelbooru": "Optional Gelbooru user API key — pair it with your numeric user id above.",
   "@plugin_booru_api_key_help_gelbooru": {},
+  "plugin_booru_blur_explicit": "Estompează miniaturile îndoielnice și explicite",
+  "@plugin_booru_blur_explicit": {},
+  "plugin_booru_blur_explicit_description": "Postarea deschisă apare fără estompare",
+  "@plugin_booru_blur_explicit_description": {},
   "plugin_booru_card_title": "Booru #{id}",
   "@plugin_booru_card_title": {
     "placeholders": {
@@ -1390,6 +1394,16 @@
   "@plugin_booru_clear_history": {},
   "plugin_booru_clear_tags": "Șterge etichetele",
   "@plugin_booru_clear_tags": {},
+  "plugin_booru_comments": "Comentarii",
+  "@plugin_booru_comments": {},
+  "plugin_booru_copied": "Copiat în clipboard",
+  "@plugin_booru_copied": {},
+  "plugin_booru_copy_link": "Copiază linkul",
+  "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_tag": "Copiază eticheta",
+  "@plugin_booru_copy_tag": {},
+  "plugin_booru_copy_tags": "Copiază etichetele",
+  "@plugin_booru_copy_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Editează ca text",
@@ -1404,6 +1418,8 @@
   "@plugin_booru_empty_following_posts": {},
   "plugin_booru_empty_latest": "No posts yet — check the host in settings",
   "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_popular": "Nu există postări populare pentru această dată",
+  "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
   "plugin_booru_engine": "API engine",
@@ -1428,10 +1444,32 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_exclude_from_search": "Exclude din căutarea curentă",
+  "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Exclude",
   "@plugin_booru_exclude_tag": {},
+  "plugin_booru_family": "Postări părinte și copil",
+  "@plugin_booru_family": {},
+  "plugin_booru_favorites": "{count, plural, one{{count} favorit} few{{count} favorite} other{{count} de favorite}}",
+  "@plugin_booru_favorites": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_follow_tag": "Urmărește eticheta",
+  "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_full_screen": "Deschide pe ecran complet",
+  "@plugin_booru_full_screen": {},
+  "plugin_booru_grid_columns": "Coloane în grilă",
+  "@plugin_booru_grid_columns": {},
+  "plugin_booru_grid_columns_auto": "Potrivire la ecran",
+  "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hide_tag": "Ascunde postările cu această etichetă",
+  "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
   "@plugin_booru_host": {},
   "plugin_booru_host_hint": "https://rule34.xxx",
@@ -1452,38 +1490,66 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_more_from": "Mai multe de la {name}",
+  "@plugin_booru_more_from": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
+  "plugin_booru_mute_help": "O intrare cu mai multe etichete ascunde doar postările care le au pe toate. Funcționează și -tag și rating:e",
+  "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_no_comments": "Încă nu există comentarii",
+  "@plugin_booru_no_comments": {},
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
   "@plugin_booru_open_on_host": {},
   "plugin_booru_open_source": "Open source",
   "@plugin_booru_open_source": {},
-  "plugin_booru_open_video": "Open video",
-  "@plugin_booru_open_video": {},
   "plugin_booru_order_score": "Cel mai mare scor",
   "@plugin_booru_order_score": {},
+  "plugin_booru_original_in_viewer": "Fișiere originale pe ecran complet",
+  "@plugin_booru_original_in_viewer": {},
+  "plugin_booru_original_in_viewer_description": "Pe ecran complet se încarcă fișierul la dimensiunea maximă, nu versiunea redusă a site-ului. Consumă mai multe date",
+  "@plugin_booru_original_in_viewer_description": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
-  "plugin_booru_rating_explicit": "Explicit",
-  "@plugin_booru_rating_explicit": {},
-  "plugin_booru_rating_general": "General",
-  "@plugin_booru_rating_general": {},
-  "plugin_booru_rating_label": "Rating: {code}",
-  "@plugin_booru_rating_label": {
+  "plugin_booru_pick_date": "Alege o dată",
+  "@plugin_booru_pick_date": {},
+  "plugin_booru_popular_day": "Zi",
+  "@plugin_booru_popular_day": {},
+  "plugin_booru_popular_earlier": "Mai devreme",
+  "@plugin_booru_popular_earlier": {},
+  "plugin_booru_popular_later": "Mai târziu",
+  "@plugin_booru_popular_later": {},
+  "plugin_booru_popular_month": "Lună",
+  "@plugin_booru_popular_month": {},
+  "plugin_booru_popular_top": "Acest site nu are o listă de populare, așa că sunt afișate postările cu cel mai mare scor",
+  "@plugin_booru_popular_top": {},
+  "plugin_booru_popular_week": "Săptămână",
+  "@plugin_booru_popular_week": {},
+  "plugin_booru_posted_on": "Publicat pe {date}",
+  "@plugin_booru_posted_on": {
     "placeholders": {
-      "code": {
+      "date": {
         "type": "String"
       }
     }
   },
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
   "plugin_booru_rating_questionable": "Questionable",
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
@@ -1520,12 +1586,18 @@
       }
     }
   },
+  "plugin_booru_search_tag": "Caută această etichetă",
+  "@plugin_booru_search_tag": {},
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
   "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_display": "Afișare",
+  "@plugin_booru_section_display": {},
   "plugin_booru_section_host": "Host",
   "@plugin_booru_section_host": {},
+  "plugin_booru_see_all": "Vezi tot",
+  "@plugin_booru_see_all": {},
   "plugin_booru_settings_title": "Booru settings",
   "@plugin_booru_settings_title": {},
   "plugin_booru_show_tab": "Show Booru tab",
@@ -1536,12 +1608,24 @@
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nume afișat",
   "@plugin_booru_site_name": {},
+  "plugin_booru_small_thumbnails": "Miniaturi mai mici",
+  "@plugin_booru_small_thumbnails": {},
+  "plugin_booru_small_thumbnails_description": "Încarcă în grilă previzualizările mici de pe site. Mai rapid și consumă mai puține date, dar imaginile sunt mai neclare",
+  "@plugin_booru_small_thumbnails_description": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_actions_hint": "Atinge o etichetă ca s-o cauți, s-o urmărești, s-o ascunzi sau să-i citești pagina wiki",
+  "@plugin_booru_tag_actions_hint": {},
+  "plugin_booru_tag_artist": "Artist",
+  "@plugin_booru_tag_artist": {},
+  "plugin_booru_tag_character": "Personaj",
+  "@plugin_booru_tag_character": {},
+  "plugin_booru_tag_copyright": "Copyright",
+  "@plugin_booru_tag_copyright": {},
   "plugin_booru_tag_count": "{count} posts",
   "@plugin_booru_tag_count": {
     "placeholders": {
@@ -1550,8 +1634,16 @@
       }
     }
   },
-  "plugin_booru_tag_hint": "Tap a tag to search · long-press to follow or unfollow",
-  "@plugin_booru_tag_hint": {},
+  "plugin_booru_tag_meta": "Meta",
+  "@plugin_booru_tag_meta": {},
+  "plugin_booru_tag_sort": "Sortează etichetele",
+  "@plugin_booru_tag_sort": {},
+  "plugin_booru_tag_sort_count": "Cele mai folosite",
+  "@plugin_booru_tag_sort_count": {},
+  "plugin_booru_tag_sort_name": "A–Z",
+  "@plugin_booru_tag_sort_name": {},
+  "plugin_booru_tag_species": "Specie",
+  "@plugin_booru_tag_species": {},
   "plugin_booru_tag_subtitle": "tag:{name}",
   "@plugin_booru_tag_subtitle": {
     "placeholders": {
@@ -1560,6 +1652,8 @@
       }
     }
   },
+  "plugin_booru_tags": "Etichete",
+  "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
   "@plugin_booru_test_connection": {},
   "plugin_booru_test_failed": "Booru test failed: {detail}",
@@ -1578,12 +1672,43 @@
       }
     }
   },
+  "plugin_booru_tile_details": "Detalii sub miniaturi",
+  "@plugin_booru_tile_details": {},
+  "plugin_booru_tile_details_description": "Site-ul, primele etichete și scorul sub fiecare postare din grilă",
+  "@plugin_booru_tile_details_description": {},
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unfollow_tag": "Nu mai urmări eticheta",
+  "@plugin_booru_unfollow_tag": {},
+  "plugin_booru_unhide_tag": "Nu mai ascunde această etichetă",
+  "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Elimină din căutările salvate",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_uploaded_by": "Încărcat de {name}",
+  "@plugin_booru_uploaded_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
+  "plugin_booru_votes": "Voturi pozitive: {up}, negative: {down}",
+  "@plugin_booru_votes": {
+    "placeholders": {
+      "up": {
+        "type": "int"
+      },
+      "down": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_wiki": "Wiki",
+  "@plugin_booru_wiki": {},
+  "plugin_booru_wiki_empty": "Această etichetă nu are pagină wiki",
+  "@plugin_booru_wiki_empty": {},
   "plugin_catalogue_cached": "Se afișează ultima listă primită",
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Lista de pluginuri nu a putut fi preluată",
@@ -1660,8 +1785,6 @@
   "@plugin_eh_clear_history": {},
   "plugin_eh_comments": "Comentarii",
   "@plugin_eh_comments": {},
-  "plugin_eh_continue": "Continuă",
-  "@plugin_eh_continue": {},
   "plugin_eh_cookies": "Cookies",
   "@plugin_eh_cookies": {},
   "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
@@ -1698,6 +1821,120 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_gallery_all_comments": "{count, plural, one{Afișează {count} comentariu} few{Afișează toate cele {count} comentarii} other{Afișează toate cele {count} de comentarii}}",
+  "@plugin_eh_gallery_all_comments": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_comment_score": "Scor {score}",
+  "@plugin_eh_gallery_comment_score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_continue_page": "Continuă de la pagina {page}",
+  "@plugin_eh_gallery_continue_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_copy_tag": "Copiază eticheta",
+  "@plugin_eh_gallery_copy_tag": {},
+  "plugin_eh_gallery_favorited": "{count, plural, =0{Nu a fost adăugată la favorite} one{Adăugată la favorite o dată} few{Adăugată la favorite de {count} ori} other{Adăugată la favorite de {count} de ori}}",
+  "@plugin_eh_gallery_favorited": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_file_size": "Dimensiune {size}",
+  "@plugin_eh_gallery_file_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language": "Limbă: {language}",
+  "@plugin_eh_gallery_language": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_language_translated": "Limbă: {language} (traducere)",
+  "@plugin_eh_gallery_language_translated": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_pages": "{count, plural, one{{count} pagină} few{{count} pagini} other{{count} de pagini}}",
+  "@plugin_eh_gallery_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_posted": "Publicat pe {date}",
+  "@plugin_eh_gallery_posted": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_semantics": "{count, plural, one{Notă {rating} din 5, pe baza a {count} vot} few{Notă {rating} din 5, pe baza a {count} voturi} other{Notă {rating} din 5, pe baza a {count} de voturi}}",
+  "@plugin_eh_gallery_rating_semantics": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_gallery_rating_value": "{rating} ({count})",
+  "@plugin_eh_gallery_rating_value": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_tag_copied": "S-a copiat {tag}",
+  "@plugin_eh_gallery_tag_copied": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_gallery_uploader_comment": "Uploader",
+  "@plugin_eh_gallery_uploader_comment": {},
+  "plugin_eh_gallery_weak_tag": "{tag}, încă neconfirmată",
+  "@plugin_eh_gallery_weak_tag": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_eh_jump_go": "Mergi",
   "@plugin_eh_jump_go": {},
   "plugin_eh_jump_hint": "1–{total}",
@@ -1732,6 +1969,30 @@
   "@plugin_eh_load_more_previews": {},
   "plugin_eh_min_rating": "Notă minimă",
   "@plugin_eh_min_rating": {},
+  "plugin_eh_ns_artist": "Artist",
+  "@plugin_eh_ns_artist": {},
+  "plugin_eh_ns_character": "Personaj",
+  "@plugin_eh_ns_character": {},
+  "plugin_eh_ns_cosplayer": "Cosplayer",
+  "@plugin_eh_ns_cosplayer": {},
+  "plugin_eh_ns_female": "Feminin",
+  "@plugin_eh_ns_female": {},
+  "plugin_eh_ns_group": "Grup",
+  "@plugin_eh_ns_group": {},
+  "plugin_eh_ns_language": "Limbă",
+  "@plugin_eh_ns_language": {},
+  "plugin_eh_ns_male": "Masculin",
+  "@plugin_eh_ns_male": {},
+  "plugin_eh_ns_mixed": "Mixt",
+  "@plugin_eh_ns_mixed": {},
+  "plugin_eh_ns_other": "Altele",
+  "@plugin_eh_ns_other": {},
+  "plugin_eh_ns_parody": "Parodie",
+  "@plugin_eh_ns_parody": {},
+  "plugin_eh_ns_reclass": "Reclasificare",
+  "@plugin_eh_ns_reclass": {},
+  "plugin_eh_ns_temp": "Temporar",
+  "@plugin_eh_ns_temp": {},
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1769,6 +2030,20 @@
   },
   "plugin_eh_read": "Read",
   "@plugin_eh_read": {},
+  "plugin_eh_reader_image_failed": "Imaginea acestei pagini nu s-a încărcat",
+  "@plugin_eh_reader_image_failed": {},
+  "plugin_eh_reader_mode": "Mod de citire",
+  "@plugin_eh_reader_mode": {},
+  "plugin_eh_reader_mode_ltr": "De la stânga la dreapta",
+  "@plugin_eh_reader_mode_ltr": {},
+  "plugin_eh_reader_mode_rtl": "De la dreapta la stânga (manga)",
+  "@plugin_eh_reader_mode_rtl": {},
+  "plugin_eh_reader_mode_vertical": "Derulare verticală (webtoon)",
+  "@plugin_eh_reader_mode_vertical": {},
+  "plugin_eh_reader_open_original": "Deschide originalul",
+  "@plugin_eh_reader_open_original": {},
+  "plugin_eh_reader_try_another_server": "Încearcă alt server",
+  "@plugin_eh_reader_try_another_server": {},
   "plugin_eh_reload_image": "Reîncarcă imaginea",
   "@plugin_eh_reload_image": {},
   "plugin_eh_search_hint": "Search title, tags, uploader…",

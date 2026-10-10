@@ -7,9 +7,12 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
+import 'package:xta/plugins/pixiv/pixiv_tag_kinds.dart';
+import 'package:xta/plugins/plugin_tag_chip.dart';
 
-/// A work's or a novel's tags, each searching Pixiv for itself among [kind];
-/// a long press offers to mute, pin or copy it.
+/// A work's or a novel's tags as kind-coloured chips (copyright, character,
+/// general, meta, read off the tags themselves), each searching Pixiv for
+/// itself among [kind]; a long press offers to mute, pin or copy it.
 class PixivDetailTags extends StatelessWidget {
   final List<PixivTag> tags;
   final PixivSearchKind kind;
@@ -18,33 +21,31 @@ class PixivDetailTags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
     // Each chip keeps its padded 48 dp target, so the rows need no spacing of
-    // their own; the long press is merged into the chip's labelled node.
+    // their own.
     return Wrap(
       spacing: 6,
       children: [
-        for (final tag in tags)
-          MergeSemantics(
-            child: GestureDetector(
-              key: ValueKey('pixiv-tag-${tag.name}'),
-              onLongPress: () => showPixivTagSheet(context, tag),
-              child: ActionChip(
-                label: _label(context, tag),
-                onPressed: () => openPixivTagSearch(context, tag.name, kind: kind),
-              ),
-            ),
+        for (final entry in pixivKindedTags(tags))
+          PluginTagChip(
+            key: ValueKey('pixiv-tag-${entry.tag.name}'),
+            label: '#${entry.tag.name}',
+            detail: entry.tag.translation,
+            kind: entry.kind,
+            longPressHint: l10n.plugin_pixiv_mute_tag(entry.tag.displayName),
+            onLongPress: () => showPixivTagSheet(context, entry.tag),
+            onPressed: () => openPixivTagSearch(context, entry.tag.name, kind: kind),
           ),
       ],
     );
   }
-
-  Widget _label(BuildContext context, PixivTag tag) => Text.rich(pixivTagSpan(context, tag));
 }
 
 /// The tag as Pixiv spells it, with its translation beside it when there is one.
 TextSpan pixivTagSpan(BuildContext context, PixivTag tag) {
-  final translated = tag.translatedName?.trim() ?? '';
-  if (translated.isEmpty || translated == tag.name) return TextSpan(text: '#${tag.name}');
+  final translated = tag.translation;
+  if (translated == null) return TextSpan(text: '#${tag.name}');
   final muted = Theme.of(context).colorScheme.onSurfaceVariant;
   return TextSpan(
     children: [

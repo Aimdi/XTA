@@ -61,6 +61,12 @@ const List<BooruPreset> booruPresets = [
     host: 'https://danbooru.donmai.us',
   ),
   BooruPreset(
+    id: 'aibooru',
+    name: 'AIBooru',
+    engine: BooruEngine.danbooru,
+    host: 'https://aibooru.online',
+  ),
+  BooruPreset(
     id: 'yandere',
     name: 'Yande.re',
     engine: BooruEngine.moebooru,
@@ -71,6 +77,12 @@ const List<BooruPreset> booruPresets = [
     name: 'Konachan',
     engine: BooruEngine.moebooru,
     host: 'https://konachan.com',
+  ),
+  BooruPreset(
+    id: 'sakugabooru',
+    name: 'Sakugabooru',
+    engine: BooruEngine.moebooru,
+    host: 'https://www.sakugabooru.com',
   ),
   BooruPreset(
     id: 'safebooru',
@@ -89,6 +101,12 @@ const List<BooruPreset> booruPresets = [
     name: 'Rule34',
     engine: BooruEngine.gelbooruV2,
     host: 'https://rule34.xxx',
+  ),
+  BooruPreset(
+    id: 'tbib',
+    name: 'TBIB',
+    engine: BooruEngine.gelbooruV2,
+    host: 'https://tbib.org',
   ),
   BooruPreset(
     id: 'xbooru',
@@ -160,6 +178,7 @@ BooruEngine? guessBooruEngine(String host) {
   if (h.contains('e621') || h.contains('e926')) return BooruEngine.e621;
   if (h.contains('yande.re') ||
       h.contains('konachan') ||
+      h.contains('sakugabooru') ||
       h.contains('hypnohub')) {
     return BooruEngine.moebooru;
   }
