@@ -101,6 +101,44 @@ void main() {
     });
   });
 
+  group('PixivDownloadStore with a wider queue', () {
+    test('keeps as many pages in flight as the queue allows and remembers which saved', () async {
+      final gates = <String, Completer<bool>>{};
+      final store = PixivDownloadStore(
+        save: (request) => (gates[request.fileName] = Completer<bool>()).future,
+        cancelActive: (_) {},
+        total: 3,
+        parallel: 2,
+      );
+      addTearDown(store.destroy);
+      final run = store.run([_request(0), _request(1), _request(2)]);
+
+      expect(gates.keys, ['p0.png', 'p1.png']);
+      gates['p1.png']!.complete(true);
+      await pumpEventQueue();
+      expect(gates.keys, ['p0.png', 'p1.png', 'p2.png']);
+      gates['p0.png']!.complete(false);
+      gates['p2.png']!.complete(true);
+
+      final result = await run;
+      expect((result.done, result.saved), (3, 2));
+      expect(result.savedIndexes..sort(), [1, 2]);
+    });
+
+    test('cancelling stops every page in flight', () async {
+      final cancelled = <Uri>[];
+      final gate = Completer<bool>();
+      final store = PixivDownloadStore(save: (_) => gate.future, cancelActive: cancelled.add, total: 4, parallel: 2);
+      addTearDown(store.destroy);
+      final run = store.run([for (var page = 0; page < 4; page++) _request(page)]);
+
+      store.cancel();
+      expect(cancelled, [_request(0).uri, _request(1).uri]);
+      gate.complete(false);
+      expect((await run).done, 2);
+    });
+  });
+
   testWidgets('download all shows page progress with a cancel button and reports the final count', (tester) async {
     final harness = await pumpPixiv(tester, PixivReaderScreen(illust: pixivWork(pages: 3)));
     final gates = <Completer<bool>>[];
