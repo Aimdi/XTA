@@ -66,7 +66,7 @@ void main() {
   group('account', () {
     Finder tokenField() => find.descendant(of: find.byType(PixivAccountSettings), matching: find.byType(TextField));
 
-    testWidgets('pasting or clearing a refresh token flips Sign in and Sign out at once', (tester) async {
+    testWidgets('pasting or clearing a refresh token flips Sign in and Sign out once entered', (tester) async {
       await pumpPixiv(
         tester,
         const PixivSettingsScreen(),
@@ -80,9 +80,13 @@ void main() {
 
       await tester.enterText(tokenField(), 'pasted-refresh-token');
       await tester.pump();
+      expect(find.text('Sign out'), findsNothing, reason: 'nothing is put in use while typing');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
       expect(find.text('Sign out'), findsOneWidget);
 
       await tester.enterText(tokenField(), '');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
       expect(find.text('Sign out'), findsNothing);
       await disposePixiv(tester);

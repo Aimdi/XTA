@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Serverul propriu Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "O oglindă sau serverul tău vede fiecare imagine pe care o deschizi, inclusiv cele R-18, și adresa ta IP.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Revino la implicit",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informații copiate",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Acest plugin privat citește Pixiv ca o galerie: urmăriți, clasamente, semnele dvs. publice și căutarea. Atingeți Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. De aici nu se publică, marchează sau urmărește nimic pe Pixiv.",
+  "plugin_pixiv_settings_intro": "Acest plugin privat citește Pixiv ca o aplicație-galerie: ilustrații, manga, romane, clasamente, semnele dvs. de carte și căutarea. Atingeți Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. În contul dvs. Pixiv ajung doar semnele de carte, urmăririle și modificările listei de urmărire pe care le faceți dvs. De aici nu se publică, nu se comentează și nu se raportează niciodată nimic.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Partajează imaginea",
   "@plugin_pixiv_share_image": {},

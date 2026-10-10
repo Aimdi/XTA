@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Уласны сервер Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Люстэрка або ваш сервер бачыць кожную выяву, якую вы адкрываеце, у тым ліку R-18, і ваш IP-адрас.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Скінуць да прадвызначанага",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Звесткі скапіяваны",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Гэты прыватны плагін чытае Pixiv як галерэю: стужка, рэйтынгі, вашы публічныя закладкі і пошук. Націсніце «Увайсці», каб увайсці ў Pixiv у браўзеры, або ўстаўце refresh-токен ніжэй. Адсюль нічога не публікуецца, не дадаецца ў закладкі і не падпісваецца на Pixiv.",
+  "plugin_pixiv_settings_intro": "Гэты прыватны плагін чытае Pixiv як галерэю: ілюстрацыі, манга, раманы, рэйтынгі, вашы закладкі і пошук. Націсніце «Увайсці», каб увайсці ў Pixiv у браўзеры, або ўстаўце refresh-токен ніжэй. На ваш акаўнт Pixiv адпраўляюцца толькі закладкі, падпіскі і змены ў спісе назірання, якія вы робіце самі. Публікацыі, каментарыі і скаргі адсюль ніколі не адпраўляюцца.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Падзяліцца выявай",
   "@plugin_pixiv_share_image": {},

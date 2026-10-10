@@ -10,6 +10,8 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 
 void main() {
   late PrefServiceCache prefs;
@@ -243,12 +245,15 @@ void main() {
         );
 
         await PixivDiscoveryApi(client).ranking('week');
-        await client.searchIllust(
-          'cat',
-          searchTarget: 'exact_match_for_tags',
-          sort: 'popular_desc',
+        final searchApi = PixivSearchApi(client);
+        await searchApi.illusts(
+          pixivSearchQuery(
+            const PixivSearchFilter(target: PixivSearchTarget.exactTags, sort: PixivSearchSort.popular),
+            'cat',
+            now: DateTime(2024),
+          ),
         );
-        final users = await client.searchUsers('artist');
+        final users = await searchApi.users('artist');
         final detail = await client.illustDetail(5);
         await client.related(5);
         await client.bookmarks(userId: 123, restrict: 'private');
@@ -272,7 +277,7 @@ void main() {
           (request) => request.url.path == '/v1/user/bookmarks/illust',
         );
         expect(bookmarks.url.queryParameters['restrict'], 'private');
-        expect(users.users.single.id, 9);
+        expect(users.items.single.user.id, 9);
         expect(detail.id, 5);
       },
     );
@@ -308,6 +313,29 @@ void main() {
       expect(follow!.url.path, '/v1/user/follow/add');
       expect(follow!.body, contains('user_id=42'));
       expect(follow!.body, contains('restrict=public'));
+    });
+
+    test('Pixiv\'s "Rate Limit" answer reads as rate limiting, not a refused token', () async {
+      await prefs.set(optionPluginPixivAccessToken, 'access-1');
+      await prefs.set(optionPluginPixivAccessExpiresAt, DateTime.now().add(const Duration(hours: 1)).toIso8601String());
+      for (final status in [400, 403]) {
+        var tokenHits = 0;
+        final client = PixivClient(
+          prefs,
+          httpClient: MockClient((request) async {
+            if (request.url.host.contains('oauth')) tokenHits++;
+            return _json({
+              'error': {'user_message': '', 'message': 'Rate Limit', 'reason': '', 'user_message_details': {}},
+            }, status);
+          }),
+        );
+        await expectLater(
+          client.getJson('/v1/illust/recommended'),
+          throwsA(isA<PixivException>().having((e) => e.kind, 'kind', PixivErrorKind.rateLimited)),
+          reason: 'HTTP $status',
+        );
+        expect(tokenHits, 0, reason: 'a rate limit is no reason to refresh the token');
+      }
     });
 
     test('a refused token surfaces what Pixiv actually said', () async {

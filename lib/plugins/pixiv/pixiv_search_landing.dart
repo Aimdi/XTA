@@ -61,7 +61,10 @@ class PixivSearchLanding extends StatelessWidget {
               title: l10n.plugin_pixiv_recommended_users,
               store: store.creators,
               height: 88,
-              builder: (context, users) => _PixivCreatorStrip(users: users),
+              builder: (context, users) => ScopedBuilder<PixivMuteStore, PixivMuteState>(
+                store: context.read<PixivMuteStore>(),
+                onState: (context, mute) => _PixivCreatorStrip(users: mute.withoutMutedAuthors(users, (u) => u.id)),
+              ),
             ),
           _PixivLandingSection<PixivTrendTag>(
             title: l10n.plugin_pixiv_trending_title,
@@ -114,9 +117,12 @@ class _PixivSearchHistory extends StatelessWidget {
             runSpacing: 8,
             children: [
               for (final query in shown)
-                GestureDetector(
-                  onLongPress: () => onForget(query),
-                  child: ActionChip(label: Text(query), onPressed: () => onSearch(query)),
+                // One labelled node, so a screen reader offers the long press with the chip.
+                MergeSemantics(
+                  child: GestureDetector(
+                    onLongPress: () => onForget(query),
+                    child: ActionChip(label: Text(query), onPressed: () => onSearch(query)),
+                  ),
                 ),
               if (folds)
                 ActionChip(
@@ -259,12 +265,15 @@ class _PixivTrendingGrid extends StatelessWidget {
 
   const _PixivTrendingGrid({required this.tags, required this.onSearch});
 
+  /// Large text makes the caption cover a third-width tile, so the tiles widen to halves.
+  static int _columns(BuildContext context) => MediaQuery.textScalerOf(context).scale(12) > 12 * 1.5 ? 2 : 3;
+
   @override
   Widget build(BuildContext context) => GridView.builder(
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 3,
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: _columns(context),
       mainAxisSpacing: 4,
       crossAxisSpacing: 4,
     ),

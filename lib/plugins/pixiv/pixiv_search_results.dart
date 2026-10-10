@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filter_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_store.dart';
@@ -129,14 +131,21 @@ class PixivPopularStrip extends StatelessWidget {
         SizedBox(
           height: 110,
           // Sideways scrolling here must not reach the grid's load-more listener.
-          child: NotificationListener<ScrollNotification>(onNotification: (_) => true, child: _thumbs(cacheWidth)),
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (_) => true,
+            // A work muted from the grid below leaves the strip too.
+            child: ScopedBuilder<PixivMuteStore, PixivMuteState>(
+              store: context.read<PixivMuteStore>(),
+              onState: (context, mute) => _thumbs(mute.filter(illusts), cacheWidth),
+            ),
+          ),
         ),
         const SizedBox(height: 8),
       ],
     );
   }
 
-  Widget _thumbs(int cacheWidth) => ListView.separated(
+  Widget _thumbs(List<PixivIllust> illusts, int cacheWidth) => ListView.separated(
     scrollDirection: Axis.horizontal,
     padding: const EdgeInsets.symmetric(horizontal: 8),
     itemCount: illusts.length,

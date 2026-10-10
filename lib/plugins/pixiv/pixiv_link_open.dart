@@ -13,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_gate.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -74,6 +75,15 @@ Future<void> openPixivUser(BuildContext context, int userId, {String? initialTab
   ),
 );
 
+/// Searches works, or with [kind] novels, for [tag].
+Future<void> openPixivTagSearch(BuildContext context, String tag, {PixivSearchKind kind = PixivSearchKind.works}) =>
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) => PixivSearchScreen(initialQuery: tag, kind: kind),
+      ),
+    );
+
 /// Opens what a Pixiv link or ID names. False when the work or novel could
 /// not be fetched, so the caller can fall back to the browser or say so.
 ///
@@ -81,13 +91,13 @@ Future<void> openPixivUser(BuildContext context, int userId, {String? initialTab
 /// novels go through [openPixivNovelById], like every other way into one.
 Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
   switch (ref) {
-    case PixivUserLinkRef(:final id):
-      await openPixivUser(context, id);
+    case PixivUserLinkRef(:final id, :final tab):
+      await openPixivUser(context, id, initialTab: tab);
       return true;
     case PixivArtworkLinkRef(:final id):
       return _openArtwork(context, id);
-    case PixivTagLinkRef(:final tag):
-      await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivSearchScreen(initialQuery: tag)));
+    case PixivTagLinkRef(:final tag, :final novels):
+      await openPixivTagSearch(context, tag, kind: novels ? PixivSearchKind.novels : PixivSearchKind.works);
       return true;
     case PixivShortLinkRef():
       return _openShortLink(context, ref);

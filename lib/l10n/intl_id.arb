@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Server milik Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Mirror atau server Anda sendiri melihat setiap gambar yang Anda buka, termasuk yang R-18, dan alamat IP Anda.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Kembalikan ke bawaan",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Info disalin",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Plugin pribadi ini membaca Pixiv seperti galeri: mengikuti, peringkat, penanda publik Anda, dan pencarian. Ketuk Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Dari sini tidak ada yang diposting, ditandai, atau diikuti di Pixiv.",
+  "plugin_pixiv_settings_intro": "Plugin pribadi ini membaca Pixiv seperti aplikasi galeri: ilustrasi, manga, novel, peringkat, penanda Anda, dan pencarian. Ketuk Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Hanya penanda, ikutan, dan perubahan daftar pantau yang Anda buat sendiri yang dikirim ke akun Pixiv Anda. Dari sini tidak pernah ada yang diposting, dikomentari, atau dilaporkan.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Bagikan gambar",
   "@plugin_pixiv_share_image": {},

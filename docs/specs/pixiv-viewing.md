@@ -41,10 +41,13 @@ the app saves.
 - `pixivImageUrl(url, host)` changes only URLs on `i.pximg.net`, keeping the
   path (and query). `s.pximg.net` and every other host are never touched, nor
   is anything when the host is Pixiv's own or unusable.
-- `parsePixivImageHost` accepts a bare host or an `http(s)` address with port
+- `parsePixivImageHost` accepts a bare host or an `https` address with port
   and path prefix (`https://example.com:8443/pixiv` serves
-  `/pixiv/img-master/…`). Whitespace inside, other schemes, credentials,
-  queries and fragments are refused.
+  `/pixiv/img-master/…`). Whitespace inside, plain `http` (it would carry
+  every work's address and Pixiv's Referer in the clear, and Android refuses
+  it anyway), other schemes, credentials, queries and fragments are refused.
+- The dialog says that a mirror or your own server sees every image opened,
+  R-18 included, and the reader's IP address.
 - The dialog offers Pixiv, the public mirror and a custom address with the
   error shown under the field and Save disabled until it parses; *Reset to
   default* goes back to Pixiv's own server.

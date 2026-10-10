@@ -27,9 +27,15 @@ Map<String, Object?> _work(int id, {int restrict = 0, int ai = 1}) => {
 void main() {
   var requests = 0;
 
-  Future<List<DiscoveryAccount>> discover({required bool showR18, required bool hideAi, required int seed}) async {
+  Future<List<DiscoveryAccount>> discover({
+    required bool showR18,
+    required bool hideAi,
+    required int seed,
+    int userId = 7,
+  }) async {
     final prefs = PrefServiceCache(
       cache: {
+        optionPluginPixivUserId: userId,
         optionPluginPixivRefreshToken: 'refresh-me',
         optionPluginPixivAccessToken: 'access-1',
         optionPluginPixivAccessExpiresAt: DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
@@ -86,5 +92,14 @@ void main() {
     final fetched = requests;
     expect(shownWork(await discover(showR18: false, hideAi: true, seed: 104)), 3);
     expect(requests, fetched, reason: 'the second scan reads the cache');
+  });
+
+  test('another account asks again rather than reading the last one\'s answers', () async {
+    await discover(showR18: true, hideAi: false, seed: 105, userId: 7);
+    final fetched = requests;
+    await discover(showR18: true, hideAi: false, seed: 105, userId: 7);
+    expect(requests, fetched);
+    await discover(showR18: true, hideAi: false, seed: 105, userId: 8);
+    expect(requests, fetched + 1);
   });
 }

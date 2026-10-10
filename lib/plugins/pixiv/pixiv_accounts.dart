@@ -114,6 +114,13 @@ class PixivAccountsStore extends Store<List<PixivAccount>> {
     await client.switchTo(accounts.where((known) => known.userId == account.userId).firstOrNull ?? account);
   }
 
+  /// Puts a pasted refresh [token] in use; the account it replaces first
+  /// keeps the token it had among the stored ones.
+  Future<void> useToken(String token) async {
+    update(await keepActivePixivToken(_prefs));
+    await client.useRefreshToken(token);
+  }
+
   /// Forgets an account that is not the active one.
   Future<void> remove(PixivAccount account) async =>
       update(await _store(_prefs, pixivAccountsWithout(_stored(_prefs), account.userId)));

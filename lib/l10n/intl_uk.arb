@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Власний сервер Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Дзеркало або ваш сервер бачить кожне зображення, яке ви відкриваєте, зокрема R-18, і вашу IP-адресу.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Повернути типовий",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Відомості скопійовано",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Цей приватний плагін читає Pixiv як галерею: стрічка, рейтинги, ваші публічні закладки й пошук. Натисніть «Увійти», щоб увійти в Pixiv у браузері, або вставте refresh-токен нижче. Звідси нічого не публікується, не додається в закладки й не підписується на Pixiv.",
+  "plugin_pixiv_settings_intro": "Цей приватний плагін читає Pixiv як галерею: ілюстрації, манґа, романи, рейтинги, ваші закладки й пошук. Натисніть «Увійти», щоб увійти в Pixiv у браузері, або вставте refresh-токен нижче. До вашого облікового запису Pixiv надсилаються лише закладки, підписки й зміни списку відстеження, які ви робите самі. Публікації, коментарі й скарги звідси ніколи не надсилаються.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Поділитися зображенням",
   "@plugin_pixiv_share_image": {},

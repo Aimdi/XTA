@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv'in kendi sunucusu",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Bir yansı veya kendi sunucunuz, açtığınız her görseli (R-18 olanlar dahil) ve IP adresinizi görür.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Varsayılana sıfırla",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Bilgiler kopyalandı",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri gibi okur: takip, sıralamalar, herkese açık yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Buradan Pixiv’de hiçbir şey gönderilmez, yer imine eklenmez veya takip edilmez.",
+  "plugin_pixiv_settings_intro": "Bu özel eklenti Pixiv’i bir galeri uygulaması gibi okur: illüstrasyonlar, mangalar, romanlar, sıralamalar, yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Pixiv hesabınıza yalnızca kendi yaptığınız yer imleri, takipler ve izleme listesi değişiklikleri gönderilir. Buradan asla gönderi paylaşılmaz, yorum yapılmaz veya şikâyette bulunulmaz.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Görseli paylaş",
   "@plugin_pixiv_share_image": {},

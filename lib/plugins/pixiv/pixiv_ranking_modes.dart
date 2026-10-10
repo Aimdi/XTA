@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -116,14 +117,30 @@ class PixivRankingPinsStore extends Store<List<String>> {
   final BasePrefService prefs;
   final String prefKey;
   final List<PixivRankingMode> table;
+  final List<String> defaults;
 
+  /// Follows the stored pins, so a settings import or an uninstall's reset
+  /// shows at once and the next toggle never writes the old pins back.
   PixivRankingPinsStore(
     this.prefs, {
     this.prefKey = optionPluginPixivRankingModes,
     List<PixivRankingMode>? table,
-    List<String> defaults = pixivDefaultRankingPins,
+    this.defaults = pixivDefaultRankingPins,
   }) : table = table ?? pixivIllustRankingModes,
-       super(parsePixivRankingPins(prefs.get<String>(prefKey), table ?? pixivIllustRankingModes, defaults));
+       super(parsePixivRankingPins(prefs.get<String>(prefKey), table ?? pixivIllustRankingModes, defaults)) {
+    prefs.addKeyListener(prefKey, _load);
+  }
+
+  void _load() {
+    final stored = parsePixivRankingPins(prefs.get<String>(prefKey), table, defaults);
+    if (!listEquals(stored, state)) update(stored);
+  }
+
+  @override
+  Future<void> destroy() async {
+    prefs.removeKeyListener(prefKey, _load);
+    await super.destroy();
+  }
 
   bool isPinned(String id) => state.contains(id);
 
@@ -219,7 +236,8 @@ class _RankingModeSheet extends StatelessWidget {
             const SizedBox(height: 12),
             ScopedBuilder<PixivRankingPinsStore, List<String>>(
               store: pins,
-              onState: (context, pinned) => Wrap(spacing: 8, runSpacing: 4, children: _chips(l10n, pinned)),
+              onState: (context, pinned) =>
+                  Wrap(spacing: 8, runSpacing: 4, children: _chips(l10n, pinned, pixivFilterChipLabel(context))),
             ),
           ],
         ),
@@ -227,16 +245,31 @@ class _RankingModeSheet extends StatelessWidget {
     );
   }
 
-  List<Widget> _chips(L10n l10n, List<String> pinned) {
+  List<Widget> _chips(L10n l10n, List<String> pinned, TextStyle? labelStyle) {
     final visiblePins = offered.where((mode) => pinned.contains(mode.id)).length;
     return [
       for (final mode in offered)
         FilterChip(
           key: ValueKey('pixiv-ranking-pin-${mode.id}'),
           label: Text(mode.label(l10n)),
+          labelStyle: labelStyle,
           selected: pinned.contains(mode.id),
           onSelected: pinned.contains(mode.id) && visiblePins <= 1 ? null : (_) => pins.toggle(mode.id),
         ),
     ];
   }
+}
+
+/// A FilterChip's label in the theme's colour on the accent fill once selected,
+/// as a ChoiceChip's is; FilterChip keeps the unselected colour there, which
+/// the true-black theme draws light grey on blue. Null where the theme names
+/// no colours, leaving Material's own pair.
+TextStyle? pixivFilterChipLabel(BuildContext context) {
+  final chips = ChipTheme.of(context);
+  final selected = chips.secondaryLabelStyle?.color;
+  final idle = chips.labelStyle?.color;
+  if (selected == null || idle == null) return null;
+  return TextStyle(
+    color: WidgetStateColor.resolveWith((states) => states.contains(WidgetState.selected) ? selected : idle),
+  );
 }

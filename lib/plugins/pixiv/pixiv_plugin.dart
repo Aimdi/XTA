@@ -19,6 +19,7 @@ import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_index.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
@@ -118,8 +119,20 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
   Widget Function() destinationFor(Subscription subscription) =>
       () => PixivUserScreen(userId: int.parse((subscription as PluginAccountSubscription).accountId));
 
+  /// A settings import or sync rewrote the preferences the app-wide stores
+  /// hold in memory; they read them again so the next change builds on them.
   @override
-  Future<void> reloadFromDatabase(BuildContext context) async {}
+  Future<void> reloadFromDatabase(BuildContext context) async {
+    _reloadPreferenceStores(context);
+    context.read<PixivDownloadIndex?>()?.load();
+    await context.read<PixivMuteStore?>()?.load();
+  }
+
+  void _reloadPreferenceStores(BuildContext context) {
+    context.read<PixivSearchHistory?>()?.load();
+    context.read<PixivNovelSearchHistory?>()?.load();
+    context.read<PixivFavoriteTagsStore?>()?.load();
+  }
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) async {
@@ -181,13 +194,14 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
     pixivAccountDataForgetter(context)();
-    context.read<PixivSearchHistory>().load();
-    context.read<PixivNovelSearchHistory>().load();
-    context.read<PixivFavoriteTagsStore>().load();
+    _reloadPreferenceStores(context);
     context.read<PixivDownloadIndex?>()?.update(const {});
+    final mute = context.read<PixivMuteStore?>();
+    final history = context.read<PixivHistoryStore?>();
     final novelHistory = context.read<PixivNovelHistoryStore?>();
     final prefs = PrefService.of(context, listen: false);
-    await context.read<PixivHistoryStore?>()?.clear();
+    await mute?.load();
+    await history?.clear();
     await novelHistory?.clear();
     await ArticleReadingStore.forget(prefs, journalKey: optionPluginPixivNovelReading);
   }

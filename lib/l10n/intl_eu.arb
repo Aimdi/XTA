@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiven zerbitzari propioa",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Ispilu batek edo zure zerbitzariak irekitzen duzun irudi oro ikusten du, R-18 direnak barne, baita zure IP helbidea ere.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Berrezarri lehenetsia",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informazioa kopiatu da",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Plugin pribatu honek Pixiv galeria gisa irakurtzen du: jarraipena, sailkapenak, zure laster-marka publikoak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Hemendik ez da ezer argitaratzen, markatzen edo jarraitzen Pixiv-en.",
+  "plugin_pixiv_settings_intro": "Plugin pribatu honek Pixiv galeria-aplikazio gisa irakurtzen du: ilustrazioak, manga, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Zuk zeuk egiten dituzun laster-markak, jarraipenak eta jarraipen-zerrendako aldaketak soilik bidaltzen dira zure Pixiv kontura. Hemendik ez da inoiz ezer argitaratzen, iruzkintzen edo salatzen.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Partekatu irudia",
   "@plugin_pixiv_share_image": {},

@@ -226,4 +226,10 @@ void main() {
     ], mute);
     expect([for (final tag in tags) (tag.name, tag.illust?.id)], [('shown', null), ('kept', 6)]);
   });
+
+  test("a tag muted by an r'pattern' leaves trending too", () {
+    final mute = PixivMuteState(tags: {pixivNormalizeMuteTag(r"r'^ai'")});
+    final tags = pixivVisibleTrendTags(const [PixivTrendTag(name: 'AIイラスト'), PixivTrendTag(name: 'fairy')], mute);
+    expect([for (final tag in tags) tag.name], ['fairy']);
+  });
 }

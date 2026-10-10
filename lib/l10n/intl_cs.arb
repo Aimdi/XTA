@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Vlastní server Pixivu",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Zrcadlo nebo váš server vidí každý obrázek, který otevřete, včetně R-18, i vaši IP adresu.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Obnovit výchozí",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informace zkopírovány",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Tento soukromý plugin čte Pixiv jako galerii: sledování, žebříčky, vaše veřejné záložky a vyhledávání. Klepněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Odtud se na Pixivu nic nepublikuje, nepřidává do záložek ani nesleduje.",
+  "plugin_pixiv_settings_intro": "Tento soukromý plugin čte Pixiv jako galerii: ilustrace, manga, romány, žebříčky, vaše záložky a vyhledávání. Klepněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Do vašeho účtu Pixiv se odesílají jen záložky, sledování a změny sledovaných sérií, které sami provedete. Odtud se nikdy nic nepublikuje, nekomentuje ani nenahlašuje.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Sdílet obrázek",
   "@plugin_pixiv_share_image": {},

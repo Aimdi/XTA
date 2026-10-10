@@ -334,6 +334,44 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('tapping the Manga or Watchlist chip again brings its list back to the top', (tester) async {
+      final api = _api(
+        manga: [for (var id = 800; id < 840; id++) pixivWork(id: id, pages: 1, title: 'Manga $id')],
+        watchlist: [
+          for (var id = 1; id <= 40; id++)
+            PixivWatchlistSeries(id: id, title: 'Series $id', userId: 9, userName: 'Ren'),
+        ],
+      );
+      await pumpHome(tester, api);
+      for (final source in ['manga', 'watchlist']) {
+        await _tapChip(tester, source);
+        await tester.drag(find.byType(CustomScrollView).last, const Offset(0, -600));
+        await settlePixiv(tester);
+        expect(_verticalOffset(tester), greaterThan(0), reason: source);
+
+        await _tapChip(tester, source);
+        await settlePixiv(tester);
+        expect(_verticalOffset(tester), 0, reason: source);
+      }
+      await disposePixiv(tester);
+    });
+
+    testWidgets('turning Show R-18 off reloads the lists loaded under it', (tester) async {
+      final api = _api(manga: [pixivWork(id: 800, pages: 1, title: 'Loaded with R-18 on')]);
+      final harness = await pumpHome(tester, api, userId: 5);
+      await harness.prefs.set(optionPluginPixivShowR18, true);
+      await settlePixiv(tester);
+      await _tapChip(tester, 'manga');
+      expect(find.text('Loaded with R-18 on'), findsOneWidget);
+
+      api.manga = [pixivWork(id: 801, pages: 1, title: 'Loaded with R-18 off')];
+      await harness.prefs.set(optionPluginPixivShowR18, false);
+      await settlePixiv(tester);
+      expect(find.text('Loaded with R-18 on'), findsNothing);
+      expect(find.text('Loaded with R-18 off'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
     testWidgets('the Recommended header fits a narrow phone with large text', (tester) async {
       final api = _api(users: [_creator(7, 'Sora')], articles: [_articleNumber(1), _articleNumber(2)]);
       final mute = PixivMuteStore(PrefServiceCache());
@@ -593,6 +631,24 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets("an article's works leave out muted creators and works, as soon as they are muted", (tester) async {
+      final api = _api(article: parsed);
+      await _pump(tester, const PixivisionArticleScreen(articleId: 9876, article: _article), api);
+      expect(find.byKey(const ValueKey('pixivision-work-1001')), findsOneWidget);
+      expect(find.byKey(const ValueKey('pixivision-work-1002')), findsOneWidget);
+
+      final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivisionArticleScreen)), listen: false);
+      await mute.muteIllust(1001);
+      await settlePixiv(tester);
+      expect(find.byKey(const ValueKey('pixivision-work-1001')), findsNothing);
+      expect(find.byKey(const ValueKey('pixivision-work-1002')), findsOneWidget);
+
+      await mute.muteAuthor(parsed.works.last.userId);
+      await settlePixiv(tester);
+      expect(find.byKey(const ValueKey('pixivision-work-1002')), findsNothing);
+      await disposePixiv(tester);
+    });
+
     test('a pull keeps the article on screen, even when the page cannot be fetched', () async {
       final api = _api(article: parsed);
       final store = PixivisionArticleStore(api, 9876);
@@ -619,7 +675,7 @@ void main() {
   test('the session account counts signing out and a new account as a switch, not learning the id', () async {
     final prefs = PrefServiceCache(defaults: {optionPluginPixivUserId: 0});
     var switches = 0;
-    final account = PixivSessionAccountStore(prefs, onSwitched: () => switches++);
+    final account = PixivSessionAccountStore(prefs, onChanged: () => switches++);
     addTearDown(account.destroy);
     Future<void> store(int id) async {
       await prefs.set(optionPluginPixivUserId, id);
@@ -636,6 +692,26 @@ void main() {
     expect(switches, 2);
     account.check();
     expect(switches, 2, reason: 'checking again with nothing changed is not a switch');
+  });
+
+  test('turning Show R-18 or Hide AI either way empties the session lists', () async {
+    final prefs = PrefServiceCache(
+      defaults: {optionPluginPixivUserId: 5, optionPluginPixivShowR18: true, optionPluginPixivHideAi: false},
+    );
+    var changes = 0;
+    final account = PixivSessionAccountStore(prefs, onChanged: () => changes++);
+    addTearDown(account.destroy);
+    for (final (key, value) in [
+      (optionPluginPixivShowR18, false),
+      (optionPluginPixivHideAi, true),
+      (optionPluginPixivShowR18, true),
+    ]) {
+      await prefs.set(key, value);
+      expect(account.behind, isTrue);
+      account.check();
+      expect(account.behind, isFalse);
+    }
+    expect(changes, 3);
   });
 
   testWidgets('suggested creators leave out authors the reader mutes', (tester) async {

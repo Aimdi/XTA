@@ -3,6 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/pixiv/pixiv_avatar.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_viewer.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
@@ -12,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_quality.dart';
 import 'package:xta/plugins/pixiv/pixiv_reader_bar.dart';
 import 'package:xta/plugins/plugin_gallery_layout.dart';
+import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
@@ -198,6 +200,26 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Failed to load image'), findsNothing);
+      await disposePixiv(tester);
+    });
+
+    testWidgets("an image that fails never shows the library's English text; an avatar falls back to initials", (
+      tester,
+    ) async {
+      await pumpPixiv(
+        tester,
+        const Scaffold(
+          body: Column(
+            children: [
+              SizedBox.square(dimension: 120, child: PixivNetworkImage(url: 'https://i.pximg.net/c/a/1.jpg')),
+              PixivAvatar(userId: 5, name: 'Mika', url: 'https://i.pximg.net/user-profile/img/5.jpg'),
+            ],
+          ),
+        ),
+      );
+      expect(find.text('Failed to load image'), findsNothing);
+      expect(find.byIcon(Icons.broken_image_outlined), findsOneWidget);
+      expect(find.descendant(of: find.byType(PixivAvatar), matching: find.byType(FallbackAvatar)), findsOneWidget);
       await disposePixiv(tester);
     });
 

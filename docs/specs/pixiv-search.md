@@ -56,7 +56,8 @@ works only and keeps no history, which is how a favourite tag's tab uses it.
   Premium the bookmark bracket. Each control is a 48 dp pill, tinted while it
   narrows the search; the bar scrolls sideways rather than overflow.
 - **Sheet:** target (partial tags, exact tags, title and caption), sort
-  (newest, popular; oldest, popular with men, popular with women for Premium),
+  (newest, oldest, popular; popular with men and popular with women for
+  Premium),
   ugoira (all, only, none), Hide AI and Remember. The sheet and the bar take
   the search's `PixivSearchKind`, which gives novels their own targets and
   orders and leaves out the ugoira choice and the bookmark bracket.
@@ -108,11 +109,16 @@ one failing shows its error and Retry while the other stays. Recent searches
 fold after twelve behind *Show all (n)*; a long press forgets one and *Clear
 recent searches* asks first. Trending tiles show the translated name under the
 tag; a tap searches the tag and a long press opens the work Pixiv picked for
-it. Muted tags leave the grid and a muted picture leaves its tag bare.
+it; with text scaled past 1.5 the grid has two columns, not three. Muted tags,
+plain or matched by a pattern, leave the grid and a muted picture leaves its
+tag bare. Suggested creators leave out muted ones, and a work muted anywhere
+leaves the Most popular strip at once.
 
 ## Tags on a work
 
-A tap searches the tag. A long press opens a sheet titled with the tag and its
+A tap searches the tag, among novels for a novel's tags (`PixivDetailTags.kind`).
+Each chip keeps a 48 dp target, and the long press is merged into its
+labelled node so a screen reader offers both. A long press opens a sheet titled with the tag and its
 translation: mute (with the usual confirmation, then leaving the work's
 screen as the Mute sheet does), add to or remove from favourite tags, and copy
 (with a snackbar).

@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Serveur de Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Un miroir ou votre propre serveur voit chaque image que vous ouvrez, y compris les œuvres R-18, ainsi que votre adresse IP.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Rétablir par défaut",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Infos copiées",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Ce greffon privé lit Pixiv comme une galerie : suivi, classements, vos favoris publics et la recherche. Appuyez sur Se connecter pour vous identifier avec votre compte Pixiv dans le navigateur, ou collez un jeton d’actualisation ci-dessous. Rien n’est publié, mis en favori ni suivi sur Pixiv depuis ici.",
+  "plugin_pixiv_settings_intro": "Ce greffon privé lit Pixiv comme une galerie : illustrations, mangas, romans, classements, vos favoris et la recherche. Appuyez sur Se connecter pour vous identifier avec votre compte Pixiv dans le navigateur, ou collez un jeton d’actualisation ci-dessous. Seuls les favoris, abonnements et changements de liste de suivi que vous faites vous-même sont envoyés à votre compte Pixiv. Rien n’est jamais publié, commenté ni signalé depuis ici.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Partager l'image",
   "@plugin_pixiv_share_image": {},

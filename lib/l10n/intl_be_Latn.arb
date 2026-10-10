@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Ulasny siervier Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Liusterka abo vaš siervier bačyć kožnuju vyjavu, jakuju vy adkryvajecie, u tym liku R-18, i vaš IP-adras.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Skinuć da pradvyznačanaha",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Zviestki skapijavany",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Hety pryvatny plahin čytaje Pixiv jak galereju: stužka, rejtynhi, vašy publičnyja zakladki i pošuk. Nacisnicie «Uvajsci», kab uvajsci ŭ Pixiv u braŭzery, abo ŭstaŭcie refresh-token nižej. Adsul' ničoha nie publikujecca, nie dadajecca ŭ zakladki i nie padpisvajecca na Pixiv.",
+  "plugin_pixiv_settings_intro": "Hety pryvatny plahin čytaje Pixiv jak galereju: iliustracyi, manha, ramany, rejtynhi, vašy zakladki i pošuk. Nacisnicie «Uvajsci», kab uvajsci ŭ Pixiv u braŭzery, abo ŭstaŭcie refresh-token nižej. Na vaš akaŭnt Pixiv adpraŭlajucca tolki zakladki, padpiski i zmieny ŭ spisie naziranja, jakija vy robicie sami. Publikacyi, kamientaryi i skarhi adsul' nikoli nie adpraŭlajucca.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Padzialicca vyjavaj",
   "@plugin_pixiv_share_image": {},

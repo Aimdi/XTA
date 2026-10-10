@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv 자체 서버",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "미러나 직접 지정한 서버는 여는 모든 이미지(R-18 포함)와 IP 주소를 볼 수 있습니다.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "기본값으로 재설정",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "정보를 복사했습니다",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "이 비공개 플러그인은 갤러리 앱처럼 Pixiv를 읽습니다. 팔로잉, 랭킹, 공개 북마크, 검색. 로그인으로 브라우저에서 Pixiv에 접속하거나 아래에 리프레시 토큰을 붙여 넣으세요. 여기서는 Pixiv에 게시·북마크·팔로우하지 않습니다.",
+  "plugin_pixiv_settings_intro": "이 비공개 플러그인은 갤러리 앱처럼 Pixiv를 읽습니다. 일러스트, 만화, 소설, 랭킹, 북마크, 검색. 로그인으로 브라우저에서 Pixiv에 접속하거나 아래에 리프레시 토큰을 붙여 넣으세요. Pixiv 계정에는 직접 한 북마크, 팔로우, 관심 목록 변경만 전송됩니다. 여기서 게시, 댓글, 신고를 하는 일은 없습니다.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "이미지 공유",
   "@plugin_pixiv_share_image": {},

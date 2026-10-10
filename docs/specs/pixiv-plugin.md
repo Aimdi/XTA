@@ -57,6 +57,12 @@ Premium-only search options can be offered only to Premium readers.
   usually reports an expired or revoked token — refreshes once (concurrent
   requests share one refresh) and is replayed once.
 - A connection closed before any header arrived is sent again once.
+- Pixiv's rate limit is a 4xx (usually 400 or 403) whose `error.message`
+  says "Rate Limit", or a 429; it reads as `rateLimited`, never as a refused
+  token, and asks for no refresh.
+- An image server's refusal (an ugoira archive from `i.pximg.net` or a
+  mirror) is `notFound` for 404/410, `rateLimited` for 429 and otherwise
+  `badResponse`: no image server holds the token, so it is never blamed.
 - The bearer token is only ever sent to `app-api.pixiv.net`.
 
 Feature code adds its endpoints in its own `pixiv_<feature>_api.dart` over the
@@ -90,7 +96,7 @@ fakes through `pumpPixiv(extraProviders: …)`) and otherwise builds from
 | Viewing history | On the device only (`LocalJsonStore`), newest first, 500 works, filter, pause, clear |
 | Accounts | Several accounts in a secret pref; switching clears the access token and what was loaded |
 | Links | Every Pixiv link form, `pixiv://`, i.pximg.net files and pixiv.me short links; pixiv links shared to XTA or opened by default |
-| Group Discover | Related creators (`/v1/user/related`), cached unfiltered for 10 minutes; each is shown through a preview work that passes mute, Show R-18 and Hide AI as they are at read time |
+| Group Discover | Related creators (`/v1/user/related`), cached unfiltered for 10 minutes for one account (another account in use empties the cache, since each answer says whether that account follows the creator); each is shown through a preview work that passes mute, Show R-18 and Hide AI as they are at read time |
 | Novels | A mode button beside the tabs turns Home (Recommended, Following public / private, Watchlist), Rankings (novel boards, pins, archive date) and Favorites (own novel bookmarks) to novels; novel cards with a heart (long press bookmarks privately) and mutes; novel series pages with the watchlist toggle; a profile's public novel bookmarks; the novel reader (Pixiv markup, pictures, shared text size and reading position, chapters, export, share). See `pixiv-novels.md` |
 
 Every way into a work goes through `pixiv_link_open.dart`: `openPixivLinkRef`

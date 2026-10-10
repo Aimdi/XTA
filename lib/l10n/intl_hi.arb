@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv का अपना सर्वर",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "मिरर या आपका अपना सर्वर आपकी खोली हर छवि, R-18 वाली भी, और आपका IP पता देखता है।",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "डिफ़ॉल्ट पर लौटाएँ",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "जानकारी कॉपी हो गई",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: फ़ॉलोइंग, रैंकिंग, आपके सार्वजनिक बुकमार्क और खोज। ब्राउज़र में Pixiv खाते से साइन इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। यहाँ से Pixiv पर कुछ पोस्ट, बुकमार्क या फ़ॉलो नहीं होता।",
+  "plugin_pixiv_settings_intro": "यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: चित्र, मांगा, उपन्यास, रैंकिंग, आपके बुकमार्क और खोज। साइन इन पर टैप करके ब्राउज़र में अपने Pixiv खाते से लॉग इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। आपके Pixiv खाते पर केवल वे बुकमार्क, फ़ॉलो और वॉचलिस्ट बदलाव भेजे जाते हैं जो आप खुद करते हैं। यहाँ से कभी कुछ पोस्ट, टिप्पणी या रिपोर्ट नहीं किया जाता।",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "छवि साझा करें",
   "@plugin_pixiv_share_image": {},

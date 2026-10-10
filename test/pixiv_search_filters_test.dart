@@ -113,8 +113,12 @@ void main() {
   });
 
   group('Premium', () {
-    test('oldest and the audience sorts are offered only to Premium', () {
-      expect(pixivSearchSorts(isPremium: false), [PixivSearchSort.newest, PixivSearchSort.popular]);
+    test('only the audience sorts are kept for Premium; oldest first is free', () {
+      expect(pixivSearchSorts(isPremium: false), [
+        PixivSearchSort.newest,
+        PixivSearchSort.oldest,
+        PixivSearchSort.popular,
+      ]);
       expect(pixivSearchSorts(isPremium: true), PixivSearchSort.values);
     });
 
@@ -172,10 +176,13 @@ void main() {
       expect(readPixivSearchFilter(prefs), isNull);
       expect(pixivStartingFilter(prefs, isPremium: false), const PixivSearchFilter(hideAi: true));
 
-      await savePixivSearchFilter(prefs, const PixivSearchFilter(sort: PixivSearchSort.oldest));
-      expect(readPixivSearchFilter(prefs)?.sort, PixivSearchSort.oldest);
-      expect(pixivStartingFilter(prefs, isPremium: true).sort, PixivSearchSort.oldest);
+      await savePixivSearchFilter(prefs, const PixivSearchFilter(sort: PixivSearchSort.popularMale));
+      expect(readPixivSearchFilter(prefs)?.sort, PixivSearchSort.popularMale);
+      expect(pixivStartingFilter(prefs, isPremium: true).sort, PixivSearchSort.popularMale);
       expect(pixivStartingFilter(prefs, isPremium: false).sort, PixivSearchSort.newest);
+
+      await savePixivSearchFilter(prefs, const PixivSearchFilter(sort: PixivSearchSort.oldest));
+      expect(pixivStartingFilter(prefs, isPremium: false).sort, PixivSearchSort.oldest);
 
       await savePixivSearchFilter(prefs, null);
       expect(prefs.get<String>(optionPluginPixivSearchFilters), '');

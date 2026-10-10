@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "خادم Pixiv نفسه",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "ترى المرآة أو خادمك الخاص كل صورة تفتحها، بما فيها صور R-18، وعنوان IP الخاص بك.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "استعادة الافتراضي",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "تم نسخ المعلومات",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "هذه الإضافة الخاصة تقرأ Pixiv كمعرض: المتابعة والترتيب وإشاراتك العامة والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُنشَر شيء ولا تُضاف إشارات ولا متابعات على Pixiv من هنا.",
+  "plugin_pixiv_settings_intro": "تقرأ هذه الإضافة الخاصة Pixiv كتطبيق معرض: الرسوم والمانجا والروايات والترتيب وإشاراتك المرجعية والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُرسَل إلى حسابك على Pixiv إلا ما تُجريه بنفسك من إشارات ومتابعات وتغييرات على قائمة المتابعة. ولا يُنشَر من هنا أي شيء ولا يُعلَّق عليه ولا يُبلَّغ عنه أبدًا.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "مشاركة الصورة",
   "@plugin_pixiv_share_image": {},

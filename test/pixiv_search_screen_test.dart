@@ -96,11 +96,11 @@ void main() {
       await disposePixiv(tester);
     });
 
-    testWidgets('offers Oldest and the audience sorts only to Premium', (tester) async {
+    testWidgets('offers Oldest to everyone and the audience sorts only to Premium', (tester) async {
       await pumpPixiv(tester, const PixivSearchScreen(initialQuery: 'miku'), extraProviders: [_api().provider]);
       await tester.tap(find.byKey(const ValueKey('pixiv-search-filters')));
       await settlePixiv(tester);
-      expect(find.widgetWithText(ChoiceChip, 'Oldest'), findsNothing);
+      expect(find.widgetWithText(ChoiceChip, 'Oldest'), findsOneWidget);
       expect(find.widgetWithText(ChoiceChip, 'Popular with women'), findsNothing);
       expect(find.widgetWithText(ChoiceChip, 'Popular'), findsOneWidget);
       await disposePixiv(tester);
@@ -115,6 +115,17 @@ void main() {
       expect(find.widgetWithText(ChoiceChip, 'Oldest'), findsOneWidget);
       expect(find.widgetWithText(ChoiceChip, 'Popular with men'), findsOneWidget);
       expect(find.byKey(const ValueKey('pixiv-search-bookmarks')), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a work muted elsewhere leaves the Most popular strip at once', (tester) async {
+      await pumpPixiv(tester, const PixivSearchScreen(initialQuery: 'miku'), extraProviders: [_api().provider]);
+      Finder thumbs() => find.descendant(of: find.byType(PixivPopularStrip), matching: find.byType(InkWell));
+      expect(thumbs(), findsOneWidget);
+      final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivSearchScreen)), listen: false);
+      await mute.muteIllust(7);
+      await settlePixiv(tester);
+      expect(thumbs(), findsNothing);
       await disposePixiv(tester);
     });
 
@@ -338,6 +349,70 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('suggested creators leave out the ones the reader muted, at once', (tester) async {
+      final api = FakePixivSearchApi(
+        creators: const [
+          PixivUser(id: 7, name: 'Sora', account: 'sora', comment: ''),
+          PixivUser(id: 8, name: 'Kai', account: 'kai', comment: ''),
+        ],
+      );
+      await pumpPixiv(
+        tester,
+        const PixivSearchScreen(),
+        client: _seeded({optionPluginPixivMutedAuthors: '[8]'}),
+        extraProviders: [api.provider],
+      );
+      final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivSearchScreen)), listen: false);
+      await mute.load();
+      await settlePixiv(tester);
+      expect(find.text('Sora'), findsOneWidget);
+      expect(find.text('Kai'), findsNothing);
+
+      await mute.muteAuthor(7);
+      await settlePixiv(tester);
+      expect(find.text('Sora'), findsNothing);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('trending tiles widen to two columns at large text', (tester) async {
+      for (final (textScale, columns) in [(1.0, 3), (2.0, 2)]) {
+        await pumpPixiv(
+          tester,
+          const PixivSearchScreen(),
+          size: const Size(320, 2000),
+          textScale: textScale,
+          extraProviders: [
+            FakePixivSearchApi(trending: [for (var i = 0; i < 6; i++) PixivTrendTag(name: 'tag$i')]).provider,
+          ],
+        );
+        final first = tester.getRect(find.byKey(const ValueKey('pixiv-trend-tag0')));
+        final row = [
+          for (var i = 0; i < 6; i++)
+            if (tester.getRect(find.byKey(ValueKey('pixiv-trend-tag$i'))).top == first.top) i,
+        ];
+        expect(row, hasLength(columns), reason: 'text scale $textScale');
+        await disposePixiv(tester);
+      }
+    });
+
+    testWidgets('a recent search is one labelled node offering both its tap and its long press', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await pumpPixiv(
+        tester,
+        const PixivSearchScreen(),
+        client: _seeded({
+          optionPluginPixivSearchHistory: jsonEncode(['cat']),
+        }),
+        extraProviders: [_api().provider],
+      );
+      expect(
+        tester.getSemantics(find.widgetWithText(ActionChip, 'cat')),
+        isSemantics(label: 'cat', isButton: true, hasTapAction: true, hasLongPressAction: true),
+      );
+      semantics.dispose();
+      await disposePixiv(tester);
+    });
+
     testWidgets('more than twelve recent searches fold behind Show all', (tester) async {
       await pumpPixiv(
         tester,
@@ -383,6 +458,24 @@ void main() {
 
   group('tags on a work', () {
     const tag = PixivTag(name: 'オリジナル', translatedName: 'original');
+
+    testWidgets('each tag is one labelled, finger-sized target that also offers its long press', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await pumpPixiv(tester, const Scaffold(body: SizedBox()), extraProviders: [pixivFavoriteTagsProvider()]);
+      await _openWork(tester, [
+        tag,
+        const PixivTag(name: '風景', translatedName: 'landscape'),
+        const PixivTag(name: '夏'),
+      ]);
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      expect(
+        tester.getSemantics(find.byKey(const ValueKey('pixiv-tag-夏'))),
+        isSemantics(label: '#夏', isButton: true, hasTapAction: true, hasLongPressAction: true),
+      );
+      semantics.dispose();
+      await disposePixiv(tester);
+    });
 
     testWidgets('a long press offers mute, favourite and copy', (tester) async {
       String? copied;

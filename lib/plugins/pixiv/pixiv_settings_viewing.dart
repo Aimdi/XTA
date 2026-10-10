@@ -202,6 +202,11 @@ class _PixivImageHostDialogState extends State<PixivImageHostDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l10n.plugin_pixiv_image_host_description),
+          const SizedBox(height: 8),
+          Text(
+            l10n.plugin_pixiv_image_host_privacy,
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
           RadioListTile(
             value: PixivImageHostChoice.pixiv,
             title: Text(l10n.plugin_pixiv_image_host_pixiv),
@@ -222,7 +227,7 @@ class _PixivImageHostDialogState extends State<PixivImageHostDialog> {
             decoration: InputDecoration(
               labelText: l10n.plugin_pixiv_image_host_address,
               helperText: l10n.plugin_pixiv_image_host_example,
-              helperMaxLines: 2,
+              helperMaxLines: 20,
               errorMaxLines: 3,
               errorText: editing && custom.trim().isNotEmpty && parsePixivImageHost(custom) == null
                   ? l10n.plugin_pixiv_image_host_invalid

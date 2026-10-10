@@ -10,13 +10,14 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_paged_feed.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_card.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 
 typedef PixivRecommendedUsersStore = PixivPagedListStore<PixivUserPreview>;
 
 /// Creators neither the reader nor Pixiv has muted.
 List<PixivUserPreview> pixivUnmutedPreviews(List<PixivUserPreview> previews, PixivMuteState mute) => [
-  for (final preview in previews)
-    if (!preview.isMuted && !mute.authorIds.contains(preview.user.id)) preview,
+  for (final preview in pixivVisibleUsers(previews, mute))
+    if (!preview.isMuted) preview,
 ];
 
 PixivRecommendedUsersStore pixivRecommendedUsersStore(PixivDiscoveryApi api, PixivMuteStore mute) =>

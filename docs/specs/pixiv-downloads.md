@@ -102,10 +102,11 @@ The tree code needs a device; there is no Android test harness in the repo.
 `pixiv_download_index.dart`. `PixivDownloadIndex` is an app-wide store (provided
 in `main.dart`) of `<illustId>_p<page>` keys in `plugin.pixiv.download_index`
 (JSON list, oldest first, capped at 5000; a re-saved page moves to the end).
-It is a normal preference, so settings backups carry it, and plugin reset
-clears it. The store listens to that preference, so a restored backup or a
-reset shows at once, and `record` builds on the stored list rather than its
-own copy, so the next save never drops what a restore brought back.
+It is listed in `secretPrefKeys`: the pages live on this device's storage,
+so no export, backup or WebDAV upload carries the list (it would name every
+Pixiv work the reader saved), and an import never writes one. Plugin reset
+clears it. The store listens to that preference, so a reset shows at once,
+and `record` builds on the stored list rather than its own copy.
 
 - A page is recorded when its save completes: one page after
   `PixivDownloader.savePage` reports success, a batch for the requests that

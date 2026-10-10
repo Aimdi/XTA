@@ -2619,6 +2619,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Máy chủ của Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Máy chủ gương hoặc máy chủ riêng của bạn thấy mọi ảnh bạn mở, kể cả ảnh R-18, và địa chỉ IP của bạn.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Đặt lại mặc định",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Đã sao chép thông tin",
@@ -3296,7 +3298,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Plugin riêng này đọc Pixiv như một ứng dụng thư viện: đang theo dõi, xếp hạng, dấu trang công khai và tìm kiếm. Chạm Đăng nhập để vào tài khoản Pixiv trên trình duyệt, hoặc dán mã làm mới bên dưới. Từ đây không đăng, đánh dấu hay theo dõi gì trên Pixiv.",
+  "plugin_pixiv_settings_intro": "Plugin riêng này đọc Pixiv như một ứng dụng thư viện: tranh minh họa, manga, tiểu thuyết, xếp hạng, dấu trang của bạn và tìm kiếm. Chạm Đăng nhập để vào tài khoản Pixiv trên trình duyệt, hoặc dán mã làm mới bên dưới. Chỉ những dấu trang, lượt theo dõi và thay đổi trong danh sách truyện theo dõi do chính bạn thực hiện mới được gửi lên tài khoản Pixiv của bạn. Từ đây không bao giờ đăng bài, bình luận hay báo cáo gì.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Chia sẻ ảnh",
   "@plugin_pixiv_share_image": {},

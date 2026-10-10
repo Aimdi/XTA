@@ -23,6 +23,7 @@ PixivUserProfile pixivProfileOf({
   String comment = '',
   String? background,
   bool premium = false,
+  String webpage = 'https://example.com/mika',
 }) => PixivUserProfile(
   user: PixivUser(
     id: id,
@@ -39,7 +40,7 @@ PixivUserProfile pixivProfileOf({
   totalManga: manga,
   totalNovels: novels,
   publicBookmarks: 12,
-  webpage: 'https://example.com/mika',
+  webpage: webpage,
   twitterAccount: 'mika_draws',
   isPremium: premium,
 );

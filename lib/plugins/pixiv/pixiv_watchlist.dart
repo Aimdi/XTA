@@ -45,12 +45,14 @@ Future<void> openPixivWatchlistLatest(BuildContext context, PixivWatchlistSeries
 /// A change made on a series page shows here at once.
 class PixivMangaWatchlistFeed extends StatelessWidget {
   final PixivWatchlistStore store;
+  final ScrollController? scrollController;
 
-  const PixivMangaWatchlistFeed({super.key, required this.store});
+  const PixivMangaWatchlistFeed({super.key, required this.store, this.scrollController});
 
   @override
   Widget build(BuildContext context) => PixivWatchlistFeed(
     store: store,
+    scrollController: scrollController,
     emptyMessage: L10n.of(context).plugin_pixiv_watchlist_empty,
     onOpen: (context, series) => openPixivSeries(context, series.id, onWatchlistChanged: store.refresh),
     onViewLatest: openPixivWatchlistLatest,

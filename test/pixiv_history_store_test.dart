@@ -63,6 +63,33 @@ void main() {
       expect(back.toIllust().aspectRatio, closeTo(1200 / 1700, 0.001), reason: 'the tile keeps its shape');
     });
 
+    test("an R-18 or AI work keeps its rating through the file, so its tile keeps the badges", () {
+      final r18 = PixivHistoryEntry.of(
+        PixivIllust(
+          id: 8,
+          title: 'Night',
+          caption: '',
+          type: 'illust',
+          thumbnailUrl: 'https://i.pximg.net/c/540x540_70/img-master/img/8.jpg',
+          pageCount: 1,
+          userId: 42,
+          userName: 'Mika',
+          userAccount: 'mika',
+          isR18: true,
+          isAi: true,
+        ),
+        DateTime.utc(2026),
+      );
+      final back = PixivHistoryEntry.fromJson(Json(r18.toJson()))!.toIllust();
+      expect((back.isR18, back.isAi), (true, true));
+      final plain = PixivHistoryEntry.fromJson(
+        Json(PixivHistoryEntry.of(pixivWork(id: 9), DateTime.utc(2026)).toJson()),
+      );
+      expect((plain!.toIllust().isR18, plain.toIllust().isAi), (false, false));
+      final older = PixivHistoryEntry.fromJson(const Json({'id': 10, 'thumbUrl': 'u'}))!.toIllust();
+      expect((older.isR18, older.isAi), (false, false), reason: 'entries kept before the rating read as unrated');
+    });
+
     test('drops entries without an id or thumbnail and tolerates the rest missing', () {
       expect(PixivHistoryEntry.fromJson(const Json({'title': 'x', 'thumbUrl': 'u'})), isNull);
       expect(PixivHistoryEntry.fromJson(const Json({'id': 3})), isNull);

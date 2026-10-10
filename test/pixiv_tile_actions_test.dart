@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_group.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -56,6 +57,37 @@ PixivIllust _labelledWork() {
 T _read<T>(WidgetTester tester) => Provider.of<T>(tester.element(find.byType(PixivIllustTile)), listen: false);
 
 void main() {
+  testWidgets('a group timeline drops a Pixiv work as soon as it is muted', (tester) async {
+    final work = PixivIllust(
+      id: 900,
+      title: 'Grouped',
+      caption: '',
+      type: 'illust',
+      thumbnailUrl: 'https://i.pximg.net/c/540x540_70/img-master/img/900.jpg',
+      pageCount: 1,
+      userId: 42,
+      userName: 'Mika',
+      userAccount: 'mika',
+      createdAt: DateTime.utc(2026),
+    );
+    await pumpPixiv(
+      tester,
+      const Scaffold(body: SizedBox()),
+      client: (prefs) => FakePixivClient(prefs, authorWorks: [work]),
+    );
+    final context = tester.element(find.byType(Scaffold));
+    final mute = context.read<PixivMuteStore>();
+    final items = await loadPixivGroupPosts(context, ['pixiv:42']);
+    expect(items, hasLength(1));
+    await pumpPixiv(tester, Scaffold(body: Builder(builder: items.single.build)));
+    expect(find.byType(PixivIllustTile), findsOneWidget);
+
+    await mute.muteIllust(900);
+    await tester.pump();
+    expect(find.byType(PixivIllustTile), findsNothing);
+    await disposePixiv(tester);
+  });
+
   testWidgets('a long-pressed tile lists Pixiv actions above the shared ones', (tester) async {
     await pumpPixiv(tester, _tile(pixivWork(pages: 3)));
     await _longPressTile(tester);

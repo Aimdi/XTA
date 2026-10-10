@@ -5,32 +5,32 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_favorite_tags_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
-import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 
-/// A work's tags, each searching Pixiv for itself; a long press offers to
-/// mute, pin or copy it.
+/// A work's or a novel's tags, each searching Pixiv for itself among [kind];
+/// a long press offers to mute, pin or copy it.
 class PixivDetailTags extends StatelessWidget {
   final List<PixivTag> tags;
+  final PixivSearchKind kind;
 
-  const PixivDetailTags({super.key, required this.tags});
+  const PixivDetailTags({super.key, required this.tags, this.kind = PixivSearchKind.works});
 
   @override
   Widget build(BuildContext context) {
+    // Each chip keeps its padded 48 dp target, so the rows need no spacing of
+    // their own; the long press is merged into the chip's labelled node.
     return Wrap(
       spacing: 6,
-      runSpacing: 4,
       children: [
         for (final tag in tags)
-          GestureDetector(
-            key: ValueKey('pixiv-tag-${tag.name}'),
-            onLongPress: () => showPixivTagSheet(context, tag),
-            child: ActionChip(
-              label: _label(context, tag),
-              visualDensity: VisualDensity.compact,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(builder: (_) => PixivSearchScreen(initialQuery: tag.name)),
+          MergeSemantics(
+            child: GestureDetector(
+              key: ValueKey('pixiv-tag-${tag.name}'),
+              onLongPress: () => showPixivTagSheet(context, tag),
+              child: ActionChip(
+                label: _label(context, tag),
+                onPressed: () => openPixivTagSearch(context, tag.name, kind: kind),
               ),
             ),
           ),

@@ -2776,6 +2776,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv's own server",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "A mirror or your own server sees every image you open, R-18 ones included, and your IP address.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Reset to default",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Info copied",
@@ -3491,7 +3493,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "This private plugin reads Pixiv like a gallery app: following, rankings, your public bookmarks and search. Tap Sign in to log in with your Pixiv account in the browser, or paste a refresh token below. Nothing is posted, bookmarked, or followed on Pixiv from here.",
+  "plugin_pixiv_settings_intro": "This private plugin reads Pixiv like a gallery app: illustrations, manga, novels, rankings, your bookmarks and search. Tap Sign in to log in with your Pixiv account in the browser, or paste a refresh token below. Only the bookmarks, follows and watchlist changes you make are sent to your Pixiv account. Nothing is ever posted, commented on or reported from here.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Share image",
   "@plugin_pixiv_share_image": {},

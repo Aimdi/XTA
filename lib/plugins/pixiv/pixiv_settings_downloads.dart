@@ -187,7 +187,7 @@ class _PixivFileNameEditorState extends State<PixivFileNameEditor> {
     decoration: InputDecoration(
       border: const OutlineInputBorder(),
       helperText: l10n.plugin_pixiv_file_name_help,
-      helperMaxLines: 3,
+      helperMaxLines: 20,
       errorText: pixivTemplateHasPart(text) ? null : l10n.plugin_pixiv_file_name_part_required(pixivPartToken),
       errorMaxLines: 3,
     ),

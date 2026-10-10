@@ -712,6 +712,28 @@ void main() {
     expect(tester.getRect(find.text('かんじ')).height, closeTo(9 * 1.1 * 2, 1));
     await tester.scrollUntilVisible(find.byKey(const ValueKey('pixiv-novel-chapter-901')), 300);
     expect(tester.takeException(), isNull);
+    final previous = tester.getRect(find.byKey(const ValueKey('pixiv-novel-chapter-899')));
+    final next = tester.getRect(find.byKey(const ValueKey('pixiv-novel-chapter-901')));
+    expect(next.top, greaterThan(previous.bottom), reason: 'too narrow for two, they stack');
+    expect(next.width, closeTo(previous.width, 0.5));
+    await _close(tester);
+  });
+
+  testWidgets('a phone at normal text keeps the chapter buttons side by side', (tester) async {
+    final api = _api(
+      contents: {
+        _id: _content(
+          previous: const PixivNovelNeighbour(id: 899, viewable: true, title: 'Before'),
+          next: const PixivNovelNeighbour(id: 901, viewable: true, title: 'After'),
+        ),
+      },
+    );
+    await _open(tester, api, novel: pixivNovel(), size: const Size(390, 844));
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('pixiv-novel-chapter-901')), 300);
+    final previous = tester.getRect(find.byKey(const ValueKey('pixiv-novel-chapter-899')));
+    final next = tester.getRect(find.byKey(const ValueKey('pixiv-novel-chapter-901')));
+    expect(next.top, previous.top);
+    expect(next.left, greaterThan(previous.right));
     await _close(tester);
   });
 

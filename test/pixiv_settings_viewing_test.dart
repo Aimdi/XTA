@@ -120,6 +120,11 @@ void main() {
       expect(find.text('Enter a valid address without spaces, such as img.example.com'), findsOneWidget);
       expect(_save(tester).onPressed, isNull);
 
+      await tester.enterText(find.byKey(const ValueKey('pixiv-image-host-field')), 'http://img.example.com');
+      await tester.pump();
+      expect(_save(tester).onPressed, isNull, reason: 'a cleartext server is refused');
+      expect(find.textContaining('sees every image you open'), findsOneWidget);
+
       await tester.enterText(
         find.byKey(const ValueKey('pixiv-image-host-field')),
         'https://img.example.com:8443/pixiv',

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
-import 'package:xta/utils/urls.dart';
 
 /// What tapping an Info row does.
 sealed class PixivInfoAction {
@@ -110,6 +110,14 @@ class PixivProfileInfo extends StatelessWidget {
   Widget _row(BuildContext context, PixivInfoRow row) {
     final theme = Theme.of(context);
     final action = row.action;
+    final label = Text(
+      row.label,
+      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    );
+    final value = Text(row.value, style: theme.textTheme.bodyLarge);
+    // Large text leaves the label column too narrow for whole words, so the
+    // label goes above its value instead.
+    final stacked = MediaQuery.textScalerOf(context).scale(14) > 14 * 1.5;
     final content = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
       child: Padding(
@@ -118,14 +126,14 @@ class PixivProfileInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 12,
           children: [
-            Expanded(
-              flex: 2,
-              child: Text(
-                row.label,
-                style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
-            ),
-            Expanded(flex: 3, child: Text(row.value, style: theme.textTheme.bodyLarge)),
+            if (stacked)
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: 2, children: [label, value]),
+              )
+            else ...[
+              Expanded(flex: 2, child: label),
+              Expanded(flex: 3, child: value),
+            ],
             // The slot stays when empty so every value starts in the same column.
             SizedBox.square(
               dimension: 20,
@@ -153,7 +161,7 @@ class PixivProfileInfo extends StatelessWidget {
         await Clipboard.setData(ClipboardData(text: text));
         messenger.showSnackBar(SnackBar(content: Text(copied)));
       case PixivInfoLink(:final url):
-        await openUri(context, url);
+        await openPixivHref(context, url);
       case PixivInfoList(:final kind):
         await openPixivUserList(context, kind, userId: profile.id);
     }

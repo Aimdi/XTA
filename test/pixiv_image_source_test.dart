@@ -32,17 +32,24 @@ void main() {
       );
     });
 
-    test('a custom server keeps its scheme, port and path prefix', () {
+    test('a custom server keeps its port and path prefix', () {
       expect(
-        pixivImageUrl(_master, 'http://example.com:8443/pixiv/'),
-        'http://example.com:8443/pixiv/img-master/img/2026/07/01/00/00/00/120_p0_master1200.jpg',
+        pixivImageUrl(_master, 'https://example.com:8443/pixiv/'),
+        'https://example.com:8443/pixiv/img-master/img/2026/07/01/00/00/00/120_p0_master1200.jpg',
       );
       expect(pixivImageUrl(_master, 'img.example.com'), startsWith('https://img.example.com/img-master/'));
       expect(pixivImageUrl('$_master?x=1', 'img.example.com'), endsWith('_master1200.jpg?x=1'));
     });
 
     test('an address with spaces or of another kind is refused and changes nothing', () {
-      for (final host in ['img example.com', 'ftp://example.com', 'https://user:pw@example.com', 'https://', '?x']) {
+      for (final host in [
+        'img example.com',
+        'ftp://example.com',
+        'http://example.com',
+        'https://user:pw@example.com',
+        'https://',
+        '?x',
+      ]) {
         expect(parsePixivImageHost(host), isNull, reason: host);
         expect(pixivImageUrl(_master, host), _master, reason: host);
       }
@@ -124,6 +131,23 @@ void main() {
       status = 200;
       expect(await client.ugoiraArchive(zip), [7]);
       expect(requests, 2);
+    });
+
+    test('an image server\'s refusal is never blamed on the Pixiv token', () async {
+      for (final (status, kind) in [
+        (403, PixivErrorKind.badResponse),
+        (404, PixivErrorKind.notFound),
+        (429, PixivErrorKind.rateLimited),
+      ]) {
+        final client = PixivClient(
+          PrefServiceCache(),
+          httpClient: MockClient((_) async => http.Response.bytes([], status)),
+        );
+        await expectLater(
+          client.ugoiraArchive('https://i.pximg.net/z$status.zip'),
+          throwsA(isA<PixivException>().having((e) => e.kind, 'kind', kind)),
+        );
+      }
     });
 
     testWidgets('images on screen load from the picked server', (tester) async {

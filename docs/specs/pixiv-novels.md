@@ -359,12 +359,14 @@ and page jumps left out.
 
 Cover, title, the author (opens the profile), the series link (opens the
 novel series page), bookmarks (following the session's heart), views, date,
-length, R-18 / R-18G and AI labels, tags (a tap searches, a long press offers
+length, R-18 / R-18G and AI labels, tags (a tap searches novels, a long press offers
 Mute, Favourite or Copy, the works' own sheet), the caption with its links
 (`PixivHtmlText`) and *View comments (N)* opening `PixivCommentsScreen` for
 `PixivCommentTarget.novel`. After the text come *View comments* again and the
 previous and next chapters, each named (title, else `#n`) and off when Pixiv
-says the reader cannot open it; opening one replaces the reader.
+says the reader cannot open it; opening one replaces the reader. They sit
+side by side while each half holds about eleven characters of label, else
+one above the other, so large text or a long language never breaks words.
 
 ### Appearance and place
 

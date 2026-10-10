@@ -83,28 +83,6 @@ void main() {
     });
   });
 
-  group('popular preview', () {
-    test('one free page of the most popular results for a word', () async {
-      final client = clientAnswering((request) {
-        expect(request.url.path, '/v1/search/popular-preview/illust');
-        expect(request.url.queryParameters['word'], 'miku');
-        return {
-          'illusts': [_illustJson(3), _illustJson(4)],
-          'next_url': null,
-        };
-      });
-
-      final page = await client.popularPreview('miku');
-      expect(page.illusts.map((e) => e.id), [3, 4]);
-    });
-
-    test('an empty word asks nothing', () async {
-      final client = clientAnswering((request) => fail('should not be called'));
-      final page = await client.popularPreview('  ');
-      expect(page.illusts, isEmpty);
-    });
-  });
-
   group('tag autocomplete', () {
     test('suggests tags with their translations', () async {
       final client = clientAnswering((request) {

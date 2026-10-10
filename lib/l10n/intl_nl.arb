@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Eigen server van Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Een mirror of je eigen server ziet elke afbeelding die je opent, ook R-18, en je IP-adres.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Standaard herstellen",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Info gekopieerd",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Deze privéplug-in leest Pixiv als een galerij-app: volgend, ranglijsten, je openbare bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Hier vanuit wordt niets op Pixiv gepost, gebookmarkt of gevolgd.",
+  "plugin_pixiv_settings_intro": "Deze privéplug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Alleen de bladwijzers, follows en wijzigingen in de volglijst die je zelf maakt, gaan naar je Pixiv-account. Vanuit hier wordt nooit iets gepost, becommentarieerd of gemeld.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Afbeelding delen",
   "@plugin_pixiv_share_image": {},

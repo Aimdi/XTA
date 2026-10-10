@@ -28,6 +28,19 @@ final _mastodonDiscoveryCache = AccountPostCache<MastodonPost>(dateOf: (post) =>
 final _blueskySuggestedCache = AccountPostCache<BlueskySuggestion>(dateOf: (_) => null, perAccount: 50);
 final _pixivRelatedCache = AccountPostCache<PixivRelation>(dateOf: (_) => null, perAccount: 30);
 
+/// The Pixiv account whose answers [_pixivRelatedCache] holds; each related
+/// creator carries whether that account follows them.
+int? _pixivRelatedOwner;
+
+/// [_pixivRelatedCache], emptied first when another account (or none) is now in use.
+AccountPostCache<PixivRelation> pixivRelatedCacheFor(int? userId) {
+  if (userId != _pixivRelatedOwner) {
+    _pixivRelatedCache.clear();
+    _pixivRelatedOwner = userId;
+  }
+  return _pixivRelatedCache;
+}
+
 Set<String> discoveryFollowedIds(Iterable<Subscription> subscriptions) => {
   for (final subscription in subscriptions)
     if (_sourceOf(subscription) case final source?) ...[
@@ -226,7 +239,7 @@ DiscoveryRead mastodonDiscoveryReader(
 ///
 /// Related users are cached unfiltered and the reader's Show R-18 / Hide AI
 /// choices apply on every read, so flipping one shows at once, not after the
-/// cache expires.
+/// cache expires. The cache holds one account's answers: a switch empties it.
 DiscoveryRead pixivDiscoveryReader(PixivClient client, List<Subscription> members, PixivMuteState mute) {
   final seeds = {
     for (final member in members)
@@ -245,7 +258,7 @@ DiscoveryRead pixivDiscoveryReader(PixivClient client, List<Subscription> member
 
   return (scan) async => batch(
     await readRotating(
-      _pixivRelatedCache,
+      pixivRelatedCacheFor(client.storedUserId),
       seeds.keys.toList(),
       scan,
       perLoad: 4,

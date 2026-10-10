@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
-import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -64,16 +63,15 @@ class PixivDetailRelated extends StatelessWidget {
           ),
         ),
       ),
+      // The grid leaves out a work as soon as it or its creator is muted from a tile.
       SliverPadding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
         sliver: SliverLayoutBuilder(
-          builder: (context, constraints) => SliverMasonryGrid.count(
-            crossAxisCount: pixivGridColumnsFor(context, constraints.crossAxisExtent),
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            childCount: works.length,
-            itemBuilder: (context, index) =>
-                PixivIllustTile(illust: works[index], siblings: works, index: index, source: store),
+          builder: (context, constraints) => PixivIllustSliverGrid(
+            illusts: works,
+            columns: pixivGridColumnsFor(context, constraints.crossAxisExtent),
+            spacing: 4,
+            source: store,
           ),
         ),
       ),

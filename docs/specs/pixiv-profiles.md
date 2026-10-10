@@ -57,8 +57,10 @@ dropped. A missing or reshaped payload parses to empty fields, never a throw.
   while another is shown, and a tab with a switch is a `PixivSwitchedList`.
 - **Info** (`pixiv_user_info.dart`): a two-column table built by the pure
   `pixivProfileInfoRows`. The user ID copies, Following and Followers open
-  the lists, links open the way the reader opens links, and empty or private
-  fields are left out.
+  the lists, links open the way the reader opens links (`openPixivHref`: a
+  Pixiv link in XTA, an x.com profile on XTA's own screen, others where
+  `openLink` sends them), and empty or private fields are left out. With text
+  scaled past 1.5 the label goes above its value rather than break its words.
 - **AppBar** (`pixiv_user_menu.dart`): Share link, and a menu from the
   `pixivProfileMenuEntries` list: Follow privately, Copy profile info (name,
   @account and link), Mute author or Unmute, Open on Pixiv. Your own profile

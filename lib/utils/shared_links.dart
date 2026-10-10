@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:xta/plugins/pixiv/pixiv_links.dart' show isPixivWebHost, isPixivisionHost;
+import 'package:xta/plugins/pixiv/pixiv_links.dart' show isPixivImageHost, isPixivWebHost, isPixivisionHost;
 
 const sharedTextChannel = EventChannel('com.aimdi.xta/shared_text');
 const _shareHosts = {
@@ -19,28 +19,27 @@ const _shareHosts = {
   'www.fixupx.com',
 };
 
-/// Taken only while the Pixiv plugin is on; nothing else in XTA reads them.
-const _pixivShareHosts = {
-  'pixiv.net',
-  'www.pixiv.net',
-  'touch.pixiv.net',
-  'pixiv.me',
-  'pixivision.net',
-  'www.pixivision.net',
-};
+/// Pixiv's pages, its image files (whose names carry the work's ID) and its
+/// app links; taken only while the Pixiv plugin is on, as nothing else in XTA
+/// reads them.
+bool _isPixivShare(Uri uri) {
+  if (uri.scheme == 'pixiv') return true;
+  final host = uri.host.toLowerCase();
+  return isPixivWebHost(host) || isPixivisionHost(host) || isPixivImageHost(host);
+}
 
 bool _supported(Uri uri, {required bool pixiv}) {
-  final host = uri.host.toLowerCase();
-  return (uri.scheme == 'https' || uri.scheme == 'http') &&
+  final web = uri.scheme == 'https' || uri.scheme == 'http';
+  return (web || uri.scheme == 'pixiv') &&
       uri.userInfo.isEmpty &&
       !uri.hasPort &&
-      (_shareHosts.contains(host) || (pixiv && _pixivShareHosts.contains(host)));
+      ((web && _shareHosts.contains(uri.host.toLowerCase())) || (pixiv && _isPixivShare(uri)));
 }
 
 /// The first X link in a share — or Pixiv link, when [pixiv] is on. Shares
 /// often carry the post's caption before the actual link.
 Uri? extractSharedLink(String text, {bool pixiv = false}) {
-  final urls = RegExp(r'''https?://[^\s<>"\u200b]+''', caseSensitive: false);
+  final urls = RegExp(r'''(?:https?|pixiv)://[^\s<>"\u200b]+''', caseSensitive: false);
   for (final match in urls.allMatches(text)) {
     final candidate = match.group(0)!.replaceFirst(RegExp(r'''[)\]}>.,!?;:'"]+$'''), '');
     final uri = Uri.tryParse(candidate);
@@ -50,9 +49,9 @@ Uri? extractSharedLink(String text, {bool pixiv = false}) {
 }
 
 /// Whether X's link parser should read [link], which no plugin opened. A Pixiv
-/// or pixivision page should not: X would take `pixiv.net/en/` for the profile
-/// `@en`, so it goes to the browser instead.
-bool readsAsXLink(Uri link) => !isPixivWebHost(link.host) && !isPixivisionHost(link.host);
+/// or pixivision page, image file or app link should not: X would take
+/// `pixiv.net/en/` for the profile `@en`, so it goes to the browser instead.
+bool readsAsXLink(Uri link) => !_isPixivShare(link);
 
 /// A share that is only a number, which Pixiv reads as a work's ID.
 String? sharedPixivId(String text) {

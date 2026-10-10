@@ -151,6 +151,17 @@ void main() {
     await disposePixiv(tester);
   });
 
+  testWidgets("a website on Pixiv opens in XTA, on the profile tab its link names", (tester) async {
+    final api = _api()..profile = pixivProfileOf(webpage: 'https://www.pixiv.net/users/77/novels');
+    await _pump(tester, api);
+    await _tab(tester, 'info');
+    await tester.tap(find.byKey(const ValueKey('pixiv-profile-info-website')));
+    await settlePixiv(tester);
+    final opened = tester.widget<PixivUserScreen>(find.byType(PixivUserScreen).last);
+    expect((opened.userId, opened.initialTab), (77, 'novels'));
+    await disposePixiv(tester);
+  });
+
   testWidgets('opens on the tab it was asked for, and the works count goes back to Works', (tester) async {
     final api = _api();
     await pumpPixiv(tester, const PixivUserScreen(userId: 9, initialTab: 'info'), extraProviders: [api.provider]);
@@ -340,6 +351,10 @@ void main() {
     expect(tester.takeException(), isNull);
     await _tab(tester, 'info');
     expect(tester.takeException(), isNull);
+    final label = tester.getRect(find.text('User ID'));
+    final value = tester.getRect(find.text('9'));
+    expect(value.top, greaterThanOrEqualTo(label.bottom), reason: 'large text puts the label above its value');
+    expect(value.left, label.left);
     await disposePixiv(tester);
   });
 }

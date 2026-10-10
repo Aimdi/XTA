@@ -61,6 +61,17 @@ void main() {
     expect(extractSharedLink('https://evil@www.pixiv.net/artworks/1', pixiv: true), isNull);
   });
 
+  test("takes Pixiv's image files and app links with the Pixiv plugin, and never hands one to X", () {
+    const image = 'https://i.pximg.net/img-original/img/2026/07/01/00/00/00/123_p0.png';
+    expect(extractSharedLink('Saved from $image', pixiv: true)?.host, 'i.pximg.net');
+    expect(extractSharedLink(image), isNull, reason: 'only while the Pixiv plugin is on');
+    expect(extractSharedLink('open pixiv://illusts/123 please', pixiv: true)?.toString(), 'pixiv://illusts/123');
+    expect(extractSharedLink('pixiv://illusts/123'), isNull);
+    expect(extractSharedLink('https://i.pximg.net.evil.example/123_p0.png', pixiv: true), isNull);
+    expect(readsAsXLink(Uri.parse(image)), isFalse);
+    expect(readsAsXLink(Uri.parse('pixiv://users/456')), isFalse);
+  });
+
   test('takes pixivision links with the Pixiv plugin, and never hands one to X', () {
     const share = 'Autumn cats https://www.pixivision.net/en/a/9876';
     expect(extractSharedLink(share), isNull);

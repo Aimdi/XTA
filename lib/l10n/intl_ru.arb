@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Собственный сервер Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Зеркало или ваш сервер видит каждое изображение, которое вы открываете, включая R-18, и ваш IP-адрес.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Вернуть стандартный",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Сведения скопированы",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Этот частный плагин читает Pixiv как галерею: лента, рейтинги, ваши публичные закладки и поиск. Нажмите «Войти», чтобы войти в Pixiv в браузере, или вставьте refresh-токен ниже. Отсюда ничего не публикуется, не добавляется в закладки и не подписывается на Pixiv.",
+  "plugin_pixiv_settings_intro": "Этот частный плагин читает Pixiv как галерею: иллюстрации, манга, романы, рейтинги, ваши закладки и поиск. Нажмите «Войти», чтобы войти в Pixiv в браузере, или вставьте refresh-токен ниже. В ваш аккаунт Pixiv отправляются только закладки, подписки и изменения списка отслеживания, которые вы делаете сами. Публикации, комментарии и жалобы отсюда никогда не отправляются.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Поделиться изображением",
   "@plugin_pixiv_share_image": {},

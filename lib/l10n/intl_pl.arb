@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Własny serwer Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Serwer lustrzany lub twój własny serwer widzi każdy otwierany obraz, także R-18, oraz twój adres IP.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Przywróć domyślny",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Skopiowano informacje",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Ta prywatna wtyczka czyta Pixiv jak galerię: obserwowani, rankingi, twoje publiczne zakładki i wyszukiwanie. Dotknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Stąd nic nie jest publikowane, dodawane do zakładek ani obserwowane na Pixiv.",
+  "plugin_pixiv_settings_intro": "Ta prywatna wtyczka czyta Pixiv jak aplikację-galerię: ilustracje, mangę, powieści, rankingi, twoje zakładki i wyszukiwanie. Dotknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Na twoje konto Pixiv trafiają tylko zakładki, obserwowania i zmiany na liście obserwowanych, które wprowadzasz samodzielnie. Stąd nigdy nic nie jest publikowane, komentowane ani zgłaszane.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Udostępnij obraz",
   "@plugin_pixiv_share_image": {},

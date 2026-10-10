@@ -79,6 +79,36 @@ void main() {
       }
     });
 
+    test("a tag's novels page searches novels; its other pages search works", () {
+      expect(
+        parsePixivLink('https://www.pixiv.net/tags/%E7%8C%AB/novels'),
+        isA<PixivTagLinkRef>().having((r) => r.tag, 'tag', '猫').having((r) => r.novels, 'novels', isTrue),
+      );
+      for (final link in ['https://www.pixiv.net/tags/猫/artworks', 'https://www.pixiv.net/tags/猫']) {
+        expect(parsePixivLink(link), isA<PixivTagLinkRef>().having((r) => r.novels, 'novels', isFalse), reason: link);
+      }
+    });
+
+    test("a creator's page opens their profile on the tab it names", () {
+      for (final (page, tab) in [
+        ('', null),
+        ('/artworks', 'works'),
+        ('/illustrations', 'works'),
+        ('/manga', 'works'),
+        ('/novels', 'novels'),
+        ('/bookmarks/artworks', 'bookmarks'),
+        ('/bookmarks/novels', 'bookmarks'),
+        ('/following', 'following'),
+        ('/followers', null),
+      ]) {
+        expect(
+          parsePixivLink('https://www.pixiv.net/users/456$page'),
+          isA<PixivUserLinkRef>().having((r) => r.id, 'id', 456).having((r) => r.tab, 'tab', tab),
+          reason: page,
+        );
+      }
+    });
+
     test('reads the work id from an image file name', () {
       for (final link in [
         'https://i.pximg.net/img-original/img/2026/07/01/00/00/00/123_p0.png',

@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixivi enda server",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Peegel või sinu oma server näeb iga pilti, mille avad, ka R-18 pilte, ja sinu IP-aadressi.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Taasta vaikimisi",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Info kopeeritud",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "See privaatne plugin loeb Pixivi nagu galeriiäppi: jälgimine, edetabelid, sinu avalikud järjehoidjad ja otsing. Puuduta Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Siit ei postitata, ei märgita ega jälgita midagi Pixivis.",
+  "plugin_pixiv_settings_intro": "See privaatne plugin loeb Pixivi nagu galeriiäppi: illustratsioonid, manga, romaanid, edetabelid, sinu järjehoidjad ja otsing. Puuduta Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Sinu Pixivi kontole saadetakse ainult järjehoidjad, jälgimised ja jälgimisnimekirja muudatused, mille ise teed. Siit ei postitata, kommenteerita ega teatata kunagi midagi.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Jaga pilti",
   "@plugin_pixiv_share_image": {},

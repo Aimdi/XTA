@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_menu.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
@@ -97,6 +98,27 @@ void main() {
     final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivIllustScreen)), listen: false);
     expect(mute.state.isEmpty, isTrue);
     expect(find.byType(PixivIllustScreen), findsOneWidget);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('a similar work leaves at once when it is muted', (tester) async {
+    final harness = await pumpPixiv(
+      tester,
+      PixivIllustScreen(illust: pixivWork(title: 'Seed')),
+      size: const Size(390, 1600),
+      client: _FlakyPixivClient.new,
+    );
+    (harness.client as _FlakyPixivClient).failing = false;
+    await tester.ensureVisible(find.text('Retry'));
+    await tester.tap(find.text('Retry'));
+    await settlePixiv(tester);
+    Finder similar() => find.byWidgetPredicate((w) => w is PixivIllustTile && w.illust.id == 300);
+    expect(similar(), findsOneWidget);
+
+    final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivIllustScreen)), listen: false);
+    await mute.muteIllust(300);
+    await settlePixiv(tester);
+    expect(similar(), findsNothing);
     await disposePixiv(tester);
   });
 

@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Servidor propi de Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Un mirall o el vostre servidor veu cada imatge que obriu, també les R-18, i la vostra adreça IP.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Restableix el valor per defecte",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informació copiada",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Aquest connector privat llegeix Pixiv com una galeria: seguiment, rànquings, els vostres marcadors públics i la cerca. Tocau Inicia la sessió per entrar amb el compte de Pixiv al navegador, o enganxeu un token de renovació a sota. Des d’aquí no es publica, es marca ni se segueix res a Pixiv.",
+  "plugin_pixiv_settings_intro": "Aquest connector privat llegeix Pixiv com una galeria: il·lustracions, manga, novel·les, rànquings, els vostres marcadors i la cerca. Tocau Inicia la sessió per entrar amb el compte de Pixiv al navegador, o enganxeu un token de renovació a sota. Al vostre compte de Pixiv només s’envien els marcadors, els seguiments i els canvis a la llista de seguiment que feu vosaltres. Des d’aquí mai no es publica, es comenta ni es denuncia res.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Comparteix la imatge",
   "@plugin_pixiv_share_image": {},

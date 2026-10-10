@@ -35,10 +35,8 @@ PixivPageLoader<PixivUserPreview> pixivUserListLoader(
     ({nextUrl}) async => api.userList(kind, userId ?? await api.ownUserId(), restrict: restrict, nextUrl: nextUrl);
 
 /// The creators [mute] lets through; a muted creator disappears from lists too.
-List<PixivUserPreview> pixivVisibleUsers(List<PixivUserPreview> previews, PixivMuteState mute) => [
-  for (final preview in previews)
-    if (!mute.authorIds.contains(preview.user.id)) preview,
-];
+List<PixivUserPreview> pixivVisibleUsers(List<PixivUserPreview> previews, PixivMuteState mute) =>
+    mute.withoutMutedAuthors(previews, (preview) => preview.user.id);
 
 String pixivUserListTitle(L10n l10n, PixivUserListKind kind) => switch (kind) {
   PixivUserListKind.following => l10n.plugin_pixiv_profile_following,

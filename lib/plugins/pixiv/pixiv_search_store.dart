@@ -87,11 +87,12 @@ class PixivSearchState {
   );
 }
 
-/// Trending tags as the reader's mutes leave them: muted tags go, and a tag
+/// Trending tags as the reader's mutes leave them: muted tags, plain or
+/// matched by a pattern, go, and a tag
 /// whose picture is a muted work keeps its name without the picture.
 List<PixivTrendTag> pixivVisibleTrendTags(List<PixivTrendTag> tags, PixivMuteState mute) => [
   for (final tag in tags)
-    if (!mute.tags.contains(tag.name.toLowerCase()))
+    if (mute.tagMatcher.match([PixivTag(name: tag.name)]) == null)
       switch (tag.illust) {
         final illust? when mute.isMuted(illust) => PixivTrendTag(name: tag.name, translatedName: tag.translatedName),
         _ => tag,
@@ -160,10 +161,8 @@ class PixivSearchStore extends Store<PixivSearchState> {
   List<PixivIllust> _visibleWorks(List<PixivIllust> illusts) =>
       pixivUgoiraFiltered(mute.filter(illusts), state.filter.ugoira);
 
-  List<PixivUserPreview> _visibleUsers(List<PixivUserPreview> previews) => [
-    for (final preview in previews)
-      if (!mute.state.authorIds.contains(preview.user.id)) preview,
-  ];
+  List<PixivUserPreview> _visibleUsers(List<PixivUserPreview> previews) =>
+      mute.state.withoutMutedAuthors(previews, (preview) => preview.user.id);
 
   /// Takes the field's text and asks for tags completing its last word.
   void type(String text) {

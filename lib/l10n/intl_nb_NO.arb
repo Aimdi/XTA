@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixivs egen server",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Et speil eller din egen server ser hvert bilde du åpner, også R-18-bilder, og IP-adressen din.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Tilbakestill til standard",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Info kopiert",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Denne private utvidelsen leser Pixiv som et galleri: følging, rangeringer, dine offentlige bokmerker og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Herfra blir ingenting postet, bokmerket eller fulgt på Pixiv.",
+  "plugin_pixiv_settings_intro": "Denne private utvidelsen leser Pixiv som en galleriapp: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Bare bokmerkene, følgingene og endringene i følgelisten som du selv gjør, sendes til Pixiv-kontoen din. Herfra blir ingenting noen gang postet, kommentert eller rapportert.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Del bilde",
   "@plugin_pixiv_share_image": {},

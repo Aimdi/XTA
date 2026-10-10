@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -43,7 +44,8 @@ List<T> pixivMoved<T>(List<T> items, int from, int to) {
 }
 
 /// Tags pinned as saved searches. The settings backup carries them with the
-/// other preferences.
+/// other preferences, so adding and removing build on what is stored rather
+/// than on [state]: tags an import just wrote are never saved over.
 class PixivFavoriteTagsStore extends Store<List<PixivTag>> {
   final BasePrefService prefs;
 
@@ -55,17 +57,26 @@ class PixivFavoriteTagsStore extends Store<List<PixivTag>> {
 
   /// Adds [tag] at the end, replacing an entry that differs only in case.
   Future<void> add(PixivTag tag) => _save([
-    for (final kept in state)
+    for (final kept in readPixivFavoriteTags(prefs))
       if (!pixivSameTag(kept.name, tag.name)) kept,
     tag,
   ]);
 
   Future<void> remove(String name) => _save([
-    for (final kept in state)
+    for (final kept in readPixivFavoriteTags(prefs))
       if (!pixivSameTag(kept.name, name)) kept,
   ]);
 
-  Future<void> reorder(int from, int to) => _save(pixivMoved(state, from, to));
+  /// Moves a row of the list on screen; when the stored list changed under
+  /// it, that list is shown instead of moving the wrong row.
+  Future<void> reorder(int from, int to) async {
+    final stored = readPixivFavoriteTags(prefs);
+    if (!listEquals(stored.map((tag) => tag.name).toList(), state.map((tag) => tag.name).toList())) {
+      update(stored);
+      return;
+    }
+    await _save(pixivMoved(state, from, to));
+  }
 
   /// Shows the change before writing it: a swiped-away row must leave the
   /// list in the same frame, not after the write.

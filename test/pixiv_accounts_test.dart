@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_account_list.dart';
 import 'package:xta/plugins/pixiv/pixiv_accounts.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
@@ -22,6 +23,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/settings/export_preferences.dart';
 import 'package:xta/utils/crash_reporter.dart';
+import 'package:xta/utils/pref_lists.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
@@ -246,6 +248,7 @@ void main() {
       );
       final tokenField = find.descendant(of: find.byType(PixivAccountSettings), matching: find.byType(TextField));
       await tester.enterText(tokenField.last, 'mistyped');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
       expect(harness.prefs.get<int>(optionPluginPixivUserId), 0);
 
@@ -253,6 +256,40 @@ void main() {
       await settlePixiv(tester);
       expect(_storedTokens(harness.prefs), {1: 'mika-token', 2: 'haru-token'});
       expect(harness.prefs.get<String>(optionPluginPixivRefreshToken), 'haru-token');
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a token entered in Settings is a switch: the last account keeps its token and its marks go', (
+      tester,
+    ) async {
+      final feed = PixivFeedStore(PixivClient(PrefServiceCache()));
+      addTearDown(feed.destroy);
+      final harness = await pumpPixiv(
+        tester,
+        const PixivSettingsScreen(),
+        size: const Size(390, 1600),
+        extraProviders: [Provider<PixivFeedStore>.value(value: feed)],
+        client: (prefs) {
+          prefs.set(optionPluginPixivRefreshToken, 'rotated-mika-token');
+          prefs.set(optionPluginPixivUserId, 1);
+          prefs.set(optionPluginPixivAccounts, _accountsJson([(_mika, 'mika-token')]));
+          return FakePixivClient(prefs);
+        },
+      );
+      final context = tester.element(find.byType(PixivAccountSettings));
+      final bookmarks = Provider.of<PixivBookmarkStore>(context, listen: false)..mark(123, true);
+      final tokenField = find.descendant(of: find.byType(PixivAccountSettings), matching: find.byType(TextField));
+      await tester.enterText(tokenField.last, 'another-accounts-token');
+      await tester.pump();
+      expect(bookmarks.state, {123: true}, reason: 'typing alone changes nothing');
+      expect(harness.prefs.get<String>(optionPluginPixivRefreshToken), 'rotated-mika-token');
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await settlePixiv(tester);
+      expect(bookmarks.state, isEmpty);
+      expect(_storedTokens(harness.prefs), {1: 'rotated-mika-token'});
+      expect(harness.prefs.get<String>(optionPluginPixivRefreshToken), 'another-accounts-token');
+      expect(harness.prefs.get<int>(optionPluginPixivUserId), 0);
       await disposePixiv(tester);
     });
   });
@@ -331,6 +368,38 @@ void main() {
       final exported = preferencesForExport(prefs, includeSettings: true, includeSubscriptions: true)!;
       expect(exported.containsKey(optionPluginPixivAccounts), isFalse);
       expect(jsonEncode(exported), isNot(contains('token')));
+    });
+
+    test('whose the tokens are and the saved pages stay on the device, both ways', () {
+      final prefs = {
+        optionPluginPixivUserId: 1,
+        optionPluginPixivIsPremium: true,
+        optionPluginPixivAccessExpiresAt: '2099-01-01T00:00:00.000',
+        optionPluginPixivDownloadIndex: '["123_p0"]',
+        optionPluginPixivShowR18: true,
+      };
+      expect(prefsMapWithoutSecrets(prefs).keys, [optionPluginPixivShowR18]);
+      expect(prefsForImport(prefs).keys, [optionPluginPixivShowR18], reason: 'an older backup carried them');
+    });
+
+    test("restoring another account's backup leaves the account in use and every stored token alone", () async {
+      final prefs = PrefServiceCache(
+        cache: {
+          optionPluginPixivRefreshToken: 'haru-token',
+          optionPluginPixivUserId: 2,
+          optionPluginPixivAccounts: _accountsJson([(_mika, 'mika-token'), (_haru, 'haru-token')]),
+        },
+      );
+      final backup = {optionPluginPixivUserId: 1, optionPluginPixivIsPremium: true, optionPluginPixivShowR18: true};
+      await prefs.fromMap(prefsForImport(backup));
+      expect(prefs.get<int>(optionPluginPixivUserId), 2);
+
+      final store = PixivAccountsStore(PixivClient(prefs));
+      addTearDown(store.destroy);
+      store.load();
+      await store.switchTo(store.state.firstWhere((account) => account.userId == 1));
+      expect(_storedTokens(prefs), {1: 'mika-token', 2: 'haru-token'});
+      expect(prefs.get<String>(optionPluginPixivRefreshToken), 'mika-token');
     });
   });
 

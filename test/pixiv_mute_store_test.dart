@@ -1,11 +1,17 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_gate.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+
+import 'support/pixiv_reader_harness.dart';
 
 void main() {
   group('PixivMuteState', () {
@@ -120,6 +126,43 @@ void main() {
       addTearDown(reloaded.destroy);
       await reloaded.load();
       expect(reloaded.state.tags, {r"r'\D+'", 'cat'});
+    });
+
+    test('a change builds on the stored mutes, so an import is never saved over', () async {
+      final prefs = PrefServiceCache()..set(optionPluginPixivMutedTags, '["old"]');
+      final store = PixivMuteStore(prefs);
+      addTearDown(store.destroy);
+      await store.load();
+
+      await prefs.set(optionPluginPixivMutedTags, '["imported"]');
+      await prefs.set(optionPluginPixivMutedIllusts, '[77]');
+      await store.muteAuthor(5);
+      expect(jsonDecode(prefs.get<String>(optionPluginPixivMutedTags)!), ['imported']);
+      expect(jsonDecode(prefs.get<String>(optionPluginPixivMutedIllusts)!), [77]);
+      expect(store.state.tags, {'imported'});
+      expect(store.state.illustIds, {77});
+      expect(store.state.authorIds, {5});
+    });
+
+    testWidgets('a settings import reloads the mutes and the searches the app holds', (tester) async {
+      final harness = await pumpPixiv(
+        tester,
+        Scaffold(
+          body: Builder(
+            builder: (context) =>
+                TextButton(onPressed: () => PixivPlugin().reloadFromDatabase(context), child: const Text('reload')),
+          ),
+        ),
+      );
+      final context = tester.element(find.text('reload'));
+      final mute = context.read<PixivMuteStore>();
+      await harness.prefs.set(optionPluginPixivMutedAuthors, '[9]');
+      await harness.prefs.set(optionPluginPixivSearchHistory, '["imported"]');
+      await tester.tap(find.text('reload'));
+      await settlePixiv(tester);
+      expect(mute.state.authorIds, {9});
+      expect(context.read<PixivSearchHistory>().state, ['imported']);
+      await disposePixiv(tester);
     });
 
     test('a damaged preference reads as nothing muted', () async {

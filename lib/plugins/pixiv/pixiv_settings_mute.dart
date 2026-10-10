@@ -189,7 +189,7 @@ class _PixivMuteTagFieldState extends State<PixivMuteTagField> {
         decoration: InputDecoration(
           hintText: l10n.plugin_pixiv_mute_tag_hint,
           helperText: l10n.plugin_pixiv_mute_tag_help,
-          helperMaxLines: 3,
+          helperMaxLines: 20,
           errorText: invalid ? l10n.plugin_pixiv_mute_tag_invalid : null,
           border: const OutlineInputBorder(),
           suffixIcon: IconButton(tooltip: l10n.plugin_pixiv_mute_tag_add, icon: const Icon(Icons.add), onPressed: _add),

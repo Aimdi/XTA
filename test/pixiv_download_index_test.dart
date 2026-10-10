@@ -74,7 +74,7 @@ void main() {
     expect(store.get<String>(optionPluginPixivDownloadIndex), '[]');
   });
 
-  test('a restored backup shows at once, and the next save keeps what it brought back', () async {
+  test('a write from outside the store shows at once, and the next save keeps it', () async {
     final store = prefs('["1_p0"]');
     final index = PixivDownloadIndex(store);
     addTearDown(index.destroy);

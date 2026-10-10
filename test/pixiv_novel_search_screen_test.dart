@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_detail_tags.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
@@ -14,6 +15,7 @@ import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/utils/json.dart';
 
@@ -113,6 +115,27 @@ void main() {
     expect(novels.calls, ['trending']);
     expect(search.calls, isNot(contains('creators')));
     expect(find.byTooltip('Search by image'), findsNothing);
+    await disposePixiv(tester);
+  });
+
+  testWidgets("a novel's tag searches novels, not works", (tester) async {
+    final novels = _novelApi(found: [pixivNovel(id: 1, title: 'Rainy letters')]);
+    final search = FakePixivSearchApi();
+    await pumpPixiv(
+      tester,
+      const Scaffold(
+        body: PixivDetailTags(
+          tags: [PixivTag(name: 'rain')],
+          kind: PixivSearchKind.novels,
+        ),
+      ),
+      client: _seeded({optionPluginPixivNovelSearchHistory: '[]', optionPluginPixivNovelSearchFilters: ''}),
+      extraProviders: [...novels.providers, search.provider, _novelHistory()],
+    );
+    await _tap(tester, find.byKey(const ValueKey('pixiv-tag-rain')));
+    expect(novels.calls, contains('search:rain'));
+    expect(find.widgetWithText(PixivNovelCard, 'Rainy letters'), findsOneWidget);
+    expect(search.calls.where((call) => call.startsWith('illusts')), isEmpty);
     await disposePixiv(tester);
   });
 

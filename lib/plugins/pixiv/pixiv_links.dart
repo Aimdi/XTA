@@ -15,14 +15,19 @@ class PixivArtworkLinkRef extends PixivLinkRef {
 class PixivUserLinkRef extends PixivLinkRef {
   final int id;
 
-  const PixivUserLinkRef(this.id);
+  /// The profile tab the link names, such as `novels` for `/users/<id>/novels`.
+  final String? tab;
+
+  const PixivUserLinkRef(this.id, {this.tab});
 }
 
-/// A tag page, which XTA opens as a search for the tag.
+/// A tag page, which XTA opens as a search for the tag, of novels when the
+/// page was the tag's novels.
 class PixivTagLinkRef extends PixivLinkRef {
   final String tag;
+  final bool novels;
 
-  const PixivTagLinkRef(this.tag);
+  const PixivTagLinkRef(this.tag, {this.novels = false});
 }
 
 /// A `pixiv.me/<name>` short link; only a request to pixiv.me says where it goes.
@@ -207,7 +212,7 @@ PixivLinkRef? _pathRef(List<String> path) {
   if (segments.length < 2) {
     return null;
   }
-  return _namedPathRef(segments) ?? _idPathRef(segments.first, _positiveId(segments[1]));
+  return _namedPathRef(segments) ?? _idPathRef(segments);
 }
 
 /// Paths whose second segment is not the ID: tags, series and novel series.
@@ -215,7 +220,7 @@ PixivLinkRef? _namedPathRef(List<String> segments) {
   final head = segments.first;
   if (head == 'tags') {
     final tag = segments[1].trim();
-    return tag.isEmpty ? null : PixivTagLinkRef(tag);
+    return tag.isEmpty ? null : PixivTagLinkRef(tag, novels: segments.length > 2 && segments[2] == 'novels');
   }
   if (head == 'novel' && segments[1] == 'series' && segments.length > 2) {
     final id = _positiveId(segments[2]);
@@ -228,17 +233,27 @@ PixivLinkRef? _namedPathRef(List<String> segments) {
   return null;
 }
 
-PixivLinkRef? _idPathRef(String head, int? id) {
+PixivLinkRef? _idPathRef(List<String> segments) {
+  final id = _positiveId(segments[1]);
   if (id == null) {
     return null;
   }
-  return switch (head) {
+  return switch (segments.first) {
     'artworks' || 'artwork' || 'illust' || 'i' => PixivLinkRef.artwork(id),
-    'users' || 'user' || 'u' => PixivLinkRef.user(id),
+    'users' || 'user' || 'u' => PixivUserLinkRef(id, tab: _profileTab(segments.skip(2).firstOrNull)),
     'n' => PixivNovelLinkRef(id),
     _ => null,
   };
 }
+
+/// The profile tab a page under `/users/<id>/` shows.
+String? _profileTab(String? page) => switch (page) {
+  'artworks' || 'illustrations' || 'manga' => 'works',
+  'novels' => 'novels',
+  'bookmarks' => 'bookmarks',
+  'following' => 'following',
+  _ => null,
+};
 
 /// pixiv.net and pixiv.me, with any subdomain.
 bool isPixivWebHost(String host) => _isPixivHost(host.toLowerCase());

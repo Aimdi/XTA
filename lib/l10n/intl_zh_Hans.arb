@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv 官方服务器",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "镜像或自定义服务器能看到你打开的每张图片（包括 R-18）以及你的 IP 地址。",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "恢复默认",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "已复制作品信息",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "此私有插件像图库应用一样阅读 Pixiv：关注、排行榜、公开收藏与搜索。点登录在浏览器中用 Pixiv 账号登录，或在下方粘贴刷新令牌。此处不会在 Pixiv 发帖、收藏或关注。",
+  "plugin_pixiv_settings_intro": "此私有插件像图库应用一样阅读 Pixiv：插画、漫画、小说、排行榜、你的收藏与搜索。点登录在浏览器中用 Pixiv 账号登录，或在下方粘贴刷新令牌。只有你亲自进行的收藏、关注和追更列表更改会发送到你的 Pixiv 账号。此处绝不会发帖、评论或举报。",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "分享图片",
   "@plugin_pixiv_share_image": {},

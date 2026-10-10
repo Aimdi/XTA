@@ -27,7 +27,8 @@ plugin as a whole is described in `pixiv-plugin.md`.
   `plugin.pixiv.novel_reading`, listed in `secretPrefKeys` so no export,
   backup or crash report carries it.
 - Each entry is `{id, title, userId, userName, thumbUrl, tags, viewedAt,
-  width, height, bookmarks, bookmarked}`; newest first, one entry per work
+  width, height, bookmarks, bookmarked, xRestrict, isAi}` (the last two only
+  when set; a work keeps `xRestrict` 1 for any R-18); newest first, one entry per work
   (reopening moves it to the top), at most 500. Tags are kept so a muted tag
   still gates a work reopened from history; the size and bookmarks keep the
   tile's shape and count.
@@ -35,7 +36,9 @@ plugin as a whole is described in `pixiv-plugin.md`.
   work's detail has loaded — not while it waits behind the mute notice, and
   not for a work Pixiv no longer has.
 - `plugin.pixiv.history_paused` stops recording works and novels alike, and
-  the novel reader then neither keeps nor restores places. The history screen
+  the novel reader then neither keeps nor restores places. The history lists
+  everything opened, whatever the mutes, Show R-18 or Hide AI say now, so it
+  can be found and forgotten; R-18 and AI works keep their badges. The history screen
   (More → Viewing history, on the kind the sections show, or Settings) is the
   shared `PixivIllustGrid` (mute filter
   off, long press forgets a work) under a header with the title/artist filter
@@ -67,6 +70,11 @@ plugin as a whole is described in `pixiv-plugin.md`.
 - `plugin.pixiv.accounts` is a JSON list of
   `{userId, name, account, avatar, isPremium, refreshToken}`. It is in
   `secretPrefKeys`, so exports, backups and crash reports never carry it.
+  So are `user_id`, `is_premium` and `access_expires_at`: they say whose the
+  tokens are, and beside another device's tokens they would name the wrong
+  account (and a switch would file this device's token under it).
+  `prefsForImport` drops every `secretPrefKeys` entry too, so an older backup
+  that carried them cannot write them.
 - The active account is still the one in the single-account keys
   (`refresh_token`, `user_id`, `is_premium`, …). `PixivClient.switchTo`
   copies another account into them and clears the access token, so the next
@@ -74,7 +82,11 @@ plugin as a whole is described in `pixiv-plugin.md`.
   account is discarded and asked again for the account now in use.
 - **A token belongs to the stored user id.** Every path that sets the refresh
   token sets `user_id` with it; a token typed or pasted in Settings clears
-  `user_id` until a token check names its owner. A user is only kept in the
+  `user_id` (and Premium) until a token check names its owner. The field is
+  put in use when the reader submits it, taps Test, leaves the field or the
+  page, never per keystroke, and as a switch is: the account it replaces
+  keeps its own token among the stored ones and what was loaded for it is
+  dropped (`PixivAccountsStore.useToken`). A user is only kept in the
   list with the token while `user_id` is theirs, so a check that lands after
   a switch, or a pasted token, never overwrites another account's entry.
 - Before switching or adding, the active entry takes the refresh token now in
@@ -126,7 +138,8 @@ the work and artist links, and a reset.
 | `member.php?id=`, `member_illust.php?id=` | user |
 | `novel/show.php?id=`, `/novel/series/<id>` | novel, novel series |
 | `/user/<uid>/series/<id>` | illust series |
-| `/tags/<tag>` | tag (opens search) |
+| `/tags/<tag>`, `/tags/<tag>/novels` | tag (opens works search, or novel search for its novels page) |
+| `/users/<id>/artworks|illustrations|manga|novels|bookmarks/…|following` | user, on the Works, Novels, Bookmarks or Following tab |
 | `i.pximg.net/…/img-original|img-master/…/<id>_p0.png` | artwork |
 | `pixiv://illusts|users|novels/<id>` | artwork, user, novel |
 | `pixivision.net/<lang>/a/<id>` | pixivision article |
@@ -154,9 +167,10 @@ pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 - `openUri` asks Android who would open a Pixiv page; when that is XTA itself
   or a chooser that lists it, the page goes to a named browser instead, so a
   link XTA cannot show never comes straight back.
-- Shared text (`shared_links.dart`) yields Pixiv and pixivision.net links
+- Shared text (`shared_links.dart`) yields Pixiv (any pixiv.net or pixiv.me
+  host), pixivision.net, image-file (`*.pximg.net`) and `pixiv://` links
   while the plugin is on; a share that is only a number opens Pixiv search
-  with it. `readsAsXLink` keeps pixivision pages from X's parser too.
+  with it. `readsAsXLink` keeps all of them from X's parser.
 - pixivision.net is not in the manifest's VIEW filter yet, so Android does
   not offer XTA for a pixivision link; one reaches the article screen when
   tapped inside XTA or shared to it.
@@ -171,7 +185,19 @@ pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 - `plugin.pixiv.start_section` (`home`, `ranking`, `favorites`, `search`)
   picks the section the Pixiv screen opens on.
 - Tapping the section, Home source, Favorites filter (visibility and bookmark
-  tag) or ranking mode already shown scrolls that list to the top. Embedded in Home, the More list
+  tag) or ranking mode already shown scrolls that list to the top; every Home
+  source (Following, Recommended, Manga, Watchlist) has its own controller.
+- Show R-18 and Hide AI apply as each page is parsed, so turning either one,
+  either way, empties the Home session's lists (Home sources, Rankings,
+  Favorites, the novel lists and the app-wide Following feed) the way an
+  account switch does, and the list on screen loads again
+  (`PixivSessionAccountStore`, keyed by the account and both choices).
+- The app-wide stores that hold preferences in memory build every change on
+  what is stored, not on what they hold: mutes, favourite tags and ranking
+  pins (which also follow their preference). A settings import or WebDAV
+  pull reloads them (`PixivPlugin.reloadFromDatabase`), and an uninstall's
+  reset reaches them through `forgetLoadedData`, so the next change never
+  writes the old state back. Embedded in Home, the More list
   scrolls with Home's controller, so tapping More again works there too.
 
 ## Preferences added
@@ -179,6 +205,8 @@ pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 | Key | Default | Backed up |
 |---|---|---|
 | `plugin.pixiv.accounts` | `[]` | Never (secret) |
+| `plugin.pixiv.user_id`, `is_premium`, `access_expires_at` | `0`, `false`, `''` | Never (secret: they belong to the tokens) |
+| `plugin.pixiv.hide_ai` | `false` | Yes |
 | `plugin.pixiv.start_section` | `home` | Yes |
 | `plugin.pixiv.copy_template` | `''` | Yes |
 | `plugin.pixiv.history_paused` | `false` | Yes |

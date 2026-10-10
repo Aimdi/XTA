@@ -62,7 +62,7 @@ enum PixivSearchKind {
   works(
     targets: pixivIllustSearchTargets,
     sorts: PixivSearchSort.values,
-    premiumSorts: {PixivSearchSort.oldest, PixivSearchSort.popularMale, PixivSearchSort.popularFemale},
+    premiumSorts: {PixivSearchSort.popularMale, PixivSearchSort.popularFemale},
     filterPref: optionPluginPixivSearchFilters,
   ),
   novels(

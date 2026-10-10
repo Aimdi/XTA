@@ -13,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin_counts.dart';
@@ -40,7 +41,7 @@ class PixivNovelReaderHeader extends StatelessWidget {
           _titleRow(context),
           if (series != null) PixivSeriesLink(series: series, onOpen: openPixivNovelSeries),
           PixivNovelReaderStats(novel: novel),
-          if (novel.tags.isNotEmpty) PixivDetailTags(tags: novel.tags),
+          if (novel.tags.isNotEmpty) PixivDetailTags(tags: novel.tags, kind: PixivSearchKind.novels),
           if (novel.captionHtml.isNotEmpty || novel.caption.isNotEmpty)
             PixivHtmlText(html: novel.captionHtml, plainText: novel.caption),
           PixivCommentsLink(target: PixivCommentTarget.novel(novel.id), count: novel.totalComments),
@@ -157,28 +158,41 @@ class PixivNovelChapterButtons extends StatelessWidget {
 
   const PixivNovelChapterButtons({super.key, required this.content, required this.onOpen});
 
+  /// About eleven characters of label per button: narrower than that, the two
+  /// go one above the other rather than break their words.
+  static const _minButtonEms = 11;
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     if (content.previous == null && content.next == null) return const SizedBox.shrink();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 12,
-      children: [
-        Expanded(child: _button(context, content.previous, l10n.plugin_pixiv_novel_previous, Icons.chevron_left)),
-        Expanded(child: _button(context, content.next, l10n.plugin_pixiv_novel_next, Icons.chevron_right)),
-      ],
+    final previous = _button(context, content.previous, l10n.plugin_pixiv_novel_previous, Icons.chevron_left);
+    final next = _button(context, content.next, l10n.plugin_pixiv_novel_next, Icons.chevron_right);
+    final em = MediaQuery.textScalerOf(context).scale(14);
+    return LayoutBuilder(
+      builder: (context, constraints) => (constraints.maxWidth - 12) / 2 < em * _minButtonEms
+          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, spacing: 8, children: [?previous, ?next])
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 12,
+              children: [
+                Expanded(child: previous ?? const SizedBox.shrink()),
+                Expanded(child: next ?? const SizedBox.shrink()),
+              ],
+            ),
     );
   }
 
-  Widget _button(BuildContext context, PixivNovelNeighbour? chapter, String label, IconData icon) {
-    if (chapter == null) return const SizedBox.shrink();
+  Widget? _button(BuildContext context, PixivNovelNeighbour? chapter, String label, IconData icon) {
+    if (chapter == null) return null;
     final name = pixivNovelNeighbourName(L10n.of(context), chapter);
     return OutlinedButton.icon(
       key: ValueKey('pixiv-novel-chapter-${chapter.id}'),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(kMinInteractiveDimension),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        // Two lines of label read as a card, not a pill.
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       onPressed: chapter.viewable ? () => onOpen(chapter.id) : null,
       icon: Icon(icon),

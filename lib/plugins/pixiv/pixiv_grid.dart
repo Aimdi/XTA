@@ -70,6 +70,9 @@ class PixivIllustSliverGrid extends StatelessWidget {
   /// The store [illusts] come from, handed to tiles so a work opens among its neighbours.
   final PixivIllustListStore? source;
 
+  /// The gap between tiles, both ways.
+  final double spacing;
+
   const PixivIllustSliverGrid({
     super.key,
     required this.illusts,
@@ -79,6 +82,7 @@ class PixivIllustSliverGrid extends StatelessWidget {
     this.hideMuted = true,
     this.tileBuilder,
     this.source,
+    this.spacing = 8,
   });
 
   @override
@@ -96,8 +100,8 @@ class PixivIllustSliverGrid extends StatelessWidget {
     padding: padding,
     sliver: SliverMasonryGrid.count(
       crossAxisCount: columns,
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
+      mainAxisSpacing: spacing,
+      crossAxisSpacing: spacing,
       childCount: shown.length,
       itemBuilder: (context, index) => _tile(context, shown, index),
     ),

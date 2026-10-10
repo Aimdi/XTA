@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 import 'support/pixiv_discovery_fakes.dart';
 import 'support/pixiv_reader_harness.dart';
@@ -115,6 +117,18 @@ void main() {
       await store.destroy();
     });
 
+    test('follow the stored pins, so an import or a reset shows and is not written back', () async {
+      final prefs = PrefServiceCache(defaults: {optionPluginPixivRankingModes: '["day","week"]'});
+      final store = PixivRankingPinsStore(prefs);
+      await prefs.set(optionPluginPixivRankingModes, '["month"]');
+      expect(store.state, ['month']);
+      await store.toggle('day');
+      expect(jsonDecode(prefs.get<String>(optionPluginPixivRankingModes)!), ['day', 'month']);
+      await store.destroy();
+      await prefs.set(optionPluginPixivRankingModes, '["week"]');
+      expect(store.state, ['day', 'month'], reason: 'a destroyed store stops following');
+    });
+
     test('a tap while the last one is still being saved builds on it', () async {
       final prefs = _SlowPrefs(defaults: {optionPluginPixivRankingModes: '["day"]'});
       final store = PixivRankingPinsStore(prefs);
@@ -180,6 +194,43 @@ void main() {
       final pins = PixivRankingPinsStore(harness.prefs);
       expect(pins.state, contains('day_ai'));
       await pins.destroy();
+      await disposePixiv(tester);
+    });
+
+    testWidgets('pinned chips stay legible on the accent in the true-black theme', (tester) async {
+      final prefs = PrefServiceCache(defaults: {optionPluginPixivRankingModes: '["day","week"]'});
+      final pins = PixivRankingPinsStore(prefs);
+      addTearDown(pins.destroy);
+      await pumpPixiv(
+        tester,
+        Theme(
+          data: xLookLightsOutTheme(null),
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => showPixivRankingModeSheet(
+                  context,
+                  pins: pins,
+                  offered: pixivRankingModesOffered(pixivIllustRankingModes, showR18: false),
+                ),
+                child: const Text('edit'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('edit'));
+      await settlePixiv(tester);
+      final theme = xLookLightsOutTheme(null);
+      Color labelOf(String id) => tester
+          .renderObject<RenderParagraph>(
+            find.descendant(of: find.byKey(ValueKey('pixiv-ranking-pin-$id')), matching: find.byType(RichText)),
+          )
+          .text
+          .style!
+          .color!;
+      expect(labelOf('week'), theme.chipTheme.secondaryLabelStyle!.color, reason: 'selected: on the accent');
+      expect(labelOf('month'), theme.chipTheme.labelStyle!.color);
       await disposePixiv(tester);
     });
 

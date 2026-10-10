@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Servidor do próprio Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Um espelho ou seu próprio servidor vê cada imagem que você abre, incluindo as R-18, e seu endereço IP.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Restaurar o padrão",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informações copiadas",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Este plugin privado lê o Pixiv como uma galeria: seguindo, rankings, seus favoritos públicos e busca. Toque em Entrar para fazer login com a conta Pixiv no navegador, ou cole um token de atualização abaixo. Daqui nada é postado, favoritado ou seguido no Pixiv.",
+  "plugin_pixiv_settings_intro": "Este plugin privado lê o Pixiv como um app de galeria: ilustrações, mangás, romances, rankings, seus favoritos e busca. Toque em Entrar para fazer login com a conta Pixiv no navegador, ou cole um token de atualização abaixo. Só os favoritos, as contas seguidas e as mudanças na lista de acompanhamento que você fizer vão para a sua conta Pixiv. Daqui nada é postado, comentado ou denunciado, nunca.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Compartilhar imagem",
   "@plugin_pixiv_share_image": {},

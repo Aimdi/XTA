@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv 官方伺服器",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "鏡像或自訂伺服器能看到你開啟的每張圖片（包括 R-18）以及你的 IP 位址。",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "恢復預設",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "已複製作品資訊",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "此私有外掛像圖庫應用程式一樣閱讀 Pixiv：追蹤、排行榜、公開收藏與搜尋。點登入以在瀏覽器中用 Pixiv 帳號登入，或在下方貼上重新整理權杖。此處不會在 Pixiv 發文、收藏或追蹤。",
+  "plugin_pixiv_settings_intro": "此私有外掛像圖庫應用程式一樣閱讀 Pixiv：插畫、漫畫、小說、排行榜、你的收藏與搜尋。點登入以在瀏覽器中用 Pixiv 帳號登入，或在下方貼上重新整理權杖。只有你親自進行的收藏、追蹤和追更清單變更會傳送到你的 Pixiv 帳號。此處絕不會發文、留言或檢舉。",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "分享圖片",
   "@plugin_pixiv_share_image": {},

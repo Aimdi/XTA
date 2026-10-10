@@ -73,22 +73,28 @@ class PixivNetworkImage extends StatelessWidget {
     final source = pixivImageUrlFor(context, url);
     if (fullResolution) {
       final screen = MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context);
-      return _image(source, width: pixivFullResolutionWidth(screen));
+      return _image(context, source, width: pixivFullResolutionWidth(screen));
     }
     if (cacheWidth != null || cacheHeight != null) {
-      return _image(source, width: cacheWidth, height: cacheHeight);
+      return _image(context, source, width: cacheWidth, height: cacheHeight);
     }
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxW = constraints.maxWidth;
         final width = maxW.isFinite && maxW > 0 ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil() : null;
-        return _image(source, width: width);
+        return _image(context, source, width: width);
       },
     );
   }
 
-  Widget _image(String source, {int? width, int? height}) => ExtendedImage.network(
+  /// [loadStateChanged] first; a failure it leaves to the default gets the broken-image
+  /// mark rather than the library's untranslated text drawn over the box.
+  Widget? _loadState(BuildContext context, ExtendedImageState state) =>
+      loadStateChanged?.call(state) ??
+      (state.extendedImageLoadState == LoadState.failed ? pixivTileLoadState(context, state) : null);
+
+  Widget _image(BuildContext context, String source, {int? width, int? height}) => ExtendedImage.network(
     source,
     fit: fit,
     cache: true,
@@ -99,7 +105,7 @@ class PixivNetworkImage extends StatelessWidget {
     retries: 1,
     gaplessPlayback: gaplessPlayback,
     handleLoadingProgress: handleLoadingProgress,
-    loadStateChanged: loadStateChanged,
+    loadStateChanged: (state) => _loadState(context, state),
   );
 }
 

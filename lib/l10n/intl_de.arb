@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixivs eigener Server",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Ein Spiegelserver oder dein eigener Server sieht jedes Bild, das du öffnest, auch R-18-Werke, und deine IP-Adresse.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Auf Standard zurücksetzen",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Infos kopiert",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Dieses private Plugin liest Pixiv wie eine Galerie-App: Folge-Feed, Rankings, deine öffentlichen Lesezeichen und Suche. Tippe auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. Von hier aus wird auf Pixiv nichts gepostet, geliked oder gefolgt.",
+  "plugin_pixiv_settings_intro": "Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und Suche. Tippe auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. An dein Pixiv-Konto gehen nur die Lesezeichen, Follows und Änderungen an der Merkliste, die du selbst vornimmst. Von hier aus wird nie etwas gepostet, kommentiert oder gemeldet.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Bild teilen",
   "@plugin_pixiv_share_image": {},

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -55,25 +57,37 @@ class PixivAccountSettings extends StatefulWidget {
 
 class _PixivAccountSettingsState extends State<PixivAccountSettings> {
   late final TextEditingController _token;
+  final _tokenFocus = FocusNode();
   late final PixivAccountsStore _accounts;
-  final _view = PluginViewStore(const PixivAccountView());
+  late final BasePrefService _prefs;
 
-  BasePrefService get _prefs => PrefService.of(context, listen: false);
+  /// Read once, so a token left in the field is still put in use as the page closes.
+  late final VoidCallback _forgetAccountData;
+  final _view = PluginViewStore(const PixivAccountView());
 
   @override
   void initState() {
     super.initState();
+    _prefs = PrefService.of(context, listen: false);
+    _forgetAccountData = pixivAccountDataForgetter(context);
     _accounts = PixivAccountsStore(context.read<PixivClient>())..load();
     _token = TextEditingController(text: _prefs.get<String>(optionPluginPixivRefreshToken) ?? '');
+    _tokenFocus.addListener(_saveTokenOnBlur);
     _loadSignedInName();
   }
 
   @override
   void dispose() {
+    _tokenFocus.removeListener(_saveTokenOnBlur);
+    unawaited(_saveToken().whenComplete(_accounts.destroy));
+    _tokenFocus.dispose();
     _token.dispose();
     _view.destroy();
-    _accounts.destroy();
     super.dispose();
+  }
+
+  void _saveTokenOnBlur() {
+    if (mounted && !_tokenFocus.hasFocus) unawaited(_saveToken());
   }
 
   void _syncToken() => _token.text = _prefs.get<String>(optionPluginPixivRefreshToken) ?? '';
@@ -94,15 +108,14 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
     _syncToken();
   }
 
-  /// A typed or pasted token may be another account's: the stored id is
-  /// cleared until a token check names its owner, so no stored account takes it.
+  /// A typed or pasted token may be another account's, so it is put in use as
+  /// a switch is: once the reader is done with the field, never per keystroke,
+  /// and without what was loaded for the account it replaces.
   Future<void> _saveToken() async {
     final token = _token.text.trim();
     if (token == (_prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim()) return;
-    await _prefs.set(optionPluginPixivRefreshToken, token);
-    await _prefs.set(optionPluginPixivAccessToken, '');
-    await _prefs.set(optionPluginPixivAccessExpiresAt, '');
-    await _prefs.set(optionPluginPixivUserId, 0);
+    _forgetAccountData();
+    await _accounts.useToken(token);
   }
 
   Future<void> _signIn() async {
@@ -203,7 +216,9 @@ class _PixivAccountSettingsState extends State<PixivAccountSettings> {
             onPressed: () => _view.select(view.copyWith(tokenShown: !view.tokenShown)),
           ),
         ),
-        onChanged: (_) => _saveToken(),
+        focusNode: _tokenFocus,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _saveToken(),
       ),
       const SizedBox(height: 12),
       Align(

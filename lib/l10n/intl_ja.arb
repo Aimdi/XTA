@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Pixiv公式サーバー",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "ミラーや独自のサーバーには、開いたすべての画像（R-18を含む）とIPアドレスが見えます。",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "デフォルトに戻す",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "作品情報をコピーしました",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "このプライベートプラグインはギャラリーアプリのようにPixivを読みます。フォロー、ランキング、公開ブックマーク、検索。サインインでブラウザからPixivにログインするか、下にリフレッシュトークンを貼ってください。ここからPixivへの投稿・ブックマーク・フォローはしません。",
+  "plugin_pixiv_settings_intro": "このプライベートプラグインはギャラリーアプリのようにPixivを読みます。イラスト、マンガ、小説、ランキング、ブックマーク、検索。サインインでブラウザからPixivにログインするか、下にリフレッシュトークンを貼ってください。Pixivアカウントに送られるのは、あなた自身が行ったブックマーク、フォロー、ウォッチリストの変更だけです。ここから投稿・コメント・通報をすることはありません。",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "画像を共有",
   "@plugin_pixiv_share_image": {},

@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "Server di Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Un mirror o il tuo server vede ogni immagine che apri, anche quelle R-18, e il tuo indirizzo IP.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Ripristina predefinito",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informazioni copiate",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Questo plugin privato legge Pixiv come una galleria: seguiti, classifiche, i tuoi segnalibri pubblici e la ricerca. Tocca Accedi per entrare con l’account Pixiv nel browser, oppure incolla un refresh token sotto. Da qui non si pubblica, non si aggiungono segnalibri e non si seguono account su Pixiv.",
+  "plugin_pixiv_settings_intro": "Questo plugin privato legge Pixiv come un’app galleria: illustrazioni, manga, romanzi, classifiche, i tuoi segnalibri e la ricerca. Tocca Accedi per entrare con l’account Pixiv nel browser, oppure incolla un refresh token sotto. Al tuo account Pixiv arrivano solo i segnalibri, i follow e le modifiche alle serie seguite che fai tu. Da qui non si pubblica, non si commenta e non si segnala mai nulla.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Condividi immagine",
   "@plugin_pixiv_share_image": {},

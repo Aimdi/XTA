@@ -38,7 +38,8 @@ class PixivHistoryEntry {
   /// A novel's length in characters, for its card.
   final int textLength;
 
-  /// A novel's age rating and AI mark, so its card keeps its R-18, R-18G and AI chips.
+  /// The age rating and AI mark, so a tile keeps its R-18 and AI badges and a
+  /// novel's card its R-18, R-18G and AI chips. A work keeps 1 for any R-18.
   final int xRestrict;
   final bool isAi;
 
@@ -71,6 +72,8 @@ class PixivHistoryEntry {
     height: illust.height,
     bookmarks: illust.totalBookmarks,
     bookmarked: illust.isBookmarked,
+    xRestrict: illust.isR18 ? 1 : 0,
+    isAi: illust.isAi,
   );
 
   /// [novel] with its cover in place of a thumbnail.
@@ -155,6 +158,8 @@ class PixivHistoryEntry {
     height: height,
     totalBookmarks: bookmarks,
     isBookmarked: bookmarked,
+    isR18: xRestrict > 0,
+    isAi: isAi,
   );
 
   /// Enough of the novel to show its card and open it again.

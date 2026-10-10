@@ -38,8 +38,8 @@ Set<String> cappedPixivIndex(Iterable<String> keys) {
 }
 
 /// The Pixiv pages saved on this device, so a tile can show it and a second
-/// save can ask first. Kept in settings, so a backup carries it; it follows
-/// the setting, so a restore or a reset shows at once.
+/// save can ask first. Kept in a device-only setting that no backup carries;
+/// it follows the setting, so a reset shows at once.
 class PixivDownloadIndex extends Store<Set<String>> {
   final BasePrefService prefs;
 
@@ -68,7 +68,7 @@ class PixivDownloadIndex extends Store<Set<String>> {
   }
 
   /// Remembers [pages] of [illustId] as saved now, newest last. It builds on
-  /// the stored list, so pages a restore brought back are kept.
+  /// the stored list rather than on [state].
   Future<void> record(int illustId, Iterable<int> pages) async {
     final added = [for (final page in pages) pixivPageKey(illustId, page)];
     if (added.isEmpty) return;

@@ -102,7 +102,11 @@ class PixivHomeSection extends StatelessWidget {
 
   /// The Home tab's own controller, so tapping Home scrolls Following to the top.
   final ScrollController scrollController;
+
+  /// Each other source's own, so tapping its chip again scrolls it to the top.
   final ScrollController? recommendedScrollController;
+  final ScrollController? mangaScrollController;
+  final ScrollController? watchlistScrollController;
 
   const PixivHomeSection({
     super.key,
@@ -113,6 +117,8 @@ class PixivHomeSection extends StatelessWidget {
     required this.stores,
     required this.scrollController,
     this.recommendedScrollController,
+    this.mangaScrollController,
+    this.watchlistScrollController,
   });
 
   @override
@@ -172,8 +178,15 @@ class PixivHomeSection extends StatelessWidget {
         ),
       ],
     ),
-    PixivHomeSource.manga => PixivIllustFeed(store: stores.manga, emptyMessage: l10n.plugin_pixiv_manga_empty),
-    PixivHomeSource.watchlist => PixivMangaWatchlistFeed(store: stores.watchlist),
+    PixivHomeSource.manga => PixivIllustFeed(
+      store: stores.manga,
+      emptyMessage: l10n.plugin_pixiv_manga_empty,
+      scrollController: mangaScrollController,
+    ),
+    PixivHomeSource.watchlist => PixivMangaWatchlistFeed(
+      store: stores.watchlist,
+      scrollController: watchlistScrollController,
+    ),
   };
 }
 

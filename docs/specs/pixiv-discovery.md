@@ -94,7 +94,9 @@ R-18 AI, R-18 weekly and R-18G weekly.
   carries the picture and title (black with white text over the picture in
   every theme), with share and open in browser. The intro is a selectable
   card, then each featured work is a card that opens the work through
-  `openPixivLinkRef`; the artist row opens the profile.
+  `openPixivLinkRef`; the artist row opens the profile. A work whose creator
+  or id is muted is left out as soon as it is muted (`pixivisionVisibleWorks`);
+  the article names no tags, so a muted tag waits behind its notice on open.
 - `pixivision_parser.dart` is a pure `package:html` parser. It finds works by
   the links a block carries, not by class names: each work is the widest
   element around an artwork link that features no other work and also links

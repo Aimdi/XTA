@@ -19,6 +19,24 @@ void main() {
 
   tearDown(() => store.destroy());
 
+  test('adding and removing build on the stored tags, so an import is never saved over', () async {
+    await store.add(const PixivTag(name: 'old'));
+    await prefs.set(optionPluginPixivFavoriteTags, jsonEncode(['imported', 'other']));
+    await store.add(const PixivTag(name: 'new'));
+    expect(_names(store.state), ['imported', 'other', 'new']);
+    await store.remove('other');
+    expect(_names(readPixivFavoriteTags(prefs)), ['imported', 'new']);
+  });
+
+  test('a reorder over a list that changed underneath shows the stored list instead', () async {
+    await store.add(const PixivTag(name: 'a'));
+    await store.add(const PixivTag(name: 'b'));
+    await prefs.set(optionPluginPixivFavoriteTags, jsonEncode(['c', 'd']));
+    await store.reorder(0, 1);
+    expect(_names(store.state), ['c', 'd']);
+    expect(_names(readPixivFavoriteTags(prefs)), ['c', 'd']);
+  });
+
   test('adds at the end, and a tag differing only in case replaces the old one', () async {
     await store.add(const PixivTag(name: '初音ミク', translatedName: 'Hatsune Miku'));
     await store.add(const PixivTag(name: 'landscape'));

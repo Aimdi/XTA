@@ -117,6 +117,7 @@ class _PixivCopyTemplateScreenState extends State<PixivCopyTemplateScreen> {
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               helperText: l10n.plugin_pixiv_copy_template_help,
+              helperMaxLines: 20,
             ),
           ),
           const SizedBox(height: 16),

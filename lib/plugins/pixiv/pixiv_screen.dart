@@ -85,6 +85,8 @@ class _PixivScreenState extends State<PixivScreen> {
   /// The account the lists were loaded for; another one empties them.
   late final PixivSessionAccountStore _account;
   final _recommendedScroll = ScrollController();
+  final _mangaScroll = ScrollController();
+  final _watchlistScroll = ScrollController();
   final _rankingScroll = ScrollController();
   final _favoritesScroll = ScrollController();
   final _moreScroll = ScrollController();
@@ -135,15 +137,16 @@ class _PixivScreenState extends State<PixivScreen> {
     _watchAccount(prefs);
   }
 
-  /// Empties every session list when the reader signs out or switches account,
-  /// including while this screen was away and the session kept its lists.
+  /// Empties every session list when the reader signs out, switches account
+  /// or changes Show R-18 / Hide AI, including while this screen was away and
+  /// the session kept its lists.
   void _watchAccount(BasePrefService prefs) {
     final lists = [..._home.all, _ranking, _bookmarks, ..._novels.all];
     _account = _session.obtain(
       'account',
       () => PixivSessionAccountStore(
         prefs,
-        onSwitched: () {
+        onChanged: () {
           for (final list in lists) {
             list.clear();
           }
@@ -184,6 +187,8 @@ class _PixivScreenState extends State<PixivScreen> {
     if (_state.signingIn) _view.select(_state.copyWith(signingIn: false));
     for (final controller in [
       _recommendedScroll,
+      _mangaScroll,
+      _watchlistScroll,
       _rankingScroll,
       _favoritesScroll,
       _moreScroll,
@@ -199,10 +204,15 @@ class _PixivScreenState extends State<PixivScreen> {
   /// The list the reader sees in [section] now; Search keeps its own lists
   /// and is reached through the route's primary controller.
   ScrollController? _scrollControllerFor(int section) => switch (section) {
-    0 when _state.novelMode || _state.homeSource == PixivHomeSource.following => widget.scrollController,
+    0 when _state.novelMode => widget.scrollController,
     1 when _state.novelMode => _novelRankingScroll,
     2 when _state.novelMode => _novelFavoritesScroll,
-    0 => _recommendedScroll,
+    0 => switch (_state.homeSource) {
+      PixivHomeSource.following => widget.scrollController,
+      PixivHomeSource.recommended => _recommendedScroll,
+      PixivHomeSource.manga => _mangaScroll,
+      PixivHomeSource.watchlist => _watchlistScroll,
+    },
     1 => _rankingScroll,
     2 => _favoritesScroll,
     4 => _moreScroll,
@@ -222,8 +232,8 @@ class _PixivScreenState extends State<PixivScreen> {
     _view.select(_state.copyWith());
   }
 
-  /// An account changed somewhere this screen did not hear of, such as the
-  /// plugin's page in Settings.
+  /// An account or a content choice changed somewhere this screen did not
+  /// hear of, such as the plugin's page in Settings.
   void _followAccount() {
     if (mounted && _account.behind) _onAuthChanged();
   }
@@ -401,6 +411,8 @@ class _PixivScreenState extends State<PixivScreen> {
       stores: _home,
       scrollController: widget.scrollController,
       recommendedScrollController: _recommendedScroll,
+      mangaScrollController: _mangaScroll,
+      watchlistScrollController: _watchlistScroll,
     ),
     (_) => ScopedBuilder<PixivRankingPinsStore, List<String>>(
       store: _rankingPins,

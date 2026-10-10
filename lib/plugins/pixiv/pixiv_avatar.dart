@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -24,16 +25,22 @@ class PixivAvatar extends StatelessWidget {
     final pixels = (size * MediaQuery.devicePixelRatioOf(context)).ceil();
     return ClipOval(
       child: image == null || image.isEmpty
-          ? FallbackAvatar(
-              seed: '$userId',
-              displayName: name,
-              size: size,
-              accent: Theme.of(context).colorScheme.primary,
-            )
+          ? _initials(context)
           : SizedBox.square(
               dimension: size,
-              child: PixivNetworkImage(url: image, fit: BoxFit.cover, cacheWidth: pixels, cacheHeight: pixels),
+              child: PixivNetworkImage(
+                url: image,
+                fit: BoxFit.cover,
+                cacheWidth: pixels,
+                cacheHeight: pixels,
+                // A picture that will not load falls back to the initials too.
+                loadStateChanged: (state) =>
+                    state.extendedImageLoadState == LoadState.failed ? _initials(context) : null,
+              ),
             ),
     );
   }
+
+  Widget _initials(BuildContext context) =>
+      FallbackAvatar(seed: '$userId', displayName: name, size: size, accent: Theme.of(context).colorScheme.primary);
 }

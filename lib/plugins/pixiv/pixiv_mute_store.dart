@@ -135,6 +135,14 @@ class PixivMuteState {
     ];
   }
 
+  /// [items] without those by a muted author, [authorOf] naming each one's.
+  List<T> withoutMutedAuthors<T>(List<T> items, int Function(T item) authorOf) => authorIds.isEmpty
+      ? items
+      : [
+          for (final item in items)
+            if (!authorIds.contains(authorOf(item))) item,
+        ];
+
   /// Whether a muted author or tag, or the novel's own id, hides [novel].
   bool hidesNovel(PixivNovel novel) =>
       authorIds.contains(novel.user.id) || novelIds.contains(novel.id) || tagMatcher.match(novel.tags) != null;
@@ -171,38 +179,42 @@ class PixivMuteState {
   }
 }
 
+/// The reader's mutes. Every change builds on what is stored rather than on
+/// [state], so mutes a settings import or sync just wrote are never saved over.
 class PixivMuteStore extends Store<PixivMuteState> {
   final BasePrefService prefs;
 
   PixivMuteStore(this.prefs) : super(PixivMuteState.empty);
 
-  Future<void> load() async {
-    await execute(() async {
-      final authors = readPixivMutedAuthors(prefs.get<String>(optionPluginPixivMutedAuthors));
-      return PixivMuteState(
-        authorIds: Set.unmodifiable(authors.keys),
-        authorNames: Map.unmodifiable({
-          for (final MapEntry(:key, :value) in authors.entries)
-            if (value.isNotEmpty) key: value,
-        }),
-        tags: Set.unmodifiable(
-          _readStringList(prefs.get<String>(optionPluginPixivMutedTags)).map(pixivNormalizeMuteTag),
-        ),
-        illustIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedIllusts)),
-        commentIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedComments)),
-        novelIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedNovels)),
-      );
-    });
+  /// Reads the stored mutes again. Preferences answer at once, so there is no
+  /// loading state to show, and a caller awaiting it never waits on a frame.
+  Future<void> load() async => update(_read());
+
+  PixivMuteState _read() {
+    final authors = readPixivMutedAuthors(prefs.get<String>(optionPluginPixivMutedAuthors));
+    return PixivMuteState(
+      authorIds: Set.unmodifiable(authors.keys),
+      authorNames: Map.unmodifiable({
+        for (final MapEntry(:key, :value) in authors.entries)
+          if (value.isNotEmpty) key: value,
+      }),
+      tags: Set.unmodifiable(_readStringList(prefs.get<String>(optionPluginPixivMutedTags)).map(pixivNormalizeMuteTag)),
+      illustIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedIllusts)),
+      commentIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedComments)),
+      novelIds: _readIntSet(prefs.get<String>(optionPluginPixivMutedNovels)),
+    );
   }
 
   Future<void> muteAuthor(int id, {String name = ''}) => _write(
-    authorIds: {...state.authorIds, id},
-    authorNames: {...state.authorNames, if (name.trim().isNotEmpty) id: name.trim()},
+    (mute) => mute.copyWith(
+      authorIds: {...mute.authorIds, id},
+      authorNames: {...mute.authorNames, if (name.trim().isNotEmpty) id: name.trim()},
+    ),
   );
 
-  Future<void> unmuteAuthor(int id) {
-    return _write(authorIds: {...state.authorIds}..remove(id), authorNames: {...state.authorNames}..remove(id));
-  }
+  Future<void> unmuteAuthor(int id) => _write(
+    (mute) => mute.copyWith(authorIds: {...mute.authorIds}..remove(id), authorNames: {...mute.authorNames}..remove(id)),
+  );
 
   /// Mutes a tag name or an `r'pattern'`; false, and nothing saved, when the
   /// entry is blank or its pattern does not compile.
@@ -210,27 +222,24 @@ class PixivMuteStore extends Store<PixivMuteState> {
     if (!pixivMuteTagValid(tag)) {
       return false;
     }
-    await _write(tags: {...state.tags, pixivNormalizeMuteTag(tag)});
+    await _write((mute) => mute.copyWith(tags: {...mute.tags, pixivNormalizeMuteTag(tag)}));
     return true;
   }
 
-  Future<void> unmuteTag(String tag) {
-    return _write(tags: {...state.tags}..remove(pixivNormalizeMuteTag(tag)));
-  }
+  Future<void> unmuteTag(String tag) =>
+      _write((mute) => mute.copyWith(tags: {...mute.tags}..remove(pixivNormalizeMuteTag(tag))));
 
-  Future<void> muteIllust(int id) => _write(illustIds: {...state.illustIds, id});
+  Future<void> muteIllust(int id) => _write((mute) => mute.copyWith(illustIds: {...mute.illustIds, id}));
 
-  Future<void> unmuteIllust(int id) {
-    return _write(illustIds: {...state.illustIds}..remove(id));
-  }
+  Future<void> unmuteIllust(int id) => _write((mute) => mute.copyWith(illustIds: {...mute.illustIds}..remove(id)));
 
-  Future<void> muteComment(int id) => _write(commentIds: {...state.commentIds, id});
+  Future<void> muteComment(int id) => _write((mute) => mute.copyWith(commentIds: {...mute.commentIds, id}));
 
-  Future<void> unmuteComment(int id) => _write(commentIds: {...state.commentIds}..remove(id));
+  Future<void> unmuteComment(int id) => _write((mute) => mute.copyWith(commentIds: {...mute.commentIds}..remove(id)));
 
-  Future<void> muteNovel(int id) => _write(novelIds: {...state.novelIds, id});
+  Future<void> muteNovel(int id) => _write((mute) => mute.copyWith(novelIds: {...mute.novelIds, id}));
 
-  Future<void> unmuteNovel(int id) => _write(novelIds: {...state.novelIds}..remove(id));
+  Future<void> unmuteNovel(int id) => _write((mute) => mute.copyWith(novelIds: {...mute.novelIds}..remove(id)));
 
   bool isMuted(PixivIllust illust) => state.isMuted(illust);
 
@@ -238,22 +247,8 @@ class PixivMuteStore extends Store<PixivMuteState> {
 
   List<PixivNovel> filterNovels(List<PixivNovel> novels) => state.filterNovels(novels);
 
-  Future<void> _write({
-    Set<int>? authorIds,
-    Map<int, String>? authorNames,
-    Set<String>? tags,
-    Set<int>? illustIds,
-    Set<int>? commentIds,
-    Set<int>? novelIds,
-  }) async {
-    final next = state.copyWith(
-      authorIds: authorIds,
-      authorNames: authorNames,
-      tags: tags,
-      illustIds: illustIds,
-      commentIds: commentIds,
-      novelIds: novelIds,
-    );
+  Future<void> _write(PixivMuteState Function(PixivMuteState stored) change) async {
+    final next = change(_read());
     await _save(next);
     update(next);
   }

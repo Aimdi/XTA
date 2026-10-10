@@ -15,13 +15,15 @@ PixivImageHostChoice pixivImageHostChoice(String host) => switch (host.trim()) {
   _ => PixivImageHostChoice.custom,
 };
 
-/// The server a host setting names, with its scheme, port and path prefix; null when it is
-/// unusable: blank, containing spaces, not http(s), or carrying a query or credentials.
+/// The server a host setting names, with its port and path prefix; null when it is
+/// unusable: blank, containing spaces, not https, or carrying a query or credentials.
+/// Plain http would carry every work's address and Pixiv's Referer in the clear,
+/// and Android refuses it anyway.
 Uri? parsePixivImageHost(String input) {
   final text = input.trim();
   if (text.isEmpty || text.contains(RegExp(r'\s'))) return null;
   final uri = Uri.tryParse(text.contains('://') ? text : 'https://$text');
-  if (uri == null || uri.host.isEmpty || !const {'http', 'https'}.contains(uri.scheme)) return null;
+  if (uri == null || uri.host.isEmpty || uri.scheme != 'https') return null;
   if (uri.hasQuery || uri.hasFragment || uri.userInfo.isNotEmpty) return null;
   return uri;
 }

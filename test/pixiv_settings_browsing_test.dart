@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
@@ -116,6 +117,13 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await settlePixiv(tester);
       expect(find.widgetWithText(InputChip, '#cat'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('the pattern help is shown whole at large text on a narrow phone', (tester) async {
+      await pumpPixiv(tester, const PixivMuteScreen(), size: const Size(320, 1600), textScale: 2);
+      final help = tester.renderObject<RenderParagraph>(find.textContaining("Write r'pattern'"));
+      expect(help.didExceedMaxLines, isFalse);
       await disposePixiv(tester);
     });
 

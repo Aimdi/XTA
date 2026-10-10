@@ -163,7 +163,18 @@ class PixivClient {
       (response.statusCode == 400 &&
           (Json(_tryDecode(response))['error']['message'].string ?? '').contains('OAuth'));
 
+  /// Pixiv rate-limits with a JSON `error.message` of "Rate Limit" on a 4xx
+  /// (usually 400 or 403) far more often than with a 429.
+  bool _isRateLimited(http.Response response) =>
+      response.statusCode == 429 ||
+      (response.statusCode >= 400 &&
+          response.statusCode < 500 &&
+          (Json(_tryDecode(response))['error']['message'].string ?? '').toLowerCase().contains('rate limit'));
+
   void _throwForStatus(http.Response response, Uri uri) {
+    if (_isRateLimited(response)) {
+      throw PixivException(PixivErrorKind.rateLimited, '$uri: ${response.statusCode}');
+    }
     if (_isTokenRefused(response) || response.statusCode == 403) {
       throw PixivException(
         PixivErrorKind.unauthorized,
@@ -173,15 +184,24 @@ class PixivClient {
     if (response.statusCode == 404) {
       throw PixivException(PixivErrorKind.notFound, '$uri: 404');
     }
-    if (response.statusCode == 429) {
-      throw PixivException(PixivErrorKind.rateLimited, '$uri: 429');
-    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw PixivException(
         PixivErrorKind.badResponse,
         '$uri: ${response.statusCode}',
       );
     }
+  }
+
+  /// An image server holds no token, so a refusal from it is never the token's fault.
+  static void _throwForImageStatus(http.Response response, Uri uri) {
+    final status = response.statusCode;
+    if (status >= 200 && status < 300) return;
+    final kind = switch (status) {
+      404 || 410 => PixivErrorKind.notFound,
+      429 => PixivErrorKind.rateLimited,
+      _ => PixivErrorKind.badResponse,
+    };
+    throw PixivException(kind, '$uri: $status');
   }
 
   /// The token endpoint says in its body exactly why it refused — a token that
@@ -382,6 +402,16 @@ class PixivClient {
     await prefs.set(optionPluginPixivIsPremium, account.isPremium);
   }
 
+  /// Puts a pasted refresh [token] in use. Whose it is stays unknown until a
+  /// token check names its owner, so no stored account takes it meanwhile.
+  Future<void> useRefreshToken(String token) async {
+    await prefs.set(optionPluginPixivRefreshToken, token);
+    await prefs.set(optionPluginPixivAccessToken, '');
+    await prefs.set(optionPluginPixivAccessExpiresAt, '');
+    await prefs.set(optionPluginPixivUserId, 0);
+    await prefs.set(optionPluginPixivIsPremium, false);
+  }
+
   Future<void> signOut() async {
     await prefs.set(optionPluginPixivRefreshToken, '');
     await prefs.set(optionPluginPixivAccessToken, '');
@@ -530,26 +560,6 @@ class PixivClient {
     includeAi: !hideAi,
   );
 
-  /// One free page of the most popular results for [word] — the community's
-  /// answer to `popular_desc` being Premium-only.
-  Future<PixivIllustPage> popularPreview(
-    String word, {
-    String searchTarget = 'partial_match_for_tags',
-  }) async {
-    final trimmed = word.trim();
-    if (trimmed.isEmpty) {
-      return const PixivIllustPage(illusts: []);
-    }
-    final json = await getJson('/v1/search/popular-preview/illust', query: {
-      'word': trimmed,
-      'search_target': searchTarget,
-      'merge_plain_keyword_results': 'true',
-      'include_translated_tag_results': 'true',
-      'filter': 'for_android',
-    });
-    return illustPageFrom(json);
-  }
-
   /// Tag suggestions while typing, with translated names where Pixiv has them.
   Future<List<PixivTrendTag>> autocomplete(String word) async {
     final trimmed = word.trim();
@@ -593,41 +603,6 @@ class PixivClient {
     return illustPageFrom(json, ownList: true);
   }
 
-  Future<PixivIllustPage> searchIllust(
-    String word, {
-    String searchTarget = 'partial_match_for_tags',
-    String sort = 'date_desc',
-    String? nextUrl,
-  }) async {
-    final trimmed = word.trim();
-    if (trimmed.isEmpty) {
-      return const PixivIllustPage(illusts: []);
-    }
-    final json = await _firstOrNext('/v1/search/illust', {
-      'word': trimmed,
-      'search_target': searchTarget,
-      'sort': sort,
-      'filter': 'for_android',
-    }, nextUrl);
-    return illustPageFrom(json);
-  }
-
-  Future<({List<PixivUser> users, String? nextUrl})> searchUsers(
-    String word, {
-    String? nextUrl,
-  }) async {
-    final trimmed = word.trim();
-    if (trimmed.isEmpty) {
-      return (users: const <PixivUser>[], nextUrl: null);
-    }
-    final json = await _firstOrNext('/v1/search/user', {
-      'word': trimmed,
-      'filter': 'for_android',
-    }, nextUrl);
-    final root = Json(json);
-    return (users: parsePixivUserList(json), nextUrl: root['next_url'].string);
-  }
-
   Future<PixivIllust> illustDetail(int illustId) async {
     final json = await getJson('/v1/illust/detail', query: {'illust_id': '$illustId'});
     final illust = pixivIllustFromJson(Json(json)['illust'].raw);
@@ -669,7 +644,7 @@ class PixivClient {
     } catch (e) {
       throw PixivException(PixivErrorKind.network, '$e');
     }
-    _throwForStatus(response, uri);
+    _throwForImageStatus(response, uri);
     return response.bodyBytes;
   }
 

@@ -818,8 +818,15 @@ const secretPrefKeys = {
   optionPluginThreadsDirectBearer,
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
+  // Whose the tokens above are, and what that account may do: beside another
+  // device's tokens they would name the wrong account.
+  optionPluginPixivUserId,
+  optionPluginPixivIsPremium,
+  optionPluginPixivAccessExpiresAt,
   optionPluginPixivAccounts,
   optionPluginPixivNovelReading,
+  // The pages saved to this device's storage, which another device does not have.
+  optionPluginPixivDownloadIndex,
   optionPluginEhCookies,
   optionPluginTiktokCookies,
   optionPluginInstagramCookies,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
@@ -7,6 +8,7 @@ import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
+import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_link.dart';
 import 'package:xta/plugins/pixiv/pixivision_parser.dart';
@@ -182,17 +184,29 @@ class _PixivisionArticleScreenState extends State<PixivisionArticleScreen> {
           ],
         ),
       ),
-      SliverPadding(
-        padding: pluginFeedPadding(context, extra: const EdgeInsets.symmetric(horizontal: 16)),
-        sliver: SliverList.separated(
-          itemCount: article.works.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (context, index) => PixivisionWorkCard(work: article.works[index]),
-        ),
+      ScopedBuilder<PixivMuteStore, PixivMuteState>(
+        store: context.read<PixivMuteStore>(),
+        onState: (context, mute) => _works(context, pixivisionVisibleWorks(article.works, mute)),
       ),
     ];
   }
+
+  Widget _works(BuildContext context, List<PixivisionWork> works) => SliverPadding(
+    padding: pluginFeedPadding(context, extra: const EdgeInsets.symmetric(horizontal: 16)),
+    sliver: SliverList.separated(
+      itemCount: works.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      itemBuilder: (context, index) => PixivisionWorkCard(work: works[index]),
+    ),
+  );
 }
+
+/// The featured works the reader's mutes let through. An article names no
+/// tags, so a muted tag still waits behind its notice when the work is opened.
+List<PixivisionWork> pixivisionVisibleWorks(List<PixivisionWork> works, PixivMuteState mute) => [
+  for (final work in mute.withoutMutedAuthors(works, (work) => work.userId))
+    if (!mute.illustIds.contains(work.artworkId)) work,
+];
 
 class PixivisionIntroCard extends StatelessWidget {
   final String intro;

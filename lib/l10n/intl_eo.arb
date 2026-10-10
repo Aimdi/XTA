@@ -2622,6 +2622,8 @@
   "@plugin_pixiv_image_host_mirror": {},
   "plugin_pixiv_image_host_pixiv": "La propra servilo de Pixiv",
   "@plugin_pixiv_image_host_pixiv": {},
+  "plugin_pixiv_image_host_privacy": "Spegulo aŭ via propra servilo vidas ĉiun bildon, kiun vi malfermas, ankaŭ R-18-ajn, kaj vian IP-adreson.",
+  "@plugin_pixiv_image_host_privacy": {},
   "plugin_pixiv_image_host_reset": "Restarigi la defaŭlton",
   "@plugin_pixiv_image_host_reset": {},
   "plugin_pixiv_info_copied": "Informoj kopiitaj",
@@ -3299,7 +3301,7 @@
       }
     }
   },
-  "plugin_pixiv_settings_intro": "Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: sekvado, rangigoj, viaj publikaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refresĥĵetonon sube. De ĉi tie nenio estas afiŝita, legosignita aŭ sekvata sur Pixiv.",
+  "plugin_pixiv_settings_intro": "Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: ilustraĵoj, mangaoj, romanoj, rangigoj, viaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refreŝigan ĵetonon sube. Al via Pixiv-konto iras nur la legosignoj, sekvoj kaj ŝanĝoj de la atentolisto, kiujn vi mem faras. De ĉi tie nenio iam estas afiŝita, komentita aŭ raportita.",
   "@plugin_pixiv_settings_intro": {},
   "plugin_pixiv_share_image": "Kunhavigi bildon",
   "@plugin_pixiv_share_image": {},
