@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/pixiv/pixiv_comment_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_author.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
+import 'package:xta/plugins/pixiv/pixiv_detail_comments.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_stats.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_tags.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -28,6 +30,7 @@ class PixivDetailMeta extends StatelessWidget {
           PixivDetailStats(illust: illust),
           if (illust.caption.isNotEmpty) ...[const SizedBox(height: 12), PixivDetailCaption(illust: illust)],
           if (illust.tags.isNotEmpty) ...[const SizedBox(height: 12), PixivDetailTags(tags: illust.tags)],
+          PixivCommentsLink(target: PixivCommentTarget.illust(illust.id), count: illust.totalComments),
         ],
       ),
     );
