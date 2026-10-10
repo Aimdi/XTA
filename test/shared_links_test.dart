@@ -51,6 +51,28 @@ void main() {
     }
   });
 
+  test('takes Pixiv links only while the Pixiv plugin is on', () {
+    const share = 'Look at this https://www.pixiv.net/artworks/123 !';
+    expect(extractSharedLink(share), isNull);
+    expect(extractSharedLink(share, pixiv: true)?.path, '/artworks/123');
+    expect(extractSharedLink('https://pixiv.me/mika', pixiv: true)?.host, 'pixiv.me');
+    expect(extractSharedLink('https://www.pixiv.net.evil.example/artworks/1', pixiv: true), isNull);
+    expect(extractSharedLink('https://evil@www.pixiv.net/artworks/1', pixiv: true), isNull);
+  });
+
+  test('a share that is only a number is a Pixiv work id', () {
+    expect(sharedPixivId(' 123456 '), '123456');
+    expect(sharedPixivId('12 34'), isNull);
+    expect(sharedPixivId('id 5'), isNull);
+    expect(sharedPixivId(''), isNull);
+  });
+
+  test('Pixiv shares need no request to resolve; pixiv.me waits for where it opens', () async {
+    final client = MockClient((_) async => throw StateError('unexpected request'));
+    expect((await resolveSharedLink('https://pixiv.me/mika', pixiv: true, client: client))?.host, 'pixiv.me');
+    expect(await resolveSharedLink('https://pixiv.me/mika', client: client), isNull);
+  });
+
   test('ordinary X shares do not need a network request to resolve', () async {
     final client = MockClient((_) async => throw StateError('unexpected request'));
     expect((await resolveSharedLink('https://twitter.com/reader', client: client))?.path, '/reader');
