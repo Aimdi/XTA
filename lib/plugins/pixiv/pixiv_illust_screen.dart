@@ -9,6 +9,7 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_menu.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_meta.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_related.dart';
+import 'package:xta/plugins/pixiv/pixiv_detail_split.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_viewer.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
@@ -16,6 +17,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_surface.dart';
 import 'package:xta/plugins/pixiv/pixiv_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
 /// In-app illust viewer — pages, caption, tags, stats, related works (Pixez-like).
@@ -48,10 +50,16 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
     _detail = PixivIllustDetailStore(client, widget.illust);
     _related = pixivRelatedStore(client, widget.illust, filter: context.read<PixivMuteStore>().filter);
     unawaited(_firstLoad());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followRestoredPage());
   }
 
   Future<void> _firstLoad() async {
     if (await _load() && mounted) widget.onLoaded?.call(_detail.state);
+  }
+
+  /// A work swiped back into a pager reopens on the page it was left at; the counter follows.
+  void _followRestoredPage() {
+    if (mounted && _pager.hasClients) _page.select((_pager.page ?? 0).round());
   }
 
   @override
@@ -116,41 +124,63 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
         title: Text(illust.title.isEmpty ? L10n.of(context).plugin_pixiv_title : illust.title),
         actions: pixivDetailActions(context, this),
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: NotificationListener<ScrollNotification>(
-          onNotification: (notification) {
-            _maybeLoadMore(notification.metrics);
-            return false;
-          },
-          child: CustomScrollView(physics: const AlwaysScrollableScrollPhysics(), slivers: _slivers(illust)),
-        ),
+      body: LayoutBuilder(
+        builder: (context, constraints) =>
+            pixivDetailSplits(constraints.maxWidth, pixivDetailLayout(pixivPrefsOf(context)))
+            ? _split(illust)
+            : _scroller([..._pagesSlivers(illust), ..._infoSlivers(illust)]),
       ),
     ),
   );
 
-  List<Widget> _slivers(PixivIllust illust) => [
-    SliverToBoxAdapter(
-      child: PixivDetailViewer(
-        illust: illust,
-        controller: _pager,
-        onPageChanged: _page.select,
-        onOpenPage: (page) => _openReader(page, vertical: false),
-        onPageActions: openPageActions,
-      ),
+  /// The pictures on the left, everything else scrolling on the right.
+  Widget _split(PixivIllust illust) => PixivDetailSplit(
+    images: Column(
+      children: [
+        Expanded(child: _viewer(illust, expand: true)),
+        if (illust.viewerUrls.length > 1) _pageBar(illust),
+        const SizedBox(height: 8),
+      ],
     ),
-    if (illust.viewerUrls.length > 1)
-      SliverToBoxAdapter(
-        child: ScopedBuilder<PluginViewStore<int>, int>(
-          store: _page,
-          onState: (context, page) => PixivDetailPageBar(
-            page: page,
-            pages: illust.viewerUrls.length,
-            onOverview: openPageOverview,
-            onReadVertically: changeDirection,
-          ),
-        ),
-      ),
+    info: _scroller(_infoSlivers(illust)),
+  );
+
+  Widget _scroller(List<Widget> slivers) => RefreshIndicator(
+    onRefresh: _load,
+    child: NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification.metrics.axis == Axis.vertical) _maybeLoadMore(notification.metrics);
+        return false;
+      },
+      child: CustomScrollView(physics: const AlwaysScrollableScrollPhysics(), slivers: slivers),
+    ),
+  );
+
+  Widget _viewer(PixivIllust illust, {bool expand = false}) => PixivDetailViewer(
+    illust: illust,
+    controller: _pager,
+    expand: expand,
+    onPageChanged: _page.select,
+    onOpenPage: (page) => _openReader(page, vertical: false),
+    onPageActions: openPageActions,
+  );
+
+  Widget _pageBar(PixivIllust illust) => ScopedBuilder<PluginViewStore<int>, int>(
+    store: _page,
+    onState: (context, page) => PixivDetailPageBar(
+      page: page,
+      pages: illust.viewerUrls.length,
+      onOverview: openPageOverview,
+      onReadVertically: changeDirection,
+    ),
+  );
+
+  List<Widget> _pagesSlivers(PixivIllust illust) => [
+    SliverToBoxAdapter(child: _viewer(illust)),
+    if (illust.viewerUrls.length > 1) SliverToBoxAdapter(child: _pageBar(illust)),
+  ];
+
+  List<Widget> _infoSlivers(PixivIllust illust) => [
     SliverToBoxAdapter(child: PixivDetailMeta(illust: illust)),
     SliverToBoxAdapter(
       child: PixivAuthorWorks(key: ValueKey('pixiv-author-${illust.userId}'), illust: illust),

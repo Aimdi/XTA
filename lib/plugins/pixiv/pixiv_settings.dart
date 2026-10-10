@@ -11,6 +11,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings_bookmarks.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_browsing.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_viewing.dart';
 import 'package:xta/ui/errors.dart';
 
 export 'package:xta/plugins/pixiv/pixiv_settings_content.dart' show PixivHideAiSwitch, PixivPrefSwitch;
@@ -90,6 +91,7 @@ const pixivSettingsSections = <Widget>[
   PixivAccountSettings(),
   PixivContentSettings(),
   PixivBrowsingSettings(),
+  PixivViewingSettings(),
   PixivBookmarkSettings(),
   PixivMuteSettings(),
 ];

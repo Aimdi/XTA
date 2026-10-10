@@ -1,12 +1,14 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
+import 'package:xta/plugins/pixiv/pixiv_quality.dart';
+import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_tile_badges.dart';
 import 'package:xta/plugins/pixiv/pixiv_tile_caption.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 
 /// Stable Hero tag from a grid tile into the illust viewer.
 String pixivIllustHeroTag(int id) => 'pixiv-illust-$id';
@@ -20,14 +22,24 @@ class PixivIllustTile extends StatelessWidget {
   final List<PixivIllust>? siblings;
   final int index;
 
+  /// The store [siblings] came from, so a pager over them can load the next page.
+  final PixivIllustListStore? source;
+
   /// In place of the work's actions sheet.
   final VoidCallback? onLongPress;
 
-  const PixivIllustTile({super.key, required this.illust, this.siblings, this.index = 0, this.onLongPress});
+  const PixivIllustTile({
+    super.key,
+    required this.illust,
+    this.siblings,
+    this.index = 0,
+    this.source,
+    this.onLongPress,
+  });
 
   void _open(BuildContext context) {
     final list = siblings;
-    openPixivIllustFromList(context, list ?? [illust], list == null ? 0 : index);
+    openPixivIllustFromList(context, list ?? [illust], list == null ? 0 : index, source: list == null ? null : source);
   }
 
   @override
@@ -53,7 +65,7 @@ class PixivIllustTile extends StatelessWidget {
                 children: [
                   Hero(
                     tag: pixivIllustHeroTag(illust.id),
-                    child: RepaintBoundary(child: _image(theme)),
+                    child: RepaintBoundary(child: _image(context)),
                   ),
                   PixivTileBadges(illust: illust),
                   Positioned(right: 0, bottom: 0, child: PixivBookmarkButton(illust: illust, compact: true)),
@@ -67,17 +79,9 @@ class PixivIllustTile extends StatelessWidget {
     );
   }
 
-  Widget _image(ThemeData theme) => PixivNetworkImage(
-    url: illust.thumbnailUrl,
+  Widget _image(BuildContext context) => PixivNetworkImage(
+    url: pixivTileUrl(illust, pixivQuality(pixivPrefsOf(context), PixivQualitySlot.feed)),
     fit: BoxFit.cover,
-    loadStateChanged: (state) {
-      if (state.extendedImageLoadState == LoadState.failed) {
-        return ColoredBox(
-          color: theme.colorScheme.surfaceContainerHighest,
-          child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
-        );
-      }
-      return null;
-    },
+    loadStateChanged: pixivRetryLoadState,
   );
 }

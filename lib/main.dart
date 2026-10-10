@@ -70,6 +70,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
@@ -623,6 +624,7 @@ Future<void> main() async {
       optionPluginPixivDownloadAfterBookmark: false,
       optionPluginPixivBookmarkAfterDownload: false,
       optionPluginPixivHaptics: true,
+      ...pixivViewingDefaults,
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,
       optionPluginBooruEngine: 'danbooru',

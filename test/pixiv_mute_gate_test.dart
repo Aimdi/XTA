@@ -112,6 +112,62 @@ void main() {
     expect(stores.history.state, isEmpty);
     await disposePixiv(tester);
   });
+
+  testWidgets('swiping between works, each work swiped to joins the history and a muted one waits behind its notice', (
+    tester,
+  ) async {
+    final works = [
+      pixivWork(id: 1, pages: 1, title: 'One'),
+      pixivWork(
+        id: 2,
+        pages: 1,
+        title: 'Two',
+        tags: const [PixivTag(name: 'cat')],
+      ),
+    ];
+    final history = PixivHistoryStore(storage: MemoryJsonStore());
+    addTearDown(history.destroy);
+    await pumpPixiv(
+      tester,
+      Scaffold(
+        body: Builder(
+          builder: (context) =>
+              TextButton(onPressed: () => openPixivIllustFromList(context, works, 0), child: const Text('open')),
+        ),
+      ),
+      extraProviders: [Provider<PixivHistoryStore>.value(value: history)],
+      client: (prefs) {
+        prefs.set(optionPluginPixivMutedTags, '["cat"]');
+        prefs.set(optionPluginPixivSwipeBetweenWorks, true);
+        return _ListClient(prefs, works);
+      },
+    );
+    unawaited(Provider.of<PixivMuteStore>(tester.element(find.text('open')), listen: false).load());
+    await settlePixiv(tester);
+    await tester.tap(find.text('open'));
+    await settlePixiv(tester);
+    expect(history.state.map((entry) => entry.id), [1]);
+
+    await tester.dragFrom(const Offset(300, 760), const Offset(-320, 0));
+    await settlePixiv(tester);
+    expect(find.byKey(const ValueKey('pixiv-mute-gate')), findsOneWidget);
+    expect(history.state.map((entry) => entry.id), [1], reason: 'a work kept behind the notice was not viewed');
+
+    await tester.tap(find.text('Show this time'));
+    await settlePixiv(tester);
+    expect(history.state.map((entry) => entry.id), [2, 1]);
+    await disposePixiv(tester);
+  });
+}
+
+/// Answers each work's detail with that work from [works].
+class _ListClient extends FakePixivClient {
+  final List<PixivIllust> works;
+
+  _ListClient(super.prefs, this.works);
+
+  @override
+  Future<PixivIllust> illustDetail(int illustId) async => works.firstWhere((work) => work.id == illustId);
 }
 
 /// A work Pixiv no longer has.

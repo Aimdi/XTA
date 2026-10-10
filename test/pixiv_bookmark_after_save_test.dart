@@ -81,7 +81,7 @@ void main() {
   });
 
   testWidgets('the Bookmarking settings switch their preferences', (tester) async {
-    final harness = await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 2400));
+    final harness = await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 4800));
     for (final (key, pref) in [
       ('pixiv-default-private-bookmark', optionPluginPixivDefaultPrivateBookmark),
       ('pixiv-auto-tag-bookmarks', optionPluginPixivAutoTagBookmarks),

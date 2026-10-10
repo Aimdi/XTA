@@ -6,16 +6,17 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_tile.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/plugins/plugin_gallery_layout.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -27,9 +28,6 @@ typedef PixivMuteView = PixivMuteState Function(PixivMuteState mute);
 
 /// Builds the cell for the work at [index] of the works a grid shows.
 typedef PixivIllustTileBuilder = Widget Function(BuildContext context, List<PixivIllust> illusts, int index);
-
-Widget _illustTile(BuildContext context, List<PixivIllust> illusts, int index) =>
-    PixivIllustTile(illust: illusts[index], siblings: illusts, index: index);
 
 /// Pixez-style staggered gallery of illust thumbnails.
 class PixivIllustGrid extends StatelessWidget {
@@ -48,7 +46,12 @@ class PixivIllustGrid extends StatelessWidget {
   /// Off for a list the reader keeps themselves, such as the viewing history;
   /// a muted work there still waits behind its notice when opened.
   final bool hideMuted;
-  final PixivIllustTileBuilder tileBuilder;
+
+  /// A plain tile opening among its neighbours (and [source]'s next pages) when null.
+  final PixivIllustTileBuilder? tileBuilder;
+
+  /// The store [illusts] come from, handed to tiles so a work opens among its neighbours.
+  final PixivIllustListStore? source;
 
   const PixivIllustGrid({
     super.key,
@@ -60,24 +63,31 @@ class PixivIllustGrid extends StatelessWidget {
     this.leadingSlivers = const [],
     this.mutes,
     this.hideMuted = true,
-    this.tileBuilder = _illustTile,
+    this.tileBuilder,
+    this.source,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (!hideMuted) return _layout(illusts);
-    // Plain ScopedBuilder (not .transition): mute changes must not animate the
-    // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
-    return ScopedBuilder<PixivMuteStore, PixivMuteState>(
-      store: context.read<PixivMuteStore>(),
-      onState: (context, mute) => _layout((mutes?.call(mute) ?? mute).filter(illusts)),
-    );
-  }
+  Widget build(BuildContext context) => PixivPrefsBuilder(
+    keys: pixivGridPrefKeys,
+    builder: (context) {
+      if (!hideMuted) return _layout(illusts);
+      // Plain ScopedBuilder (not .transition): mute changes must not animate the
+      // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
+      return ScopedBuilder<PixivMuteStore, PixivMuteState>(
+        store: context.read<PixivMuteStore>(),
+        onState: (context, mute) => _layout((mutes?.call(mute) ?? mute).filter(illusts)),
+      );
+    },
+  );
 
   Widget _layout(List<PixivIllust> shown) => LayoutBuilder(
-    builder: (context, constraints) =>
-        _grid(context, shown, pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context))),
+    builder: (context, constraints) => _grid(context, shown, pixivGridColumnsFor(context, constraints.maxWidth)),
   );
+
+  Widget _tile(BuildContext context, List<PixivIllust> illusts, int index) =>
+      tileBuilder?.call(context, illusts, index) ??
+      PixivIllustTile(illust: illusts[index], siblings: illusts, index: index, source: source);
 
   Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts, int columns) {
     final grid = CustomScrollView(
@@ -94,7 +104,7 @@ class PixivIllustGrid extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
-            itemBuilder: (context, index) => tileBuilder(context, visibleIllusts, index),
+            itemBuilder: (context, index) => _tile(context, visibleIllusts, index),
           ),
         ),
         if (loadingMore)
@@ -192,6 +202,7 @@ class PixivIllustFeed extends StatelessWidget {
           loadingMore: store.loadingMore,
           leadingSlivers: leadingSlivers,
           mutes: mutes,
+          source: store,
         ),
       ),
     );

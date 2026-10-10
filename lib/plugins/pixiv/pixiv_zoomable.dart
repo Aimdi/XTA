@@ -18,6 +18,9 @@ class PixivZoomable extends StatefulWidget {
   /// Off where the child has its own buttons: a double-tap detector delays every tap below it.
   final bool doubleTapZoom;
 
+  /// Told when the child is first magnified and when it is back at its own size.
+  final ValueChanged<bool>? onZoomChanged;
+
   const PixivZoomable({
     super.key,
     required this.child,
@@ -25,6 +28,7 @@ class PixivZoomable extends StatefulWidget {
     this.onLongPress,
     this.controller,
     this.doubleTapZoom = true,
+    this.onZoomChanged,
   });
 
   @override
@@ -36,16 +40,31 @@ class _PixivZoomableState extends State<PixivZoomable> with SingleTickerProvider
   AnimationController? _animationController;
   Matrix4Tween? _tween;
   var _focal = Offset.zero;
+  var _zoomed = false;
 
   /// Only built on the first double-tap, so pages never zoomed carry no ticker.
   AnimationController get _animation =>
       _animationController ??= AnimationController(vsync: this, duration: kXtaMotionStandard)..addListener(_step);
 
   @override
+  void initState() {
+    super.initState();
+    _transform.addListener(_reportZoom);
+  }
+
+  @override
   void dispose() {
     _animationController?.dispose();
+    _transform.removeListener(_reportZoom);
     if (widget.controller == null) _transform.dispose();
     super.dispose();
+  }
+
+  void _reportZoom() {
+    final zoomed = _transform.value.getMaxScaleOnAxis() > 1.01;
+    if (zoomed == _zoomed) return;
+    _zoomed = zoomed;
+    widget.onZoomChanged?.call(zoomed);
   }
 
   void _step() {

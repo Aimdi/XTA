@@ -395,6 +395,18 @@ const optionPluginPixivCopyTemplate = 'plugin.pixiv.copy_template';
 /// While on, opened works are not added to the on-device viewing history.
 const optionPluginPixivHistoryPaused = 'plugin.pixiv.history_paused';
 
+/// Pixiv viewing preferences: image server, image sizes, grid columns, work layout.
+const optionPluginPixivImageHost = 'plugin.pixiv.image_host';
+const optionPluginPixivQualityFeed = 'plugin.pixiv.quality_feed';
+const optionPluginPixivQualityDetail = 'plugin.pixiv.quality_detail';
+const optionPluginPixivQualityReader = 'plugin.pixiv.quality_reader';
+const optionPluginPixivGridColumnsPortrait = 'plugin.pixiv.grid_columns_portrait';
+const optionPluginPixivGridColumnsLandscape = 'plugin.pixiv.grid_columns_landscape';
+const optionPluginPixivSwipeBetweenWorks = 'plugin.pixiv.swipe_between_works';
+const optionPluginPixivDetailLayout = 'plugin.pixiv.detail_layout';
+const optionPluginPixivDetailSplit = 'plugin.pixiv.detail_split';
+const optionPluginPixivAiBadge = 'plugin.pixiv.ai_badge';
+
 const pluginIdBooru = 'booru';
 const optionPluginBooruEnabled = 'plugin.booru.enabled';
 const optionPluginBooruShowTab = 'plugin.booru.show_tab';

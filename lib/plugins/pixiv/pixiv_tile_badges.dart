@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 
-/// The labels laid over a tile's image: page count, ugoira, R-18 and AI.
+/// The labels laid over a tile's image: page count, ugoira, R-18 and, unless switched off, AI.
 class PixivTileBadges extends StatelessWidget {
   final PixivIllust illust;
 
@@ -11,6 +12,7 @@ class PixivTileBadges extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final ai = illust.isAi && pixivShowsAiBadge(pixivPrefsOf(context));
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -26,7 +28,7 @@ class PixivTileBadges extends StatelessWidget {
             left: 6,
             child: PixivTileBadge(icon: Icons.play_circle_outline, label: l10n.plugin_pixiv_ugoira),
           ),
-        if (illust.isR18 || illust.isAi)
+        if (illust.isR18 || ai)
           Positioned(
             bottom: 6,
             left: 6,
@@ -35,7 +37,7 @@ class PixivTileBadges extends StatelessWidget {
               spacing: 4,
               children: [
                 if (illust.isR18) PixivTileBadge(icon: Icons.eighteen_up_rating_outlined, label: l10n.plugin_pixiv_r18),
-                if (illust.isAi) PixivTileBadge(icon: Icons.auto_awesome_outlined, label: l10n.plugin_pixiv_ai),
+                if (ai) PixivTileBadge(icon: Icons.auto_awesome_outlined, label: l10n.plugin_pixiv_ai),
               ],
             ),
           ),

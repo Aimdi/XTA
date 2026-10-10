@@ -329,6 +329,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
                   illusts: _illusts.state,
                   onRefresh: _illusts.refresh,
                   loadingMore: _illusts.loadingMore,
+                  source: _illusts,
                 );
               }
               return const Center(child: CircularProgressIndicator());
@@ -362,6 +363,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
                   illusts: illusts,
                   onRefresh: _illusts.refresh,
                   loadingMore: _illusts.loadingMore,
+                  source: _illusts,
                 ),
               );
             },

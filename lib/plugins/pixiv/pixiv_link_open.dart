@@ -5,31 +5,62 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_illust_pager.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_gate.dart';
+import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/utils/shared_links.dart';
 import 'package:xta/utils/urls.dart';
 
-/// The one route into a work's detail, so whatever must happen on every
-/// opening happens wherever it was opened from: a muted work waits behind its
-/// notice, and a shown one joins the viewing history once it has loaded.
-Route<void> pixivIllustRoute(PixivIllust illust) => MaterialPageRoute<void>(
+/// A work's detail as every way into it builds it, alone on its route or as one page of
+/// a pager, so whatever must happen on every opening happens wherever it was opened from:
+/// a muted work waits behind its notice, and a shown one joins the viewing history once
+/// it has loaded.
+Widget pixivIllustPage(PixivIllust illust) => Builder(
   builder: (context) => PixivMuteGate(
     illust: illust,
     child: PixivIllustScreen(illust: illust, onLoaded: (loaded) => recordPixivVisit(context, loaded)),
   ),
 );
 
+/// The one route into a single work's detail.
+Route<void> pixivIllustRoute(PixivIllust illust) => MaterialPageRoute<void>(builder: (_) => pixivIllustPage(illust));
+
 Future<void> openPixivIllust(BuildContext context, PixivIllust illust) =>
     Navigator.push(context, pixivIllustRoute(illust));
 
-/// Opens the work at [index] of the list it was tapped in.
-Future<void> openPixivIllustFromList(BuildContext context, List<PixivIllust> illusts, int index) =>
-    openPixivIllust(context, illusts[index]);
+/// Opens the work at [index] of the list it was tapped in. With Swipe between works on,
+/// it opens among its neighbours, and [source] pages the list on past its end.
+Future<void> openPixivIllustFromList(
+  BuildContext context,
+  List<PixivIllust> illusts,
+  int index, {
+  PixivIllustListStore? source,
+}) {
+  if (!pixivSwipesBetweenWorks(pixivPrefsOf(context)) || (illusts.length < 2 && source == null)) {
+    return openPixivIllust(context, illusts[index]);
+  }
+  final mute = context.read<PixivMuteStore?>();
+  return Navigator.push(
+    context,
+    MaterialPageRoute<void>(
+      builder: (_) => PixivIllustPager(
+        illusts: illusts,
+        initialIndex: index,
+        source: source,
+        // The list's own filter first: a profile shown anyway keeps its muted creator's works.
+        visible: source?.filter ?? mute?.filter,
+        page: pixivIllustPage,
+      ),
+    ),
+  );
+}
 
 Future<void> openPixivUser(BuildContext context, int userId) =>
     Navigator.push(context, MaterialPageRoute<void>(builder: (_) => PixivUserScreen(userId: userId)));

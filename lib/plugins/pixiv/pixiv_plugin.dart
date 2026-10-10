@@ -18,6 +18,7 @@ import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -147,6 +148,9 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivDownloadAfterBookmark, false);
     await prefs.set(optionPluginPixivBookmarkAfterDownload, false);
     await prefs.set(optionPluginPixivHaptics, true);
+    for (final MapEntry(:key, :value) in pixivViewingDefaults.entries) {
+      await prefs.set(key, value);
+    }
     final database = await Repository.writable();
     await database.delete(tableSubscriptionGroupMember,
       where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);

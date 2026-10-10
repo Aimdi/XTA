@@ -12,19 +12,23 @@ import 'package:xta/plugins/pixiv/pixiv_settings_browsing.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
+import 'package:xta/plugins/pixiv/pixiv_settings_viewing.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
 void main() {
-  testWidgets('settings are the account, content, browsing, bookmarking and mute sections in order', (tester) async {
-    await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 3600));
+  testWidgets('settings are the account, content, browsing, viewing, bookmarking and mute sections in order', (
+    tester,
+  ) async {
+    await pumpPixiv(tester, const PixivSettingsScreen(), size: const Size(390, 4800));
 
     final sections = [
       PixivAccountSettings,
       PixivContentSettings,
       PixivBrowsingSettings,
+      PixivViewingSettings,
       PixivBookmarkSettings,
       PixivMuteSettings,
     ];
@@ -38,7 +42,7 @@ void main() {
     await pumpPixiv(
       tester,
       const PixivSettingsScreen(),
-      size: const Size(390, 3600),
+      size: const Size(390, 4800),
       client: (prefs) {
         prefs.set(optionPluginPixivMutedComments, '[5]');
         prefs.set(optionPluginPixivMutedNovels, '[6]');

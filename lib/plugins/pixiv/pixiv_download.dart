@@ -8,22 +8,27 @@ import 'package:xta/constants.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_image_source.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/ui/snack_bar_policy.dart';
 import 'package:xta/utils/download_directory.dart';
 
 const pixivDownloadSource = 'pixiv';
 
-/// One page as the shared plugin media path sees it: shown large, saved original.
-PluginMediaItem pixivPageMedia(PixivIllust illust, int page) =>
-    PluginMediaItem(url: illust.viewerUrls[page], downloadUrl: illust.downloadUrlAt(page));
+/// One page as the shared plugin media path sees it: shown large, saved original, both
+/// fetched from [imageHost] when the reader picked another image server.
+PluginMediaItem pixivPageMedia(PixivIllust illust, int page, {String imageHost = pixivImageHost}) => PluginMediaItem(
+  url: pixivImageUrl(illust.viewerUrls[page], imageHost),
+  downloadUrl: pixivImageUrl(illust.downloadUrlAt(page), imageHost),
+);
 
 /// Every page of [illust] queued into [treeUri], named like Pixiv's own files.
-List<DownloadRequest> pixivPageRequests(PixivIllust illust, String treeUri) => [
+List<DownloadRequest> pixivPageRequests(PixivIllust illust, String treeUri, {String imageHost = pixivImageHost}) => [
   for (var page = 0; page < illust.viewerUrls.length; page++)
     DownloadRequest(
-      uri: Uri.parse(illust.downloadUrlAt(page)),
+      uri: Uri.parse(pixivImageUrl(illust.downloadUrlAt(page), imageHost)),
       fileName: pluginMediaFileName(pixivPageMedia(illust, page), pixivDownloadSource),
       treeUri: treeUri,
     ),
@@ -37,8 +42,11 @@ class PixivDownloader {
 
   /// One page, with the same prompts and messages as any other plugin image;
   /// true once it is saved.
-  Future<bool> savePage(BuildContext context, PixivIllust illust, int page) =>
-      downloadPluginMediaItem(context, pixivPageMedia(illust, page), sourceName: pixivDownloadSource);
+  Future<bool> savePage(BuildContext context, PixivIllust illust, int page) => downloadPluginMediaItem(
+    context,
+    pixivPageMedia(illust, page, imageHost: pixivImageHostSetting(pixivPrefsOf(context))),
+    sourceName: pixivDownloadSource,
+  );
 
   /// One page of a batch; true once the file is saved.
   Future<bool> save(DownloadRequest request) async {
@@ -124,9 +132,10 @@ Future<bool> downloadAllPixivPages(BuildContext context, PixivIllust illust) asy
   final downloader = PixivDownloader.of(context);
   final messenger = ScaffoldMessenger.of(context);
   final l10n = L10n.of(context);
-  final folder = await downloader.batchFolder(PrefService.of(context, listen: false));
+  final prefs = PrefService.of(context, listen: false);
+  final folder = await downloader.batchFolder(prefs);
   if (folder == null || !messenger.mounted) return false;
-  final requests = pixivPageRequests(illust, folder);
+  final requests = pixivPageRequests(illust, folder, imageHost: pixivImageHostSetting(prefs));
   final store = PixivDownloadStore(save: downloader.save, cancelActive: downloader.cancel, total: requests.length);
   messenger
     ..clearSnackBars()
