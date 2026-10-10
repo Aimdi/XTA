@@ -125,6 +125,24 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('large text on a small screen still lays out', (tester) async {
+      final picked = <PixivBookmarkFilter?>[];
+      await pumpPixiv(
+        tester,
+        _PickerHost(current: (restrict: 'public', tag: null), onPicked: picked.add),
+        size: const Size(320, 568),
+        textScale: 2,
+        extraProviders: [_api().provider],
+      );
+      await tester.tap(find.text('pick'));
+      await settlePixiv(tester);
+      expect(tester.takeException(), isNull);
+      await tester.tap(_pick(null));
+      await settlePixiv(tester);
+      expect(picked, [(restrict: 'public', tag: null)]);
+      await disposePixiv(tester);
+    });
+
     testWidgets('opens on the visibility being shown, with its tag selected', (tester) async {
       final api = _api();
       await _openPicker(tester, api, current: (restrict: 'private', tag: 'Secret'));

@@ -211,6 +211,31 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('large text on a small screen keeps every control reachable', (tester) async {
+      final api = FakePixivBookmarkApi(detailResult: _detail());
+      await pumpPixiv(
+        tester,
+        Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: 220,
+              child: PixivIllustTile(illust: pixivWork(pages: 1, tags: _workTags)),
+            ),
+          ),
+        ),
+        size: const Size(320, 568),
+        textScale: 2,
+        extraProviders: [api.provider],
+      );
+      await _openEditor(tester);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byKey(const ValueKey('pixiv-bookmark-editor-save')));
+      await settlePixiv(tester);
+      expect(api.writes, ['add:120:public:']);
+      await disposePixiv(tester);
+    });
+
     testWidgets('Edit bookmark in the detail menu opens the editor', (tester) async {
       final api = FakePixivBookmarkApi(detailResult: _detail());
       await pumpPixiv(tester, PixivIllustScreen(illust: pixivWork()), extraProviders: [api.provider]);
@@ -224,6 +249,18 @@ void main() {
   });
 
   group('the heart', () {
+    testWidgets('is a 48 dp labelled button with tap and long-press actions', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await _pumpTile(tester, FakePixivBookmarkApi());
+      expect(tester.getSize(_heart), const Size.square(48));
+      expect(
+        tester.getSemantics(_heart),
+        isSemantics(label: 'Bookmark', isButton: true, hasTapAction: true, hasLongPressAction: true),
+      );
+      semantics.dispose();
+      await disposePixiv(tester);
+    });
+
     testWidgets('a tap bookmarks with the defaults and buzzes lightly; a long press buzzes firmer', (tester) async {
       var now = DateTime(2026);
       final played = <PixivHaptic>[];
