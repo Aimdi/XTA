@@ -147,6 +147,18 @@ void main() {
     await disposePixiv(tester);
   });
 
+  testWidgets('opens on the tab it was asked for, and the works count goes back to Works', (tester) async {
+    final api = _api();
+    await pumpPixiv(tester, const PixivUserScreen(userId: 9, initialTab: 'info'), extraProviders: [api.provider]);
+    expect(find.text('User ID'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('pixiv-profile-works-count')));
+    await settlePixiv(tester);
+    expect(find.text('User ID'), findsNothing);
+    expect(_tile(302), findsOneWidget);
+    await disposePixiv(tester);
+  });
+
   testWidgets('the following count opens the following list', (tester) async {
     final api = _api();
     await _pump(tester, api);

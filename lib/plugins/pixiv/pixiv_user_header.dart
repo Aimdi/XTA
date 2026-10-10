@@ -132,7 +132,8 @@ class PixivUserHeader extends StatelessWidget {
   }
 }
 
-/// One count in the header, a 48dp target when it leads somewhere.
+/// One count in the header, a 48dp target when it leads somewhere. The text
+/// starts flush with the names above it.
 class _Count extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
@@ -144,15 +145,16 @@ class _Count extends StatelessWidget {
     final text = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsetsDirectional.only(end: 16),
         child: Align(
+          alignment: AlignmentDirectional.centerStart,
           widthFactor: 1,
           heightFactor: 1,
           child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
         ),
       ),
     );
-    if (onTap == null) return Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: text);
+    if (onTap == null) return text;
     return InkWell(borderRadius: BorderRadius.circular(8), onTap: onTap, child: text);
   }
 }

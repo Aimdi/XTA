@@ -18,6 +18,7 @@ import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_tab_view.dart';
 
 /// One Pixiv creator's profile: header, then Works, Bookmarks, Following and
@@ -135,9 +136,10 @@ class PixivProfileView extends StatelessWidget {
     );
   }
 
-  VoidCallback? _showTab(TabController controller, List<PixivProfileTab> tabs, String id) {
+  VoidCallback? _showTab(BuildContext context, TabController controller, List<PixivProfileTab> tabs, String id) {
     final index = tabs.indexWhere((tab) => tab.id == id);
-    return index < 0 ? null : () => controller.animateTo(index);
+    final duration = xtaMotionDuration(context, controller.animationDuration);
+    return index < 0 ? null : () => controller.animateTo(index, duration: duration);
   }
 
   Widget _scroll(BuildContext context, List<PixivProfileTab> tabs) {
@@ -154,7 +156,7 @@ class PixivProfileView extends StatelessWidget {
           actions: pixivProfileActions(context, scope),
         ),
         SliverToBoxAdapter(
-          child: PixivUserHeader(profile: scope.profile, onWorks: _showTab(controller, tabs, 'works')),
+          child: PixivUserHeader(profile: scope.profile, onWorks: _showTab(context, controller, tabs, 'works')),
         ),
         SliverPersistentHeader(
           pinned: true,

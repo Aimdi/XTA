@@ -126,7 +126,11 @@ class PixivProfileInfo extends StatelessWidget {
               ),
             ),
             Expanded(flex: 3, child: Text(row.value, style: theme.textTheme.bodyLarge)),
-            if (action != null) Icon(_icon(action), size: 20, color: theme.colorScheme.onSurfaceVariant),
+            // The slot stays when empty so every value starts in the same column.
+            SizedBox.square(
+              dimension: 20,
+              child: action == null ? null : Icon(_icon(action), size: 20, color: theme.colorScheme.onSurfaceVariant),
+            ),
           ],
         ),
       ),
