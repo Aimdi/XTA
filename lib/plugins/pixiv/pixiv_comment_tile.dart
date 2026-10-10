@@ -82,6 +82,7 @@ class PixivCommentTile extends StatelessWidget {
     final name = pixivCommentAuthorName(user) ?? L10n.of(context).plugin_pixiv_comment_unknown_user;
     final avatar = PixivAvatar(userId: user?.id ?? 0, name: name, url: user?.avatarUrl, size: _avatarSize);
     return Semantics(
+      container: true,
       button: user != null,
       label: name,
       excludeSemantics: true,
@@ -139,11 +140,18 @@ class PixivCommentTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Semantics(
+        container: true,
         image: true,
         label: L10n.of(context).plugin_pixiv_comment_sticker,
         child: SizedBox.square(
           dimension: _stickerSize,
-          child: PixivNetworkImage(url: url, fit: BoxFit.contain, cacheWidth: pixels, cacheHeight: pixels),
+          child: PixivNetworkImage(
+            url: url,
+            fit: BoxFit.contain,
+            cacheWidth: pixels,
+            cacheHeight: pixels,
+            loadStateChanged: (state) => pixivTileLoadState(context, state),
+          ),
         ),
       ),
     );

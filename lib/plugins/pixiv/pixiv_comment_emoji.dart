@@ -97,7 +97,7 @@ class PixivCommentText extends StatelessWidget {
           for (final part in pixivCommentParts(text))
             switch (part) {
               PixivCommentTextPart(:final text) => TextSpan(text: text),
-              PixivCommentEmojiPart() => _emoji(part, pixels),
+              PixivCommentEmojiPart() => _emoji(context, part, pixels),
             },
         ],
       ),
@@ -105,14 +105,25 @@ class PixivCommentText extends StatelessWidget {
     );
   }
 
-  InlineSpan _emoji(PixivCommentEmojiPart emoji, int pixels) => WidgetSpan(
+  /// A failed emoji is a quiet mark, not the image widget's tap-to-reload
+  /// target, which would be far too small to hit inside a line of text.
+  InlineSpan _emoji(BuildContext context, PixivCommentEmojiPart emoji, int pixels) => WidgetSpan(
     alignment: PlaceholderAlignment.middle,
     child: Semantics(
       label: emoji.code,
       image: true,
-      child: SizedBox.square(
-        dimension: pixivEmojiSize,
-        child: PixivNetworkImage(url: emoji.url, fit: BoxFit.contain, cacheWidth: pixels, cacheHeight: pixels),
+      child: IconTheme.merge(
+        data: const IconThemeData(size: pixivEmojiSize),
+        child: SizedBox.square(
+          dimension: pixivEmojiSize,
+          child: PixivNetworkImage(
+            url: emoji.url,
+            fit: BoxFit.contain,
+            cacheWidth: pixels,
+            cacheHeight: pixels,
+            loadStateChanged: (state) => pixivTileLoadState(context, state),
+          ),
+        ),
       ),
     ),
   );
