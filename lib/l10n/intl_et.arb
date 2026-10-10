@@ -2715,6 +2715,10 @@
   },
   "plugin_pixiv_not_configured": "Logi Pixivisse sisse, et sirvida jälgimist, edetabelit ja järjehoidjaid",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Romaan",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Vaata tema romaane",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Lisa privaatselt järjehoidjatesse",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Siin on romaanid, mille lisad avalikult järjehoidjatesse",
@@ -2751,8 +2755,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Ekspordi tekstina",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Romaani ei õnnestunud eksportida",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixivi märgendusega",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Tekst täpselt nii, nagu Pixiv selle salvestab, koos siltidega nagu [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Lihttekst",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Ilma Pixivi märgenduseta, ruby kujul alus(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} salvestatud",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Siin on jälgitavate autorite uued romaanid",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Pilt romaanis",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Ava teos",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Salvesta pilt",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Vaata täisekraanil",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Mine leheküljele {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Kas lahkuda Pixivist, et avada {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Ava link",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Järgmine peatükk",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Lehekülg {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Eelmine peatükk",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Edetabelis pole praegu romaane",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Praegu soovitatud romaane pole — tõmba värskendamiseks",
@@ -2773,6 +2835,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Alusta esimesest",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Jaga profiili linki",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Jaga sarja linki",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Siin on romaanisarjad, mille lisad jälgimisnimekirja",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Seda Pixivi linki ei saanud avada",

@@ -396,6 +396,10 @@ const optionPluginPixivCopyTemplate = 'plugin.pixiv.copy_template';
 /// While on, opened works are not added to the on-device viewing history.
 const optionPluginPixivHistoryPaused = 'plugin.pixiv.history_paused';
 
+/// Where the reader stopped in each novel, and when: viewing history, so it
+/// stays on the device (see [secretPrefKeys]).
+const optionPluginPixivNovelReading = 'plugin.pixiv.novel_reading';
+
 /// Pixiv viewing preferences: image server, image sizes, grid columns, work layout.
 const optionPluginPixivImageHost = 'plugin.pixiv.image_host';
 const optionPluginPixivQualityFeed = 'plugin.pixiv.quality_feed';
@@ -815,6 +819,7 @@ const secretPrefKeys = {
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
   optionPluginPixivAccounts,
+  optionPluginPixivNovelReading,
   optionPluginEhCookies,
   optionPluginTiktokCookies,
   optionPluginInstagramCookies,

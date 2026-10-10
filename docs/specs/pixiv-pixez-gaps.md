@@ -25,7 +25,7 @@ once those are in.
 | B0 | Shared seams: transport, models, user card, file splits | Built |
 | B1 | Search: filters, shortcuts, favourite tags, SauceNAO | Built |
 | B2a | Novels: models, API, feeds, rankings, bookmarks, series, watchlist | Built |
-| B2b | Novels: reader | Planned |
+| B2b | Novels: reader | Built |
 | B2c | Novels: search, profiles, history, deep links | Planned |
 | B3 | Comments (reading only) | Built |
 | B4 | Discovery: rankings, manga, Pixivision, series, watchlist | Built |
@@ -91,12 +91,14 @@ tabbed screen with an edit mode; SauceNAO searches by image. Details in
   muting novels by author, tag, pattern or id; novel rankings with pins, R-18
   gates and the archive date; own novel bookmarks and a profile's public ones;
   the novel series page with the watchlist toggle; the novel watchlist.
-  Novels open in the browser until the reader lands. Details in
-  `pixiv-novels.md`.
-- **B2b:** reader loading (and open by ID); header; markup rendering; embedded
-  illustrations and uploaded images; font size and spacing; reading position;
-  selectable text with Translate; menu with author and previous / next
-  chapter; share links; export as .txt.
+  Details in `pixiv-novels.md`.
+- **B2b (built):** the in-app reader, opened from every card, series page and
+  watchlist row and by id; header with comments above and below the text;
+  Pixiv markup (pages, chapters, ruby, links, page jumps, pictures); text size,
+  spacing and reading position shared with the article readers; selectable
+  text with Translate; menu with the author, previous / next chapter, share
+  links anchored to their button, export as .txt and Open on Pixiv; each open
+  joins the novel history. Details in `pixiv-novels.md`.
 - **B2c (built):** novel search with the shared filters (novel places to
   look, popular for Premium); its landing (own recent searches, trending novel
   tags, novel / series / author id shortcuts); the profile Novels tab and

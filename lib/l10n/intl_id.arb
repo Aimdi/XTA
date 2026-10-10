@@ -2715,6 +2715,10 @@
   },
   "plugin_pixiv_not_configured": "Masuk ke Pixiv untuk melihat mengikuti, peringkat, dan penanda",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Novel",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Lihat novelnya",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Tandai secara pribadi",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Novel yang kamu tandai secara publik muncul di sini",
@@ -2751,8 +2755,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Ekspor sebagai teks",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Tidak dapat mengekspor novel",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Dengan markup Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Teks persis seperti yang disimpan Pixiv, dengan tag seperti [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Teks biasa",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Tanpa markup Pixiv, ruby ditulis sebagai dasar(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} disimpan",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Novel baru dari kreator yang kamu ikuti muncul di sini",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Gambar dalam novel",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Buka karya",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Simpan gambar",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Lihat layar penuh",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Ke halaman {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Keluar dari Pixiv untuk membuka {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Buka tautan",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Bab berikutnya",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Halaman {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Bab sebelumnya",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Tidak ada novel di peringkat sekarang",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Tidak ada novel rekomendasi saat ini — tarik untuk menyegarkan",
@@ -2773,6 +2835,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Mulai dari #1",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Bagikan tautan profil",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Bagikan tautan seri",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Seri novel yang kamu tambahkan ke daftar pantau muncul di sini",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Tidak dapat membuka tautan Pixiv itu",

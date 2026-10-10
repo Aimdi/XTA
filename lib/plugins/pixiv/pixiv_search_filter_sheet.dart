@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
 import 'package:xta/utils/number_locale.dart';
@@ -41,18 +40,15 @@ String pixivDatePresetLabel(L10n l10n, PixivDatePreset preset) => switch (preset
   PixivDatePreset.custom => l10n.plugin_pixiv_search_date_custom,
 };
 
-String _count(BuildContext context, int value) =>
-    NumberFormat.decimalPattern(numberFormatLocale(context)).format(value);
-
 String pixivUsersIriLabel(BuildContext context, int threshold) =>
-    L10n.of(context).plugin_pixiv_search_users_iri(_count(context, threshold));
+    L10n.of(context).plugin_pixiv_search_users_iri(decimalCount(context, threshold));
 
 String pixivBookmarkRangeLabel(BuildContext context, PixivBookmarkRange range) {
   final l10n = L10n.of(context);
   final max = range.max;
   return max == null
-      ? l10n.plugin_pixiv_search_bookmarks_min(_count(context, range.min))
-      : l10n.plugin_pixiv_search_bookmarks_range(_count(context, range.min), _count(context, max));
+      ? l10n.plugin_pixiv_search_bookmarks_min(decimalCount(context, range.min))
+      : l10n.plugin_pixiv_search_bookmarks_range(decimalCount(context, range.min), decimalCount(context, max));
 }
 
 /// The bar over search results: the filter sheet, posting dates, popularity

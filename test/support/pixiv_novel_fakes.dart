@@ -4,6 +4,7 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 
@@ -21,17 +22,21 @@ PixivNovel pixivNovel({
   int comments = 0,
   int xRestrict = 0,
   bool ai = false,
+  String caption = '',
+  bool cover = true,
 }) => PixivNovel(
   id: id,
   title: title,
+  caption: caption,
+  captionHtml: caption,
+  totalComments: comments,
   user: PixivUser(id: userId, name: userName, account: userName.toLowerCase(), comment: ''),
-  coverUrl: 'https://i.pximg.net/c/240x480_80/novel-cover-master/img/2026/09/01/$id.jpg',
+  coverUrl: cover ? 'https://i.pximg.net/c/240x480_80/novel-cover-master/img/2026/09/01/$id.jpg' : null,
   tags: tags,
   series: series,
   textLength: textLength,
   isBookmarked: bookmarked,
   totalBookmarks: bookmarks,
-  totalComments: comments,
   xRestrict: xRestrict,
   isAi: ai,
 );
@@ -66,6 +71,12 @@ class FakePixivNovelApi extends PixivNovelApi {
   /// Holds every series page back until it completes, when set.
   Future<void>? seriesGate;
 
+  /// Texts by novel id; a novel without one fails like a page that would not load.
+  Map<int, PixivNovelContent> contents;
+
+  /// Thrown by [content] while set.
+  Object? contentError;
+
   FakePixivNovelApi(
     super.client, {
     this.recommendedNovels = const [],
@@ -77,6 +88,7 @@ class FakePixivNovelApi extends PixivNovelApi {
     this.searchNovels = const [],
     this.userNovelList = const [],
     this.trending = const [],
+    this.contents = const {},
     this.details = const {},
   });
 
@@ -139,18 +151,25 @@ class FakePixivNovelApi extends PixivNovelApi {
   Future<void> removeFromWatchlist(int seriesId) => _write('unwatch:$seriesId');
 
   @override
-  Future<PixivNovelSeriesPage> series(int seriesId, {String? nextUrl}) async {
-    calls.add('series:$seriesId:$nextUrl');
-    await seriesGate;
-    final page = seriesPages[nextUrl];
-    if (page == null) throw PixivException(PixivErrorKind.notFound, 'series $seriesId');
-    return page;
+  Future<PixivNovelContent> content(int novelId) async {
+    calls.add('content:$novelId');
+    if (contentError case final error?) throw error;
+    return contents[novelId] ?? (throw PixivException(PixivErrorKind.notFound, 'novel $novelId'));
   }
 
   @override
   Future<PixivNovel> detail(int novelId) async {
     calls.add('detail:$novelId');
     return details[novelId] ?? (throw PixivException(PixivErrorKind.notFound, 'novel $novelId'));
+  }
+
+  @override
+  Future<PixivNovelSeriesPage> series(int seriesId, {String? nextUrl}) async {
+    calls.add('series:$seriesId:$nextUrl');
+    await seriesGate;
+    final page = seriesPages[nextUrl];
+    if (page == null) throw PixivException(PixivErrorKind.notFound, 'series $seriesId');
+    return page;
   }
 
   @override

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +12,9 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_more_pane.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
@@ -22,21 +23,6 @@ import 'package:xta/utils/json.dart';
 import 'support/memory_json_store.dart';
 import 'support/pixiv_novel_fakes.dart';
 import 'support/pixiv_reader_harness.dart';
-
-/// Records the pages `openUri` hands the browser.
-List<String> _recordLaunches() {
-  final launched = <String>[];
-  final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  for (final name in ['plugins.flutter.io/url_launcher', 'browser_resolver']) {
-    final channel = MethodChannel(name);
-    messenger.setMockMethodCallHandler(channel, (call) async {
-      if (call.arguments case {'url': final String url}) launched.add(url);
-      return name == 'browser_resolver' ? null : true;
-    });
-    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
-  }
-  return launched;
-}
 
 PixivHistoryEntry _novelEntry(int id, String title, String author) => PixivHistoryEntry.ofNovel(
   pixivNovel(id: id, title: title, userName: author, textLength: 2000),
@@ -93,11 +79,16 @@ void main() {
   });
 
   group('opening a novel', () {
-    Future<(PixivHarness, PixivNovelHistoryStore, List<String>)> pump(WidgetTester tester) async {
-      final launched = _recordLaunches();
+    Future<(PixivHarness, PixivNovelHistoryStore, FakePixivNovelApi)> pump(WidgetTester tester) async {
       final history = PixivNovelHistoryStore(storage: MemoryJsonStore());
       addTearDown(history.destroy);
-      final api = FakePixivNovelApi(PixivClient(PrefServiceCache()), details: {5: pixivNovel(id: 5, title: 'Found')});
+      final api = FakePixivNovelApi(
+        PixivClient(PrefServiceCache()),
+        details: {5: pixivNovel(id: 5, title: 'Found')},
+        contents: {
+          for (final id in [4, 5]) id: PixivNovelContent(id: id, text: 'Text of $id'),
+        },
+      );
       final harness = await pumpPixiv(
         tester,
         Scaffold(
@@ -115,28 +106,32 @@ void main() {
           Provider<PixivNovelHistoryStore>.value(value: history),
         ],
       );
-      return (harness, history, launched);
+      return (harness, history, api);
     }
 
-    testWidgets('records it in the novel history and opens its page', (tester) async {
-      final (_, history, launched) = await pump(tester);
+    testWidgets('opens its reader, which records it in the novel history', (tester) async {
+      final (_, history, api) = await pump(tester);
       await tester.tap(find.text('card'));
+      await settlePixiv(tester);
+      expect(find.text('Text of 4', findRichText: true), findsOneWidget);
+      tester.state<NavigatorState>(find.byType(Navigator).first).pop();
       await settlePixiv(tester);
       await tester.tap(find.text('link'));
       await settlePixiv(tester);
+      expect(find.text('Text of 5', findRichText: true), findsOneWidget);
 
       expect([for (final entry in history.state) (entry.id, entry.title)], [(5, 'Found'), (4, 'Autumn Letters')]);
-      expect(launched, ['https://www.pixiv.net/novel/show.php?id=4', 'https://www.pixiv.net/novel/show.php?id=5']);
+      expect(api.calls, ['content:4', 'detail:5', 'content:5']);
       await disposePixiv(tester);
     });
 
     testWidgets('a paused history records nothing', (tester) async {
-      final (harness, history, launched) = await pump(tester);
+      final (harness, history, _) = await pump(tester);
       await harness.prefs.set(optionPluginPixivHistoryPaused, true);
       await tester.tap(find.text('card'));
       await settlePixiv(tester);
+      expect(find.byType(PixivNovelReaderScreen), findsOneWidget);
       expect(history.state, isEmpty);
-      expect(launched, hasLength(1));
       await disposePixiv(tester);
     });
   });
@@ -148,6 +143,7 @@ void main() {
       double textScale = 1,
       Size size = const Size(390, 844),
       Widget? home,
+      FakePixivNovelApi? api,
     }) async {
       final storage = MemoryJsonStore()
         ..values[pixivIllustHistoryKey] = [PixivHistoryEntry.of(pixivWork(id: 1), DateTime.utc(2026)).toJson()]
@@ -165,7 +161,7 @@ void main() {
         textScale: textScale,
         size: size,
         extraProviders: [
-          ...FakePixivNovelApi(PixivClient(PrefServiceCache())).providers,
+          ...(api ?? FakePixivNovelApi(PixivClient(PrefServiceCache()))).providers,
           Provider<PixivHistoryStore>.value(value: works),
           Provider<PixivNovelHistoryStore>.value(value: novels),
         ],
@@ -255,9 +251,13 @@ void main() {
       await disposePixiv(tester);
     });
 
-    testWidgets('a muted novel stays in the history, and tapping one opens it and moves it up', (tester) async {
-      final launched = _recordLaunches();
-      final (_, novels) = await pump(tester, initialKind: PixivContentMode.novel);
+    testWidgets('a muted novel stays in the history, and tapping one opens it by id and moves it up', (tester) async {
+      final api = FakePixivNovelApi(
+        PixivClient(PrefServiceCache()),
+        details: {2: pixivNovel(id: 2, title: 'Letters', caption: 'From the detail')},
+        contents: {2: const PixivNovelContent(id: 2, text: 'Dear Haru')},
+      );
+      final (_, novels) = await pump(tester, initialKind: PixivContentMode.novel, api: api);
       final mute = Provider.of<PixivMuteStore>(tester.element(find.byType(PixivHistoryScreen)), listen: false);
       await mute.muteNovel(3);
       await tester.pump();
@@ -265,7 +265,9 @@ void main() {
 
       await tester.tap(find.text('Letters'));
       await settlePixiv(tester);
-      expect(launched, ['https://www.pixiv.net/novel/show.php?id=2']);
+      expect(tester.widget<PixivNovelReaderScreen>(find.byType(PixivNovelReaderScreen)).novelId, 2);
+      expect(api.calls, unorderedEquals(['detail:2', 'content:2']), reason: 'the reader fetches what an entry lacks');
+      expect(find.text('From the detail', findRichText: true), findsOneWidget);
       expect([for (final entry in novels.state) entry.id], [2, 3]);
       await disposePixiv(tester);
     });

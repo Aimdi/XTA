@@ -2715,6 +2715,10 @@
   },
   "plugin_pixiv_not_configured": "Takip, sıralama ve yer imlerini görmek için Pixiv’e giriş yapın",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Roman",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Romanlarını gör",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Özel yer imlerine ekle",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Herkese açık yer imlerine eklediğiniz romanlar burada görünür",
@@ -2751,8 +2755,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Metin olarak dışa aktar",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Roman dışa aktarılamadı",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Pixiv biçimlendirmesiyle",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Metin, Pixiv'in sakladığı haliyle, [newpage] gibi etiketlerle birlikte",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Düz metin",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Pixiv biçimlendirmesi olmadan, ruby taban(ruby) olarak yazılır",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "{fileName} kaydedildi",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Takip ettiğiniz yazarların yeni romanları burada görünür",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Romandaki görsel",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Eseri aç",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Görseli kaydet",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Tam ekranda görüntüle",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "{page}. sayfaya git",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "{url} adresini açmak için Pixiv'den çıkılsın mı?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Bağlantıyı aç",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Sonraki bölüm",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Sayfa {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Önceki bölüm",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Şu an sıralamada roman yok",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Şu an önerilen roman yok — yenilemek için çekin",
@@ -2773,6 +2835,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "İlk bölümden başla",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Profil bağlantısını paylaş",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Seri bağlantısını paylaş",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "İzleme listenize eklediğiniz roman serileri burada görünür",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Bu Pixiv bağlantısı açılamadı",

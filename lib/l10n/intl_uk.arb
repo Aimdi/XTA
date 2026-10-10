@@ -2715,6 +2715,10 @@
   },
   "plugin_pixiv_not_configured": "Увійдіть у Pixiv, щоб переглядати стрічку, рейтинг і закладки",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Роман",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Романи автора",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Додати до приватних закладок",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Тут з’являться романи, додані до публічних закладок",
@@ -2751,8 +2755,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Експортувати як текст",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Не вдалося експортувати роман",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "З розміткою Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Текст точно так, як його зберігає Pixiv, з тегами на кшталт [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Звичайний текст",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Без розмітки Pixiv, рубі записано як основа(рубі)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Збережено: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Тут з’являться нові романи авторів, на яких ви підписані",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Зображення в романі",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Відкрити роботу",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Зберегти зображення",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Переглянути на весь екран",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Перейти на сторінку {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Залишити Pixiv, щоб відкрити {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Відкрити посилання",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Наступний розділ",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Сторінка {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Попередній розділ",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Зараз у рейтингу немає романів",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Поки немає рекомендованих романів — потягніть, щоб оновити",
@@ -2773,6 +2835,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Почати з першого",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Поділитися посиланням на профіль",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Поділитися посиланням на серію",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Тут з’являться серії романів, додані до списку відстеження",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Не вдалося відкрити це посилання Pixiv",

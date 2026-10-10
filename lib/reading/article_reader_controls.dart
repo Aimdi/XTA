@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/reading/article_reading_store.dart';
+import 'package:xta/utils/number_locale.dart';
 
 class ArticleReaderControls extends StatelessWidget {
   final ArticleReadingStore store;
@@ -25,9 +26,7 @@ class ArticleReaderControls extends StatelessWidget {
     store: store,
     onState: (context, state) {
       final l10n = L10n.of(context);
-      final percent = NumberFormat.percentPattern(
-        Localizations.localeOf(context).toString(),
-      ).format(state.point.fraction);
+      final percent = NumberFormat.percentPattern(numberFormatLocale(context)).format(state.point.fraction);
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -63,12 +62,7 @@ class ArticleReaderControls extends StatelessWidget {
                   tooltip: l10n.article_reader_appearance,
                   icon: const Icon(Icons.text_fields),
                   onPressed: supportsAppearance
-                      ? () => showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          useSafeArea: true,
-                          builder: (_) => ArticleAppearanceSheet(store: store, onChanged: onAppearanceChanged),
-                        )
+                      ? () => showArticleAppearanceSheet(context, store, onChanged: onAppearanceChanged)
                       : null,
                 ),
                 IconButton(
@@ -85,6 +79,18 @@ class ArticleReaderControls extends StatelessWidget {
     },
   );
 }
+
+/// The text size and line spacing sliders, over the reader they change.
+Future<void> showArticleAppearanceSheet(
+  BuildContext context,
+  ArticleReadingStore store, {
+  required VoidCallback onChanged,
+}) => showModalBottomSheet<void>(
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  builder: (_) => ArticleAppearanceSheet(store: store, onChanged: onChanged),
+);
 
 class ArticleAppearanceSheet extends StatelessWidget {
   final ArticleReadingStore store;

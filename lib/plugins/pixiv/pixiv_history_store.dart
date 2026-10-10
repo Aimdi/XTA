@@ -238,6 +238,9 @@ class PixivNovelHistoryStore extends PixivHistoryStore {
   PixivNovelHistoryStore({super.storage}) : super(key: pixivNovelHistoryKey, needsThumb: false);
 }
 
+/// Whether the reader paused the history: nothing they open is remembered.
+bool pixivHistoryPaused(BasePrefService prefs) => prefs.get<bool>(optionPluginPixivHistoryPaused) == true;
+
 /// Adds [illust] to the history unless the reader paused it or no history is
 /// provided (a test, or a screen outside the app).
 void recordPixivVisit(BuildContext context, PixivIllust illust) =>
@@ -248,7 +251,6 @@ void recordPixivNovelVisit(BuildContext context, PixivNovel novel) =>
     _record(context, context.read<PixivNovelHistoryStore?>(), () => PixivHistoryEntry.ofNovel(novel, DateTime.now()));
 
 void _record(BuildContext context, PixivHistoryStore? history, PixivHistoryEntry Function() entry) {
-  final paused = PrefService.of(context, listen: false).get<bool>(optionPluginPixivHistoryPaused) == true;
-  if (history == null || paused) return;
+  if (history == null || pixivHistoryPaused(PrefService.of(context, listen: false))) return;
   unawaited(history.record(entry()));
 }

@@ -10,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_list.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_paged_feed.dart';
 import 'package:xta/plugins/pixiv/pixiv_segmented_switch.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_content.dart';
@@ -179,7 +180,11 @@ class _PixivHistoryScreenState extends State<PixivHistoryScreen> {
           items: novels,
           novelOf: (novel) => novel,
           mutes: _showingEverything,
-          card: (novel) => PixivNovelCard(novel: novel, onLongPress: () => _forget(novel.id, novel.title)),
+          card: (novel) => PixivNovelCard(
+            novel: novel,
+            onTap: () => openRememberedPixivNovel(context, novel.id),
+            onLongPress: () => _forget(novel.id, novel.title),
+          ),
         ),
       ),
     ],

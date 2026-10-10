@@ -2715,6 +2715,10 @@
   },
   "plugin_pixiv_not_configured": "Přihlaste se k Pixivu a prohlížejte sledování, žebříčky a záložky",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Román",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Romány autora",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Uložit do soukromých záložek",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Zde se objeví romány, které si veřejně uložíte do záložek",
@@ -2751,8 +2755,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Exportovat jako text",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Román se nepodařilo exportovat",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Se značkami Pixivu",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Text přesně tak, jak ho ukládá Pixiv, se značkami jako [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Prostý text",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Bez značek Pixivu, ruby zapsané jako základ(ruby)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Uloženo: {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Zde se objeví nové romány od autorů, které sledujete",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Obrázek v románu",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Otevřít dílo",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Uložit obrázek",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Zobrazit na celou obrazovku",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Přejít na stranu {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Opustit Pixiv a otevřít {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Otevřít odkaz",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Další kapitola",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Strana {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Předchozí kapitola",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "V žebříčku teď nejsou žádné romány",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Teď žádné doporučené romány — potáhněte pro obnovení",
@@ -2773,6 +2835,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Začít od prvního",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Sdílet odkaz na profil",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Sdílet odkaz na sérii",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Zde se objeví série románů, které přidáte do sledovaných",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Tento odkaz Pixiv se nepodařilo otevřít",

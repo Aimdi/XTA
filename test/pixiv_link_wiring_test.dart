@@ -11,7 +11,9 @@ import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_link_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
@@ -183,12 +185,13 @@ void main() {
       await disposePixiv(tester);
     });
 
-    testWidgets('a novel link opens the novel and joins the history; a novel series link opens its screen', (
+    testWidgets('a novel link opens its reader and joins the history; a novel series link opens its screen', (
       tester,
     ) async {
       final novels = FakePixivNovelApi(
         PixivClient(PrefServiceCache()),
         details: {789: pixivNovel(id: 789, title: 'Letters')},
+        contents: {789: const PixivNovelContent(id: 789, text: 'Dear Mika')},
         seriesPages: {
           null: PixivNovelSeriesPage(
             series: PixivNovelSeries(id: 55, title: 'Seasons', user: pixivNovel().user),
@@ -218,14 +221,17 @@ void main() {
 
       await tester.tap(find.text('open').at(0));
       await settlePixiv(tester);
-      expect(novels.calls, ['detail:789']);
-      expect(launched, ['https://www.pixiv.net/novel/show.php?id=789']);
+      expect(novels.calls, ['detail:789', 'content:789']);
+      expect(tester.widget<PixivNovelReaderScreen>(find.byType(PixivNovelReaderScreen)).novel?.title, 'Letters');
+      expect(find.text('Dear Mika', findRichText: true), findsOneWidget);
       expect([for (final entry in history.state) (entry.id, entry.title)], [(789, 'Letters')]);
+      tester.state<NavigatorState>(find.byType(Navigator).first).pop();
+      await settlePixiv(tester);
 
       await tester.tap(find.text('open').at(1));
       await settlePixiv(tester);
       expect(opened, [true, false], reason: 'a novel Pixiv does not have goes back to the caller');
-      expect(launched, hasLength(1));
+      expect(find.byType(PixivNovelReaderScreen), findsNothing);
 
       await tester.tap(find.text('open').at(2));
       await settlePixiv(tester);
@@ -235,7 +241,7 @@ void main() {
       await tester.pageBack();
       await settlePixiv(tester);
       expect(opened, [true, false, true]);
-      expect(launched, hasLength(1));
+      expect(launched, isEmpty);
       await disposePixiv(tester);
     });
   });

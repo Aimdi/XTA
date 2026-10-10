@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +15,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_list.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
@@ -96,21 +96,6 @@ ScrollPosition _position(WidgetTester tester, Type feed) => tester
 Future<void> _scrollTo(WidgetTester tester, Type feed, double offset) async {
   _position(tester, feed).jumpTo(offset);
   await tester.pump();
-}
-
-/// Records the pages `openUri` hands the browser.
-List<String> _recordLaunches() {
-  final launched = <String>[];
-  final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  for (final name in ['plugins.flutter.io/url_launcher', 'browser_resolver']) {
-    final channel = MethodChannel(name);
-    messenger.setMockMethodCallHandler(channel, (call) async {
-      if (call.arguments case {'url': final String url}) launched.add(url);
-      return name == 'browser_resolver' ? null : true;
-    });
-    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
-  }
-  return launched;
 }
 
 Widget _list(List<PixivNovel> novels) => Scaffold(
@@ -322,7 +307,6 @@ void main() {
     });
 
     testWidgets('View latest opens the newest chapter Pixiv names, else the series', (tester) async {
-      final launched = _recordLaunches();
       final api = _novelApi(
         watchlist: const [
           PixivWatchlistSeries(id: 77, title: 'Seasons', userId: 42, userName: 'Mika', latestContentId: 12),
@@ -335,8 +319,11 @@ void main() {
       await _tap(tester, find.byKey(const ValueKey('pixiv-novel-home-watchlist')));
 
       await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-77')));
-      expect(launched.single, contains('novel/show.php?id=12'));
+      expect(tester.widget<PixivNovelReaderScreen>(find.byType(PixivNovelReaderScreen)).novelId, 12);
+      expect(api.calls, containsAll(['detail:12', 'content:12']));
       expect(find.byType(PixivNovelSeriesScreen), findsNothing);
+      tester.state<NavigatorState>(find.byType(Navigator).first).pop();
+      await settlePixiv(tester);
 
       await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-78')));
       expect(find.byType(PixivNovelSeriesScreen), findsOneWidget);
@@ -345,7 +332,6 @@ void main() {
     });
 
     testWidgets('View latest says so when Pixiv no longer has the chapter', (tester) async {
-      final launched = _recordLaunches();
       final api = _novelApi(
         watchlist: const [
           PixivWatchlistSeries(id: 77, title: 'Seasons', userId: 42, userName: 'Mika', latestContentId: 12),
@@ -358,7 +344,7 @@ void main() {
       await _tap(tester, find.byKey(const ValueKey('pixiv-watchlist-latest-77')));
       expect(api.calls.last, 'detail:12');
       expect(find.text('Could not open that Pixiv link'), findsOneWidget);
-      expect(launched, isEmpty);
+      expect(find.byType(PixivNovelReaderScreen), findsNothing);
       expect(find.byType(PixivNovelSeriesScreen), findsNothing);
       await disposePixiv(tester);
     });

@@ -28,6 +28,7 @@ import 'package:xta/plugins/pixiv/pixiv_history_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
+import 'package:xta/reading/article_reading_store.dart';
 
 /// Private Pixiv gallery — following, ranking, bookmarks, search.
 ///
@@ -174,8 +175,9 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginPixivGroupSubscriptions, '[]');
   }
 
-  /// Also empties the viewing histories: they live in files on the device,
-  /// not in the preferences the reset above clears.
+  /// Also empties the viewing histories: they live in files on the device, not
+  /// in the preferences the reset above clears. The places reached in novels
+  /// go too, after any a closing reader is still writing.
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
     pixivAccountDataForgetter(context)();
@@ -184,7 +186,9 @@ class PixivPlugin extends XtaPlugin with SubscriptionSource {
     context.read<PixivFavoriteTagsStore>().load();
     context.read<PixivDownloadIndex?>()?.update(const {});
     final novelHistory = context.read<PixivNovelHistoryStore?>();
+    final prefs = PrefService.of(context, listen: false);
     await context.read<PixivHistoryStore?>()?.clear();
     await novelHistory?.clear();
+    await ArticleReadingStore.forget(prefs, journalKey: optionPluginPixivNovelReading);
   }
 }

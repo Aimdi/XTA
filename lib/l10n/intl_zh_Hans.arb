@@ -2715,6 +2715,10 @@
   },
   "plugin_pixiv_not_configured": "登录 Pixiv 以浏览关注、排行榜与收藏",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "小说",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "查看作者的小说",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "私密收藏",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "公开收藏的小说会显示在这里",
@@ -2751,8 +2755,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "导出为文本",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "无法导出小说",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "保留 Pixiv 标记",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "与 Pixiv 存储的原文完全一致，包含 [newpage] 等标记",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "纯文本",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "去除 Pixiv 标记，注音写作“正文(注音)”",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "已保存 {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "你关注的作者发布的新小说会显示在这里",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "小说中的图片",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "打开作品",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "保存图片",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "全屏查看",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "跳到第 {page} 页",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "要离开 Pixiv 打开 {url} 吗？",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "打开链接",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "下一章",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "第 {page} 页",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "上一章",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "当前没有排行榜小说",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "暂时没有推荐小说 — 下拉刷新",
@@ -2773,6 +2835,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "从第 1 章开始",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "分享主页链接",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "分享系列链接",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "加入追更列表的小说系列会显示在这里",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "无法打开该 Pixiv 链接",

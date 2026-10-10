@@ -77,7 +77,7 @@ class PixivUserProfile {
 
   int get id => user.id;
 
-  String get url => 'https://www.pixiv.net/users/$id';
+  String get url => pixivUserUrl(id);
 
   /// Name, @account and link, as Copy info puts them on the clipboard.
   String get infoText => '${user.name}\n@${user.account}\n$url';

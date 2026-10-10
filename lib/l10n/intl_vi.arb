@@ -2712,6 +2712,10 @@
   },
   "plugin_pixiv_not_configured": "Đăng nhập Pixiv để xem đang theo dõi, xếp hạng và dấu trang",
   "@plugin_pixiv_not_configured": {},
+  "plugin_pixiv_novel": "Tiểu thuyết",
+  "@plugin_pixiv_novel": {},
+  "plugin_pixiv_novel_author_novels": "Xem tiểu thuyết của tác giả",
+  "@plugin_pixiv_novel_author_novels": {},
   "plugin_pixiv_novel_bookmark_private": "Đánh dấu riêng tư",
   "@plugin_pixiv_novel_bookmark_private": {},
   "plugin_pixiv_novel_bookmarks_empty": "Tiểu thuyết bạn đánh dấu công khai sẽ hiện ở đây",
@@ -2748,8 +2752,66 @@
       }
     }
   },
+  "plugin_pixiv_novel_export": "Xuất dạng văn bản",
+  "@plugin_pixiv_novel_export": {},
+  "plugin_pixiv_novel_export_failed": "Không thể xuất tiểu thuyết",
+  "@plugin_pixiv_novel_export_failed": {},
+  "plugin_pixiv_novel_export_markup": "Kèm mã định dạng của Pixiv",
+  "@plugin_pixiv_novel_export_markup": {},
+  "plugin_pixiv_novel_export_markup_hint": "Văn bản đúng như Pixiv lưu, kèm các thẻ như [newpage]",
+  "@plugin_pixiv_novel_export_markup_hint": {},
+  "plugin_pixiv_novel_export_plain": "Văn bản thuần",
+  "@plugin_pixiv_novel_export_plain": {},
+  "plugin_pixiv_novel_export_plain_hint": "Bỏ mã định dạng của Pixiv, chú âm ruby viết dạng chữ(chú âm)",
+  "@plugin_pixiv_novel_export_plain_hint": {},
+  "plugin_pixiv_novel_exported": "Đã lưu {fileName}",
+  "@plugin_pixiv_novel_exported": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_pixiv_novel_following_empty": "Tiểu thuyết mới từ những tác giả bạn theo dõi sẽ hiện ở đây",
   "@plugin_pixiv_novel_following_empty": {},
+  "plugin_pixiv_novel_image": "Hình trong tiểu thuyết",
+  "@plugin_pixiv_novel_image": {},
+  "plugin_pixiv_novel_image_open": "Mở tác phẩm",
+  "@plugin_pixiv_novel_image_open": {},
+  "plugin_pixiv_novel_image_save": "Lưu hình",
+  "@plugin_pixiv_novel_image_save": {},
+  "plugin_pixiv_novel_image_view": "Xem toàn màn hình",
+  "@plugin_pixiv_novel_image_view": {},
+  "plugin_pixiv_novel_jump_to_page": "Đến trang {page}",
+  "@plugin_pixiv_novel_jump_to_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_confirm": "Rời Pixiv để mở {url}?",
+  "@plugin_pixiv_novel_link_confirm": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_novel_link_open": "Mở liên kết",
+  "@plugin_pixiv_novel_link_open": {},
+  "plugin_pixiv_novel_next": "Chương sau",
+  "@plugin_pixiv_novel_next": {},
+  "plugin_pixiv_novel_page": "Trang {page}",
+  "@plugin_pixiv_novel_page": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_novel_previous": "Chương trước",
+  "@plugin_pixiv_novel_previous": {},
   "plugin_pixiv_novel_ranking_empty": "Hiện không có tiểu thuyết xếp hạng",
   "@plugin_pixiv_novel_ranking_empty": {},
   "plugin_pixiv_novel_recommended_empty": "Hiện không có tiểu thuyết đề xuất — kéo để làm mới",
@@ -2770,6 +2832,10 @@
   "@plugin_pixiv_novel_series_ongoing": {},
   "plugin_pixiv_novel_series_start": "Bắt đầu từ chương 1",
   "@plugin_pixiv_novel_series_start": {},
+  "plugin_pixiv_novel_share_author": "Chia sẻ liên kết hồ sơ",
+  "@plugin_pixiv_novel_share_author": {},
+  "plugin_pixiv_novel_share_series": "Chia sẻ liên kết bộ truyện",
+  "@plugin_pixiv_novel_share_series": {},
   "plugin_pixiv_novel_watchlist_empty": "Các bộ tiểu thuyết bạn thêm vào truyện theo dõi sẽ hiện ở đây",
   "@plugin_pixiv_novel_watchlist_empty": {},
   "plugin_pixiv_open_link_failed": "Không thể mở liên kết Pixiv đó",
