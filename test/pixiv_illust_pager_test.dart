@@ -258,6 +258,11 @@ void main() {
       await tester.drag(pages, const Offset(-300, 0));
       await settlePixiv(tester);
       expect(find.widgetWithText(AppBar, 'Two'), findsOneWidget);
+
+      await tester.dragFrom(const Offset(80, 300), const Offset(320, 0));
+      await settlePixiv(tester);
+      expect(find.widgetWithText(AppBar, 'One'), findsOneWidget);
+      expect(find.text('2 / 2'), findsOneWidget);
       await disposePixiv(tester);
     });
   });

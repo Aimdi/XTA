@@ -47,6 +47,12 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSur
     _detail = PixivIllustDetailStore(client, widget.illust);
     _related = pixivRelatedStore(client, widget.illust, filter: context.read<PixivMuteStore>().filter);
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _followRestoredPage());
+  }
+
+  /// A work swiped back into a pager reopens on the page it was left at; the counter follows.
+  void _followRestoredPage() {
+    if (mounted && _pager.hasClients) _page.select((_pager.page ?? 0).round());
   }
 
   @override

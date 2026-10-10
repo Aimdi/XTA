@@ -15,7 +15,7 @@ Future<PixivHarness> _pumpDetail(WidgetTester tester, Size size, {PixivDetailLay
   size: size,
   client: (prefs) {
     if (layout != null) prefs.set(optionPluginPixivDetailLayout, layout.name);
-    return FakePixivClient(prefs);
+    return FakePixivClient(prefs, detail: pixivWork(pages: 3));
   },
 );
 
@@ -84,6 +84,21 @@ void main() {
       await _pumpDetail(tester, const Size(740, 360), layout: PixivDetailLayout.split);
       expect(find.byType(PixivDetailSplit), findsOneWidget);
       expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('turning the device keeps the page on screen', (tester) async {
+      await _pumpDetail(tester, const Size(1000, 700));
+      await tester.drag(find.byType(PixivDetailViewer), const Offset(-500, 0));
+      await settlePixiv(tester);
+      expect(find.text('2 / 3'), findsOneWidget);
+
+      tester.view.physicalSize = const Size(390, 844);
+      await settlePixiv(tester);
+      expect(find.byType(PixivDetailSplit), findsNothing);
+      expect(find.text('2 / 3'), findsOneWidget);
+      final pages = find.descendant(of: find.byType(PixivDetailViewer), matching: find.byType(PageView));
+      expect(tester.widget<PageView>(pages).controller!.page, 1);
       await disposePixiv(tester);
     });
 
