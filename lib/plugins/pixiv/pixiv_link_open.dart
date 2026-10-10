@@ -84,11 +84,11 @@ Future<bool> openPixivLinkRef(BuildContext context, PixivLinkRef ref) async {
       return true;
     case PixivShortLinkRef():
       return _openShortLink(context, ref);
-    case PixivSeriesLinkRef(:final id):
-      await openPixivSeries(context, id);
+    case PixivSeriesLinkRef(:final id, :final webUrl):
+      await openPixivSeries(context, id, webUrl: webUrl);
       return true;
-    case PixivisionLinkRef(:final id):
-      await openPixivisionArticle(context, id);
+    case PixivisionLinkRef(:final id, :final webUrl):
+      await openPixivisionArticle(context, id, webUrl: webUrl);
       return true;
     case PixivWebPageLinkRef(:final webUrl):
       await openUri(context, webUrl);

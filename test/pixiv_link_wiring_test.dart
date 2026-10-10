@@ -43,6 +43,17 @@ FakePixivDiscoveryApi _discovery() => FakePixivDiscoveryApi(
   article: _article,
 );
 
+/// A series Pixiv will not hand over, such as a deleted one.
+class _UnreadableSeries extends FakePixivDiscoveryApi {
+  _UnreadableSeries() : super(PixivClient(PrefServiceCache()));
+
+  @override
+  Future<PixivSeriesPage> illustSeries(int seriesId, {String? nextUrl}) async {
+    calls.add('series:$seriesId');
+    throw PixivException(PixivErrorKind.notFound, 'gone');
+  }
+}
+
 SingleChildWidget _provide(FakePixivDiscoveryApi api) => Provider<PixivDiscoveryApi>.value(value: api);
 
 /// A button that opens [ref] the way a caption, comment or shared link does.
@@ -111,11 +122,36 @@ void main() {
       expect(find.byWidgetPredicate((w) => w is PixivisionArticleScreen && w.articleId == 9876), findsOneWidget);
       expect(api.calls, ['pixivision:9876']);
       expect(find.text('Sleepy cat'), findsOneWidget);
+      expect(launched, isEmpty);
+
+      await tester.tap(find.byTooltip('Open in browser'));
+      await settlePixiv(tester);
+      expect(launched, ['https://www.pixivision.net/ja/a/9876'], reason: 'the page the link named, not a translation');
 
       await tester.pageBack();
       await settlePixiv(tester);
       expect(opened, [true]);
-      expect(launched, isEmpty);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a series link that cannot be read still offers its page on pixiv.net', (tester) async {
+      final api = _UnreadableSeries();
+      final launched = _recordLaunches();
+      await pumpPixiv(
+        tester,
+        _linkButton(parsePixivLink('https://www.pixiv.net/user/42/series/266067')!, []),
+        extraProviders: [_provide(api)],
+      );
+
+      await tester.tap(find.text('open'));
+      await settlePixiv(tester);
+      expect(find.byType(PixivSeriesScreen), findsOneWidget);
+      expect(api.calls, contains('series:266067'));
+      expect(find.byTooltip('Share link'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Open on Pixiv'));
+      await settlePixiv(tester);
+      expect(launched, ['https://www.pixiv.net/user/42/series/266067']);
       await disposePixiv(tester);
     });
 

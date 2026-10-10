@@ -15,13 +15,14 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Opens Pixivision article [id]; [article] is the list's copy, shown while
-/// the page loads.
-Future<void> openPixivisionArticle(BuildContext context, int id, {PixivSpotlightArticle? article}) => Navigator.push(
-  context,
-  MaterialPageRoute<void>(
-    builder: (_) => PixivisionArticleScreen(articleId: id, article: article),
-  ),
-);
+/// the page loads, and [webUrl] the link it was opened from.
+Future<void> openPixivisionArticle(BuildContext context, int id, {PixivSpotlightArticle? article, String? webUrl}) =>
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) => PixivisionArticleScreen(articleId: id, article: article, webUrl: webUrl),
+      ),
+    );
 
 /// One Pixivision article, read from its web page.
 class PixivisionArticleStore extends Store<PixivisionArticle?> {
@@ -50,7 +51,11 @@ class PixivisionArticleScreen extends StatefulWidget {
   final int articleId;
   final PixivSpotlightArticle? article;
 
-  const PixivisionArticleScreen({super.key, required this.articleId, this.article});
+  /// The page a link named, which Share and Open in browser keep: the article
+  /// loads in the reader's language, and a link may name one it is not in.
+  final String? webUrl;
+
+  const PixivisionArticleScreen({super.key, required this.articleId, this.article, this.webUrl});
 
   @override
   State<PixivisionArticleScreen> createState() => _PixivisionArticleScreenState();
@@ -74,7 +79,7 @@ class _PixivisionArticleScreenState extends State<PixivisionArticleScreen> {
     super.dispose();
   }
 
-  String get _url => switch (widget.article?.articleUrl) {
+  String get _url => switch (widget.article?.articleUrl ?? widget.webUrl) {
     final url? when url.isNotEmpty => url,
     _ => pixivisionArticleUrl(widget.articleId, _language),
   };

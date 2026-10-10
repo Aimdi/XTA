@@ -146,8 +146,12 @@ pixivision.net, i.pximg.net and `pixiv://` links reach the plugin.
 - `openUri` asks Android who would open a Pixiv page; when that is XTA itself
   or a chooser that lists it, the page goes to a named browser instead, so a
   link XTA cannot show never comes straight back.
-- Shared text (`shared_links.dart`) yields Pixiv links while the plugin is
-  on; a share that is only a number opens Pixiv search with it.
+- Shared text (`shared_links.dart`) yields Pixiv and pixivision.net links
+  while the plugin is on; a share that is only a number opens Pixiv search
+  with it. `readsAsXLink` keeps pixivision pages from X's parser too.
+- pixivision.net is not in the manifest's VIEW filter yet, so Android does
+  not offer XTA for a pixivision link; one reaches the article screen when
+  tapped inside XTA or shared to it.
 
 ## More hub and navigation
 

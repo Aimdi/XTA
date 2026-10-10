@@ -188,13 +188,7 @@ void main() {
   });
 
   testWidgets('large text on a narrow phone does not overflow', (tester) async {
-    await pumpPixiv(
-      tester,
-      _ownFollowing,
-      extraProviders: [_api().provider],
-      size: const Size(320, 640),
-      textScale: 2,
-    );
+    await pumpPixiv(tester, _ownFollowing, extraProviders: [_api().provider], size: const Size(320, 640), textScale: 2);
     expect(tester.takeException(), isNull);
     await disposePixiv(tester);
   });

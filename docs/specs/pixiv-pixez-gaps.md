@@ -173,8 +173,9 @@ series screen; search's numeric shortcuts offer the Pixivision article; Home's
 people icon opens the reader's following list (`PixivUserListScreen`). One
 paged feed (`PixivPagedFeed`, with `PixivIllustFeed` on top), one ranking call
 (`PixivDiscoveryApi.ranking`) and one `/v1/user/illusts` request
-(`PixivClient.userIllusts`, which `PixivSocialApi.userWorks` calls). Described
-in `pixiv-discovery.md` and `pixiv-profiles.md`.
+(`PixivClient.userIllusts`, which `PixivSocialApi.userWorks` calls). Works
+grids measure their columns outside the scroll view, so scrolling rebuilds no
+tile. Described in `pixiv-discovery.md` and `pixiv-profiles.md`.
 
 ## Already on par
 

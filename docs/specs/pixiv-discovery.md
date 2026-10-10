@@ -167,11 +167,14 @@ rather than overflow at large text sizes.
   `loadAhead` pixels before the end of its own scroll (not a sideways strip
   inside it). `PixivIllustFeed` is it over `PixivIllustSliverGrid` with the
   grid skeleton, a 1400 px look-ahead, a 1200 px build-ahead and the
-  thumbnail prefetch. `PixivIllustSliverGrid` (`pixiv_grid.dart`) measures its
-  columns outside its own padding, so the count follows the list's whole
-  width; the fixed `PixivIllustGrid` (viewing history) draws the same sliver.
-  Both scroll in `pixivScrollView`, which takes the Home shell's inner
-  controller when embedded.
+  thumbnail prefetch. `PixivGridColumns` (`pixiv_grid.dart`) measures the
+  column count as a box around the scroll view, so it follows the list's
+  whole width and scrolling never lays the grid out again (a
+  `SliverLayoutBuilder` would rebuild every built tile on every scroll
+  frame); `PixivIllustSliverGrid` draws the works in that many columns, and
+  the fixed `PixivIllustGrid` (viewing history) draws the same sliver. Both
+  scroll in `pixivScrollView`, which takes the Home shell's inner controller
+  when embedded.
 - `PixivRecommendedUsersStrip` takes plain users and a padding, so any
   creator strip can use it.
 - `PixivUserLink` (`pixiv_user_link.dart`) is a creator's avatar and name as a
@@ -186,8 +189,13 @@ rather than overflow at large text sizes.
 - pixivision.net/<lang>/a/<id> links open `openPixivisionArticle(context, id)`
   and pixiv.net/user/<uid>/series/<sid> links open `openPixivSeries(context, id)`
   wherever `openPixivLinkRef` opens a link: work captions, search and links
-  XTA opens itself (`plugin_url.dart` lets pixivision.net through).
-  The article loads in the reader's language whatever the link's.
+  XTA opens itself (`plugin_url.dart` lets pixivision.net through), and
+  pixivision links shared to XTA (`shared_links.dart`).
+  The article loads in the reader's language whatever the link's; its Share
+  and Open in browser keep the page the link named.
+- A series opened from a link shows Share and *Open on Pixiv* for the link's
+  pixiv.net page before its header loads, so a series that cannot be read
+  (signed out, deleted, offline) still reaches the browser.
 - Search's numeric shortcuts end with *Open Pixivision article #<id>*
   (`pixivisionShortcut`).
 

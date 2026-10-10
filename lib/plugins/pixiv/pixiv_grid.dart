@@ -27,12 +27,34 @@ typedef PixivIllustTileBuilder = Widget Function(BuildContext context, List<Pixi
 /// How far past the screen a works grid builds its tiles ahead.
 const pixivGridCacheExtent = ScrollCacheExtent.pixels(1200);
 
-/// Works as a staggered sliver: as many columns as the list's width and the
-/// reader's settings allow, without the works the reader muted.
+/// Builds [builder] with the column count for a works grid as wide as this
+/// widget, again when a grid setting changes.
+///
+/// Measured as a box around the scroll view: a sliver measurement sees every
+/// scroll frame as a new layout and would rebuild every built tile with it.
+class PixivGridColumns extends StatelessWidget {
+  final Widget Function(BuildContext context, int columns) builder;
+
+  const PixivGridColumns({super.key, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => PixivPrefsBuilder(
+    keys: pixivGridPrefKeys,
+    builder: (context) => LayoutBuilder(
+      builder: (context, constraints) => builder(context, pixivGridColumnsFor(context, constraints.maxWidth)),
+    ),
+  );
+}
+
+/// Works as a staggered sliver in [columns] columns, without the works the
+/// reader muted. Built under a [PixivGridColumns], which also rebuilds it when
+/// a grid setting the tiles read changes.
 class PixivIllustSliverGrid extends StatelessWidget {
   final List<PixivIllust> illusts;
 
-  /// Inside the measured width, so the columns follow the list's whole width.
+  /// From the [PixivGridColumns] around the scroll view.
+  final int columns;
+
   final EdgeInsetsGeometry padding;
 
   /// The reader's mutes as this list applies them; all of them when null.
@@ -51,6 +73,7 @@ class PixivIllustSliverGrid extends StatelessWidget {
   const PixivIllustSliverGrid({
     super.key,
     required this.illusts,
+    required this.columns,
     this.padding = EdgeInsets.zero,
     this.mutes,
     this.hideMuted = true,
@@ -59,29 +82,24 @@ class PixivIllustSliverGrid extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PixivPrefsBuilder(
-    keys: pixivGridPrefKeys,
-    builder: (context) {
-      if (!hideMuted) return _layout(illusts);
-      // Plain ScopedBuilder (not .transition): mute changes must not animate the
-      // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
-      return ScopedBuilder<PixivMuteStore, PixivMuteState>(
-        store: context.read<PixivMuteStore>(),
-        onState: (context, mute) => _layout((mutes?.call(mute) ?? mute).filter(illusts)),
-      );
-    },
-  );
+  Widget build(BuildContext context) {
+    if (!hideMuted) return _layout(illusts);
+    // Plain ScopedBuilder (not .transition): mute changes must not animate the
+    // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
+    return ScopedBuilder<PixivMuteStore, PixivMuteState>(
+      store: context.read<PixivMuteStore>(),
+      onState: (context, mute) => _layout((mutes?.call(mute) ?? mute).filter(illusts)),
+    );
+  }
 
-  Widget _layout(List<PixivIllust> shown) => SliverLayoutBuilder(
-    builder: (context, constraints) => SliverPadding(
-      padding: padding,
-      sliver: SliverMasonryGrid.count(
-        crossAxisCount: pixivGridColumnsFor(context, constraints.crossAxisExtent),
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childCount: shown.length,
-        itemBuilder: (context, index) => _tile(context, shown, index),
-      ),
+  Widget _layout(List<PixivIllust> shown) => SliverPadding(
+    padding: padding,
+    sliver: SliverMasonryGrid.count(
+      crossAxisCount: columns,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childCount: shown.length,
+      itemBuilder: (context, index) => _tile(context, shown, index),
     ),
   );
 
@@ -125,21 +143,24 @@ class PixivIllustGrid extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => pixivScrollView(
-    context,
-    controller: scrollController,
-    cacheExtent: pixivGridCacheExtent,
-    slivers: [
-      ...leadingSlivers,
-      PixivIllustSliverGrid(
-        illusts: illusts,
-        padding: padding,
-        mutes: mutes,
-        hideMuted: hideMuted,
-        tileBuilder: tileBuilder,
-        source: source,
-      ),
-    ],
+  Widget build(BuildContext context) => PixivGridColumns(
+    builder: (context, columns) => pixivScrollView(
+      context,
+      controller: scrollController,
+      cacheExtent: pixivGridCacheExtent,
+      slivers: [
+        ...leadingSlivers,
+        PixivIllustSliverGrid(
+          illusts: illusts,
+          columns: columns,
+          padding: padding,
+          mutes: mutes,
+          hideMuted: hideMuted,
+          tileBuilder: tileBuilder,
+          source: source,
+        ),
+      ],
+    ),
   );
 }
 
@@ -164,19 +185,27 @@ class PixivIllustFeed extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => PixivPagedFeed<PixivIllust>(
-    store: store,
-    emptyMessage: emptyMessage,
-    emptyIcon: Icons.photo_outlined,
-    placeholder: const PluginGridSkeleton(columns: 2),
-    scrollController: scrollController,
-    leadingSlivers: leadingSlivers,
-    // The next API page is asked for well before the footer — Pixez-style.
-    loadAhead: 1400,
-    cacheExtent: pixivGridCacheExtent,
-    sliver: (context, illusts) => _ThumbPrefetch(
-      illusts: illusts,
-      child: PixivIllustSliverGrid(illusts: illusts, padding: const EdgeInsets.all(4), mutes: mutes, source: store),
+  Widget build(BuildContext context) => PixivGridColumns(
+    builder: (context, columns) => PixivPagedFeed<PixivIllust>(
+      store: store,
+      emptyMessage: emptyMessage,
+      emptyIcon: Icons.photo_outlined,
+      placeholder: const PluginGridSkeleton(columns: 2),
+      scrollController: scrollController,
+      leadingSlivers: leadingSlivers,
+      // The next API page is asked for well before the footer — Pixez-style.
+      loadAhead: 1400,
+      cacheExtent: pixivGridCacheExtent,
+      sliver: (context, illusts) => _ThumbPrefetch(
+        illusts: illusts,
+        child: PixivIllustSliverGrid(
+          illusts: illusts,
+          columns: columns,
+          padding: const EdgeInsets.all(4),
+          mutes: mutes,
+          source: store,
+        ),
+      ),
     ),
   );
 }

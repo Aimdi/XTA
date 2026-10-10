@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:xta/plugins/pixiv/pixiv_links.dart' show isPixivWebHost;
+import 'package:xta/plugins/pixiv/pixiv_links.dart' show isPixivWebHost, isPixivisionHost;
 
 const sharedTextChannel = EventChannel('com.aimdi.xta/shared_text');
 const _shareHosts = {
@@ -20,7 +20,14 @@ const _shareHosts = {
 };
 
 /// Taken only while the Pixiv plugin is on; nothing else in XTA reads them.
-const _pixivShareHosts = {'pixiv.net', 'www.pixiv.net', 'touch.pixiv.net', 'pixiv.me'};
+const _pixivShareHosts = {
+  'pixiv.net',
+  'www.pixiv.net',
+  'touch.pixiv.net',
+  'pixiv.me',
+  'pixivision.net',
+  'www.pixivision.net',
+};
 
 bool _supported(Uri uri, {required bool pixiv}) {
   final host = uri.host.toLowerCase();
@@ -43,9 +50,9 @@ Uri? extractSharedLink(String text, {bool pixiv = false}) {
 }
 
 /// Whether X's link parser should read [link], which no plugin opened. A Pixiv
-/// page should not: X would take `pixiv.net/en/` for the profile `@en`, so it
-/// goes to the browser instead.
-bool readsAsXLink(Uri link) => !isPixivWebHost(link.host);
+/// or pixivision page should not: X would take `pixiv.net/en/` for the profile
+/// `@en`, so it goes to the browser instead.
+bool readsAsXLink(Uri link) => !isPixivWebHost(link.host) && !isPixivisionHost(link.host);
 
 /// A share that is only a number, which Pixiv reads as a work's ID.
 String? sharedPixivId(String text) {

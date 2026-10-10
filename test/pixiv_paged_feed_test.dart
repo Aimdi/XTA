@@ -56,6 +56,26 @@ int _columns(WidgetTester tester) =>
             as SliverSimpleGridDelegateWithFixedCrossAxisCount)
         .crossAxisCount;
 
+Map<int, PixivIllustTile> _tiles(WidgetTester tester) => {
+  for (final tile in tester.widgetList<PixivIllustTile>(find.byType(PixivIllustTile, skipOffstage: false)))
+    tile.illust.id: tile,
+};
+
+double _offset(WidgetTester tester) => tester.state<ScrollableState>(find.byType(Scrollable).first).position.pixels;
+
+/// Ten small steps, one frame each, that reveal no new tile.
+Future<void> _nudge(WidgetTester tester) async {
+  final gesture = await tester.startGesture(tester.getCenter(find.byType(CustomScrollView)));
+  await gesture.moveBy(const Offset(0, -40));
+  await tester.pump();
+  for (var i = 0; i < 10; i++) {
+    await gesture.moveBy(const Offset(0, -2));
+    await tester.pump();
+  }
+  await gesture.up();
+  await tester.pump();
+}
+
 void main() {
   late _Pages pages;
   late PixivIllustListStore store;
@@ -149,14 +169,62 @@ void main() {
     await disposePixiv(tester);
   });
 
-  testWidgets('a fixed works grid scrolls the same way, without paging', (tester) async {
+  testWidgets('a fixed works grid scrolls the same way, without paging its source', (tester) async {
     unawaited(store.refresh());
-    await pumpPixiv(tester, Scaffold(body: PixivIllustGrid(illusts: store.state)));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(store.state, hasLength(_Pages.perPage));
+    await pumpPixiv(
+      tester,
+      Scaffold(
+        body: PixivIllustGrid(illusts: store.state, source: store),
+      ),
+    );
     expect(find.byType(PixivPagedFeed<PixivIllust>), findsNothing);
-    expect(find.byType(SliverMasonryGrid), findsOneWidget);
+    expect(find.byType(PixivIllustTile), findsWidgets);
+
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
     await settlePixiv(tester);
-    expect(pages.asked, [null]);
+    expect(_offset(tester), greaterThan(0), reason: 'the works scroll');
+    expect(pages.asked, [null], reason: 'only a paged feed asks for the next page as it scrolls');
+    await disposePixiv(tester);
+  });
+
+  testWidgets('scrolling a fixed grid builds no shown tile again', (tester) async {
+    final works = [for (var i = 0; i < 200; i++) pixivWork(id: i + 1, pages: 1)];
+    final builds = <int, int>{};
+    Widget tile(BuildContext context, List<PixivIllust> illusts, int index) {
+      builds.update(index, (count) => count + 1, ifAbsent: () => 1);
+      return SizedBox(height: 120, child: Text('${illusts[index].id}'));
+    }
+
+    await pumpPixiv(
+      tester,
+      Scaffold(
+        body: PixivIllustGrid(illusts: works, tileBuilder: tile),
+      ),
+    );
+    final before = Map.of(builds);
+    expect(before, isNotEmpty);
+    await _nudge(tester);
+    expect(_offset(tester), greaterThan(0));
+    expect({for (final index in before.keys) index: builds[index]}, before);
+    await disposePixiv(tester);
+  });
+
+  testWidgets('scrolling a works feed keeps every built tile as it was', (tester) async {
+    final works = [for (var i = 0; i < 200; i++) pixivWork(id: i + 1, pages: 1)];
+    final whole = PixivIllustListStore(({nextUrl}) async => PixivIllustPage(illusts: works));
+    addTearDown(whole.destroy);
+    unawaited(whole.refresh());
+    await pumpPixiv(tester, _feed(whole));
+    final before = _tiles(tester);
+    expect(before, isNotEmpty);
+    await _nudge(tester);
+    expect(_offset(tester), greaterThan(0));
+    final after = _tiles(tester);
+    final kept = before.keys.where(after.containsKey);
+    expect(kept, isNotEmpty);
+    expect(kept.where((id) => !identical(before[id], after[id])), isEmpty, reason: 'no shown tile is built again');
     await disposePixiv(tester);
   });
 }

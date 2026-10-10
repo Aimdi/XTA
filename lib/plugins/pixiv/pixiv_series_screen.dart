@@ -16,13 +16,15 @@ import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Opens an illustration or manga series by its id. [onWatchlistChanged] runs
-/// after the reader adds it to or removes it from the watchlist there.
-Future<void> openPixivSeries(BuildContext context, int seriesId, {VoidCallback? onWatchlistChanged}) => Navigator.push(
-  context,
-  MaterialPageRoute<void>(
-    builder: (_) => PixivSeriesScreen(seriesId: seriesId, onWatchlistChanged: onWatchlistChanged),
-  ),
-);
+/// after the reader adds it to or removes it from the watchlist there; [webUrl]
+/// is the link it was opened from.
+Future<void> openPixivSeries(BuildContext context, int seriesId, {VoidCallback? onWatchlistChanged, String? webUrl}) =>
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) => PixivSeriesScreen(seriesId: seriesId, onWatchlistChanged: onWatchlistChanged, webUrl: webUrl),
+      ),
+    );
 
 /// A series' header and whether its watchlist change is still on its way.
 typedef PixivSeriesView = ({PixivIllustSeries? series, bool busy});
@@ -65,7 +67,11 @@ class PixivSeriesScreen extends StatefulWidget {
   final int seriesId;
   final VoidCallback? onWatchlistChanged;
 
-  const PixivSeriesScreen({super.key, required this.seriesId, this.onWatchlistChanged});
+  /// The series' page on pixiv.net before its header loads, so a link that
+  /// cannot be read here still has its way to the browser.
+  final String? webUrl;
+
+  const PixivSeriesScreen({super.key, required this.seriesId, this.onWatchlistChanged, this.webUrl});
 
   @override
   State<PixivSeriesScreen> createState() => _PixivSeriesScreenState();
@@ -109,7 +115,7 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
       onState: (context, view) => Scaffold(
         appBar: AppBar(
           title: Text(view.series?.title ?? l10n.plugin_pixiv_series, maxLines: 1, overflow: TextOverflow.ellipsis),
-          actions: [if (view.series case final series?) ..._actions(l10n, series)],
+          actions: [if (view.series?.url ?? widget.webUrl case final url?) ..._actions(l10n, url)],
         ),
         // The header sits outside the works list, so it and its watchlist
         // toggle stay when every work is filtered out or a page fails.
@@ -126,16 +132,16 @@ class _PixivSeriesScreenState extends State<PixivSeriesScreen> {
     );
   }
 
-  List<Widget> _actions(L10n l10n, PixivIllustSeries series) => [
+  List<Widget> _actions(L10n l10n, String url) => [
     IconButton(
       tooltip: l10n.share_link,
       icon: const Icon(Icons.share_outlined),
-      onPressed: () => SharePlus.instance.share(ShareParams(text: series.url)),
+      onPressed: () => SharePlus.instance.share(ShareParams(text: url)),
     ),
     IconButton(
       tooltip: l10n.plugin_pixiv_open_on_pixiv,
       icon: const Icon(Icons.open_in_new),
-      onPressed: () => openUri(context, series.url),
+      onPressed: () => openUri(context, url),
     ),
   ];
 }
