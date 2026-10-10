@@ -4,16 +4,20 @@ import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_folder_sheet.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_sheet.dart';
+import 'package:xta/plugins/pixiv/pixiv_overflow_menu.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_page_surface.dart';
 import 'package:xta/utils/urls.dart';
 
 /// One entry of a work's overflow menu. A feature adds its entry to
 /// [pixivDetailMenuEntries] rather than to the screen.
-class PixivDetailMenuEntry {
+class PixivDetailMenuEntry implements PixivMenuItemSpec {
   /// Stable name; the menu item is keyed `pixiv-illust-menu-<id>`.
+  @override
   final String id;
+  @override
   final IconData icon;
+  @override
   final String Function(L10n l10n) label;
   final Future<void> Function(PixivPageSurface surface) run;
   final bool Function(PixivIllust illust) offeredFor;
@@ -100,27 +104,12 @@ class PixivDetailMenu extends StatelessWidget {
   const PixivDetailMenu({super.key, required this.surface});
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return PopupMenuButton<PixivDetailMenuEntry>(
-      key: const ValueKey('pixiv-illust-menu'),
-      onSelected: (entry) => entry.run(surface),
-      itemBuilder: (_) => [
-        for (final entry in pixivDetailMenuEntries)
-          if (entry.offeredFor(surface.pageIllust)) _item(l10n, entry),
-      ],
-    );
-  }
-
-  PopupMenuItem<PixivDetailMenuEntry> _item(L10n l10n, PixivDetailMenuEntry entry) => PopupMenuItem(
-    key: ValueKey('pixiv-illust-menu-${entry.id}'),
-    value: entry,
-    child: Row(
-      children: [
-        Icon(entry.icon, size: 20),
-        const SizedBox(width: 12),
-        Flexible(child: Text(entry.label(l10n))),
-      ],
-    ),
+  Widget build(BuildContext context) => PixivOverflowMenu<PixivDetailMenuEntry>(
+    keyPrefix: 'pixiv-illust-menu',
+    entries: [
+      for (final entry in pixivDetailMenuEntries)
+        if (entry.offeredFor(surface.pageIllust)) entry,
+    ],
+    onSelected: (entry) => entry.run(surface),
   );
 }
