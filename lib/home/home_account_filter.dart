@@ -9,7 +9,7 @@ import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
-import 'package:xta/client/login_webview.dart';
+import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/future_pool.dart';
 import 'package:xta/group/group_model.dart';
@@ -365,7 +365,7 @@ void showHomeAccountFilterSheet(
             Navigator.pop(sheetContext);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),
+              MaterialPageRoute(builder: (_) => xLoginScreen()),
             );
           },
         );

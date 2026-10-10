@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_download_naming.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_parser.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_store.dart';
+import 'package:xta/utils/file_dialogs.dart';
 
 /// What an exported file holds.
 enum PixivNovelExportFormat {
@@ -40,12 +40,10 @@ class PixivNovelExporter {
 
   /// True once saved, false when the reader backed out of the dialog.
   Future<bool> save(String fileName, String text) async {
-    final path = await FlutterFileDialog.saveFile(
-      params: SaveFileDialogParams(
-        fileName: fileName,
-        data: Uint8List.fromList(utf8.encode(text)),
-        mimeTypesFilter: const ['text/plain'],
-      ),
+    final path = await saveWithDialog(
+      fileName: fileName,
+      data: Uint8List.fromList(utf8.encode(text)),
+      mimeTypes: const ['text/plain'],
     );
     return path != null;
   }

@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Паказаць яшчэ 1 адказ} few{Паказаць яшчэ {count} адказы} many{Паказаць яшчэ {count} адказаў} other{Паказаць яшчэ {count} адказу}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Паказаць яшчэ 1 допіс у гэтай галінцы} few{Паказаць яшчэ {count} допісы ў гэтай галінцы} many{Паказаць яшчэ {count} допісаў у гэтай галінцы} other{Паказаць яшчэ {count} допісу ў гэтай галінцы}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie з x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Увайдзіце на x.com у браўзеры, адкрыйце інструменты распрацоўшчыка (F12) і скапіруйце cookie auth_token і ct0 з раздзела «Сховішча» → «Cookie». Устаўце іх ніжэй у выглядзе auth_token=…; ct0=…. Яны захоўваюцца толькі на гэтым камп'ютары і нікому не перадаюцца.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Для ўваходу тут патрэбны ўбудаваны браўзер праграмы для Android, якога няма ў версіі для камп'ютара.",
+  "@sign_in_needs_android": {}
 }

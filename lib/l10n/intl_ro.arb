@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Arată încă 1 răspuns} few{Arată încă {count} răspunsuri} other{Arată încă {count} de răspunsuri}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Arată încă 1 postare din acest fir} few{Arată încă {count} postări din acest fir} other{Arată încă {count} de postări din acest fir}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookie-uri de la x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Conectează-te la x.com în browser, deschide instrumentele pentru dezvoltatori (F12) și copiază cookie-urile auth_token și ct0 din Stocare → Cookie-uri. Lipește-le mai jos sub forma auth_token=…; ct0=…. Sunt păstrate doar pe acest computer și nu sunt partajate niciodată.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Conectarea aici necesită browserul integrat al aplicației Android, pe care aplicația pentru desktop nu îl are.",
+  "@sign_in_needs_android": {}
 }

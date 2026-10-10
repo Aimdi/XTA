@@ -14,6 +14,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings_downloads.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_mute.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings_viewing.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/desktop.dart';
 
 export 'package:xta/plugins/pixiv/pixiv_settings_content.dart' show PixivHideAiSwitch, PixivPrefSwitch;
 
@@ -37,6 +38,10 @@ String pixivErrorMessage(L10n l10n, Object error) {
 ///
 /// Returns the signed-in user, or null when cancelled or failed.
 Future<PixivAuthUser?> runPixivSignIn(BuildContext context) async {
+  if (isDesktop) {
+    showSnackBar(context, icon: '🖥️', message: L10n.of(context).sign_in_needs_android);
+    return null;
+  }
   final client = context.read<PixivClient>();
   final forget = pixivAccountDataForgetter(context);
   final pkce = PixivAuth.generatePkce();

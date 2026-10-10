@@ -11,6 +11,11 @@ server-side like. Accounts are used to *fetch* content; subscriptions, saved
 posts, and device likes stay local in SQLite. There are no external trackers;
 the app talks to reverse-engineered X API endpoints.
 
+It ships for Android and the Linux desktop (an Arch package and a portable
+tarball on every release). The desktop has no web view, share intents or
+Android storage APIs: code that needs one checks `isDesktop`
+(`lib/utils/desktop.dart`) and takes the desktop route. See `docs/desktop.md`.
+
 ## Build & Development Commands
 
 Use `fvm flutter` instead of raw `flutter` to enforce the pinned SDK version (3.44.4).

@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{عرض رد واحد آخر} two{عرض ردين آخرين} few{عرض {count} ردود أخرى} many{عرض {count} ردًا آخر} other{عرض {count} رد آخر}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{عرض منشور واحد آخر في هذه السلسلة} two{عرض منشورين آخرين في هذه السلسلة} few{عرض {count} منشورات أخرى في هذه السلسلة} many{عرض {count} منشورًا آخر في هذه السلسلة} other{عرض {count} منشور آخر في هذه السلسلة}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "ملفات تعريف الارتباط من x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "سجّل الدخول إلى x.com في متصفحك، ثم افتح أدوات المطوّر (F12) وانسخ ملفَّي تعريف الارتباط auth_token وct0 من قسم التخزين ← ملفات تعريف الارتباط. الصقهما أدناه بالشكل auth_token=…; ct0=…. يُحفظان على هذا الحاسوب فقط ولا تتم مشاركتهما أبدًا.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "يتطلب تسجيل الدخول هنا المتصفح المدمج في تطبيق Android، وهو غير متوفر في تطبيق سطح المكتب.",
+  "@sign_in_needs_android": {}
 }

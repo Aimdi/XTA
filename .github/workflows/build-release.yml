@@ -33,6 +33,8 @@ jobs:
        github.event.pull_request.base.ref == 'claude/main' &&
        startsWith(github.event.pull_request.head.ref, 'release/aimdi'))
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
     steps:
       - name: Clone the repository
         uses: actions/checkout@v4
@@ -179,3 +181,12 @@ jobs:
             build/app/outputs/release/release-build.json
             build/app/outputs/release/SHA256SUMS
           fail_on_unmatched_files: true
+
+  # The desktop build goes up beside the APKs once the release exists.
+  linux-desktop:
+    needs: build-release
+    uses: ./.github/workflows/linux-desktop.yml
+    with:
+      tag: ${{ needs.build-release.outputs.tag }}
+    permissions:
+      contents: write

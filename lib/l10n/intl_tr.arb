@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, other{{count} yanıt daha göster}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, other{Bu dizideki {count} gönderiyi daha göster}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "x.com çerezleri",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Tarayıcınızda x.com'a giriş yapın, geliştirici araçlarını (F12) açın ve Depolama → Çerezler bölümünden auth_token ile ct0 çerezlerini kopyalayın. Bunları aşağıya auth_token=…; ct0=… biçiminde yapıştırın. Yalnızca bu bilgisayarda saklanır ve hiçbir zaman paylaşılmaz.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Burada giriş yapmak için Android uygulamasının yerleşik tarayıcısı gerekir; masaüstü uygulamasında bu tarayıcı yok.",
+  "@sign_in_needs_android": {}
 }

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/group_model.dart';
@@ -16,6 +15,7 @@ import 'package:xta/settings/export_preferences.dart';
 import 'package:xta/settings/backup_data.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/utils/file_dialogs.dart';
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -194,9 +194,7 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
     var dateFormat = DateFormat('yyyy-MM-dd');
     var fileName = 'xta-${dateFormat.format(DateTime.now())}.json';
 
-    var path = await FlutterFileDialog.saveFile(
-      params: SaveFileDialogParams(fileName: fileName, data: Uint8List.fromList(utf8.encode(exportData))),
-    );
+    var path = await saveWithDialog(fileName: fileName, data: Uint8List.fromList(utf8.encode(exportData)));
 
     if (path != null && mounted) {
       ScaffoldMessenger.of(

@@ -14,6 +14,7 @@ import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
+import 'package:xta/links/link_opening.dart';
 
 const double kSubstackLogoSize = 48;
 
@@ -32,7 +33,7 @@ class SubstackPostCard extends StatelessWidget {
   const SubstackPostCard({super.key, required this.post, this.showSourceBadge = true, this.logoUrl});
 
   void _open(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)));
+    pushWebViewScreen(context, url: post.canonicalUrl, screen: () => SubstackReaderScreen(post: post));
   }
 
   void _openPublication(BuildContext context) {

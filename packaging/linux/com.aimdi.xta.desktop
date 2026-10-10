@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=XTA
+GenericName=X reader
+Comment=A private, read-oriented way to browse X
+Exec=xta
+Icon=com.aimdi.xta
+Terminal=false
+Categories=Network;News;
+Keywords=X;Twitter;Reader;Mastodon;Bluesky;RSS;
+StartupWMClass=com.aimdi.xta
+StartupNotify=true

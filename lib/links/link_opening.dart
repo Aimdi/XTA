@@ -5,6 +5,7 @@ import 'package:xta/links/link_browser_page.dart';
 import 'package:xta/links/link_browser_screen.dart';
 import 'package:xta/links/link_post_context.dart';
 import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Whether the reader chose to read links in the app.
@@ -12,6 +13,7 @@ import 'package:xta/utils/urls.dart';
 /// Settings → browser stores false the moment a real browser is picked, and
 /// the app turns the switch on at first launch; an unset key is that default.
 bool embeddedBrowserEnabled(BuildContext context) {
+  if (isDesktop) return false;
   try {
     return PrefService.of(context, listen: false).get<bool>(optionOpenLinksInEmbeddedBrowser) != false;
   } catch (_) {
@@ -50,4 +52,14 @@ Future<void> openPostLink(
           LinkBrowserScreen(url: url, title: title, post: post, openNative: openNative, pageFactory: pageFactory),
     ),
   );
+}
+
+/// Pushes [screen], a reader built on the platform web view. The desktop has
+/// none, so there the page at [url] opens in the reader's browser instead.
+Future<void> pushWebViewScreen(BuildContext context, {required String? url, required Widget Function() screen}) async {
+  if (!isDesktop) {
+    await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => screen()));
+    return;
+  }
+  if (url != null && url.isNotEmpty) await openUri(context, url);
 }

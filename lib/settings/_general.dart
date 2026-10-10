@@ -12,6 +12,7 @@ import 'package:xta/utils/iterables.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/utils/desktop.dart';
 
 class SettingLocale {
   final String code;
@@ -119,7 +120,8 @@ class SettingsGeneralFragment extends StatelessWidget {
                 ),
                 pref: optionConfirmClose,
               )),
-              const BrowserPickerTile(),
+              // The desktop opens every link in the default browser.
+              if (!isDesktop) const BrowserPickerTile(),
               SettingsControlTarget(id: optionCleanLinks, child: PrefSwitch(
                 title: Text(L10n.of(context).option_clean_links_label),
                 subtitle: Text(
@@ -127,7 +129,7 @@ class SettingsGeneralFragment extends StatelessWidget {
                 ),
                 pref: optionCleanLinks,
               )),
-              SettingsControlTarget(id: optionDisableScreenshots, child: PrefSwitch(
+              if (!isDesktop) SettingsControlTarget(id: optionDisableScreenshots, child: PrefSwitch(
                 title: Text(L10n.of(context).disable_screenshots),
                 subtitle: Text(L10n.of(context).disable_screenshots_hint),
                 pref: optionDisableScreenshots,

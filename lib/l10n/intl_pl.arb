@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Pokaż jeszcze 1 odpowiedź} few{Pokaż jeszcze {count} odpowiedzi} many{Pokaż jeszcze {count} odpowiedzi} other{Pokaż jeszcze {count} odpowiedzi}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Pokaż jeszcze 1 wpis z tego wątku} few{Pokaż jeszcze {count} wpisy z tego wątku} many{Pokaż jeszcze {count} wpisów z tego wątku} other{Pokaż jeszcze {count} wpisu z tego wątku}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Pliki cookie z x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Zaloguj się na x.com w przeglądarce, otwórz narzędzia deweloperskie (F12) i skopiuj pliki cookie auth_token i ct0 z sekcji Pamięć → Pliki cookie. Wklej je poniżej w postaci auth_token=…; ct0=…. Są przechowywane tylko na tym komputerze i nigdy nie są udostępniane.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Logowanie tutaj wymaga wbudowanej przeglądarki aplikacji na Androida, której nie ma aplikacja na komputer.",
+  "@sign_in_needs_android": {}
 }

@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/utils/download_directory.dart';
+import 'package:xta/utils/file_dialogs.dart';
 
 class DownloadCancelled implements Exception {
   const DownloadCancelled();
@@ -314,13 +314,7 @@ class DownloadTransfer {
         ),
       );
     }
-    return FlutterFileDialog.saveFile(
-      params: SaveFileDialogParams(
-        fileName: entry.fileName,
-        sourceFilePath: file.path,
-        mimeTypesFilter: [mimeTypeFor(entry.fileName)],
-      ),
-    );
+    return saveWithDialog(fileName: entry.fileName, sourceFilePath: file.path, mimeTypes: [mimeTypeFor(entry.fileName)]);
   }
 
   /// Runs a native copy that [cancellation] can stop, removing anything it

@@ -5249,5 +5249,11 @@
   "plugin_threads_more_replies": "{count, plural, one{Zobrazit 1 další odpověď} few{Zobrazit {count} další odpovědi} many{Zobrazit {count} další odpovědi} other{Zobrazit {count} dalších odpovědí}}",
   "@plugin_threads_more_replies": {},
   "plugin_threads_show_thread": "{count, plural, one{Zobrazit 1 další příspěvek z tohoto vlákna} few{Zobrazit {count} další příspěvky z tohoto vlákna} many{Zobrazit {count} dalšího příspěvku z tohoto vlákna} other{Zobrazit {count} dalších příspěvků z tohoto vlákna}}",
-  "@plugin_threads_show_thread": {}
+  "@plugin_threads_show_thread": {},
+  "x_cookie_login_field": "Cookies z x.com",
+  "@x_cookie_login_field": {},
+  "x_cookie_login_help": "Přihlaste se na x.com v prohlížeči, otevřete nástroje pro vývojáře (F12) a zkopírujte cookies auth_token a ct0 z části Úložiště → Cookies. Vložte je níže ve tvaru auth_token=…; ct0=…. Uloží se jen v tomto počítači a nikam se neodesílají.",
+  "@x_cookie_login_help": {},
+  "sign_in_needs_android": "Přihlášení zde vyžaduje vestavěný prohlížeč aplikace pro Android, který desktopová aplikace nemá.",
+  "@sign_in_needs_android": {}
 }
