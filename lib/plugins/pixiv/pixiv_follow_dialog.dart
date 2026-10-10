@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_social_api.dart';
@@ -67,11 +68,20 @@ class PixivFollowDialog extends StatefulWidget {
 }
 
 class _PixivFollowDialogState extends State<PixivFollowDialog> {
-  late final PixivFollowDraftStore _draft = PixivFollowDraftStore(widget.loadDetail)..load();
+  late final PixivFollowDraftStore _draft = PixivFollowDraftStore(widget.loadDetail);
+  final _loads = PixivLoads();
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() => _loads.track(_draft.load());
 
   @override
   void dispose() {
-    _draft.destroy();
+    _loads.destroyAfter([_draft]);
     super.dispose();
   }
 
@@ -125,7 +135,7 @@ class _PixivFollowDialogState extends State<PixivFollowDialog> {
         children: [
           Text(pixivErrorMessage(l10n, error)),
           const SizedBox(height: 8),
-          TextButton.icon(onPressed: _draft.load, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+          TextButton.icon(onPressed: _load, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
         ],
       );
     }

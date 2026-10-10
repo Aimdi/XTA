@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
+import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_header.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_tabs.dart';
 
 import 'support/pixiv_reader_harness.dart';
 import 'support/pixiv_social_fakes.dart';
@@ -185,6 +189,31 @@ void main() {
       await disposePixiv(tester);
     });
 
+    testWidgets('Show anyway shows the creator\'s works, and their muted tags stay hidden', (tester) async {
+      final api = FakePixivSocialApi(
+        profile: pixivProfileOf(id: 42, illusts: 2),
+        works: {
+          PixivWorkType.illust: [
+            pixivWork(id: 301, pages: 1),
+            pixivWork(id: 302, pages: 1, tags: const [PixivTag(name: 'Spoiler')]),
+          ],
+        },
+      );
+      await pumpPixiv(tester, const PixivUserScreen(userId: 42), extraProviders: [api.provider]);
+      final mute = _mute(tester);
+      await mute.muteAuthor(42);
+      await mute.muteTag('spoiler');
+      await settlePixiv(tester);
+      expect(_tile(301), findsNothing);
+
+      await tester.tap(find.text('Show anyway'));
+      await settlePixiv(tester);
+      expect(_tile(301), findsOneWidget);
+      expect(_tile(302), findsNothing);
+      expect(api.calls.where((call) => call.startsWith('works:')), ['works:42:illust', 'works:42:illust']);
+      await disposePixiv(tester);
+    });
+
     testWidgets('Unmute on the placeholder brings the profile back for good', (tester) async {
       await _pump(tester, _api());
       final mute = _mute(tester);
@@ -252,6 +281,55 @@ void main() {
     expect(avatar.shortestSide, greaterThanOrEqualTo(48));
     semantics.dispose();
     await disposePixiv(tester);
+  });
+
+  testWidgets('a long press on the header image and a tap on the avatar both go to the download path', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final api = FakePixivSocialApi(profile: pixivProfileOf(background: 'https://i.pximg.net/background/9.jpg'));
+    await _pump(tester, api);
+    // A test has no download folder, so each save ends on the download path's failure message.
+    await tester.longPress(find.byKey(const ValueKey('pixiv-profile-banner')));
+    await settlePixiv(tester);
+    expect(find.text('Download failed'), findsOneWidget);
+
+    ScaffoldMessenger.of(tester.element(find.byType(PixivUserHeader))).removeCurrentSnackBar();
+    await settlePixiv(tester);
+    expect(find.text('Download failed'), findsNothing);
+    // Fixture avatars never load, and a failed image takes a tap as a retry; a screen reader's tap still saves.
+    tester.semantics.tap(find.semantics.byLabel('Save profile picture'));
+    await settlePixiv(tester);
+    expect(find.text('Download failed'), findsOneWidget);
+    semantics.dispose();
+    await disposePixiv(tester);
+  });
+
+  testWidgets('leaving a profile before it arrives is safe', (tester) async {
+    final gate = Completer<void>();
+    final api = _api()..gate = gate.future;
+    await pumpPixiv(tester, const Scaffold(body: SizedBox()), extraProviders: [api.provider]);
+    final navigator = tester.state<NavigatorState>(find.byType(Navigator));
+    unawaited(navigator.push(MaterialPageRoute<void>(builder: (_) => const PixivUserScreen(userId: 9))));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    navigator.pop();
+    await tester.pumpAndSettle();
+    expect(find.byType(PixivUserScreen), findsNothing);
+    gate.complete();
+    await tester.pump(const Duration(seconds: 1));
+    expect(tester.takeException(), isNull);
+    expect(api.calls, ['profile:9']);
+    await disposePixiv(tester);
+  });
+
+  test('a profile lifts only the author mute on its own creator', () {
+    const mute = PixivMuteState(authorIds: {42, 43}, tags: {'spoiler'}, illustIds: {7});
+    final shown = pixivMutesShowing(mute, 42);
+    expect(shown.authorIds, {43});
+    expect(shown.tags, {'spoiler'});
+    expect(shown.illustIds, {7});
+    expect(pixivMutesShowing(mute, 99), same(mute));
   });
 
   testWidgets('large text on a narrow phone does not overflow', (tester) async {

@@ -200,16 +200,18 @@ class _Avatar extends StatelessWidget {
     final url = profile.user.avatarUrl;
     if (url == null) return avatar;
     final label = L10n.of(context).plugin_pixiv_profile_save_avatar;
+    void save() => savePixivProfileImage(context, url);
     return Tooltip(
       message: label,
       child: Semantics(
         button: true,
         label: label,
+        onTap: save,
         excludeSemantics: true,
         child: InkWell(
           key: const ValueKey('pixiv-profile-avatar'),
           customBorder: const CircleBorder(),
-          onTap: () => savePixivProfileImage(context, url),
+          onTap: save,
           child: avatar,
         ),
       ),

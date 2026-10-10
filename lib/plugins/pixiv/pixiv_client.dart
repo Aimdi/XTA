@@ -696,28 +696,6 @@ class PixivClient {
     return illustPageFrom(json, includeR18: includeR18 ?? showR18);
   }
 
-  Future<PixivUserPage> followedUsers({String? nextUrl, bool private = false}) async {
-    final userId = await ensureUserId();
-    final json = await _firstOrNext(
-      '/v1/user/following',
-      {'user_id': '$userId', 'restrict': private ? 'private' : 'public'},
-      nextUrl,
-    );
-    return PixivUserPage.fromJson(json);
-  }
-
-  Future<PixivUser> userDetail(int userId) async {
-    final json = await getJson('/v1/user/detail', query: {
-      'user_id': '$userId',
-      'filter': 'for_android',
-    });
-    final user = PixivUser.fromDetailJson(json);
-    if (user.id == 0) {
-      throw PixivException(PixivErrorKind.badResponse, 'empty user $userId');
-    }
-    return user;
-  }
-
   Future<PixivIllustPage> userIllusts(int userId, {String? nextUrl}) async {
     final json = await _firstOrNext('/v1/user/illusts', {
       'user_id': '$userId',

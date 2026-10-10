@@ -85,9 +85,6 @@ class FakePixivClient extends PixivClient {
   }
 
   @override
-  Future<PixivUser> userDetail(int userId) async => PixivUser(id: userId, name: 'Mika', account: 'mika', comment: '');
-
-  @override
   Future<List<String>> bookmarkFolders() async => const ['Favs'];
 
   @override

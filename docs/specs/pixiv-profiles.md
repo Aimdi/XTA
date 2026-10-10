@@ -20,6 +20,12 @@ All of them live in `PixivSocialApi` (`pixiv_social_api.dart`), read through
 | `followDetail` | `GET /v1/user/follow/detail?user_id=` | `follow_detail.is_followed`, `.restrict` |
 | (writes) | `POST /v1/user/follow/add` (`restrict`), `POST /v1/user/follow/delete` | Through `PixivFollowStore` |
 
+`PixivClient.userDetail`, `followedUsers` and `PixivUserPage` are gone, since
+these calls replace them. `PixivClient.userIllusts` (illustrations only) still
+serves the detail's More by strip and group posts; folding it into `userWorks`
+is left for the wave-1 merge, because those callers and their tests belong to
+other batches.
+
 ## Model
 
 `PixivUserProfile` (`pixiv_user_profile.dart`) wraps the `PixivUser` and adds
@@ -37,7 +43,7 @@ dropped. A missing or reshaped payload parses to empty fields, never a throw.
 `PixivUserStore` and shows:
 
 - **Header** (`pixiv_user_header.dart`): header image (long press saves it),
-  avatar (tap saves it), name, @account, a Premium badge, the follow button
+  avatar (a tap, or a screen reader's activate, saves it), name, @account, a Premium badge, the follow button
   and Add to group, the counts (works shows the Works tab, following opens the
   list) and the bio as plain text until the caption renderer lands.
 - **Tabs** from the `pixivProfileTabs` registry (`pixiv_user_tabs.dart`): Works
@@ -57,11 +63,23 @@ dropped. A missing or reshaped payload parses to empty fields, never a throw.
   @account and link), Mute author or Unmute, Open on Pixiv. Your own profile
   has no follow button, Follow privately or Mute.
 - **Muted creator**: a placeholder with Show anyway (this visit only) and
-  Unmute.
+  Unmute. After Show anyway the Works and Bookmarks tabs show the creator's
+  own works: a profile's feeds lift the author mute on its own creator
+  (`pixivMutesShowing`), both when pages are filtered and when the grid draws
+  them (the `mutes` view on `PixivIllustFeed` / `PixivIllustGrid`). Muted tags
+  and muted works stay hidden.
 
 Layout: `ExtendedNestedScrollView` with the pinned AppBar and the tab bar, the
 same shape as the X profile. The detail menu and the profile menu share
-`PixivOverflowMenu` (`pixiv_overflow_menu.dart`).
+`PixivOverflowMenu` (`pixiv_overflow_menu.dart`), and the Illustrations / Manga
+and Public / Private switches are one `PixivSegmentedSwitch`.
+
+Leaving mid-load: triple does not cancel a load when its store is destroyed,
+and a load that lands afterwards writes to a disposed store. `PixivLoads`
+(`pixiv_loads.dart`) tracks the profile and follow-detail loads, and the
+profile feeds and follow lists mix in `PixivTrackedPages`, which tracks every
+page fetch (the screen's, a pull to refresh, the grid scrolling on). Closing
+screens destroy their stores once those settle.
 
 ## Follow lists
 

@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_group.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_segmented_switch.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_social_api.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -17,7 +19,7 @@ import 'package:xta/ui/errors.dart';
 export 'package:xta/plugins/pixiv/pixiv_social_api.dart' show PixivUserListKind;
 
 /// Creators in Pixiv's order, each once, as their pages arrive.
-class PixivUserListStore extends PixivPagedListStore<PixivUserPreview> {
+class PixivUserListStore extends PixivPagedListStore<PixivUserPreview> with PixivTrackedPages<PixivUserPreview> {
   PixivUserListStore(super.loader, {super.filter}) : super(keyOf: _userId);
 }
 
@@ -110,7 +112,7 @@ class _PixivUserListState extends State<PixivUserList> {
 
   @override
   void dispose() {
-    _store.destroy();
+    _store.destroyWhenSettled();
     _restrict.destroy();
     super.dispose();
   }
@@ -129,25 +131,12 @@ class _PixivUserListState extends State<PixivUserList> {
 
   Widget _restrictSwitch(BuildContext context, String restrict) {
     final l10n = L10n.of(context);
-    ButtonSegment<String> segment(String value, String label) => ButtonSegment(
-      value: value,
-      label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-    );
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-      child: SizedBox(
-        width: double.infinity,
-        child: SegmentedButton<String>(
-          key: const ValueKey('pixiv-user-list-restrict'),
-          segments: [
-            segment('public', l10n.plugin_pixiv_follow_public),
-            segment('private', l10n.plugin_pixiv_follow_private),
-          ],
-          selected: {restrict},
-          showSelectedIcon: false,
-          onSelectionChanged: (selected) => _useRestrict(selected.first),
-        ),
-      ),
+    return PixivSegmentedSwitch<String>(
+      key: const ValueKey('pixiv-user-list-restrict'),
+      values: const ['public', 'private'],
+      label: (value) => value == 'private' ? l10n.plugin_pixiv_follow_private : l10n.plugin_pixiv_follow_public,
+      selected: restrict,
+      onSelected: _useRestrict,
     );
   }
 

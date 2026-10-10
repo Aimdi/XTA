@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/constants.dart';
@@ -137,6 +139,26 @@ void main() {
       await settlePixiv(tester);
       expect(api.calls, ['followDetail:9', 'followDetail:9']);
       expect(_privateSwitch(tester), isTrue);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('cancelling before the follow detail arrives is safe', (tester) async {
+      final gate = Completer<void>();
+      final api = FakePixivSocialApi()..gate = gate.future;
+      final harness = await pumpPixiv(tester, _card(), extraProviders: [api.provider]);
+      await tester.longPress(find.byKey(const ValueKey('pixiv-follow-9')));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(api.calls, ['followDetail:9']);
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      gate.complete();
+      await tester.pump(const Duration(seconds: 1));
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const ValueKey('pixiv-follow-dialog')), findsNothing);
+      expect(harness.client.calls, isEmpty);
       await disposePixiv(tester);
     });
   });

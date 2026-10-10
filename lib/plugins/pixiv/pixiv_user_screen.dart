@@ -6,6 +6,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
+import 'package:xta/plugins/pixiv/pixiv_loads.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_social_api.dart';
@@ -37,6 +38,7 @@ class PixivUserScreen extends StatefulWidget {
 
 class _PixivUserScreenState extends State<PixivUserScreen> {
   late final PixivUserStore _profile;
+  final _loads = PixivLoads();
 
   /// Show anyway, for this visit only.
   final _revealed = PluginViewStore<bool>(false);
@@ -44,12 +46,15 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
   @override
   void initState() {
     super.initState();
-    _profile = PixivUserStore(PixivSocialApi.of(context), widget.userId)..load();
+    _profile = PixivUserStore(PixivSocialApi.of(context), widget.userId);
+    _load();
   }
+
+  Future<void> _load() => _loads.track(_profile.load());
 
   @override
   void dispose() {
-    _profile.destroy();
+    _loads.destroyAfter([_profile]);
     _revealed.destroy();
     super.dispose();
   }
@@ -88,7 +93,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
               error: error,
               stackTrace: null,
               prefix: pixivErrorMessage(L10n.of(context), error),
-              onRetry: _profile.load,
+              onRetry: _load,
             ),
           ),
   );

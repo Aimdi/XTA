@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -114,6 +116,73 @@ void main() {
     await pumpPixiv(tester, const PixivFollowingScreen(), extraProviders: [FakePixivSocialApi().provider]);
     expect(find.text('Not following anyone yet'), findsOneWidget);
     await disposePixiv(tester);
+  });
+
+  group('pages', () {
+    FakePixivSocialApi manyFollowers() =>
+        FakePixivSocialApi(followers: [for (var id = 1; id <= 25; id++) pixivPreviewOf(100 + id)], pageSize: 10);
+
+    Future<void> openFollowers(WidgetTester tester) async {
+      final navigator = tester.state<NavigatorState>(find.byType(Navigator));
+      unawaited(
+        navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => const PixivUserListScreen(kind: PixivUserListKind.followers, userId: 9),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
+    Future<void> leave(WidgetTester tester, Completer<void> gate) async {
+      tester.state<NavigatorState>(find.byType(Navigator)).pop();
+      await tester.pumpAndSettle();
+      expect(find.byType(PixivUserList), findsNothing);
+      gate.complete();
+      await tester.pump(const Duration(seconds: 1));
+      expect(tester.takeException(), isNull);
+    }
+
+    testWidgets('scrolling to the end brings the next pages', (tester) async {
+      final api = manyFollowers();
+      await pumpPixiv(
+        tester,
+        const PixivUserListScreen(kind: PixivUserListKind.followers, userId: 9),
+        extraProviders: [api.provider],
+      );
+      expect(api.calls, ['followers:9']);
+      expect(find.text('Painter 125'), findsNothing);
+
+      await tester.scrollUntilVisible(find.text('Painter 125'), 600, scrollable: find.byType(Scrollable).first);
+      await settlePixiv(tester);
+      expect(api.calls, ['followers:9', 'followers:9@next1', 'followers:9@next2']);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('leaving before the first page arrives is safe', (tester) async {
+      final gate = Completer<void>();
+      final api = manyFollowers()..gate = gate.future;
+      await pumpPixiv(tester, const Scaffold(body: SizedBox()), extraProviders: [api.provider]);
+      await openFollowers(tester);
+      expect(api.calls, ['followers:9']);
+      await leave(tester, gate);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('leaving while the next page loads is safe', (tester) async {
+      final api = manyFollowers();
+      await pumpPixiv(tester, const Scaffold(body: SizedBox()), extraProviders: [api.provider]);
+      await openFollowers(tester);
+      await settlePixiv(tester);
+      final gate = Completer<void>();
+      api.gate = gate.future;
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -3000));
+      await tester.pump();
+      expect(api.calls.last, 'followers:9@next1');
+      await leave(tester, gate);
+      await disposePixiv(tester);
+    });
   });
 
   testWidgets('large text on a narrow phone does not overflow', (tester) async {
