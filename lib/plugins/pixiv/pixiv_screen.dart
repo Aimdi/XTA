@@ -135,7 +135,7 @@ class _PixivScreenState extends State<PixivScreen> {
       scrollToTop(context, pluginInnerScrollController(context, _scrollControllerFor(_state.section)));
 
   /// After a sign-in, switch or sign-out: lists loaded for another account
-  /// are emptied and the shown one loads for the account now in use.
+  /// are emptied, and the shown one loads for the account now in use.
   void _onAuthChanged() {
     if (!mounted) return;
     final client = context.read<PixivClient>();
@@ -145,8 +145,8 @@ class _PixivScreenState extends State<PixivScreen> {
       _recommended.useLoader(({nextUrl}) => client.recommended(nextUrl: nextUrl));
       _bookmarks.useLoader(_bookmarksLoader(_state.bookmarksRestrict));
       _ranking.useLoader(_rankingLoader());
-      _ensureTabLoaded(_state.section);
     }
+    _ensureTabLoaded(_state.section);
     _view.select(_state.copyWith());
   }
 
@@ -223,10 +223,7 @@ class _PixivScreenState extends State<PixivScreen> {
     _view.select(_state.copyWith(signingIn: true));
     try {
       await runPixivSignIn(context);
-      if (mounted) {
-        _onAuthChanged();
-        _ensureTabLoaded(_state.section);
-      }
+      _onAuthChanged();
     } finally {
       if (mounted) _view.select(_state.copyWith(signingIn: false));
     }

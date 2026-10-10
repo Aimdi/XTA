@@ -42,7 +42,7 @@ String _currentToken(BasePrefService prefs) => (prefs.get<String>(optionPluginPi
 List<PixivAccount> _stored(BasePrefService prefs) => readPixivAccounts(prefs.get<String>(optionPluginPixivAccounts));
 
 Future<List<PixivAccount>> _store(BasePrefService prefs, List<PixivAccount> accounts) async {
-  await prefs.set(optionPluginPixivAccounts, jsonEncode([for (final account in accounts) account.toJson()]));
+  await prefs.set(optionPluginPixivAccounts, jsonEncode(accounts));
   return accounts;
 }
 
@@ -52,7 +52,8 @@ Future<List<PixivAccount>> rememberPixivAccount(BasePrefService prefs, PixivAuth
   final accounts = _stored(prefs);
   final token = _currentToken(prefs);
   if (user.id <= 0 || token.isEmpty) return accounts;
-  return _store(prefs, pixivAccountsWith(accounts, PixivAccount.of(user, token)));
+  final next = pixivAccountsWith(accounts, PixivAccount.of(user, token));
+  return jsonEncode(next) == jsonEncode(accounts) ? accounts : _store(prefs, next);
 }
 
 /// Copies the token now in use into the active account's entry: Pixiv may

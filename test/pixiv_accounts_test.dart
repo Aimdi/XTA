@@ -184,4 +184,21 @@ void main() {
     expect(find.descendant(of: header, matching: find.text('Haru')), findsOneWidget);
     await disposePixiv(tester);
   });
+
+  testWidgets('the More hub fits a narrow screen with large text', (tester) async {
+    await pumpPixiv(
+      tester,
+      Scaffold(body: PixivMorePane(onAuthChanged: () {})),
+      size: const Size(320, 640),
+      textScale: 2,
+      client: (prefs) {
+        prefs.set(optionPluginPixivUserId, 1);
+        prefs.set(optionPluginPixivAccounts, jsonEncode([PixivAccount.of(_mika, 'fixture-only').toJson()]));
+        return FakePixivClient(prefs);
+      },
+    );
+    expect(tester.takeException(), isNull);
+    expect(find.text('Premium'), findsOneWidget);
+    await disposePixiv(tester);
+  });
 }
