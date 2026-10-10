@@ -164,12 +164,7 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
   /// Where a reader drawn in Flutter now stands; web readers report through
   /// [receiveProgress]. [interacted] ends the "resumed" note, and a scroll by
   /// the reader to the end may complete the article.
-  void receivePoint(
-    ArticleReadPoint point, {
-    bool interacted = false,
-    bool userScrolled = false,
-    bool atEnd = false,
-  }) {
+  void receivePoint(ArticleReadPoint point, {bool interacted = false, bool userScrolled = false, bool atEnd = false}) {
     if (_closed) return;
     update(
       ArticleReadingState(
@@ -191,8 +186,7 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   void _checkCompletion({required bool userScrolled, required bool atEnd}) {
     _endTimer?.cancel();
-    if (!allowAutomaticCompletion || !userScrolled || !atEnd || !activeTime.isRunning)
-      return;
+    if (!allowAutomaticCompletion || !userScrolled || !atEnd || !activeTime.isRunning) return;
     final remaining = const Duration(seconds: 12) - activeTime.elapsed;
     if (remaining <= Duration.zero) {
       unawaited(complete());
