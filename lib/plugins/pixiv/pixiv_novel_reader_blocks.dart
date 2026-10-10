@@ -10,8 +10,10 @@ import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_parser.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/plugin_links.dart';
 
@@ -133,10 +135,19 @@ class _PixivNovelLineState extends State<PixivNovelLine> {
   }
 }
 
-/// A link in a novel: Pixiv's own pages open in XTA, anything else only once
-/// the reader agrees to leave.
+/// A link in a novel: Pixiv's own pages open in XTA (another novel or a
+/// novel series too, in the reader and the series page), anything else only
+/// once the reader agrees to leave.
 Future<void> openPixivNovelLink(BuildContext context, String url) async {
-  if (parsePixivLink(url) != null) return openPixivHref(context, url);
+  switch (parsePixivLink(url)) {
+    case PixivNovelLinkRef(:final id):
+      return openPixivNovelById(context, id);
+    case PixivNovelSeriesLinkRef(:final id):
+      return openPixivNovelSeries(context, id);
+    case _?:
+      return openPixivHref(context, url);
+    case null:
+  }
   final l10n = L10n.of(context);
   if (await confirmPixivAction(context, l10n.plugin_pixiv_novel_link_confirm(url), l10n.plugin_pixiv_novel_link_open) &&
       context.mounted) {

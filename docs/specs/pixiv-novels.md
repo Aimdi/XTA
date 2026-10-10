@@ -233,7 +233,7 @@ text splits it, and space beside a block tag is dropped.
 | `[newpage]` | `PixivNovelPageBreak(n)`, numbered from 2 | A rule with "Page n" |
 | `[chapter:…]` | `PixivNovelHeading` (ruby inside kept) | A larger bold heading |
 | `[[rb:base > ruby]]` (half- or full-width arrow) | `PixivNovelRuby` | The ruby in half-size type over its base, on the line's baseline |
-| `[[jumpuri:label > url]]` (http or https) | `PixivNovelLink` | A link; Pixiv addresses open in XTA (`openPixivHref`), others after "Leave Pixiv to open …?" |
+| `[[jumpuri:label > url]]` (http or https) | `PixivNovelLink` | A link (`openPixivNovelLink`): another novel opens in the reader and a novel series on its page, other Pixiv addresses through `openPixivHref`, anything else after "Leave Pixiv to open …?" |
 | `[jump:N]` | `PixivNovelPageJump` | "Go to page N", scrolling to that page; literal when the page does not exist (PixEz keeps it literal) |
 | `[pixivimage:ID]`, `[pixivimage:ID-N]` | `PixivNovelIllustBlock` (page N from 1) | The work's picture; a tap opens the work, a long press saves |
 | `[uploadedimage:ID]` | `PixivNovelUploadBlock` | The picture; a tap opens it full screen, a long press saves |
@@ -308,8 +308,9 @@ marks the novel finished, as articles are.
 - B2c: novel search fills Search in Novel mode (`_novelSections` in
   `pixiv_screen.dart` reuses the illustration Search until then); novel deep
   links route `PixivNovelLinkRef` and `PixivNovelSeriesLinkRef` to
-  `openPixivNovelById` and `openPixivNovelSeries` (a `[[jumpuri:]]` to a novel
-  then opens in the reader too); the profile Novels tab can use
+  `openPixivNovelById` and `openPixivNovelSeries`, after which the reader's
+  `openPixivNovelLink` can hand every Pixiv link to `openPixivHref` (it routes
+  the two novel refs itself until then); the profile Novels tab can use
   `PixivOwnedNovelFeed` and should take the id `novels`
   (`pixivNovelReaderAuthorTab`). Novel visits are already recorded in
   `PixivNovelHistoryStore` (`pixiv-history:novels`, provided in `main.dart`,
@@ -342,7 +343,8 @@ the history entry) and `pixiv_novel_reader_test.dart` (header and blocks, a
 card opening the reader, opening by id with the history, paused history,
 error and retry, selection, the appearance sheet, chapters off when not
 viewable and replacing the reader, the menu, comments above and below,
-page jumps, the outside-link confirm and a Pixiv link opening in XTA,
+page jumps, the outside-link confirm, a Pixiv link and another novel
+opening in XTA,
 pictures fetched, opened and saved, export names and both formats, shares
 anchored to the button on the reader and the series page, the author row's
 tab, the place kept and restored, positions off, large text at 320 dp).

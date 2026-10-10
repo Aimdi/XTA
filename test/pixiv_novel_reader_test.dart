@@ -336,6 +336,23 @@ void main() {
     await _close(tester);
   });
 
+  testWidgets('a link to another novel opens it in the reader', (tester) async {
+    final api = _api(
+      contents: {
+        _id: _content(text: '[[jumpuri:the sequel > https://www.pixiv.net/novel/show.php?id=901]]'),
+        901: _content(id: 901, text: 'The sequel begins'),
+      },
+      details: {901: pixivNovel(id: 901, title: 'Sequel')},
+    );
+    await _open(tester, api, novel: pixivNovel());
+
+    await _tapText(tester, 'the sequel');
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(tester.widget<PixivNovelReaderScreen>(find.byType(PixivNovelReaderScreen)).novelId, 901);
+    expect(find.text('The sequel begins', findRichText: true), findsOneWidget);
+    await _close(tester);
+  });
+
   testWidgets('pictures: a work missing from the page is fetched, a tap opens it, a long press saves', (tester) async {
     final api = _api(
       contents: {
