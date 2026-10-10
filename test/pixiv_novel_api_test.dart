@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_api.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 
 Map<String, Object?> _novel(int id, {int xRestrict = 0, int aiType = 1}) => {
   'id': id,
@@ -45,7 +46,8 @@ http.Response _json(Object body) =>
     prefs,
     httpClient: MockClient((request) async {
       requests.add(request);
-      return _json(answer?.call(request) ?? _list());
+      final answered = answer?.call(request) ?? _list();
+      return answered is http.Response ? answered : _json(answered);
     }),
   );
   return (PixivNovelApi(client), requests);
@@ -206,6 +208,68 @@ void main() {
       expect(requests.last.url.queryParameters['last_order'], '2');
       expect([for (final chapter in page.chapters) chapter.novel.id], [1]);
       expect((page.listed, page.first?.id, page.latest?.id), (2, 1, null));
+    });
+  });
+
+  group('reading', () {
+    test('detail asks for the novel by id and parses its card fields', () async {
+      final (api, requests) = _api(answer: (_) => {'novel': _novel(41)});
+      final novel = await api.detail(41);
+
+      expect(requests.single.url.path, '/v2/novel/detail');
+      expect(requests.single.url.queryParameters, {'novel_id': '41'});
+      expect(novel.title, 'Novel 41');
+    });
+
+    test('a detail without a usable novel is not found', () async {
+      final (api, _) = _api(
+        answer: (_) => {
+          'novel': {'id': 41, 'visible': false},
+        },
+      );
+      await expectLater(
+        api.detail(41),
+        throwsA(isA<PixivException>().having((error) => error.kind, 'kind', PixivErrorKind.notFound)),
+      );
+    });
+
+    test('content reads the webview page and the novel object in it', () async {
+      const novel = {
+        'id': '41',
+        'title': 'Letters',
+        'text': 'One {brace}\n[newpage]\nTwo',
+        'seriesNavigation': {
+          'prevNovel': {'id': 40, 'viewable': true, 'contentOrder': '1', 'title': 'Before'},
+          'nextNovel': null,
+        },
+        'images': {
+          '9': {
+            'urls': {
+              '1200x1200': 'https://i.pximg.net/novel/9_1200.jpg',
+              'original': 'https://i.pximg.net/novel/9.png',
+            },
+          },
+        },
+      };
+      final page = '<script>Object.defineProperty(window, "pixiv", {value: {novel: ${jsonEncode(novel)}}});</script>';
+      final (api, requests) = _api(answer: (_) => http.Response.bytes(utf8.encode(page), 200));
+      final PixivNovelContent content = await api.content(41);
+
+      expect(requests.single.url.path, '/webview/v2/novel');
+      expect(requests.single.url.queryParameters, {'id': '41'});
+      expect(requests.single.headers['Accept'], 'text/html');
+      expect(content.text, 'One {brace}\n[newpage]\nTwo');
+      expect(content.previous?.id, 40);
+      expect(content.next, isNull);
+      expect(content.uploads['9']?.url, 'https://i.pximg.net/novel/9_1200.jpg');
+    });
+
+    test('a page without the novel object is a bad response', () async {
+      final (api, _) = _api(answer: (_) => http.Response('<html>maintenance</html>', 200));
+      await expectLater(
+        api.content(41),
+        throwsA(isA<PixivException>().having((error) => error.kind, 'kind', PixivErrorKind.badResponse)),
+      );
     });
   });
 }

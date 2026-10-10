@@ -3,15 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_novel_parser.dart';
 import 'package:xta/plugins/pixiv/pixiv_ranking_modes.dart';
 import 'package:xta/utils/json.dart';
 
 typedef PixivNovelPage = PixivPage<PixivNovel>;
 
-/// The novel side of Pixiv: feeds, rankings, bookmarks, series and the
-/// watchlist. Bookmarks and the watchlist are the only writes. Built on
-/// [PixivClient]'s public transport.
+/// The novel side of Pixiv: feeds, rankings, bookmarks, series, the
+/// watchlist and a novel's text. Bookmarks and the watchlist are the only
+/// writes. Built on [PixivClient]'s public transport.
 class PixivNovelApi {
   final PixivClient client;
 
@@ -90,6 +92,21 @@ class PixivNovelApi {
 
   Future<void> removeFromWatchlist(int seriesId) =>
       client.postForm('/v1/watchlist/novel/delete', {'series_id': '$seriesId'});
+
+  /// One novel's card fields, for a novel opened by its id alone.
+  Future<PixivNovel> detail(int novelId) async {
+    final json = await client.getJson('/v2/novel/detail', query: {'novel_id': '$novelId'});
+    return pixivNovelFromJson(Json(json)['novel'].raw) ??
+        (throw PixivException(PixivErrorKind.notFound, 'novel $novelId'));
+  }
+
+  /// The novel's text with its series neighbours and pictures, read from the
+  /// page Pixiv's app shows it in.
+  Future<PixivNovelContent> content(int novelId) async {
+    final html = await client.getText('/webview/v2/novel', query: {'id': '$novelId'});
+    return await pixivNovelParse<PixivNovelContent?>(pixivNovelContentFromHtml, html) ??
+        (throw PixivException(PixivErrorKind.badResponse, 'no text in novel $novelId'));
+  }
 
   /// One page of a series; chapters the reader's filters hide are left out but counted.
   Future<PixivNovelSeriesPage> series(int seriesId, {String? nextUrl}) async =>
