@@ -45,6 +45,13 @@ Check on a device: Developer options → "Show refresh rate", then scroll a feed
 - The existing setting controls both bars. Its label changes from "Hide
   bottom bar while scrolling" to "Hide top and bottom bars while scrolling".
 
+## 5. The reply order gets its own row
+
+Under an opened post, the "Relevant ▾" control sat loose on the black
+background, and in threaded mode the opened post's thread line showed through
+it. It is now a row of its own (`ReplySortBar`), closed by the hairline that
+separates posts, and sits outside the thread rail, as on X.
+
 ## Not in this pass
 
 - The profile header: X keeps that bar pinned as well.
