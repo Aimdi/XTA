@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/conversation_sort.dart';
 
 /// A compact "sort ▾" control that shows the current order and opens a menu
@@ -46,6 +47,26 @@ class SortMenuButton<T> extends StatelessWidget {
       child: _SortChip(icon: iconOf(value), label: labelOf(l10n, value)),
     );
   }
+}
+
+/// A reply order in a row of its own between the opened post and its
+/// replies, closed by the same hairline that separates posts, as on X.
+class ReplySortBar extends StatelessWidget {
+  final Widget child;
+
+  const ReplySortBar({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Padding(
+        padding: const EdgeInsetsDirectional.only(start: 4),
+        child: Align(alignment: AlignmentDirectional.centerStart, child: child),
+      ),
+      tweetHairlineDivider(context),
+    ],
+  );
 }
 
 class _SortChip extends StatelessWidget {

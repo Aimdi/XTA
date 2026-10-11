@@ -70,6 +70,13 @@ class MainActivity : AudioServiceActivity() {
         sharedTextChannel?.receive(intent)
     }
 
+    // On resume rather than create: the display's modes can change while the
+    // app is away (a foldable unfolded, the resolution changed in Settings).
+    override fun onResume() {
+        super.onResume()
+        preferFastestRefreshRate()
+    }
+
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         networkStateChannel?.dispose()
         networkStateChannel = null

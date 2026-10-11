@@ -729,7 +729,7 @@
   "@hide": {},
   "hide_from_main_feed": "मुख्य फ़ीड से छुपाएं",
   "@hide_from_main_feed": {},
-  "hide_navigation_on_scroll": "स्क्रॉल करते समय नीचे की पट्टी छिपाएँ",
+  "hide_navigation_on_scroll": "स्क्रॉल करते समय ऊपर और नीचे की पट्टियाँ छिपाएँ",
   "@hide_navigation_on_scroll": {},
   "hide_replies": "उत्तर छिपाएँ",
   "@hide_replies": {},

@@ -17,6 +17,7 @@ import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/alt_microblogging_selector.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_hiding_header.dart';
 import 'package:xta/home/home_timeline_controls.dart';
 import 'package:xta/home/home_swipe_navigation.dart';
 import 'package:xta/home/home_source_picker.dart';
@@ -576,6 +577,7 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         flatAppBar: true,
         fixedHeader: true,
+        headerFrame: (context, header) => HomeHidingHeader(child: header),
         toolbarHeight: tab.isPlugin ? pluginToolbarHeight(context) : null,
         toolbarBuilder: docked
             ? (context) => GroupUnreadScope(

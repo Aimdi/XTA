@@ -14,6 +14,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 
+import 'package:xta/client/account_fetch_gate.dart';
+import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
@@ -48,16 +50,12 @@ import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
 import 'package:xta/group/feed_search_fallback.dart';
 import 'package:xta/group/group_media_page.dart';
+import 'package:xta/group/feed_chunk_concurrency.dart';
 
 /// One chunk's contribution to a feed page: its chains, whether its gap-fill
 /// ran out of allowance, and whether X answered with posts from outside the
 /// chunk's own subscriptions.
-/// Max in-flight X search requests for feed chunks. Large subscription sets
-/// (1000+ → 60+ chunks) used to open every search at once via [Future.wait],
-/// which cascaded into 404s and flagged accounts (#165 / #170).
 typedef GroupBatchResult = ({List<TweetChain> chains, bool gapCapped, Object? error});
-
-const int feedChunkFetchConcurrency = 3;
 
 /// Wait this long after a membership/filter change before refetching, so a
 /// burst of subscribe/unsubscribe actions collapses into one refresh (#170).
@@ -717,6 +715,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (cursorKey == null) _batchCursor = nextCursor;
     final hiddenRetweets = await hiddenRetweetScreenNames();
     final hiddenReplies = await hiddenReplyScreenNames();
+    final concurrency = feedChunkConcurrencyFor(
+      usableSearchAccounts(await getAccounts(), AccountFetchGate.disabledIds, DateTime.now()),
+    );
     ReadWork.checkpoint();
     if (!mounted) throw const ReadCancelled();
     if (!retry && cursorKey == null) _progressivePreview = [];
@@ -883,7 +884,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         return (chains: tweets, gapCapped: gapCapped, error: network.error);
       },
       retryFailed: retry,
-      concurrency: feedChunkFetchConcurrency,
+      concurrency: concurrency,
       onError: (error) => (chains: <TweetChain>[], gapCapped: true, error: error),
       failed: (result) => result.error != null,
       onProgress: (results) {

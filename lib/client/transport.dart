@@ -121,6 +121,7 @@ class QuackerTwitterClient extends TwitterClient {
       accounts,
       now,
       isRateLimited: (a) => RateLimitTracker.isLimited(a.id, endpoint, now),
+      remainingQuota: (a) => RateLimitTracker.remaining(a.id, endpoint, now),
     );
     final tried = <String>{};
     // Accounts that 404'd on this endpoint. Held rather than flagged straight

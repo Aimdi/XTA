@@ -3,6 +3,7 @@ import 'dart:ui' show lerpDouble;
 import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/ui/contrast.dart';
+import 'package:xta/ui/page_transitions.dart';
 
 /// X design-language tokens. Chirp is proprietary — we use Inter instead.
 @immutable
@@ -602,11 +603,11 @@ ThemeData xLookThemeData(
         pageTransitions ??
         const PageTransitionsTheme(
           builders: {
-            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.android: XtaQuickFadePageTransitionsBuilder(),
             TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-            TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.linux: XtaQuickFadePageTransitionsBuilder(),
             TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
-            TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.windows: XtaQuickFadePageTransitionsBuilder(),
           },
         ),
     extensions: [tokens],

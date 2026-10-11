@@ -679,11 +679,13 @@ class Twitter {
   };
 
   /// The endpoint and fixed parameters of a profile timeline: Posts
-  /// (UserOriginalsTimeline), Posts & replies, or Media.
+  /// (UserOriginalsTimeline), Reposts (UserRepostsTimeline), Posts & replies,
+  /// or Media.
   static ({String endpoint, Map<String, Object> variables, Map<String, Object> params}) _userTimeline(
     String type,
-    bool includeReplies,
-  ) {
+    bool includeReplies, {
+    bool reposts = false,
+  }) {
     if (type == "media") {
       final toggles = jsonEncode({"withArticlePlainText": false});
       return (
@@ -696,8 +698,9 @@ class Twitter {
         params: {"features": jsonEncode(_userMediaFeatures), "fieldToggles": toggles, "filedToggles": toggles},
       );
     }
+    final posts = reposts ? XEndpoints.userRepostsTimeline : XEndpoints.userOriginalsTimeline;
     return (
-      endpoint: includeReplies ? XEndpoints.userTweetsAndReplies : XEndpoints.userOriginalsTimeline,
+      endpoint: includeReplies ? XEndpoints.userTweetsAndReplies : posts,
       variables: includeReplies ? {..._userPostsVariables, "withCommunity": true} : _userPostsVariables,
       params: {
         "features": jsonEncode(_timelineFeatures),
@@ -714,13 +717,14 @@ class Twitter {
     String? cursor,
     bool includeReplies = true,
     bool includeRetweets = true,
+    bool reposts = false,
     required int Function() getTweetsCounter,
     required void Function() incrementTweetsCounter,
   }) async {
     bool showPinnedTweet = true;
     var query = {...defaultParams, 'count': count.toString()};
 
-    final timeline = _userTimeline(type, includeReplies);
+    final timeline = _userTimeline(type, includeReplies, reposts: reposts);
     final variables = {"userId": id, "count": count, ...timeline.variables, "cursor": ?cursor};
     final params = <String, Object>{"variables": json.encode(variables), ...timeline.params};
 

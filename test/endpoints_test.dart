@@ -35,6 +35,14 @@ void main() {
       expect(XEndpoints.endpoint(XEndpoints.userOriginalsTimeline).operation, 'UserOriginalsTimeline');
     });
 
+    // Reposts left the Posts timeline for the web's Reposts tab.
+    test('reposts come from UserRepostsTimeline, under a key of their own', () {
+      final uri = XEndpoints.uri(XEndpoints.userRepostsTimeline, {});
+      expect(uri.host, 'x.com');
+      expect(uri.path, '/i/api/graphql/CnNg1YiKG7bRgi-RoIfKsw/UserRepostsTimeline');
+      expect(XEndpoints.all.map((e) => e.name), contains(XEndpoints.userRepostsTimeline));
+    });
+
     test('the profile Media tab stays on UserMedia', () {
       expect(XEndpoints.uri(XEndpoints.userMedia, {}).path, '/i/api/graphql/9EovraBTXJYGSEQXZqlLmQ/UserMedia');
     });
