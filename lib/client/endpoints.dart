@@ -47,6 +47,7 @@ class XEndpoints {
   static const userMedia = 'UserMedia';
   static const userTweetsAndReplies = 'UserTweetsAndReplies';
   static const userOriginalsTimeline = 'UserOriginalsTimeline';
+  static const userRepostsTimeline = 'UserRepostsTimeline';
   static const audioSpaceById = 'AudioSpaceById';
 
   static const Map<String, XEndpoint> shipped = {
@@ -118,6 +119,13 @@ class XEndpoints {
       name: userOriginalsTimeline,
       operation: 'UserOriginalsTimeline',
       queryId: 'qtvmQffnepvr0oPe4A8MqQ',
+      host: 'x.com',
+    ),
+    // The web's Reposts tab: reposts left the Posts timeline when X split them out.
+    userRepostsTimeline: XEndpoint(
+      name: userRepostsTimeline,
+      operation: 'UserRepostsTimeline',
+      queryId: 'CnNg1YiKG7bRgi-RoIfKsw',
       host: 'x.com',
     ),
     audioSpaceById: XEndpoint(
