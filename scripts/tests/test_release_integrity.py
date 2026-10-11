@@ -315,11 +315,11 @@ class RepositoryTest(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("XTA_REFERENCE_APK"), "Set XTA_REFERENCE_APK to inspect the published APK")
 class PublishedApkTest(unittest.TestCase):
-    def test_android_tools_verify_the_published_aimdi128_identity(self):
+    def test_android_tools_verify_the_published_aimdi175_identity(self):
         path = Path(os.environ["XTA_REFERENCE_APK"])
         details = release.inspect_apk(path)
         self.assertEqual(details["application_id"], "com.aimdi.xta")
-        self.assertEqual(details["version_code"], 400001093)
+        self.assertEqual(details["version_code"], 400001443)
         self.assertEqual(details["version_name"], "4.12.0")
         self.assertEqual(details["abis"], ["arm64-v8a"])
         self.assertFalse(details["debuggable"])
