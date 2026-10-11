@@ -9,6 +9,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
+import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/unavailable_post.dart';
 import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
@@ -447,11 +448,7 @@ class _StatusScreenState extends State<_StatusScreen> {
           tweetOpened: widget.tweetOpened,
           initialMediaIndex: widget.initialMediaIndex,
         ),
-        if (loading)
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
-          ),
+        if (loading) const TweetFeedSkeleton(count: 3, primary: false),
         if (showThreadEnd) _threadEndIndicator(context),
       ],
     );
@@ -483,7 +480,7 @@ class _StatusScreenState extends State<_StatusScreen> {
       if (paging.status == PagingStatus.noItemsFound) {
         return _unavailableFocalPage(context);
       }
-      return const Center(child: CircularProgressIndicator());
+      return const TweetFeedSkeleton();
     }
 
     final focal = chains.indexWhere((c) => c.tweets.any((t) => t.idStr == widget.id));
@@ -591,7 +588,7 @@ class _StatusScreenState extends State<_StatusScreen> {
 
   Widget _buildFlatList(BuildContext context, PagingState<int, TweetChain> state, NextPageCallback fetchNextPage) {
     if (pagingAwaitingFirstPage(state)) {
-      return const Center(child: CircularProgressIndicator());
+      return const TweetFeedSkeleton();
     }
     if (state.items == null) {
       return FullPageErrorWidget(
@@ -641,7 +638,7 @@ class _StatusScreenState extends State<_StatusScreen> {
       if (state.status == PagingStatus.noItemsFound) {
         return _unavailableFocalPage(context);
       }
-      return const Center(child: CircularProgressIndicator());
+      return const TweetFeedSkeleton();
     }
 
     final display = buildCappedThreadList(buildThreadTree(items, widget.id));
@@ -700,7 +697,7 @@ class _StatusScreenState extends State<_StatusScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) fetchNextPage();
       });
-      return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()));
+      return const TweetSkeletonTile();
     }
     return _threadEndIndicator(context);
   }

@@ -387,28 +387,32 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
             _visibility.onScroll(notification, accessible: MediaQuery.accessibleNavigationOf(context));
             return false;
           },
-          child: HomeNavigationClearance(
-            child: HomePageSwiper(
-              movePage: _movePageBy,
-              child: PageView.builder(
-                controller: _pageController,
-                // Tabs change from the bar and nowhere else. A drag anywhere in a
-                // page used to make media, nested tabs and sliders compete with the
-                // pager. Edge-aware children explicitly hand off at their boundary.
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _barPages.length,
-                onPageChanged: (page) {
-                  final previous = _pageIndex.value;
-                  _pageIndex.value = page;
-                  _visibility.show();
-                  _adoptSearchScope(previous, page);
-                },
-                itemBuilder: (context, index) {
-                  return KeyedSubtree(
-                    key: PageStorageKey<String>(_barPages[index].id),
-                    child: widget.builder(index, _scrollControllers, _focusNodes),
-                  );
-                },
+          // The home header follows the same bar: see HomeHidingHeader.
+          child: Provider<HomeNavigationVisibilityStore>.value(
+            value: _visibility,
+            child: HomeNavigationClearance(
+              child: HomePageSwiper(
+                movePage: _movePageBy,
+                child: PageView.builder(
+                  controller: _pageController,
+                  // Tabs change from the bar and nowhere else. A drag anywhere in a
+                  // page used to make media, nested tabs and sliders compete with the
+                  // pager. Edge-aware children explicitly hand off at their boundary.
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _barPages.length,
+                  onPageChanged: (page) {
+                    final previous = _pageIndex.value;
+                    _pageIndex.value = page;
+                    _visibility.show();
+                    _adoptSearchScope(previous, page);
+                  },
+                  itemBuilder: (context, index) {
+                    return KeyedSubtree(
+                      key: PageStorageKey<String>(_barPages[index].id),
+                      child: widget.builder(index, _scrollControllers, _focusNodes),
+                    );
+                  },
+                ),
               ),
             ),
           ),

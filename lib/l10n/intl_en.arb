@@ -783,7 +783,7 @@
   "@hide": {},
   "hide_from_main_feed": "Hide from main feed",
   "@hide_from_main_feed": {},
-  "hide_navigation_on_scroll": "Hide bottom bar while scrolling",
+  "hide_navigation_on_scroll": "Hide top and bottom bars while scrolling",
   "@hide_navigation_on_scroll": {},
   "hide_replies": "Hide replies",
   "@hide_replies": {},

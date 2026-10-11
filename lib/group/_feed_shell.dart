@@ -36,6 +36,10 @@ class GroupFeedShell extends StatefulWidget {
   /// Home keeps source and plugin controls below a fixed app header. A nested
   /// outer offset can otherwise move a newly selected plugin under that header.
   final bool fixedHeader;
+
+  /// Wraps the fixed header below the status bar; Home uses it to let the
+  /// header leave with the bottom bar.
+  final Widget Function(BuildContext context, Widget header)? headerFrame;
   final double? toolbarHeight;
   final WidgetBuilder? toolbarBuilder;
 
@@ -60,6 +64,7 @@ class GroupFeedShell extends StatefulWidget {
     this.centerTitle = false,
     this.flatAppBar = false,
     this.fixedHeader = false,
+    this.headerFrame,
     this.toolbarHeight,
     this.toolbarBuilder,
     this.leading,
@@ -236,28 +241,40 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
   Widget _fixedHome(BuildContext context) {
     final bottom = _bottom(context);
     final toolbarHeight = widget.toolbarHeight ?? Theme.of(context).appBarTheme.toolbarHeight ?? kToolbarHeight;
+    final background = Theme.of(context).scaffoldBackgroundColor;
+    // The status-bar strip stays put; only the bars below it can leave.
+    final header = SizedBox(
+      width: double.infinity,
+      height: toolbarHeight + bottom.preferredSize.height,
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: widget.toolbarBuilder != null
+            ? Material(
+                color: background,
+                child: SafeArea(bottom: false, child: Column(children: [widget.toolbarBuilder!(context), bottom])),
+              )
+            : AppBar(
+                toolbarHeight: toolbarHeight,
+                backgroundColor: background,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                surfaceTintColor: Colors.transparent,
+                centerTitle: widget.centerTitle,
+                leading: widget.leading,
+                title: widget.titleBuilder(context),
+                actions: widget.actionsBuilder(context),
+                bottom: bottom,
+              ),
+      ),
+    );
     return Column(
       children: [
-        SizedBox(
-          height: toolbarHeight + bottom.preferredSize.height + MediaQuery.paddingOf(context).top,
-          child: widget.toolbarBuilder != null
-              ? Material(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: SafeArea(bottom: false, child: Column(children: [widget.toolbarBuilder!(context), bottom])),
-                )
-              : AppBar(
-                  toolbarHeight: toolbarHeight,
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  surfaceTintColor: Colors.transparent,
-                  centerTitle: widget.centerTitle,
-                  leading: widget.leading,
-                  title: widget.titleBuilder(context),
-                  actions: widget.actionsBuilder(context),
-                  bottom: bottom,
-                ),
+        ColoredBox(
+          color: background,
+          child: SizedBox(height: MediaQuery.paddingOf(context).top, width: double.infinity),
         ),
+        widget.headerFrame?.call(context, header) ?? header,
         Expanded(
           child: PrimaryScrollController(
             controller: widget.scrollController,
