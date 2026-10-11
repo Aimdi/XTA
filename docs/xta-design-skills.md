@@ -5,7 +5,7 @@ plugin and not a global installation into the ChatGPT account.
 
 ## Scope and precedence
 
-Read `AGENTS.md` and `CLAUDE.md` before either skill. This brief and the user's
+Read `CLAUDE.md` before either skill. This brief and the user's
 request take precedence over generic upstream design suggestions.
 
 XTA is an existing Android-only Flutter reader. Refine the current app rather
@@ -38,9 +38,8 @@ Use UI UX Pro Max's Flutter stack explicitly; do not default to HTML/Tailwind.
 ## Use
 
 Start a fresh coding-agent session from the XTA checkout. Both skills are
-installed under `.agents/skills/` (Codex), `.claude/skills/` (Claude Code), and
-`.grok/skills/` (Grok Build). Each installed copy contains its resources; no
-submodule initialization is needed. The three design-skill copies are identical.
+installed under `.claude/skills/` with all their resources; no submodule
+initialization is needed.
 
 Example request:
 
@@ -51,7 +50,7 @@ Example request:
 From the repository root, a focused Flutter lookup is:
 
 ```sh
-python3 .agents/skills/ui-ux-pro-max/scripts/search.py "compact spacing" --stack flutter
+python3 .claude/skills/ui-ux-pro-max/scripts/search.py "compact spacing" --stack flutter
 ```
 
 In hosts exposing skill commands, invoke the names `impeccable` and
@@ -86,6 +85,5 @@ these copies with floating downloads or weaken the existing skill sync check.
 ## Verification
 
 Run `python3 scripts/check_design_skills.py` and
-`bash scripts/check_skill_sync.sh`. The design check compares all three copies,
-checks manifests/resources/licenses, verifies Python syntax, and runs a local
+`bash scripts/check_skill_sync.sh`. The design check checks manifests/resources/licenses, verifies Python syntax, and runs a local
 Flutter search. It does not assert Android UI quality or build an APK.

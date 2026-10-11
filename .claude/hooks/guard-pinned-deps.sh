@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse (Edit|Write) guard for AGENTS.md "Never bump pinned deps".
+# PreToolUse (Edit|Write) guard for the CLAUDE.md hard rule "Never bump pinned deps".
 # Denies only when a load-bearing pin actually changes:
 #   - dart_twitter_api in pubspec.yaml
 #   - the dependency_overrides block in pubspec.yaml
@@ -50,15 +50,15 @@ if [ "$(basename "$file")" = ".fvmrc" ]; then
   [ -n "$pinned" ] || exit 0
   proposed=$(fvm_version "$TMP/new")
   if [ -n "$proposed" ] && [ "$proposed" != "$pinned" ]; then
-    deny "Blocked: this edit changes the pinned Flutter version in .fvmrc ($pinned -> $proposed). AGENTS.md marks it load-bearing. Ask the user before touching it."
+    deny "Blocked: this edit changes the pinned Flutter version in .fvmrc ($pinned -> $proposed). CLAUDE.md marks it load-bearing. Ask the user before touching it."
   fi
   if [ -z "$proposed" ] && [ -n "$(fvm_version "$TMP/old")" ]; then
-    deny "Blocked: this edit removes the pinned Flutter version ($pinned) from .fvmrc. AGENTS.md marks it load-bearing. Ask the user before touching it."
+    deny "Blocked: this edit removes the pinned Flutter version ($pinned) from .fvmrc. CLAUDE.md marks it load-bearing. Ask the user before touching it."
   fi
   # An Edit can match the bare version alone, with no "flutter" key in either
   # side — then fvm_version finds nothing and the checks above see nothing.
   if grep -Fq -- "$pinned" "$TMP/old" && ! grep -Fq -- "$pinned" "$TMP/new"; then
-    deny "Blocked: this edit replaces the pinned Flutter version ($pinned) in .fvmrc. AGENTS.md marks it load-bearing. Ask the user before touching it."
+    deny "Blocked: this edit replaces the pinned Flutter version ($pinned) in .fvmrc. CLAUDE.md marks it load-bearing. Ask the user before touching it."
   fi
   exit 0
 fi
@@ -81,7 +81,7 @@ pinned_lines >"$TMP/pins"
 while IFS= read -r pin; do
   grep -Fxq -- "$pin" "$TMP/old.t" || continue
   grep -Fxq -- "$pin" "$TMP/new.t" && continue
-  deny "Blocked: this edit changes the load-bearing pin \"$pin\" in $(basename "$file"). AGENTS.md forbids bumping pinned deps (dart_twitter_api, dependency_overrides, Flutter version). Ask the user before touching it."
+  deny "Blocked: this edit changes the load-bearing pin \"$pin\" in $(basename "$file"). CLAUDE.md forbids bumping pinned deps (dart_twitter_api, dependency_overrides, Flutter version). Ask the user before touching it."
 done <"$TMP/pins"
 
 # 2. A pinned key introduced with a different value without the old line being
@@ -97,7 +97,7 @@ while IFS= read -r pin; do
   grep -Eq "$re" "$TMP/new.t" || continue
   grep -Fxq -- "$pin" "$TMP/new.t" && continue
   grep -Eq "$re" "$TMP/old.t" && continue
-  deny "Blocked: this edit introduces a different value for the load-bearing pin \"$pin\" in $(basename "$file"). AGENTS.md forbids bumping pinned deps (dart_twitter_api, dependency_overrides, Flutter version). Ask the user before touching it."
+  deny "Blocked: this edit introduces a different value for the load-bearing pin \"$pin\" in $(basename "$file"). CLAUDE.md forbids bumping pinned deps (dart_twitter_api, dependency_overrides, Flutter version). Ask the user before touching it."
 done <"$TMP/pins"
 
 exit 0

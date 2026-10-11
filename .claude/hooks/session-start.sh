@@ -3,7 +3,7 @@
 # Mirrors the first two steps of scripts/cloud_verify.sh. Always exits 0 —
 # a missing fvm must not stop the session.
 # dart_pubspec_licenses:generate is deliberately absent: it fails under
-# Flutter 3.44.4 + FVM and its output is unused (see AGENTS.md gotchas).
+# Flutter 3.44.4 + FVM and its output is unused (see Gotchas in CLAUDE.md).
 set -u
 
 cd "${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}" 2>/dev/null || exit 0

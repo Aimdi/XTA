@@ -16,6 +16,31 @@ tarball on every release). The desktop has no web view, share intents or
 Android storage APIs: code that needs one checks `isDesktop`
 (`lib/utils/desktop.dart`) and takes the desktop route. See `docs/desktop.md`.
 
+## Hard Rules (do not violate)
+
+- **Read-only towards X.** Never add compose / reply / quote / repost / like-on-X /
+  DM / Spaces hosting / account settings write-back. Local-only actions (device
+  likes, saved folders, subscriptions in SQLite) are fine and already exist — do
+  not wire them to X write endpoints.
+- Footer icons that look like X actions are **navigation / local** affordances
+  (comment opens the conversation; repeat opens the quotes screen; heart is
+  local-only). Do not "fix" them into real posting.
+- **`lib/client/` and `lib/database/` are frozen** — never rewrite them as part of
+  a UI/perf pass. Touch only to fix a live API break. DB schema changes only via
+  `sqflite_migration_plan` migrations.
+- **Do not big-bang rewrite.** Rewrite UI/feature folders incrementally, one
+  module at a time: `tweet/` → `home/` → `profile/` → `search/` → `group/` →
+  `saved/` → `settings/`. Per module, write a spec file, commit it, then implement
+  against it. `docs/grok-rewrite-plan.md` has the phases, characterization-test
+  targets and compatibility checkpoints; do not start Phase 2 UI rewrites until
+  the Phase 0–1 gates pass (clean debug APK + characterization coverage for
+  selector / rate limits / migrations / client parsers).
+- **Never bump pinned deps** (`dart_twitter_api: 0.6.0`, the
+  `dependency_overrides` block, Flutter **3.44.4** in `.fvmrc` / `pubspec.yaml`).
+  They are load-bearing.
+- The Store pattern, no raw UI strings, null-safe API parsing and short pure
+  functions are hard rules too; see Architecture and Coding Style below.
+
 ## Build & Development Commands
 
 Use `fvm flutter` instead of raw `flutter` to enforce the pinned SDK version (3.44.4).
@@ -36,7 +61,7 @@ bash -c '
 # Run all build steps through fvm so the pinned SDK is used
 fvm flutter pub get
 fvm dart run flutter_launcher_icons
-fvm dart run dart_pubspec_licenses:generate
+# dart_pubspec_licenses:generate is skipped: it fails under 3.44.4 (see Gotchas)
 fvm dart run intl_utils:generate
 fvm dart run flutter_iconpicker:generate_packs --packs material
 fvm flutter build apk --debug
@@ -144,35 +169,88 @@ Strings live in `lib/l10n/*.arb` files. The `L10n` class in `lib/generated/l10n.
 
 ## Custom Skills
 
-Skills live under both `.claude/skills/` (Claude Code) and `.grok/skills/`
-(Grok Build). Keep them in sync — `scripts/check_skill_sync.sh` enforces it in
-CI (the `skills` job in `.github/workflows/verify.yml`). Grok also loads this
-file and `AGENTS.md` automatically — see `docs/grok-rewrite-plan.md` for the
-incremental rewrite plan.
+Skills live in `.claude/skills/`. `scripts/check_skill_sync.sh` checks that every
+skill there has a well-formed `SKILL.md`; CI runs it (the `skills` job in
+`.github/workflows/verify.yml`) and so does every release build
+(`scripts/release_integrity.py`).
 
-- `/parse-api` — guidance for safely parsing reverse-engineered X API responses
-- `/port-from-squawker` — port a bug fix or feature from the Squawker codebase
-- `/translate` — user asked anything about translation, or you tried to add/remove/edit a text that appears in the UI
+| Command | Purpose |
+|---|---|
+| `/parse-api` | guidance for safely parsing reverse-engineered X API responses |
+| `/port-from-squawker` | port a bug fix or feature from the Squawker codebase |
+| `/translate` | user asked anything about translation, or you tried to add/remove/edit a text that appears in the UI |
+
+If names collide with another skill, use the qualified form (e.g. `/local:parse-api`).
 
 ## Enforced Guardrails
 
-`.claude/settings.json` enforces part of the AGENTS.md hard rules: generated code
-(`lib/generated/**`, `lib/oss_licenses.dart`) is deny-listed, `lib/client/**` and
-`lib/database/**` always prompt, and hooks in `.claude/hooks/` block pinned-dep
-bumps, run codegen at session start, and `dart format` edited Dart files. See
-"Enforced guardrails" in `AGENTS.md`.
+Part of the hard rules is machine-enforced through `.claude/settings.json`:
+
+- `permissions.deny` — Edit/Write on `lib/generated/**` and `lib/oss_licenses.dart`.
+- `permissions.ask` — Edit/Write on `lib/client/**` and `lib/database/**`.
+- `PreToolUse` → `.claude/hooks/guard-pinned-deps.sh` denies edits that change
+  `dart_twitter_api`, a `dependency_overrides` entry, or the Flutter version in
+  `pubspec.yaml` / `.fvmrc`. Other pubspec edits pass.
+- `SessionStart` → `.claude/hooks/session-start.sh` runs `pub get` +
+  `intl_utils:generate` (non-fatal, skipped without `fvm`).
+- `PostToolUse` → `.claude/hooks/format-dart.sh` runs `fvm dart format` on an
+  edited `.dart` file.
 
 ## Installed design skills
 
 For UI layout, compactness, placement, and visual hierarchy work, read
 `docs/xta-design-skills.md` first. The installed `impeccable` and `ui-ux-pro-max`
-skills are available under `.agents/skills/` (Codex), `.claude/skills/` (Claude
-Code), and `.grok/skills/` (Grok Build). Keep the three copies of these two skills
-identical; `python3 scripts/check_design_skills.py` verifies them, in addition
-to the existing `bash scripts/check_skill_sync.sh` guardrail.
+skills live in `.claude/skills/`; `python3 scripts/check_design_skills.py` checks
+that both are complete, licensed and runnable.
 
 Use Impeccable's critique/distill/layout workflow and UI UX Pro Max's Flutter
 stack guidance to refine existing XTA surfaces. Preserve features, true-black
 support, native conventions and accessible touch targets. These skills do not
 override any existing hard rule above, authorize a redesign, or authorize a
 merge/release. No automatic hooks are installed.
+
+## Verifying Changes
+
+- One-shot: `bash scripts/cloud_verify.sh` (analyze + tests + debug APK).
+- Lint: `fvm flutter analyze --no-fatal-infos` (infos are expected; no errors or warnings).
+- Tests: `fvm flutter test` (unit and widget tests under `test/`, with in-memory sqflite).
+- Live guest API (optional), which exercises the pure-Dart guest path in
+  `lib/client/client_unauthenticated.dart` against live x.com:
+  `fvm flutter test test/live/guest_api_smoke_test.dart --dart-define=RUN_LIVE=true`
+- Android build: `fvm flutter build apk --debug` → `build/app/outputs/flutter-apk/app-debug.apk`.
+- Linux build: `fvm flutter build linux --release` → `build/linux/x64/release/bundle/xta`
+  (needs `libgtk-3-dev` and `libmpv-dev`; see `docs/desktop.md`).
+- Details: `docs/cloud-testing.md`.
+
+Without `/dev/kvm` there is no usable Android emulator. Interactive Android UI
+testing needs a real device over wireless ADB:
+`bash scripts/adb_wireless_connect.sh <pair_host:port> <code> <connect_host:port>`,
+then `adb install -r build/app/outputs/flutter-apk/app-debug.apk`.
+
+The Linux build runs headless: start `build/linux/x64/release/bundle/xta` under
+`xvfb-run` and capture the screen with ImageMagick's `import -window root`. It
+exercises the shared UI and reading code, not the Android-only paths.
+
+## Gotchas
+
+- **`compileSdk 37` platform fix.** `android/app/build.gradle` uses `compileSdkVersion 37`,
+  but `sdkmanager` only ships `platforms;android-37.0` (its `AndroidVersion.ApiLevel=37.0`),
+  which this project's AGP resolves as hash `android-37` and fails to find. If an SDK
+  lacks it: `cp -r $ANDROID_HOME/platforms/android-37.0 $ANDROID_HOME/platforms/android-37`
+  then edit `source.properties` to `AndroidVersion.ApiLevel=37`. Gradle prints a harmless
+  "inconsistent location" warning for `android-37`; ignore it.
+- **`dart run dart_pubspec_licenses:generate` fails** under Flutter 3.44.4 + FVM
+  (`PathNotFoundException: .../3.44.4/version` — the SDK dropped the legacy `version`
+  file). Its output `lib/oss_licenses.dart` is **not imported** (the app uses Flutter's
+  built-in `showLicensePage`), so the step is safe to skip.
+- **Generated code is gitignored** (`lib/generated`, `lib/oss_licenses.dart`,
+  `assets/icon-*.png`). Run `intl_utils:generate` (localization, imported everywhere)
+  and `flutter_iconpicker:generate_packs --packs material` before analyzing or
+  testing. A full APK build also needs the launcher icons: `.venv/bin/python
+  generate_icons.py` then `fvm dart run flutter_launcher_icons`.
+- **Linux build behind a proxy.** If CMake fails verifying `mimalloc-2.1.2.tar.gz`,
+  the network blocked GitHub's archive download: recreate it with
+  `git archive --format=tar --prefix=mimalloc-2.1.2/ v2.1.2 | gzip -cn` from a clone
+  of microsoft/mimalloc (MD5 `5179c8f5cf1237d2300e2d8559a7bc55`) into
+  `build/linux/x64/release/`, and delete that directory first if an earlier failed
+  configure left CMake installing into `/usr/local`.

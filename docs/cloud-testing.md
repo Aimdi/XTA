@@ -25,7 +25,8 @@ work.
 
 ## Environment bootstrap
 
-- `.cursor/environment.json` → runs `scripts/cloud_install.sh`
+- Run `bash scripts/cloud_install.sh` on a fresh VM (the Cursor `.cursor/environment.json`
+  hook that used to run it was removed).
 - **Cold VMs:** `cloud_install.sh` bootstraps FVM (into `~/fvm`) and Android
   cmdline-tools (into `~/android-sdk`) when they are missing, then runs
   `fvm install` / `pub get` / codegen and applies the `platforms/android-37`
