@@ -19,8 +19,17 @@ class AccountSelector {
   final DateTime now;
   final bool Function(Account) isRateLimited;
 
-  AccountSelector(this.accounts, this.now, {bool Function(Account)? isRateLimited})
-    : isRateLimited = isRateLimited ?? ((_) => false);
+  /// Requests an account has left on the target endpoint, or null when not
+  /// known yet. Supplied, like [isRateLimited], so this stays pure.
+  final int? Function(Account) remainingQuota;
+
+  AccountSelector(
+    this.accounts,
+    this.now, {
+    bool Function(Account)? isRateLimited,
+    int? Function(Account)? remainingQuota,
+  }) : isRateLimited = isRateLimited ?? ((_) => false),
+       remainingQuota = remainingQuota ?? ((_) => null);
 
   bool _healthy(Account a) => !isNotFoundFlagged(a, now) && !isRateLimited(a);
 
@@ -33,7 +42,16 @@ class AccountSelector {
       return null;
     }
     final healthy = remaining.where(_healthy).toList();
-    final pool = healthy.isNotEmpty ? healthy : remaining;
+    final pool = _leastUsed(healthy.isNotEmpty ? healthy : remaining);
     return pool[Random().nextInt(pool.length)];
+  }
+
+  /// The accounts with the most requests left, so all of them drain evenly
+  /// instead of one running dry while others idle. One not used on this
+  /// endpoint in the current window is fresh and comes first; ties stay random.
+  List<Account> _leastUsed(List<Account> pool) {
+    int score(Account a) => remainingQuota(a) ?? 1 << 30;
+    final best = pool.map(score).reduce(max);
+    return pool.where((a) => score(a) == best).toList();
   }
 }

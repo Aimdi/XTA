@@ -66,6 +66,14 @@ void main() {
       'x-rate-limit-reset': '${(resetAt ?? reset).millisecondsSinceEpoch ~/ 1000}',
     };
 
+    test('reports the requests left, counting down as they are sent', () {
+      expect(RateLimitTracker.remaining(account, endpoint, now), isNull);
+      RateLimitTracker.record(account, endpoint, headers(10), now);
+      RateLimitTracker.consume(account, endpoint, now);
+      expect(RateLimitTracker.remaining(account, endpoint, now), 9);
+      expect(RateLimitTracker.remaining(account, endpoint, reset), isNull, reason: 'a new window is unknown again');
+    });
+
     test('an answer with quota left keeps the account available', () {
       RateLimitTracker.record(account, endpoint, headers(10), now);
       expect(RateLimitTracker.isLimited(account, endpoint, now), isFalse);

@@ -22,6 +22,11 @@ class RateLimitTracker {
     return reset != null && reset.isAfter(now);
   }
 
+  /// Requests left for an account on an endpoint in the current window, or
+  /// null when X has not reported a quota that is still running.
+  static int? remaining(String accountId, String endpoint, DateTime now) =>
+      _activeQuota(accountId, endpoint, now)?.remaining;
+
   static void flag(String accountId, String endpoint, DateTime resetAt) {
     (_resetByAccountEndpoint[accountId] ??= {})[endpoint] = resetAt;
   }

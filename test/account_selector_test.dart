@@ -82,4 +82,42 @@ void main() {
       expect(selector.pick(exclude: <String>{})?.id, 'a');
     });
   });
+
+  group('AccountSelector.pick, least used first', () {
+    Set<String> picks(AccountSelector selector) => {for (var i = 0; i < 60; i++) selector.pick(exclude: <String>{})!.id};
+
+    test('takes the account with the most requests left', () {
+      final quota = {'low': 2, 'high': 140, 'mid': 50};
+      final selector = AccountSelector([
+        _account('low'),
+        _account('high'),
+        _account('mid'),
+      ], now, remainingQuota: (a) => quota[a.id]);
+      expect(picks(selector), {'high'});
+    });
+
+    test('an account not used on the endpoint yet counts as fresh', () {
+      final quota = {'used': 140};
+      final selector = AccountSelector([_account('used'), _account('fresh')], now, remainingQuota: (a) => quota[a.id]);
+      expect(picks(selector), {'fresh'});
+    });
+
+    test('equal accounts still share the load', () {
+      final selector = AccountSelector([_account('a'), _account('b')], now, remainingQuota: (_) => 30);
+      expect(picks(selector), {'a', 'b'});
+    });
+
+    test('a healthy account beats a flagged one with more quota', () {
+      final flagged = _account('flagged', lastNotFoundAt: now.subtract(const Duration(hours: 1)));
+      final quota = {'flagged': 140, 'ok': 3};
+      final selector = AccountSelector([flagged, _account('ok')], now, remainingQuota: (a) => quota[a.id]);
+      expect(picks(selector), {'ok'});
+    });
+
+    test('an excluded account is skipped however much it has left', () {
+      final quota = {'tried': 140, 'next': 5};
+      final selector = AccountSelector([_account('tried'), _account('next')], now, remainingQuota: (a) => quota[a.id]);
+      expect(selector.pick(exclude: {'tried'})?.id, 'next');
+    });
+  });
 }
