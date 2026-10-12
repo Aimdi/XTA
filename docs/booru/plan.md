@@ -4,6 +4,12 @@ Status: **proposed, waiting for approval.** Nothing below is implemented.
 Evidence for every item is in `docs/booru/audit.md` (IDs B*, P*, §4 rows);
 baseline scenarios are in `docs/perf-baseline.md`.
 
+## Decisions (2026-10-12)
+
+Read-only towards every booru; no Boorusama code copied; credentials stay in
+the app's private settings for now; the video target follows the shared
+pool's rule. Details in the audit's "Decisions" section.
+
 ## How items are ranked
 
 Tiers follow the agreed priority order. A tier starts only when the one above
@@ -82,7 +88,7 @@ list: an item whose scenario already meets its target drops out.
 ## Tier 3: finishing partial features (§4)
 
 Ranked: per-site profiles with their own credentials, rating cap, blacklist
-and follows (1a, 1b, 3b; needs decision 3 for secure storage); semantic labels
+and follows (1a, 1b, 3b; credentials stay in app settings for now); semantic labels
 on thumbnails (14a, also a quality gate); blacklist metatags such as `score:`
 (3c); an explicit opt-in step for the Explicit cap (4); metatag help and
 autocomplete per engine (2b); artist and character pages (5e); keeping the
@@ -96,7 +102,8 @@ prompt" options (12).
 Ranked: bulk download with filename templates and skip-if-exists by MD5 (8b,
 8c, 8d); hidden-post count with tap-to-reveal (3d, 3e); notes and translation
 overlay (5i); pools reader (5f); history of viewed posts (9a, needs a
-migration). Favourites and votes synced with the site (7a) wait on decision 1.
+migration). Favourites and votes synced with the site (7a) are out of scope:
+the plugin stays read-only, and local favourites already exist.
 
 ## Tier 5: differentiators
 
@@ -106,9 +113,9 @@ in X posts opened natively, and "new since last visit" on followed tags.
 
 ## Dependencies
 
-Tiers 1 and 2 need no new dependency. Secure credential storage (tier 3) and
-a background download notification (tier 3) would each need one; each will
-come with a written justification for your approval first.
+Tiers 1 and 2 need no new dependency. A background download notification
+(tier 3) would need one, and will come with a written justification for your
+approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next three
 

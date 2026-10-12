@@ -93,31 +93,24 @@ None should be acted on before that scenario has been measured on a phone.
 | P7 | Every page change rebuilds the viewer's whole `Scaffold` and `PageView`. Pages are not kept alive, so swiping back re-runs a post's tag lookup and up to two related-post searches | `booru_post_pager.dart:39-56`; `booru_post_screen.dart:53-61, 91-92, 117-123` | S3 build times, request counts |
 | P8 | The image disk cache never shrinks: no size cap, no maximum age, and the plugin declares no `caches` | `pub:extended_image_library-5.0.1/lib/src/network/network_image_io.dart:185-215`; `lib/plugins/plugin.dart:77` | Storage; S7 |
 
-### Decisions needed before planning further
+### Decisions (2026-10-12)
 
-1. **Writing to sites.** The bar asks for favourites and votes synced with the
-   site. The plugin's spec forbids it: "No compose / favorite / upload /
-   comment write-backs to any booru" (`docs/specs/booru-plugin.md:75`, also
-   :14). CLAUDE.md's read-only rule names X, not boorus, so this is the
-   project's choice to make.
-2. **Licence.** Boorusama is GPL-3.0 (`BS:COPYING`); XTA's source is MIT
-   (`LICENSE`). The plugin is clean-room today (§5.1). Porting Boorusama code,
-   or its data files (`BS:packages/booru_clients/boorus.yaml`,
-   `BS:assets/tagdef.json`), would bring GPL-3.0 obligations. Reimplementing
-   behaviour from the sites' public APIs does not.
-3. **Secure storage.** The bar keeps credentials "in the existing secure
-   store". XTA has none: Booru's login and key are plain preferences, and no
-   secure-storage package is a dependency (§1.3, §4 row 1c). Moving them needs
-   a new dependency, which needs your approval.
-4. **Video target.** "Zero controllers left after the viewer closes" conflicts
-   with how `VideoControllerPool` works by design. Released players stay cached
-   (up to `kVideoPoolSize` = 3, `lib/constants.dart:99`) for instant resume,
-   and are freed on eviction or memory pressure
-   (`lib/tweet/video_controller_pool.dart:114-133, 155-162`). S5 records both
-   counts. A target of "none in use after close, all idle players freed under
-   memory pressure" fits the shared pool.
-5. **No AGENTS.md.** The repository has none; its rules were merged into
-   CLAUDE.md, which governs here.
+1. **Writing to sites: no.** The plugin stays read-only, as its spec says
+   (`docs/specs/booru-plugin.md:14, 75`). Favourites stay on the device;
+   syncing favourites and votes with a site (§4 row 7a) is out of scope.
+2. **Licence: clean-room.** No Boorusama code or data files are copied. It is
+   used only to learn how each site behaves; XTA's code stays MIT.
+3. **Credentials: app settings for now.** Login and key stay in the app's
+   private preferences, which backups and exports already leave out. The leaks
+   (B1, B2, B4) are fixed first; secure storage is reconsidered with per-site
+   profiles.
+4. **Video target: the pool's rule.** After the viewer closes no player is in
+   use; up to `kVideoPoolSize` (3) idle players stay cached for instant resume
+   and are freed under memory pressure (`lib/tweet/video_controller_pool.dart:114-133,
+   155-162`). The S5 target in `docs/perf-baseline.md` says so.
+
+The repository has no AGENTS.md; its rules were merged into CLAUDE.md, which
+governs here.
 
 ## 1. Module map
 
