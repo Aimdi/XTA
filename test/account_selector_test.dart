@@ -96,10 +96,43 @@ void main() {
       expect(picks(selector), {'high'});
     });
 
-    test('an account not used on the endpoint yet counts as fresh', () {
-      final quota = {'used': 140};
-      final selector = AccountSelector([_account('used'), _account('fresh')], now, remainingQuota: (a) => quota[a.id]);
-      expect(picks(selector), {'fresh'});
+    test('an account with no quota known ties with the best one instead of beating it', () {
+      final quota = {'best': 140, 'low': 3};
+      final selector = AccountSelector([
+        _account('best'),
+        _account('low'),
+        _account('unknown'),
+      ], now, remainingQuota: (a) => quota[a.id]);
+      expect(picks(selector), {'best', 'unknown'});
+    });
+
+    // aimdi176: an account answering 401/403 never reports a quota. Counted as
+    // fresh it outranked every other account and took every request.
+    test('an account that never reports a quota does not take every request', () {
+      final quota = {'a': 120, 'b': 120};
+      final selector = AccountSelector([
+        _account('a'),
+        _account('b'),
+        _account('failing'),
+      ], now, remainingQuota: (a) => quota[a.id]);
+      final counts = <String, int>{};
+      for (var i = 0; i < 300; i++) {
+        counts.update(selector.pick(exclude: <String>{})!.id, (n) => n + 1, ifAbsent: () => 1);
+      }
+      expect(counts['failing'], lessThan(150));
+      expect(counts.keys, containsAll(['a', 'b']));
+    });
+
+    test('a burst goes to the account with the fewest requests in flight', () {
+      final busy = {'a': 2, 'b': 0, 'c': 1};
+      final quota = {'a': 140, 'b': 10, 'c': 140};
+      final selector = AccountSelector(
+        [_account('a'), _account('b'), _account('c')],
+        now,
+        remainingQuota: (a) => quota[a.id],
+        inFlight: (a) => busy[a.id]!,
+      );
+      expect(picks(selector), {'b'});
     });
 
     test('equal accounts still share the load', () {

@@ -36,6 +36,11 @@ void main() {
       expect(usableSearchAccounts(accounts, {'a', 'b', 'c'}, _now), 2);
     });
 
+    test('an account rate-limited on search does not count', () {
+      final accounts = [_account('a'), _account('b'), _account('c')];
+      expect(usableSearchAccounts(accounts, const {}, _now, isSearchLimited: (a) => a.id != 'a'), 1);
+    });
+
     test('no accounts means none usable', () {
       expect(usableSearchAccounts(const [], const {}, _now), 0);
     });

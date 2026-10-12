@@ -46,3 +46,23 @@ Selector unit tests:
 - `exclude` still applies.
 
 Tracker unit test for `remaining`.
+
+## Follow-up (aimdi177): an unknown quota no longer wins outright
+
+Readers reported group feeds that stopped loading partway after a while.
+"Unknown quota counts as fresh" let an account outrank every account with a
+known quota. Two kinds of account never get a known quota:
+
+- one whose sign-in started answering 401 or 403;
+- one whose answers carry no quota headers.
+
+Nothing records a quota for either, so the selector sent every request to it
+first, and the transport surfaces those errors as they are. Random rotation
+had spread those failures over the other accounts.
+
+- An account with no known quota now ties with the best known one, and ties
+  stay random. It is no longer preferred outright.
+- Requests in flight are counted per account and endpoint (`AccountLoad`).
+  The account with the fewest in flight is chosen first, then the one with the
+  most quota left. A burst of parallel searches therefore lands evenly on the
+  accounts instead of piling onto one.

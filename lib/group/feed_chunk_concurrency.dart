@@ -13,11 +13,18 @@ const int feedChunkFetchConcurrencyMax = 6;
 int feedChunkConcurrencyFor(int usableAccounts) =>
     (usableAccounts * 2).clamp(feedChunkFetchConcurrency, feedChunkFetchConcurrencyMax);
 
-/// Accounts a Following search can go to: on for home feeds and with a sign-in
-/// not flagged broken. With every account off for home feeds the transport
-/// falls back to all of them, so then all of them count.
-int usableSearchAccounts(List<Account> accounts, Set<String> disabledIds, DateTime now) {
-  final working = accounts.where((a) => !isNotFoundFlagged(a, now)).toList();
+/// Accounts a Following search can go to: on for home feeds, with a sign-in
+/// not flagged broken and not rate-limited on search ([isSearchLimited]). With
+/// every account off for home feeds the transport falls back to all of them,
+/// so then all of them count.
+int usableSearchAccounts(
+  List<Account> accounts,
+  Set<String> disabledIds,
+  DateTime now, {
+  bool Function(Account)? isSearchLimited,
+}) {
+  final limited = isSearchLimited ?? (_) => false;
+  final working = accounts.where((a) => !isNotFoundFlagged(a, now) && !limited(a)).toList();
   final enabled = working.where((a) => !disabledIds.contains(a.id)).length;
   return enabled > 0 ? enabled : working.length;
 }

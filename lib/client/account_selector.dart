@@ -23,13 +23,18 @@ class AccountSelector {
   /// known yet. Supplied, like [isRateLimited], so this stays pure.
   final int? Function(Account) remainingQuota;
 
+  /// Requests an account has in flight on the target endpoint right now.
+  final int Function(Account) inFlight;
+
   AccountSelector(
     this.accounts,
     this.now, {
     bool Function(Account)? isRateLimited,
     int? Function(Account)? remainingQuota,
+    int Function(Account)? inFlight,
   }) : isRateLimited = isRateLimited ?? ((_) => false),
-       remainingQuota = remainingQuota ?? ((_) => null);
+       remainingQuota = remainingQuota ?? ((_) => null),
+       inFlight = inFlight ?? ((_) => 0);
 
   bool _healthy(Account a) => !isNotFoundFlagged(a, now) && !isRateLimited(a);
 
@@ -46,12 +51,17 @@ class AccountSelector {
     return pool[Random().nextInt(pool.length)];
   }
 
-  /// The accounts with the most requests left, so all of them drain evenly
-  /// instead of one running dry while others idle. One not used on this
-  /// endpoint in the current window is fresh and comes first; ties stay random.
+  /// The accounts least busy right now, then those with the most requests
+  /// left, so a burst spreads over all of them and they drain evenly. An
+  /// account whose quota is not known ties with the best known one rather than
+  /// beating it: one failing with errors that carry no quota would otherwise
+  /// take every request. Ties stay random.
   List<Account> _leastUsed(List<Account> pool) {
-    int score(Account a) => remainingQuota(a) ?? 1 << 30;
-    final best = pool.map(score).reduce(max);
-    return pool.where((a) => score(a) == best).toList();
+    final fewest = pool.map(inFlight).reduce(min);
+    final idle = pool.where((a) => inFlight(a) == fewest).toList();
+    final known = idle.map(remainingQuota).whereType<int>();
+    if (known.isEmpty) return idle;
+    final best = known.reduce(max);
+    return idle.where((a) => (remainingQuota(a) ?? best) == best).toList();
   }
 }
