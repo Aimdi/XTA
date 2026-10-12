@@ -13,29 +13,8 @@ Future<void> main() {
   return integrationDriver(
     responseDataCallback: (data) async {
       if (data == null) return;
-      final env = Map<String, dynamic>.from(data['env'] as Map? ?? const {});
-      final refreshRate = (env['refresh_rate'] as num?)?.toDouble() ?? 60;
-      env.addAll(await _hostEnvironment());
-
-      Map<String, Object> scenario(String prefix) {
-        final trials = [
-          for (var trial = 1; data['${prefix}_trial_$trial'] is Map; trial++)
-            trialStats(Map<String, dynamic>.from(data['${prefix}_trial_$trial'] as Map), refreshRate: refreshRate),
-        ];
-        return {'trials': trials, 'median': medianOfTrials(trials)};
-      }
-
-      final openTimes = [
-        for (var trial = 1; data['s3_open_ms_trial_$trial'] is num; trial++)
-          (data['s3_open_ms_trial_$trial'] as num).toDouble(),
-      ];
-      final report = {
-        'env': env,
-        's2_grid_fling': scenario('s2'),
-        's3_viewer_swipes': scenario('s3'),
-        's3_open_to_picture_ms': {'trials': openTimes, 'median': median(openTimes), 'p95': percentile(openTimes, 95)},
-      };
-
+      final report = booruSummary(data);
+      (report['env'] as Map<String, dynamic>).addAll(await _hostEnvironment());
       final pretty = const JsonEncoder.withIndent('  ').convert(report);
       // ignore: avoid_print
       print('\nbooru perf summary:\n$pretty\n');
