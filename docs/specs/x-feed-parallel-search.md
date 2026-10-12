@@ -37,3 +37,11 @@ In-flight searches = twice the usable accounts, at least 3 and at most 6:
 
 Unit tests for the rule: guest, one account, two, many, disabled and flagged
 accounts, and the all-disabled fallback.
+
+## Follow-up (aimdi177)
+
+- An account currently rate-limited on `SearchTimeline` no longer counts as
+  usable, so a load with one working account and two limited ones stays at
+  three searches instead of six on that one account.
+- With the selector now spreading requests in flight, each usable account
+  carries about two searches at once.
