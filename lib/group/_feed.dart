@@ -17,6 +17,8 @@ import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:xta/client/account_fetch_gate.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/client/endpoints.dart';
+import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
@@ -715,8 +717,15 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (cursorKey == null) _batchCursor = nextCursor;
     final hiddenRetweets = await hiddenRetweetScreenNames();
     final hiddenReplies = await hiddenReplyScreenNames();
+    final now = DateTime.now();
+    final searchPath = XEndpoints.uri(XEndpoints.searchTimeline, const {}).path;
     final concurrency = feedChunkConcurrencyFor(
-      usableSearchAccounts(await getAccounts(), AccountFetchGate.disabledIds, DateTime.now()),
+      usableSearchAccounts(
+        await getAccounts(),
+        AccountFetchGate.disabledIds,
+        now,
+        isSearchLimited: (a) => RateLimitTracker.isLimited(a.id, searchPath, now),
+      ),
     );
     ReadWork.checkpoint();
     if (!mounted) throw const ReadCancelled();

@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/account_fetch_gate.dart';
+import 'package:xta/client/account_load.dart';
 import 'package:xta/client/account_selector.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client_regular_account.dart';
@@ -122,6 +123,7 @@ class QuackerTwitterClient extends TwitterClient {
       now,
       isRateLimited: (a) => RateLimitTracker.isLimited(a.id, endpoint, now),
       remainingQuota: (a) => RateLimitTracker.remaining(a.id, endpoint, now),
+      inFlight: (a) => AccountLoad.of(a.id, endpoint),
     );
     final tried = <String>{};
     // Accounts that 404'd on this endpoint. Held rather than flagged straight
@@ -138,13 +140,19 @@ class QuackerTwitterClient extends TwitterClient {
       tried.add(account.id);
       RateLimitTracker.consume(account.id, endpoint, now);
 
-      final response = await XRegularAccount().fetch(
-        uri,
-        headers: headers,
-        log: log,
-        authHeader: json.decode(account.authHeader),
-        timeout: budget.remaining,
-      );
+      AccountLoad.begin(account.id, endpoint);
+      final http.Response response;
+      try {
+        response = await XRegularAccount().fetch(
+          uri,
+          headers: headers,
+          log: log,
+          authHeader: json.decode(account.authHeader),
+          timeout: budget.remaining,
+        );
+      } finally {
+        AccountLoad.end(account.id, endpoint);
+      }
       final code = response.statusCode;
 
       if (code >= 200 && code < 300) {
