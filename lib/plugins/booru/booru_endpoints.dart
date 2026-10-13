@@ -6,6 +6,15 @@ import 'package:intl/intl.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 
+/// The query parameters that carry credentials, on any engine.
+const booruCredentialParameters = {'login', 'user_id', 'api_key', 'password_hash'};
+
+final _credentialValues = RegExp('([?&](?:${booruCredentialParameters.join('|')})=)[^&\\s]*');
+
+/// [text] with the value of every credential parameter masked, so an error
+/// that names a request URL can be shown.
+String redactBooruCredentials(String text) => text.replaceAllMapped(_credentialValues, (match) => '${match[1]}***');
+
 /// Where a request goes and who it is made as.
 class BooruSite {
   final BooruEngine engine;

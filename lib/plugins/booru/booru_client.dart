@@ -27,7 +27,9 @@ class BooruException implements Exception {
   final BooruErrorKind kind;
   final String message;
 
-  BooruException(this.kind, this.message);
+  /// [message] often names the request URL; its credentials are masked.
+  BooruException(this.kind, String message)
+    : message = redactBooruCredentials(message);
 
   @override
   String toString() => 'BooruException{$kind: $message}';

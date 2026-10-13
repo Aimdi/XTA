@@ -518,5 +518,40 @@ void main() {
       );
       expect(await client.tagInfo(_post(engine: 'gelbooru_v2')), isEmpty);
     });
+
+    test('error text never carries the login or the key', () async {
+      const sites = {
+        'danbooru': 'https://danbooru.donmai.us',
+        'moebooru': 'https://yande.re',
+        'gelbooru_v2': 'https://safebooru.org',
+        'e621': 'https://e621.net',
+      };
+      Future<String> failure(String engine, MockClient http) => _client(
+        engine,
+        sites[engine]!,
+        http,
+        prefs: {optionPluginBooruLogin: 'reader', optionPluginBooruApiKey: 'secret-key'},
+      ).latest().then((_) => 'no error', onError: (Object error) => '$error');
+
+      for (final engine in sites.keys) {
+        final refused = await failure(engine, MockClient((request) async => http.Response('', 401)));
+        final unreachable = await failure(
+          engine,
+          MockClient((request) async => throw http.ClientException('Connection refused', request.url)),
+        );
+        for (final text in [refused, unreachable]) {
+          expect(text, contains(Uri.parse(sites[engine]!).host), reason: 'still names what failed');
+          expect(text, isNot(contains('secret-key')), reason: engine);
+          expect(text, isNot(contains('reader')), reason: engine);
+        }
+      }
+    });
+
+    test('every engine sends credentials under a name the error text masks', () {
+      for (final engine in BooruEngine.values) {
+        final site = BooruSite(engine: engine, host: 'https://example.org', login: 'a', apiKey: 'b');
+        expect(booruCredentialParameters, containsAll(site.auth.keys), reason: engine.id);
+      }
+    });
   });
 }
