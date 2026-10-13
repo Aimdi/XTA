@@ -232,7 +232,7 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 | Reading progress saved/restored per post | Present | Journal keyed by publication and slug (`substack_reader_store.dart:107-108`, `article_reading_store.dart`), restored by paragraph and offset (`article_reading_bridge.dart:22-26, 60-63`). |
 | Estimated read time | Missing | No word count or read-time code anywhere. |
 | Paid: full content when entitled | Missing | No session. |
-| Paid: otherwise preview + paid badge | Partial | Badge (`substack_post_card.dart:218`), preview footer (`substack_reader_screen.dart:296-298`). A paid post without a body loads the live site instead (BUG-11). |
+| Paid: otherwise preview + paid badge | Present | Badge (`substack_post_card.dart:218`), preview footer on a free opening (`substack_reader_screen.dart`, `_showArticle`), and the paid pane (lock, excerpt, "Open in browser") for a paid post without a body, chosen by `substackReaderBodyFor` (`substack_reader_store.dart`). BUG-11 fixed in the Tier 1 batch. |
 | Expired session → prompt re-login | Missing | No session. |
 | Comments threaded | Present | `substack_comments_store.dart:42-125`. Replies nested more than nine levels deep are dropped (BUG-01). |
 | Comments sortable (best/new) | Partial | Original order (the API's `best_first`), newest and oldest (`substack_comments_store.dart:5`); there is no server-side "new". |
@@ -266,15 +266,15 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 | Gate in the brief (§5) | Today | Gap |
 |---|---|---|
 | HTML-to-block parser for every §4 construct | No block parser exists. Sanitizer tests cover scripts, handlers and URLs (`substack_sanitize_test.dart`, 7 tests). | No recorded Substack constructs; the probes use reconstructed markup. |
-| Paywall detection | `substack_preview_test.dart` (6) | No recorded paid payload; `_PaywallPane` is untested. |
+| Paywall detection | `substack_preview_test.dart` (9) | No recorded paid payload; `_PaywallPane` itself is not pumped (no WebView fake), its selection is (`substackReaderBodyFor`). |
 | Offset pagination dedupe | `substack_store_recovery_test.dart` (23), `substack_publication_reader_test.dart` (19) | — |
 | API + RSS merge | none | BUG-02 shows the identities split. |
 | Cookie host scoping | N/A (no cookies) | Needed before any authentication lands. |
 | OPML round trip | N/A | — |
-| Rate limiter and backoff | none | BUG-03. |
+| Rate limiter and backoff | `substack_transport_test.dart` (8), the BUG-03 regression probe | Fake clock; no live 429 recorded. |
 | Reader rendering and progress restore (widget) | Store and bridge level only (`article_reading_test.dart`, 11) | The WebView screen itself is not widget-tested. |
 | Comment threading (widget) | `substack_discussion_reader_test.dart` (15) | Depth-cap behaviour is pinned as intended (`substack_features_test.dart:90-101`); see BUG-01. |
-| Paid preview state (widget) | Footer HTML covered | The pane path (BUG-11). |
+| Paid preview state (widget) | Footer HTML and the reader-body decision covered | The pane widget is not pumped: the reader screen needs a WebView platform fake no test has yet. |
 | Live endpoints | Beehiiv custom domain only, via CI canary | No live test for any Substack endpoint. |
 | Performance | none before this pass | `integration_test/substack_perf_test.dart` (S2/S3), `test/perf/substack_vm_benchmark_test.dart` |
 
@@ -301,7 +301,7 @@ Columns: **T** is the priority tier, **Sev** is severity, and the last column na
 | BUG-08 | 1 | Med-High | LaTeX, galleries, polls and native audio embeds vanish without a trace. | Maths or photo-essay publications. | `substack_html.dart:52, 70-74` | probe (reconstructed markup) |
 | BUG-09 | 1 | Low | The article cache drops the video flag. It also has no size bound and is never invalidated when a post is edited. | Open a video post, go back, open it again. | `substack_article_cache.dart:170-197` | probe |
 | BUG-10 | 1 | Med | `substack.com/home/post/p-{id}` app share links are not read in-app. | Tap such a link in an X post. | `substack_links.dart:47-100` | probe; the link shape is UNVERIFIED |
-| BUG-11 | 1 | Med | A paid post without a body loads the publisher's live site with JavaScript instead of the preview pane and paid badge. `_PaywallPane` is reachable only when there is no canonical URL. | A paid post the API sends without `body_html`. | `substack_reader_screen.dart:311-329` | code |
+| BUG-11 | 1 | Med | A paid post without a body loads the publisher's live site with JavaScript instead of the preview pane and paid badge. `_PaywallPane` is reachable only when there is no canonical URL. | A paid post the API sends without `body_html`. | `substack_reader_screen.dart:311-329` | code. **Fixed** (Tier 1 batch): `substackReaderBodyFor` picks the paid pane before the live site; `substack_preview_test.dart` fails on the old order and passes on the new |
 | BUG-12 | 1 | Med | Long-press is taken for read-aloud: `contextmenu` is cancelled and the touch callout is disabled. Text selection and copy in articles are blocked, and so are quoting and highlights. | Long-press a paragraph. | `substack_html.dart:208-218, 385` | code; UNVERIFIED on device |
 | BUG-13 | 2 | Med | Feed covers and logos download the source image; only decoding is capped. | Any image-heavy feed. | `substack_post_card.dart:179-185, 323-327` | code; bytes UNVERIFIED (S6) |
 | BUG-14 | 1 | Low | Speech reads footnote markers into sentences ("Claim1."). | A post with footnotes. | `substack_html.dart:84-138` | sanitizer output |

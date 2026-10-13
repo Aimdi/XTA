@@ -255,87 +255,79 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   Future<void> _showContent(SubstackPost post) async {
-    final generation = _content.generation;
     if (context.read<SubstackReadStore>().isRead(post.id)) unawaited(_reading.complete());
-    final html = post.bodyHtml;
-    final hasBody = html != null && html.trim().isNotEmpty;
-
-    // A paid post usually arrives with its opening paragraphs — the part the
-    // publication chose to give away. Refusing to render any of it because the
-    // post is marked paid threw away what had already been sent, and left a
-    // lock icon where there was something to read.
-    if (hasBody) {
-      _content.change(paywalled: false);
-      _content.change(empty: false);
-      _content.change(liveSite: false);
-      _content.change(speakText: _fallbackSpeakText(post, bodyHtml: html));
-      _content.change(partial: post.isPaywalled, document: SubstackArticleDocument.parse(html));
-      _reading.allowAutomaticCompletion = !post.isPaywalled;
-      _stopSpinnerWhenLoaded();
-
-      // Built before the first await: everything below it reads the theme and
-      // the strings, and `context` is not ours to touch across an async gap.
-      final scheme = Theme.of(context).colorScheme;
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final page = wrapSubstackHtml(
-        title: post.title,
-        body: _content.state.document!.body,
-        subtitle: post.excerpt,
-        authorName: post.authorName,
-        publicationName: post.publicationName,
-        background: _cssColor(scheme.surface),
-        foreground: _cssColor(scheme.onSurface),
-        muted: _cssColor(scheme.onSurfaceVariant),
-        link: _cssColor(scheme.primary),
-        isDark: isDark,
-        isRtl: Directionality.of(context) == TextDirection.rtl,
-        fontSizePx: MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18,
-        lineHeight: _reading.state.lineHeight,
-        // Says where the free part stops, so the end of the preview does not
-        // read as the end of the article.
-        footer: post.isPaywalled ? L10n.of(context).plugin_substack_preview_ends : null,
-        footerLink: post.isPaywalled ? post.canonicalUrl : null,
-        footerLinkLabel: post.isPaywalled ? L10n.of(context).plugin_substack_continue_on_site : null,
-      );
-
-      // Article HTML is sanitized; JS stays on so a long-press can start
-      // Vorlesen from that paragraph.
-      await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
-      final document = await OfflineStore.shared.renderArticle(_offlineId, page);
-      if (!mounted || !_content.accepts(generation)) return;
-      await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
-
-      return;
+    switch (substackReaderBodyFor(post)) {
+      case SubstackReaderBody.article:
+        await _showArticle(post, post.bodyHtml!);
+      case SubstackReaderBody.liveSite:
+        _content.change(paywalled: false, partial: false, empty: false, speakText: _fallbackSpeakText(post));
+        await _loadLiveSite(post.canonicalUrl!);
+      case SubstackReaderBody.paywall:
+        _showPane(post, paywalled: true);
+      case SubstackReaderBody.empty:
+        _showPane(post, paywalled: false);
     }
+  }
 
-    if (post.canonicalUrl != null) {
-      _content.change(paywalled: false);
-      _content.change(partial: false);
-      _content.change(empty: false);
-      _content.change(speakText: _fallbackSpeakText(post));
-      await _loadLiveSite(post.canonicalUrl!);
-      return;
-    }
+  /// The paid pane or the empty note: nothing goes into the web view.
+  void _showPane(SubstackPost post, {required bool paywalled}) {
+    _reading.allowAutomaticCompletion = false;
+    _reading.setActive(false);
+    _content.change(
+      paywalled: paywalled,
+      empty: !paywalled,
+      partial: false,
+      loading: false,
+      liveSite: false,
+      speakText: _fallbackSpeakText(post),
+    );
+  }
 
-    if (post.isPaywalled) {
-      _content.change(paywalled: true);
-      _content.change(partial: false);
-      _content.change(empty: false);
-      _content.change(loading: false);
-      _content.change(liveSite: false);
-      _content.change(speakText: _fallbackSpeakText(post));
+  // A paid post usually arrives with its opening paragraphs — the part the
+  // publication chose to give away. Refusing to render any of it because the
+  // post is marked paid threw away what had already been sent, and left a
+  // lock icon where there was something to read.
+  Future<void> _showArticle(SubstackPost post, String html) async {
+    final generation = _content.generation;
+    _content.change(paywalled: false);
+    _content.change(empty: false);
+    _content.change(liveSite: false);
+    _content.change(speakText: _fallbackSpeakText(post, bodyHtml: html));
+    _content.change(partial: post.isPaywalled, document: SubstackArticleDocument.parse(html));
+    _reading.allowAutomaticCompletion = !post.isPaywalled;
+    _stopSpinnerWhenLoaded();
 
-      return;
-    }
+    // Built before the first await: everything below it reads the theme and
+    // the strings, and `context` is not ours to touch across an async gap.
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final page = wrapSubstackHtml(
+      title: post.title,
+      body: _content.state.document!.body,
+      subtitle: post.excerpt,
+      authorName: post.authorName,
+      publicationName: post.publicationName,
+      background: _cssColor(scheme.surface),
+      foreground: _cssColor(scheme.onSurface),
+      muted: _cssColor(scheme.onSurfaceVariant),
+      link: _cssColor(scheme.primary),
+      isDark: isDark,
+      isRtl: Directionality.of(context) == TextDirection.rtl,
+      fontSizePx: MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18,
+      lineHeight: _reading.state.lineHeight,
+      // Says where the free part stops, so the end of the preview does not
+      // read as the end of the article.
+      footer: post.isPaywalled ? L10n.of(context).plugin_substack_preview_ends : null,
+      footerLink: post.isPaywalled ? post.canonicalUrl : null,
+      footerLinkLabel: post.isPaywalled ? L10n.of(context).plugin_substack_continue_on_site : null,
+    );
 
-    if (mounted) {
-      _content.change(loading: false);
-      _content.change(empty: true);
-      _content.change(paywalled: false);
-      _content.change(partial: false);
-      _content.change(liveSite: false);
-      _content.change(speakText: _fallbackSpeakText(post));
-    }
+    // Article HTML is sanitized; JS stays on so a long-press can start
+    // Vorlesen from that paragraph.
+    await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    final document = await OfflineStore.shared.renderArticle(_offlineId, page);
+    if (!mounted || !_content.accepts(generation)) return;
+    await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
   }
 
   /// True when what is being read aloud is this article, rather than one the

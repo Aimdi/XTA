@@ -103,6 +103,18 @@ class SubstackArticleNavigationStore extends Store<String> {
   List<SubstackArticlePassage> get results => state.trim().isEmpty ? document.headings : document.search(state);
 }
 
+enum SubstackReaderBody { article, paywall, liveSite, empty }
+
+/// What the reader shows for [post]. A paid post without a body gets the paid
+/// pane, never the publisher's page: that page runs the publisher's scripts
+/// and is not ours to render the paywall of.
+SubstackReaderBody substackReaderBodyFor(SubstackPost post) {
+  if (post.bodyHtml?.trim().isNotEmpty == true) return SubstackReaderBody.article;
+  if (post.isPaywalled) return SubstackReaderBody.paywall;
+  if (post.canonicalUrl != null) return SubstackReaderBody.liveSite;
+  return SubstackReaderBody.empty;
+}
+
 /// A deep link starts with a slug ID; the full API post uses a numeric ID.
 String substackArticleReadingId(SubstackPost post) =>
     'substack:${post.publication.id}:${post.slug.isEmpty ? post.id : post.slug}';
