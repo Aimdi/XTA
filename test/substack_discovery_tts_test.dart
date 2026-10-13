@@ -163,6 +163,18 @@ void main() {
       expect(plain, contains('Two.'));
       expect(plain, contains('\n'));
     });
+
+    test('skips footnote markers and keeps the notes', () {
+      const raw = '<p>A claim<a class="footnote-anchor" id="footnote-anchor-1" href="#footnote-1">1</a>.</p>'
+          '<div class="footnote"><a id="footnote-1" href="#footnote-anchor-1" class="footnote-number">1</a>'
+          '<div class="footnote-content"><p>The source.</p></div></div>';
+
+      final plain = substackHtmlToPlainText(raw);
+
+      expect(plain, startsWith('A claim.'), reason: '"A claim1." before the fix');
+      expect(plain, contains('The source.'));
+      expect(plain, isNot(contains('1')));
+    });
   });
 }
 

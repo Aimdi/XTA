@@ -99,6 +99,9 @@ String substackHtmlToPlainText(String raw) {
     if (tag == 'script' || tag == 'style' || tag == 'svg' || tag == 'button') {
       return;
     }
+    // A footnote's number, in the text or at its note, read aloud runs into
+    // the sentence: "a claim1".
+    if (node.classes.contains('footnote-anchor') || node.classes.contains('footnote-number')) return;
     if (tag == 'br') {
       buffer.write('\n');
       return;
@@ -172,6 +175,16 @@ const substackTtsFromHereJs = r'''
     if (!text || !window.XtaTts || !XtaTts.postMessage) return;
     XtaTts.postMessage(text);
   }
+  // A block's text without its footnote numbers, as the reader speaks it.
+  function textOf(b){
+    if (!b) return '';
+    var marks = b.querySelectorAll ? b.querySelectorAll('.footnote-anchor,.footnote-number') : [];
+    var kept = [];
+    for (var i = 0; i < marks.length; i++) { kept.push(marks[i].textContent); marks[i].textContent = ''; }
+    var t = (b.innerText || '').trim();
+    for (var j = 0; j < marks.length; j++) marks[j].textContent = kept[j];
+    return t;
+  }
   function blockOf(node){
     var n = node && node.nodeType === 3 ? node.parentElement : node;
     while (n && n !== document.body) {
@@ -191,13 +204,13 @@ const substackTtsFromHereJs = r'''
       var b = blocks[i];
       if (b === el || b.contains(el) || (el && el.contains && el.contains(b))) started = true;
       if (started) {
-        var t = (b.innerText || '').trim();
+        var t = textOf(b);
         if (t) parts.push(t);
       }
     }
     if (!parts.length) {
-      var all = (root.innerText || '').trim();
-      var needle = ((el && el.innerText) || '').trim().slice(0, 80);
+      var all = textOf(root);
+      var needle = textOf(el).slice(0, 80);
       var at = needle ? all.indexOf(needle) : -1;
       post(at >= 0 ? all.slice(at) : (needle || all));
       return;
