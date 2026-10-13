@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Plusieurs tags dans une même entrée ne masquent que les publications qui les ont tous. -tag, ~tag, rating:e, score:<0, user:name et filetype:gif fonctionnent aussi",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Tags masqués",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Tags masqués sur {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Masquer un tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Pas encore de commentaires",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru attend le hash SHA1 du site, pas le mot de passe en clair.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Chaque site garde sa propre classification maximale, ses tags masqués, son identifiant et sa clé. Les tags suivis sont communs à tous les sites.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Choisir une date",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Jour",

@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Mehrere Tags in einem Eintrag blenden nur Beiträge aus, die alle davon enthalten. Auch -tag, ~tag, rating:e, score:<0, user:name und filetype:gif funktionieren",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Stumme Tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Stumme Tags auf {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Tag stummschalten",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Noch keine Kommentare",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru erwartet den SHA1-Hash der Seite, nicht das Klartextpasswort.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Jede Seite behält ihre eigene maximale Bewertung, stummen Tags, Anmeldung und Schlüssel. Gefolgte Tags gelten für alle Seiten.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Datum wählen",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Tag",

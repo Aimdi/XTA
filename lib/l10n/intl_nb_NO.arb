@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Flere tagger i én oppføring skjuler bare innlegg som har alle sammen. -tag, ~tag, rating:e, score:<0, user:name og filetype:gif fungerer også",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Dempede tagger på {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Ingen kommentarer ennå",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Hvert nettsted har sin egen maksimale vurdering, dempede tagger, innlogging og nøkkel. Fulgte tagger deles av alle nettsteder.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Velg en dato",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Dag",

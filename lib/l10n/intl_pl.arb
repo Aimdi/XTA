@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Kilka tagów w jednym wpisie ukrywa tylko posty, które mają je wszystkie. Działają też -tag, ~tag, rating:e, score:<0, user:name i filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Wyciszone tagi w {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Na razie brak komentarzy",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Każda witryna ma własną maksymalną klasyfikację, wyciszone tagi, login i klucz. Obserwowane tagi są wspólne dla wszystkich witryn.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Wybierz datę",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Dzień",

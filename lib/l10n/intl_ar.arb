@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "الإدخال الذي يضم عدة وسوم يُخفي فقط المنشورات التي تحملها جميعًا. ويعمل أيضًا ‎-tag، ‎~tag، rating:e، score:<0، user:name و filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "الوسوم المكتومة على {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "لا تعليقات بعد",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "يحتفظ كل موقع بأقصى تصنيف خاص به وبالوسوم المكتومة وبيانات الدخول والمفتاح. أما الوسوم المتابَعة فمشتركة بين جميع المواقع.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "اختر تاريخًا",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "يوم",

@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Sarrera batean hainbat etiketa jarriz gero, guztiak dituzten argitalpenak soilik ezkutatzen dira. -tag, ~tag, rating:e, score:<0, user:name eta filetype:gif ere erabil daitezke",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Isilarazitako etiketak {site} gunean",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Oraindik ez dago iruzkinik",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Gune bakoitzak bere sailkapen maximoa, isilarazitako etiketak, saioa eta gakoa gordetzen ditu. Jarraitutako etiketak gune guztientzat dira.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Aukeratu data",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Eguna",

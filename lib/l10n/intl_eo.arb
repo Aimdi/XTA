@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Pluraj etikedoj en unu ero kaŝas nur afiŝojn, kiuj havas ilin ĉiujn. Ankaŭ -tag, ~tag, rating:e, score:<0, user:name kaj filetype:gif funkcias",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Silentigitaj etikedoj ĉe {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Ankoraŭ neniuj komentoj",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Ĉiu retejo konservas sian propran maksimuman taksadon, silentigitajn etikedojn, salutnomon kaj ŝlosilon. Sekvataj etikedoj estas komunaj al ĉiuj retejoj.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Elekti daton",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Tago",

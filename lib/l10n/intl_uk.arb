@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Кілька тегів в одному записі приховують лише дописи, де є всі вони. Також працюють -tag, ~tag, rating:e, score:<0, user:name і filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Приховані теги на {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Коментарів поки немає",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Кожен сайт зберігає власний максимальний рейтинг, приховані теги, логін і ключ. Теги, які ви відстежуєте, спільні для всіх сайтів.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Виберіть дату",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "День",

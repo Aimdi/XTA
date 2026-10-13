@@ -686,6 +686,8 @@ Future<void> main() async {
       optionPluginBooruBlurExplicit: false,
       optionPluginBooruTagSort: 'name',
       optionPluginBooruPromptKinds: '',
+      optionPluginBooruSiteSettings: '{}',
+      optionPluginBooruSiteCredentials: '{}',
       optionPluginEhEnabled: false,
       optionPluginEhShowTab: true,
       optionPluginEhCookies: '',

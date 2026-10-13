@@ -467,6 +467,11 @@ const optionPluginBooruApiKey = 'plugin.booru.api_key';
 /// The host the Booru login and key were entered for; no other host is sent them.
 const optionPluginBooruCredentialsHost = 'plugin.booru.credentials_host';
 const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
+// Each site's own rating cap and blacklist while another is in use, as JSON by host.
+const optionPluginBooruSiteSettings = 'plugin.booru.site_settings';
+// Each site's own login and key while another is in use, as JSON by host. The
+// suffix keeps it out of exports and crash reports (see isSecretPrefKey).
+const optionPluginBooruSiteCredentials = 'plugin.booru.site_credentials_api_key';
 const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
 const optionPluginBooruSearchHistory = 'plugin.booru.search_history';
 const optionPluginBooruMutedTags = 'plugin.booru.muted_tags';

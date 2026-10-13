@@ -1237,13 +1237,56 @@ void main() {
 
       await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
+      expect(find.text('Show adult posts?'), findsNothing, reason: 'e621 kept its General cap');
       await tester.enterText(login, 'fox');
       await tester.pumpAndSettle();
       expect(prefs.get<String>(optionPluginBooruCredentialsHost), 'https://e621.net');
       expect(prefs.get<String>(optionPluginBooruApiKey), isEmpty);
       expect(find.textContaining('danbooru.donmai.us'), findsNothing);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Danbooru'));
+      await tester.pumpAndSettle();
+      expect(shown(), 'reader', reason: "each site keeps its own login");
+      expect(prefs.get<String>(optionPluginBooruApiKey), 'secret-key');
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      expect(shown(), 'fox');
+    });
+
+    testWidgets("each site's muted tags come back with it", (tester) async {
+      await _pump(tester, const BooruSettingsScreen(), prefs: {optionPluginBooruHost: 'https://danbooru.donmai.us'});
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+      Future<void> mute(String tag) async {
+        final field = find.widgetWithText(TextField, 'Mute a tag');
+        await tester.scrollUntilVisible(field, 300, scrollable: find.byType(Scrollable).first);
+        await tester.enterText(field, tag);
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+      }
+
+      Future<void> site(String name) async {
+        await tester.scrollUntilVisible(
+          find.widgetWithText(ChoiceChip, name),
+          -300,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.widgetWithText(ChoiceChip, name));
+        await tester.pumpAndSettle();
+      }
+
+      await mute('gore');
+      await site('Safebooru');
+      await mute('scat');
+      expect(prefs.get<String>(optionPluginBooruMutedTags), '["gore","scat"]');
+
+      await site('Danbooru');
+      expect(prefs.get<String>(optionPluginBooruMutedTags), '["gore"]');
+      await tester.scrollUntilVisible(
+        find.text('Muted tags on danbooru.donmai.us'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.widgetWithText(InputChip, 'scat'), findsNothing);
     });
 
     test('thumbnails and full screen use the chosen file size', () {

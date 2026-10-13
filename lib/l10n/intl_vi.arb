@@ -1570,8 +1570,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "Nhiều thẻ trong một mục chỉ ẩn bài đăng có đủ tất cả các thẻ đó. Cũng dùng được -tag, ~tag, rating:e, score:<0, user:name và filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Thẻ đã ẩn trên {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Chưa có bình luận nào",
@@ -1592,6 +1598,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Mỗi trang giữ mức đánh giá tối đa, thẻ đã ẩn, thông tin đăng nhập và khóa riêng. Các thẻ đang theo dõi được dùng chung cho mọi trang.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Chọn ngày",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "Ngày",

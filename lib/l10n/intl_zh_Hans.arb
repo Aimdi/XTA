@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "同一条目中填写多个标签时，只屏蔽同时包含这些标签的帖子。也支持 -tag、~tag、rating:e、score:<0、user:name 和 filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "屏蔽标签",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site} 上的屏蔽标签",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "屏蔽标签",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "暂无评论",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru 需要站点的 SHA1 哈希，不是明文密码。",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "每个站点分别保存最高分级、屏蔽标签、登录名和密钥。关注的标签在所有站点间共享。",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "选择日期",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "日榜",

@@ -1573,8 +1573,14 @@
   "@plugin_booru_mute_empty": {},
   "plugin_booru_mute_help": "同一個項目中有多個標籤時，只會封鎖同時含有這些標籤的貼文。也支援 -tag、~tag、rating:e、score:<0、user:name 和 filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site} 上的封鎖標籤",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "尚無留言",
@@ -1595,6 +1601,8 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "每個站點分別保存最高分級、封鎖標籤、登入名稱和金鑰。追蹤的標籤在所有站點間共用。",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "選擇日期",
   "@plugin_booru_pick_date": {},
   "plugin_booru_popular_day": "日榜",
