@@ -1,6 +1,6 @@
 # Booru plugin: ranked plan
 
-Status: **approved 2026-10-12; tier 1 in progress.** Ranks marked **Done**
+Status: **approved 2026-10-12; tier 1 done except the live checks named below.** Ranks marked **Done**
 name the commit that fixed them.
 Evidence for every item is in `docs/booru/audit.md` (IDs B*, P*, §4 rows);
 baseline scenarios are in `docs/perf-baseline.md`.
@@ -34,9 +34,11 @@ with no regression elsewhere.
 ## Tier 1: bugs in existing features
 
 IDs are the audit's. Items marked "live check" depend on how a site answers,
-which could not be observed from this environment. They start by recording
-real responses as test fixtures, which needs the booru hosts reachable here
-or responses captured on your side.
+which could not be observed from this environment. They were meant to start
+by recording real responses as test fixtures. The hosts stayed unreachable,
+so on your go-ahead they were fixed against answers built from the shapes the
+audit read in Boorusama instead, each change kept to what holds whatever the
+host sends, and each is unverified until checked live.
 
 | Rank | Item | Fixes | Impact | Effort | Risk | Test first |
 |---|---|---|---|---|---|---|
@@ -49,24 +51,24 @@ or responses captured on your side.
 | 7 | **Done** (`56ddcba9`). Show the skeleton, not the empty state, until a feed's first load has finished | B7 | M | S | L | A new feed renders the skeleton before its first result |
 | 8 | **Done** (`cc31597e`). Drop a load-more that finishes after a refresh: a generation counter in `BooruFeedStore`, also guarding an older refresh's page counter, paging state and Following's failure count | B8 | M | S | L | Refresh while a load-more is pending: its posts never appear. Two overlapping refreshes: only the newer one's state remains |
 | 9 | **Done** (`6ec2f4bd`). Name Booru downloads from the decoded file name, keeping the start of long names | B9 | M | S | M (shared helper) | A Moebooru URL gives a readable `booru-…` name under 240 characters |
-| 10 | Drop posts with no usable file, and say why when a download has nothing to fetch | B10 | M | S | M (live check) | Fixtures of a banned Danbooru post and a deleted e621 post |
-| 11 | Let a feed emptied by the rating cap keep paging, and send the cap to Gelbooru-family hosts in their own rating syntax | B16 | M | S | M (live check) | Four filtered-empty pages, then a full one: the reader reaches it |
-| 12 | Read errors sent as HTTP 200: Rule34's missing authentication becomes "needs credentials"; Gelbooru's "Too deep" ends the feed | B11 | M | S | M (live check) | Recorded Rule34 and Gelbooru bodies |
-| 13 | Danbooru's tag limit: a specific message for 422, and say when a saved search exceeds it | B13 | M | S | M (live check) | Recorded 422 body |
-| 14 | e621 GIFs play from the original file | B14 | M | S | M (live check) | A recorded e621 GIF post: its display URL is the `.gif` |
-| 15 | Decode HTML entities in Gelbooru tags | B15 | M | S | M (live check) | A recorded Gelbooru post: `girls&#039;_frontline` parses to `girls'_frontline` |
-| 16 | Gelbooru 0.2 forks: parse the tag endpoint's XML reply, or use their autocomplete endpoint | B12 | M | M | M (live check) | Recorded Safebooru tag replies |
-| 17 | Stop unfollowing a booru tag from removing other sources' group rows: prefix Booru members and migrate existing rows | B17 | M | M | H (migration in frozen `lib/database/`) | Needs your approval for the migration |
+| 10 | **Done** (`18989036`). Drop posts with no usable file; every listed post now has a file, so no download comes up empty | B10 | M | S | M (live check) | Fixtures of a banned Danbooru post and a deleted e621 post |
+| 11 | **Done** (`94fb4cdb`, `6803168b`). Let a feed emptied by the rating cap keep paging, and send the cap to Gelbooru-family hosts in their own rating syntax | B16 | M | S | M (live check) | Four filtered-empty pages, then a full one: the reader reaches it |
+| 12 | **Done** (`2926ce05`). Read errors sent as HTTP 200: Rule34's missing authentication becomes "needs credentials"; Gelbooru's "Too deep" and a 410 end the feed | B11 | M | S | M (live check) | Recorded Rule34 and Gelbooru bodies |
+| 13 | **Done** (`bd92c6c7`) for the 422 message. Open: a warning when a search past the limit is saved, which needs Danbooru's free-metatag list | B13 | M | S | M (live check) | Recorded 422 body |
+| 14 | **Done** (`b503f6a4`). GIFs play from the original file, on every engine | B14 | M | S | M (live check) | A recorded e621 GIF post: its display URL is the `.gif` |
+| 15 | **Done** (`033da183`). Decode HTML entities in Gelbooru tags | B15 | M | S | M (live check) | A recorded Gelbooru post: `girls&#039;_frontline` parses to `girls'_frontline` |
+| 16 | **Done** (`864e395f`). Gelbooru 0.2 forks: parse the tag endpoint's XML reply | B12 | M | M | M (live check) | Recorded Safebooru tag replies |
+| 17 | **Done** (`d259a6a4`). Stop unfollowing a booru tag from removing other sources' group rows: prefix Booru members and migrate existing rows (migration 62, approved) | B17 | M | M | H (migration in frozen `lib/database/`) | Needs your approval for the migration |
 | 18 | **Done** (`20d4f4a8`). Honour "load media only on tap" for Booru videos through the existing gate | B18 | L | S | L | With the setting on, no player is built until a tap |
 | 19 | **Done** (`add22b17`). Distinct messages for a 403 without credentials and for 503 | B20 | L | S | L | Each status maps to its own message |
 | 20 | **Done** (`5a3b9819`). Guess `hypnohub.net` as Gelbooru 0.2 | B19 | L | S | L | Engine guess test |
 | 21 | **Done** (`0d10bd5d`). `mounted` checks after awaits in Booru settings | B26 | L | S | L | Leave the screen mid-write: no exception |
 | 22 | **Done** (`ec2cf187`). Label the Gelbooru 0.2 date as "updated", or leave it out | B24 | L | S | L | Facts test |
 | 23 | **Done** (`006f364f`). Download ugoira as its webm, or offer both | B25 | L | S | L | Download source test |
-| 24 | Moebooru wiki: look the title up exactly | B21 | L | S | M (live check) | Recorded wiki reply |
+| 24 | **Partly done** (`0f88f167`): the exact title is picked from up to 100 search results; an exact lookup is a live check | B21 | L | S | M (live check) | Recorded wiki reply |
 | 25 | **Done** (`972d8d6e`). Popular's default date: the host's day, not the device's | B22 | L | S | M | Date test at UTC+9 |
 | 26 | **Done** (`14851203`). Ignore results after a store is destroyed, and stop its remaining pages | B27 | L | M | L | Destroy mid-load: no late update, no further request |
-| 27 | Rule34 media URLs: rewrite `api-cdn` samples, build missing previews, read a numeric `directory`, send a `Referer` | B23 | L | M | M (live check) | Recorded Rule34 posts |
+| 27 | **Partly done** (`e39aa081`): a numeric `directory`, and a video's missing preview. Open, live check: the `api-cdn` rewrite and a `Referer` | B23 | L | M | M (live check) | Recorded Rule34 posts |
 
 ## Tier 2: performance of existing screens
 
@@ -120,13 +122,13 @@ approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next
 
-Ranks 1–9 and 18–26 are done. Every open tier 1 item now waits on you:
+Every tier 1 rank is done or partly done. Ranks 10–16, 24 and 27 were fixed
+without the booru hosts, which this environment's network policy refuses:
+their tests use answers built from the shapes the audit read in Boorusama, so
+each stays unverified until it is checked live. What is still open in tier 1
+needs a live host: the `api-cdn` rewrite and `Referer` for Rule34 (rank 27),
+an exact Moebooru wiki lookup (rank 24), and a warning when a Danbooru search
+past the tag limit is saved (rank 13).
 
-- Ranks 10–16, 24 and 27 are live checks: they start from real responses,
-  and this environment's network policy refuses every booru host. They need
-  danbooru.donmai.us, e621.net, gelbooru.com, rule34.xxx (with
-  api.rule34.xxx), safebooru.org and yande.re allowed, or responses captured
-  on your side.
-- Rank 17 needs your approval for a migration in the frozen `lib/database/`.
-
-Tier 2 needs the baseline measured on a phone first.
+Tier 2 is next. Without a phone, its items get static diagnosis and tests,
+and every metric stays UNVERIFIED until the S1–S7 baseline runs on a device.

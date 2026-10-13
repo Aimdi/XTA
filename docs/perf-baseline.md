@@ -224,14 +224,24 @@ lists each) change error text, credentials, feed resets, paging, the first
 frame of a feed, the Following tab, download names, tap-to-load for videos,
 the engine guessed for a custom host, settings after leaving them, the date
 label on Gelbooru 0.2 posts, what an animation downloads, Popular's default
-date and what a closed store does with a late answer. The scripted run uses Danbooru with no
-credentials on a working network, so four of them are on a timed path: B3
-checks whether a feed is stale (site, rating cap, blacklist) before each page
-request; B5 adds a footer under every grid that observes the paging state and
-shows a spinner while the next page loads; B7 shows the skeleton until a
-feed's first page arrives, where an empty state used to flash; and B8 checks
-that a returning page still belongs to the latest refresh. S1 and S2 cover
-them. Requests after a failed page are not a scenario here; a unit test checks
-them (five near-end scroll notifications after a failure make one request).
+date and what a closed store does with a late answer. The scripted run uses
+Danbooru with no credentials on a working network, so four of them are on a
+timed path: B3 checks whether a feed is stale (site, rating cap, blacklist)
+before each page request; B5 adds a footer under every grid that observes the
+paging state and shows a spinner while the next page loads; B7 shows the
+skeleton until a feed's first page arrives, where an empty state used to
+flash; and B8 checks that a returning page still belongs to the latest
+refresh. S1 and S2 cover them. Requests after a failed page are not a
+scenario here; a unit test checks them (five near-end scroll notifications
+after a failure make one request).
 Since B18 the run also turns "load media only on tap" off, and puts the
 reader's value back, so S5 starts each video with the player's own button.
+
+B10–B17, and B21 and B23 in part (`d259a6a4` to `e39aa081`), add three
+things to the Danbooru run: every page is checked for posts without a file
+(one check per post), an empty feed observes the paging state for its Load
+more button, and a GIF now opens from its original, so S3 and S7 load more
+bytes for a GIF post. The rest (Gelbooru-family rating tags, XML tags and
+entities, text refusals, page and tag limits, Rule34 paths, the Moebooru
+wiki, group member ids) is off the scripted path. None of this has been
+measured: the baseline itself has not yet run on a phone.
