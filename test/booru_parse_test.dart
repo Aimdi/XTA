@@ -211,6 +211,46 @@ void main() {
       expect(posts.single.hostPageUrl, 'https://e621.net/posts/6617540');
     });
 
+    // An e621 GIF's sample is a still JPEG; Boorusama shows the original
+    // instead. Shape as the audit read it, not recorded from the live host.
+    test('a GIF is shown from its original, not its still sample', () {
+      final gif = parseBooruPosts(
+        {
+          'posts': [
+            {
+              'id': 1,
+              'rating': 's',
+              'file': {
+                'ext': 'gif',
+                'url': 'https://static1.e621.net/data/a.gif',
+              },
+              'sample': {'url': 'https://static1.e621.net/data/sample/a.jpg'},
+              'preview': {'url': 'https://static1.e621.net/data/preview/a.jpg'},
+            },
+          ],
+        },
+        engine: BooruEngine.e621,
+        host: 'https://e621.net',
+      ).single;
+      final still = parseBooruPosts(
+        [
+          {
+            'id': 2,
+            'rating': 'g',
+            'file_ext': 'png',
+            'file_url': 'https://cdn.donmai.us/original/b.png',
+            'large_file_url': 'https://cdn.donmai.us/sample/b.jpg',
+          },
+        ],
+        engine: BooruEngine.danbooru,
+        host: 'https://danbooru.donmai.us',
+      ).single;
+
+      expect(gif.displayUrl, 'https://static1.e621.net/data/a.gif');
+      expect(gif.catalogUrl, 'https://static1.e621.net/data/sample/a.jpg');
+      expect(still.displayUrl, 'https://cdn.donmai.us/sample/b.jpg');
+    });
+
     test('filters by max rating and muted tags', () {
       final explicit = parseBooruPosts(
         [

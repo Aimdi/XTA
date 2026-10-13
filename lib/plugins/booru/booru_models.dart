@@ -145,9 +145,18 @@ class BooruPost {
       ? previewUrl!
       : (sampleUrl ?? fileUrl ?? '');
 
-  String get displayUrl => (sampleUrl != null && sampleUrl!.isNotEmpty)
-      ? sampleUrl!
-      : (fileUrl ?? previewUrl ?? '');
+  /// The sample, else the original. A GIF's sample is a still JPEG, so a
+  /// GIF is shown from its original.
+  String get displayUrl {
+    if (_isGif && fileUrl != null && fileUrl!.isNotEmpty) return fileUrl!;
+    return (sampleUrl != null && sampleUrl!.isNotEmpty)
+        ? sampleUrl!
+        : (fileUrl ?? previewUrl ?? '');
+  }
+
+  bool get _isGif =>
+      (fileExt ?? '').toLowerCase() == 'gif' ||
+      _extensionOf(fileUrl ?? '') == 'gif';
 
   /// Sample/large for catalog tiles. Preview (~150px) looks like 240p when
   /// stretched across a two-column phone tile. Video posters stay on preview
