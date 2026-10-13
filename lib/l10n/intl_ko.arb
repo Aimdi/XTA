@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "사이트에서 접근을 거부했습니다. 로그인이나 브라우저 확인이 필요할 수 있습니다",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "이 사이트는 로그인과 API 키가 필요합니다. 설정에서 추가하세요",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",

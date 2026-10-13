@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "網站拒絕存取，可能需要登入或在瀏覽器中驗證",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "此網站需要登入名稱和 API 金鑰，請在設定中新增",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",

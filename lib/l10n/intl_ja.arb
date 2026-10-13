@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "アクセスが拒否されました。ログインまたはブラウザでの確認が必要かもしれません",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "このサイトにはログインと API キーが必要です。設定で追加してください",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Booruホストに接続できません",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "先に設定でBooruホストを選んでください",

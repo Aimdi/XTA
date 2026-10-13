@@ -12,6 +12,8 @@ String booruErrorMessage(L10n l10n, Object? error) {
     BooruErrorKind.forbidden => l10n.plugin_booru_error_forbidden,
     BooruErrorKind.rateLimited => l10n.plugin_booru_error_rate_limited,
     BooruErrorKind.unavailable => l10n.plugin_booru_error_unavailable,
+    BooruErrorKind.needsCredentials => l10n.plugin_booru_error_needs_key,
+    BooruErrorKind.tooDeep => l10n.plugin_booru_end_of_results,
     BooruErrorKind.notFound => l10n.plugin_booru_error_not_found,
     BooruErrorKind.badResponse => l10n.plugin_booru_error_response,
   };

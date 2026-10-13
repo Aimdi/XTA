@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "L’hôte a refusé l’accès — une connexion ou une vérification dans le navigateur est peut-être nécessaire",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Cet hôte demande un identifiant et une clé API — ajoutez-les dans les réglages",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Impossible de joindre l’hôte Booru",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choisissez d’abord un hôte Booru dans les réglages",

@@ -481,6 +481,52 @@ void main() {
       expect(await messageFor(500), l10n.plugin_booru_error_response);
     });
 
+    // Bodies built from the checks the audit read in Boorusama (an answer starting "missing authentication",
+    // gelbooru.com's "Too deep" and Danbooru's 410), not recorded from the live hosts.
+    test('a host that asks a guest for credentials in plain text says so', () async {
+      final l10n = await L10n.load(const Locale('en'));
+      const missing = 'Missing authentication. Go to api.rule34.xxx for more information';
+      Future<String> messageFor(Map<String, Object> prefs) async {
+        final client = _client(
+          'gelbooru_v2',
+          'https://rule34.xxx',
+          MockClient((_) async => http.Response(missing, 200)),
+          prefs: prefs,
+        );
+        final error = await client.latest().then<Object?>((_) => null, onError: (Object error) => error);
+        return booruErrorMessage(l10n, error);
+      }
+
+      expect(await messageFor(const {}), l10n.plugin_booru_error_needs_key);
+      expect(
+        await messageFor(const {
+          optionPluginBooruLogin: '123',
+          optionPluginBooruApiKey: 'secret',
+          optionPluginBooruCredentialsHost: 'https://rule34.xxx',
+        }),
+        l10n.plugin_booru_error_unauthorized,
+      );
+    });
+
+    test('a host that will not page that deep ends the feed instead of failing', () async {
+      final deep = _client(
+        'gelbooru_v2',
+        'https://gelbooru.com',
+        MockClient((_) async => http.Response('Too deep! Pull it back some.', 200)),
+      );
+      final limited = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient((_) async => http.Response('{"success":false}', 410)),
+      );
+
+      for (final client in [deep, limited]) {
+        final page = await client.latest(page: 1001);
+        expect(page.posts, isEmpty);
+        expect(page.hasMore, isFalse);
+      }
+    });
+
     test('Gelbooru popular shows its highest-scored posts', () async {
       final asked = <Uri>[];
       final client = _client(

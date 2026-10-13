@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "साइट ने एक्सेस देने से मना कर दिया — शायद लॉग इन या ब्राउज़र में जाँच ज़रूरी है",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "इस साइट के लिए लॉगिन और API कुंजी ज़रूरी है — उन्हें सेटिंग में जोड़ें",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",

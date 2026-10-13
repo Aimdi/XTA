@@ -27,6 +27,12 @@ enum BooruErrorKind {
 
   /// A 503: the host is overloaded, or rate limits that way (e621).
   unavailable,
+
+  /// The host answered a guest that it needs credentials (Rule34).
+  needsCredentials,
+
+  /// The host pages no further: a 410, or gelbooru.com's "Too deep".
+  tooDeep,
   notFound,
   badResponse,
 }
@@ -131,11 +137,14 @@ class BooruClient {
     final from = site ?? this.site;
     final effectiveTags = _withRatingTag(tags, from);
     final uri = _postsUri(from, tags: effectiveTags, page: page, limit: limit);
-    final parsed = parseBooruPosts(
-      await fetchJson(uri),
-      engine: from.engine,
-      host: from.host,
-    );
+    final Object? raw;
+    try {
+      raw = await fetchJson(uri);
+    } on BooruException catch (error) {
+      if (error.kind != BooruErrorKind.tooDeep) rethrow;
+      return BooruPostPage(posts: const [], page: page, hasMore: false);
+    }
+    final parsed = parseBooruPosts(raw, engine: from.engine, host: from.host);
     return _page(parsed, page: page, hasMore: parsed.length >= limit);
   }
 
@@ -427,14 +436,32 @@ class BooruClient {
   /// an unexpected answer. A 403 blames the credentials only if some went out.
   BooruErrorKind? _statusFailure(int status, Uri uri) => switch (status) {
     401 => BooruErrorKind.unauthorized,
-    403 when uri.queryParameters.keys.any(booruCredentialParameters.contains) =>
-      BooruErrorKind.unauthorized,
+    403 when _sentCredentials(uri) => BooruErrorKind.unauthorized,
     403 => BooruErrorKind.forbidden,
     404 => BooruErrorKind.notFound,
+    410 => BooruErrorKind.tooDeep,
     429 => BooruErrorKind.rateLimited,
     503 => BooruErrorKind.unavailable,
     _ => null,
   };
+
+  /// What a successful answer in plain text says went wrong: Rule34 asks a
+  /// guest for credentials that way, and gelbooru.com stops paging.
+  BooruErrorKind? _textFailure(String body, Uri uri) {
+    if (body.startsWith('[') || body.startsWith('{') || body.startsWith('<')) {
+      return null;
+    }
+    final text = body.toLowerCase();
+    if (text.startsWith('missing authentication')) {
+      return _sentCredentials(uri)
+          ? BooruErrorKind.unauthorized
+          : BooruErrorKind.needsCredentials;
+    }
+    return text.contains('too deep') ? BooruErrorKind.tooDeep : null;
+  }
+
+  bool _sentCredentials(Uri uri) =>
+      uri.queryParameters.keys.any(booruCredentialParameters.contains);
 
   Object? _decodeJson(http.Response response, Uri uri) {
     final failure = _statusFailure(response.statusCode, uri);
@@ -451,6 +478,10 @@ class BooruClient {
     final body = response.body.trim();
     if (body.isEmpty || body == '[]' || body == '{}') {
       return const [];
+    }
+    final refusal = _textFailure(body, uri);
+    if (refusal != null) {
+      throw BooruException(refusal, '$uri: ${refusal.name}');
     }
 
     try {

@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "El servidor ha denegado el acceso — puede que haga falta iniciar sesión o una comprobación en el navegador",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Este sitio necesita un usuario y una clave API — añádelos en los ajustes",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",

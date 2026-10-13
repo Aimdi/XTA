@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "Zugriff verweigert — evtl. sind Login oder Browser-Prüfung nötig",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Dieser Host braucht Login und API-Schlüssel — in den Einstellungen hinzufügen",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Booru-Host nicht erreichbar",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Zuerst einen Booru-Host in den Einstellungen wählen",

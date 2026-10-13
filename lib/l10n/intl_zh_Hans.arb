@@ -1444,6 +1444,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "站点拒绝访问，可能需要登录或在浏览器中验证",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "该站点需要登录名和 API 密钥，请在设置中添加",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "无法连接 Booru 站点",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "请先在设置中选择 Booru 站点",
