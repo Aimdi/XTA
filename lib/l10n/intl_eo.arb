@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Pluraj etikedoj en unu ero kaŝas nur afiŝojn, kiuj havas ilin ĉiujn. Ankaŭ -tag kaj rating:e funkcias",
+  "plugin_booru_mute_help": "Pluraj etikedoj en unu ero kaŝas nur afiŝojn, kiuj havas ilin ĉiujn. Ankaŭ -tag, ~tag, rating:e, score:<0, user:name kaj filetype:gif funkcias",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

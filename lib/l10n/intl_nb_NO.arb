@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Flere tagger i én oppføring skjuler bare innlegg som har alle sammen. -tag og rating:e fungerer også",
+  "plugin_booru_mute_help": "Flere tagger i én oppføring skjuler bare innlegg som har alle sammen. -tag, ~tag, rating:e, score:<0, user:name og filetype:gif fungerer også",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

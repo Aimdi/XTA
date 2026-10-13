@@ -30,22 +30,34 @@ BooruPost _post({
   BooruRating? rating = BooruRating.general,
   Map<String, BooruTagCategory> categories = const {},
   String? fileUrl,
+  int score = 0,
+  int width = 1,
+  int height = 1,
+  int? favCount,
+  String? uploader,
+  String? md5,
+  String? parentId,
+  String? source,
 }) => BooruPost(
   id: id,
   host: host,
   engine: engine,
   tags: tags,
   rating: rating,
-  score: 0,
-  width: 1,
-  height: 1,
+  score: score,
+  width: width,
+  height: height,
   previewUrl: null,
   sampleUrl: null,
   fileUrl: fileUrl,
   fileExt: 'jpg',
-  source: null,
+  source: source,
   createdAt: null,
   tagCategories: categories,
+  favCount: favCount,
+  uploader: uploader,
+  md5: md5,
+  parentId: parentId,
 );
 
 BooruClient _client(String engine, String host, http.Client http, {Map<String, Object> prefs = const {}}) =>
@@ -230,8 +242,38 @@ void main() {
     });
 
     test('an entry with a metatag the app cannot check never hides', () {
-      expect(booruPostMuted(_post(), {'solo score:<0'}), isFalse);
-      expect(booruPostMuted(_post(), {'solo -score:<0'}), isFalse);
+      expect(booruPostMuted(_post(), {'solo status:deleted'}), isFalse);
+      expect(booruPostMuted(_post(), {'solo -status:deleted'}), isFalse);
+      expect(booruPostMuted(_post(), {'solo score:lots'}), isFalse, reason: 'not a number');
+      expect(booruPostMuted(_post(), {'user:someone'}), isFalse, reason: 'the host did not say who uploaded it');
+    });
+
+    test('score, id, sizes and counts compare like the hosts compare them', () {
+      final post = _post(id: '1500', score: -3, width: 1920, height: 1080, favCount: 7);
+      expect(booruPostMuted(post, {'score:<0'}), isTrue);
+      expect(booruPostMuted(post, {'score:>=0'}), isFalse);
+      expect(booruPostMuted(post, {'solo -score:<0'}), isFalse);
+      expect(booruPostMuted(post, {'score:-5..-1'}), isTrue);
+      expect(booruPostMuted(post, {'score:..-4'}), isFalse);
+      expect(booruPostMuted(post, {'id:>1000'}), isTrue);
+      expect(booruPostMuted(post, {'id:1500'}), isTrue);
+      expect(booruPostMuted(post, {'width:>=1920 height:<1200'}), isTrue);
+      expect(booruPostMuted(post, {'favcount:10..'}), isFalse);
+      expect(booruPostMuted(post, {'tagcount:<3'}), isTrue, reason: 'it has two tags');
+    });
+
+    test('uploader, file type, md5, parent and source match what the post says', () {
+      final post = _post(uploader: 'SomeOne', md5: 'abc123', parentId: '9', source: 'https://www.pixiv.net/artworks/1');
+      expect(booruPostMuted(post, {'user:someone'}), isTrue);
+      expect(booruPostMuted(post, {'filetype:jpg'}), isTrue);
+      expect(booruPostMuted(post, {'filetype:gif'}), isFalse);
+      expect(booruPostMuted(post, {'md5:abc123'}), isTrue);
+      expect(booruPostMuted(post, {'parent:9'}), isTrue);
+      expect(booruPostMuted(post, {'parent:none'}), isFalse);
+      expect(booruPostMuted(_post(), {'parent:none'}), isTrue);
+      expect(booruPostMuted(post, {'source:https://www.pixiv.net'}), isTrue, reason: 'a source matches by its start');
+      expect(booruPostMuted(post, {'source:*artworks*'}), isTrue);
+      expect(booruPostMuted(post, {'source:none'}), isFalse);
     });
 
     test('stored entries keep their spaces and old single tags still load', () {

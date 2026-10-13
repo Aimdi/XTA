@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "한 항목에 태그를 여러 개 넣으면 모두 포함된 게시물만 숨깁니다. -tag와 rating:e도 쓸 수 있습니다",
+  "plugin_booru_mute_help": "한 항목에 태그를 여러 개 넣으면 모두 포함된 게시물만 숨깁니다. -tag, ~tag, rating:e, score:<0, user:name, filetype:gif도 쓸 수 있습니다",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

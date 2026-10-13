@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "ミュート中のタグはまだありません",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "1つの項目に複数のタグを入れると、そのすべてを含む投稿だけをミュートします。-tag や rating:e も使えます",
+  "plugin_booru_mute_help": "1つの項目に複数のタグを入れると、そのすべてを含む投稿だけをミュートします。-tag、~tag、rating:e、score:<0、user:name、filetype:gif なども使えます",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "ミュートタグ",
   "@plugin_booru_mute_section": {},

@@ -1544,7 +1544,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Nhiều thẻ trong một mục chỉ ẩn bài đăng có đủ tất cả các thẻ đó. Cũng dùng được -tag và rating:e",
+  "plugin_booru_mute_help": "Nhiều thẻ trong một mục chỉ ẩn bài đăng có đủ tất cả các thẻ đó. Cũng dùng được -tag, ~tag, rating:e, score:<0, user:name và filetype:gif",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

@@ -1640,7 +1640,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Several tags in one entry hide only posts that have all of them. -tag and rating:e work too",
+  "plugin_booru_mute_help": "Several tags in one entry hide only posts that have all of them. -tag, ~tag, rating:e, score:<0, user:name and filetype:gif work too",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

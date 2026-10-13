@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Sarrera batean hainbat etiketa jarriz gero, guztiak dituzten argitalpenak soilik ezkutatzen dira. -tag eta rating:e ere erabil daitezke",
+  "plugin_booru_mute_help": "Sarrera batean hainbat etiketa jarriz gero, guztiak dituzten argitalpenak soilik ezkutatzen dira. -tag, ~tag, rating:e, score:<0, user:name eta filetype:gif ere erabil daitezke",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

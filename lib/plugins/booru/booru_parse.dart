@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:html_unescape/html_unescape.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_metatag_match.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/utils/json.dart';
@@ -421,8 +422,9 @@ bool booruPostAllowed(BooruPost post, BooruRating maxRating) {
 
 /// Whether any blacklist entry hides [post]. An entry is one tag or several;
 /// several hide a post only when all of them match. `-tag` matches a post
-/// without the tag, `~a ~b` matches a post with either, and `rating:x` uses
-/// the host's own rating letters.
+/// without the tag, `~a ~b` matches a post with either, `rating:x` uses the
+/// host's own rating letters, and the metatags [booruMetatagMatches] knows
+/// (`score:<0`, `user:name`, `filetype:gif`…) compare what the post says.
 bool booruPostMuted(BooruPost post, Set<String> entries) {
   if (entries.isEmpty) return false;
   final tags = post.tags.map((tag) => tag.toLowerCase()).toSet();
@@ -442,8 +444,7 @@ bool _tokenMatches(BooruPost post, Set<String> tags, BooruQueryToken token) {
   final present = switch (token.metatag) {
     null => tags.contains(token.value.toLowerCase()),
     'rating' => _ratingMatches(post, token.value),
-    // Other metatags need the host; an entry using one never hides a post.
-    _ => null,
+    final name => booruMetatagMatches(post, name, token.value),
   };
   if (present == null) return false;
   return token.operator == BooruTagOperator.exclude ? !present : present;

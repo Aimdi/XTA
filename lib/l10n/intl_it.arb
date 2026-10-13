@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Più tag nella stessa voce nascondono solo i post che li hanno tutti. Funzionano anche -tag e rating:e",
+  "plugin_booru_mute_help": "Più tag nella stessa voce nascondono solo i post che li hanno tutti. Funzionano anche -tag, ~tag, rating:e, score:<0, user:name e filetype:gif",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},

@@ -1547,7 +1547,7 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "同一個項目中有多個標籤時，只會封鎖同時含有這些標籤的貼文。也支援 -tag 和 rating:e",
+  "plugin_booru_mute_help": "同一個項目中有多個標籤時，只會封鎖同時含有這些標籤的貼文。也支援 -tag、~tag、rating:e、score:<0、user:name 和 filetype:gif",
   "@plugin_booru_mute_help": {},
   "plugin_booru_mute_section": "Muted tags",
   "@plugin_booru_mute_section": {},
