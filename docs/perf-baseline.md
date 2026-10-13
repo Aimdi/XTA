@@ -216,3 +216,15 @@ The in-test S6 sends only the framework's memory-pressure message. A real trim
 from Android also asks the Dart VM to collect garbage and lets the renderer
 trim (`FlutterActivityAndFragmentDelegate.onTrimMemory`, in the Flutter SDK's
 engine sources, lines 1059–1073).
+
+### Tier 1 fixes since this section was written
+
+B1–B6 (`dba4687f` to `e5315b74`; docs/booru/plan.md lists each) change error
+text, credentials, feed resets, paging after a failure and the Following tab.
+The scripted run uses Danbooru with no credentials on a working network, so
+two of them are on a timed path: B3 checks whether a feed is stale (site,
+rating cap, blacklist) before each page request, and B5 adds a footer under
+every grid that observes the paging state and shows a spinner while the next
+page loads. S1 and S2 cover both. Requests after a failed page are not a
+scenario here; a unit test checks them (five near-end scroll notifications
+after a failure make one request).

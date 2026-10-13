@@ -1,6 +1,7 @@
 # Booru plugin: ranked plan
 
-Status: **proposed, waiting for approval.** Nothing below is implemented.
+Status: **approved 2026-10-12; tier 1 in progress.** Ranks marked **Done**
+name the commit that fixed them.
 Evidence for every item is in `docs/booru/audit.md` (IDs B*, P*, §4 rows);
 baseline scenarios are in `docs/perf-baseline.md`.
 
@@ -42,11 +43,11 @@ or responses captured on your side.
 | 1 | **Done** (`dba4687f`). Strip credentials from Booru error text, including network failures that wrap the URL | B1 | H | S | L | A 401, and a socket failure, with a key set: the exception text has no key |
 | 2 | **Done** (`ce934ebc`). Send credentials only to the host they were entered for. Save the host with the login and key; other hosts get none, and settings say which site the key belongs to | B2 | H | S–M | M (preferences) | Switch preset: the request carries no key. Switch back: it does |
 | 3 | **Done** (`a9ef31c1`, `63fb05ba`). Reset Home's feeds when the site, rating cap or blacklist changes, and look up a post's details on its own host and engine | B3 | H | M | L | Change host with a feed loaded: the next page starts from page 1 of the new host; an old post's lookups go to its own host |
-| 4 | Attach credentials only when both login and key are set | B4 | M | S | L | Login without key: no credential parameters are sent |
-| 5 | Back off after a failed load-more and show it: the failure and `loadingMore` become Store state, with a retry footer and an end-of-feed marker; no automatic retry until the reader asks or a cooldown passes | B5 | M | S | L | A failing loader and repeated near-end notifications make one request; the footer offers retry |
-| 6 | Show Following's failures: an error with Retry when every followed query failed, and a notice when some did | B6 | M | S | L | All queries fail: the error view shows. One fails: the rest show with a notice |
+| 4 | **Done** (`7825d39a`). Attach credentials only when both login and key are set | B4 | M | S | L | Login without key: no credential parameters are sent |
+| 5 | **Done** (`afd18acb`). Back off after a failed load-more and show it: the failure and `loadingMore` become Store state, with a retry footer and an end-of-feed marker; no automatic retry until the reader taps Retry or refreshes | B5 | M | S | L | A failing loader and repeated near-end notifications make one request; the footer offers retry |
+| 6 | **Done** (`e5315b74`). Show Following's failures: an error with Retry when every followed query failed, and a notice when some did | B6 | M | S | L | All queries fail: the error view shows. One fails: the rest show with a notice |
 | 7 | Show the skeleton, not the empty state, until a feed's first load has finished | B7 | M | S | L | A new feed renders the skeleton before its first result |
-| 8 | Drop a load-more that finishes after a refresh: a generation counter in `BooruFeedStore` | B8 | M | S | L | Refresh while a load-more is pending: its posts never appear |
+| 8 | Drop a load-more that finishes after a refresh: a generation counter in `BooruFeedStore`, also guarding an older refresh's page counter, paging state and Following's failure count | B8 | M | S | L | Refresh while a load-more is pending: its posts never appear. Two overlapping refreshes: only the newer one's state remains |
 | 9 | Name Booru downloads from the decoded file name, keeping the start of long names | B9 | M | S | M (shared helper) | A Moebooru URL gives a readable `booru-…` name under 240 characters |
 | 10 | Drop posts with no usable file, and say why when a download has nothing to fetch | B10 | M | S | M (live check) | Fixtures of a banned Danbooru post and a deleted e621 post |
 | 11 | Let a feed emptied by the rating cap keep paging, and send the cap to Gelbooru-family hosts in their own rating syntax | B16 | M | S | M (live check) | Four filtered-empty pages, then a full one: the reader reaches it |
@@ -119,9 +120,10 @@ approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next three
 
-Ranks 1–3 are done. Next:
+Ranks 1–6 are done. Next:
 
-1. Tier 1 rank 4: attach credentials only when both login and key are set (B4).
-2. Tier 1 rank 5: back off after a failed load-more, and show it (B5).
-3. Tier 1 rank 6: show the Following tab's failures instead of an empty feed
-   (B6).
+1. Tier 1 rank 7: show the skeleton, not the empty state, until a feed's
+   first load has finished (B7).
+2. Tier 1 rank 8: drop results of a load that a refresh has overtaken (B8).
+3. Tier 1 rank 9: name Booru downloads from the decoded file name, keeping
+   the start of long names (B9).
