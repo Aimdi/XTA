@@ -189,6 +189,9 @@ sends 7 requests in total when the publications are on `*.substack.com` (one sha
 are 24 distinct custom domains (three each; about 528 before). Both end in a rate-limit message rather than "not a
 Substack publication".
 
+With the refresh cap lifted as well (BUG-05), a healthy 30-publication refresh sends 30 requests and reaches all 30
+(24 before); under a blanket 429 it sends 8 on `*.substack.com` and 90 on 30 custom domains.
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

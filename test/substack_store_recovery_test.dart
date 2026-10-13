@@ -148,7 +148,7 @@ void main() {
       expect(store.refreshError, isNull);
     });
 
-    test('publication requests obey concurrency and pass budgets without starving untouched publications', () async {
+    test('a refresh reads every publication within the concurrency bound; paging passes rotate failures', () async {
       final pubs = List.generate(27, (i) => _pub('pub$i'));
       final gate = Completer<void>();
       var active = 0;
@@ -170,12 +170,12 @@ void main() {
       gate.complete();
       await refresh;
       expect(maximum, substackPublicationConcurrency);
-      expect(client.postCalls, hasLength(substackPublicationsPerBatch));
-      expect(store.pendingCount, 27);
-      await store.loadMore();
       expect(client.postCalls.map((call) => call.baseUrl).toSet(), hasLength(27));
       expect(store.allPosts, hasLength(3 * substackFeedPageSize));
       expect(store.pendingCount, 24);
+      await store.loadMore();
+      expect(client.postCalls, hasLength(27 + substackPublicationsPerBatch));
+      expect(client.postCalls.skip(27).every((call) => call.offset == 0), isTrue, reason: 'failed pages retry first');
       await store.loadMore();
       expect(client.postCalls.where((call) => call.offset == 8), hasLength(3));
     });

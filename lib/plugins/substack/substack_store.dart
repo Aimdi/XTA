@@ -256,6 +256,7 @@ class SubstackSavedStore extends _SubstackPostLibrary {
   bool isSaved(String id) => state.any((post) => post.id == id);
 }
 
+/// Publications read per load-more pass. A refresh reads every one.
 const substackPublicationsPerBatch = 24;
 const substackPublicationConcurrency = 3;
 
@@ -397,7 +398,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     try {
       final candidates = _candidates(more: more);
       await mapWithConcurrency(
-        candidates.take(substackPublicationsPerBatch),
+        more ? candidates.take(substackPublicationsPerBatch) : candidates,
         substackPublicationConcurrency,
         (pub) => _readPublication(pub, request, identity, more: more),
       );

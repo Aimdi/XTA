@@ -174,7 +174,7 @@ void main() {
     expect(posts.single.publicationBaseUrl, 'https://newsletter.example.com');
   });
 
-  test('BUG-05: a refresh reads only 24 of 30 followed publications', () async {
+  test('BUG-05 (fixed): a refresh reads all 30 followed publications', () async {
     final pubs = [
       for (var i = 0; i < 30; i++)
         SubstackPublication(subdomain: 'p$i', baseUrl: 'https://p$i.substack.com', name: 'P$i'),
@@ -185,8 +185,8 @@ void main() {
 
     await store.refresh(force: true);
 
-    expect(client.calls.toSet(), hasLength(24));
-    expect(store.pendingCount, 6);
+    expect(client.calls.toSet(), hasLength(30), reason: '24 before the fix');
+    expect(store.pendingCount, 0);
   });
 
   test('BUG-06: two custom domains resolved from RSS share one subscription id', () async {
