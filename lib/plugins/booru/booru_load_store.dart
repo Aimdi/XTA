@@ -1,8 +1,30 @@
 import 'package:flutter_triple/flutter_triple.dart';
 
+/// A store its screen can leave while it loads: once [close]d or destroyed,
+/// an answer still on its way changes nothing, and loops ask for no more.
+mixin BooruClosableStore<T> on Store<T> {
+  var _closed = false;
+
+  bool get closed => _closed;
+
+  /// Stops taking updates, without disposing what widgets still listen to.
+  void close() => _closed = true;
+
+  @override
+  void propagate(Triple<T> triple) {
+    if (!_closed) super.propagate(triple);
+  }
+
+  @override
+  Future<void> destroy() async {
+    close();
+    await super.destroy();
+  }
+}
+
 /// One value the post screen loads when it is first shown: tag kinds,
 /// comments, a wiki page. Null until it has loaded.
-class BooruLoadStore<T extends Object> extends Store<T?> {
+class BooruLoadStore<T extends Object> extends Store<T?> with BooruClosableStore<T?> {
   final Future<T> Function() loader;
   var _started = false;
 

@@ -77,11 +77,11 @@ class BooruPopularTab extends StatelessWidget {
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final today = DateTime.now();
+    final today = booruPopularToday();
     final picked = await showDatePicker(
       context: context,
       helpText: L10n.of(context).plugin_booru_pick_date,
-      initialDate: query.date,
+      initialDate: query.date.isAfter(today) ? today : query.date,
       firstDate: DateTime(2005),
       lastDate: today,
     );

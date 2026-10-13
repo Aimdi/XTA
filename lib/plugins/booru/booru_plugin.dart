@@ -152,6 +152,7 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBooruPreset, booruPresets.first.id);
     await prefs.set(optionPluginBooruLogin, '');
     await prefs.set(optionPluginBooruApiKey, '');
+    await prefs.set(optionPluginBooruCredentialsHost, '');
     await prefs.set(optionPluginBooruMaxRating, BooruRating.general.code);
     await prefs.set(optionPluginBooruInHomeFeed, false);
     await prefs.set(optionPluginBooruSearchHistory, '[]');

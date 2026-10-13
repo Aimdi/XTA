@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
@@ -32,7 +34,12 @@ class _Client extends BooruClient {
   }
 
   @override
-  Future<BooruPostPage> search(String query, {int page = 1, int limit = BooruClient.defaultPageSize}) async {
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async {
     queries.add(query);
     return const BooruPostPage(posts: [], page: 1, hasMore: false);
   }
@@ -214,6 +221,16 @@ void main() {
   });
 
   group('search store', () {
+    test('a new search stops the one it replaces', () async {
+      final store = _store(PrefServiceCache());
+      await store.run('cat_ears');
+      final first = store.results!;
+      await store.run('blue_eyes');
+      expect(first.closed, isTrue, reason: 'its remaining pages are not wanted any more');
+      expect(store.results!.closed, isFalse);
+      await store.destroy();
+    });
+
     test('a space finishes a tag; what follows stays in the field', () {
       final store = _store(PrefServiceCache());
       expect(store.type('cat_ears blu'), 'blu');
@@ -323,6 +340,43 @@ void main() {
       );
       await client.postsForTags(['blue_eyes solo', 'night']);
       expect(requested, unorderedEquals(['blue_eyes solo', 'night']));
+    });
+
+    test('Following counts followed tags that failed, and fails only when all did', () async {
+      final failing = <String>{};
+      final client = BooruClient(
+        PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruMaxRating: 'e'}),
+        httpClient: MockClient((request) async {
+          final tags = request.url.queryParameters['tags'] ?? '';
+          if (failing.contains(tags)) return http.Response('', 503);
+          return http.Response(
+            jsonEncode([
+              {'id': tags.length, 'tag_string': tags, 'rating': 'g'},
+            ]),
+            200,
+          );
+        }),
+      );
+      final feed = BooruFeedStore(
+        client,
+        ({required page}) => loadBooruFollowing(client, ['blue_eyes', 'night'], page: page),
+      );
+      addTearDown(feed.destroy);
+
+      failing.add('night');
+      await feed.refresh();
+      expect(feed.state.map((post) => post.tags.join(' ')), ['blue_eyes']);
+      expect(feed.failedQueries.state, 1);
+
+      failing.add('blue_eyes');
+      await feed.refresh();
+      expect(feed.error, isA<BooruException>(), reason: 'an empty tab would say there are no recent posts');
+      expect(feed.failedQueries.state, 0, reason: 'the error page says it; no notice on top');
+
+      failing.clear();
+      await feed.refresh();
+      expect(feed.state, hasLength(2));
+      expect(feed.failedQueries.state, 0);
     });
   });
 }

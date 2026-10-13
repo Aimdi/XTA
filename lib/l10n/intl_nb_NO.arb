@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopier tagger",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Innloggingsopplysningene dine er lagret for {site} og sendes bare dit. Hvis du skriver inn nye her, erstatter de de gamle.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Rediger som tekst",
@@ -1422,6 +1430,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "Ingen flere innlegg",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "API engine",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1432,6 +1442,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "Nettstedet nektet tilgang — det kan kreve innlogging eller en kontroll i nettleseren",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1444,6 +1456,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "Nettstedet er overbelastet eller begrenser forespørsler — prøv igjen senere",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "Utelat fra nåværende søk",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Utelat",
@@ -1462,6 +1476,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Noen av taggene du følger kunne ikke lastes inn",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Åpne i fullskjerm",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Kolonner i rutenettet",
@@ -1480,6 +1496,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "Kunne ikke laste inn flere innlegg",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "Optional account login or numeric user id, depending on the host.",
@@ -1684,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Fjern fra lagrede søk",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Oppdatert {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Lastet opp av {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

@@ -103,6 +103,7 @@ BooruPost? _parseOne(
     fileExt: ext,
     source: json['source'].string,
     createdAt: _createdAt(json),
+    updatedAt: _changedAt(json),
     tagCategories: _danbooruCategories(json),
     fileSize: _positive(json['file_size']),
     md5: _nonEmpty(json['md5'].string ?? json['hash'].string),
@@ -274,11 +275,15 @@ DateTime? _createdAt(Json json) {
     }
     return DateTime.fromMillisecondsSinceEpoch(asInt * 1000);
   }
-  final change = json['change'].integer;
-  if (change != null && change > 0) {
-    return DateTime.fromMillisecondsSinceEpoch(change * 1000);
-  }
   return null;
+}
+
+/// When the post last changed: Gelbooru's `change`, in seconds.
+DateTime? _changedAt(Json json) {
+  final change = json['change'].integer;
+  return change != null && change > 0
+      ? DateTime.fromMillisecondsSinceEpoch(change * 1000)
+      : null;
 }
 
 const _months = {

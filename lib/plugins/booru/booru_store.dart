@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
@@ -108,70 +109,180 @@ class BooruMuteStore extends Store<Set<String>> {
   }
 }
 
+/// The Following tab's single page, counting the followed tags that failed
+/// to load. When every one failed, the first failure is thrown, so the tab
+/// shows it with Retry rather than an empty feed.
+Future<BooruPostPage> loadBooruFollowing(
+  BooruClient client,
+  List<String> tags, {
+  required int page,
+}) async {
+  if (page > 1) {
+    return BooruPostPage(posts: const [], page: page, hasMore: false);
+  }
+  final followed = await client.followedPosts(tags);
+  if (followed.asked > 0 && followed.failed == followed.asked) {
+    throw followed.error!;
+  }
+  return BooruPostPage(
+    posts: followed.posts,
+    page: 1,
+    hasMore: false,
+    failedQueries: followed.failed,
+  );
+}
+
+/// Where loading a feed's next page stands, for the footer under its grid.
+enum BooruPaging { idle, loading, failed, end }
+
+class BooruPagingStore extends Store<BooruPaging> {
+  BooruPagingStore() : super(BooruPaging.idle);
+}
+
+/// How many of the queries behind a feed's first page failed to load.
+class BooruFailedQueriesStore extends Store<int> {
+  BooruFailedQueriesStore() : super(0);
+}
+
 /// Paginated post list for Latest / Search / Following.
-class BooruFeedStore extends Store<List<BooruPost>> {
+class BooruFeedStore extends Store<List<BooruPost>>
+    with BooruClosableStore<List<BooruPost>> {
   final BooruClient client;
   final Future<BooruPostPage> Function({required int page}) loader;
 
+  /// Where loading the next page stands; the grid's footer shows it.
+  final paging = BooruPagingStore();
+
+  /// How many queries behind the shown first page failed (Following).
+  final failedQueries = BooruFailedQueriesStore();
+
   var _page = 0;
   var _hasMore = true;
-  var _loadingMore = false;
+  String? _loadedFor;
 
-  BooruFeedStore(this.client, this.loader) : super(const []);
+  /// Bumped by every refresh; a load started before the latest refresh is
+  /// dropped when it returns. [_landed] is the last one whose answer is in.
+  var _generation = 0;
+  var _landed = 0;
+
+  /// Starts out loading: until the first page has been asked for and
+  /// answered, an empty list means "not loaded yet", not "no posts".
+  BooruFeedStore(this.client, this.loader) : super(const []) {
+    setLoading(true);
+  }
 
   bool get hasMore => _hasMore;
-  bool get loadingMore => _loadingMore;
+
+  /// Whether the site, rating cap or blacklist changed since the feed loaded.
+  bool get isStale => _loadedFor != null && _loadedFor != client.feedKey;
+
+  /// Loads the feed when it is empty or stale.
+  Future<void> ensureFresh() async {
+    if (state.isEmpty || isStale) await refresh();
+  }
 
   Future<void> refresh() async {
+    if (closed) return;
+    final generation = ++_generation;
     _page = 0;
     _hasMore = true;
+    _loadedFor = client.feedKey;
+    _setPaging(BooruPaging.idle);
     await execute(() async {
-      // Rating / mute filters can zero the first raw page. Skip a few so Latest
-      // does not open empty while the host still has posts.
-      var posts = <BooruPost>[];
-      var pageNo = 0;
-      var hasMore = true;
-      for (
-        var attempt = 0;
-        attempt < 4 && hasMore && posts.isEmpty;
-        attempt++
-      ) {
-        pageNo += 1;
-        final page = await loader(page: pageNo);
-        posts = page.posts;
-        hasMore = page.hasMore;
+      final ({BooruPostPage page, int number}) first;
+      try {
+        first = await _firstPage();
+      } catch (_) {
+        if (_isCurrent(generation)) _land(generation, failed: 0);
+        rethrow;
       }
-      _page = pageNo;
-      _hasMore = hasMore;
-      return posts;
+      // Overtaken by a newer refresh: what is shown stays until that lands.
+      if (!_isCurrent(generation)) return state;
+      _page = first.number;
+      _hasMore = first.page.hasMore;
+      _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
+      _land(generation, failed: first.page.failedQueries);
+      return first.page.posts;
     });
   }
 
-  Future<void> loadMore() async {
-    if (!_hasMore || _loadingMore) return;
-    _loadingMore = true;
-    try {
-      // Skip empty filtered pages while the API still has more raw results.
-      var repeats = 0;
-      for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
-        final next = _page + 1;
-        final page = await loader(page: next);
-        _page = next;
-        _hasMore = page.hasMore;
-        final fresh = _unseen(page.posts);
-        if (fresh.isNotEmpty) {
-          update([...state, ...fresh]);
-          return;
-        }
-        if (page.posts.isNotEmpty) repeats++;
-      }
-      // A host that ignores the page number sends the same posts forever.
-      if (repeats == 3) _hasMore = false;
-    } catch (_) {
-      // Keep what we have; the reader can pull-to-refresh.
-    } finally {
-      _loadingMore = false;
+  /// The first page with posts: the rating and mute filters can empty a raw
+  /// page, so a few are skipped while the host still has more.
+  Future<({BooruPostPage page, int number})> _firstPage() async {
+    var page = const BooruPostPage(posts: [], page: 0, hasMore: true);
+    var number = 0;
+    while (!closed && number < 4 && page.hasMore && page.posts.isEmpty) {
+      number += 1;
+      page = await loader(page: number);
     }
+    return (page: page, number: number);
+  }
+
+  void _land(int generation, {required int failed}) {
+    _landed = generation;
+    failedQueries.update(failed);
+  }
+
+  bool _isCurrent(int generation) => !closed && generation == _generation;
+
+  /// The next page; a stale feed starts over from the first page instead,
+  /// so another site's posts are never appended to it. After a failure it
+  /// waits for [retryMore], however often the grid asks, and while a refresh
+  /// is on its way it waits for that.
+  Future<void> loadMore() async {
+    final generation = _generation;
+    if (closed || _landed != generation) return;
+    if (!_hasMore || paging.state != BooruPaging.idle) return;
+    if (isStale) return refresh();
+    _setPaging(BooruPaging.loading);
+    try {
+      await _appendNextPage(generation);
+      if (_isCurrent(generation)) {
+        _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
+      }
+    } catch (_) {
+      if (_isCurrent(generation)) _setPaging(BooruPaging.failed);
+    }
+  }
+
+  /// Asks again for the page that failed.
+  Future<void> retryMore() async {
+    if (paging.state != BooruPaging.failed) return;
+    _setPaging(BooruPaging.idle);
+    await loadMore();
+  }
+
+  /// Appends the next page with posts not shown yet, skipping pages the
+  /// filters emptied while the host still has more. Dropped if a refresh
+  /// started meanwhile.
+  Future<void> _appendNextPage(int generation) async {
+    var repeats = 0;
+    for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
+      final next = _page + 1;
+      final page = await loader(page: next);
+      if (!_isCurrent(generation)) return;
+      _page = next;
+      _hasMore = page.hasMore;
+      final fresh = _unseen(page.posts);
+      if (fresh.isNotEmpty) {
+        update([...state, ...fresh]);
+        return;
+      }
+      if (page.posts.isNotEmpty) repeats++;
+    }
+    // A host that ignores the page number sends the same posts forever.
+    if (repeats == 3) _hasMore = false;
+  }
+
+  void _setPaging(BooruPaging value) {
+    if (!closed) paging.update(value);
+  }
+
+  @override
+  Future<void> destroy() async {
+    await super.destroy();
+    await paging.destroy();
+    await failedQueries.destroy();
   }
 
   /// New uploads shift a host's pages, so a page can repeat posts already

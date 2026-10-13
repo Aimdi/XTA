@@ -178,8 +178,7 @@ BooruEngine? guessBooruEngine(String host) {
   if (h.contains('e621') || h.contains('e926')) return BooruEngine.e621;
   if (h.contains('yande.re') ||
       h.contains('konachan') ||
-      h.contains('sakugabooru') ||
-      h.contains('hypnohub')) {
+      h.contains('sakugabooru')) {
     return BooruEngine.moebooru;
   }
   if (h.contains('donmai.us') ||

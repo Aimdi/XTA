@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
@@ -18,7 +19,14 @@ enum BooruErrorKind {
   notConfigured,
   network,
   unauthorized,
+
+  /// A 403 although no credentials were sent: the host wants a login, or a
+  /// bot check stands in front of it.
+  forbidden,
   rateLimited,
+
+  /// A 503: the host is overloaded, or rate limits that way (e621).
+  unavailable,
   notFound,
   badResponse,
 }
@@ -27,11 +35,23 @@ class BooruException implements Exception {
   final BooruErrorKind kind;
   final String message;
 
-  BooruException(this.kind, this.message);
+  /// [message] often names the request URL; its credentials are masked.
+  BooruException(this.kind, String message)
+    : message = redactBooruCredentials(message);
 
   @override
   String toString() => 'BooruException{$kind: $message}';
 }
+
+/// The newest posts of the followed tags and saved searches, merged; of
+/// the [asked] queries, [failed] did not load, and [error] is the first such
+/// failure.
+typedef BooruFollowedPosts = ({
+  List<BooruPost> posts,
+  int asked,
+  int failed,
+  Object? error,
+});
 
 class BooruClient {
   final http.Client httpClient;
@@ -49,17 +69,11 @@ class BooruClient {
       BooruEngine.tryParse(prefs.get<String>(optionPluginBooruEngine)) ??
       BooruEngine.danbooru;
 
-  String get host {
-    final custom = normaliseBooruHost(
-      prefs.get<String>(optionPluginBooruHost) ?? '',
-    );
-    if (custom.isNotEmpty) return custom;
-    return booruPresets.first.host;
-  }
+  String get host => booruHostOf(prefs);
 
-  String get login => (prefs.get<String>(optionPluginBooruLogin) ?? '').trim();
-  String get apiKey =>
-      (prefs.get<String>(optionPluginBooruApiKey) ?? '').trim();
+  /// Sent only to the host it was entered for.
+  String get login => booruCredential(prefs, optionPluginBooruLogin).trim();
+  String get apiKey => booruCredential(prefs, optionPluginBooruApiKey).trim();
 
   BooruRating get maxRating {
     final stored = BooruRating.tryParse(
@@ -76,6 +90,15 @@ class BooruClient {
 
   bool get isConfigured => host.isNotEmpty;
 
+  /// What a feed's posts depend on: the site, the rating cap and the
+  /// blacklist. A feed loaded under another key is stale.
+  String get feedKey => [
+    engine.id,
+    host,
+    maxRating.code,
+    ...(mutedTags.toList()..sort()),
+  ].join('\n');
+
   Future<BooruPostPage> latest({int page = 1, int limit = defaultPageSize}) =>
       posts(tags: const [], page: page, limit: limit);
 
@@ -83,12 +106,20 @@ class BooruClient {
     String query, {
     int page = 1,
     int limit = defaultPageSize,
-  }) => posts(tags: booruQueryTokens(query), page: page, limit: limit);
+    BooruSite? site,
+  }) => posts(
+    tags: booruQueryTokens(query),
+    page: page,
+    limit: limit,
+    site: site,
+  );
 
+  /// Posts from [site], the site in use by default.
   Future<BooruPostPage> posts({
     required List<String> tags,
     int page = 1,
     int limit = defaultPageSize,
+    BooruSite? site,
   }) async {
     if (!isConfigured) {
       throw BooruException(
@@ -97,12 +128,13 @@ class BooruClient {
       );
     }
 
-    final effectiveTags = _withRatingTag(tags);
-    final uri = _postsUri(tags: effectiveTags, page: page, limit: limit);
+    final from = site ?? this.site;
+    final effectiveTags = _withRatingTag(tags, from.engine);
+    final uri = _postsUri(from, tags: effectiveTags, page: page, limit: limit);
     final parsed = parseBooruPosts(
       await fetchJson(uri),
-      engine: engine,
-      host: host,
+      engine: from.engine,
+      host: from.host,
     );
     return _page(parsed, page: page, hasMore: parsed.length >= limit);
   }
@@ -128,6 +160,23 @@ class BooruClient {
 
   BooruSite get site =>
       BooruSite(engine: engine, host: host, login: login, apiKey: apiKey);
+
+  /// Where [post] came from: its own host and engine, with the saved
+  /// credentials only if they belong to that host.
+  BooruSite siteOf(BooruPost post) {
+    final host = normaliseBooruHost(post.host);
+    if (host.isEmpty) return site;
+    return BooruSite(
+      engine: BooruEngine.tryParse(post.engine) ?? engine,
+      host: host,
+      login: booruCredential(prefs, optionPluginBooruLogin, host: host).trim(),
+      apiKey: booruCredential(
+        prefs,
+        optionPluginBooruApiKey,
+        host: host,
+      ).trim(),
+    );
+  }
 
   /// The host's popular list for [query]. Gelbooru keeps none, so it shows
   /// its highest-scored posts instead.
@@ -167,10 +216,14 @@ class BooruClient {
           in post.tagCategories.entries)
         tag: BooruTagInfo(category: category),
     };
-    final uri = booruTagInfoUri(site, postId: post.id, tags: post.tags);
+    final from = siteOf(post);
+    final uri = booruTagInfoUri(from, postId: post.id, tags: post.tags);
     if (uri == null) return fromPost;
     try {
-      final looked = parseBooruTagInfo(await fetchJson(uri), engine: engine);
+      final looked = parseBooruTagInfo(
+        await fetchJson(uri),
+        engine: from.engine,
+      );
       return {
         ...fromPost,
         for (final MapEntry(key: tag, value: info) in looked.entries)
@@ -184,9 +237,10 @@ class BooruClient {
     }
   }
 
-  /// The wiki text for [tag], or null when the host has no page for it.
-  Future<String?> wiki(String tag) async {
-    final uri = booruWikiUri(site, tag);
+  /// The wiki text for [tag] on [site] (the site in use by default), or
+  /// null when the host has no page for it.
+  Future<String?> wiki(String tag, {BooruSite? site}) async {
+    final uri = booruWikiUri(site ?? this.site, tag);
     if (uri == null) return null;
     try {
       return parseBooruWiki(await fetchJson(uri), tag: tag);
@@ -197,7 +251,7 @@ class BooruClient {
   }
 
   Future<List<BooruComment>> comments(BooruPost post) async {
-    final uri = booruCommentsUri(site, post.id);
+    final uri = booruCommentsUri(siteOf(post), post.id);
     if (uri == null) return const [];
     return parseBooruComments(await fetchJson(uri));
   }
@@ -218,25 +272,40 @@ class BooruClient {
   }
 
   /// One page per followed tag or saved search, newest-first merge for
-  /// interleaved feeds.
+  /// interleaved feeds. Queries that fail are left out.
   Future<List<BooruPost>> postsForTags(
+    Iterable<String> tags, {
+    int limitPerTag = 10,
+  }) async => (await followedPosts(tags, limitPerTag: limitPerTag)).posts;
+
+  /// One page per followed tag or saved search, merged newest first, with how
+  /// many of the queries failed.
+  Future<BooruFollowedPosts> followedPosts(
     Iterable<String> tags, {
     int limitPerTag = 10,
   }) async {
     final unique = <String>{for (final tag in tags) ?normaliseBooruQuery(tag)};
-    if (unique.isEmpty) return const [];
-
-    final pages = await Future.wait([
+    final settled = await Future.wait([
       for (final query in unique)
         posts(
           tags: booruQueryTokens(query),
           page: 1,
           limit: limitPerTag,
-        ).catchError(
-          (_) => const BooruPostPage(posts: [], page: 1, hasMore: false),
+        ).then<(BooruPostPage?, Object?)>(
+          (page) => (page, null),
+          onError: (Object error) => (null, error),
         ),
     ]);
+    final errors = [for (final (_, error) in settled) ?error];
+    return (
+      posts: _newestFirst([for (final (page, _) in settled) ?page]),
+      asked: unique.length,
+      failed: errors.length,
+      error: errors.firstOrNull,
+    );
+  }
 
+  List<BooruPost> _newestFirst(List<BooruPostPage> pages) {
     final byId = <String, BooruPost>{};
     for (final page in pages) {
       for (final post in page.posts) {
@@ -246,14 +315,14 @@ class BooruClient {
 
     final merged = byId.values.toList(growable: false);
     merged.sort((a, b) {
-      final ad = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bd = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final ad = a.feedDate ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bd = b.feedDate ?? DateTime.fromMillisecondsSinceEpoch(0);
       return bd.compareTo(ad);
     });
     return merged;
   }
 
-  List<String> _withRatingTag(List<String> tags) {
+  List<String> _withRatingTag(List<String> tags, BooruEngine engine) {
     final hasRating = tags.any((t) => t.toLowerCase().startsWith('rating:'));
     if (hasRating) return tags;
 
@@ -300,7 +369,8 @@ class BooruClient {
     };
   }
 
-  Uri _postsUri({
+  Uri _postsUri(
+    BooruSite site, {
     required List<String> tags,
     required int page,
     required int limit,
@@ -310,7 +380,7 @@ class BooruClient {
       'limit': '$limit',
       if (tagQuery.isNotEmpty) 'tags': tagQuery,
     };
-    return switch (engine) {
+    return switch (site.engine) {
       BooruEngine.danbooru || BooruEngine.e621 => site.endpoint('/posts.json', {
         ...query,
         'page': '$page',
@@ -341,18 +411,23 @@ class BooruClient {
 
   Future<Object?> fetchJson(Uri uri) async => _decodeJson(await _get(uri), uri);
 
+  /// What a status says went wrong, when it says something more specific than
+  /// an unexpected answer. A 403 blames the credentials only if some went out.
+  BooruErrorKind? _statusFailure(int status, Uri uri) => switch (status) {
+    401 => BooruErrorKind.unauthorized,
+    403 when uri.queryParameters.keys.any(booruCredentialParameters.contains) =>
+      BooruErrorKind.unauthorized,
+    403 => BooruErrorKind.forbidden,
+    404 => BooruErrorKind.notFound,
+    429 => BooruErrorKind.rateLimited,
+    503 => BooruErrorKind.unavailable,
+    _ => null,
+  };
+
   Object? _decodeJson(http.Response response, Uri uri) {
-    if (response.statusCode == 401 || response.statusCode == 403) {
-      throw BooruException(
-        BooruErrorKind.unauthorized,
-        '$uri: ${response.statusCode}',
-      );
-    }
-    if (response.statusCode == 404) {
-      throw BooruException(BooruErrorKind.notFound, '$uri: 404');
-    }
-    if (response.statusCode == 429) {
-      throw BooruException(BooruErrorKind.rateLimited, '$uri: 429');
+    final failure = _statusFailure(response.statusCode, uri);
+    if (failure != null) {
+      throw BooruException(failure, '$uri: ${response.statusCode}');
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw BooruException(

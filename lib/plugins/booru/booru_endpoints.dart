@@ -6,6 +6,15 @@ import 'package:intl/intl.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 
+/// The query parameters that carry credentials, on any engine.
+const booruCredentialParameters = {'login', 'user_id', 'api_key', 'password_hash'};
+
+final _credentialValues = RegExp('([?&](?:${booruCredentialParameters.join('|')})=)[^&\\s]*');
+
+/// [text] with the value of every credential parameter masked, so an error
+/// that names a request URL can be shown.
+String redactBooruCredentials(String text) => text.replaceAllMapped(_credentialValues, (match) => '${match[1]}***');
+
 /// Where a request goes and who it is made as.
 class BooruSite {
   final BooruEngine engine;
@@ -23,8 +32,9 @@ class BooruSite {
     return path.replaceAll(RegExp(r'/+$'), '');
   }
 
-  /// The credentials each engine expects, named its way.
-  Map<String, String> get auth => {if (login.isNotEmpty) _loginParam: login, if (apiKey.isNotEmpty) _keyParam: apiKey};
+  /// The credentials each engine expects, named its way. Every engine needs
+  /// both halves, so half a login is not sent.
+  Map<String, String> get auth => login.isEmpty || apiKey.isEmpty ? const {} : {_loginParam: login, _keyParam: apiKey};
 
   String get _loginParam => engine == BooruEngine.gelbooruV2 ? 'user_id' : 'login';
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:path/path.dart' as p;
 import 'package:xta/plugins/pixiv/pixiv_models.dart' show pixivImageHeaders;
 
@@ -115,6 +117,23 @@ class DownloadEntry {
     );
     return entry.active ? entry.copyWith(status: DownloadStatus.interrupted) : entry;
   }
+}
+
+/// Android allows 255 bytes for a name; this leaves room for the extension and
+/// the " (1)" it adds when the name is taken.
+const maxDownloadStemBytes = 180;
+
+/// The longest start of [value] whose UTF-8 form fits [limit] bytes, cut
+/// between characters so no emoji is split in half.
+String fitUtf8Bytes(String value, int limit) {
+  var used = 0;
+  final kept = StringBuffer();
+  for (final rune in value.runes) {
+    used += utf8.encode(String.fromCharCode(rune)).length;
+    if (used > limit) break;
+    kept.writeCharCode(rune);
+  }
+  return kept.toString();
 }
 
 String safeDownloadName(String value) {

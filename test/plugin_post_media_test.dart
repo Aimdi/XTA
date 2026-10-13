@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 
 void main() {
@@ -60,6 +63,34 @@ void main() {
       url: 'https://cdn.example/photo.jpg?width=1200',
     );
     expect(pluginMediaFileName(item, 'mastodon'), 'mastodon-photo.jpg');
+  });
+
+  test('plugin media filename is decoded, keeps its start and fits Android', () {
+    final tags = List.filled(60, 'long_tag').join('%20');
+    final moebooru = PluginMediaItem(
+      url: 'https://files.yande.re/image/abc/yande.re%20123456%20$tags.png',
+    );
+    final name = pluginMediaFileName(moebooru, 'booru');
+    expect(name, startsWith('booru-yande.re 123456 long_tag long_tag'));
+    expect(name, endsWith('.png'));
+    expect(utf8.encode(name).length, lessThan(240));
+    expect(safeDownloadName(name), name, reason: 'the download keeps it whole');
+
+    final emoji = PluginMediaItem(
+      url: 'https://cdn.example/${'%F0%9F%98%80' * 80}.jpg',
+    );
+    final cut = pluginMediaFileName(emoji, 'rss');
+    expect(utf8.encode(cut).length, lessThan(240));
+    expect(
+      cut,
+      matches(RegExp(r'^rss-(\u{1F600})+\.jpg$', unicode: true)),
+      reason: 'no emoji is cut in half',
+    );
+
+    const separators = PluginMediaItem(
+      url: 'https://cdn.example/a%2Fb%3Fc.png',
+    );
+    expect(pluginMediaFileName(separators, 'mastodon'), 'mastodon-a_b_c.png');
   });
 
   group('plugin videos', () {

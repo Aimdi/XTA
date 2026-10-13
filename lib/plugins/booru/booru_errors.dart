@@ -9,7 +9,9 @@ String booruErrorMessage(L10n l10n, Object? error) {
     BooruErrorKind.notConfigured => l10n.plugin_booru_error_not_configured,
     BooruErrorKind.network => l10n.plugin_booru_error_network,
     BooruErrorKind.unauthorized => l10n.plugin_booru_error_unauthorized,
+    BooruErrorKind.forbidden => l10n.plugin_booru_error_forbidden,
     BooruErrorKind.rateLimited => l10n.plugin_booru_error_rate_limited,
+    BooruErrorKind.unavailable => l10n.plugin_booru_error_unavailable,
     BooruErrorKind.notFound => l10n.plugin_booru_error_not_found,
     BooruErrorKind.badResponse => l10n.plugin_booru_error_response,
   };

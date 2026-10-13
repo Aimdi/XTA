@@ -63,11 +63,7 @@ class _BooruScreenState extends State<BooruScreen> {
     final tagStore = context.read<BooruTagsStore>();
     _following = _session.obtain(
       'following',
-      () => BooruFeedStore(client, ({required page}) async {
-        final tags = tagStore.state;
-        if (tags.isEmpty || page > 1) return BooruPostPage(posts: const [], page: page, hasMore: false);
-        return BooruPostPage(posts: await client.postsForTags(tags), page: 1, hasMore: false);
-      }),
+      () => BooruFeedStore(client, ({required page}) => loadBooruFollowing(client, tagStore.state, page: page)),
     );
     _followingBootstrapped = _following.state.isNotEmpty;
 
@@ -93,7 +89,7 @@ class _BooruScreenState extends State<BooruScreen> {
   }
 
   Future<void> _ensureFollowing() async {
-    if (_followingBootstrapped) return;
+    if (_followingBootstrapped && !_following.isStale) return;
     _followingBootstrapped = true;
     await _following.refresh();
   }
@@ -121,8 +117,7 @@ class _BooruScreenState extends State<BooruScreen> {
 
   Future<void> _ensureLoaded(int tab) async {
     if (tab == _followingTab) return _ensureFollowing();
-    final feed = tab == _popularTab ? _popular : _latest;
-    if (feed.state.isEmpty) await feed.refresh();
+    await (tab == _popularTab ? _popular : _latest).ensureFresh();
   }
 
   void _select(int index) {
@@ -180,8 +175,11 @@ class _BooruScreenState extends State<BooruScreen> {
                 PluginHomeSecondaryAction(
                   label: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const BooruSettingsScreen())),
+                  // The site or filters may have changed there.
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BooruSettingsScreen()),
+                  ).then((_) => mounted ? _ensureLoaded(_tabs.state) : null),
                 ),
               ],
             ),
@@ -234,7 +232,6 @@ class _FeedTab extends StatelessWidget {
               feed: store,
               scrollController: scrollController,
               onRefresh: store.refresh,
-              loadingMore: store.loadingMore,
               onNearEnd: store.loadMore,
             )
           : const PluginGridSkeleton(columns: 2),
@@ -263,7 +260,6 @@ class _FeedTab extends StatelessWidget {
           feed: store,
           scrollController: scrollController,
           onRefresh: store.refresh,
-          loadingMore: store.loadingMore,
           onNearEnd: store.loadMore,
         );
       },
@@ -311,12 +307,36 @@ class _FollowingTab extends StatelessWidget {
                   ),
               ],
             ),
+            BooruFollowingNotice(failed: store.failedQueries, onRetry: store.refresh),
             Expanded(
               child: _FeedTab(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts),
             ),
           ],
         );
       },
+    );
+  }
+}
+
+/// Says that some followed tags did not load, above the posts of the rest.
+class BooruFollowingNotice extends StatelessWidget {
+  final BooruFailedQueriesStore failed;
+  final VoidCallback onRetry;
+
+  const BooruFollowingNotice({super.key, required this.failed, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruFailedQueriesStore, int>(
+      store: failed,
+      onState: (context, count) => count == 0
+          ? const SizedBox.shrink()
+          : ListTile(
+              leading: const Icon(Icons.error_outline),
+              title: Text(l10n.plugin_booru_following_partial),
+              trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry, onPressed: onRetry),
+            ),
     );
   }
 }

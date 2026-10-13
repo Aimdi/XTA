@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copiar etiquetas",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Tus credenciales están guardadas para {site} y solo se envían a ese sitio. Si introduces otras aquí, sustituirán a las anteriores.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Explora sitios tipo Danbooru y Gelbooru: sigue etiquetas en grupos",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Editar como texto",
@@ -1422,6 +1430,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "Ninguna publicación coincide con esas etiquetas",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "No hay más publicaciones",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "Motor de API",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1432,6 +1442,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "El servidor ha denegado el acceso — puede que haga falta iniciar sesión o una comprobación en el navegador",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1444,6 +1456,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "El servidor está saturado o limita las solicitudes — inténtalo más tarde",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "Excluir de la búsqueda actual",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Excluir",
@@ -1462,6 +1476,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Etiquetas Booru",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "No se han podido cargar algunas de las etiquetas que sigues",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Abrir en pantalla completa",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Columnas de la cuadrícula",
@@ -1480,6 +1496,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "No se pudieron cargar las publicaciones de Booru",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "No se han podido cargar más publicaciones",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Usuario / id",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "Opcional: usuario o id numérico según el servidor.",
@@ -1684,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Quitar de las búsquedas guardadas",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Actualizado el {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Subido por {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

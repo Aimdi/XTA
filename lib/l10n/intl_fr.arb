@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copier les tags",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Vos identifiants sont enregistrés pour {site} et ne sont envoyés qu'à ce site. Si vous en saisissez de nouveaux ici, ils remplaceront les précédents.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Parcourir les sites type Danbooru et Gelbooru — suivez des tags dans les groupes",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Modifier en texte",
@@ -1422,6 +1430,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "Aucune publication ne correspond à ces tags",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "Aucune autre publication",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "Moteur d’API",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1432,6 +1442,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "L’hôte a refusé l’accès — une connexion ou une vérification dans le navigateur est peut-être nécessaire",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Impossible de joindre l’hôte Booru",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choisissez d’abord un hôte Booru dans les réglages",
@@ -1444,6 +1456,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "Requête refusée — vérifiez l’identifiant et la clé API",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "L’hôte est surchargé ou limite les requêtes — réessayez plus tard",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "Exclure de la recherche actuelle",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Exclure",
@@ -1462,6 +1476,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Tags Booru",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Certains tags suivis n’ont pas pu être chargés",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Ouvrir en plein écran",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Colonnes de la grille",
@@ -1480,6 +1496,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Impossible de charger les publications Booru",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "Impossible de charger d'autres publications",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Identifiant / id utilisateur",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "Facultatif — identifiant ou id numérique selon l’hôte.",
@@ -1684,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Retirer des recherches enregistrées",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Mis à jour le {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Mis en ligne par {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

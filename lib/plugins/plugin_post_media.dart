@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/_video.dart';
@@ -421,7 +422,7 @@ class _PluginMediaTile extends StatelessWidget {
 ///
 /// The player reads the reader's media prefs itself (autoplay, mute, loop,
 /// quality); manual loading holds even the poster back until it is asked for.
-class PluginPostVideo extends StatefulWidget {
+class PluginPostVideo extends StatelessWidget {
   const PluginPostVideo({
     super.key,
     required this.item,
@@ -434,10 +435,38 @@ class PluginPostVideo extends StatefulWidget {
   final String sourceName;
 
   @override
-  State<PluginPostVideo> createState() => _PluginPostVideoState();
+  Widget build(BuildContext context) {
+    return PluginVideoGate(
+      aspectRatio: item.aspectRatio,
+      player: (_) => TweetVideo(
+        username: sourceName,
+        loop: item.isGif,
+        alwaysPlay: item.isGif,
+        disableControls: item.isGif,
+        tweetId: pluginVideoPoolKey(item),
+        metadata: pluginVideoMetadata(item),
+      ),
+    );
+  }
 }
 
-class _PluginPostVideoState extends State<PluginPostVideo> {
+/// While "load media only on tap" is on, a placeholder stands in for the
+/// video and [player] is built only once the reader taps it.
+class PluginVideoGate extends StatefulWidget {
+  const PluginVideoGate({
+    super.key,
+    required this.aspectRatio,
+    required this.player,
+  });
+
+  final double? aspectRatio;
+  final WidgetBuilder player;
+
+  @override
+  State<PluginVideoGate> createState() => _PluginVideoGateState();
+}
+
+class _PluginVideoGateState extends State<PluginVideoGate> {
   final _revealed = _PluginVideoRevealStore();
 
   @override
@@ -454,22 +483,10 @@ class _PluginPostVideoState extends State<PluginPostVideo> {
       store: _revealed,
       onState: (context, revealed) => manual && !revealed
           ? _PluginVideoPlaceholder(
-              aspectRatio: clampPluginMediaAspect(widget.item.aspectRatio),
+              aspectRatio: clampPluginMediaAspect(widget.aspectRatio),
               onTap: _revealed.reveal,
             )
-          : _player(),
-    );
-  }
-
-  Widget _player() {
-    final item = widget.item;
-    return TweetVideo(
-      username: widget.sourceName,
-      loop: item.isGif,
-      alwaysPlay: item.isGif,
-      disableControls: item.isGif,
-      tweetId: pluginVideoPoolKey(item),
-      metadata: pluginVideoMetadata(item),
+          : widget.player(context),
     );
   }
 }
@@ -578,11 +595,31 @@ Future<void> showPluginAltText(BuildContext context, String alt) {
   );
 }
 
+/// `<source>-<file name>`, the file name decoded from the URL. A long one keeps
+/// its start, where sites put their name and the post id, and its extension.
 String pluginMediaFileName(PluginMediaItem item, String sourceName) {
   final uri = Uri.tryParse(item.resolvedDownloadUrl);
-  final base = uri == null ? '' : path.basename(uri.path);
+  final base = uri == null ? '' : _lastPathSegment(uri);
   final safeSource = sourceName.trim().isEmpty ? 'xta' : sourceName.trim();
-  return base.isEmpty ? '$safeSource-media' : '$safeSource-$base';
+  if (base.isEmpty) return '$safeSource-media';
+  final extension = _fileExtension(base);
+  final stem = base.substring(0, base.length - extension.length);
+  final start = fitUtf8Bytes('$safeSource-$stem', maxDownloadStemBytes).replaceAll(RegExp(r'[. ]+$'), '');
+  return '$start$extension';
+}
+
+/// [name]'s extension with its dot; nothing when what follows the last dot is
+/// not an extension.
+String _fileExtension(String name) {
+  final extension = path.extension(name);
+  return RegExp(r'^\.[A-Za-z0-9]{1,5}$').hasMatch(extension) ? extension : '';
+}
+
+/// The last part of [uri]'s path, percent-decoded, with the separators that
+/// would split it into folders replaced.
+String _lastPathSegment(Uri uri) {
+  final segments = uri.pathSegments.where((segment) => segment.isNotEmpty);
+  return segments.isEmpty ? '' : segments.last.replaceAll(RegExp(r'[/\\?]'), '_');
 }
 
 /// True once the file is saved. A plugin with its own naming passes [fileName]

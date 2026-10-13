@@ -21,12 +21,14 @@ import 'package:xta/plugins/booru/booru_text.dart';
 enum _TagAction { search, add, exclude, follow, hide, wiki, copy }
 
 /// What can be done with one of a post's tags. With [search], the tag can
-/// also refine the search the post was opened from.
+/// also refine the search the post was opened from. The wiki comes from
+/// [site], the post's own site, or else the site in use.
 Future<void> showBooruTagActions(
   BuildContext context, {
   required String tag,
   BooruTagCategory? category,
   BooruSearchStore? search,
+  BooruSite? site,
 }) async {
   final action = await showModalBottomSheet<_TagAction>(
     context: context,
@@ -38,14 +40,20 @@ Future<void> showBooruTagActions(
       inSearch: search != null,
       followed: context.read<BooruTagsStore>().state.contains(tag),
       hidden: context.read<BooruMuteStore>().state.contains(tag),
-      wiki: booruSupportsWiki(context.read<BooruClient>().engine),
+      wiki: booruSupportsWiki((site ?? context.read<BooruClient>().site).engine),
     ),
   );
   if (action == null || !context.mounted) return;
-  await _run(context, action, tag, search);
+  await _run(context, action, tag, search, site);
 }
 
-Future<void> _run(BuildContext context, _TagAction action, String tag, BooruSearchStore? search) async {
+Future<void> _run(
+  BuildContext context,
+  _TagAction action,
+  String tag,
+  BooruSearchStore? search,
+  BooruSite? site,
+) async {
   final tags = context.read<BooruTagsStore>();
   final muted = context.read<BooruMuteStore>();
   switch (action) {
@@ -60,7 +68,7 @@ Future<void> _run(BuildContext context, _TagAction action, String tag, BooruSear
     case _TagAction.hide:
       await (muted.state.contains(tag) ? muted.unmute(tag) : muted.mute(tag));
     case _TagAction.wiki:
-      await showBooruWiki(context, tag);
+      await showBooruWiki(context, tag, site: site);
     case _TagAction.copy:
       await copyBooruText(context, tag);
   }
@@ -130,18 +138,19 @@ class _TagActionSheet extends StatelessWidget {
   );
 }
 
-Future<void> showBooruWiki(BuildContext context, String tag) => showModalBottomSheet<void>(
+Future<void> showBooruWiki(BuildContext context, String tag, {BooruSite? site}) => showModalBottomSheet<void>(
   context: context,
   showDragHandle: true,
   isScrollControlled: true,
-  builder: (_) => _WikiSheet(tag: tag, client: context.read<BooruClient>()),
+  builder: (_) => _WikiSheet(tag: tag, client: context.read<BooruClient>(), site: site),
 );
 
 class _WikiSheet extends StatefulWidget {
   final String tag;
   final BooruClient client;
+  final BooruSite? site;
 
-  const _WikiSheet({required this.tag, required this.client});
+  const _WikiSheet({required this.tag, required this.client, this.site});
 
   @override
   State<_WikiSheet> createState() => _WikiSheetState();
@@ -149,7 +158,8 @@ class _WikiSheet extends StatefulWidget {
 
 class _WikiSheetState extends State<_WikiSheet> {
   /// An empty body is a tag without a page.
-  late final _page = BooruLoadStore<String>(() async => await widget.client.wiki(widget.tag) ?? '')..ensure();
+  late final _page = BooruLoadStore<String>(() async => await widget.client.wiki(widget.tag, site: widget.site) ?? '')
+    ..ensure();
 
   @override
   void dispose() {

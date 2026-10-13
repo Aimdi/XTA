@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "複製所有標籤",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "您的登入資訊已為 {site} 儲存，只會傳送到該網站。在此輸入新的資訊將會取代原有資訊。",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "以文字編輯",
@@ -1422,6 +1430,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "沒有更多貼文了",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "API engine",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1432,6 +1442,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "網站拒絕存取，可能需要登入或在瀏覽器中驗證",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1444,6 +1456,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "網站忙碌中或正在限制請求，請稍後再試",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "從目前的搜尋中排除",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "排除",
@@ -1462,6 +1476,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "部分追蹤的標籤無法載入",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "全螢幕檢視",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "網格欄數",
@@ -1480,6 +1496,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "無法載入更多貼文",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "Optional account login or numeric user id, depending on the host.",
@@ -1684,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "從已儲存的搜尋中移除",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "更新於 {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "上傳者：{name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {
