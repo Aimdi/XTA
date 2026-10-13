@@ -129,7 +129,7 @@ class BooruClient {
     }
 
     final from = site ?? this.site;
-    final effectiveTags = _withRatingTag(tags, from.engine);
+    final effectiveTags = _withRatingTag(tags, from);
     final uri = _postsUri(from, tags: effectiveTags, page: page, limit: limit);
     final parsed = parseBooruPosts(
       await fetchJson(uri),
@@ -324,13 +324,23 @@ class BooruClient {
     return merged;
   }
 
-  List<String> _withRatingTag(List<String> tags, BooruEngine engine) {
+  List<String> _withRatingTag(List<String> tags, BooruSite site) {
     final hasRating = tags.any((t) => t.toLowerCase().startsWith('rating:'));
     if (hasRating) return tags;
+    final engine = site.engine;
 
-    // Gelbooru-family metatags differ; client-side filter still applies.
+    // Gelbooru spells ratings out and its forks know only safe, questionable
+    // and explicit, so between general and explicit only "not explicit" is
+    // said the same way on both; the client-side filter does the rest.
     if (engine == BooruEngine.gelbooruV2) {
-      return tags;
+      return [
+        ...tags,
+        if (maxRating == BooruRating.general)
+          ?booruRatingMetatag(engine, maxRating, host: site.host),
+        if (maxRating == BooruRating.sensitive ||
+            maxRating == BooruRating.questionable)
+          '-rating:explicit',
+      ];
     }
 
     // Moebooru / e621: s = safe. Danbooru: g = general, s = sensitive.

@@ -495,6 +495,33 @@ void main() {
       expect(asked.single.queryParameters['tags'], 'sort:score');
     });
 
+    // The forms Boorusama's Gelbooru and Gelbooru 0.2 query composers send, as the audit read them; not checked
+    // against the live hosts.
+    test('Gelbooru-family hosts get the rating limit in their own words', () async {
+      Future<String?> tagsFor(String host, String cap, {String query = 'solo'}) async {
+        String? sent;
+        final client = _client(
+          'gelbooru_v2',
+          host,
+          MockClient((request) async {
+            sent = request.url.queryParameters['tags'];
+            return http.Response('[]', 200);
+          }),
+          prefs: {optionPluginBooruMaxRating: cap},
+        );
+        await client.search(query);
+        return sent;
+      }
+
+      expect(await tagsFor('https://gelbooru.com', 'g'), 'solo rating:general');
+      expect(await tagsFor('https://safebooru.org', 'g'), 'solo rating:safe');
+      expect(await tagsFor('https://gelbooru.com', 's'), 'solo -rating:explicit');
+      expect(await tagsFor('https://safebooru.org', 's'), 'solo -rating:explicit');
+      expect(await tagsFor('https://rule34.xxx', 'q'), 'solo -rating:explicit');
+      expect(await tagsFor('https://gelbooru.com', 'e'), 'solo');
+      expect(await tagsFor('https://gelbooru.com', 'g', query: 'solo rating:sensitive'), 'solo rating:sensitive');
+    });
+
     test('engines with one popular page stop after it', () async {
       var calls = 0;
       final client = _client(
