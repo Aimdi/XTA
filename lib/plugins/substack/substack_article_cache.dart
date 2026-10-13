@@ -54,6 +54,7 @@ class SubstackArticleCache {
       'audience': post.audience,
       'type': post.type,
       'podcast_url': post.audioUrl,
+      if (post.hasVideoUpload) 'videoUpload': true,
       'reaction_count': post.reactionCount,
       'comment_count': post.commentCount,
       'publishedBylines': [

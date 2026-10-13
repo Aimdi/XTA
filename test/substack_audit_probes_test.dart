@@ -252,7 +252,7 @@ void main() {
     }
   });
 
-  test('BUG-09: the article cache forgets that a post is a video', () async {
+  test('BUG-09 (fixed): the article cache remembers that a post is a video', () async {
     final cache = SubstackArticleCache(cache: _MemoryCache());
     const video = SubstackPost(
       id: '7',
@@ -268,7 +268,7 @@ void main() {
     final cached = await cache.get(video.publication, 'clip');
 
     expect(video.isVideo, isTrue);
-    expect(cached!.isVideo, isFalse);
+    expect(cached!.isVideo, isTrue, reason: 'false before the fix');
   });
 
   test('BUG-10 (link shape unverified): an app share link is not read in-app', () {
