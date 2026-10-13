@@ -621,19 +621,23 @@ SubstackPublication placeSubstackFollow(Iterable<SubstackPublication> follows, S
   return publication.withSubdomain(host);
 }
 
-/// A follow id for a site found without Substack's JSON: its host, so two
-/// sites never share one.
-String substackHostId(String baseUrl) {
-  final host = Uri.tryParse(baseUrl)?.host.toLowerCase() ?? '';
-  return host.startsWith('www.') ? host.substring(4) : host;
-}
+/// A follow id that no other site can hold: the host without `www.`.
+String substackHostId(String baseUrl) => _withoutWww(Uri.tryParse(baseUrl)?.host.toLowerCase() ?? '');
+
+String _withoutWww(String host) => host.startsWith('www.') ? host.substring(4) : host;
 
 /// A custom domain with more than two labels once `www.` is dropped, such as
 /// `newsletter.example.com`: its first label is a prefix, not a subdomain.
 bool isDeepCustomHost(String host) {
   if (isSubstackPublicationHost(host) || isSubstackServiceHost(host)) return false;
-  return substackHostId('https://$host').split('.').where((e) => e.isNotEmpty).length > 2;
+  return _withoutWww(host.toLowerCase()).split('.').where((e) => e.isNotEmpty).length > 2;
 }
+
+/// The id of a publication found without Substack's JSON. On a deep host the
+/// first label is a prefix unrelated sites share, so the host is the id; on
+/// an apex domain the first label usually is the Substack subdomain.
+String substackGuessedId(Uri base) =>
+    isDeepCustomHost(base.host) ? _withoutWww(base.host.toLowerCase()) : subdomainOf(base);
 
 String _hostOf(SubstackPublication publication) => Uri.tryParse(publication.baseUrl)?.host.toLowerCase() ?? '';
 
@@ -699,7 +703,7 @@ SubstackPublication? publicationFromHomepageHtml(String html, Uri base) {
   if (name == null || publicationNameLooksGeneric(name)) return null;
   final image = _metaContent(html, 'og:image');
   return SubstackPublication(
-    subdomain: subdomainOf(base),
+    subdomain: substackGuessedId(base),
     baseUrl: base.origin,
     name: name,
     logoUrl: image == null || image.isEmpty ? null : image,
@@ -806,7 +810,7 @@ SubstackPublication? publicationFromBeehiivRemix(Object? remix, Uri base) {
   }
   final description = (Json(pub)['description'].string)?.trim();
   return SubstackPublication(
-    subdomain: subdomainOf(base),
+    subdomain: substackGuessedId(base),
     baseUrl: base.origin,
     name: name,
     description: description == null || description.isEmpty ? null : description,
@@ -1121,10 +1125,13 @@ List<Uri> substackHostCandidates(Uri base, {String? subdomainHint}) {
     add('$slug.substack.com');
   }
 
-  addSubstackTwin(subdomainHint);
   // The host's first label only guesses at the Substack subdomain, and can
-  // name another publication: use it when no subdomain is known.
-  if (_unknownSubdomain(subdomainHint)) addSubstackTwin(registrableLabel(base.host));
+  // name another publication: an apex domain uses it when no subdomain is
+  // known, and a deep host, whose first label is a prefix, never does.
+  final deep = isDeepCustomHost(base.host);
+  final label = registrableLabel(base.host);
+  if (!deep || subdomainHint?.trim().toLowerCase() != label) addSubstackTwin(subdomainHint);
+  if (!deep && _unknownSubdomain(subdomainHint)) addSubstackTwin(label);
   return out;
 }
 

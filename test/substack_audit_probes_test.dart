@@ -224,7 +224,7 @@ void main() {
     expect(store.pendingCount, 0);
   });
 
-  test('BUG-06: two custom domains resolved from RSS share one subscription id', () async {
+  test('BUG-06 (fixed): two deep custom domains resolved from RSS get their own ids', () async {
     final client = _client((request) async {
       if (request.url.path == '/feed') {
         return http.Response(_rss(request.url.host), 200, request: request);
@@ -236,7 +236,11 @@ void main() {
     final beta = await client.fetchPublication(Uri.parse('https://newsletter.beta.example'));
 
     expect(alpha.baseUrl, isNot(beta.baseUrl));
-    expect(alpha.id, beta.id);
+    expect(
+      [alpha.id, beta.id],
+      ['newsletter.alpha.example', 'newsletter.beta.example'],
+      reason: 'both newsletter before',
+    );
   });
 
   test('BUG-07 (reconstructed markup): the subscribe widget survives as a live form', () {

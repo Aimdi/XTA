@@ -417,7 +417,7 @@ class SubstackClient {
   SubstackPublication _publicationFromRss(Uri base, SubstackRssChannel rss) {
     final title = rss.title?.trim();
     return SubstackPublication(
-      subdomain: subdomainOf(base),
+      subdomain: substackGuessedId(base),
       baseUrl: base.origin,
       name: title != null && title.isNotEmpty ? title : subdomainOf(base),
       description: rss.description,
@@ -447,7 +447,7 @@ class SubstackClient {
     if (listing == null) return null;
     final fromHtml = await _publicationFromHomepage(base);
     if (fromHtml != null) return fromHtml;
-    return SubstackPublication(subdomain: subdomainOf(base), baseUrl: base.origin, name: subdomainOf(base));
+    return SubstackPublication(subdomain: substackGuessedId(base), baseUrl: base.origin, name: subdomainOf(base));
   }
 
   Future<List<SubstackPost>?> _postsFromBeehiiv(
@@ -557,7 +557,7 @@ class SubstackClient {
       return found;
     }
     return SubstackPublication(
-      subdomain: found.subdomain.isNotEmpty ? found.subdomain : subdomainOf(requested),
+      subdomain: found.subdomain.isNotEmpty ? found.subdomain : substackGuessedId(requested),
       baseUrl: Uri(scheme: 'https', host: requested.host).origin,
       name: found.name,
       description: found.description,

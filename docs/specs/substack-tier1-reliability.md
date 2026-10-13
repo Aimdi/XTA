@@ -55,13 +55,13 @@ A publication built from a post (`post.publication`, `publicationForPost`) has n
 
 - **One identity rule**, `substackFollowOf(follows, publication)`. A publication is a follow when their hosts are the same, ignoring `www.`. Otherwise it is a follow when their ids are equal and neither id is a guess. A guess is `www`, empty, or the first label of a host deeper than an apex domain (`newsletter` for `newsletter.example.com`). Every "is this followed" decision uses the rule: the follow button, pin, the publication page's metadata write-back, search results, notes, groups and the checks after a follow.
 - **Following never overwrites.** `SubstackPublicationsStore.add` updates the matching follow in place, under that follow's id. A publication that matches no follow, but whose id another follow holds, is stored under its host instead.
-- **Ids guessed from a host are the host.** RSS, homepage and Beehiiv resolution store the host without `www.` (BUG-06 at its source), so two sites never share an id. Existing follows keep their ids: there is no migration, and reading progress keeps its keys.
-- **Twins.** A host-shaped id is no subdomain, so it is no twin hint. Like `www`, it lets an apex domain still guess `{first label}.substack.com`, which is then checked as in §3. A host deeper than an apex domain never guesses its first label, whether pasted or followed: on such hosts it is a prefix like `newsletter` or `blog`, not the publication's subdomain.
+- **Ids guessed from a deep host are the host.** On a host deeper than an apex domain, RSS, homepage and Beehiiv resolution store the whole host without `www.` (BUG-06 at its source), so two `newsletter.*` sites never share an id. Apex domains keep their first label: `garbageday.email` stays `garbageday`, which is usually the publication's Substack subdomain and is pinned by existing tests. Existing follows keep their ids: there is no migration, and reading progress keeps its keys.
+- **Twins.** A host deeper than an apex domain never guesses its first label as a twin, whether pasted or followed, and its first label is no twin hint either: on such hosts it is a prefix like `newsletter` or `blog`, not the publication's subdomain. A host-shaped id is not a handle, so it is no hint. Apex domains guess as before, checked as in §3.
 
 Trade-offs, kept on purpose:
 
 - The same publication followed at `{subdomain}.substack.com` and at its apex custom domain still matches by id, as before.
-- Two existing follows of different apex sites that share a label (`example.com` from RSS and `example.substack.com`) still match by id. Only new follows get host ids.
+- Two follows of different apex sites that share a label (`example.com` found without JSON, and `example.substack.com`) still match by id, so following the second updates the first. Host ids would avoid that, but on an apex domain the first label is usually the publication's own Substack subdomain, which the twin lookup and existing tests rely on. The case needs a non-Substack apex site whose label is another publication's subdomain.
 - When the rule cannot tell, a publication is shown as not followed. Following it again adds a second follow rather than replacing one.
 
 ## Tests

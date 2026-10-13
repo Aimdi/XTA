@@ -133,7 +133,7 @@ void main() {
     );
   });
 
-  test('a stored subdomain replaces the guessed twin; www still guesses', () {
+  test('a stored subdomain replaces the guessed twin; only apex domains guess', () {
     List<String> twins(String url, String? subdomain) => leftoverSubstackHosts(
       Uri.parse(url),
       subdomainHint: subdomain,
@@ -145,9 +145,18 @@ void main() {
     expect(twins('https://www.garbageday.email', 'www'), [
       'garbageday.substack.com',
     ]);
-    expect(twins('https://newsletter.example.com', null), [
-      'newsletter.substack.com',
-    ]);
+    expect(twins('https://newsletter.example.com', null), isEmpty);
+    expect(twins('https://newsletter.example.com', 'newsletter'), isEmpty);
+    expect(twins('https://www.example.com', null), ['example.substack.com']);
+  });
+
+  test('a deep host found without JSON is followed under its host', () {
+    expect(
+      substackGuessedId(Uri.parse('https://www.newsletter.example.com')),
+      'newsletter.example.com',
+    );
+    expect(substackGuessedId(Uri.parse('https://www.garbageday.email')), 'garbageday');
+    expect(substackGuessedId(Uri.parse('https://fieldnotes.substack.com')), 'fieldnotes');
   });
 
   test('a twin must not name another custom domain or subdomain', () {
