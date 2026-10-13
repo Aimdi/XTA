@@ -7,6 +7,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_interleaved.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_screen.dart';
@@ -85,6 +86,9 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   List<String> get tables => const [tableBooruSubscription];
+
+  @override
+  List<String> get caches => const [booruFeedCacheName];
 
   @override
   String get groupMembershipPrefix => '$id:';

@@ -81,6 +81,7 @@ import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
@@ -1151,6 +1152,7 @@ Future<void> main() async {
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),
                 Provider(create: (_) => booruMute),
+                Provider(create: (_) => BooruFeedCache()),
                 Provider(create: (_) => ehClient),
                 Provider(create: (_) => ehFavorites),
                 Provider(create: (_) => ehHistory),

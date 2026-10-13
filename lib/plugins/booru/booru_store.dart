@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_triple/flutter_triple.dart';
@@ -6,6 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
@@ -170,6 +172,13 @@ class BooruFeedStore extends Store<List<BooruPost>>
   final BooruClient client;
   final Future<BooruPostPage> Function({required int page}) loader;
 
+  /// Where the first page is kept on the device, so that a launch without
+  /// a network still has the last one to show; [cacheKey] names what the
+  /// feed asks for besides the site and filters. Nothing is kept without
+  /// both.
+  final BooruFeedCache? cache;
+  final String Function()? cacheKey;
+
   /// Where loading the next page stands; the grid's footer shows it.
   final paging = BooruPagingStore();
 
@@ -190,7 +199,8 @@ class BooruFeedStore extends Store<List<BooruPost>>
 
   /// Starts out loading: until the first page has been asked for and
   /// answered, an empty list means "not loaded yet", not "no posts".
-  BooruFeedStore(this.client, this.loader) : super(const []) {
+  BooruFeedStore(this.client, this.loader, {this.cache, this.cacheKey})
+    : super(const []) {
     setLoading(true);
   }
 
@@ -212,6 +222,7 @@ class BooruFeedStore extends Store<List<BooruPost>>
     if (closed) return;
     final generation = ++_generation;
     final shown = changed ? null : _shown();
+    final cacheId = _cacheId();
     _page = 0;
     _hasMore = true;
     _loadedFor = client.feedKey;
@@ -222,12 +233,18 @@ class BooruFeedStore extends Store<List<BooruPost>>
         first = await _firstPage();
       } catch (error) {
         if (!_isCurrent(generation)) rethrow;
-        if (shown == null) {
+        if (shown != null) {
+          _keep(generation, shown, error);
+          return state;
+        }
+        final kept = cacheId == null ? null : await cache?.read(cacheId);
+        if (!_isCurrent(generation)) rethrow;
+        if (kept == null) {
           _land(generation, failed: 0);
           rethrow;
         }
-        _keep(generation, shown, error);
-        return state;
+        _keep(generation, _shownOf(kept), error);
+        return kept.posts;
       }
       // Overtaken by a newer refresh: what is shown stays until that lands.
       if (!_isCurrent(generation)) return state;
@@ -235,6 +252,9 @@ class BooruFeedStore extends Store<List<BooruPost>>
       _hasMore = first.page.hasMore;
       _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
       _land(generation, failed: first.page.failedQueries);
+      if (cacheId != null && first.page.posts.isNotEmpty) {
+        unawaited(cache?.write(cacheId, _pageOf(first)));
+      }
       return first.page.posts;
     }, delay: generation == 1 ? Duration.zero : _debounce);
   }
@@ -273,6 +293,26 @@ class BooruFeedStore extends Store<List<BooruPost>>
               ? BooruPaging.idle
               : paging.state,
         );
+
+  /// What the feed's copy on the device is kept under: its own key with the
+  /// site and filters.
+  String? _cacheId() => switch ((cache, cacheKey)) {
+    (_?, final key?) => '${key()}\n${client.feedKey}',
+    _ => null,
+  };
+
+  static BooruPostPage _pageOf(({BooruPostPage page, int number}) first) =>
+      BooruPostPage(
+        posts: first.page.posts,
+        page: first.number,
+        hasMore: first.page.hasMore,
+      );
+
+  static _Shown _shownOf(BooruPostPage kept) => (
+    page: kept.page,
+    hasMore: kept.hasMore,
+    paging: kept.hasMore ? BooruPaging.idle : BooruPaging.end,
+  );
 
   /// Goes back to the posts [shown] before a refresh that failed with
   /// [error].

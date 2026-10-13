@@ -20,6 +20,7 @@ import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
@@ -141,6 +142,17 @@ class _GatedPrefs extends PrefServiceCache {
   }
 }
 
+/// Feed pages kept in memory instead of on the device.
+class _MemoryFeedCache extends BooruFeedCache {
+  final pages = <String, BooruPostPage>{};
+
+  @override
+  Future<BooruPostPage?> read(String key) async => pages[key];
+
+  @override
+  Future<void> write(String key, BooruPostPage page) async => pages[key] = page;
+}
+
 /// Followed tags in memory, so the Booru home needs no database.
 class _Tags extends BooruTagsStore {
   @override
@@ -153,6 +165,7 @@ Future<_Client> _pump(
   Map<String, Object> prefs = const {},
   PrefServiceCache? service,
   BooruTagsStore? tags,
+  BooruFeedCache? feedCache,
   bool settle = true,
 }) async {
   // Tall enough for a post's picture, facts and tags without scrolling.
@@ -169,6 +182,7 @@ Future<_Client> _pump(
           Provider<BooruClient>.value(value: client),
           Provider<BooruTagsStore>.value(value: tags ?? BooruTagsStore()),
           Provider<BooruMuteStore>.value(value: BooruMuteStore(service)),
+          if (feedCache != null) Provider<BooruFeedCache>.value(value: feedCache),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -405,6 +419,35 @@ void main() {
 
       expect(feed.paging.state, BooruPaging.idle);
       expect(feed.state.map((p) => p.id), ['1'], reason: 'the page asked before the refresh is dropped');
+    });
+
+    test('a feed keeps its first page on the device, and shows it when a launch cannot load', () async {
+      final cache = _MemoryFeedCache();
+      var fail = false;
+      Future<BooruPostPage> load({required int page}) async {
+        if (fail) throw BooruException(BooruErrorKind.network, 'offline');
+        return BooruPostPage(posts: [_post('$page')], page: page, hasMore: true);
+      }
+
+      BooruFeedStore feed(String key) {
+        final store = BooruFeedStore(_Client(PrefServiceCache()), load, cache: cache, cacheKey: () => key);
+        addTearDown(store.destroy);
+        return store;
+      }
+
+      await feed('latest').refresh();
+      expect(cache.pages, hasLength(1));
+
+      fail = true;
+      final relaunched = feed('latest');
+      await relaunched.refresh();
+      expect(relaunched.state.map((p) => p.id), ['1']);
+      expect(relaunched.error, isNull);
+      expect(relaunched.refreshFailure.state.error, isA<BooruException>());
+
+      final other = feed('following\nsolo');
+      await other.refresh();
+      expect(other.error, isA<BooruException>(), reason: 'nothing was kept for that feed');
     });
 
     test('no next page is asked for while a refresh is on its way', () async {
@@ -996,6 +1039,38 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(notice), findsNothing);
       expect(find.byType(BooruPostTile), findsOneWidget);
+    });
+
+    testWidgets('Latest opened without a network shows the page kept from last time', (tester) async {
+      final cache = _MemoryFeedCache();
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      var client = await _pump(
+        tester,
+        BooruScreen(scrollController: scroll),
+        tags: _Tags(),
+        feedCache: cache,
+        settle: false,
+      );
+      client.latestPage.complete(BooruPostPage(posts: [_post('1'), _post('2')], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      expect(cache.pages, hasLength(1));
+
+      await tester.pumpWidget(const SizedBox());
+      client = await _pump(
+        tester,
+        BooruScreen(scrollController: scroll),
+        tags: _Tags(),
+        feedCache: cache,
+        settle: false,
+      );
+      await tester.pump(Duration.zero);
+      expect(client.latestCalls, 1);
+      client.latestPage.completeError(BooruException(BooruErrorKind.network, 'offline'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
+      expect(find.text('Showing the posts from before'), findsOneWidget);
     });
 
     testWidgets('Latest asks for its first page in its first frame', (tester) async {

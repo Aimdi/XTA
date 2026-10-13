@@ -14,6 +14,7 @@ import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
@@ -56,7 +57,16 @@ class _BooruScreenState extends State<BooruScreen> {
     _session = PluginSessionLease(context, 'booru');
     _tabs = _session.obtain('view', () => PluginViewStore<int>(0));
     final client = context.read<BooruClient>();
-    _latest = _session.obtain('latest', () => BooruFeedStore(client, ({required page}) => client.latest(page: page)));
+    final cache = context.read<BooruFeedCache?>();
+    _latest = _session.obtain(
+      'latest',
+      () => BooruFeedStore(
+        client,
+        ({required page}) => client.latest(page: page),
+        cache: cache,
+        cacheKey: () => 'latest',
+      ),
+    );
     _popularQuery = _session.obtain('popular-query', () => PluginViewStore(BooruPopularQuery.today()));
     _popular = _session.obtain(
       'popular',
@@ -65,7 +75,12 @@ class _BooruScreenState extends State<BooruScreen> {
     final tagStore = context.read<BooruTagsStore>();
     _following = _session.obtain(
       'following',
-      () => BooruFeedStore(client, ({required page}) => loadBooruFollowing(client, tagStore.state, page: page)),
+      () => BooruFeedStore(
+        client,
+        ({required page}) => loadBooruFollowing(client, tagStore.state, page: page),
+        cache: cache,
+        cacheKey: () => ['following', ...tagStore.state].join('\n'),
+      ),
     );
     _followingBootstrapped = _following.state.isNotEmpty;
 
