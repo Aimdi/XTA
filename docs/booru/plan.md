@@ -60,9 +60,9 @@ or responses captured on your side.
 | 18 | **Done** (`20d4f4a8`). Honour "load media only on tap" for Booru videos through the existing gate | B18 | L | S | L | With the setting on, no player is built until a tap |
 | 19 | **Done** (`add22b17`). Distinct messages for a 403 without credentials and for 503 | B20 | L | S | L | Each status maps to its own message |
 | 20 | **Done** (`5a3b9819`). Guess `hypnohub.net` as Gelbooru 0.2 | B19 | L | S | L | Engine guess test |
-| 21 | `mounted` checks after awaits in Booru settings | B26 | L | S | L | Leave the screen mid-write: no exception |
-| 22 | Label the Gelbooru 0.2 date as "updated", or leave it out | B24 | L | S | L | Facts test |
-| 23 | Download ugoira as its webm, or offer both | B25 | L | S | L | Download source test |
+| 21 | **Done** (`0d10bd5d`). `mounted` checks after awaits in Booru settings | B26 | L | S | L | Leave the screen mid-write: no exception |
+| 22 | **Done** (`ec2cf187`). Label the Gelbooru 0.2 date as "updated", or leave it out | B24 | L | S | L | Facts test |
+| 23 | **Done** (`006f364f`). Download ugoira as its webm, or offer both | B25 | L | S | L | Download source test |
 | 24 | Moebooru wiki: look the title up exactly | B21 | L | S | M (live check) | Recorded wiki reply |
 | 25 | Popular's default date: the host's day, not the device's | B22 | L | S | M | Date test at UTC+9 |
 | 26 | Ignore results after a store is destroyed, and stop its remaining pages | B27 | L | M | L | Destroy mid-load: no late update, no further request |
@@ -118,16 +118,18 @@ Tiers 1 and 2 need no new dependency. A background download notification
 (tier 3) would need one, and will come with a written justification for your
 approval first. Secure credential storage is deferred until per-site profiles.
 
-## Proposed next three
+## Proposed next
 
-Ranks 1–9 and 18–20 are done. Ranks 10–16 are live checks: they start from
-real responses, and this environment's network policy refuses every booru
-host. They need danbooru.donmai.us, e621.net, gelbooru.com, rule34.xxx (with
-api.rule34.xxx) and safebooru.org allowed, or responses captured on your
-side. Rank 17 needs your approval for a migration in the frozen
-`lib/database/`. The next three that can be done here meanwhile:
+Ranks 1–9 and 18–23 are done. Ranks 10–16, 24 and 27 are live checks: they
+start from real responses, and this environment's network policy refuses
+every booru host. They need danbooru.donmai.us, e621.net, gelbooru.com,
+rule34.xxx (with api.rule34.xxx), safebooru.org and yande.re allowed, or
+responses captured on your side. Rank 17 needs your approval for a migration in the
+frozen `lib/database/`. What can still be done here:
 
-1. Tier 1 rank 21: `mounted` checks after awaits in Booru settings (B26).
-2. Tier 1 rank 22: label the Gelbooru 0.2 date as "updated", or leave it
-   out (B24).
-3. Tier 1 rank 23: download ugoira as its webm, or offer both (B25).
+1. Tier 1 rank 25: Popular's default date, the host's day rather than the
+   device's (B22).
+2. Tier 1 rank 26: ignore results after a store is destroyed, and stop its
+   remaining pages (B27).
+
+After those, every open tier 1 item waits on the hosts or on that approval.
