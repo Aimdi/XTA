@@ -219,11 +219,12 @@ engine sources, lines 1059–1073).
 
 ### Tier 1 fixes since this section was written
 
-B1–B9, B18–B20 and B24–B26 (`dba4687f` to `006f364f`; docs/booru/plan.md
+B1–B9, B18–B20 and B22–B27 (`dba4687f` to `14851203`; docs/booru/plan.md
 lists each) change error text, credentials, feed resets, paging, the first
 frame of a feed, the Following tab, download names, tap-to-load for videos,
 the engine guessed for a custom host, settings after leaving them, the date
-label on Gelbooru 0.2 posts and what an animation downloads. The scripted run uses Danbooru with no
+label on Gelbooru 0.2 posts, what an animation downloads, Popular's default
+date and what a closed store does with a late answer. The scripted run uses Danbooru with no
 credentials on a working network, so four of them are on a timed path: B3
 checks whether a feed is stale (site, rating cap, blacklist) before each page
 request; B5 adds a footer under every grid that observes the paging state and

@@ -64,8 +64,8 @@ or responses captured on your side.
 | 22 | **Done** (`ec2cf187`). Label the Gelbooru 0.2 date as "updated", or leave it out | B24 | L | S | L | Facts test |
 | 23 | **Done** (`006f364f`). Download ugoira as its webm, or offer both | B25 | L | S | L | Download source test |
 | 24 | Moebooru wiki: look the title up exactly | B21 | L | S | M (live check) | Recorded wiki reply |
-| 25 | Popular's default date: the host's day, not the device's | B22 | L | S | M | Date test at UTC+9 |
-| 26 | Ignore results after a store is destroyed, and stop its remaining pages | B27 | L | M | L | Destroy mid-load: no late update, no further request |
+| 25 | **Done** (`972d8d6e`). Popular's default date: the host's day, not the device's | B22 | L | S | M | Date test at UTC+9 |
+| 26 | **Done** (`14851203`). Ignore results after a store is destroyed, and stop its remaining pages | B27 | L | M | L | Destroy mid-load: no late update, no further request |
 | 27 | Rule34 media URLs: rewrite `api-cdn` samples, build missing previews, read a numeric `directory`, send a `Referer` | B23 | L | M | M (live check) | Recorded Rule34 posts |
 
 ## Tier 2: performance of existing screens
@@ -120,16 +120,13 @@ approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next
 
-Ranks 1–9 and 18–23 are done. Ranks 10–16, 24 and 27 are live checks: they
-start from real responses, and this environment's network policy refuses
-every booru host. They need danbooru.donmai.us, e621.net, gelbooru.com,
-rule34.xxx (with api.rule34.xxx), safebooru.org and yande.re allowed, or
-responses captured on your side. Rank 17 needs your approval for a migration in the
-frozen `lib/database/`. What can still be done here:
+Ranks 1–9 and 18–26 are done. Every open tier 1 item now waits on you:
 
-1. Tier 1 rank 25: Popular's default date, the host's day rather than the
-   device's (B22).
-2. Tier 1 rank 26: ignore results after a store is destroyed, and stop its
-   remaining pages (B27).
+- Ranks 10–16, 24 and 27 are live checks: they start from real responses,
+  and this environment's network policy refuses every booru host. They need
+  danbooru.donmai.us, e621.net, gelbooru.com, rule34.xxx (with
+  api.rule34.xxx), safebooru.org and yande.re allowed, or responses captured
+  on your side.
+- Rank 17 needs your approval for a migration in the frozen `lib/database/`.
 
-After those, every open tier 1 item waits on the hosts or on that approval.
+Tier 2 needs the baseline measured on a phone first.

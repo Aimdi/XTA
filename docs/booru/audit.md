@@ -67,20 +67,21 @@ API, because no live request was possible.
 | B19 | A custom `hypnohub.net` site is guessed as Moebooru; Boorusama lists it as Gelbooru 0.2, so its requests likely 404 | `booru_engines.dart:179-183` | Low | Code; site, likely; fixed in `5a3b9819`, not checked live | ST-18, M2 |
 | B20 | A 403 always says "check login and API key", even with none set or behind a bot challenge; a 503 (e621's rate limit) says "returned something unexpected" | `booru_client.dart:345-362`; `booru_errors.dart:11, 14` | Low | Code; fixed in `add22b17` | ST-19, X5 |
 | B21 | The Moebooru wiki is a title search limited to 10 results, so a common tag's page is often reported missing | `booru_endpoints.dart:108-109`; `booru_detail_parse.dart:35-41` | Low | Code; site, likely | ST-17 |
-| B22 | Popular asks for "today" in the device's local date, which the host may not have reached yet (UTC+8 and UTC+9 mornings), so the default list is empty. Boorusama does the same | `booru_popular.dart:17-18`; `booru_endpoints.dart:46-63` | Low | Code | ST-16 |
+| B22 | Popular asks for "today" in the device's local date, which the host may not have reached yet (UTC+8 and UTC+9 mornings), so the default list is empty. Boorusama does the same | `booru_popular.dart:17-18`; `booru_endpoints.dart:46-63` | Low | Code; fixed in `972d8d6e`, taking the host's day as UTC's (not checked live) | ST-16 |
 | B23 | Rule34 media: `api-cdn` sample URLs are used as-is, a missing preview falls back to the original file (or the `.mp4` itself), the file-URL fallback fails when `directory` is a number, and no `Referer` is sent | `booru_parse.dart:86-88, 319-330`; `booru_models.dart:135-157` | Low | Code; site, likely | ST-15, G8, G9 |
 | B24 | On Gelbooru 0.2 forks "Posted" shows the time of the last edit (`change`), and Following sorts by it. A test codifies the fallback; the label is what is wrong | `booru_parse.dart:277-280`; `booru_post_facts.dart:35`; `test/booru_details_test.dart:118` | Low | Code; fixed in `ec2cf187` | ST-21 |
 | B25 | Downloading a Danbooru ugoira saves the frame archive (`.zip`), not the playable webm | `booru_post_actions.dart:31-32`; `booru_models.dart:188-189` | Low | Code; fixed in `006f364f` | ST-23 |
 | B26 | Booru settings call `setState` after awaiting a preference write, with no `mounted` check; leaving the screen at that moment throws in release builds (logged, not a crash) | `booru_settings.dart:72, 118, 229, 298` | Low | ✔; fixed in `0d10bd5d` | ST-24 |
-| B27 | Late results reach stores that were already destroyed (leaving a search mid-load, swiping past a post before its lookups finish). Debug builds assert "used after being disposed"; release builds ignore it, but the requests still run to the end | `booru_search_store.dart:176-179, 201-207`; `booru_post_screen.dart:65`; `pub:asp-1.3.0/lib/asp.dart:118-122` | Low | ✔ | ST-25 |
+| B27 | Late results reach stores that were already destroyed (leaving a search mid-load, swiping past a post before its lookups finish). Debug builds assert "used after being disposed"; release builds ignore it, but the requests still run to the end | `booru_search_store.dart:176-179, 201-207`; `booru_post_screen.dart:65`; `pub:asp-1.3.0/lib/asp.dart:118-122` | Low | ✔; fixed in `14851203` | ST-25 |
 
 No release-mode crash was found on any traced path (§7.3).
 
 Fixed since the audit: B1 (`dba4687f`), B2 (`ce934ebc`), B3 (`a9ef31c1`,
 `63fb05ba`), B4 (`7825d39a`), B5 (`afd18acb`), B6 (`e5315b74`), B7
 (`56ddcba9`), B8 (`cc31597e`), B9 (`6ec2f4bd`), B18 (`20d4f4a8`), B19
-(`5a3b9819`), B20 (`add22b17`), B24 (`ec2cf187`), B25 (`006f364f`), B26
-(`0d10bd5d`). Each fix landed with a regression test.
+(`5a3b9819`), B20 (`add22b17`), B22 (`972d8d6e`), B24 (`ec2cf187`), B25
+(`006f364f`), B26 (`0d10bd5d`), B27 (`14851203`). Each fix landed with a
+regression test.
 
 ### Performance: what the code suggests (priority tier 2)
 
@@ -1125,7 +1126,7 @@ Issues that cut across all engines: ST-18 (engine guessed for a custom host), ST
   - ids sent as numbers or as strings;
   - Danbooru ugoira, where the original is a `.zip` and the `.webm` sample is the one that plays (booru_models.dart:170-172).
 - **e621 User-Agent:** sent on every API request (booru_client.dart:44-45, 334).
-- **Release-mode crashes:** none found on any traced path. The only throwing paths are ST-24 (rare) and ST-25 (debug builds only).
+- **Release-mode crashes:** none found on any traced path. The only throwing paths are ST-24 (rare) and ST-25 (debug builds only). Both are fixed since: ST-24 in `0d10bd5d` (B26), ST-25 in `14851203` (B27).
 
 ### 7.4 What to confirm first on a device
 
