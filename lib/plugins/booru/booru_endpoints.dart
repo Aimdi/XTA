@@ -115,8 +115,10 @@ Uri? booruWikiUri(BooruSite site, String tag) {
     case BooruEngine.danbooru:
     case BooruEngine.e621:
       return site.endpoint('/wiki_pages.json', {'search[title]': tag, 'limit': '1'});
+    // A title search, not a lookup: many titles holding the tag can sort
+    // before it, so ask for as many as one page holds and pick the exact one.
     case BooruEngine.moebooru:
-      return site.endpoint('/wiki.json', {'query': tag, 'limit': '10'});
+      return site.endpoint('/wiki.json', {'query': tag, 'limit': '100'});
     case BooruEngine.gelbooruV2:
       return null;
   }

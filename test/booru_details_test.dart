@@ -322,6 +322,11 @@ void main() {
       });
       expect(booruCommentsUri(danbooru, '9')!.queryParameters['search[post_id]'], '9');
       const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
+      expect(
+        booruWikiUri(moebooru, 'dress')!.queryParameters,
+        {'query': 'dress', 'limit': '100'},
+        reason: "Moebooru's wiki answers a title search; ten titles holding `dress` can all come before `dress`",
+      );
       expect(booruCommentsUri(moebooru, '9').toString(), 'https://yande.re/comment.json?post_id=9');
       const gelbooru = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://gelbooru.com');
       expect(booruWikiUri(gelbooru, 'a'), isNull);
