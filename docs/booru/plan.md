@@ -1,6 +1,6 @@
 # Booru plugin: ranked plan
 
-Status: **approved 2026-10-12; tiers 1 and 2 done except the live checks and phone measurements named below; tier 3 in progress (eight of its eleven items done).** Ranks marked **Done**
+Status: **approved 2026-10-12; tiers 1 and 2 done except the live checks and phone measurements named below; tier 3 done except the download notification, which waits for a decision on a dependency, and per-site follows, which wait for a migration.** Ranks marked **Done**
 name the commit that fixed them.
 Evidence for every item is in `docs/booru/audit.md` (IDs B*, P*, §4 rows);
 baseline scenarios are in `docs/perf-baseline.md`.
@@ -97,15 +97,15 @@ dependency and no change to the read-only rule went first.
 
 | Rank | Item | Rows | Status |
 |---|---|---|---|
-| 1 | Per-site profiles with their own credentials, rating cap, blacklist and follows; credentials stay in app settings for now | 1a, 1b, 3b | Open. Follows per site need a host column, so a migration in the frozen `lib/database/` |
+| 1 | Per-site profiles with their own credentials, rating cap, blacklist and follows; credentials stay in app settings for now | 1a, 1b, 3b | **Done** (`346dd10c`) for rating cap, blacklist, login and key. Open: per-site follows, which need a host column and so a migration in the frozen `lib/database/`, waiting for your approval |
 | 2 | Semantic labels on thumbnails | 14a | **Done** (`000c308c`) |
 | 3 | Blacklist metatags such as `score:` | 3c | **Done** (`fab90427`) for what a post carries; `status:`, `pool:` and the like still hide nothing |
 | 4 | An explicit opt-in step for the Explicit cap | 4 | **Done** (`cd9444dd`) |
 | 5 | Metatag help and autocomplete per engine | 2b | **Done** (`c8fedb29`); Moebooru's and e621's lists are not checked live |
-| 6 | Artist and character pages | 5e | Open; live check (artist endpoints' shapes) |
+| 6 | Artist and character pages | 5e | **Done** (`0adbd3c7` moves the feed view out for reuse, `de6ea791` adds the page); the artist entries are not checked live |
 | 7 | Keeping the last page through a failed refresh and across restarts | 10c | **Done** (`7d6cedba`, `322c1b31`) for Latest and Following |
 | 8 | One-tap tag search and long-press tag actions | 5b, 5c | **Done** (`bf492b75`) |
-| 9 | Host-provided related tags | 5g | Open; live check (related-tag endpoints' shapes) |
+| 9 | Host-provided related tags | 5g | **Done** (`e38de0a1`) for Danbooru and e621; not checked live |
 | 10 | A download progress notification | 8e | Blocked: needs native work and a new dependency, which needs your approval |
 | 11 | "Copy tags as prompt" options | 12 | **Done** (`d023e0de`) |
 
@@ -135,8 +135,9 @@ Tiers 1 and 2 are done apart from the live checks named in their tables and
 the phone measurements; every tier 2 metric is UNVERIFIED until S1–S7 run on
 a phone.
 
-Tier 3 is eight items done. Next, in order: host-provided related tags (5g)
-and artist and character pages (5e), both built against the shapes in
-Boorusama's parsers and unverified until checked live; then per-site
-profiles (1a, 1b, 3b), whose per-site follows need a migration. The download
-notification (8e) waits for your decision on a dependency.
+Tier 3 is done apart from two items that need a decision from you: the
+download notification (8e), which needs a dependency, and per-site follows,
+which need a migration. On your "just finish", tier 4 starts while they wait,
+with the items that need neither: the hidden-post count with tap-to-reveal
+(3d, 3e), bulk download with filename templates and a skip for files already
+saved (8b, 8c, 8d), and the pools reader (5f).
