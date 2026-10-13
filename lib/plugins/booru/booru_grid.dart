@@ -9,6 +9,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
+import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
@@ -160,6 +161,31 @@ class BooruEmptyFeed extends StatelessWidget {
               icon: Icon(failed ? Icons.refresh : Icons.expand_more),
               label: Text(failed ? l10n.retry : l10n.plugin_booru_load_more),
             ),
+    );
+  }
+}
+
+/// Above a feed whose refresh failed: why, that the posts from before are
+/// still shown, and Retry.
+class BooruRefreshNotice extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  const BooruRefreshNotice({super.key, required this.feed});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruRefreshFailureStore, ({Object? error})>(
+      store: feed.refreshFailure,
+      onState: (context, failure) => switch (failure.error) {
+        null => const SizedBox.shrink(),
+        final error => ListTile(
+          leading: const Icon(Icons.cloud_off_outlined),
+          title: Text(booruErrorMessage(l10n, error)),
+          subtitle: Text(l10n.plugin_booru_showing_earlier),
+          trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry, onPressed: feed.refresh),
+        ),
+      },
     );
   }
 }

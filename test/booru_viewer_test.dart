@@ -71,6 +71,9 @@ class _Client extends BooruClient {
 
   /// Latest's next page, answered when the test completes it.
   final latestPage = Completer<BooruPostPage>();
+
+  /// What Latest answers once [latestPage] has; the same page when null.
+  Future<BooruPostPage> Function()? latestAgain;
   var latestCalls = 0;
   final searches = <String>[];
   final searchSites = <String?>[];
@@ -94,7 +97,8 @@ class _Client extends BooruClient {
   @override
   Future<BooruPostPage> latest({int page = 1, int limit = BooruClient.defaultPageSize}) {
     latestCalls++;
-    return latestPage.future;
+    final again = latestAgain;
+    return again != null && latestPage.isCompleted ? again() : latestPage.future;
   }
 
   @override
@@ -325,6 +329,82 @@ void main() {
       expect(feed.paging.state, BooruPaging.idle);
       expect(feed.failedQueries.state, 0, reason: "Monday's failures are not Tuesday's");
       await feed.destroy();
+    });
+
+    test('a failed refresh keeps the posts from before, and says why until a refresh lands', () async {
+      Object? failure;
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        if (failure case final error?) throw error;
+        return BooruPostPage(posts: [_post('$page')], page: page, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+      await feed.refresh();
+      await feed.loadMore();
+
+      failure = BooruException(BooruErrorKind.network, 'offline');
+      await feed.refresh();
+
+      expect(feed.state.map((p) => p.id), ['1', '2']);
+      expect(feed.error, isNull, reason: 'no error page over the posts');
+      expect(feed.refreshFailure.state.error, same(failure));
+      failure = null;
+      await feed.loadMore();
+      expect(feed.state.map((p) => p.id), ['1', '2', '3'], reason: 'paging goes on from where it stood');
+
+      await feed.refresh();
+      expect(feed.state.map((p) => p.id), ['1']);
+      expect(feed.refreshFailure.state.error, isNull);
+    });
+
+    test('a failed first load, another site or a changed query gets the error page, not posts from before', () async {
+      final prefs = PrefServiceCache(
+        cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruHost: 'https://danbooru.donmai.us'},
+      );
+      var fail = true;
+      final feed = BooruFeedStore(_Client(prefs), ({required page}) async {
+        if (fail) throw BooruException(BooruErrorKind.network, 'offline');
+        return BooruPostPage(posts: [_post('$page')], page: page, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+      expect(feed.error, isA<BooruException>());
+      expect(feed.refreshFailure.state.error, isNull);
+
+      fail = false;
+      await feed.refresh();
+      fail = true;
+      await feed.refresh(changed: true);
+      expect(feed.refreshFailure.state.error, isNull, reason: "another day's or other tags' posts do not answer it");
+
+      fail = false;
+      await feed.refresh();
+      await prefs.set(optionPluginBooruHost, 'https://safebooru.donmai.us');
+      fail = true;
+      await feed.refresh();
+      expect(feed.refreshFailure.state.error, isNull, reason: "the old site's posts are not this site's");
+    });
+
+    test('a refresh that fails while the next page loads leaves the footer able to load it again', () async {
+      final next = Completer<BooruPostPage>();
+      var fail = false;
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        if (page > 1) return next.future;
+        if (fail) throw BooruException(BooruErrorKind.network, 'offline');
+        return BooruPostPage(posts: [_post('1')], page: 1, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+      await feed.refresh();
+      unawaited(feed.loadMore());
+      expect(feed.paging.state, BooruPaging.loading);
+
+      fail = true;
+      await feed.refresh();
+      next.complete(BooruPostPage(posts: [_post('2')], page: 2, hasMore: true));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(feed.paging.state, BooruPaging.idle);
+      expect(feed.state.map((p) => p.id), ['1'], reason: 'the page asked before the refresh is dropped');
     });
 
     test('no next page is asked for while a refresh is on its way', () async {
@@ -893,6 +973,29 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PluginGridSkeleton), findsNothing);
       expect(find.byType(BooruPostGrid), findsOneWidget);
+    });
+
+    testWidgets('Latest keeps its posts when a refresh fails, under a notice with Retry', (tester) async {
+      const notice = 'Showing the posts from before';
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+      client.latestPage.complete(BooruPostPage(posts: [_post('1'), _post('2')], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      client.latestAgain = () async => throw BooruException(BooruErrorKind.network, 'offline');
+
+      unawaited(tester.state<RefreshIndicatorState>(find.byType(RefreshIndicator)).show());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
+      expect(find.text(notice), findsOneWidget);
+      expect(find.text('Could not reach the booru host'), findsOneWidget);
+
+      client.latestAgain = () async => BooruPostPage(posts: [_post('3')], page: 1, hasMore: false);
+      await tester.tap(find.byTooltip('Retry'));
+      await tester.pumpAndSettle();
+      expect(find.text(notice), findsNothing);
+      expect(find.byType(BooruPostTile), findsOneWidget);
     });
 
     testWidgets('Latest asks for its first page in its first frame', (tester) async {

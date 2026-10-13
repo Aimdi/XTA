@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Ajoute Booru à la navigation du bas lorsque le module est activé",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Les publications précédentes restent affichées",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Saisissez une URL d’hôte valide",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nom affiché",

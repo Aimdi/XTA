@@ -154,6 +154,16 @@ class BooruFailedQueriesStore extends Store<int> {
   BooruFailedQueriesStore() : super(0);
 }
 
+/// Why a feed's latest refresh failed while its posts from before stay
+/// shown; a null error otherwise. A record, because a store's state cannot
+/// be updated to null.
+class BooruRefreshFailureStore extends Store<({Object? error})> {
+  BooruRefreshFailureStore() : super((error: null));
+}
+
+/// Where a feed's shown posts stand, for a failed refresh to go back to.
+typedef _Shown = ({int page, bool hasMore, BooruPaging paging});
+
 /// Paginated post list for Latest / Search / Following.
 class BooruFeedStore extends Store<List<BooruPost>>
     with BooruClosableStore<List<BooruPost>> {
@@ -165,6 +175,9 @@ class BooruFeedStore extends Store<List<BooruPost>>
 
   /// How many queries behind the shown first page failed (Following).
   final failedQueries = BooruFailedQueriesStore();
+
+  /// Why the latest refresh failed while the posts from before stay shown.
+  final refreshFailure = BooruRefreshFailureStore();
 
   var _page = 0;
   var _hasMore = true;
@@ -191,9 +204,14 @@ class BooruFeedStore extends Store<List<BooruPost>>
     if (state.isEmpty || isStale) await refresh();
   }
 
-  Future<void> refresh() async {
+  /// Loads the first page again. If that fails while this feed's posts are
+  /// shown, they stay and [refreshFailure] says why. When [changed], the
+  /// feed asks for something else now (another day, other tags), so the
+  /// posts shown no longer answer it and a failure is the feed's error.
+  Future<void> refresh({bool changed = false}) async {
     if (closed) return;
     final generation = ++_generation;
+    final shown = changed ? null : _shown();
     _page = 0;
     _hasMore = true;
     _loadedFor = client.feedKey;
@@ -202,9 +220,14 @@ class BooruFeedStore extends Store<List<BooruPost>>
       final ({BooruPostPage page, int number}) first;
       try {
         first = await _firstPage();
-      } catch (_) {
-        if (_isCurrent(generation)) _land(generation, failed: 0);
-        rethrow;
+      } catch (error) {
+        if (!_isCurrent(generation)) rethrow;
+        if (shown == null) {
+          _land(generation, failed: 0);
+          rethrow;
+        }
+        _keep(generation, shown, error);
+        return state;
       }
       // Overtaken by a newer refresh: what is shown stays until that lands.
       if (!_isCurrent(generation)) return state;
@@ -235,6 +258,30 @@ class BooruFeedStore extends Store<List<BooruPost>>
   void _land(int generation, {required int failed}) {
     _landed = generation;
     failedQueries.update(failed);
+    refreshFailure.update((error: null));
+  }
+
+  /// Null when none of this feed's posts are shown. A next page on its way
+  /// is dropped by the refresh, so the footer goes back to idle, not to
+  /// loading.
+  _Shown? _shown() => state.isEmpty || isStale
+      ? null
+      : (
+          page: _page,
+          hasMore: _hasMore,
+          paging: paging.state == BooruPaging.loading
+              ? BooruPaging.idle
+              : paging.state,
+        );
+
+  /// Goes back to the posts [shown] before a refresh that failed with
+  /// [error].
+  void _keep(int generation, _Shown shown, Object error) {
+    _landed = generation;
+    _page = shown.page;
+    _hasMore = shown.hasMore;
+    _setPaging(shown.paging);
+    refreshFailure.update((error: error));
   }
 
   bool _isCurrent(int generation) => !closed && generation == _generation;
@@ -297,6 +344,7 @@ class BooruFeedStore extends Store<List<BooruPost>>
     await super.destroy();
     await paging.destroy();
     await failedQueries.destroy();
+    await refreshFailure.destroy();
   }
 
   /// New uploads shift a host's pages, so a page can repeat posts already

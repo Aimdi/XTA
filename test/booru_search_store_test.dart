@@ -370,13 +370,32 @@ void main() {
 
       failing.add('blue_eyes');
       await feed.refresh();
-      expect(feed.error, isA<BooruException>(), reason: 'an empty tab would say there are no recent posts');
-      expect(feed.failedQueries.state, 0, reason: 'the error page says it; no notice on top');
+      expect(feed.state.map((post) => post.tags.join(' ')), ['blue_eyes'], reason: 'the posts from before stay');
+      expect(feed.refreshFailure.state.error, isA<BooruException>());
+      expect(feed.failedQueries.state, 1, reason: 'it still describes the posts shown');
 
       failing.clear();
       await feed.refresh();
       expect(feed.state, hasLength(2));
       expect(feed.failedQueries.state, 0);
+      expect(feed.refreshFailure.state.error, isNull);
+    });
+
+    test('Following fails with the error page when every followed tag fails on the first load', () async {
+      final client = BooruClient(
+        PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru'}),
+        httpClient: MockClient((request) async => http.Response('', 503)),
+      );
+      final feed = BooruFeedStore(
+        client,
+        ({required page}) => loadBooruFollowing(client, ['blue_eyes', 'night'], page: page),
+      );
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+
+      expect(feed.error, isA<BooruException>(), reason: 'an empty tab would say there are no recent posts');
+      expect(feed.failedQueries.state, 0, reason: 'the error page says it; no notice on top');
     });
   });
 }

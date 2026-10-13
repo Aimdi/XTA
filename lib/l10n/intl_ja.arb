@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "プラグイン有効時、下部ナビにBooruを追加します",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "前回の投稿を表示しています",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "有効なホストURLを入力してください",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "表示名",

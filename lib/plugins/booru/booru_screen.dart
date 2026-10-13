@@ -86,7 +86,7 @@ class _BooruScreenState extends State<BooruScreen> {
           if (!_listEquals(next, _lastFollowingTags)) {
             _lastFollowingTags = List.of(next);
             if (_followingBootstrapped || _tabs.state == _followingTab) {
-              _following.refresh();
+              _following.refresh(changed: true);
             }
           }
         },
@@ -135,7 +135,7 @@ class _BooruScreenState extends State<BooruScreen> {
   void _showPopular(BooruPopularQuery query) {
     if (query == _popularQuery.state) return;
     _popularQuery.select(query);
-    _popular.refresh();
+    _popular.refresh(changed: true);
   }
 
   @override
@@ -229,7 +229,14 @@ class _FeedTab extends StatelessWidget {
   const _FeedTab({required this.store, required this.emptyLabel, this.scrollController});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Column(
+    children: [
+      BooruRefreshNotice(feed: store),
+      Expanded(child: _posts(context)),
+    ],
+  );
+
+  Widget _posts(BuildContext context) {
     final l10n = L10n.of(context);
     return ScopedBuilder<BooruFeedStore, List<BooruPost>>(
       store: store,

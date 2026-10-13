@@ -1652,6 +1652,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Đang hiển thị các bài đăng trước đó",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Nhập URL máy chủ hợp lệ",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Tên hiển thị",

@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "启用插件后，在底部导航加入 Booru",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "正在显示之前的帖子",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "请输入有效的主机 URL",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "显示名称",

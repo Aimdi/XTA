@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Añade Booru a la navegación inferior cuando el complemento está activo",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Se muestran las publicaciones de antes",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Introduce una URL de host válida",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nombre visible",

@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "पहले की पोस्ट दिखाई जा रही हैं",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "मान्य होस्ट URL दर्ज करें",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "प्रदर्शित नाम",

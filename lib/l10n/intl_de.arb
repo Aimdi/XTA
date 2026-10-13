@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Fügt Booru der unteren Navigation hinzu, wenn das Plugin aktiv ist",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Es werden die bisherigen Beiträge angezeigt",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Gib eine gültige Host-URL ein",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Anzeigename",

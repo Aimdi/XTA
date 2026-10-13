@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "이전 게시물을 표시하는 중",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "올바른 호스트 URL을 입력하세요",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "표시 이름",

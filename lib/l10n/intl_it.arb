@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Restano i post di prima",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Inserisci un URL host valido",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nome visualizzato",

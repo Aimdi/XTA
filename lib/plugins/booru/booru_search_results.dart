@@ -39,6 +39,7 @@ class BooruSearchResults extends StatelessWidget {
         final related = booruRelatedTags(posts, store.state.tags);
         return Column(
           children: [
+            BooruRefreshNotice(feed: results),
             if (related.isNotEmpty) _RelatedTags(tags: related, onAdd: store.refine),
             Expanded(
               child: BooruPostGrid(

@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "正在顯示先前的貼文",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "請輸入有效的主機 URL",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "顯示名稱",

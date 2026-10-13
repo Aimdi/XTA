@@ -1655,6 +1655,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Zobrazují se dřívější příspěvky",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Zadejte platnou URL hostitele",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Zobrazovaný název",
