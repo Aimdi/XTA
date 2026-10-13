@@ -111,33 +111,58 @@ dependency and no change to the read-only rule went first.
 
 ## Tier 4: missing must-haves (§4)
 
-Ranked: bulk download with filename templates and skip-if-exists by MD5 (8b,
-8c, 8d); hidden-post count with tap-to-reveal (3d, 3e); notes and translation
-overlay (5i); pools reader (5f); history of viewed posts (9a, needs a
-migration). Favourites and votes synced with the site (7a) are out of scope:
-the plugin stays read-only, and local favourites already exist.
+| Rank | Item | Rows | Status |
+|---|---|---|---|
+| 1 | Bulk download with filename templates and a skip for files already downloaded | 8b, 8c, 8d | **Done** (`f3249630` shares Pixiv's template helpers, `e0fabe18`) for the posts loaded on a search, tag or pool page. No selection mode; files are matched by URL, not by hashing them |
+| 2 | Hidden-post count with tap-to-reveal | 3d, 3e | **Done** (`06ed5d02`; search results in `ab8081d5`); Following does not count, as its merge keeps only what it shows |
+| 3 | Notes and translation overlay | 5i | **Done** (`3fece939`, `1331f013`) for Danbooru and e621; not checked live |
+| 4 | Pools reader | 5f | **Done** (`55ef99aa` makes the tag page a reusable query page, `7e379860`) for Danbooru; not checked live |
+| 5 | History of viewed posts | 9a | Waiting for you: it needs a table, so a migration in the frozen `lib/database/` |
+
+Favourites and votes synced with the site (7a) are out of scope: the plugin
+stays read-only, and local favourites already exist.
+
+`1331f013` fixes a request regression ranks 3 and 4 brought in: notes and
+pools skipped the viewer's per-post lookups from tier 2, and the notes
+overlay sat inside the picture's hero, so opening a post from the grid
+asked for its notes three times.
 
 ## Tier 5: differentiators
 
-Reverse image search from X media (SauceNAO needs an API key; IQDB's terms
-need checking; this environment's network policy also refuses both hosts), booru links
-in X posts opened natively, and "new since last visit" on followed tags.
+| Rank | Item | Rows | Status |
+|---|---|---|---|
+| 1 | Booru links in X posts opened natively | 11b | **Done** (`e1f56f6e`) for post links to the built-in sites and those added in settings |
+| 2 | "New since last visit" on followed tags | 13c | **Done** (`ba615dbd`) on Following |
+| 3 | Reverse image search from X media | 11a | Not started: SauceNAO needs an API key, IQDB's terms need checking, and this environment's network policy refuses both hosts, so nothing could be tried |
 
 ## Dependencies
 
-Tiers 1 and 2 need no new dependency. A background download notification
-(tier 3) would need one, and will come with a written justification for your
-approval first. Secure credential storage is deferred until per-site profiles.
+Tiers 1 to 5 added no dependency. A background download notification (8e)
+would need one, and waits for a written justification and your approval.
+Credentials stay in app settings, as you decided (decision 3); the app has no
+secure storage package, so moving them there (1c) would need a dependency
+too. Since `346dd10c` the logins and keys kept for the sites not in use sit
+under a preference that exports and crash reports leave out; the login in
+use is still exported, as before, and its key is not.
 
 ## Proposed next
 
-Tiers 1 and 2 are done apart from the live checks named in their tables and
-the phone measurements; every tier 2 metric is UNVERIFIED until S1–S7 run on
-a phone.
+Tiers 1 to 5 are done apart from what needs a decision from you, a live
+site or a phone. Every tier 2 metric is UNVERIFIED until S1–S7 run on a
+phone.
 
-Tier 3 is done apart from two items that need a decision from you: the
-download notification (8e), which needs a dependency, and per-site follows,
-which need a migration. On your "just finish", tier 4 starts while they wait,
-with the items that need neither: the hidden-post count with tap-to-reveal
-(3d, 3e), bulk download with filename templates and a skip for files already
-saved (8b, 8c, 8d), and the pools reader (5f).
+Waiting for a decision from you:
+
+- 8e, a download progress notification: a new dependency and native work.
+- Per-site follows: a host column in `booru_subscription`, so a migration
+  in the frozen `lib/database/`.
+- 9a, a history of viewed posts: a new table, so a migration.
+- 11a, reverse image search: an API key (SauceNAO) or a terms check (IQDB),
+  and a network that reaches them.
+
+Waiting for a live site: the request shapes behind B10–B16, B21 and B23, and
+behind 2b, 5e, 5f, 5g, 5i and 11b's `id:` lookup.
+
+Waiting for a phone: S1–S7, and tier 2's ranks 5 (cancelling tile
+downloads), 6 (capping the viewer's decode size) and 9 (parsing off the
+main thread).

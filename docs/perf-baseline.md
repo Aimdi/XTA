@@ -271,3 +271,19 @@ which the first page lands, so the encoding and decoding run on a background
 isolate with `compute`, as `lib/group/feed_cache.dart` does. What remains on
 the UI isolate is copying the page to that isolate, which is not measured.
 On a phone, S1 and S2 should not change; that is UNVERIFIED.
+
+### Tiers 4 and 5 changes with a performance side
+
+Tier 4 adds requests to the viewer: a Danbooru post asks for its pools, and
+a Danbooru or e621 post for its translation notes. Until `1331f013` both
+skipped the viewer's per-post lookups, and the notes overlay sat inside the
+picture's hero, which builds its child again for each flight. A widget test
+that opens a post from search results, swipes to the next and back counted
+five notes requests for the two posts; after the fix it counts two. On a
+phone, S3 should show one or two more requests per post viewed (notes,
+pools) and no repeats; UNVERIFIED.
+
+Following now writes one preference per load, each site's newest post id
+(`ba615dbd`); the write is not awaited by the feed. A booru link opened from
+a post makes one `id:` search before the viewer opens (`e1f56f6e`), the way
+TikTok links already wait for their video.
