@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Tags Booru",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Certains tags suivis n’ont pas pu être chargés",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Ouvrir en plein écran",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Colonnes de la grille",

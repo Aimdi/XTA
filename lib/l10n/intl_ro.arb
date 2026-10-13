@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Unele etichete urmărite nu au putut fi încărcate",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Deschide pe ecran complet",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Coloane în grilă",

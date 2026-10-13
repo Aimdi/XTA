@@ -1469,6 +1469,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Không thể tải một số thẻ đang theo dõi",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Mở toàn màn hình",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Số cột lưới",

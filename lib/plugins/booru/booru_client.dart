@@ -36,6 +36,16 @@ class BooruException implements Exception {
   String toString() => 'BooruException{$kind: $message}';
 }
 
+/// The newest posts of the followed tags and saved searches, merged; of
+/// the [asked] queries, [failed] did not load, and [error] is the first such
+/// failure.
+typedef BooruFollowedPosts = ({
+  List<BooruPost> posts,
+  int asked,
+  int failed,
+  Object? error,
+});
+
 class BooruClient {
   final http.Client httpClient;
   final BasePrefService prefs;
@@ -255,25 +265,40 @@ class BooruClient {
   }
 
   /// One page per followed tag or saved search, newest-first merge for
-  /// interleaved feeds.
+  /// interleaved feeds. Queries that fail are left out.
   Future<List<BooruPost>> postsForTags(
+    Iterable<String> tags, {
+    int limitPerTag = 10,
+  }) async => (await followedPosts(tags, limitPerTag: limitPerTag)).posts;
+
+  /// One page per followed tag or saved search, merged newest first, with how
+  /// many of the queries failed.
+  Future<BooruFollowedPosts> followedPosts(
     Iterable<String> tags, {
     int limitPerTag = 10,
   }) async {
     final unique = <String>{for (final tag in tags) ?normaliseBooruQuery(tag)};
-    if (unique.isEmpty) return const [];
-
-    final pages = await Future.wait([
+    final settled = await Future.wait([
       for (final query in unique)
         posts(
           tags: booruQueryTokens(query),
           page: 1,
           limit: limitPerTag,
-        ).catchError(
-          (_) => const BooruPostPage(posts: [], page: 1, hasMore: false),
+        ).then<(BooruPostPage?, Object?)>(
+          (page) => (page, null),
+          onError: (Object error) => (null, error),
         ),
     ]);
+    final errors = [for (final (_, error) in settled) ?error];
+    return (
+      posts: _newestFirst([for (final (page, _) in settled) ?page]),
+      asked: unique.length,
+      failed: errors.length,
+      error: errors.firstOrNull,
+    );
+  }
 
+  List<BooruPost> _newestFirst(List<BooruPostPage> pages) {
     final byId = <String, BooruPost>{};
     for (final page in pages) {
       for (final post in page.posts) {

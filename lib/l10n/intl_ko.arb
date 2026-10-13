@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "팔로우한 태그 중 일부를 불러오지 못했습니다",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "전체 화면으로 열기",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "그리드 열 수",

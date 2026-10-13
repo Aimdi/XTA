@@ -19,11 +19,13 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
+import 'package:xta/plugins/booru/booru_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 
 BooruPost _post(
   String id, {
@@ -523,6 +525,30 @@ void main() {
       expect(find.text('Could not load more posts'), findsNothing);
       expect(find.text('No more posts'), findsOneWidget);
       expect(feed.state.map((p) => p.id), ['a', 'b']);
+    });
+
+    testWidgets('Following says when some followed tags did not load, and offers a retry', (tester) async {
+      const notice = 'Some followed tags could not be loaded';
+      final failed = PluginViewStore<int>(0);
+      addTearDown(failed.destroy);
+      var retries = 0;
+      await _pump(
+        tester,
+        Scaffold(
+          body: BooruFollowingNotice(failed: failed, onRetry: () => retries++),
+        ),
+      );
+      expect(find.text(notice), findsNothing);
+
+      failed.update(2);
+      await tester.pumpAndSettle();
+      expect(find.text(notice), findsOneWidget);
+      await tester.tap(find.byTooltip('Retry'));
+      expect(retries, 1);
+
+      failed.update(0);
+      await tester.pumpAndSettle();
+      expect(find.text(notice), findsNothing);
     });
 
     testWidgets('settings keep the login and key with the site they belong to', (tester) async {

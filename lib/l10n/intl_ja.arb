@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booruタグ",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "フォロー中のタグの一部を読み込めませんでした",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "全画面で開く",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "グリッドの列数",

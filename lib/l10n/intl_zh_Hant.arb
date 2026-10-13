@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "部分追蹤的標籤無法載入",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "全螢幕檢視",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "網格欄數",

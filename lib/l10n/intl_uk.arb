@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Не вдалося завантажити деякі теги, на які ви підписані",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Відкрити на весь екран",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Стовпці сітки",

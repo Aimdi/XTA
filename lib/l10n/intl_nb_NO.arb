@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Noen av taggene du følger kunne ikke lastes inn",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Åpne i fullskjerm",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Kolonner i rutenettet",

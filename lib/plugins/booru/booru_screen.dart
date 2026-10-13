@@ -44,6 +44,7 @@ class _BooruScreenState extends State<BooruScreen> {
   late final PluginViewStore<BooruPopularQuery> _popularQuery;
   late final BooruFeedStore _popular;
   late final BooruFeedStore _following;
+  late final PluginViewStore<int> _followingFailed;
   Disposer? _tagsDisposer;
   var _followingBootstrapped = false;
   List<String> _lastFollowingTags = const [];
@@ -61,13 +62,10 @@ class _BooruScreenState extends State<BooruScreen> {
       () => BooruFeedStore(client, ({required page}) => client.popular(_popularQuery.state, page: page)),
     );
     final tagStore = context.read<BooruTagsStore>();
+    final failed = _followingFailed = _session.obtain('following-failed', () => PluginViewStore<int>(0));
     _following = _session.obtain(
       'following',
-      () => BooruFeedStore(client, ({required page}) async {
-        final tags = tagStore.state;
-        if (tags.isEmpty || page > 1) return BooruPostPage(posts: const [], page: page, hasMore: false);
-        return BooruPostPage(posts: await client.postsForTags(tags), page: 1, hasMore: false);
-      }),
+      () => BooruFeedStore(client, ({required page}) => loadBooruFollowing(client, tagStore.state, failed, page: page)),
     );
     _followingBootstrapped = _following.state.isNotEmpty;
 
@@ -207,7 +205,7 @@ class _BooruScreenState extends State<BooruScreen> {
                       child: _FeedTab(store: _popular, emptyLabel: l10n.plugin_booru_empty_popular),
                     ),
                   ),
-                  (_) => _FollowingTab(store: _following),
+                  (_) => _FollowingTab(store: _following, failed: _followingFailed),
                 ],
               ),
             ),
@@ -273,8 +271,9 @@ class _FeedTab extends StatelessWidget {
 
 class _FollowingTab extends StatelessWidget {
   final BooruFeedStore store;
+  final PluginViewStore<int> failed;
 
-  const _FollowingTab({required this.store});
+  const _FollowingTab({required this.store, required this.failed});
 
   @override
   Widget build(BuildContext context) {
@@ -311,12 +310,36 @@ class _FollowingTab extends StatelessWidget {
                   ),
               ],
             ),
+            BooruFollowingNotice(failed: failed, onRetry: store.refresh),
             Expanded(
               child: _FeedTab(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts),
             ),
           ],
         );
       },
+    );
+  }
+}
+
+/// Says that some followed tags did not load, above the posts of the rest.
+class BooruFollowingNotice extends StatelessWidget {
+  final PluginViewStore<int> failed;
+  final VoidCallback onRetry;
+
+  const BooruFollowingNotice({super.key, required this.failed, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<PluginViewStore<int>, int>(
+      store: failed,
+      onState: (context, count) => count == 0
+          ? const SizedBox.shrink()
+          : ListTile(
+              leading: const Icon(Icons.error_outline),
+              title: Text(l10n.plugin_booru_following_partial),
+              trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry, onPressed: onRetry),
+            ),
     );
   }
 }

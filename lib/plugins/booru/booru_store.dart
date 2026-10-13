@@ -108,6 +108,25 @@ class BooruMuteStore extends Store<Set<String>> {
   }
 }
 
+/// The Following tab's single page. Followed tags that failed to load are
+/// counted in [failed]; when every one failed, the first failure is thrown,
+/// so the tab shows it with Retry rather than an empty feed.
+Future<BooruPostPage> loadBooruFollowing(
+  BooruClient client,
+  List<String> tags,
+  Store<int> failed, {
+  required int page,
+}) async {
+  if (page > 1) {
+    return BooruPostPage(posts: const [], page: page, hasMore: false);
+  }
+  final followed = await client.followedPosts(tags);
+  final allFailed = followed.asked > 0 && followed.failed == followed.asked;
+  failed.update(allFailed ? 0 : followed.failed);
+  if (allFailed) throw followed.error!;
+  return BooruPostPage(posts: followed.posts, page: 1, hasMore: false);
+}
+
 /// Where loading a feed's next page stands, for the footer under its grid.
 enum BooruPaging { idle, loading, failed, end }
 

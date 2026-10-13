@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "फ़ॉलो किए गए कुछ टैग लोड नहीं हो सके",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "फ़ुल स्क्रीन में खोलें",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "ग्रिड कॉलम",

@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Beberapa tag yang diikuti tidak dapat dimuat",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Buka layar penuh",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Kolom kisi",

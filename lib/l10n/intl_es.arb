@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Etiquetas Booru",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "No se han podido cargar algunas de las etiquetas que sigues",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Abrir en pantalla completa",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Columnas de la cuadrícula",

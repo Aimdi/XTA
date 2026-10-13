@@ -1472,6 +1472,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru 标签",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "部分关注的标签未能加载",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "全屏查看",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "网格列数",

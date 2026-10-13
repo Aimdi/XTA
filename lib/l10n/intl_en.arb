@@ -1565,6 +1565,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Some followed tags could not be loaded",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Open full screen",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Grid columns",

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,7 @@ import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 
 class _Client extends BooruClient {
   _Client(super.prefs);
@@ -329,6 +331,37 @@ void main() {
       );
       await client.postsForTags(['blue_eyes solo', 'night']);
       expect(requested, unorderedEquals(['blue_eyes solo', 'night']));
+    });
+
+    test('Following counts followed tags that failed, and fails only when all did', () async {
+      BooruClient client({required Set<String> failing}) => BooruClient(
+        PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruMaxRating: 'e'}),
+        httpClient: MockClient((request) async {
+          final tags = request.url.queryParameters['tags'] ?? '';
+          if (failing.contains(tags)) return http.Response('', 503);
+          return http.Response(
+            jsonEncode([
+              {'id': tags.length, 'tag_string': tags, 'rating': 'g'},
+            ]),
+            200,
+          );
+        }),
+      );
+      final failed = PluginViewStore<int>(0);
+
+      final some = await loadBooruFollowing(client(failing: {'night'}), ['blue_eyes', 'night'], failed, page: 1);
+      expect(some.posts.map((post) => post.tags.join(' ')), ['blue_eyes']);
+      expect(failed.state, 1);
+
+      await expectLater(
+        loadBooruFollowing(client(failing: {'blue_eyes', 'night'}), ['blue_eyes', 'night'], failed, page: 1),
+        throwsA(isA<BooruException>()),
+        reason: 'an empty tab would say there are no recent posts',
+      );
+      expect(failed.state, 0, reason: 'the error page says it; no notice on top');
+
+      await loadBooruFollowing(client(failing: {}), ['blue_eyes'], failed, page: 1);
+      expect(failed.state, 0);
     });
   });
 }
