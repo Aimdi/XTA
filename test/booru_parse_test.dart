@@ -251,6 +251,11 @@ void main() {
       expect(guessBooruEngine('https://xbooru.com'), BooruEngine.gelbooruV2);
       expect(guessBooruEngine('danbooru.donmai.us'), BooruEngine.danbooru);
       expect(guessBooruEngine('yande.re'), BooruEngine.moebooru);
+      expect(
+        guessBooruEngine('https://hypnohub.net'),
+        BooruEngine.gelbooruV2,
+        reason: 'a Gelbooru 0.2 site, not Moebooru',
+      );
       expect(guessBooruEngine('e621.net'), BooruEngine.e621);
       expect(guessBooruEngine('rule34.paheal.net'), isNull);
       expect(booruRequestHost('https://rule34.xxx'), 'https://api.rule34.xxx');
