@@ -259,3 +259,15 @@ request, and the next and previous pictures load while the reader looks
 (S3; S7 per viewer post rises by the preloads). Launches delete pictures
 cached more than 30 days ago. Every one of these is a prediction until the
 scenarios run on the same phone before and after.
+
+### Tier 3 changes with a performance side
+
+`322c1b31` keeps Latest's and Following's first page on the device so that
+a launch without a network can show it. Writing it costs JSON encoding: 100
+Danbooru-shaped posts with 40 tags each took a median of 6.2 ms (max 14 ms,
+30 runs after 20 warm-ups) on this environment's 2.8 GHz Xeon, in a
+throwaway test that was not committed. That is too much for the frame in
+which the first page lands, so the encoding and decoding run on a background
+isolate with `compute`, as `lib/group/feed_cache.dart` does. What remains on
+the UI isolate is copying the page to that isolate, which is not measured.
+On a phone, S1 and S2 should not change; that is UNVERIFIED.
