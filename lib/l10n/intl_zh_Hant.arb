@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "最近使用",
   "@home_networks_recent": {},
+  "image_cache_clear": "清除",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "下次查看時會重新下載圖片。",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "清除圖片快取？",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "此裝置上有 {size}。超過 {days} 天的圖片會自動刪除。",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "圖片快取",
+  "@image_cache_title": {},
   "image_quality": "圖片品質",
   "@image_quality": {},
   "import": "匯入",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "加入目前的搜尋",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable 與 Explicit 貼文僅限成人。請確認你已年滿 18 歲並希望查看。",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "我已年滿 18 歲",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} 上的貼文大多為限制級內容。",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "顯示成人內容？",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "又名 {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "複製連結",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "將標籤複製為提示詞",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "複製標籤",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "複製所有標籤",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "全部下載",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "已載入的貼文：{count}。下載紀錄中已有的檔案會被略過。",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "已加入佇列：{queued}。已下載過：{skipped}。",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "以文字編輯",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "輕觸即可編輯",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "網站拒絕存取，可能需要登入或在瀏覽器中驗證",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "此網站需要登入名稱和 API 金鑰，請在設定中新增",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "在此網站上單次搜尋的標籤過多，請移除一些",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "網站忙碌中或正在限制請求，請稍後再試",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "下載檔案名稱",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "留空則沿用站點的檔案名稱。可以使用 {tokens}。",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "追蹤標籤",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "依螢幕寬度",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "被封鎖標籤隱藏：{count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "目前所有貼文都被你的最高分級或靜音標籤隱藏了",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "封鎖此標籤",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "載入更多",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "無法載入更多貼文",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "元標籤",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name} 的更多作品",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "同一個項目中有多個標籤時，只會封鎖同時含有這些標籤的貼文。也支援 -tag 和 rating:e",
+  "plugin_booru_mute_help": "同一個項目中有多個標籤時，只會封鎖同時含有這些標籤的貼文。也支援 -tag、~tag、rating:e、score:<0、user:name 和 filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site} 上的封鎖標籤",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "新",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "自上次造訪以來的新內容：{count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "尚無留言",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "註解：{count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "每個站點分別保存最高分級、封鎖標籤、登入名稱和金鑰。追蹤的標籤在所有站點間共用。",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "選擇日期",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "貼文：{count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "圖集",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "日榜",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "較早",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "「將標籤複製為提示詞」會依此順序寫出這些種類，以空格取代底線並跳脫括號。拖曳可調整順序；關閉某一種類即可略去。",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "標籤作為提示詞",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "正在顯示先前的貼文",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "請輸入有效的主機 URL",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "顯示名稱",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "輕觸標籤即可搜尋、追蹤、封鎖或查看維基",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "繪師",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "角色",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "顯示標籤操作",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "中繼資料",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "排序標籤",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "點按標籤即可搜尋。長按可追蹤、隱藏或查看其 Wiki。",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "標籤",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "在網格中每則貼文下方顯示站點、前幾個標籤和分數",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "貼文：{tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "影片：{tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "取消追蹤標籤",

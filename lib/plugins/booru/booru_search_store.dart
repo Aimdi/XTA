@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
+import 'package:xta/plugins/booru/booru_metatags.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
@@ -67,6 +68,7 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
 
   Timer? _suggestTimer;
   BooruFeedStore? _results;
+  BooruLoadStore<List<String>>? _related;
 
   /// With an [initialQuery] the field opens on its tags, ready for [search].
   BooruSearchStore(
@@ -77,6 +79,9 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
   }) : super(BooruSearchState(tags: booruQueryTokens(initialQuery), editing: initialQuery.trim().isEmpty));
 
   BooruFeedStore? get results => _results;
+
+  /// What the host relates to the current search, asked once per search.
+  BooruLoadStore<List<String>>? get related => _related;
 
   /// Takes the field's text; finished tags become chips. Returns what stays
   /// in the field.
@@ -129,9 +134,16 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
   }
 
   /// Adds a suggestion as a chip in place of the typed text, keeping a `-`
-  /// or `~` typed before it.
-  void pick(BooruTagSuggestion suggestion) {
+  /// or `~` typed before it. A metatag's name stays in the field instead, to
+  /// be given its value. Returns what stays in the field.
+  String pick(BooruTagSuggestion suggestion) {
     _suggestTimer?.cancel();
+    if (booruSuggestsMetatagName(suggestion)) {
+      final input = booruTokenFor(state.input, suggestion.name);
+      update(state.copyWith(input: input, editing: true));
+      _suggest(input);
+      return input;
+    }
     final category = suggestion.category;
     update(
       state.copyWith(
@@ -141,6 +153,7 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
         categories: category == null ? null : {...state.categories, suggestion.name: category},
       ),
     );
+    return '';
   }
 
   void edit() {
@@ -177,27 +190,38 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
     // more pages, and their grid, still on screen until the next frame, keeps
     // what it listens to.
     _results?.close();
+    _related?.close();
     final results = BooruFeedStore(client, ({required page}) => client.search(query, page: page));
     _results = results;
+    final related = BooruLoadStore(() => client.relatedTags(booruPlainTags(tags)));
+    _related = related;
     update(state.copyWith(tags: tags, input: '', suggestions: const [], query: query, editing: false));
     await history.remember(query);
-    if (!closed) await results.refresh();
+    if (closed) return;
+    unawaited(related.ensure());
+    await results.refresh();
   }
 
+  /// The host's tags for what is typed, then the metatags of its engine
+  /// that match it. Those show at once; the host's suggestions for the
+  /// previous text stay until its answer for this one arrives.
   void _suggest(String input) {
     _suggestTimer?.cancel();
+    final metatags = booruMetatagSuggestions(client.engine, input, host: client.host, maxRating: client.maxRating);
     final prefix = booruSuggestionPrefix(input);
-    if (prefix == null) {
-      if (state.suggestions.isNotEmpty) update(state.copyWith(suggestions: const []));
-      return;
-    }
-    _suggestTimer = Timer(debounce, () => _fetchSuggestions(input, prefix));
+    if (prefix == null || metatags.isNotEmpty) _showSuggestions(metatags);
+    if (prefix == null) return;
+    _suggestTimer = Timer(debounce, () => _fetchSuggestions(input, prefix, metatags));
   }
 
-  Future<void> _fetchSuggestions(String input, String prefix) async {
+  void _showSuggestions(List<BooruTagSuggestion> suggestions) {
+    if (suggestions.isNotEmpty || state.suggestions.isNotEmpty) update(state.copyWith(suggestions: suggestions));
+  }
+
+  Future<void> _fetchSuggestions(String input, String prefix, List<BooruTagSuggestion> metatags) async {
     final suggestions = await client.suggestTags(prefix);
     if (closed || state.input != input) return;
-    update(state.copyWith(suggestions: suggestions));
+    update(state.copyWith(suggestions: [...suggestions, ...metatags]));
   }
 
   @override
@@ -205,6 +229,7 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
     close();
     _suggestTimer?.cancel();
     await _results?.destroy();
+    await _related?.destroy();
     await super.destroy();
   }
 }

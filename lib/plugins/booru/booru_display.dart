@@ -39,7 +39,13 @@ class BooruDisplay {
   int columnsFor(double width, TextScaler textScaler) =>
       columns > 0 ? columns : pluginGalleryColumns(width, textScaler);
 
-  String tileUrl(BooruPost post) => smallThumbnails ? post.thumbnailUrl : post.catalogUrl;
+  /// The picture for a tile [pixelWidth] wide: the preview when small
+  /// thumbnails are on, else the smallest size that fills the tile.
+  String tileUrl(BooruPost post, {int? pixelWidth}) => smallThumbnails
+      ? post.thumbnailUrl
+      : pixelWidth == null
+      ? post.catalogUrl
+      : post.tileUrlFor(pixelWidth);
 
   String viewerUrl(BooruPost post) => originalInViewer ? post.originalUrl : post.displayUrl;
 

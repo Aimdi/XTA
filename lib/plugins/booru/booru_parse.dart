@@ -3,7 +3,9 @@ library;
 
 import 'dart:convert';
 
+import 'package:html_unescape/html_unescape.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_metatag_match.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/utils/json.dart';
@@ -28,10 +30,12 @@ List<BooruPost> parseBooruPosts(
   ];
 }
 
+/// Tag rows from JSON, or from the XML text Gelbooru 0.2 forks answer with.
 List<BooruTagSuggestion> parseBooruTagSuggestions(
   Object? raw, {
   required BooruEngine engine,
 }) {
+  if (raw is String) return _xmlTags(raw, engine);
   final root = Json(raw);
   final list = switch (engine) {
     BooruEngine.gelbooruV2 => root['tag'].exists ? root['tag'] : root,
@@ -45,6 +49,21 @@ List<BooruTagSuggestion> parseBooruTagSuggestions(
   ];
 }
 
+final _xmlTag = RegExp(r'<tag\s([^>]*?)/?>');
+final _xmlAttribute = RegExp(r'(\w+)="([^"]*)"');
+
+/// `<tag type="4" count="900" name="..."/>` rows, attributes unescaped.
+List<BooruTagSuggestion> _xmlTags(String xml, BooruEngine engine) => [
+  for (final tag in _xmlTag.allMatches(xml))
+    ?_suggestionOf(
+      Json({
+        for (final attribute in _xmlAttribute.allMatches(tag.group(1)!))
+          attribute.group(1)!: _entities.convert(attribute.group(2)!),
+      }),
+      engine,
+    ),
+];
+
 BooruTagSuggestion? _suggestionOf(Json json, BooruEngine engine) {
   final name = json['name'].string ?? json['tag'].string;
   if (name == null || name.isEmpty) return null;
@@ -53,7 +72,7 @@ BooruTagSuggestion? _suggestionOf(Json json, BooruEngine engine) {
       json['count'].integer ??
       json['posts'].integer;
   return BooruTagSuggestion(
-    name: name,
+    name: _tagName(name, engine),
     postCount: count,
     category: _categoryOf(json, engine),
   );
@@ -83,9 +102,12 @@ BooruPost? _parseOne(
   final width = json['image_width'].integer ?? json['width'].integer ?? 0;
   final height = json['image_height'].integer ?? json['height'].integer ?? 0;
 
-  final preview = json['preview_file_url'].string ?? json['preview_url'].string;
   final sample = json['large_file_url'].string ?? json['sample_url'].string;
   final file = json['file_url'].string ?? _composedFileUrl(json);
+  final preview =
+      json['preview_file_url'].string ??
+      json['preview_url'].string ??
+      (booruIsVideoUrl(file ?? '') ? _composedThumbnailUrl(json) : null);
   final ext = json['file_ext'].string ?? _extFromUrl(file ?? sample ?? preview);
 
   return BooruPost(
@@ -117,7 +139,26 @@ BooruPost? _parseOne(
           json['owner'].string ??
           json['uploader_name'].string,
     ),
+    variants: _stillVariants(json['media_asset']['variants']),
   );
+}
+
+const _stillExtensions = {'jpg', 'jpeg', 'png', 'webp'};
+
+/// Danbooru's sizes of the picture that are stills, smallest first. The
+/// original is left out: tiles never fetch it.
+List<BooruImageVariant> _stillVariants(Json variants) => [
+  for (final variant in variants.list)
+    if (variant['type'].string != 'original' &&
+        _stillExtensions.contains(variant['file_ext'].string?.toLowerCase()))
+      ?_variantOf(variant),
+]..sort((a, b) => a.width.compareTo(b.width));
+
+BooruImageVariant? _variantOf(Json json) {
+  final url = json['url'].string;
+  final width = json['width'].integer;
+  if (url == null || url.isEmpty || width == null || width <= 0) return null;
+  return BooruImageVariant(url: url, width: width);
 }
 
 const _danbooruCategoryFields = {
@@ -234,12 +275,21 @@ String? _idOf(Json json) {
   return null;
 }
 
+final _entities = HtmlUnescape();
+
+/// Gelbooru sends tag names HTML-escaped: `girls&#039;_frontline`.
+String _tagName(String name, BooruEngine engine) =>
+    engine == BooruEngine.gelbooruV2 && name.contains('&')
+    ? _entities.convert(name)
+    : name;
+
 List<String> _tagsOf(Json json, BooruEngine engine) {
   final tagString = json['tag_string'].string ?? json['tags'].string;
   if (tagString != null && tagString.isNotEmpty) {
     return tagString
         .split(RegExp(r'\s+'))
         .where((t) => t.isNotEmpty)
+        .map((t) => _tagName(t, engine))
         .toList(growable: false);
   }
 
@@ -322,16 +372,28 @@ DateTime? parseGelbooruDate(String raw) {
 }
 
 /// Rule34 / Xbooru omit `file_url` for guests and only send directory + image.
+/// Gelbooru 0.2 keeps a post's files under its `directory`, which some
+/// hosts send as a number.
+String? _directoryOf(Json json) {
+  final directory =
+      json['directory'].string ?? json['directory'].integer?.toString();
+  return directory == null || directory.isEmpty ? null : directory;
+}
+
 String? _composedFileUrl(Json json) {
-  final directory = json['directory'].string;
+  final directory = _directoryOf(json);
   final image = json['image'].string;
-  if (directory == null ||
-      directory.isEmpty ||
-      image == null ||
-      image.isEmpty) {
-    return null;
-  }
+  if (directory == null || image == null || image.isEmpty) return null;
   return '/images/$directory/$image';
+}
+
+/// Gelbooru 0.2's thumbnail path, for a video sent without a preview: the
+/// video itself cannot stand in for one.
+String? _composedThumbnailUrl(Json json) {
+  final directory = _directoryOf(json);
+  final hash = json['hash'].string;
+  if (directory == null || hash == null || hash.isEmpty) return null;
+  return '/thumbnails/$directory/thumbnail_$hash.jpg';
 }
 
 String? _extFromUrl(String? url) {
@@ -360,8 +422,9 @@ bool booruPostAllowed(BooruPost post, BooruRating maxRating) {
 
 /// Whether any blacklist entry hides [post]. An entry is one tag or several;
 /// several hide a post only when all of them match. `-tag` matches a post
-/// without the tag, `~a ~b` matches a post with either, and `rating:x` uses
-/// the host's own rating letters.
+/// without the tag, `~a ~b` matches a post with either, `rating:x` uses the
+/// host's own rating letters, and the metatags [booruMetatagMatches] knows
+/// (`score:<0`, `user:name`, `filetype:gif`…) compare what the post says.
 bool booruPostMuted(BooruPost post, Set<String> entries) {
   if (entries.isEmpty) return false;
   final tags = post.tags.map((tag) => tag.toLowerCase()).toSet();
@@ -381,8 +444,7 @@ bool _tokenMatches(BooruPost post, Set<String> tags, BooruQueryToken token) {
   final present = switch (token.metatag) {
     null => tags.contains(token.value.toLowerCase()),
     'rating' => _ratingMatches(post, token.value),
-    // Other metatags need the host; an entry using one never hides a post.
-    _ => null,
+    final name => booruMetatagMatches(post, name, token.value),
   };
   if (present == null) return false;
   return token.operator == BooruTagOperator.exclude ? !present : present;

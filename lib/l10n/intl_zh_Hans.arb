@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "最近使用",
   "@home_networks_recent": {},
+  "image_cache_clear": "清除",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "下次查看时会重新下载图片。",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "清除图片缓存？",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "此设备上有 {size}。超过 {days} 天的图片会自动删除。",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "图片缓存",
+  "@image_cache_title": {},
   "image_quality": "图片质量",
   "@image_quality": {},
   "import": "导入",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "添加到当前搜索",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "“可疑”和“限制级”帖子仅限成人。请确认你已年满 18 岁并希望查看。",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "我已年满 18 岁",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} 上的帖子大多为限制级内容。",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "显示成人内容？",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "又名 {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API 密钥",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "可选。部分站点（Gelbooru、Danbooru）需要密钥才能稳定访问。",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "复制链接",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "将标签复制为提示词",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "复制标签",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "复制所有标签",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "浏览 Danbooru / Gelbooru 类站点，将标签加入分组",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "全部下载",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "已加载的帖子：{count}。下载记录中已有的文件会被跳过。",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "已加入队列：{queued}。已下载过：{skipped}。",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "以文本编辑",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "点按以编辑",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "站点拒绝访问，可能需要登录或在浏览器中验证",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "该站点需要登录名和 API 密钥，请在设置中添加",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "无法连接 Booru 站点",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "请先在设置中选择 Booru 站点",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "站点返回了意外响应",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "在该站点上单次搜索的标签过多，请移除一些",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "请求被拒绝，请检查登录名和 API 密钥",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "站点繁忙或正在限制请求，请稍后再试",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "下载文件名",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "留空则沿用站点的文件名。可以使用 {tokens}。",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "关注标签",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru 标签",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "适应屏幕",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "被屏蔽标签隐藏：{count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "目前所有帖子都被你的最高分级或屏蔽标签隐藏了",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "屏蔽此标签",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "站点 URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "无法加载 Booru 帖子",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "加载更多",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "无法加载更多帖子",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "登录名 / 用户 ID",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "最高分级",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "元标签",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name} 的更多作品",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "尚无屏蔽标签",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "同一条目中填写多个标签时，只屏蔽同时包含这些标签的帖子。也支持 -tag 和 rating:e",
+  "plugin_booru_mute_help": "同一条目中填写多个标签时，只屏蔽同时包含这些标签的帖子。也支持 -tag、~tag、rating:e、score:<0、user:name 和 filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "屏蔽标签",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site} 上的屏蔽标签",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "屏蔽标签",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "新",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "自上次访问以来的新内容：{count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "暂无评论",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "注释：{count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "打开原文件",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "在站点打开",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru 需要站点的 SHA1 哈希，不是明文密码。",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "每个站点分别保存最高分级、屏蔽标签、登录名和密钥。关注的标签在所有站点间共享。",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "选择日期",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "帖子：{count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "图集",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "日榜",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "更早",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "“将标签复制为提示词”会按此顺序写出这些种类，用空格替换下划线并转义括号。拖动可调整顺序；关闭某一种类即可将其略去。",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "标签作为提示词",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "限制级",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "一般",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "启用插件后，在底部导航加入 Booru",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "正在显示之前的帖子",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "请输入有效的主机 URL",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "显示名称",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "最新",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "点按标签可搜索、关注、屏蔽或查看维基",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "画师",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "角色",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "显示标签操作",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "元数据",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "排序标签",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "点按标签即可搜索。长按可关注、隐藏或查看其 Wiki。",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "标签",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "测试连接",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "在网格中每个帖子下方显示站点、前几个标签和分数",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "帖子：{tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "视频：{tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "取消关注标签",

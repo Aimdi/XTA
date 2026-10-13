@@ -12,11 +12,14 @@ import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_pools.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
+import 'package:xta/plugins/booru/booru_tag_page.dart';
 import 'package:xta/plugins/booru/booru_tag_sheet.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 
@@ -56,7 +59,8 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     super.initState();
     final client = context.read<BooruClient>();
     _engine = BooruEngine.tryParse(_post.engine) ?? client.engine;
-    _tagInfo = BooruLoadStore(() => client.tagInfo(_post));
+    final lookups = context.read<BooruPostLookups?>();
+    _tagInfo = BooruLoadStore(() => booruPostTagInfo(client, lookups, _post));
     unawaited(_tagInfo.ensure());
   }
 
@@ -90,6 +94,7 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
           ),
         if (_post.hasFamily)
           BooruRelatedStrip(title: l10n.plugin_booru_family, query: booruFamilyQuery(_post), exclude: _post),
+        if (booruSupportsPools(_engine)) BooruPoolsSection(post: _post),
         if (booruSupportsComments(_engine)) BooruComments(post: _post),
       ],
     );
@@ -108,11 +113,11 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BooruTagSection(tags: _post.tags, info: info, onTap: _openTag),
+        BooruTagSection(tags: _post.tags, info: info, onTap: _searchTag, onLongPress: _openTag),
         if (_post.tags.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Text(l10n.plugin_booru_tag_actions_hint, style: theme.textTheme.bodySmall),
+            child: Text(l10n.plugin_booru_tag_tap_hint, style: theme.textTheme.bodySmall),
           ),
         if (artist != null)
           BooruRelatedStrip(
@@ -124,6 +129,9 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
       ],
     );
   }
+
+  void _searchTag(String tag, BooruTagCategory? category) =>
+      openBooruTag(context, tag, category: category, site: context.read<BooruClient>().siteOf(_post));
 
   void _openTag(String tag, BooruTagCategory? category) => showBooruTagActions(
     context,

@@ -3,6 +3,26 @@ import 'package:flutter/material.dart';
 
 const booruImageTimeLimit = Duration(seconds: 15);
 
+/// What [BooruNetworkImage] shows [url] with at [cacheWidth], so a picture
+/// loaded ahead with it is the one the page then finds in the image cache.
+ImageProvider booruImageProvider(String url, {int? cacheWidth}) =>
+    _network(url, cacheWidth: cacheWidth).image;
+
+ExtendedImage _network(
+  String url, {
+  BoxFit? fit,
+  int? cacheWidth,
+  LoadStateChanged? loadStateChanged,
+}) => ExtendedImage.network(
+  url,
+  fit: fit,
+  cache: true,
+  cacheWidth: cacheWidth,
+  timeLimit: booruImageTimeLimit,
+  retries: 1,
+  loadStateChanged: loadStateChanged,
+);
+
 /// Booru CDN image decoded near paint size.
 class BooruNetworkImage extends StatelessWidget {
   final String url;
@@ -31,13 +51,10 @@ class BooruNetworkImage extends StatelessWidget {
     }
 
     if (cacheWidth != null) {
-      return ExtendedImage.network(
+      return _network(
         url,
         fit: fit,
-        cache: true,
         cacheWidth: cacheWidth,
-        timeLimit: booruImageTimeLimit,
-        retries: 1,
         loadStateChanged: loadStateChanged,
       );
     }
@@ -48,13 +65,10 @@ class BooruNetworkImage extends StatelessWidget {
         final width = maxW.isFinite && maxW > 0
             ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
             : null;
-        return ExtendedImage.network(
+        return _network(
           url,
           fit: fit,
-          cache: true,
           cacheWidth: width,
-          timeLimit: booruImageTimeLimit,
-          retries: 1,
           loadStateChanged: loadStateChanged,
         );
       },

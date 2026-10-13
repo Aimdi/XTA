@@ -81,6 +81,7 @@ import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
@@ -156,6 +157,7 @@ import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/desktop.dart';
+import 'package:xta/utils/image_disk_cache.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -683,6 +685,11 @@ Future<void> main() async {
       optionPluginBooruTileDetails: true,
       optionPluginBooruBlurExplicit: false,
       optionPluginBooruTagSort: 'name',
+      optionPluginBooruPromptKinds: '',
+      optionPluginBooruSiteSettings: '{}',
+      optionPluginBooruFileNameTemplate: '',
+      optionPluginBooruSiteCredentials: '{}',
+      optionPluginBooruFollowingSeen: '{}',
       optionPluginEhEnabled: false,
       optionPluginEhShowTab: true,
       optionPluginEhCookies: '',
@@ -796,6 +803,10 @@ Future<void> main() async {
     } catch (_) {
       // Ignore, as we'll catch it later instead
     }
+
+    // The image disk cache is shared by X and every plugin and never shrank
+    // on its own; old pictures go once per launch, off the startup path.
+    unawaited(trimImageDiskCache());
 
     var importDataModel = ImportDataModel();
 
@@ -1145,6 +1156,7 @@ Future<void> main() async {
                 Provider(create: (_) => booruClient),
                 Provider(create: (_) => booruTags),
                 Provider(create: (_) => booruMute),
+                Provider(create: (_) => BooruFeedCache()),
                 Provider(create: (_) => ehClient),
                 Provider(create: (_) => ehFavorites),
                 Provider(create: (_) => ehHistory),

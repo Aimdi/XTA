@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "최근",
   "@home_networks_recent": {},
+  "image_cache_clear": "지우기",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "이미지는 다음에 볼 때 다시 내려받습니다.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "이미지 캐시를 지울까요?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "이 기기에 {size}. {days}일이 지난 이미지는 자동으로 삭제됩니다.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "이미지 캐시",
+  "@image_cache_title": {},
   "image_quality": "이미지 화질",
   "@image_quality": {},
   "import": "가져오기",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "현재 검색에 추가",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable 및 Explicit 게시물은 성인 전용입니다. 만 18세 이상이며 보기를 원한다는 것을 확인해 주세요.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "만 18세 이상입니다",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site}의 게시물은 대부분 노골적인 내용입니다.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "성인용 게시물을 표시할까요?",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "다른 이름: {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "링크 복사",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "태그를 프롬프트로 복사",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "태그 복사",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "모든 태그 복사",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "모두 다운로드",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "지금까지 불러온 게시물: {count}개. 이미 다운로드한 파일은 건너뜁니다.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "대기열에 추가: {queued}개. 이미 다운로드됨: {skipped}개.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "텍스트로 편집",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "탭하여 편집",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "사이트에서 접근을 거부했습니다. 로그인이나 브라우저 확인이 필요할 수 있습니다",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "이 사이트는 로그인과 API 키가 필요합니다. 설정에서 추가하세요",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "이 사이트에서 한 번에 검색하기에는 태그가 너무 많습니다. 일부를 빼세요",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "사이트가 혼잡하거나 요청을 제한하고 있습니다. 나중에 다시 시도하세요",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "다운로드 파일 이름",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "비워 두면 사이트의 파일 이름을 그대로 씁니다. 사용할 수 있는 항목: {tokens}",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "태그 팔로우",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "화면에 맞추기",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "숨긴 태그로 가려진 게시물: {count}개",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "지금까지의 게시물은 모두 최대 등급이나 숨긴 태그 때문에 가려져 있습니다",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "이 태그가 있는 게시물 숨기기",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "더 불러오기",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "게시물을 더 불러오지 못했습니다",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "메타태그",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name}의 다른 작품",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "한 항목에 태그를 여러 개 넣으면 모두 포함된 게시물만 숨깁니다. -tag와 rating:e도 쓸 수 있습니다",
+  "plugin_booru_mute_help": "한 항목에 태그를 여러 개 넣으면 모두 포함된 게시물만 숨깁니다. -tag, ~tag, rating:e, score:<0, user:name, filetype:gif도 쓸 수 있습니다",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site}에서 숨긴 태그",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "새 글",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "지난 방문 이후 새 게시물: {count}개",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "아직 댓글이 없습니다",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "주석: {count}개",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "최대 등급, 숨긴 태그, 로그인과 키는 사이트마다 따로 저장됩니다. 팔로우한 태그는 모든 사이트에서 공유됩니다.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "날짜 선택",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "게시물: {count}개",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "풀",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "일간",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "이전 기간",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "‘태그를 프롬프트로 복사’는 이 종류들을 이 순서대로, 밑줄은 공백으로 바꾸고 괄호는 이스케이프해서 씁니다. 끌어서 순서를 바꾸고, 종류를 끄면 빠집니다.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "프롬프트로 쓸 태그",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "이전 게시물을 표시하는 중",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "올바른 호스트 URL을 입력하세요",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "표시 이름",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "태그를 탭하면 검색, 팔로우, 숨기기, 위키 보기를 할 수 있습니다",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "작가",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "캐릭터",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "태그 작업 보기",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "메타",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "태그 정렬",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "태그를 탭하면 검색합니다. 길게 누르면 팔로우하거나 숨기거나 위키를 볼 수 있습니다.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "태그",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "그리드의 각 게시물 아래에 호스트, 앞쪽 태그, 점수를 표시합니다",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "게시물: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "동영상: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "태그 팔로우 취소",

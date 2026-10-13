@@ -5,14 +5,18 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/plugins/booru/booru_adult_consent.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_display_settings.dart';
+import 'package:xta/plugins/booru/booru_download.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_prompt_settings.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
+import 'package:xta/plugins/booru/booru_site_profiles.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/ui/errors.dart';
@@ -68,18 +72,37 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     _apiKey.text = booruCredential(_prefs, optionPluginBooruApiKey);
   }
 
+  /// Switches to [preset], bringing back the rating cap, blacklist, login and
+  /// key it kept. A site seen for the first time gets General, except one
+  /// whose posts are mostly explicit, where a General cap would show almost
+  /// nothing: there it becomes Explicit if the reader already allowed adult
+  /// posts or confirms it now.
   Future<void> _applyPreset(BooruPreset preset) async {
     final prefs = PrefService.of(context, listen: false);
+    final mutes = context.read<BooruMuteStore>();
+    final current =
+        BooruRating.tryParse(prefs.get<String>(optionPluginBooruMaxRating)) ??
+        BooruRating.general;
+    final ownSettings = await swapBooruSiteProfile(
+      prefs,
+      from: booruHostOf(prefs),
+      to: normaliseBooruHost(preset.host),
+    );
     await prefs.set(optionPluginBooruPreset, preset.id);
     await prefs.set(optionPluginBooruEngine, preset.engine.id);
     await prefs.set(optionPluginBooruHost, preset.host);
+    await mutes.load();
+    if (!mounted) return;
+    setState(() => _host.text = preset.host);
+    if (ownSettings) return;
+    final adult =
+        booruHostIsMostlyExplicit(preset.host) &&
+        (!booruRatingNeedsConsent(current, BooruRating.explicit) ||
+            await confirmBooruAdultContent(context, site: preset.name));
     await prefs.set(
       optionPluginBooruMaxRating,
-      booruHostIsMostlyExplicit(preset.host)
-          ? BooruRating.explicit.code
-          : BooruRating.general.code,
+      (adult ? BooruRating.explicit : BooruRating.general).code,
     );
-    if (mounted) setState(() => _host.text = preset.host);
   }
 
   Future<void> _addCustomSite() async {
@@ -127,6 +150,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     } else if (mounted) {
       setState(() {});
     }
+    await forgetBooruSiteProfile(prefs, normaliseBooruHost(site.host));
   }
 
   Future<void> _mute(String entry) async {
@@ -296,6 +320,13 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
             ),
           ),
           PrefTitle(title: Text(l10n.plugin_booru_section_content)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              l10n.plugin_booru_per_site_note,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
           ListTile(
             title: Text(l10n.plugin_booru_max_rating),
             subtitle: Text(booruRatingLabel(l10n, maxRating)),
@@ -315,7 +346,11 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                   ),
                 ),
               );
-              if (next == null) return;
+              if (next == null || !context.mounted) return;
+              if (booruRatingNeedsConsent(maxRating, next) &&
+                  !await confirmBooruAdultContent(context)) {
+                return;
+              }
               await prefs.set(optionPluginBooruMaxRating, next.code);
               if (mounted) setState(() {});
             },
@@ -336,7 +371,16 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
             },
           ),
           const BooruDisplaySettings(),
-          PrefTitle(title: Text(l10n.plugin_booru_mute_section)),
+          const BooruPromptSettings(),
+          PrefTitle(title: Text(l10n.download)),
+          const BooruDownloadSettings(),
+          PrefTitle(
+            title: Text(
+              l10n.plugin_booru_mute_section_on(
+                displayNameForBooruHost(booruHostOf(prefs)),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(

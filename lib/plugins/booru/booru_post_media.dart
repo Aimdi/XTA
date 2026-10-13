@@ -6,12 +6,14 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_notes.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/tweet/_video.dart';
 
 /// The post's picture, or its video in the app's player. A picture opens
-/// full screen, where it zooms.
+/// full screen, where it zooms. Its notes stay out of the hero, which builds
+/// its child again for every flight.
 class BooruPostMedia extends StatelessWidget {
   final BooruPost post;
 
@@ -24,19 +26,25 @@ class BooruPostMedia extends StatelessWidget {
     if (video != null) {
       return AspectRatio(aspectRatio: ratio, child: _video(video));
     }
-    return Hero(
-      tag: booruPostHeroTag(post),
-      child: AspectRatio(
-        aspectRatio: ratio,
-        child: Semantics(
-          image: true,
-          button: true,
-          label: L10n.of(context).plugin_booru_full_screen,
-          child: GestureDetector(
-            onTap: () => _openFullScreen(context),
-            child: BooruNetworkImage(url: post.isVideo ? post.thumbnailUrl : post.displayUrl, fit: BoxFit.contain),
+    return AspectRatio(
+      aspectRatio: ratio,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Hero(
+            tag: booruPostHeroTag(post),
+            child: Semantics(
+              image: true,
+              button: true,
+              label: L10n.of(context).plugin_booru_full_screen,
+              child: GestureDetector(
+                onTap: () => _openFullScreen(context),
+                child: BooruNetworkImage(url: post.isVideo ? post.thumbnailUrl : post.displayUrl, fit: BoxFit.contain),
+              ),
+            ),
           ),
-        ),
+          if (!post.isVideo) BooruNotesOverlay(post: post),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/utils/download_directory.dart';
 
 /// The download settings as a fresh install starts with them.
 const downloadPrefDefaults = <String, Object>{
@@ -33,6 +34,18 @@ class DownloadDestination {
   }
 
   bool get asks => treeUri == null && !background;
+}
+
+/// Where a batch goes: the configured destination, else a folder asked for
+/// once for the whole batch; null when the reader backs out of choosing one.
+Future<DownloadDestination?> batchDownloadDestination(
+  BasePrefService prefs, {
+  Future<String?> Function() pick = DownloadDirectory.pick,
+}) async {
+  final configured = DownloadDestination.fromPrefs(prefs);
+  if (!configured.asks) return configured;
+  final treeUri = await pick();
+  return treeUri == null ? null : DownloadDestination.folder(treeUri);
 }
 
 /// Moves readers from the former "ask" default to background saving, once.

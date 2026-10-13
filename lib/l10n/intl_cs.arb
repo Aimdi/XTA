@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Nedávné",
   "@home_networks_recent": {},
+  "image_cache_clear": "Vymazat",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Obrázky se znovu stáhnou, až je příště uvidíte.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Vymazat mezipaměť obrázků?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} v tomto zařízení. Obrázky starší než {days} dní se mažou samy.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Mezipaměť obrázků",
+  "@image_cache_title": {},
   "image_quality": "Kvalita obrázků",
   "@image_quality": {},
   "import": "Importovat",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Přidat do aktuálního hledání",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Příspěvky Questionable a Explicit jsou jen pro dospělé. Potvrďte, že je vám 18 let nebo více a chcete je vidět.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Je mi 18 let nebo více",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Většina příspěvků na {site} je explicitních.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Zobrazovat příspěvky pro dospělé?",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "Známý také jako {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Kopírovat odkaz",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Kopírovat štítky jako prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Kopírovat štítek",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopírovat štítky",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Stáhnout vše",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Dosud načtené příspěvky: {count}. Soubory, které už máte ve stažených, se přeskočí.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "Ve frontě: {queued}. Již staženo: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Upravit jako text",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Klepnutím upravíte",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "Web odepřel přístup — možná vyžaduje přihlášení nebo ověření v prohlížeči",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Tento web vyžaduje přihlašovací jméno a klíč API — přidejte je v nastavení",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "Příliš mnoho štítků na jedno hledání na tomto webu — některé odeberte",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Web je přetížený nebo omezuje požadavky — zkuste to později",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "Název staženého souboru",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Ponechte prázdné, aby zůstal název souboru z webu. Můžete použít {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "Sledovat štítek",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Přizpůsobit obrazovce",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Skryto ztlumenými štítky: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "Všechny dosavadní příspěvky skrývá vaše maximální hodnocení nebo ztlumené štítky",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Skrýt příspěvky s tímto štítkem",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "Načíst další",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "Další příspěvky se nepodařilo načíst",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "Metaštítky",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "Další od {name}",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Více štítků v jedné položce skryje jen příspěvky, které je mají všechny. Funguje i -tag a rating:e",
+  "plugin_booru_mute_help": "Více štítků v jedné položce skryje jen příspěvky, které je mají všechny. Funguje i -tag, ~tag, rating:e, score:<0, user:name a filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Ztlumené štítky na {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Nové",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Nové od vaší poslední návštěvy: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Zatím žádné komentáře",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "Poznámky: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Každý web si pamatuje vlastní maximální hodnocení, ztlumené štítky, přihlašovací jméno a klíč. Sledované štítky jsou společné pro všechny weby.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Vyberte datum",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Příspěvky: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Pooly",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Den",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Dříve",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "„Kopírovat štítky jako prompt“ píše tyto druhy v tomto pořadí, s mezerami místo podtržítek a escapovanými závorkami. Přetažením změníte pořadí; vypnutím druh vynecháte.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Štítky jako prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Zobrazují se dřívější příspěvky",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Zadejte platnou URL hostitele",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Zobrazovaný název",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Klepnutím na štítek ho můžete vyhledat, sledovat, skrýt nebo si přečíst jeho wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Umělec",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Postava",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "zobrazit akce štítku",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Seřadit štítky",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Klepnutím na štítek ho vyhledáte. Podržením ho můžete sledovat, skrýt nebo si přečíst jeho wiki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Štítky",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Hostitel, první štítky a skóre pod každým příspěvkem v mřížce",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Příspěvek: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Video: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Přestat sledovat štítek",

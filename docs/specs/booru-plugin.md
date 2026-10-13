@@ -36,11 +36,27 @@ the well-known public JSON shapes (Danbooru, Moebooru, Gelbooru v2, e621).
 | Viewer | Swipes sideways through the list a post was opened from and keeps loading the feed (`BooruPagerStore`); tap the picture for the shared full-screen viewer (pinch / double-tap zoom, download, share); videos and Danbooru's webm-sampled animations play in the app's player; download original, save on this device (same archive id as the feed card), share / copy link, copy tags, open on host / source / file |
 | Details | Score, up/down votes, favorites, rating, size, file type and size, posted date, uploader — whichever the host sends |
 | Tags | Grouped Artist · Copyright · Character · Species · General · Meta as compact chips tinted in their kind's colour (shared `PluginTagChip`), names with spaces, and a short post count (5.45M). One lookup per post: Danbooru `tags.json?search[name_comma]=`, e621 `tags.json?search[name]=`, Gelbooru `s=tag&names=` (kinds and counts); Moebooru `post.json?include_tags=1` (kinds only — its API cannot count a list of tags). Kinds the post carries stand in if the lookup fails. Sort A–Z or most used first (kept in preferences); followed / hidden markers; full counts for screen readers; 48 dp touch targets |
-| Tag actions | Tap a tag: search it, add it to / exclude it from the search the post came from, follow, hide, read its wiki (not Gelbooru), copy |
+| Tag actions | Tap a tag to search it; long-press for its actions: search it, add it to / exclude it from the search the post came from, follow, hide, read its wiki (not Gelbooru), copy |
 | Related | "More from {artist}" and parent / child posts as strips; "See all" opens the search |
 | Comments | Read-only, loaded when opened (Danbooru, e621, Moebooru; Gelbooru only answers in XML) |
 | Blacklist | An entry may hold several tags, hiding posts that have all of them; `-tag`, `~a ~b` and `rating:x` (host letters) work; old single-tag entries load unchanged |
 | Display | Grid columns (fit or 2–5), smaller thumbnails, details under thumbnails, blur questionable / explicit thumbnails, original files in full screen |
+
+## Phase 3 — docs/booru/plan.md tiers 2–5
+
+| Piece | Detail |
+|---|---|
+| Requests | At most ten a second per site, with a pause after a 429 or 5xx that doubles up to 32 s or follows `Retry-After`; a Danbooru tile asks for the smallest variant that fills it; the viewer asks once per post for its tags, related posts, notes and pools |
+| Sites | Each site keeps its own rating cap, blacklist, login and key; those kept for the sites not in use sit under a preference that exports and crash reports leave out. A cap past Sensitive asks for an adult confirmation first |
+| Search | Each engine's metatags are suggested from two letters, with known values after the colon; Danbooru's and e621's related tags over the results |
+| Tags | Artist, character and series tags open their own page; an artist's shows other names and links |
+| Blacklist | Entries may use `score:`, `id:`, `width:`, `height:`, `favcount:`, `tagcount:`, `user:`, `filetype:`, `md5:`, `parent:` and `source:`; a feed says how many posts it hid, and Show puts them back |
+| Viewer | Danbooru pools under a post, each read in pool order; Danbooru and e621 translation notes over the picture |
+| Downloads | Download all for the posts loaded on a search, tag or pool page, skipping files already downloaded; file name templates (`{id}` `{md5}` `{site}` `{artist}` `{character}` `{copyright}` `{rating}`) |
+| Feeds | A failed refresh keeps the posts under a notice; Latest's and Following's first page is kept on the device for a launch without a network; Following marks the posts that came in since the last visit |
+| Links | A post link to a built-in or added site opens in the viewer |
+| Copy | "Copy tags as prompt", with the kinds of tag and their order set in settings |
+| Accessibility | Thumbnails read as "Post: …" or "Video: …" with up to five tags |
 
 Pure pieces are unit-tested without HTTP: `booru_endpoints.dart` (URLs and
 credential names per engine), `booru_detail_parse.dart` (tag kinds, wiki,
@@ -65,9 +81,10 @@ Danbooru-family / Moebooru / e621 queries also append rating metatags.
 - More engines: Philomena, Sankaku, Shimmie2, Szurubooru, Zerochan, Nozomi,
   Anime-Pictures, Hydrus, Hybooru, Eshuushuu (Philomena, Zerochan and
   Anime-Pictures write tags with spaces, which the chip field splits on)
-- Multiple saved booru profiles with **per-host follows** (custom hosts are saved as extra chips; follows stay global)
-- A Booru grid of saved posts (saves land in the app's Saved list today) and bulk download of a search
-- Translation notes over the picture, pools and artist pages
+- **Per-host follows** (each site keeps its own cap, blacklist and login; follows stay global)
+- A Booru grid of saved posts (saves land in the app's Saved list today) and a history of viewed posts
+- Pools on e621 and Moebooru; notes on Moebooru and Gelbooru
+- Reverse image search from X media
 - Account login flows beyond pasted API credentials
 
 ## Hard rules
@@ -75,4 +92,4 @@ Danbooru-family / Moebooru / e621 queries also append rating metatags.
 - No compose / favorite / upload / comment write-backs to any booru
 - Null-safe JSON parsing (`Json` / `as Type?`)
 - Store pattern only; ARB for every UI string
-- `lib/client/` and X timeline code untouched; DB only via migration 53
+- `lib/client/` and X timeline code untouched; DB only via migrations (53, and 62 for group members)
