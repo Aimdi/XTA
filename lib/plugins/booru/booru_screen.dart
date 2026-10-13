@@ -13,18 +13,14 @@ import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
-import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_feed_cache.dart';
-import 'package:xta/plugins/booru/booru_grid.dart';
-import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_feed_view.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/ui/empty_pane.dart';
-import 'package:xta/ui/errors.dart';
-import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 const _latestTab = 0;
 const _popularTab = 1;
@@ -211,7 +207,7 @@ class _BooruScreenState extends State<BooruScreen> {
                 onSelected: _select,
                 index: tab,
                 children: [
-                  (_) => _FeedTab(
+                  (_) => BooruFeedView(
                     store: _latest,
                     emptyLabel: l10n.plugin_booru_empty_latest,
                     scrollController: widget.scrollController,
@@ -222,7 +218,7 @@ class _BooruScreenState extends State<BooruScreen> {
                       engine: context.read<BooruClient>().engine,
                       query: query,
                       onChanged: _showPopular,
-                      child: _FeedTab(store: _popular, emptyLabel: l10n.plugin_booru_empty_popular),
+                      child: BooruFeedView(store: _popular, emptyLabel: l10n.plugin_booru_empty_popular),
                     ),
                   ),
                   (_) => _FollowingTab(store: _following),
@@ -232,70 +228,6 @@ class _BooruScreenState extends State<BooruScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _FeedTab extends StatelessWidget {
-  final BooruFeedStore store;
-  final String emptyLabel;
-  final ScrollController? scrollController;
-
-  const _FeedTab({required this.store, required this.emptyLabel, this.scrollController});
-
-  @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      BooruRefreshNotice(feed: store),
-      Expanded(child: _posts(context)),
-    ],
-  );
-
-  Widget _posts(BuildContext context) {
-    final l10n = L10n.of(context);
-    return ScopedBuilder<BooruFeedStore, List<BooruPost>>(
-      store: store,
-      onLoading: (_) => store.state.isNotEmpty
-          ? BooruPostGrid(
-              posts: store.state,
-              feed: store,
-              scrollController: scrollController,
-              onRefresh: store.refresh,
-              onNearEnd: store.loadMore,
-            )
-          : const PluginGridSkeleton(columns: 2),
-      onError: (_, error) => FullPageErrorWidget(
-        error: error,
-        stackTrace: null,
-        prefix: booruErrorMessage(l10n, error),
-        onRetry: () => store.refresh(),
-      ),
-      onState: (context, posts) {
-        if (posts.isEmpty) {
-          return BooruEmptyFeed(
-            feed: store,
-            scrollController: scrollController,
-            empty: EmptyPane(
-              icon: Icons.photo_outlined,
-              message: emptyLabel,
-              scrollController: scrollController,
-              onRefresh: store.refresh,
-              action: FilledButton.icon(
-                onPressed: store.refresh,
-                icon: const Icon(Icons.refresh),
-                label: Text(l10n.retry),
-              ),
-            ),
-          );
-        }
-        return BooruPostGrid(
-          posts: posts,
-          feed: store,
-          scrollController: scrollController,
-          onRefresh: store.refresh,
-          onNearEnd: store.loadMore,
-        );
-      },
     );
   }
 }
@@ -342,7 +274,7 @@ class _FollowingTab extends StatelessWidget {
             ),
             BooruFollowingNotice(failed: store.failedQueries, onRetry: store.refresh),
             Expanded(
-              child: _FeedTab(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts),
+              child: BooruFeedView(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts),
             ),
           ],
         );
