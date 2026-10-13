@@ -57,9 +57,9 @@ or responses captured on your side.
 | 15 | Decode HTML entities in Gelbooru tags | B15 | M | S | M (live check) | A recorded Gelbooru post: `girls&#039;_frontline` parses to `girls'_frontline` |
 | 16 | Gelbooru 0.2 forks: parse the tag endpoint's XML reply, or use their autocomplete endpoint | B12 | M | M | M (live check) | Recorded Safebooru tag replies |
 | 17 | Stop unfollowing a booru tag from removing other sources' group rows: prefix Booru members and migrate existing rows | B17 | M | M | H (migration in frozen `lib/database/`) | Needs your approval for the migration |
-| 18 | Honour "load media only on tap" for Booru videos through the existing gate | B18 | L | S | L | With the setting on, no player is built until a tap |
-| 19 | Distinct messages for a 403 without credentials and for 503 | B20 | L | S | L | Each status maps to its own message |
-| 20 | Guess `hypnohub.net` as Gelbooru 0.2 | B19 | L | S | L | Engine guess test |
+| 18 | **Done** (`20d4f4a8`). Honour "load media only on tap" for Booru videos through the existing gate | B18 | L | S | L | With the setting on, no player is built until a tap |
+| 19 | **Done** (`add22b17`). Distinct messages for a 403 without credentials and for 503 | B20 | L | S | L | Each status maps to its own message |
+| 20 | **Done** (`5a3b9819`). Guess `hypnohub.net` as Gelbooru 0.2 | B19 | L | S | L | Engine guess test |
 | 21 | `mounted` checks after awaits in Booru settings | B26 | L | S | L | Leave the screen mid-write: no exception |
 | 22 | Label the Gelbooru 0.2 date as "updated", or leave it out | B24 | L | S | L | Facts test |
 | 23 | Download ugoira as its webm, or offer both | B25 | L | S | L | Download source test |
@@ -120,14 +120,14 @@ approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next three
 
-Ranks 1–9 are done. Ranks 10–16 are live checks: they start from real
-responses, and this environment's network policy refuses every booru host.
-They need danbooru.donmai.us, e621.net, gelbooru.com, rule34.xxx (with
+Ranks 1–9 and 18–20 are done. Ranks 10–16 are live checks: they start from
+real responses, and this environment's network policy refuses every booru
+host. They need danbooru.donmai.us, e621.net, gelbooru.com, rule34.xxx (with
 api.rule34.xxx) and safebooru.org allowed, or responses captured on your
 side. Rank 17 needs your approval for a migration in the frozen
 `lib/database/`. The next three that can be done here meanwhile:
 
-1. Tier 1 rank 18: honour "load media only on tap" for Booru videos (B18).
-2. Tier 1 rank 19: distinct messages for a 403 without credentials and for
-   503 (B20).
-3. Tier 1 rank 20: guess `hypnohub.net` as Gelbooru 0.2 (B19).
+1. Tier 1 rank 21: `mounted` checks after awaits in Booru settings (B26).
+2. Tier 1 rank 22: label the Gelbooru 0.2 date as "updated", or leave it
+   out (B24).
+3. Tier 1 rank 23: download ugoira as its webm, or offer both (B25).

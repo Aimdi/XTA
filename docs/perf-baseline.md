@@ -219,9 +219,10 @@ engine sources, lines 1059–1073).
 
 ### Tier 1 fixes since this section was written
 
-B1–B9 (`dba4687f` to `6ec2f4bd`; docs/booru/plan.md lists each) change error
-text, credentials, feed resets, paging, the first frame of a feed, the
-Following tab and download names. The scripted run uses Danbooru with no
+B1–B9 and B18–B20 (`dba4687f` to `5a3b9819`; docs/booru/plan.md lists each)
+change error text, credentials, feed resets, paging, the first frame of a
+feed, the Following tab, download names, tap-to-load for videos and the
+engine guessed for a custom host. The scripted run uses Danbooru with no
 credentials on a working network, so four of them are on a timed path: B3
 checks whether a feed is stale (site, rating cap, blacklist) before each page
 request; B5 adds a footer under every grid that observes the paging state and
@@ -230,3 +231,5 @@ feed's first page arrives, where an empty state used to flash; and B8 checks
 that a returning page still belongs to the latest refresh. S1 and S2 cover
 them. Requests after a failed page are not a scenario here; a unit test checks
 them (five near-end scroll notifications after a failure make one request).
+Since B18 the run also turns "load media only on tap" off, and puts the
+reader's value back, so S5 starts each video with the player's own button.
