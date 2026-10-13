@@ -219,12 +219,14 @@ engine sources, lines 1059–1073).
 
 ### Tier 1 fixes since this section was written
 
-B1–B6 (`dba4687f` to `e5315b74`; docs/booru/plan.md lists each) change error
-text, credentials, feed resets, paging after a failure and the Following tab.
-The scripted run uses Danbooru with no credentials on a working network, so
-two of them are on a timed path: B3 checks whether a feed is stale (site,
-rating cap, blacklist) before each page request, and B5 adds a footer under
-every grid that observes the paging state and shows a spinner while the next
-page loads. S1 and S2 cover both. Requests after a failed page are not a
-scenario here; a unit test checks them (five near-end scroll notifications
-after a failure make one request).
+B1–B9 (`dba4687f` to `6ec2f4bd`; docs/booru/plan.md lists each) change error
+text, credentials, feed resets, paging, the first frame of a feed, the
+Following tab and download names. The scripted run uses Danbooru with no
+credentials on a working network, so four of them are on a timed path: B3
+checks whether a feed is stale (site, rating cap, blacklist) before each page
+request; B5 adds a footer under every grid that observes the paging state and
+shows a spinner while the next page loads; B7 shows the skeleton until a
+feed's first page arrives, where an empty state used to flash; and B8 checks
+that a returning page still belongs to the latest refresh. S1 and S2 cover
+them. Requests after a failed page are not a scenario here; a unit test checks
+them (five near-end scroll notifications after a failure make one request).
