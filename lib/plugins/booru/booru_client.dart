@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
@@ -51,17 +52,11 @@ class BooruClient {
       BooruEngine.tryParse(prefs.get<String>(optionPluginBooruEngine)) ??
       BooruEngine.danbooru;
 
-  String get host {
-    final custom = normaliseBooruHost(
-      prefs.get<String>(optionPluginBooruHost) ?? '',
-    );
-    if (custom.isNotEmpty) return custom;
-    return booruPresets.first.host;
-  }
+  String get host => booruHostOf(prefs);
 
-  String get login => (prefs.get<String>(optionPluginBooruLogin) ?? '').trim();
-  String get apiKey =>
-      (prefs.get<String>(optionPluginBooruApiKey) ?? '').trim();
+  /// Sent only to the host it was entered for.
+  String get login => booruCredential(prefs, optionPluginBooruLogin).trim();
+  String get apiKey => booruCredential(prefs, optionPluginBooruApiKey).trim();
 
   BooruRating get maxRating {
     final stored = BooruRating.tryParse(

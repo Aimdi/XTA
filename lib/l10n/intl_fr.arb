@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copier les tags",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Vos identifiants sont enregistrés pour {site} et ne sont envoyés qu'à ce site. Si vous en saisissez de nouveaux ici, ils remplaceront les précédents.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Parcourir les sites type Danbooru et Gelbooru — suivez des tags dans les groupes",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Modifier en texte",

@@ -1401,6 +1401,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Sao chép các thẻ",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Thông tin đăng nhập của bạn được lưu cho {site} và chỉ được gửi đến trang đó. Nếu bạn nhập thông tin mới ở đây, thông tin cũ sẽ bị thay thế.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Sửa dạng văn bản",

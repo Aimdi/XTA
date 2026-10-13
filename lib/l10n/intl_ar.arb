@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "نسخ الوسوم",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "بيانات الدخول الخاصة بك محفوظة لموقع {site} ولا تُرسَل إلا إليه. إذا أدخلت بيانات جديدة هنا فستحل محلها.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "تعديل كنص",

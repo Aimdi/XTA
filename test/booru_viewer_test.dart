@@ -409,6 +409,40 @@ void main() {
       expect(find.text('3'), findsOneWidget);
     });
 
+    testWidgets('settings keep the login and key with the site they belong to', (tester) async {
+      await _pump(
+        tester,
+        const BooruSettingsScreen(),
+        prefs: {
+          optionPluginBooruHost: 'https://danbooru.donmai.us',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+      final login = find.widgetWithText(TextField, 'Login / user id');
+      String shown() => tester.widget<TextField>(login).controller!.text;
+      expect(shown(), 'reader');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      expect(shown(), isEmpty, reason: "another site's login is not shown as this one's");
+      expect(find.textContaining('danbooru.donmai.us'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Danbooru'));
+      await tester.pumpAndSettle();
+      expect(shown(), 'reader');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      await tester.enterText(login, 'fox');
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruCredentialsHost), 'https://e621.net');
+      expect(prefs.get<String>(optionPluginBooruApiKey), isEmpty);
+      expect(find.textContaining('danbooru.donmai.us'), findsNothing);
+    });
+
     test('thumbnails and full screen use the chosen file size', () {
       final post = BooruPost(
         id: '1',

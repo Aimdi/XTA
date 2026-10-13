@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copiar etiquetas",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Tus credenciales están guardadas para {site} y solo se envían a ese sitio. Si introduces otras aquí, sustituirán a las anteriores.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Explora sitios tipo Danbooru y Gelbooru: sigue etiquetas en grupos",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Editar como texto",

@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Tags kopiëren",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Uw inloggegevens zijn opgeslagen voor {site} en worden alleen naar die site verzonden. Als u hier nieuwe invoert, vervangen die de oude.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Als tekst bewerken",

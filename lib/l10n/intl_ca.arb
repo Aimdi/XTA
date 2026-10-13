@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copia les etiquetes",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Les teves dades d'inici de sessió estan desades per a {site} i només s'envien a aquest lloc. Si n'introdueixes de noves aquí, substituiran les anteriors.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Edita com a text",

@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Etiketleri kopyala",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Giriş bilgileriniz {site} için kaydedildi ve yalnızca o siteye gönderilir. Buraya yenilerini girerseniz eskilerinin yerini alır.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Metin olarak düzenle",

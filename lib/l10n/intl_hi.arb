@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "सभी टैग कॉपी करें",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "आपकी साइन-इन जानकारी {site} के लिए सहेजी गई है और केवल उसी साइट पर भेजी जाती है। यहाँ नई जानकारी डालने पर पुरानी जानकारी बदल दी जाएगी।",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "टेक्स्ट के रूप में संपादित करें",

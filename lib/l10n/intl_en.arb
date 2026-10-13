@@ -1497,6 +1497,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copy tags",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Your sign-in details are saved for {site} and are sent only to that site. Entering new ones here replaces them.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Edit as text",

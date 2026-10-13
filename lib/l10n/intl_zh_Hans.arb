@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "复制所有标签",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "你的凭据已为 {site} 保存，只会发送到该站点。在此输入新的凭据会替换原有凭据。",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "浏览 Danbooru / Gelbooru 类站点，将标签加入分组",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "以文本编辑",

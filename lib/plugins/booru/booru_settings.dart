@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_display_settings.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
@@ -28,21 +29,23 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
   late final TextEditingController _login;
   late final TextEditingController _apiKey;
   late final TextEditingController _muteTag;
+  late final BasePrefService _prefs;
   var _testing = false;
 
   @override
   void initState() {
     super.initState();
-    final prefs = PrefService.of(context, listen: false);
+    final prefs = _prefs = PrefService.of(context, listen: false);
     _host = TextEditingController(
       text: prefs.get<String>(optionPluginBooruHost) ?? '',
     );
     _login = TextEditingController(
-      text: prefs.get<String>(optionPluginBooruLogin) ?? '',
+      text: booruCredential(prefs, optionPluginBooruLogin),
     );
     _apiKey = TextEditingController(
-      text: prefs.get<String>(optionPluginBooruApiKey) ?? '',
+      text: booruCredential(prefs, optionPluginBooruApiKey),
     );
+    prefs.addKeyListener(optionPluginBooruHost, _showCredentialsForHost);
     _muteTag = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<BooruMuteStore>().load();
@@ -51,11 +54,18 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
 
   @override
   void dispose() {
+    _prefs.removeKeyListener(optionPluginBooruHost, _showCredentialsForHost);
     _host.dispose();
     _login.dispose();
     _apiKey.dispose();
     _muteTag.dispose();
     super.dispose();
+  }
+
+  /// The fields show a saved login and key only on the host they belong to.
+  void _showCredentialsForHost() {
+    _login.text = booruCredential(_prefs, optionPluginBooruLogin);
+    _apiKey.text = booruCredential(_prefs, optionPluginBooruApiKey);
   }
 
   Future<void> _applyPreset(BooruPreset preset) async {
@@ -250,6 +260,16 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
           ),
           const SizedBox(height: 8),
           PrefTitle(title: Text(l10n.plugin_booru_section_credentials)),
+          if (booruCredentialsElsewhere(prefs) case final owner?)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                l10n.plugin_booru_credentials_other_site(
+                  displayNameForBooruHost(owner),
+                ),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
@@ -258,7 +278,8 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                 labelText: l10n.plugin_booru_login,
                 helperText: _loginHelp(l10n, engine),
               ),
-              onChanged: (value) => prefs.set(optionPluginBooruLogin, value),
+              onChanged: (value) =>
+                  saveBooruCredential(prefs, optionPluginBooruLogin, value),
             ),
           ),
           Padding(
@@ -270,7 +291,8 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                 labelText: _apiKeyLabel(l10n, engine),
                 helperText: _apiKeyHelp(l10n, engine),
               ),
-              onChanged: (value) => prefs.set(optionPluginBooruApiKey, value),
+              onChanged: (value) =>
+                  saveBooruCredential(prefs, optionPluginBooruApiKey, value),
             ),
           ),
           PrefTitle(title: Text(l10n.plugin_booru_section_content)),

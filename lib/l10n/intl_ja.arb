@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "すべてのタグをコピー",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "認証情報は {site} 用に保存されており、そのサイトにのみ送信されます。ここで新しく入力すると置き換えられます。",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Danbooru系・Gelbooru系を閲覧し、タグをグループに追加",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "テキストとして編集",

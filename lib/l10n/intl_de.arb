@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Tags kopieren",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Die Zugangsdaten sind für {site} gespeichert und werden nur dorthin gesendet. Neue Angaben hier ersetzen sie.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Danbooru- und Gelbooru-Hosts durchsuchen — Tags in Gruppen folgen",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Als Text bearbeiten",

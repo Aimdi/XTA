@@ -80,6 +80,7 @@ import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_viewing_prefs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
@@ -670,6 +671,7 @@ Future<void> main() async {
       optionPluginBooruPreset: 'danbooru',
       optionPluginBooruLogin: '',
       optionPluginBooruApiKey: '',
+      optionPluginBooruCredentialsHost: '',
       optionPluginBooruMaxRating: 'g',
       optionPluginBooruInHomeFeed: false,
       optionPluginBooruSearchHistory: '[]',
@@ -759,6 +761,7 @@ Future<void> main() async {
   await _migrateCollapseBoostsDefaultOff(prefService);
   await migrateDownloadTypeDefault(prefService);
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
+  await migrateBooruCredentialsHost(prefService);
 
   CrashReporter.install(prefService);
   // A restored backup changes the setting too, so the queue follows the setting itself.

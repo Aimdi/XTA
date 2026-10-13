@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
@@ -552,6 +553,85 @@ void main() {
         final site = BooruSite(engine: engine, host: 'https://example.org', login: 'a', apiKey: 'b');
         expect(booruCredentialParameters, containsAll(site.auth.keys), reason: engine.id);
       }
+    });
+  });
+
+  group('credentials', () {
+    test('they are sent only to the host they were entered for', () async {
+      final sent = <Map<String, String>>[];
+      final prefs = PrefServiceCache(
+        cache: {
+          optionPluginBooruEngine: 'danbooru',
+          optionPluginBooruHost: 'https://danbooru.donmai.us',
+          optionPluginBooruMaxRating: 'e',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      final client = BooruClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          sent.add(request.url.queryParameters);
+          return http.Response('[]', 200);
+        }),
+      );
+
+      await client.latest();
+      await prefs.set(optionPluginBooruEngine, 'e621');
+      await prefs.set(optionPluginBooruHost, 'https://e621.net');
+      await client.latest();
+      await prefs.set(optionPluginBooruEngine, 'danbooru');
+      await prefs.set(optionPluginBooruHost, 'https://danbooru.donmai.us');
+      await client.latest();
+
+      expect(sent.map((query) => query['api_key']), ['secret-key', null, 'secret-key']);
+      expect(sent.map((query) => query['login']), ['reader', null, 'reader']);
+    });
+
+    test('typing one on another host starts a new pair there', () async {
+      final prefs = PrefServiceCache(
+        cache: {
+          optionPluginBooruHost: 'https://e621.net',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      await saveBooruCredential(prefs, optionPluginBooruLogin, 'fox');
+      expect(prefs.get<String>(optionPluginBooruLogin), 'fox');
+      expect(prefs.get<String>(optionPluginBooruApiKey), '', reason: "the other host's key must not follow");
+      expect(prefs.get<String>(optionPluginBooruCredentialsHost), 'https://e621.net');
+
+      await saveBooruCredential(prefs, optionPluginBooruApiKey, 'fox-key');
+      expect(prefs.get<String>(optionPluginBooruLogin), 'fox', reason: 'same host: the pair is kept');
+      expect(prefs.get<String>(optionPluginBooruApiKey), 'fox-key');
+    });
+
+    test('credentials saved before this belong to the site in use', () async {
+      final saved = PrefServiceCache(
+        cache: {
+          optionPluginBooruHost: 'yande.re',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'hash',
+        },
+      );
+      await migrateBooruCredentialsHost(saved);
+      expect(saved.get<String>(optionPluginBooruCredentialsHost), 'https://yande.re');
+
+      final none = PrefServiceCache(cache: {optionPluginBooruHost: 'yande.re'});
+      await migrateBooruCredentialsHost(none);
+      expect(none.get<String>(optionPluginBooruCredentialsHost), isNull);
+
+      final bound = PrefServiceCache(
+        cache: {
+          optionPluginBooruHost: 'yande.re',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      await migrateBooruCredentialsHost(bound);
+      expect(bound.get<String>(optionPluginBooruCredentialsHost), 'https://danbooru.donmai.us');
     });
   });
 }

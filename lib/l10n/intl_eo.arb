@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopii etikedojn",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Viaj ensalutaj datumoj estas konservitaj por {site} kaj sendataj nur al tiu retejo. Se vi enigos novajn ĉi tie, ili anstataŭos la malnovajn.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Redakti kiel tekston",
