@@ -115,6 +115,20 @@ class _Client extends BooruClient {
 /// Waits out the 50 ms `execute` holds a load back before starting it.
 Future<void> _pastDebounce() => Future<void>.delayed(const Duration(milliseconds: 80));
 
+/// Preferences whose writes wait until [open] completes, so a test can leave
+/// a screen while one is in flight.
+class _GatedPrefs extends PrefServiceCache {
+  _GatedPrefs(Map<String, Object> cache) : super(cache: cache);
+
+  final open = Completer<void>();
+
+  @override
+  Future<bool> put<T>(String key, T val) async {
+    await open.future;
+    return super.put(key, val);
+  }
+}
+
 /// Followed tags in memory, so the Booru home needs no database.
 class _Tags extends BooruTagsStore {
   @override
@@ -125,6 +139,7 @@ Future<_Client> _pump(
   WidgetTester tester,
   Widget child, {
   Map<String, Object> prefs = const {},
+  PrefServiceCache? service,
   BooruTagsStore? tags,
   bool settle = true,
 }) async {
@@ -132,7 +147,7 @@ Future<_Client> _pump(
   tester.view.physicalSize = const Size(800, 2400);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final service = PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', ...prefs});
+  service ??= PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', ...prefs});
   final client = _Client(service);
   await tester.pumpWidget(
     PrefService(
@@ -717,6 +732,32 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PluginGridSkeleton), findsNothing);
       expect(find.byType(BooruPostGrid), findsOneWidget);
+    });
+
+    testWidgets('leaving settings while a site or a mute is being saved throws nothing', (tester) async {
+      Future<_GatedPrefs> open() async {
+        final prefs = _GatedPrefs({optionPluginBooruEngine: 'danbooru'});
+        await _pump(tester, const BooruSettingsScreen(), service: prefs);
+        return prefs;
+      }
+
+      var prefs = await open();
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pump();
+      await tester.pumpWidget(const SizedBox());
+      prefs.open.complete();
+      await tester.pumpAndSettle();
+
+      prefs = await open();
+      final field = find.widgetWithText(TextField, 'Mute a tag');
+      await tester.scrollUntilVisible(field, 300, scrollable: find.byType(Scrollable).first);
+      await tester.enterText(field, 'solo');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+      await tester.pumpWidget(const SizedBox());
+      prefs.open.complete();
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMutedTags), '["solo"]', reason: 'the write itself still lands');
     });
 
     testWidgets('settings keep the login and key with the site they belong to', (tester) async {

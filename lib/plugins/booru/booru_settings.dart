@@ -79,7 +79,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
           ? BooruRating.explicit.code
           : BooruRating.general.code,
     );
-    setState(() => _host.text = preset.host);
+    if (mounted) setState(() => _host.text = preset.host);
   }
 
   Future<void> _addCustomSite() async {
@@ -124,7 +124,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     );
     if ((prefs.get<String>(optionPluginBooruPreset) ?? '') == site.id) {
       await _applyPreset(booruPresets.first);
-    } else {
+    } else if (mounted) {
       setState(() {});
     }
   }
@@ -132,7 +132,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
   Future<void> _mute(String entry) async {
     if (normaliseBooruQuery(entry) == null) return;
     await context.read<BooruMuteStore>().mute(entry);
-    _muteTag.clear();
+    if (mounted) _muteTag.clear();
   }
 
   Future<void> _test() async {
@@ -236,7 +236,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               if (next == null) return;
               await prefs.set(optionPluginBooruEngine, next.id);
               await prefs.set(optionPluginBooruPreset, 'custom');
-              setState(() {});
+              if (mounted) setState(() {});
             },
           ),
           Padding(
@@ -317,7 +317,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               );
               if (next == null) return;
               await prefs.set(optionPluginBooruMaxRating, next.code);
-              setState(() {});
+              if (mounted) setState(() {});
             },
           ),
           PrefSwitch(
