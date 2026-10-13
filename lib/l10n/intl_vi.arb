@@ -1388,6 +1388,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Thêm vào tìm kiếm hiện tại",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Bài đăng Questionable và Explicit chỉ dành cho người lớn. Hãy xác nhận bạn từ 18 tuổi trở lên và muốn xem chúng.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Tôi từ 18 tuổi trở lên",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Hầu hết bài đăng trên {site} có nội dung người lớn.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Hiển thị bài đăng dành cho người lớn?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Aldoni al la nuna serĉo",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Afiŝoj Questionable kaj Explicit estas nur por plenkreskuloj. Konfirmu, ke vi aĝas almenaŭ 18 jarojn kaj volas vidi ilin.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Mi aĝas almenaŭ 18 jarojn",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Plej multaj afiŝoj ĉe {site} estas eksplicitaj.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Ĉu montri afiŝojn por plenkreskuloj?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

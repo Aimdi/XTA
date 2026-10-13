@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "現在の検索に追加",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "「やや過激」と「過激」の投稿は成人向けです。18 歳以上で、表示を希望することを確認してください。",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "18 歳以上です",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} の投稿の大半は過激な内容です。",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "成人向けの投稿を表示しますか？",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "APIキー",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "任意。一部ホスト（Gelbooru、Danbooru）では安定したアクセスにキーが必要です。",

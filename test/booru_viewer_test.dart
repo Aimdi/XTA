@@ -1111,6 +1111,60 @@ void main() {
       expect(prefs.get<String>(optionPluginBooruMutedTags), '["solo"]', reason: 'the write itself still lands');
     });
 
+    testWidgets('the rating cap goes past Sensitive only once the reader confirms they are an adult', (tester) async {
+      await _pump(tester, const BooruSettingsScreen());
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+      Future<void> pick(String rating) async {
+        await tester.tap(find.text('Maximum rating'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(rating).last);
+        await tester.pumpAndSettle();
+      }
+
+      await pick('Explicit');
+      expect(find.text('Show adult posts?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), isNot('e'));
+
+      await pick('Explicit');
+      await tester.tap(find.text("I'm 18 or older"));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'e');
+
+      await pick('Questionable');
+      expect(find.text('Show adult posts?'), findsNothing, reason: 'the reader already said yes');
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'q');
+    });
+
+    testWidgets('a mostly explicit site asks before it allows explicit posts', (tester) async {
+      await _pump(tester, const BooruSettingsScreen());
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Rule34'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Most posts on Rule34 are explicit.'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruHost), 'https://rule34.xxx');
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'g', reason: 'declining keeps the general cap');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Rule34'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("I'm 18 or older"));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'e');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      expect(find.text('Show adult posts?'), findsNothing, reason: 'the reader already said yes');
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'e');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Danbooru'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'g');
+    });
+
     testWidgets('settings keep the login and key with the site they belong to', (tester) async {
       await _pump(
         tester,
@@ -1129,6 +1183,8 @@ void main() {
 
       await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
       expect(shown(), isEmpty, reason: "another site's login is not shown as this one's");
       expect(find.textContaining('danbooru.donmai.us'), findsOneWidget);
 
@@ -1137,6 +1193,8 @@ void main() {
       expect(shown(), 'reader');
 
       await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
       await tester.enterText(login, 'fox');
       await tester.pumpAndSettle();

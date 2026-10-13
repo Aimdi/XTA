@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "현재 검색에 추가",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable 및 Explicit 게시물은 성인 전용입니다. 만 18세 이상이며 보기를 원한다는 것을 확인해 주세요.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "만 18세 이상입니다",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site}의 게시물은 대부분 노골적인 내용입니다.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "성인용 게시물을 표시할까요?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

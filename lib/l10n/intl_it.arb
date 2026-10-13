@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Aggiungi alla ricerca attuale",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "I post Questionable ed Explicit sono solo per adulti. Conferma di avere almeno 18 anni e di volerli vedere.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Ho almeno 18 anni",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "La maggior parte dei post su {site} è esplicita.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Mostrare i post per adulti?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

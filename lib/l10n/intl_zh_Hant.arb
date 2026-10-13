@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "加入目前的搜尋",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable 與 Explicit 貼文僅限成人。請確認你已年滿 18 歲並希望查看。",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "我已年滿 18 歲",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} 上的貼文大多為限制級內容。",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "顯示成人內容？",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

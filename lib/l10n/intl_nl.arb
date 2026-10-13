@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Aan huidige zoekopdracht toevoegen",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Berichten met Questionable en Explicit zijn alleen voor volwassenen. Bevestig dat je 18 jaar of ouder bent en ze wilt zien.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Ik ben 18 jaar of ouder",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "De meeste berichten op {site} zijn expliciet.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Berichten voor volwassenen tonen?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

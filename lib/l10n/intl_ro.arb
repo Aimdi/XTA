@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Adaugă la căutarea curentă",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Postările Questionable și Explicit sunt doar pentru adulți. Confirmă că ai cel puțin 18 ani și vrei să le vezi.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Am cel puțin 18 ani",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Majoritatea postărilor de pe {site} sunt explicite.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Afișezi postări pentru adulți?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

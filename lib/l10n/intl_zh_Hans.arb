@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "添加到当前搜索",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "“可疑”和“限制级”帖子仅限成人。请确认你已年满 18 岁并希望查看。",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "我已年满 18 岁",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} 上的帖子大多为限制级内容。",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "显示成人内容？",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API 密钥",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "可选。部分站点（Gelbooru、Danbooru）需要密钥才能稳定访问。",

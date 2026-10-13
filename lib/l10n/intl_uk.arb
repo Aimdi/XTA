@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Додати до поточного пошуку",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Дописи Questionable і Explicit лише для дорослих. Підтвердьте, що вам 18 років або більше і ви хочете їх бачити.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Мені 18 років або більше",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Більшість дописів на {site} відверті.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Показувати дописи для дорослих?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

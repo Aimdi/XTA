@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Dadać u biahučy pošuk",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Dopisy Questionable i Explicit tolki dlia darosłych. Paćvierdzicie, što vam 18 hadoŭ abo bolš i vy chočacie ich bačyć.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Mnie 18 hadoŭ abo bolš",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Bolšaść dopisaŭ na {site} adkrytyja.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Pakazvać dopisy dlia darosłych?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

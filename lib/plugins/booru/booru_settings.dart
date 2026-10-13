@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/plugins/booru/booru_adult_consent.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_display_settings.dart';
@@ -69,18 +70,28 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     _apiKey.text = booruCredential(_prefs, optionPluginBooruApiKey);
   }
 
+  /// Switches to [preset]. The cap goes back to General, except on a site
+  /// whose posts are mostly explicit, where a General cap would show almost
+  /// nothing: there it becomes Explicit if the reader already allowed adult
+  /// posts or confirms it now.
   Future<void> _applyPreset(BooruPreset preset) async {
     final prefs = PrefService.of(context, listen: false);
+    final current =
+        BooruRating.tryParse(prefs.get<String>(optionPluginBooruMaxRating)) ??
+        BooruRating.general;
     await prefs.set(optionPluginBooruPreset, preset.id);
     await prefs.set(optionPluginBooruEngine, preset.engine.id);
     await prefs.set(optionPluginBooruHost, preset.host);
+    if (!mounted) return;
+    setState(() => _host.text = preset.host);
+    final adult =
+        booruHostIsMostlyExplicit(preset.host) &&
+        (!booruRatingNeedsConsent(current, BooruRating.explicit) ||
+            await confirmBooruAdultContent(context, site: preset.name));
     await prefs.set(
       optionPluginBooruMaxRating,
-      booruHostIsMostlyExplicit(preset.host)
-          ? BooruRating.explicit.code
-          : BooruRating.general.code,
+      (adult ? BooruRating.explicit : BooruRating.general).code,
     );
-    if (mounted) setState(() => _host.text = preset.host);
   }
 
   Future<void> _addCustomSite() async {
@@ -316,7 +327,11 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                   ),
                 ),
               );
-              if (next == null) return;
+              if (next == null || !context.mounted) return;
+              if (booruRatingNeedsConsent(maxRating, next) &&
+                  !await confirmBooruAdultContent(context)) {
+                return;
+              }
               await prefs.set(optionPluginBooruMaxRating, next.code);
               if (mounted) setState(() {});
             },

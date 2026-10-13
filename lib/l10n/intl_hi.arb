@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "मौजूदा खोज में जोड़ें",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable और Explicit पोस्ट केवल वयस्कों के लिए हैं। पुष्टि करें कि आपकी उम्र 18 वर्ष या उससे अधिक है और आप उन्हें देखना चाहते हैं।",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "मेरी उम्र 18 वर्ष या उससे अधिक है",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} पर ज़्यादातर पोस्ट स्पष्ट वयस्क सामग्री वाली हैं।",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "वयस्कों के लिए पोस्ट दिखाएँ?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Дадаць у бягучы пошук",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Допісы Questionable і Explicit толькі для дарослых. Пацвердзіце, што вам 18 гадоў або больш і вы хочаце іх бачыць.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Мне 18 гадоў або больш",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Большасць допісаў на {site} адкрытыя.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Паказваць допісы для дарослых?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

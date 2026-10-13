@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Añadir a la búsqueda actual",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Las publicaciones Cuestionable y Explícito son solo para adultos. Confirma que tienes 18 años o más y que quieres verlas.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Tengo 18 años o más",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "La mayoría de las publicaciones de {site} son explícitas.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "¿Mostrar publicaciones para adultos?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "Clave API",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Opcional: algunos servidores (Gelbooru, Danbooru) requieren una clave para un acceso fiable.",

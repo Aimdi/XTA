@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Gehitu uneko bilaketari",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable eta Explicit argitalpenak helduentzat soilik dira. Berretsi 18 urte edo gehiago dituzula eta ikusi nahi dituzula.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "18 urte edo gehiago ditut",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} guneko argitalpen gehienak esplizituak dira.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Helduentzako argitalpenak erakutsi?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

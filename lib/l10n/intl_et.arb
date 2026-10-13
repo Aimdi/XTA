@@ -1391,6 +1391,20 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Lisa praegusesse otsingusse",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Postitused Questionable ja Explicit on ainult täiskasvanutele. Kinnita, et oled vähemalt 18-aastane ja soovid neid näha.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Olen vähemalt 18-aastane",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Enamik saidi {site} postitusi on seksuaalse sisuga.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Kas näidata täiskasvanutele mõeldud postitusi?",
+  "@plugin_booru_adult_title": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
