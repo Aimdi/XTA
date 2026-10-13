@@ -33,6 +33,10 @@ enum BooruErrorKind {
 
   /// The host pages no further: a 410, or gelbooru.com's "Too deep".
   tooDeep,
+
+  /// A 422: the search has more tags than the host allows at once
+  /// (Danbooru: two for guests and Members).
+  tagLimit,
   notFound,
   badResponse,
 }
@@ -440,6 +444,7 @@ class BooruClient {
     403 => BooruErrorKind.forbidden,
     404 => BooruErrorKind.notFound,
     410 => BooruErrorKind.tooDeep,
+    422 => BooruErrorKind.tagLimit,
     429 => BooruErrorKind.rateLimited,
     503 => BooruErrorKind.unavailable,
     _ => null,

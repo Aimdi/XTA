@@ -1456,6 +1456,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "Unerwartete Antwort vom Host",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "Zu viele Tags für eine Suche auf diesem Host — einige entfernen",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "Anfrage abgelehnt — Login und API-Schlüssel prüfen",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Host ausgelastet oder begrenzt Anfragen — später erneut versuchen",

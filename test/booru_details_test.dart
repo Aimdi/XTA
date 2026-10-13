@@ -508,6 +508,22 @@ void main() {
       );
     });
 
+    // A 422 is how Boorusama reads Danbooru's tag limit (two tags for guests and Members); the body is built,
+    // not recorded from the live host.
+    test("Danbooru's tag limit has its own message", () async {
+      final l10n = await L10n.load(const Locale('en'));
+      final client = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient(
+          (_) async =>
+              http.Response('{"success":false,"message":"You cannot search for more than 2 tags at a time."}', 422),
+        ),
+      );
+      final error = await client.search('1girl solo order:score').then<Object?>((_) => null, onError: (Object e) => e);
+      expect(booruErrorMessage(l10n, error), l10n.plugin_booru_error_tag_limit);
+    });
+
     test('a host that will not page that deep ends the feed instead of failing', () async {
       final deep = _client(
         'gelbooru_v2',

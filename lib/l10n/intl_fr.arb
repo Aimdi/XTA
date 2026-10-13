@@ -1456,6 +1456,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "L’hôte a renvoyé une réponse inattendue",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "Trop de tags pour une recherche sur cet hôte — retirez-en quelques-uns",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "Requête refusée — vérifiez l’identifiant et la clé API",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "L’hôte est surchargé ou limite les requêtes — réessayez plus tard",

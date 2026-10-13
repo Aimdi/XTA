@@ -1456,6 +1456,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "站点返回了意外响应",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "在该站点上单次搜索的标签过多，请移除一些",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "请求被拒绝，请检查登录名和 API 密钥",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "站点繁忙或正在限制请求，请稍后再试",
