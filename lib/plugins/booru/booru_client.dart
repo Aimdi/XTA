@@ -10,6 +10,7 @@ import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_links.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
@@ -196,16 +197,28 @@ class BooruClient {
   BooruSite siteOf(BooruPost post) {
     final host = normaliseBooruHost(post.host);
     if (host.isEmpty) return site;
-    return BooruSite(
-      engine: BooruEngine.tryParse(post.engine) ?? engine,
-      host: host,
-      login: booruCredential(prefs, optionPluginBooruLogin, host: host).trim(),
-      apiKey: booruCredential(
-        prefs,
-        optionPluginBooruApiKey,
-        host: host,
-      ).trim(),
+    return siteAt(host, BooruEngine.tryParse(post.engine) ?? engine);
+  }
+
+  /// [host], spoken to as [engine], with the saved credentials only if they
+  /// belong to it.
+  BooruSite siteAt(String host, BooruEngine engine) => BooruSite(
+    engine: engine,
+    host: host,
+    login: booruCredential(prefs, optionPluginBooruLogin, host: host).trim(),
+    apiKey: booruCredential(prefs, optionPluginBooruApiKey, host: host).trim(),
+  );
+
+  /// The post [ref] names, from its own site; null when the site has no such
+  /// post or it is over the rating cap. The blacklist does not hide it: it
+  /// was asked for by name.
+  Future<BooruPost?> postAt(BooruPostRef ref) async {
+    final page = await posts(
+      tags: ['id:${ref.id}'],
+      limit: 1,
+      site: siteAt(ref.host, ref.engine),
     );
+    return page.allowed.where((post) => post.id == ref.id).firstOrNull;
   }
 
   /// The host's popular list for [query]. Gelbooru keeps none, so it shows

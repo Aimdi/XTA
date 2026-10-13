@@ -14,6 +14,7 @@ import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
+import 'package:xta/plugins/booru/booru_links.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
@@ -35,6 +36,7 @@ import 'package:xta/plugins/booru/booru_tag_list.dart';
 import 'package:xta/plugins/booru/booru_tag_page.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
 import 'package:xta/tweet/_video.dart';
 
@@ -93,6 +95,10 @@ class _Client extends BooruClient {
 
   /// The translation notes on a post; none by default.
   List<BooruNote> notesAnswer = const [];
+
+  /// The post a link names; none by default.
+  BooruPost? postAtAnswer;
+  final postsAsked = <BooruPostRef>[];
   final wikiSites = <String?>[];
 
   @override
@@ -122,6 +128,12 @@ class _Client extends BooruClient {
 
   @override
   Future<List<BooruNote>> notes(BooruPost post) async => notesAnswer;
+
+  @override
+  Future<BooruPost?> postAt(BooruPostRef ref) async {
+    postsAsked.add(ref);
+    return postAtAnswer;
+  }
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -1450,5 +1462,58 @@ void main() {
       reason: 'Download saves the animation that plays, not the zip of its frames',
     );
     expect(booruDownloadItem(_post('2')).resolvedDownloadUrl, _post('2').originalUrl);
+  });
+  group('links', () {
+    Widget opener(String url, void Function(bool handled) done) => Scaffold(
+      body: Builder(
+        builder: (context) =>
+            TextButton(onPressed: () async => done(await openWithPlugins(context, url)), child: const Text('open')),
+      ),
+    );
+
+    testWidgets('a booru post link opens in the viewer', (tester) async {
+      bool? handled;
+      final client = await _pump(
+        tester,
+        opener('https://danbooru.donmai.us/posts/7', (value) => handled = value),
+        prefs: {optionPluginBooruEnabled: true},
+        client: (service) => _Client(service)..postAtAnswer = _post('7'),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(client.postsAsked, [(host: 'https://danbooru.donmai.us', engine: BooruEngine.danbooru, id: '7')]);
+      expect(find.byType(BooruPostScreen), findsOneWidget);
+      expect(find.byType(BooruPostMedia), findsOneWidget);
+      Navigator.of(tester.element(find.byType(BooruPostScreen))).pop();
+      await tester.pumpAndSettle();
+      expect(handled, isTrue);
+    });
+
+    testWidgets('a post the viewer cannot show is left to the browser', (tester) async {
+      bool? handled;
+      final client = await _pump(
+        tester,
+        opener('https://yande.re/post/show/3', (value) => handled = value),
+        prefs: {optionPluginBooruEnabled: true},
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(client.postsAsked.single.engine, BooruEngine.moebooru);
+      expect(find.byType(BooruPostScreen), findsNothing);
+      expect(handled, isFalse);
+    });
+
+    testWidgets('booru links stay with the browser while the plugin is off', (tester) async {
+      bool? handled;
+      final client = await _pump(
+        tester,
+        opener('https://danbooru.donmai.us/posts/7', (value) => handled = value),
+        client: (service) => _Client(service)..postAtAnswer = _post('7'),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(client.postsAsked, isEmpty);
+      expect(handled, isFalse);
+    });
   });
 }
