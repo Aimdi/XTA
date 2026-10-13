@@ -24,6 +24,7 @@ import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
@@ -62,6 +63,8 @@ BooruPost _post(
 class _Client extends BooruClient {
   _Client(super.prefs);
 
+  /// Latest's next page, answered when the test completes it.
+  final latestPage = Completer<BooruPostPage>();
   final searches = <String>[];
   final searchSites = <String?>[];
   final popularQueries = <BooruPopularQuery>[];
@@ -80,6 +83,9 @@ class _Client extends BooruClient {
     searchSites.add(site?.host);
     return BooruPostPage(posts: [_post('1'), _post('10'), _post('11')], page: page, hasMore: false);
   }
+
+  @override
+  Future<BooruPostPage> latest({int page = 1, int limit = BooruClient.defaultPageSize}) => latestPage.future;
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -104,7 +110,19 @@ class _Client extends BooruClient {
   }
 }
 
-Future<_Client> _pump(WidgetTester tester, Widget child, {Map<String, Object> prefs = const {}}) async {
+/// Followed tags in memory, so the Booru home needs no database.
+class _Tags extends BooruTagsStore {
+  @override
+  Future<void> load() async {}
+}
+
+Future<_Client> _pump(
+  WidgetTester tester,
+  Widget child, {
+  Map<String, Object> prefs = const {},
+  BooruTagsStore? tags,
+  bool settle = true,
+}) async {
   // Tall enough for a post's picture, facts and tags without scrolling.
   tester.view.physicalSize = const Size(800, 2400);
   tester.view.devicePixelRatio = 1;
@@ -117,7 +135,7 @@ Future<_Client> _pump(WidgetTester tester, Widget child, {Map<String, Object> pr
       child: MultiProvider(
         providers: [
           Provider<BooruClient>.value(value: client),
-          Provider<BooruTagsStore>.value(value: BooruTagsStore()),
+          Provider<BooruTagsStore>.value(value: tags ?? BooruTagsStore()),
           Provider<BooruMuteStore>.value(value: BooruMuteStore(service)),
         ],
         child: MaterialApp(
@@ -131,8 +149,10 @@ Future<_Client> _pump(WidgetTester tester, Widget child, {Map<String, Object> pr
       ),
     ),
   );
-  await tester.pump(const Duration(milliseconds: 300));
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+  }
   return client;
 }
 
@@ -549,6 +569,24 @@ void main() {
       failed.update(0);
       await tester.pumpAndSettle();
       expect(find.text(notice), findsNothing);
+    });
+
+    testWidgets('Latest shows the skeleton, not "no posts", until its first page arrives', (tester) async {
+      const empty = 'No posts yet — check the host in settings';
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+      expect(find.byType(PluginGridSkeleton), findsOneWidget);
+      expect(find.text(empty), findsNothing);
+
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(PluginGridSkeleton), findsOneWidget, reason: 'the first page is still on its way');
+      expect(find.text(empty), findsNothing);
+
+      client.latestPage.complete(BooruPostPage(posts: [_post('1'), _post('2')], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      expect(find.byType(PluginGridSkeleton), findsNothing);
+      expect(find.byType(BooruPostGrid), findsOneWidget);
     });
 
     testWidgets('settings keep the login and key with the site they belong to', (tester) async {

@@ -15,6 +15,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
+import 'package:xta/plugins/booru/booru_search_results.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
@@ -193,6 +194,23 @@ void main() {
     await tester.tap(find.byTooltip('Remove from saved searches'));
     await _settle(tester);
     expect(harness.saved.state, isEmpty);
+  });
+
+  testWidgets('a new search shows a spinner, not "no posts", until its first page arrives', (tester) async {
+    await _open(tester);
+    await tester.enterText(_field, 'solo');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pump();
+    final spinner = find.descendant(
+      of: find.byType(BooruSearchResults),
+      matching: find.byType(CircularProgressIndicator),
+    );
+    expect(spinner, findsOneWidget);
+    expect(find.text('No posts matched those tags'), findsNothing);
+
+    await _settle(tester);
+    expect(spinner, findsNothing);
+    expect(find.byType(BooruPostGrid), findsOneWidget);
   });
 
   group('tags as chips', () {

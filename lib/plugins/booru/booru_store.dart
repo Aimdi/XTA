@@ -147,7 +147,11 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   var _closed = false;
   String? _loadedFor;
 
-  BooruFeedStore(this.client, this.loader) : super(const []);
+  /// Starts out loading: until the first page has been asked for and
+  /// answered, an empty list means "not loaded yet", not "no posts".
+  BooruFeedStore(this.client, this.loader) : super(const []) {
+    setLoading(true);
+  }
 
   bool get hasMore => _hasMore;
 
