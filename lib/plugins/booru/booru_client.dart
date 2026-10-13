@@ -19,7 +19,14 @@ enum BooruErrorKind {
   notConfigured,
   network,
   unauthorized,
+
+  /// A 403 although no credentials were sent: the host wants a login, or a
+  /// bot check stands in front of it.
+  forbidden,
   rateLimited,
+
+  /// A 503: the host is overloaded, or rate limits that way (e621).
+  unavailable,
   notFound,
   badResponse,
 }
@@ -404,18 +411,23 @@ class BooruClient {
 
   Future<Object?> fetchJson(Uri uri) async => _decodeJson(await _get(uri), uri);
 
+  /// What a status says went wrong, when it says something more specific than
+  /// an unexpected answer. A 403 blames the credentials only if some went out.
+  BooruErrorKind? _statusFailure(int status, Uri uri) => switch (status) {
+    401 => BooruErrorKind.unauthorized,
+    403 when uri.queryParameters.keys.any(booruCredentialParameters.contains) =>
+      BooruErrorKind.unauthorized,
+    403 => BooruErrorKind.forbidden,
+    404 => BooruErrorKind.notFound,
+    429 => BooruErrorKind.rateLimited,
+    503 => BooruErrorKind.unavailable,
+    _ => null,
+  };
+
   Object? _decodeJson(http.Response response, Uri uri) {
-    if (response.statusCode == 401 || response.statusCode == 403) {
-      throw BooruException(
-        BooruErrorKind.unauthorized,
-        '$uri: ${response.statusCode}',
-      );
-    }
-    if (response.statusCode == 404) {
-      throw BooruException(BooruErrorKind.notFound, '$uri: 404');
-    }
-    if (response.statusCode == 429) {
-      throw BooruException(BooruErrorKind.rateLimited, '$uri: 429');
+    final failure = _statusFailure(response.statusCode, uri);
+    if (failure != null) {
+      throw BooruException(failure, '$uri: ${response.statusCode}');
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw BooruException(

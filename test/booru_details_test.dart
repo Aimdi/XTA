@@ -1,16 +1,19 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/downloads/download_entry.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
@@ -430,6 +433,32 @@ void main() {
   });
 
   group('client', () {
+    test('a refusal with no key set, and a busy host, each say so', () async {
+      final l10n = await L10n.load(const Locale('en'));
+      const keyed = {
+        optionPluginBooruLogin: 'reader',
+        optionPluginBooruApiKey: 'secret',
+        optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+      };
+      Future<String> messageFor(int status, {Map<String, Object> prefs = const {}}) async {
+        final client = _client(
+          'danbooru',
+          'https://danbooru.donmai.us',
+          MockClient((_) async => http.Response('', status)),
+          prefs: prefs,
+        );
+        final error = await client.latest().then<Object?>((_) => null, onError: (Object error) => error);
+        return booruErrorMessage(l10n, error);
+      }
+
+      expect(await messageFor(403), l10n.plugin_booru_error_forbidden, reason: 'no key was sent to check');
+      expect(await messageFor(403, prefs: keyed), l10n.plugin_booru_error_unauthorized);
+      expect(await messageFor(401, prefs: keyed), l10n.plugin_booru_error_unauthorized);
+      expect(await messageFor(503), l10n.plugin_booru_error_unavailable);
+      expect(await messageFor(429), l10n.plugin_booru_error_rate_limited);
+      expect(await messageFor(500), l10n.plugin_booru_error_response);
+    });
+
     test('Gelbooru popular shows its highest-scored posts', () async {
       final asked = <Uri>[];
       final client = _client(
