@@ -159,8 +159,8 @@ scroll method reached the page. Without the two URLs the harness reads synthetic
 - **S1:** run `adb shell am force-stop com.aimdi.xta`, then `adb shell am start -W …`, with Substack as the start tab.
   Read time to first card from a 60 fps screen recording, or from a DevTools timeline in profile mode.
 - **S4:** pull to refresh with the 30-publication test set behind an intercepting proxy on Wi-Fi. Count requests and
-  429s, and time the last response. The client logs no request count yet; a counter arrives with the transport layer
-  (audit plan, Tier 1, first item).
+  429s, and time the last response. The transport layer (`substack_transport.dart`) exists now but counts nothing
+  itself, so count at the proxy.
 - **S5:** take `adb shell dumpsys meminfo com.aimdi.xta` before and after reading ten long posts from the feed. Then run
   `adb shell am send-trim-memory com.aimdi.xta RUNNING_CRITICAL` and take a third reading.
 - **S6:** use the proxy capture of one long-post open. Compare the image URLs and bytes requested with the originals.
@@ -191,6 +191,23 @@ Substack publication".
 
 With the refresh cap lifted as well (BUG-05), a healthy 30-publication refresh sends 30 requests and reaches all 30
 (24 before); under a blanket 429 it sends 8 on `*.substack.com` and 90 on 30 custom domains.
+
+### Tier 1 batch: same-session host comparison
+
+Host numbers move between sessions: the S2 open path, which this batch did not touch, measured 92.9 ms in the baseline
+session above and 32–39 ms in this one. So the base commit `eaf5f25` and HEAD were measured back to back in one session,
+alternating, two runs each (median ms per run). Only differences larger than that spread count.
+
+| Path | `eaf5f25` | HEAD | Reading |
+|---|---|---|---|
+| S2 open pipeline | 32.1, 38.9 | 34.0, 33.1 | Unchanged; the reader's parsing path was not touched. |
+| S2 speech text | 15.7, 15.8, 17.2, 15.8 | 15.2, 17.0 | Unchanged once the footnote check looks at links only (`317a321`). |
+| S3 flatten, 300 / 1,000 comments | 1.37 / 2.16, 1.62 / 2.57 | 1.70 / 2.25, 1.33 / 2.20 | Unchanged. |
+| S4 refresh CPU, 30 follows | 64.1, 67.6; 27 publishes; 24 publications | 102.9, 104.2; 33 publishes; 30 publications | +57 % CPU for 25 % more publications (BUG-05). Each publish re-merges and re-sorts every post loaded so far (`substack_store.dart:500-506`), once per arriving publication, so the total grows with the square of the publications: (30/24)² is +56 %. Tier 2, item 3 targets it. |
+| S7 retained page, online / offline | 115,476 / 8,274,517 bytes | 115,895 / 8,274,936 bytes | +419 bytes: the read-aloud script now skips footnote numbers. |
+| S7 `renderArticle` | 93.4, 105.9 | 97.8, 87.2 | Unchanged. |
+
+The device rows stay UNVERIFIED: no device, and no route to Substack from this environment.
 
 ## Phase 2 targets (tweet module)
 
