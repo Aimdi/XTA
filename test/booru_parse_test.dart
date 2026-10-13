@@ -119,6 +119,33 @@ void main() {
       expect(posts.single.tags, ['solo', 'smile']);
     });
 
+    // Gelbooru sends tag names HTML-escaped; Boorusama decodes them. Shapes
+    // as the audit read them, not recorded from the live host.
+    test('Gelbooru tags and tag names read without HTML entities', () {
+      final post = parseBooruPosts(
+        {
+          'post': [
+            {
+              'id': 8,
+              'tags': 'girls&#039;_frontline tom_&amp;_jerry &quot;quote&quot;',
+              'rating': 'general',
+              'file_url': 'https://img3.gelbooru.com/images/a.jpg',
+            },
+          ],
+        },
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://gelbooru.com',
+      ).single;
+      final suggestion = parseBooruTagSuggestions({
+        'tag': [
+          {'name': 'girls&#039;_frontline', 'count': 1200, 'type': 3},
+        ],
+      }, engine: BooruEngine.gelbooruV2).single;
+
+      expect(post.tags, ["girls'_frontline", 'tom_&_jerry', '"quote"']);
+      expect(suggestion.name, "girls'_frontline");
+    });
+
     test('Rule34 guest posts compose file URLs from directory and image', () {
       final posts = parseBooruPosts(
         {

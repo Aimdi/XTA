@@ -3,6 +3,7 @@ library;
 
 import 'dart:convert';
 
+import 'package:html_unescape/html_unescape.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
@@ -53,7 +54,7 @@ BooruTagSuggestion? _suggestionOf(Json json, BooruEngine engine) {
       json['count'].integer ??
       json['posts'].integer;
   return BooruTagSuggestion(
-    name: name,
+    name: _tagName(name, engine),
     postCount: count,
     category: _categoryOf(json, engine),
   );
@@ -234,12 +235,21 @@ String? _idOf(Json json) {
   return null;
 }
 
+final _entities = HtmlUnescape();
+
+/// Gelbooru sends tag names HTML-escaped: `girls&#039;_frontline`.
+String _tagName(String name, BooruEngine engine) =>
+    engine == BooruEngine.gelbooruV2 && name.contains('&')
+    ? _entities.convert(name)
+    : name;
+
 List<String> _tagsOf(Json json, BooruEngine engine) {
   final tagString = json['tag_string'].string ?? json['tags'].string;
   if (tagString != null && tagString.isNotEmpty) {
     return tagString
         .split(RegExp(r'\s+'))
         .where((t) => t.isNotEmpty)
+        .map((t) => _tagName(t, engine))
         .toList(growable: false);
   }
 
