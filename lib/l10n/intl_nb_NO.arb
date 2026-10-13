@@ -1644,6 +1644,16 @@
   "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Velg en dato",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Innlegg: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Samlinger",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Dag",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Tidligere",

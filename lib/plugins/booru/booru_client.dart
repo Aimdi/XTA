@@ -294,6 +294,18 @@ class BooruClient {
     }
   }
 
+  /// The pools [post] is in, on its own site; none where the host keeps no
+  /// pools or cannot be reached.
+  Future<List<BooruPool>> pools(BooruPost post) async {
+    final uri = booruPostPoolsUri(siteOf(post), post.id);
+    if (uri == null) return const [];
+    try {
+      return parseBooruPools(await fetchJson(uri));
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<List<BooruComment>> comments(BooruPost post) async {
     final uri = booruCommentsUri(siteOf(post), post.id);
     if (uri == null) return const [];

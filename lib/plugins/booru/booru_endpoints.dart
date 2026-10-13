@@ -126,6 +126,18 @@ Uri? booruArtistUri(BooruSite site, String name) => switch (site.engine) {
   _ => null,
 };
 
+/// The pools post [postId] is in; Danbooru keeps them. Null elsewhere.
+Uri? booruPostPoolsUri(BooruSite site, String postId) => switch (site.engine) {
+  BooruEngine.danbooru => site.endpoint('/pools.json', {'search[post_ids_include_all]': postId, 'limit': '20'}),
+  _ => null,
+};
+
+/// Only Danbooru's pools are read so far.
+bool booruSupportsPools(BooruEngine engine) => engine == BooruEngine.danbooru;
+
+/// The search that reads pool [poolId] in its own order.
+String booruPoolQuery(String poolId) => 'ordpool:$poolId';
+
 bool booruSupportsWiki(BooruEngine engine) => engine != BooruEngine.gelbooruV2;
 
 /// Gelbooru only answers comments in XML.

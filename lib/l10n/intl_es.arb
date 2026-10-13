@@ -1644,6 +1644,16 @@
   "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Elegir una fecha",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Publicaciones: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Colecciones",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Día",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Anterior",

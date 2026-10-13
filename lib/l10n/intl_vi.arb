@@ -1641,6 +1641,16 @@
   "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Chọn ngày",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Bài đăng: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Bộ sưu tập",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Ngày",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Trước đó",

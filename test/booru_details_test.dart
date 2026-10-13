@@ -283,6 +283,23 @@ void main() {
   });
 
   group('endpoints', () {
+    test("a post's pools come from Danbooru, and read in order through ordpool", () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+
+      expect(booruPostPoolsUri(danbooru, '42')!.queryParameters, {'search[post_ids_include_all]': '42', 'limit': '20'});
+      expect(booruPostPoolsUri(e621, '42'), isNull);
+      expect(booruPoolQuery('7'), 'ordpool:7');
+
+      final pools = parseBooruPools([
+        {'id': 7, 'name': 'my_series', 'post_count': 12, 'is_deleted': false},
+        {'id': 8, 'name': 'gone', 'is_deleted': true},
+        {'name': 'no_id'},
+      ]);
+      expect([for (final pool in pools) (pool.id, pool.name, pool.postCount)], [('7', 'my_series', 12)]);
+      expect(parseBooruPools('not json'), isEmpty);
+    });
+
     test('artist entries come from Danbooru and e621', () {
       const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
       const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');

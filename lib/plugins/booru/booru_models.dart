@@ -362,6 +362,15 @@ class BooruTagSuggestion {
   const BooruTagSuggestion({required this.name, this.postCount, this.category});
 }
 
+/// A pool a post belongs to: a series or collection read in its own order.
+class BooruPool {
+  final String id;
+  final String name;
+  final int? postCount;
+
+  const BooruPool({required this.id, required this.name, this.postCount});
+}
+
 /// What a host keeps about the artist behind an artist tag.
 class BooruArtist {
   final String name;

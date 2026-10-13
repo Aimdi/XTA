@@ -1644,6 +1644,16 @@
   "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "اختر تاريخًا",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "المنشورات: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "المجموعات",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "يوم",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "السابق",

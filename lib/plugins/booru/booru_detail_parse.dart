@@ -110,3 +110,14 @@ BooruArtist? parseBooruArtist(Object? raw, String name) {
     ],
   );
 }
+
+/// The pools in a `/pools.json` answer, deleted ones left out.
+List<BooruPool> parseBooruPools(Object? raw) => [
+  for (final pool in Json(raw).list)
+    if (pool['is_deleted'].boolean != true)
+      if ((pool['id'].integer?.toString() ?? pool['id'].string, pool['name'].string) case (
+        final String id,
+        final String name,
+      ))
+        BooruPool(id: id, name: name, postCount: pool['post_count'].integer),
+];

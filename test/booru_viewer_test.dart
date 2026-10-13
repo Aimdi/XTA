@@ -19,6 +19,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
+import 'package:xta/plugins/booru/booru_query_page.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
@@ -85,6 +86,9 @@ class _Client extends BooruClient {
 
   /// What the host keeps about an artist; nothing by default.
   BooruArtist? artistAnswer;
+
+  /// The pools a post is in; none by default.
+  List<BooruPool> poolsAnswer = const [];
   final wikiSites = <String?>[];
 
   @override
@@ -108,6 +112,9 @@ class _Client extends BooruClient {
 
   @override
   Future<BooruArtist?> artist(String tag, {BooruSite? site}) async => artistAnswer;
+
+  @override
+  Future<List<BooruPool>> pools(BooruPost post) async => poolsAnswer;
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -182,6 +189,7 @@ Future<_Client> _pump(
   PrefServiceCache? service,
   BooruTagsStore? tags,
   BooruFeedCache? feedCache,
+  _Client Function(PrefServiceCache service)? client,
   bool settle = true,
 }) async {
   // Tall enough for a post's picture, facts and tags without scrolling.
@@ -189,13 +197,13 @@ Future<_Client> _pump(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   service ??= PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', ...prefs});
-  final client = _Client(service);
+  final fake = (client ?? _Client.new)(service);
   await tester.pumpWidget(
     PrefService(
       service: service,
       child: MultiProvider(
         providers: [
-          Provider<BooruClient>.value(value: client),
+          Provider<BooruClient>.value(value: fake),
           Provider<BooruTagsStore>.value(value: tags ?? BooruTagsStore()),
           Provider<BooruMuteStore>.value(value: BooruMuteStore(service)),
           if (feedCache != null) Provider<BooruFeedCache>.value(value: feedCache),
@@ -215,7 +223,7 @@ Future<_Client> _pump(
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
   }
-  return client;
+  return fake;
 }
 
 void main() {
@@ -815,6 +823,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(tags.state, ['kantoku']);
       expect(find.byTooltip('Unfollow tag'), findsOneWidget);
+    });
+
+    testWidgets("a post's pools are listed, and one opens to read in order", (tester) async {
+      final client = await _pump(
+        tester,
+        BooruPostScreen(post: _post('1')),
+        client: (service) =>
+            _Client(service)..poolsAnswer = const [BooruPool(id: '7', name: 'my_series', postCount: 12)],
+      );
+
+      final pool = find.text('my series');
+      await tester.scrollUntilVisible(pool, 300, scrollable: find.byType(Scrollable).at(1));
+      expect(find.text('Pools'), findsOneWidget);
+      expect(find.text('Posts: 12'), findsOneWidget);
+      await tester.tap(pool);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruQueryPage), findsOneWidget);
+      expect(client.searches.last, 'ordpool:7');
     });
 
     testWidgets('comments load when opened', (tester) async {

@@ -1644,6 +1644,16 @@
   "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "날짜 선택",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "게시물: {count}개",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "풀",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "일간",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "이전 기간",

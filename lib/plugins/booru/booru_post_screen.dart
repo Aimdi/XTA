@@ -12,6 +12,7 @@ import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_pools.dart';
 import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
@@ -93,6 +94,7 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
           ),
         if (_post.hasFamily)
           BooruRelatedStrip(title: l10n.plugin_booru_family, query: booruFamilyQuery(_post), exclude: _post),
+        if (booruSupportsPools(_engine)) BooruPoolsSection(post: _post),
         if (booruSupportsComments(_engine)) BooruComments(post: _post),
       ],
     );

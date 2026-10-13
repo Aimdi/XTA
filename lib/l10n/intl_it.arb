@@ -1644,6 +1644,16 @@
   "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Scegli una data",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Post: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Raccolte",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Giorno",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Precedente",
