@@ -7,6 +7,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 
 /// [post]'s translation notes over its picture, which fills this widget the
@@ -29,7 +30,8 @@ class _BooruNotesOverlayState extends State<BooruNotesOverlay> {
   void initState() {
     super.initState();
     final client = context.read<BooruClient>();
-    _notes = BooruLoadStore(() => client.notes(widget.post));
+    final lookups = context.read<BooruPostLookups?>();
+    _notes = BooruLoadStore(() => booruPostLookup(lookups, 'notes', widget.post, () => client.notes(widget.post)));
     unawaited(_notes.ensure());
   }
 

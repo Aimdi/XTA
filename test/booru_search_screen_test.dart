@@ -26,6 +26,7 @@ class _Client extends BooruClient {
   final prefixes = <String>[];
   final queries = <String>[];
   final tagLookups = <String>[];
+  final noteLookups = <String>[];
 
   /// What the host relates to a search; none by default.
   List<String> related = const [];
@@ -41,6 +42,12 @@ class _Client extends BooruClient {
   Future<Map<String, BooruTagInfo>> tagInfo(BooruPost post) async {
     tagLookups.add(post.id);
     return const {};
+  }
+
+  @override
+  Future<List<BooruNote>> notes(BooruPost post) async {
+    noteLookups.add(post.id);
+    return const [];
   }
 
   @override
@@ -550,7 +557,9 @@ void main() {
       expect(readMuted(harness.prefs), contains('smile'));
     });
 
-    testWidgets("swiping back to a post asks for its tags once, and a page change keeps the pages", (tester) async {
+    testWidgets("swiping back to a post asks for its tags and notes once, and a page change keeps the pages", (
+      tester,
+    ) async {
       final harness = await _open(tester, initialQuery: 'cat');
       await tester.tap(find.byType(BooruPostTile).first);
       await _settle(tester);
@@ -565,6 +574,7 @@ void main() {
 
       expect(find.text('#1'), findsOneWidget);
       expect(harness.client.tagLookups, ['1', '2']);
+      expect(harness.client.noteLookups, ['1', '2'], reason: 'nor are the notes asked again for the hero flight');
     });
 
     testWidgets('the viewer swipes on to the next post', (tester) async {

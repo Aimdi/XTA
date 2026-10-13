@@ -20,12 +20,14 @@ import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
+import 'package:xta/plugins/booru/booru_pools.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_query_page.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_notes.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
@@ -93,9 +95,11 @@ class _Client extends BooruClient {
 
   /// The pools a post is in; none by default.
   List<BooruPool> poolsAnswer = const [];
+  var poolsCalls = 0;
 
   /// The translation notes on a post; none by default.
   List<BooruNote> notesAnswer = const [];
+  var notesCalls = 0;
 
   /// The post a link names; none by default.
   BooruPost? postAtAnswer;
@@ -128,10 +132,16 @@ class _Client extends BooruClient {
   Future<BooruArtist?> artist(String tag, {BooruSite? site}) async => artistAnswer;
 
   @override
-  Future<List<BooruPool>> pools(BooruPost post) async => poolsAnswer;
+  Future<List<BooruPool>> pools(BooruPost post) async {
+    poolsCalls++;
+    return poolsAnswer;
+  }
 
   @override
-  Future<List<BooruNote>> notes(BooruPost post) async => notesAnswer;
+  Future<List<BooruNote>> notes(BooruPost post) async {
+    notesCalls++;
+    return notesAnswer;
+  }
 
   @override
   Future<BooruFollowedPosts> followedPosts(Iterable<String> tags, {int limitPerTag = 10}) async =>
@@ -869,6 +879,31 @@ void main() {
 
       expect(find.byType(BooruQueryPage), findsOneWidget);
       expect(client.searches.last, 'ordpool:7');
+    });
+
+    testWidgets('a post seen again in the same viewer asks for its pools and notes once', (tester) async {
+      final lookups = BooruPostLookups();
+      _Client? fake;
+      for (var visit = 0; visit < 2; visit++) {
+        await _pump(
+          tester,
+          Provider<BooruPostLookups>.value(
+            value: lookups,
+            child: Scaffold(
+              body: ListView(
+                children: [
+                  BooruPostMedia(post: _post('1')),
+                  BooruPoolsSection(post: _post('1')),
+                ],
+              ),
+            ),
+          ),
+          client: (service) => fake ??= _Client(service),
+        );
+        await tester.pumpWidget(const SizedBox());
+      }
+      expect(fake!.poolsCalls, 1);
+      expect(fake!.notesCalls, 1);
     });
 
     testWidgets('translation notes show over the picture once switched on', (tester) async {

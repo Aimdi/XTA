@@ -37,9 +37,12 @@ class BooruPostLookups {
   }
 }
 
+/// What [ask] answers about [post] under [kind], asked once per open viewer
+/// when [lookups] is given.
+Future<T> booruPostLookup<T>(BooruPostLookups? lookups, String kind, BooruPost post, Future<T> Function() ask) =>
+    lookups?.remember('$kind:${post.key}', ask) ?? ask();
+
 /// [post]'s tag kinds and counts, asked once per open viewer when
 /// [lookups] is given.
-Future<Map<String, BooruTagInfo>> booruPostTagInfo(BooruClient client, BooruPostLookups? lookups, BooruPost post) {
-  Future<Map<String, BooruTagInfo>> ask() => client.tagInfo(post);
-  return lookups?.remember('tags:${post.key}', ask) ?? ask();
-}
+Future<Map<String, BooruTagInfo>> booruPostTagInfo(BooruClient client, BooruPostLookups? lookups, BooruPost post) =>
+    booruPostLookup(lookups, 'tags', post, () => client.tagInfo(post));

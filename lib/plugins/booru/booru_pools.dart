@@ -8,6 +8,7 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_query_page.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 
@@ -29,7 +30,8 @@ class _BooruPoolsSectionState extends State<BooruPoolsSection> {
   void initState() {
     super.initState();
     final client = context.read<BooruClient>();
-    _pools = BooruLoadStore(() => client.pools(widget.post));
+    final lookups = context.read<BooruPostLookups?>();
+    _pools = BooruLoadStore(() => booruPostLookup(lookups, 'pools', widget.post, () => client.pools(widget.post)));
     unawaited(_pools.ensure());
   }
 
