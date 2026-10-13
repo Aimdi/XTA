@@ -39,9 +39,9 @@ or responses captured on your side.
 
 | Rank | Item | Fixes | Impact | Effort | Risk | Test first |
 |---|---|---|---|---|---|---|
-| 1 | Strip credentials from Booru error text, including network failures that wrap the URL | B1 | H | S | L | A 401, and a socket failure, with a key set: the exception text has no key |
-| 2 | Send credentials only to the host they were entered for. Save the host with the login and key; other hosts get none, and settings say which site the key belongs to | B2 | H | S–M | M (preferences) | Switch preset: the request carries no key. Switch back: it does |
-| 3 | Reset Home's feeds when the site, rating cap or blacklist changes, and look up a post's details on its own host and engine | B3 | H | M | L | Change host with a feed loaded: the next page starts from page 1 of the new host; an old post's lookups go to its own host |
+| 1 | **Done** (`dba4687f`). Strip credentials from Booru error text, including network failures that wrap the URL | B1 | H | S | L | A 401, and a socket failure, with a key set: the exception text has no key |
+| 2 | **Done** (`ce934ebc`). Send credentials only to the host they were entered for. Save the host with the login and key; other hosts get none, and settings say which site the key belongs to | B2 | H | S–M | M (preferences) | Switch preset: the request carries no key. Switch back: it does |
+| 3 | **Done** (`a9ef31c1`, `63fb05ba`). Reset Home's feeds when the site, rating cap or blacklist changes, and look up a post's details on its own host and engine | B3 | H | M | L | Change host with a feed loaded: the next page starts from page 1 of the new host; an old post's lookups go to its own host |
 | 4 | Attach credentials only when both login and key are set | B4 | M | S | L | Login without key: no credential parameters are sent |
 | 5 | Back off after a failed load-more and show it: the failure and `loadingMore` become Store state, with a retry footer and an end-of-feed marker; no automatic retry until the reader asks or a cooldown passes | B5 | M | S | L | A failing loader and repeated near-end notifications make one request; the footer offers retry |
 | 6 | Show Following's failures: an error with Retry when every followed query failed, and a notice when some did | B6 | M | S | L | All queries fail: the error view shows. One fails: the rest show with a notice |
@@ -119,7 +119,9 @@ approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next three
 
-1. Tier 1 rank 1: strip credentials from error text (B1).
-2. Tier 1 rank 2: credentials only for the host they were entered for (B2).
-3. Tier 1 rank 3: reset feeds when the site or filters change, and look up
-   details on the post's own host (B3).
+Ranks 1–3 are done. Next:
+
+1. Tier 1 rank 4: attach credentials only when both login and key are set (B4).
+2. Tier 1 rank 5: back off after a failed load-more, and show it (B5).
+3. Tier 1 rank 6: show the Following tab's failures instead of an empty feed
+   (B6).
