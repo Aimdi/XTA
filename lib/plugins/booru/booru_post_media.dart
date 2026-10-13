@@ -41,11 +41,14 @@ class BooruPostMedia extends StatelessWidget {
     );
   }
 
-  Widget _video(String url) => TweetVideo(
-    username: displayNameForBooruHost(post.host),
-    loop: true,
-    tweetId: 'booru-${post.host}-${post.id}',
-    metadata: TweetVideoMetadata(post.aspectRatio, post.thumbnailUrl, () async => TweetVideoUrls(url, url)),
+  Widget _video(String url) => PluginVideoGate(
+    aspectRatio: post.aspectRatio,
+    player: (_) => TweetVideo(
+      username: displayNameForBooruHost(post.host),
+      loop: true,
+      tweetId: 'booru-${post.host}-${post.id}',
+      metadata: TweetVideoMetadata(post.aspectRatio, post.thumbnailUrl, () async => TweetVideoUrls(url, url)),
+    ),
   );
 
   void _openFullScreen(BuildContext context) {

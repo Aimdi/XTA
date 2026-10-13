@@ -422,7 +422,7 @@ class _PluginMediaTile extends StatelessWidget {
 ///
 /// The player reads the reader's media prefs itself (autoplay, mute, loop,
 /// quality); manual loading holds even the poster back until it is asked for.
-class PluginPostVideo extends StatefulWidget {
+class PluginPostVideo extends StatelessWidget {
   const PluginPostVideo({
     super.key,
     required this.item,
@@ -435,10 +435,38 @@ class PluginPostVideo extends StatefulWidget {
   final String sourceName;
 
   @override
-  State<PluginPostVideo> createState() => _PluginPostVideoState();
+  Widget build(BuildContext context) {
+    return PluginVideoGate(
+      aspectRatio: item.aspectRatio,
+      player: (_) => TweetVideo(
+        username: sourceName,
+        loop: item.isGif,
+        alwaysPlay: item.isGif,
+        disableControls: item.isGif,
+        tweetId: pluginVideoPoolKey(item),
+        metadata: pluginVideoMetadata(item),
+      ),
+    );
+  }
 }
 
-class _PluginPostVideoState extends State<PluginPostVideo> {
+/// While "load media only on tap" is on, a placeholder stands in for the
+/// video and [player] is built only once the reader taps it.
+class PluginVideoGate extends StatefulWidget {
+  const PluginVideoGate({
+    super.key,
+    required this.aspectRatio,
+    required this.player,
+  });
+
+  final double? aspectRatio;
+  final WidgetBuilder player;
+
+  @override
+  State<PluginVideoGate> createState() => _PluginVideoGateState();
+}
+
+class _PluginVideoGateState extends State<PluginVideoGate> {
   final _revealed = _PluginVideoRevealStore();
 
   @override
@@ -455,22 +483,10 @@ class _PluginPostVideoState extends State<PluginPostVideo> {
       store: _revealed,
       onState: (context, revealed) => manual && !revealed
           ? _PluginVideoPlaceholder(
-              aspectRatio: clampPluginMediaAspect(widget.item.aspectRatio),
+              aspectRatio: clampPluginMediaAspect(widget.aspectRatio),
               onTap: _revealed.reveal,
             )
-          : _player(),
-    );
-  }
-
-  Widget _player() {
-    final item = widget.item;
-    return TweetVideo(
-      username: widget.sourceName,
-      loop: item.isGif,
-      alwaysPlay: item.isGif,
-      disableControls: item.isGif,
-      tweetId: pluginVideoPoolKey(item),
-      metadata: pluginVideoMetadata(item),
+          : widget.player(context),
     );
   }
 }

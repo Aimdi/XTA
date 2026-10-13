@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -17,6 +18,7 @@ import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
 import 'package:xta/plugins/booru/booru_screen.dart';
@@ -26,6 +28,7 @@ import 'package:xta/plugins/booru/booru_tag_list.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
+import 'package:xta/tweet/_video.dart';
 
 BooruPost _post(
   String id, {
@@ -652,6 +655,50 @@ void main() {
       failed.update(0);
       await tester.pumpAndSettle();
       expect(find.text(notice), findsNothing);
+    });
+
+    testWidgets('a video waits for a tap when media loads only on tap', (tester) async {
+      final interval = VisibilityDetectorController.instance.updateInterval;
+      VisibilityDetectorController.instance.updateInterval = Duration.zero;
+      addTearDown(() => VisibilityDetectorController.instance.updateInterval = interval);
+      final clip = BooruPost(
+        id: '7',
+        host: 'https://danbooru.donmai.us',
+        engine: 'danbooru',
+        tags: const [],
+        rating: BooruRating.general,
+        score: null,
+        width: 16,
+        height: 9,
+        previewUrl: null,
+        sampleUrl: null,
+        fileUrl: 'https://cdn.donmai.us/original/clip.mp4',
+        fileExt: 'mp4',
+        source: null,
+        createdAt: null,
+      );
+      await _pump(
+        tester,
+        Scaffold(
+          body: SingleChildScrollView(child: BooruPostMedia(post: clip)),
+        ),
+        prefs: {
+          optionMediaDisableAutoload: true,
+          optionMediaDefaultMute: true,
+          optionMediaDefaultLoop: false,
+          optionMediaDefaultAutoPlay: false,
+          optionMediaBackgroundPlayback: true,
+          optionMediaAllowBackgroundPlayOtherApps: false,
+        },
+      );
+      addTearDown(() => tester.pumpWidget(const SizedBox()));
+      expect(find.byType(TweetVideo), findsNothing, reason: 'no player, and no download, before the tap');
+
+      await tester.tap(find.text('Tap to show Media'));
+      await tester.pump();
+      final player = tester.widget<TweetVideo>(find.byType(TweetVideo));
+      expect(player.loop, isTrue, reason: "Booru's own player settings are kept");
+      expect(player.tweetId, 'booru-https://danbooru.donmai.us-7');
     });
 
     testWidgets('Latest shows the skeleton, not "no posts", until its first page arrives', (tester) async {
