@@ -89,6 +89,27 @@ class _HiddenClient extends _Client {
   }
 }
 
+/// A host whose results the blacklist partly hid: [shown] of [all].
+class _MutedClient extends _Client {
+  _MutedClient(super.prefs, {required this.shown, required this.all});
+
+  final List<String> shown;
+  final List<String> all;
+
+  @override
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async => BooruPostPage(
+    posts: [for (final id in shown) _post(id)],
+    allowed: [for (final id in all) _post(id)],
+    page: page,
+    hasMore: false,
+  );
+}
+
 BooruPost _post(String id) => BooruPost(
   id: id,
   host: 'https://danbooru.donmai.us',
@@ -575,6 +596,34 @@ void main() {
       expect(find.text('#1'), findsOneWidget);
       expect(harness.client.tagLookups, ['1', '2']);
       expect(harness.client.noteLookups, ['1', '2'], reason: 'nor are the notes asked again for the hero flight');
+    });
+
+    testWidgets('results say how many posts the muted tags hid, and show them on request', (tester) async {
+      await _open(
+        tester,
+        initialQuery: 'cat',
+        client: (prefs) => _MutedClient(prefs, shown: ['1'], all: ['1', '2', '3']),
+      );
+      expect(find.byType(BooruPostTile), findsOneWidget);
+      expect(find.text('Hidden by your muted tags: 2'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Show'));
+      await _settle(tester);
+      expect(find.byType(BooruPostTile), findsNWidgets(3));
+    });
+
+    testWidgets('a search the muted tags emptied still offers what they hid', (tester) async {
+      await _open(
+        tester,
+        initialQuery: 'cat',
+        client: (prefs) => _MutedClient(prefs, shown: [], all: ['1']),
+      );
+      expect(find.byType(BooruPostTile), findsNothing);
+      expect(find.text('Hidden by your muted tags: 1'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Show'));
+      await _settle(tester);
+      expect(find.byType(BooruPostTile), findsOneWidget);
     });
 
     testWidgets('the viewer swipes on to the next post', (tester) async {

@@ -11,7 +11,7 @@ import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/ui/errors.dart';
 
 /// Posts for the current query, with the tags they share most as one-tap
-/// refinements.
+/// refinements, under how many the blacklist hid.
 class BooruSearchResults extends StatelessWidget {
   final BooruSearchStore store;
   final BooruFeedStore results;
@@ -19,7 +19,14 @@ class BooruSearchResults extends StatelessWidget {
   const BooruSearchResults({super.key, required this.store, required this.results});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => Column(
+    children: [
+      BooruHiddenNotice(feed: results),
+      Expanded(child: _results(context)),
+    ],
+  );
+
+  Widget _results(BuildContext context) {
     final l10n = L10n.of(context);
     return ScopedBuilder<BooruFeedStore, List<BooruPost>>(
       store: results,
