@@ -403,6 +403,31 @@ void main() {
       await feed.destroy();
     });
 
+    test('the next and the previous picture are loaded ahead, never a video', () {
+      BooruPost post(String id, String ext) => BooruPost(
+        id: id,
+        host: 'https://danbooru.donmai.us',
+        engine: 'danbooru',
+        tags: const [],
+        rating: BooruRating.general,
+        score: 0,
+        width: 1,
+        height: 1,
+        previewUrl: null,
+        sampleUrl: null,
+        fileUrl: 'https://cdn.example/$id.$ext',
+        fileExt: ext,
+        source: null,
+        createdAt: null,
+      );
+      final posts = [post('1', 'png'), post('2', 'mp4'), post('3', 'jpg'), post('4', 'png')];
+
+      expect(booruPreloadUrls(posts, 0), isEmpty, reason: 'the next is a video and there is no previous');
+      expect(booruPreloadUrls(posts, 1), ['https://cdn.example/3.jpg', 'https://cdn.example/1.png']);
+      expect(booruPreloadUrls(posts, 2), ['https://cdn.example/4.png']);
+      expect(booruPreloadUrls(posts, 3), ['https://cdn.example/3.jpg']);
+    });
+
     test('a list only counts as extended when it starts the same', () {
       final a = [_post('1'), _post('2')];
       expect(booruPostsExtend(a, [...a, _post('3')]), isTrue);

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
@@ -32,8 +33,35 @@ class _BooruPostPagerState extends State<BooruPostPager> {
   late final _pages = PageController(initialPage: _store.state.index);
   final _lookups = BooruPostLookups();
 
+  /// Waits for the reader to stop on a post before loading its neighbours,
+  /// so a fast run of swipes loads nothing ahead.
+  Timer? _preload;
+  static const _settle = Duration(milliseconds: 300);
+
+  @override
+  void initState() {
+    super.initState();
+    _preload = Timer(_settle, () => _preloadAround(_store.state.index));
+  }
+
+  void _show(int index) {
+    _store.show(index);
+    _preload?.cancel();
+    _preload = Timer(_settle, () => _preloadAround(index));
+  }
+
+  /// The neighbours' pictures at the width the page shows them.
+  void _preloadAround(int index) {
+    if (!mounted) return;
+    final width = (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil();
+    for (final url in booruPreloadUrls(_store.state.posts, index)) {
+      unawaited(precacheImage(booruImageProvider(url, cacheWidth: width), context, onError: (_, _) {}));
+    }
+  }
+
   @override
   void dispose() {
+    _preload?.cancel();
     _pages.dispose();
     unawaited(_store.destroy());
     super.dispose();
@@ -63,7 +91,7 @@ class _BooruPostPagerState extends State<BooruPostPager> {
           onState: (context, state) => PageView.builder(
             controller: _pages,
             itemCount: state.posts.length,
-            onPageChanged: _store.show,
+            onPageChanged: _show,
             itemBuilder: (context, index) => BooruPostDetails(
               key: ValueKey(state.posts[index].key),
               post: state.posts[index],
