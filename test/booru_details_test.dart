@@ -18,12 +18,13 @@ import 'package:xta/plugins/booru/booru_text.dart';
 BooruPost _post({
   String id = '1',
   String engine = 'danbooru',
+  String host = 'https://example.com',
   List<String> tags = const ['solo', 'smile'],
   BooruRating? rating = BooruRating.general,
   Map<String, BooruTagCategory> categories = const {},
 }) => BooruPost(
   id: id,
-  host: 'https://example.com',
+  host: host,
   engine: engine,
   tags: tags,
   rating: rating,
@@ -554,6 +555,39 @@ void main() {
         expect(booruCredentialParameters, containsAll(site.auth.keys), reason: engine.id);
       }
     });
+    test("a post's details come from its own site", () async {
+      final asked = <Uri>[];
+      final client = _client(
+        'e621',
+        'https://e621.net',
+        MockClient((request) async {
+          asked.add(request.url);
+          return http.Response('[]', 200);
+        }),
+        prefs: {
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      final post = _post(host: 'https://danbooru.donmai.us');
+      final site = client.siteOf(post);
+      await client.tagInfo(post);
+      await client.comments(post);
+      await client.wiki('kantoku', site: site);
+      await client.search('kantoku', site: site);
+      expect(asked.map((uri) => uri.host).toSet(), {'danbooru.donmai.us'});
+      expect(asked.map((uri) => uri.path), ['/tags.json', '/comments.json', '/wiki_pages.json', '/posts.json']);
+      expect(asked.map((uri) => uri.queryParameters['api_key']).toSet(), {
+        'secret-key',
+      }, reason: 'the key is that site\'s');
+
+      asked.clear();
+      await client.tagInfo(_post(host: 'https://e621.net', engine: 'e621'));
+      await client.latest();
+      expect(asked.map((uri) => uri.host).toSet(), {'e621.net'});
+      expect(asked.map((uri) => uri.queryParameters['api_key']).toSet(), {null}, reason: "Danbooru's key stays home");
+    });
   });
 
   group('credentials', () {
@@ -610,11 +644,7 @@ void main() {
 
     test('credentials saved before this belong to the site in use', () async {
       final saved = PrefServiceCache(
-        cache: {
-          optionPluginBooruHost: 'yande.re',
-          optionPluginBooruLogin: 'reader',
-          optionPluginBooruApiKey: 'hash',
-        },
+        cache: {optionPluginBooruHost: 'yande.re', optionPluginBooruLogin: 'reader', optionPluginBooruApiKey: 'hash'},
       );
       await migrateBooruCredentialsHost(saved);
       expect(saved.get<String>(optionPluginBooruCredentialsHost), 'https://yande.re');

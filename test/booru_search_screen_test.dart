@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
@@ -34,7 +35,12 @@ class _Client extends BooruClient {
   }
 
   @override
-  Future<BooruPostPage> search(String query, {int page = 1, int limit = BooruClient.defaultPageSize}) async {
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async {
     queries.add(query);
     return BooruPostPage(posts: [_post('1'), _post('2')], page: page, hasMore: false);
   }

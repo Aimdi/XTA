@@ -8,6 +8,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
@@ -32,7 +33,12 @@ class _Client extends BooruClient {
   }
 
   @override
-  Future<BooruPostPage> search(String query, {int page = 1, int limit = BooruClient.defaultPageSize}) async {
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async {
     queries.add(query);
     return const BooruPostPage(posts: [], page: 1, hasMore: false);
   }

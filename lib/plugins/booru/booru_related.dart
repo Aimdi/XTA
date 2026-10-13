@@ -36,7 +36,8 @@ class _BooruRelatedStripState extends State<BooruRelatedStrip> {
   void initState() {
     super.initState();
     final client = context.read<BooruClient>();
-    _feed = BooruFeedStore(client, ({required page}) => client.search(widget.query, page: page, limit: 20));
+    final site = client.siteOf(widget.exclude);
+    _feed = BooruFeedStore(client, ({required page}) => client.search(widget.query, page: page, limit: 20, site: site));
     unawaited(_feed.refresh());
   }
 

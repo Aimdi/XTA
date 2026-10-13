@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
@@ -24,14 +25,16 @@ import 'package:xta/plugins/plugin_tag_chip.dart';
 
 BooruPost _post(
   String id, {
+  String host = 'https://danbooru.donmai.us',
+  String engine = 'danbooru',
   List<String> tags = const ['kantoku', 'solo', 'highres'],
   Map<String, BooruTagCategory> categories = const {},
   BooruRating rating = BooruRating.general,
   String? parentId,
 }) => BooruPost(
   id: id,
-  host: 'https://danbooru.donmai.us',
-  engine: 'danbooru',
+  host: host,
+  engine: engine,
   tags: tags,
   rating: rating,
   score: 12,
@@ -56,13 +59,21 @@ class _Client extends BooruClient {
   _Client(super.prefs);
 
   final searches = <String>[];
+  final searchSites = <String?>[];
   final popularQueries = <BooruPopularQuery>[];
   var commentCalls = 0;
   var wikiCalls = 0;
+  final wikiSites = <String?>[];
 
   @override
-  Future<BooruPostPage> search(String query, {int page = 1, int limit = BooruClient.defaultPageSize}) async {
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async {
     searches.add(query);
+    searchSites.add(site?.host);
     return BooruPostPage(posts: [_post('1'), _post('10'), _post('11')], page: page, hasMore: false);
   }
 
@@ -82,8 +93,9 @@ class _Client extends BooruClient {
   };
 
   @override
-  Future<String?> wiki(String tag) async {
+  Future<String?> wiki(String tag, {BooruSite? site}) async {
     wikiCalls++;
+    wikiSites.add(site?.host);
     return tag == 'kantoku' ? 'h4. Kantoku\nAn illustrator.' : null;
   }
 }
@@ -331,6 +343,21 @@ void main() {
       await tester.pumpAndSettle();
       expect(client.commentCalls, 1);
       expect(find.text('Nice kantoku'), findsOneWidget);
+    });
+
+    testWidgets('a post from another site is looked up on that site', (tester) async {
+      final client = await _pump(
+        tester,
+        BooruPostScreen(
+          post: _post('1', host: 'https://e621.net', engine: 'e621', categories: {'kantoku': BooruTagCategory.artist}),
+        ),
+      );
+      expect(client.searchSites, contains('https://e621.net'), reason: '"More from" searches the post\'s site');
+      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('booru-tag-action-wiki')));
+      await tester.pumpAndSettle();
+      expect(client.wikiSites, ['https://e621.net']);
     });
 
     testWidgets('the wiki opens from a tag', (tester) async {

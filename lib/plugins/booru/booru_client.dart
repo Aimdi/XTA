@@ -89,12 +89,20 @@ class BooruClient {
     String query, {
     int page = 1,
     int limit = defaultPageSize,
-  }) => posts(tags: booruQueryTokens(query), page: page, limit: limit);
+    BooruSite? site,
+  }) => posts(
+    tags: booruQueryTokens(query),
+    page: page,
+    limit: limit,
+    site: site,
+  );
 
+  /// Posts from [site], the site in use by default.
   Future<BooruPostPage> posts({
     required List<String> tags,
     int page = 1,
     int limit = defaultPageSize,
+    BooruSite? site,
   }) async {
     if (!isConfigured) {
       throw BooruException(
@@ -103,12 +111,13 @@ class BooruClient {
       );
     }
 
-    final effectiveTags = _withRatingTag(tags);
-    final uri = _postsUri(tags: effectiveTags, page: page, limit: limit);
+    final from = site ?? this.site;
+    final effectiveTags = _withRatingTag(tags, from.engine);
+    final uri = _postsUri(from, tags: effectiveTags, page: page, limit: limit);
     final parsed = parseBooruPosts(
       await fetchJson(uri),
-      engine: engine,
-      host: host,
+      engine: from.engine,
+      host: from.host,
     );
     return _page(parsed, page: page, hasMore: parsed.length >= limit);
   }
@@ -134,6 +143,23 @@ class BooruClient {
 
   BooruSite get site =>
       BooruSite(engine: engine, host: host, login: login, apiKey: apiKey);
+
+  /// Where [post] came from: its own host and engine, with the saved
+  /// credentials only if they belong to that host.
+  BooruSite siteOf(BooruPost post) {
+    final host = normaliseBooruHost(post.host);
+    if (host.isEmpty) return site;
+    return BooruSite(
+      engine: BooruEngine.tryParse(post.engine) ?? engine,
+      host: host,
+      login: booruCredential(prefs, optionPluginBooruLogin, host: host).trim(),
+      apiKey: booruCredential(
+        prefs,
+        optionPluginBooruApiKey,
+        host: host,
+      ).trim(),
+    );
+  }
 
   /// The host's popular list for [query]. Gelbooru keeps none, so it shows
   /// its highest-scored posts instead.
@@ -173,10 +199,14 @@ class BooruClient {
           in post.tagCategories.entries)
         tag: BooruTagInfo(category: category),
     };
-    final uri = booruTagInfoUri(site, postId: post.id, tags: post.tags);
+    final from = siteOf(post);
+    final uri = booruTagInfoUri(from, postId: post.id, tags: post.tags);
     if (uri == null) return fromPost;
     try {
-      final looked = parseBooruTagInfo(await fetchJson(uri), engine: engine);
+      final looked = parseBooruTagInfo(
+        await fetchJson(uri),
+        engine: from.engine,
+      );
       return {
         ...fromPost,
         for (final MapEntry(key: tag, value: info) in looked.entries)
@@ -190,9 +220,10 @@ class BooruClient {
     }
   }
 
-  /// The wiki text for [tag], or null when the host has no page for it.
-  Future<String?> wiki(String tag) async {
-    final uri = booruWikiUri(site, tag);
+  /// The wiki text for [tag] on [site] (the site in use by default), or
+  /// null when the host has no page for it.
+  Future<String?> wiki(String tag, {BooruSite? site}) async {
+    final uri = booruWikiUri(site ?? this.site, tag);
     if (uri == null) return null;
     try {
       return parseBooruWiki(await fetchJson(uri), tag: tag);
@@ -203,7 +234,7 @@ class BooruClient {
   }
 
   Future<List<BooruComment>> comments(BooruPost post) async {
-    final uri = booruCommentsUri(site, post.id);
+    final uri = booruCommentsUri(siteOf(post), post.id);
     if (uri == null) return const [];
     return parseBooruComments(await fetchJson(uri));
   }
@@ -259,7 +290,7 @@ class BooruClient {
     return merged;
   }
 
-  List<String> _withRatingTag(List<String> tags) {
+  List<String> _withRatingTag(List<String> tags, BooruEngine engine) {
     final hasRating = tags.any((t) => t.toLowerCase().startsWith('rating:'));
     if (hasRating) return tags;
 
@@ -306,7 +337,8 @@ class BooruClient {
     };
   }
 
-  Uri _postsUri({
+  Uri _postsUri(
+    BooruSite site, {
     required List<String> tags,
     required int page,
     required int limit,
@@ -316,7 +348,7 @@ class BooruClient {
       'limit': '$limit',
       if (tagQuery.isNotEmpty) 'tags': tagQuery,
     };
-    return switch (engine) {
+    return switch (site.engine) {
       BooruEngine.danbooru || BooruEngine.e621 => site.endpoint('/posts.json', {
         ...query,
         'page': '$page',

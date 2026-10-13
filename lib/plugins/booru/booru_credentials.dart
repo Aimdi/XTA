@@ -21,10 +21,10 @@ String booruCredentialsHost(BasePrefService prefs) =>
 bool _hasCredentials(BasePrefService prefs) =>
     [optionPluginBooruLogin, optionPluginBooruApiKey].any((key) => (prefs.get<String>(key) ?? '').trim().isNotEmpty);
 
-/// The saved login or key ([key]) when it belongs to the host in use, else
-/// empty.
-String booruCredential(BasePrefService prefs, String key) =>
-    booruCredentialsHost(prefs) == booruHostOf(prefs) ? prefs.get<String>(key) ?? '' : '';
+/// The saved login or key ([key]) when it belongs to [host] (the host in use
+/// by default), else empty.
+String booruCredential(BasePrefService prefs, String key, {String? host}) =>
+    booruCredentialsHost(prefs) == (host ?? booruHostOf(prefs)) ? prefs.get<String>(key) ?? '' : '';
 
 /// The host saved credentials belong to when it is not the host in use; null
 /// when there are none, or they are this host's.
