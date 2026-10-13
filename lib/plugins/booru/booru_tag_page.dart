@@ -5,12 +5,11 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
-import 'package:xta/plugins/booru/booru_download.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
-import 'package:xta/plugins/booru/booru_feed_view.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
+import 'package:xta/plugins/booru/booru_query_page.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_sheet.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
@@ -46,25 +45,20 @@ class BooruTagPage extends StatefulWidget {
 }
 
 class _BooruTagPageState extends State<BooruTagPage> {
-  late final BooruFeedStore _posts;
   late final BooruLoadStore<({BooruArtist? artist})>? _artist;
 
   @override
   void initState() {
     super.initState();
     final client = context.read<BooruClient>();
-    final site = widget.site;
-    _posts = BooruFeedStore(client, ({required page}) => client.search(widget.tag, page: page, site: site));
     _artist = widget.category == BooruTagCategory.artist
-        ? BooruLoadStore(() async => (artist: await client.artist(widget.tag, site: site)))
+        ? BooruLoadStore(() async => (artist: await client.artist(widget.tag, site: widget.site)))
         : null;
-    unawaited(_posts.refresh());
     unawaited(_artist?.ensure());
   }
 
   @override
   void dispose() {
-    unawaited(_posts.destroy());
     unawaited(_artist?.destroy());
     super.dispose();
   }
@@ -72,39 +66,29 @@ class _BooruTagPageState extends State<BooruTagPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final theme = Theme.of(context);
     final engine = (widget.site ?? context.read<BooruClient>().site).engine;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text.rich(booruTokenSpan(widget.tag, theme, category: widget.category)),
-        actions: [
-          _FollowButton(tag: widget.tag),
-          if (booruSupportsWiki(engine))
-            IconButton(
-              tooltip: l10n.plugin_booru_wiki,
-              icon: const Icon(Icons.menu_book_outlined),
-              onPressed: () => showBooruWiki(context, widget.tag, site: widget.site),
-            ),
+    return BooruQueryPage(
+      query: widget.tag,
+      site: widget.site,
+      title: Text.rich(booruTokenSpan(widget.tag, Theme.of(context), category: widget.category)),
+      header: switch (_artist) {
+        final artist? => BooruArtistLinks(store: artist),
+        null => null,
+      },
+      actions: [
+        _FollowButton(tag: widget.tag),
+        if (booruSupportsWiki(engine))
           IconButton(
-            tooltip: l10n.plugin_booru_search_tag,
-            icon: const Icon(Icons.search),
-            onPressed: () => searchBooruTag(context, widget.tag),
+            tooltip: l10n.plugin_booru_wiki,
+            icon: const Icon(Icons.menu_book_outlined),
+            onPressed: () => showBooruWiki(context, widget.tag, site: widget.site),
           ),
-          IconButton(
-            tooltip: l10n.plugin_booru_download_all,
-            icon: const Icon(Icons.download_for_offline_outlined),
-            onPressed: () => confirmBooruDownloadAll(context, _posts.state),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (_artist case final artist?) BooruArtistLinks(store: artist),
-          Expanded(
-            child: BooruFeedView(store: _posts, emptyLabel: l10n.plugin_booru_empty_search),
-          ),
-        ],
-      ),
+        IconButton(
+          tooltip: l10n.plugin_booru_search_tag,
+          icon: const Icon(Icons.search),
+          onPressed: () => searchBooruTag(context, widget.tag),
+        ),
+      ],
     );
   }
 }
