@@ -433,6 +433,25 @@ void main() {
       expect(query.step(1, today: today).isLatest(today: today), isTrue);
       expect(query.isLatest(today: today), isFalse);
     });
+
+    test("today is the host's day, never one it has not reached", () {
+      DateTime todayAt(DateTime utc, int hours) => booruPopularToday(
+        now: utc,
+        offset: Duration(hours: hours),
+      );
+      expect(
+        todayAt(DateTime.utc(2026, 10, 12, 23, 30), 9),
+        DateTime(2026, 10, 12),
+        reason: 'at 08:30 in Tokyo the host is still on the 12th',
+      );
+      expect(
+        todayAt(DateTime.utc(2026, 10, 13, 2), -5),
+        DateTime(2026, 10, 12),
+        reason: 'at 21:00 in New York the 13th has only just begun for the host',
+      );
+      expect(todayAt(DateTime.utc(2026, 10, 13, 12), 0), DateTime(2026, 10, 13));
+      expect(BooruPopularQuery.today().date, booruPopularToday());
+    });
   });
 
   group('client', () {
