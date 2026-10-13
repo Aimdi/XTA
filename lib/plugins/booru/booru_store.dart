@@ -108,23 +108,27 @@ class BooruMuteStore extends Store<Set<String>> {
   }
 }
 
-/// The Following tab's single page. Followed tags that failed to load are
-/// counted in [failed]; when every one failed, the first failure is thrown,
-/// so the tab shows it with Retry rather than an empty feed.
+/// The Following tab's single page, counting the followed tags that failed
+/// to load. When every one failed, the first failure is thrown, so the tab
+/// shows it with Retry rather than an empty feed.
 Future<BooruPostPage> loadBooruFollowing(
   BooruClient client,
-  List<String> tags,
-  Store<int> failed, {
+  List<String> tags, {
   required int page,
 }) async {
   if (page > 1) {
     return BooruPostPage(posts: const [], page: page, hasMore: false);
   }
   final followed = await client.followedPosts(tags);
-  final allFailed = followed.asked > 0 && followed.failed == followed.asked;
-  failed.update(allFailed ? 0 : followed.failed);
-  if (allFailed) throw followed.error!;
-  return BooruPostPage(posts: followed.posts, page: 1, hasMore: false);
+  if (followed.asked > 0 && followed.failed == followed.asked) {
+    throw followed.error!;
+  }
+  return BooruPostPage(
+    posts: followed.posts,
+    page: 1,
+    hasMore: false,
+    failedQueries: followed.failed,
+  );
 }
 
 /// Where loading a feed's next page stands, for the footer under its grid.
@@ -132,6 +136,11 @@ enum BooruPaging { idle, loading, failed, end }
 
 class BooruPagingStore extends Store<BooruPaging> {
   BooruPagingStore() : super(BooruPaging.idle);
+}
+
+/// How many of the queries behind a feed's first page failed to load.
+class BooruFailedQueriesStore extends Store<int> {
+  BooruFailedQueriesStore() : super(0);
 }
 
 /// Paginated post list for Latest / Search / Following.
@@ -142,10 +151,18 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   /// Where loading the next page stands; the grid's footer shows it.
   final paging = BooruPagingStore();
 
+  /// How many queries behind the shown first page failed (Following).
+  final failedQueries = BooruFailedQueriesStore();
+
   var _page = 0;
   var _hasMore = true;
   var _closed = false;
   String? _loadedFor;
+
+  /// Bumped by every refresh; a load started before the latest refresh is
+  /// dropped when it returns. [_landed] is the last one whose answer is in.
+  var _generation = 0;
+  var _landed = 0;
 
   /// Starts out loading: until the first page has been asked for and
   /// answered, an empty list means "not loaded yet", not "no posts".
@@ -164,45 +181,65 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   }
 
   Future<void> refresh() async {
+    final generation = ++_generation;
     _page = 0;
     _hasMore = true;
     _loadedFor = client.feedKey;
     _setPaging(BooruPaging.idle);
     await execute(() async {
-      // Rating / mute filters can zero the first raw page. Skip a few so Latest
-      // does not open empty while the host still has posts.
-      var posts = <BooruPost>[];
-      var pageNo = 0;
-      var hasMore = true;
-      for (
-        var attempt = 0;
-        attempt < 4 && hasMore && posts.isEmpty;
-        attempt++
-      ) {
-        pageNo += 1;
-        final page = await loader(page: pageNo);
-        posts = page.posts;
-        hasMore = page.hasMore;
+      final ({BooruPostPage page, int number}) first;
+      try {
+        first = await _firstPage();
+      } catch (_) {
+        if (_isCurrent(generation)) _land(generation, failed: 0);
+        rethrow;
       }
-      _page = pageNo;
-      _hasMore = hasMore;
-      _setPaging(hasMore ? BooruPaging.idle : BooruPaging.end);
-      return posts;
+      // Overtaken by a newer refresh: what is shown stays until that lands.
+      if (!_isCurrent(generation)) return state;
+      _page = first.number;
+      _hasMore = first.page.hasMore;
+      _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
+      _land(generation, failed: first.page.failedQueries);
+      return first.page.posts;
     });
   }
 
+  /// The first page with posts: the rating and mute filters can empty a raw
+  /// page, so a few are skipped while the host still has more.
+  Future<({BooruPostPage page, int number})> _firstPage() async {
+    var page = const BooruPostPage(posts: [], page: 0, hasMore: true);
+    var number = 0;
+    while (number < 4 && page.hasMore && page.posts.isEmpty) {
+      number += 1;
+      page = await loader(page: number);
+    }
+    return (page: page, number: number);
+  }
+
+  void _land(int generation, {required int failed}) {
+    _landed = generation;
+    failedQueries.update(failed);
+  }
+
+  bool _isCurrent(int generation) => !_closed && generation == _generation;
+
   /// The next page; a stale feed starts over from the first page instead,
   /// so another site's posts are never appended to it. After a failure it
-  /// waits for [retryMore], however often the grid asks.
+  /// waits for [retryMore], however often the grid asks, and while a refresh
+  /// is on its way it waits for that.
   Future<void> loadMore() async {
+    final generation = _generation;
+    if (_landed != generation) return;
     if (!_hasMore || paging.state != BooruPaging.idle) return;
     if (isStale) return refresh();
     _setPaging(BooruPaging.loading);
     try {
-      await _appendNextPage();
-      _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
+      await _appendNextPage(generation);
+      if (_isCurrent(generation)) {
+        _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
+      }
     } catch (_) {
-      _setPaging(BooruPaging.failed);
+      if (_isCurrent(generation)) _setPaging(BooruPaging.failed);
     }
   }
 
@@ -214,13 +251,14 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   }
 
   /// Appends the next page with posts not shown yet, skipping pages the
-  /// filters emptied while the host still has more.
-  Future<void> _appendNextPage() async {
+  /// filters emptied while the host still has more. Dropped if a refresh
+  /// started meanwhile.
+  Future<void> _appendNextPage(int generation) async {
     var repeats = 0;
     for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
       final next = _page + 1;
       final page = await loader(page: next);
-      if (_closed) return;
+      if (!_isCurrent(generation)) return;
       _page = next;
       _hasMore = page.hasMore;
       final fresh = _unseen(page.posts);
@@ -242,6 +280,7 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   Future<void> destroy() async {
     _closed = true;
     await paging.destroy();
+    await failedQueries.destroy();
     await super.destroy();
   }
 

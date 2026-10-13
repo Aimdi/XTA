@@ -17,7 +17,6 @@ import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
-import 'package:xta/plugins/plugin_view_store.dart';
 
 class _Client extends BooruClient {
   _Client(super.prefs);
@@ -334,7 +333,8 @@ void main() {
     });
 
     test('Following counts followed tags that failed, and fails only when all did', () async {
-      BooruClient client({required Set<String> failing}) => BooruClient(
+      final failing = <String>{};
+      final client = BooruClient(
         PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruMaxRating: 'e'}),
         httpClient: MockClient((request) async {
           final tags = request.url.queryParameters['tags'] ?? '';
@@ -347,21 +347,26 @@ void main() {
           );
         }),
       );
-      final failed = PluginViewStore<int>(0);
-
-      final some = await loadBooruFollowing(client(failing: {'night'}), ['blue_eyes', 'night'], failed, page: 1);
-      expect(some.posts.map((post) => post.tags.join(' ')), ['blue_eyes']);
-      expect(failed.state, 1);
-
-      await expectLater(
-        loadBooruFollowing(client(failing: {'blue_eyes', 'night'}), ['blue_eyes', 'night'], failed, page: 1),
-        throwsA(isA<BooruException>()),
-        reason: 'an empty tab would say there are no recent posts',
+      final feed = BooruFeedStore(
+        client,
+        ({required page}) => loadBooruFollowing(client, ['blue_eyes', 'night'], page: page),
       );
-      expect(failed.state, 0, reason: 'the error page says it; no notice on top');
+      addTearDown(feed.destroy);
 
-      await loadBooruFollowing(client(failing: {}), ['blue_eyes'], failed, page: 1);
-      expect(failed.state, 0);
+      failing.add('night');
+      await feed.refresh();
+      expect(feed.state.map((post) => post.tags.join(' ')), ['blue_eyes']);
+      expect(feed.failedQueries.state, 1);
+
+      failing.add('blue_eyes');
+      await feed.refresh();
+      expect(feed.error, isA<BooruException>(), reason: 'an empty tab would say there are no recent posts');
+      expect(feed.failedQueries.state, 0, reason: 'the error page says it; no notice on top');
+
+      failing.clear();
+      await feed.refresh();
+      expect(feed.state, hasLength(2));
+      expect(feed.failedQueries.state, 0);
     });
   });
 }

@@ -227,10 +227,14 @@ class BooruPostPage {
   final int page;
   final bool hasMore;
 
+  /// Of the queries merged into this page (Following), how many failed.
+  final int failedQueries;
+
   const BooruPostPage({
     required this.posts,
     required this.page,
     required this.hasMore,
+    this.failedQueries = 0,
   });
 }
 

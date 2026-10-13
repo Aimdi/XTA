@@ -26,7 +26,6 @@ import 'package:xta/plugins/booru/booru_tag_list.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
-import 'package:xta/plugins/plugin_view_store.dart';
 
 BooruPost _post(
   String id, {
@@ -109,6 +108,9 @@ class _Client extends BooruClient {
     return tag == 'kantoku' ? 'h4. Kantoku\nAn illustrator.' : null;
   }
 }
+
+/// Waits out the 50 ms `execute` holds a load back before starting it.
+Future<void> _pastDebounce() => Future<void>.delayed(const Duration(milliseconds: 80));
 
 /// Followed tags in memory, so the Booru home needs no database.
 class _Tags extends BooruTagsStore {
@@ -236,6 +238,87 @@ void main() {
 
       await feed.retryMore();
       expect(calls, 2);
+      await feed.destroy();
+    });
+
+    test('a page asked for before a refresh never lands after it', () async {
+      var date = 'monday';
+      final pending = <String, Completer<BooruPostPage>>{};
+      final feed = BooruFeedStore(
+        _Client(PrefServiceCache()),
+        ({required page}) => (pending['$date $page'] = Completer<BooruPostPage>()).future,
+      );
+      BooruPostPage answer(String id, int page) => BooruPostPage(posts: [_post(id)], page: page, hasMore: true);
+      List<String> shown() => [for (final post in feed.state) post.id];
+
+      final opening = feed.refresh();
+      await _pastDebounce();
+      pending['monday 1']!.complete(answer('m1', 1));
+      await opening;
+
+      final more = feed.loadMore();
+      date = 'tuesday';
+      final change = feed.refresh();
+      await _pastDebounce();
+      pending['tuesday 1']!.complete(answer('t1', 1));
+      await change;
+      pending['monday 2']!.complete(answer('m2', 2));
+      await more;
+      expect(shown(), ['t1'], reason: "Monday's second page is not added to Tuesday's");
+
+      final next = feed.loadMore();
+      await Future<void>.delayed(Duration.zero);
+      expect(pending.keys, contains('tuesday 2'), reason: 'Tuesday goes on from its own second page');
+      pending['tuesday 2']!.complete(answer('t2', 2));
+      await next;
+      expect(shown(), ['t1', 't2']);
+      await feed.destroy();
+    });
+
+    test('of two overlapping refreshes, the newer one decides what the feed holds', () async {
+      var date = 'monday';
+      final pending = <String, Completer<BooruPostPage>>{};
+      final feed = BooruFeedStore(
+        _Client(PrefServiceCache()),
+        ({required page}) => (pending['$date $page'] = Completer<BooruPostPage>()).future,
+      );
+
+      final monday = feed.refresh();
+      await _pastDebounce();
+      date = 'tuesday';
+      final tuesday = feed.refresh();
+      await _pastDebounce();
+      pending['tuesday 1']!.complete(BooruPostPage(posts: [_post('t1')], page: 1, hasMore: true));
+      await tuesday;
+      pending['monday 1']!.complete(BooruPostPage(posts: [_post('m1')], page: 1, hasMore: false, failedQueries: 2));
+      await monday;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(feed.state.map((post) => post.id), ['t1']);
+      expect(feed.hasMore, isTrue, reason: "Monday's last page does not end Tuesday's feed");
+      expect(feed.paging.state, BooruPaging.idle);
+      expect(feed.failedQueries.state, 0, reason: "Monday's failures are not Tuesday's");
+      await feed.destroy();
+    });
+
+    test('no next page is asked for while a refresh is on its way', () async {
+      final asked = <int>[];
+      final first = Completer<BooruPostPage>();
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) {
+        asked.add(page);
+        return page == 1 && asked.length > 1
+            ? first.future
+            : Future.value(BooruPostPage(posts: [_post('${asked.length}')], page: page, hasMore: true));
+      });
+      await feed.refresh();
+      final refreshing = feed.refresh();
+      await _pastDebounce();
+      await feed.loadMore();
+      expect(asked, [1, 1], reason: 'the second page of a list about to be replaced is not worth asking for');
+      first.complete(BooruPostPage(posts: [_post('fresh')], page: 1, hasMore: true));
+      await refreshing;
+      await feed.loadMore();
+      expect(asked, [1, 1, 2]);
       await feed.destroy();
     });
 
@@ -549,7 +632,7 @@ void main() {
 
     testWidgets('Following says when some followed tags did not load, and offers a retry', (tester) async {
       const notice = 'Some followed tags could not be loaded';
-      final failed = PluginViewStore<int>(0);
+      final failed = BooruFailedQueriesStore();
       addTearDown(failed.destroy);
       var retries = 0;
       await _pump(
