@@ -36,7 +36,7 @@ Refresh fetches the first page of every followed publication, still three at a t
 
 For a followed custom domain, posts, post bodies, comments and archive search use `{stored subdomain}.substack.com`. The guess `{first host label}.substack.com` is used only when the stored subdomain is unknown (`www` or empty). That is the legacy follow that needs it.
 
-A twin listing is rejected if its publication names a different custom domain, or a different subdomain from the one stored. Resolving a pasted URL keeps its probing, because the user previews the result before following; a twin that names another custom domain is rejected there too. A publication that moved to a new custom domain while its old one went dark is no longer read through its twin: showing nothing is safer than showing someone else's posts, and following the new domain fixes it.
+A twin listing is rejected if its publication names a different custom domain, or a different subdomain from the one stored. Resolving a pasted URL keeps its probing, because the user previews the result before following; a twin that names another custom domain is rejected there too. §6 narrows the guess to apex domains. A publication that moved to a new custom domain while its old one went dark is no longer read through its twin: showing nothing is safer than showing someone else's posts, and following the new domain fixes it.
 
 ### 4. A paid post without a body (BUG-11)
 
@@ -45,13 +45,29 @@ The reader shows the paid pane: lock, excerpt and an "Open in browser" button. I
 ### 5. Small fixes
 
 - **BUG-09:** the article cache keeps the video flag.
-- **BUG-06:** a follow resolved without Substack's JSON on a host deeper than an apex domain (`newsletter.example.com`) keeps the whole host as its id. Apex domains keep their first label, so `garbageday.email` stays `garbageday`.
+- **BUG-06:** replaced by §6, which found the same overwrite on a second path.
 - **BUG-14:** speech skips footnote markers.
 - **BUG-15:** Beehiiv JSON-LD fields are read through `Json`, so an unexpected shape falls through to the next parser instead of throwing.
+
+### 6. Follow identity (BUG-16, BUG-06)
+
+A publication built from a post (`post.publication`, `publicationForPost`) has no subdomain of its own, so it takes the first label of its host. That label is often enough someone else's subdomain. A page opened from a `newsletter.pragmaticengineer.com` post counts as followed when `newsletter.substack.com` is, and opening it rewrites that follow to the other publication (BUG-16). Following a second `newsletter.*` site resolved without JSON replaces the first (BUG-06). Both come from one cause: a follow is found by its id alone, and `add` replaces by id.
+
+- **One identity rule**, `substackFollowOf(follows, publication)`. A publication is a follow when their hosts are the same, ignoring `www.`. Otherwise it is a follow when their ids are equal and neither id is a guess. A guess is `www`, empty, or the first label of a host deeper than an apex domain (`newsletter` for `newsletter.example.com`). Every "is this followed" decision uses the rule: the follow button, pin, the publication page's metadata write-back, search results, notes, groups and the checks after a follow.
+- **Following never overwrites.** `SubstackPublicationsStore.add` updates the matching follow in place, under that follow's id. A publication that matches no follow, but whose id another follow holds, is stored under its host instead.
+- **Ids guessed from a host are the host.** RSS, homepage and Beehiiv resolution store the host without `www.` (BUG-06 at its source), so two sites never share an id. Existing follows keep their ids: there is no migration, and reading progress keeps its keys.
+- **Twins.** A host-shaped id is no subdomain, so it is no twin hint. Like `www`, it lets an apex domain still guess `{first label}.substack.com`, which is then checked as in §3. A host deeper than an apex domain never guesses its first label, whether pasted or followed: on such hosts it is a prefix like `newsletter` or `blog`, not the publication's subdomain.
+
+Trade-offs, kept on purpose:
+
+- The same publication followed at `{subdomain}.substack.com` and at its apex custom domain still matches by id, as before.
+- Two existing follows of different apex sites that share a label (`example.com` from RSS and `example.substack.com`) still match by id. Only new follows get host ids.
+- When the rule cannot tell, a publication is shown as not followed. Following it again adds a second follow rather than replacing one.
 
 ## Tests
 
 - **Flipped probes.** The probes for BUG-03, 04, 05, 06 and 09 in `test/substack_audit_probes_test.dart` flip into regression tests.
+- **Follow identity:** `test/substack_follow_identity_test.dart` covers the publication page (BUG-16), two `newsletter.*` follows (BUG-06), following the same site again, and the same publication on two hosts. Each case fails before §6 except the last, which pins behaviour kept.
 - **Transport unit tests**, with a fake clock:
   - bucket sharing;
   - `Retry-After` in seconds and as a date;
