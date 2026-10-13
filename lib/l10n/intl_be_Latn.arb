@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Naciśnicie na teh, kab šukać, padpisacca, schavać ci pračytać jaho viki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Mastak",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Piersanaž",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "pakazać dziejanni z teham",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Mietadanyja",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Sartavać tehi",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Naciśnicie na teh, kab šukać jaho. Utrymlivajcie, kab padpisacca, schavać abo pračytać viki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Tehi",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

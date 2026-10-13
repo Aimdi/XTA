@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "انقر على وسم للبحث عنه أو متابعته أو إخفائه أو قراءة صفحته في الويكي",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "الفنان",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "الشخصية",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "إظهار إجراءات الوسم",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "ميتا",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "ترتيب الوسوم",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "انقر على وسم للبحث عنه. المس مطولًا لمتابعته أو إخفائه أو قراءة الويكي الخاص به.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "الوسوم",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

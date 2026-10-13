@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Neueste",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Tag antippen, um zu suchen, zu folgen, auszublenden oder das Wiki zu lesen",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Künstler",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Figur",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "Tag-Aktionen anzeigen",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Tags sortieren",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Tippe auf einen Tag, um danach zu suchen. Halte ihn gedrückt, um ihm zu folgen, ihn auszublenden oder sein Wiki zu lesen.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Tags",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Verbindung testen",

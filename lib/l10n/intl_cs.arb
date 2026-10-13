@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Klepnutím na štítek ho můžete vyhledat, sledovat, skrýt nebo si přečíst jeho wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Umělec",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Postava",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "zobrazit akce štítku",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Seřadit štítky",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Klepnutím na štítek ho vyhledáte. Podržením ho můžete sledovat, skrýt nebo si přečíst jeho wiki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Štítky",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

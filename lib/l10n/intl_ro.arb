@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Atinge o etichetă ca s-o cauți, s-o urmărești, s-o ascunzi sau să-i citești pagina wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Artist",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Personaj",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "afișează acțiunile etichetei",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Sortează etichetele",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Atinge o etichetă ca s-o cauți. Ține apăsat ca s-o urmărești, s-o ascunzi sau să-i citești wiki-ul.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Etichete",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

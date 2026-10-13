@@ -111,11 +111,11 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BooruTagSection(tags: _post.tags, info: info, onTap: _openTag),
+        BooruTagSection(tags: _post.tags, info: info, onTap: _searchTag, onLongPress: _openTag),
         if (_post.tags.isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Text(l10n.plugin_booru_tag_actions_hint, style: theme.textTheme.bodySmall),
+            child: Text(l10n.plugin_booru_tag_tap_hint, style: theme.textTheme.bodySmall),
           ),
         if (artist != null)
           BooruRelatedStrip(
@@ -127,6 +127,8 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
       ],
     );
   }
+
+  void _searchTag(String tag, BooruTagCategory? _) => searchBooruTag(context, tag);
 
   void _openTag(String tag, BooruTagCategory? category) => showBooruTagActions(
     context,

@@ -476,6 +476,24 @@ void main() {
       expect(harness.client.queries.last, 'cat -hat_red');
     });
 
+    testWidgets("one tap on a post's tag searches it", (tester) async {
+      final harness = await _open(tester, initialQuery: 'cat');
+      await tester.tap(find.byType(BooruPostTile).first);
+      await _settle(tester);
+      final chip = find.byKey(const ValueKey('booru-post-tag-smile'));
+      await tester.scrollUntilVisible(
+        chip,
+        300,
+        scrollable: find.descendant(of: find.byType(BooruPostDetails), matching: find.byType(Scrollable)).first,
+      );
+
+      await tester.tap(chip);
+      await _settle(tester);
+
+      expect(find.byKey(const ValueKey('booru-tag-action-add')), findsNothing, reason: 'no sheet in between');
+      expect(harness.client.queries.last, 'smile');
+    });
+
     testWidgets('a tag can be followed and hidden from its sheet', (tester) async {
       final harness = await _open(tester, initialQuery: 'cat');
       await _openTagActions(tester, 'smile');
@@ -483,7 +501,7 @@ void main() {
       await _settle(tester);
       expect(harness.saved.state, contains('smile'));
 
-      await tester.tap(find.byKey(const ValueKey('booru-post-tag-smile')));
+      await tester.longPress(find.byKey(const ValueKey('booru-post-tag-smile')));
       await _settle(tester);
       expect(find.text('Unfollow tag'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-hide')));
@@ -520,7 +538,7 @@ void main() {
   });
 }
 
-/// Opens the first result and the actions of its [tag].
+/// Opens the first result and, with a long press, the actions of its [tag].
 Future<void> _openTagActions(WidgetTester tester, String tag) async {
   await tester.tap(find.byType(BooruPostTile).first);
   await _settle(tester);
@@ -531,7 +549,7 @@ Future<void> _openTagActions(WidgetTester tester, String tag) async {
     300,
     scrollable: find.descendant(of: find.byType(BooruPostDetails), matching: find.byType(Scrollable)).first,
   );
-  await tester.tap(chip);
+  await tester.longPress(chip);
   await _settle(tester);
 }
 

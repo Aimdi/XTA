@@ -1756,8 +1756,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Tap a tag to search it, follow it, hide it or read its wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Artist",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Character",
@@ -1772,6 +1770,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "show tag actions",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Sort tags",
@@ -1790,6 +1790,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Tap a tag to search it. Touch and hold it to follow it, hide it or read its wiki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Tags",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

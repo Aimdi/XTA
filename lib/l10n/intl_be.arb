@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Націсніце на тэг, каб шукаць, падпісацца, схаваць ці прачытаць яго вікі",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Мастак",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Персанаж",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "паказаць дзеянні з тэгам",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Метаданыя",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Сартаваць тэгі",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Націсніце на тэг, каб шукаць яго. Утрымлівайце, каб падпісацца, схаваць або прачытаць вікі.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Тэгі",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

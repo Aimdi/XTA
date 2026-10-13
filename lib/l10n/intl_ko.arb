@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "태그를 탭하면 검색, 팔로우, 숨기기, 위키 보기를 할 수 있습니다",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "작가",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "캐릭터",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "태그 작업 보기",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "메타",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "태그 정렬",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "태그를 탭하면 검색합니다. 길게 누르면 팔로우하거나 숨기거나 위키를 볼 수 있습니다.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "태그",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

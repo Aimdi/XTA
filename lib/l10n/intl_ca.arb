@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Toca una etiqueta per cercar-la, seguir-la, amagar-la o llegir-ne la wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Artista",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Personatge",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "mostra les accions de l'etiqueta",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Ordena les etiquetes",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Toca una etiqueta per cercar-la. Mantén-la premuda per seguir-la, amagar-la o llegir-ne la wiki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Etiquetes",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

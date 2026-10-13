@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "最新",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "点按标签可搜索、关注、屏蔽或查看维基",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "画师",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "角色",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "显示标签操作",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "元数据",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "排序标签",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "点按标签即可搜索。长按可关注、隐藏或查看其 Wiki。",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "标签",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "测试连接",

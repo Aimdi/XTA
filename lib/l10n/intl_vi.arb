@@ -1660,8 +1660,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Chạm vào thẻ để tìm kiếm, theo dõi, ẩn hoặc đọc wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Họa sĩ",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Nhân vật",
@@ -1676,6 +1674,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "hiện thao tác với thẻ",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Sắp xếp thẻ",
@@ -1694,6 +1694,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Chạm vào thẻ để tìm kiếm. Nhấn giữ để theo dõi, ẩn hoặc đọc wiki của thẻ.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Thẻ",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

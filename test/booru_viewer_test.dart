@@ -602,7 +602,7 @@ void main() {
         ),
       );
       expect(client.searchSites, contains('https://e621.net'), reason: '"More from" searches the post\'s site');
-      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.longPress(find.byKey(const ValueKey('booru-post-tag-kantoku')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-wiki')));
       await tester.pumpAndSettle();
@@ -614,7 +614,7 @@ void main() {
         tester,
         BooruPostScreen(post: _post('1', categories: {'kantoku': BooruTagCategory.artist})),
       );
-      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.longPress(find.byKey(const ValueKey('booru-post-tag-kantoku')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-wiki')));
       await tester.pump(const Duration(milliseconds: 300));

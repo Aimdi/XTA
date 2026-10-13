@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Торкніться тегу, щоб шукати його, підписатися, приховати або відкрити вікі",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Художник",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Персонаж",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "показати дії з тегом",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Метадані",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Сортувати теги",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Торкніться тегу, щоб знайти його. Утримуйте, щоб підписатися, приховати чи прочитати вікі.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Теги",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Tocca un tag per cercarlo, seguirlo, nasconderlo o leggerne la wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Artista",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Personaggio",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "mostra le azioni del tag",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Ordina i tag",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Tocca un tag per cercarlo. Tienilo premuto per seguirlo, nasconderlo o leggerne la wiki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Tag",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Нажмите на тег, чтобы найти его, подписаться, скрыть или открыть вики",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Художник",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Персонаж",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "показать действия с тегом",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Мета",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Сортировать теги",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Нажмите на тег, чтобы найти его. Удерживайте, чтобы подписаться, скрыть или прочитать вики.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Теги",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",

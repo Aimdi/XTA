@@ -1663,8 +1663,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "最新",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "タグをタップすると検索、フォロー、ミュート、Wikiの閲覧ができます",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "アーティスト",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "キャラクター",
@@ -1679,6 +1677,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "タグの操作を表示",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "メタ",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "タグを並べ替え",
@@ -1697,6 +1697,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "タグをタップすると検索します。長押しでフォロー、非表示、Wiki の表示ができます。",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "タグ",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "接続をテスト",

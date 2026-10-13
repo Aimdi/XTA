@@ -47,6 +47,10 @@ Future<void> showBooruTagActions(
   await _run(context, action, tag, search, site);
 }
 
+/// Searches [tag] on its own.
+Future<void> searchBooruTag(BuildContext context, String tag) =>
+    Navigator.push(context, MaterialPageRoute(builder: (_) => BooruSearchScreen(initialQuery: tag)));
+
 Future<void> _run(
   BuildContext context,
   _TagAction action,
@@ -58,7 +62,7 @@ Future<void> _run(
   final muted = context.read<BooruMuteStore>();
   switch (action) {
     case _TagAction.search:
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => BooruSearchScreen(initialQuery: tag)));
+      await searchBooruTag(context, tag);
     case _TagAction.add || _TagAction.exclude:
       final token = action == _TagAction.add ? tag : '${BooruTagOperator.exclude.prefix}$tag';
       unawaited(search?.refine(token));
