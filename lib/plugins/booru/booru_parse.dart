@@ -101,9 +101,12 @@ BooruPost? _parseOne(
   final width = json['image_width'].integer ?? json['width'].integer ?? 0;
   final height = json['image_height'].integer ?? json['height'].integer ?? 0;
 
-  final preview = json['preview_file_url'].string ?? json['preview_url'].string;
   final sample = json['large_file_url'].string ?? json['sample_url'].string;
   final file = json['file_url'].string ?? _composedFileUrl(json);
+  final preview =
+      json['preview_file_url'].string ??
+      json['preview_url'].string ??
+      (booruIsVideoUrl(file ?? '') ? _composedThumbnailUrl(json) : null);
   final ext = json['file_ext'].string ?? _extFromUrl(file ?? sample ?? preview);
 
   return BooruPost(
@@ -349,16 +352,28 @@ DateTime? parseGelbooruDate(String raw) {
 }
 
 /// Rule34 / Xbooru omit `file_url` for guests and only send directory + image.
+/// Gelbooru 0.2 keeps a post's files under its `directory`, which some
+/// hosts send as a number.
+String? _directoryOf(Json json) {
+  final directory =
+      json['directory'].string ?? json['directory'].integer?.toString();
+  return directory == null || directory.isEmpty ? null : directory;
+}
+
 String? _composedFileUrl(Json json) {
-  final directory = json['directory'].string;
+  final directory = _directoryOf(json);
   final image = json['image'].string;
-  if (directory == null ||
-      directory.isEmpty ||
-      image == null ||
-      image.isEmpty) {
-    return null;
-  }
+  if (directory == null || image == null || image.isEmpty) return null;
   return '/images/$directory/$image';
+}
+
+/// Gelbooru 0.2's thumbnail path, for a video sent without a preview: the
+/// video itself cannot stand in for one.
+String? _composedThumbnailUrl(Json json) {
+  final directory = _directoryOf(json);
+  final hash = json['hash'].string;
+  if (directory == null || hash == null || hash.isEmpty) return null;
+  return '/thumbnails/$directory/thumbnail_$hash.jpg';
 }
 
 String? _extFromUrl(String? url) {

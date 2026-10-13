@@ -76,6 +76,10 @@ enum BooruRating {
   bool exceeds(BooruRating max) => index > max.index;
 }
 
+/// Whether [url] names a file the player opens rather than a picture.
+bool booruIsVideoUrl(String url) =>
+    BooruPost._videoExtensions.contains(BooruPost._extensionOf(url));
+
 class BooruPost {
   final String id;
   final String host;
@@ -141,9 +145,13 @@ class BooruPost {
   /// changed.
   DateTime? get feedDate => createdAt ?? updatedAt;
 
-  String get thumbnailUrl => (previewUrl != null && previewUrl!.isNotEmpty)
-      ? previewUrl!
-      : (sampleUrl ?? fileUrl ?? '');
+  /// The preview, else a still sample or original. A video file is never a
+  /// thumbnail: nothing is shown rather than a picture that cannot decode.
+  String get thumbnailUrl {
+    if (previewUrl != null && previewUrl!.isNotEmpty) return previewUrl!;
+    final fallback = sampleUrl ?? fileUrl ?? '';
+    return booruIsVideoUrl(fallback) ? '' : fallback;
+  }
 
   /// The sample, else the original. A GIF's sample is a still JPEG, so a
   /// GIF is shown from its original.

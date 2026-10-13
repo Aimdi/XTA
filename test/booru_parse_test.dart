@@ -172,6 +172,38 @@ void main() {
       expect(posts.single.rating, BooruRating.explicit);
     });
 
+    // Shapes as the audit read them in Boorusama's Gelbooru 0.2 post parser,
+    // not recorded from the live hosts.
+    test('a numeric directory still builds the file URL', () {
+      final post = parseBooruPosts(
+        [
+          {'id': 12, 'directory': 1234, 'image': 'abc.png'},
+        ],
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://rule34.xxx',
+      ).single;
+
+      expect(post.fileUrl, 'https://rule34.xxx/images/1234/abc.png');
+    });
+
+    test('a video with no preview never uses the video as its thumbnail', () {
+      final posts = parseBooruPosts(
+        [
+          {'id': 13, 'directory': '1234', 'image': 'abc.mp4', 'hash': 'abc'},
+          {'id': 14, 'file_url': 'https://rule34.xxx/images/1/def.mp4'},
+        ],
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://rule34.xxx',
+      );
+
+      expect(
+        posts.first.thumbnailUrl,
+        'https://rule34.xxx/thumbnails/1234/thumbnail_abc.jpg',
+      );
+      expect(posts.last.thumbnailUrl, isEmpty);
+      expect(posts.last.catalogUrl, isEmpty);
+    });
+
     test('Rule34 API host opens the public site', () {
       final posts = parseBooruPosts(
         [
