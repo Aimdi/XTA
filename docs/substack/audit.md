@@ -219,10 +219,10 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 
 | Bar item | Status | Evidence |
 |---|---|---|
-| Follow without an account (archive API, RSS fallback) | Present | `substack_client.dart:105-171`, `substack_store.dart:110-115`. The fallback chain has bugs: BUG-02, BUG-03, BUG-04, BUG-06. |
+| Follow without an account (archive API, RSS fallback) | Present | `substack_client.dart:105-171`, `substack_store.dart:110-115`. BUG-03, BUG-04 and BUG-06 in the fallback chain are fixed (Tier 1 batch); BUG-02 is open. |
 | Import subscriptions with an account | Missing | No authentication of any kind; the client is "read-only … public" (`substack_client.dart:9-10`). |
 | OPML import/export | Missing | No `opml` anywhere in `lib/`. |
-| Unified inbox + per-publication pages | Partial | Home/Inbox (`substack_screen.dart:179-204, 452-573`) and the publication page (`substack_archive_screen.dart`) exist, but a refresh reaches only 24 publications (BUG-05). |
+| Unified inbox + per-publication pages | Present | Home/Inbox (`substack_screen.dart:179-204, 452-573`) and the publication page (`substack_archive_screen.dart`). A refresh reaches every followed publication (BUG-05 fixed in the Tier 1 batch). |
 | Unread state; marked read when scrolled past | Partial | Read ids are kept (`substack_store.dart:202-228`, cap 400 at `constants.dart:246`). They are set only by finishing in the reader (`substack_reader_screen.dart:69`), the card action (`substack_post_card.dart:278-294`) or mark-all (`substack_screen.dart:120-125`). Nothing marks a post read when it scrolls past. |
 | Filters: unread, saved, podcasts, paid | Partial | `SubstackFeedFilter { all, unread, free, podcast, video }` (`substack_models.dart:295`). There is "free" but no "paid only", and Saved is a Library section rather than a filter. |
 | Typography: font, size, line height, column width | Partial | Size 16–28 and line height 1.4–2.2 (`article_reading_store.dart:123-124`). The font is fixed to Georgia (`substack_html.dart:266`) and the column to 42rem (`:276`). |
@@ -269,6 +269,7 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 | Paywall detection | `substack_preview_test.dart` (9) | No recorded paid payload; `_PaywallPane` itself is not pumped (no WebView fake), its selection is (`substackReaderBodyFor`). |
 | Offset pagination dedupe | `substack_store_recovery_test.dart` (23), `substack_publication_reader_test.dart` (19) | — |
 | API + RSS merge | none | BUG-02 shows the identities split. |
+| Follow identity | `substack_follow_identity_test.dart` (9): the publication page, two `newsletter.*` follows, following again, one publication on two hosts | Two apex sites that share a label still count as one follow (BUG-06 trade-off). |
 | Cookie host scoping | N/A (no cookies) | Needed before any authentication lands. |
 | OPML round trip | N/A | — |
 | Rate limiter and backoff | `substack_transport_test.dart` (8), the BUG-03 regression probe | Fake clock; no live 429 recorded. |
@@ -424,20 +425,20 @@ Rank = I × E × S. The brief's tier order still governs; ranks order work withi
 
 ### Tier 1 — known issues and bugs
 
-Order is by score, except where a dependency forces a change; the last column says when.
+Order is by score, except where a dependency forces a change; the last column says when. ✅ marks an item done in the Tier 1 batch.
 
 | Order | Item | I | E | S | Score | Why here |
 |---|---|---|---|---|---|---|
-| 1 | **BUG-03** transport layer: classify 429/5xx, per-host limiter, exponential backoff with jitter, stop the fallback cascade on 429, honest "rate limited" error | 5 | 3 | 4 | 60 | Ahead of BUG-05: lifting the 24-publication cap without a limiter would amplify 429s. First step of splitting the API layer (`substack_transport.dart`); later it also scopes cookies to hosts. |
-| 2 | **BUG-05** reach every followed publication on refresh, keeping concurrency bounded | 4 | 4 | 4 | 64 | Needs #1. |
-| 3 | **BUG-04** use a `{label}.substack.com` twin only when it is proven to be the same publication | 4 | 4 | 4 | 64 | — |
-| 4 | **BUG-11** paid post without a body → preview and paid badge, not the live site | 3 | 5 | 4 | 60 | — |
+| 1 ✅ | **BUG-03** transport layer: classify 429/5xx, per-host limiter, exponential backoff with jitter, stop the fallback cascade on 429, honest "rate limited" error | 5 | 3 | 4 | 60 | Ahead of BUG-05: lifting the 24-publication cap without a limiter would amplify 429s. First step of splitting the API layer (`substack_transport.dart`); later it also scopes cookies to hosts. |
+| 2 ✅ | **BUG-05** reach every followed publication on refresh, keeping concurrency bounded | 4 | 4 | 4 | 64 | Needs #1. |
+| 3 ✅ | **BUG-04** use a `{label}.substack.com` twin only when it is proven to be the same publication | 4 | 4 | 4 | 64 | — |
+| 4 ✅ | **BUG-11** paid post without a body → preview and paid badge, not the live site | 3 | 5 | 4 | 60 | — |
 | 5 | **BUG-01** keep deep replies at the cap depth instead of dropping them | 2 | 5 | 5 | 50 | Flips an existing test, so it waits for your call. |
-| 6 | **BUG-09** article cache keeps the video flag; bounded size; invalidated by post date | 2 | 5 | 5 | 50 | — |
+| 6 ✅ (flag) | **BUG-09** article cache keeps the video flag; bounded size; invalidated by post date | 2 | 5 | 5 | 50 | The video flag is fixed; the size bound and edit invalidation are open. |
 | 7 | **BUG-02** one canonical identity (host + slug) for read/like/save/offline and for API ↔ RSS dedupe, still honouring existing numeric ids | 4 | 3 | 3 | 36 | Preference-level only; no schema change. High severity, but riskier: it touches stored state. |
-| 8 | **BUG-06** host-based ids for follows resolved without JSON; existing rows untouched | 3 | 4 | 3 | 36 | — |
+| 8 ✅ | **BUG-06** host-based ids for follows resolved without JSON; existing rows untouched | 3 | 4 | 3 | 36 | Done with BUG-16, the same overwrite reached by browsing: one identity rule for every follow check. |
 | 9 | **BUG-12** allow text selection; move read-from-here off long-press | 3 | 4 | 3 | 36 | Superseded if the native reader lands. |
-| 10 | **BUG-14 / BUG-15** footnote markers in speech; checked JSON-LD casts | 1 | 5 | 5 | 25 | — |
+| 10 ✅ | **BUG-14 / BUG-15** footnote markers in speech; checked JSON-LD casts | 1 | 5 | 5 | 25 | — |
 | blocked | **BUG-07 / BUG-08** sanitizer: drop subscribe forms; turn galleries into figures; show LaTeX source as math text; placeholder with a link for polls and audio | 4 | 4 | 4 | 64 | Needs recorded bodies (HAR); fixtures must not be invented. |
 | blocked | **BUG-10** app share links | 3 | 3 | 3 | 27 | Needs a HAR confirming a post-by-id endpoint. |
 
