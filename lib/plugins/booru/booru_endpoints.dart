@@ -105,6 +105,15 @@ Uri? booruTagInfoUri(BooruSite site, {required String postId, required List<Stri
   }
 }
 
+/// Tags the host finds alongside [tags]: Danbooru for a whole search, e621
+/// for one tag. Null where the host keeps no such list.
+Uri? booruRelatedTagsUri(BooruSite site, List<String> tags) => switch (site.engine) {
+  _ when tags.isEmpty => null,
+  BooruEngine.danbooru => site.endpoint('/related_tag.json', {'search[query]': tags.join(' '), 'limit': '25'}),
+  BooruEngine.e621 when tags.length == 1 => site.endpoint('/tags.json', {'search[name]': tags.single, 'limit': '1'}),
+  _ => null,
+};
+
 bool booruSupportsWiki(BooruEngine engine) => engine != BooruEngine.gelbooruV2;
 
 /// Gelbooru only answers comments in XML.

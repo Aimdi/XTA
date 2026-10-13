@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
+import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
@@ -36,11 +37,10 @@ class BooruSearchResults extends StatelessWidget {
             empty: Center(child: Text(l10n.plugin_booru_empty_search)),
           );
         }
-        final related = booruRelatedTags(posts, store.state.tags);
         return Column(
           children: [
             BooruRefreshNotice(feed: results),
-            if (related.isNotEmpty) _RelatedTags(tags: related, onAdd: store.refine),
+            _RelatedTagsRow(store: store, posts: posts),
             Expanded(
               child: BooruPostGrid(
                 posts: posts,
@@ -53,6 +53,31 @@ class BooruSearchResults extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+/// The host's related tags for the search where it keeps them, else the
+/// tags the results share most.
+class _RelatedTagsRow extends StatelessWidget {
+  final BooruSearchStore store;
+  final List<BooruPost> posts;
+
+  const _RelatedTagsRow({required this.store, required this.posts});
+
+  @override
+  Widget build(BuildContext context) {
+    final related = store.related;
+    if (related == null) return _row(const []);
+    return ScopedBuilder<BooruLoadStore<List<String>>, List<String>?>(
+      store: related,
+      onState: (_, fromHost) => _row(fromHost ?? const []),
+    );
+  }
+
+  Widget _row(List<String> fromHost) {
+    final query = store.state.tags;
+    final tags = fromHost.isNotEmpty ? booruUnsearchedTags(fromHost, query) : booruRelatedTags(posts, query);
+    return tags.isEmpty ? const SizedBox.shrink() : _RelatedTags(tags: tags, onAdd: store.refine);
   }
 }
 

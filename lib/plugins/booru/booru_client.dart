@@ -282,6 +282,18 @@ class BooruClient {
     return parseBooruComments(await fetchJson(uri));
   }
 
+  /// Tags the host finds alongside [tags], most related first; none where
+  /// it keeps no such list or the request fails.
+  Future<List<String>> relatedTags(List<String> tags) async {
+    final uri = booruRelatedTagsUri(site, tags);
+    if (uri == null || !isConfigured) return const [];
+    try {
+      return parseBooruRelatedTags(await fetchJson(uri), engine);
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<List<BooruTagSuggestion>> suggestTags(
     String prefix, {
     int limit = 12,

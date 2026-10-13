@@ -283,6 +283,51 @@ void main() {
   });
 
   group('endpoints', () {
+    test('related tags come from Danbooru for any search and from e621 for one tag', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+      const gelbooru = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://gelbooru.com');
+      const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
+
+      final uri = booruRelatedTagsUri(danbooru, const ['cat_ears', 'blue_eyes'])!;
+      expect(uri.path, '/related_tag.json');
+      expect(uri.queryParameters, {'search[query]': 'cat_ears blue_eyes', 'limit': '25'});
+      expect(booruRelatedTagsUri(e621, const ['wolf'])!.queryParameters, {'search[name]': 'wolf', 'limit': '1'});
+      expect(booruRelatedTagsUri(e621, const ['wolf', 'solo']), isNull, reason: 'e621 relates one tag at a time');
+      expect(booruRelatedTagsUri(gelbooru, const ['cat']), isNull);
+      expect(booruRelatedTagsUri(moebooru, const ['cat']), isNull);
+      expect(booruRelatedTagsUri(danbooru, const []), isNull);
+    });
+
+    test("related tags read in the host's order", () {
+      final danbooru = {
+        'query': 'cat_ears',
+        'related_tags': [
+          {
+            'tag': {'name': 'cat_ears', 'category': 0},
+            'frequency': 1.0,
+          },
+          {
+            'tag': {'name': 'animal_ears', 'category': 0},
+            'frequency': 0.9,
+          },
+          {'tag': null},
+        ],
+      };
+      expect(parseBooruRelatedTags(danbooru, BooruEngine.danbooru), ['cat_ears', 'animal_ears']);
+      final e621 = [
+        {'name': 'wolf', 'related_tags': 'wolf 300 canine 120.5 mammal 90'},
+      ];
+      expect(parseBooruRelatedTags(e621, BooruEngine.e621), ['wolf', 'canine', 'mammal']);
+      expect(
+        parseBooruRelatedTags([
+          {'name': 'wolf', 'related_tags': '[]'},
+        ], BooruEngine.e621),
+        isEmpty,
+      );
+      expect(parseBooruRelatedTags('not json', BooruEngine.danbooru), isEmpty);
+    });
+
     final day = BooruPopularQuery(scale: BooruPopularScale.week, date: DateTime(2026, 3, 4));
 
     test('popular lists per engine', () {

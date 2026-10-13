@@ -71,3 +71,20 @@ int _byDate(BooruComment a, BooruComment b) {
   if (ad != null && bd != null) return ad.compareTo(bd);
   return (int.tryParse(a.id) ?? 0).compareTo(int.tryParse(b.id) ?? 0);
 }
+
+/// Related tag names in the host's order: Danbooru's `related_tags`
+/// entries, or e621's tag record, whose `related_tags` alternates names and
+/// weights in one string.
+List<String> parseBooruRelatedTags(Object? raw, BooruEngine engine) => switch (engine) {
+  BooruEngine.danbooru => [for (final related in Json(raw)['related_tags'].list) ?related['tag']['name'].string],
+  BooruEngine.e621 => _e621RelatedTags(Json(raw).list.firstOrNull?['related_tags'].string),
+  _ => const [],
+};
+
+List<String> _e621RelatedTags(String? pairs) {
+  final words = (pairs ?? '').split(' ').where((word) => word.isNotEmpty).toList();
+  return [
+    for (var i = 0; i + 1 < words.length; i += 2)
+      if (double.tryParse(words[i + 1]) != null) words[i],
+  ];
+}

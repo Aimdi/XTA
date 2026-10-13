@@ -68,6 +68,7 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
 
   Timer? _suggestTimer;
   BooruFeedStore? _results;
+  BooruLoadStore<List<String>>? _related;
 
   /// With an [initialQuery] the field opens on its tags, ready for [search].
   BooruSearchStore(
@@ -78,6 +79,9 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
   }) : super(BooruSearchState(tags: booruQueryTokens(initialQuery), editing: initialQuery.trim().isEmpty));
 
   BooruFeedStore? get results => _results;
+
+  /// What the host relates to the current search, asked once per search.
+  BooruLoadStore<List<String>>? get related => _related;
 
   /// Takes the field's text; finished tags become chips. Returns what stays
   /// in the field.
@@ -186,11 +190,16 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
     // more pages, and their grid, still on screen until the next frame, keeps
     // what it listens to.
     _results?.close();
+    _related?.close();
     final results = BooruFeedStore(client, ({required page}) => client.search(query, page: page));
     _results = results;
+    final related = BooruLoadStore(() => client.relatedTags(booruPlainTags(tags)));
+    _related = related;
     update(state.copyWith(tags: tags, input: '', suggestions: const [], query: query, editing: false));
     await history.remember(query);
-    if (!closed) await results.refresh();
+    if (closed) return;
+    unawaited(related.ensure());
+    await results.refresh();
   }
 
   /// The host's tags for what is typed, then the metatags of its engine
@@ -220,6 +229,7 @@ class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<B
     close();
     _suggestTimer?.cancel();
     await _results?.destroy();
+    await _related?.destroy();
     await super.destroy();
   }
 }

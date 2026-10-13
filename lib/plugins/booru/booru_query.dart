@@ -127,7 +127,7 @@ String booruTokenFor(String input, String suggestion) => '${BooruTagOperator.of(
 
 /// Tags most shared by [posts], leaving out the ones already in [query].
 List<String> booruRelatedTags(List<BooruPost> posts, List<String> query, {int limit = 12}) {
-  final taken = {for (final token in query) BooruQueryToken.parse(token).value.toLowerCase()};
+  final taken = _namedTags(query);
   final counts = posts
       .expand((post) => post.tags)
       .where((tag) => !taken.contains(tag.toLowerCase()))
@@ -136,6 +136,23 @@ List<String> booruRelatedTags(List<BooruPost> posts, List<String> query, {int li
     ..sort((a, b) => b.value != a.value ? b.value.compareTo(a.value) : a.key.compareTo(b.key));
   return [for (final entry in shared.take(limit)) entry.key];
 }
+
+/// [tags] the host relates to a search, leaving out the ones [query]
+/// already names, included or excluded; at most [limit].
+List<String> booruUnsearchedTags(List<String> tags, List<String> query, {int limit = 12}) {
+  final taken = _namedTags(query);
+  return tags.where((tag) => !taken.contains(tag.toLowerCase())).take(limit).toList();
+}
+
+/// The tags [query] asks to include: no operator, no metatag.
+List<String> booruPlainTags(List<String> query) => [
+  for (final token in query.map(BooruQueryToken.parse))
+    if (token.operator == BooruTagOperator.none && token.metatag == null) token.value,
+];
+
+Set<String> _namedTags(List<String> query) => {
+  for (final token in query) BooruQueryToken.parse(token).value.toLowerCase(),
+};
 
 /// The metatag the host understands for [rating], or null when it has none.
 /// Gelbooru itself spells ratings out; its older forks only know safe,

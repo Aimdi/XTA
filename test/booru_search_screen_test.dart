@@ -27,6 +27,16 @@ class _Client extends BooruClient {
   final queries = <String>[];
   final tagLookups = <String>[];
 
+  /// What the host relates to a search; none by default.
+  List<String> related = const [];
+  final relatedAsked = <List<String>>[];
+
+  @override
+  Future<List<String>> relatedTags(List<String> tags) async {
+    relatedAsked.add(tags);
+    return related;
+  }
+
   @override
   Future<Map<String, BooruTagInfo>> tagInfo(BooruPost post) async {
     tagLookups.add(post.id);
@@ -470,6 +480,23 @@ void main() {
       await tester.longPress(find.widgetWithText(ActionChip, 'smile'));
       await _settle(tester);
       expect(harness.client.queries.last, 'cat solo -smile');
+    });
+
+    testWidgets("the host's related tags take the place of the ones the results share", (tester) async {
+      final harness = await _open(
+        tester,
+        initialQuery: 'cat -dog order:score',
+        client: (prefs) => _Client(prefs)..related = const ['cat', 'animal_ears', 'dog', 'whiskers'],
+      );
+
+      expect(harness.client.relatedAsked, [
+        ['cat'],
+      ], reason: 'asked once, for the tags searched for');
+      expect(find.widgetWithText(ActionChip, 'animal_ears'), findsOneWidget);
+      expect(find.widgetWithText(ActionChip, 'whiskers'), findsOneWidget);
+      expect(find.widgetWithText(ActionChip, 'cat'), findsNothing, reason: 'already searched for');
+      expect(find.widgetWithText(ActionChip, 'dog'), findsNothing, reason: 'already excluded');
+      expect(find.widgetWithText(ActionChip, 'solo'), findsNothing);
     });
 
     testWidgets('a tag on a post can be added to the search it came from', (tester) async {
