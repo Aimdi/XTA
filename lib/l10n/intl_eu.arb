@@ -1721,6 +1721,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Ostalaria, lehen etiketak eta puntuazioa saretako argitalpen bakoitzaren azpian",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Argitalpena: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Bideoa: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Utzi etiketari jarraitzeari",

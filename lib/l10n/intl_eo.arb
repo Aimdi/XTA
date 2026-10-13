@@ -1721,6 +1721,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Retejo, unuaj etikedoj kaj poentaro sub ĉiu afiŝo en la krado",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Afiŝo: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Video: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Malsekvi etikedon",

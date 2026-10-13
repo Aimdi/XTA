@@ -1721,6 +1721,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "الموقع وأول الوسوم والنقاط أسفل كل منشور في الشبكة",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "منشور: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "فيديو: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "إلغاء متابعة الوسم",

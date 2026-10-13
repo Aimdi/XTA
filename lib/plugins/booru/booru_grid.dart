@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
@@ -202,9 +203,13 @@ class BooruPostTile extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Hero(
-                    tag: booruPostHeroTag(post),
-                    child: RepaintBoundary(child: _image(theme, ratio)),
+                  Semantics(
+                    image: true,
+                    label: booruTileLabel(l10n, post),
+                    child: Hero(
+                      tag: booruPostHeroTag(post),
+                      child: RepaintBoundary(child: _image(theme, ratio)),
+                    ),
                   ),
                   if (display.blurs(post))
                     Center(child: Icon(Icons.visibility_off_outlined, color: theme.colorScheme.onSurface)),

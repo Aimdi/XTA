@@ -1721,6 +1721,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Site-ul, primele etichete și scorul sub fiecare postare din grilă",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Postare: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Videoclip: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Nu mai urmări eticheta",

@@ -1721,6 +1721,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Сайт, перші теги й оцінка під кожним дописом у сітці",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Допис: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Відео: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Відписатися від тегу",

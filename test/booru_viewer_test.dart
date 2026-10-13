@@ -12,6 +12,7 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
@@ -433,6 +434,52 @@ void main() {
       expect(booruPostsExtend(a, [...a, _post('3')]), isTrue);
       expect(booruPostsExtend(a, [_post('9'), _post('2'), _post('3')]), isFalse);
       expect(booruPostsExtend(a, a), isFalse);
+    });
+  });
+
+  group('thumbnail labels', () {
+    test('name the artist, characters and series first, and leave meta tags out', () {
+      final post = _post(
+        '1',
+        tags: const ['highres', 'solo', 'kantoku', 'hatsune_miku', 'vocaloid', 'smile', 'blue_eyes'],
+        categories: const {
+          'highres': BooruTagCategory.meta,
+          'kantoku': BooruTagCategory.artist,
+          'hatsune_miku': BooruTagCategory.character,
+          'vocaloid': BooruTagCategory.copyright,
+          'solo': BooruTagCategory.general,
+        },
+      );
+
+      expect(booruLabelTags(post), ['kantoku', 'hatsune_miku', 'vocaloid', 'solo', 'smile']);
+    });
+
+    testWidgets('a grid tile is read as a post with its first tags', (tester) async {
+      final semantics = tester.ensureSemantics();
+
+      await _pump(
+        tester,
+        Scaffold(
+          body: BooruPostGrid(
+            posts: [
+              _post('1', tags: const ['kantoku', 'solo_focus']),
+            ],
+          ),
+        ),
+      );
+
+      expect(find.bySemanticsLabel(RegExp(r'^Post: kantoku, solo focus')), findsOneWidget);
+      semantics.dispose();
+    });
+
+    testWidgets('a related thumbnail is read the same way', (tester) async {
+      final semantics = tester.ensureSemantics();
+
+      await _pump(tester, BooruPostScreen(post: _post('1', categories: const {'kantoku': BooruTagCategory.artist})));
+
+      expect(find.text('More from kantoku'), findsOneWidget);
+      expect(find.bySemanticsLabel('Post: kantoku, solo, highres'), findsWidgets);
+      semantics.dispose();
     });
   });
 

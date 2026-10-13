@@ -1718,6 +1718,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Trang, các thẻ đầu tiên và điểm số dưới mỗi bài đăng trong lưới",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Bài đăng: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Video: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Bỏ theo dõi thẻ",

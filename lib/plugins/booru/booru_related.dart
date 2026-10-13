@@ -7,6 +7,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
@@ -114,7 +115,11 @@ class _BooruRelatedStripState extends State<BooruRelatedStrip> {
           onTap: () => openBooruPost(context, posts, index),
           child: SizedBox(
             width: width,
-            child: BooruNetworkImage(url: post.thumbnailUrl, fit: BoxFit.cover),
+            child: Semantics(
+              image: true,
+              label: booruTileLabel(L10n.of(context), post),
+              child: BooruNetworkImage(url: post.thumbnailUrl, fit: BoxFit.cover),
+            ),
           ),
         ),
       ),
