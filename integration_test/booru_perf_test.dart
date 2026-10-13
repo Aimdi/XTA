@@ -97,19 +97,21 @@ Map<String, Object> _environment(WidgetTester tester, String host) => {
 };
 
 /// Points the Booru plugin at Danbooru (or [hostOverride]) with no
-/// credentials, so a key saved for another site is never sent to it. The
-/// reader's settings come back when the test ends.
+/// credentials, so a key saved for another site is never sent to it, and
+/// lets media load without a tap, so S5 starts each video with the player's
+/// own button. The reader's settings come back when the test ends.
 Future<String> _useDanbooru(BasePrefService prefs) async {
   final danbooru = booruPresets.firstWhere((preset) => preset.id == 'danbooru');
   final host = hostOverride.isEmpty ? danbooru.host : hostOverride;
-  final run = {
+  final run = <String, Object>{
     optionPluginBooruEngine: danbooru.engine.id,
     optionPluginBooruHost: host,
     optionPluginBooruPreset: danbooru.id,
     optionPluginBooruLogin: '',
     optionPluginBooruApiKey: '',
+    optionMediaDisableAutoload: false,
   };
-  final saved = {for (final key in run.keys) key: prefs.get<String>(key)};
+  final saved = {for (final key in run.keys) key: prefs.get<Object>(key)};
   addTearDown(() => _restore(prefs, saved));
   for (final MapEntry(:key, :value) in run.entries) {
     await prefs.set(key, value);
@@ -117,7 +119,7 @@ Future<String> _useDanbooru(BasePrefService prefs) async {
   return host;
 }
 
-Future<void> _restore(BasePrefService prefs, Map<String, String?> saved) async {
+Future<void> _restore(BasePrefService prefs, Map<String, Object?> saved) async {
   for (final MapEntry(:key, :value) in saved.entries) {
     if (value == null) {
       await prefs.remove(key);
