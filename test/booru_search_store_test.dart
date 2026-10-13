@@ -221,6 +221,16 @@ void main() {
   });
 
   group('search store', () {
+    test('a new search stops the one it replaces', () async {
+      final store = _store(PrefServiceCache());
+      await store.run('cat_ears');
+      final first = store.results!;
+      await store.run('blue_eyes');
+      expect(first.closed, isTrue, reason: 'its remaining pages are not wanted any more');
+      expect(store.results!.closed, isFalse);
+      await store.destroy();
+    });
+
     test('a space finishes a tag; what follows stays in the field', () {
       final store = _store(PrefServiceCache());
       expect(store.type('cat_ears blu'), 'blu');

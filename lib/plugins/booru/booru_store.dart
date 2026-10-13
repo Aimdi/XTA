@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
@@ -144,7 +145,8 @@ class BooruFailedQueriesStore extends Store<int> {
 }
 
 /// Paginated post list for Latest / Search / Following.
-class BooruFeedStore extends Store<List<BooruPost>> {
+class BooruFeedStore extends Store<List<BooruPost>>
+    with BooruClosableStore<List<BooruPost>> {
   final BooruClient client;
   final Future<BooruPostPage> Function({required int page}) loader;
 
@@ -156,7 +158,6 @@ class BooruFeedStore extends Store<List<BooruPost>> {
 
   var _page = 0;
   var _hasMore = true;
-  var _closed = false;
   String? _loadedFor;
 
   /// Bumped by every refresh; a load started before the latest refresh is
@@ -181,6 +182,7 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   }
 
   Future<void> refresh() async {
+    if (closed) return;
     final generation = ++_generation;
     _page = 0;
     _hasMore = true;
@@ -209,7 +211,7 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   Future<({BooruPostPage page, int number})> _firstPage() async {
     var page = const BooruPostPage(posts: [], page: 0, hasMore: true);
     var number = 0;
-    while (number < 4 && page.hasMore && page.posts.isEmpty) {
+    while (!closed && number < 4 && page.hasMore && page.posts.isEmpty) {
       number += 1;
       page = await loader(page: number);
     }
@@ -221,7 +223,7 @@ class BooruFeedStore extends Store<List<BooruPost>> {
     failedQueries.update(failed);
   }
 
-  bool _isCurrent(int generation) => !_closed && generation == _generation;
+  bool _isCurrent(int generation) => !closed && generation == _generation;
 
   /// The next page; a stale feed starts over from the first page instead,
   /// so another site's posts are never appended to it. After a failure it
@@ -229,7 +231,7 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   /// is on its way it waits for that.
   Future<void> loadMore() async {
     final generation = _generation;
-    if (_landed != generation) return;
+    if (closed || _landed != generation) return;
     if (!_hasMore || paging.state != BooruPaging.idle) return;
     if (isStale) return refresh();
     _setPaging(BooruPaging.loading);
@@ -273,15 +275,14 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   }
 
   void _setPaging(BooruPaging value) {
-    if (!_closed) paging.update(value);
+    if (!closed) paging.update(value);
   }
 
   @override
   Future<void> destroy() async {
-    _closed = true;
+    await super.destroy();
     await paging.destroy();
     await failedQueries.destroy();
-    await super.destroy();
   }
 
   /// New uploads shift a host's pages, so a page can repeat posts already

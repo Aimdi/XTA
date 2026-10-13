@@ -12,6 +12,7 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
+import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
@@ -339,6 +340,33 @@ void main() {
       await feed.loadMore();
       expect(asked, [1, 1, 2]);
       await feed.destroy();
+    });
+
+    test('a closed feed asks for no more pages, and what was on its way is dropped', () async {
+      final asked = <int>[];
+      final first = Completer<BooruPostPage>();
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) {
+        asked.add(page);
+        return page == 1
+            ? first.future
+            : Future.value(BooruPostPage(posts: [_post('$page')], page: page, hasMore: true));
+      });
+      final opening = feed.refresh();
+      await _pastDebounce();
+      await feed.destroy();
+      first.complete(const BooruPostPage(posts: [], page: 1, hasMore: true));
+      await expectLater(opening, completes, reason: 'nothing lands on the closed feed');
+      expect(asked, [1], reason: 'an emptied first page would otherwise send it on to page 2');
+    });
+
+    test('a closed load ignores its late answer', () async {
+      final answer = Completer<String>();
+      final load = BooruLoadStore<String>(() => answer.future);
+      final loading = load.ensure();
+      await _pastDebounce();
+      await load.destroy();
+      answer.complete('late');
+      await expectLater(loading, completes);
     });
 
     test('the feed skips posts it already shows', () async {
