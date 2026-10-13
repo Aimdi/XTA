@@ -32,8 +32,9 @@ class BooruSite {
     return path.replaceAll(RegExp(r'/+$'), '');
   }
 
-  /// The credentials each engine expects, named its way.
-  Map<String, String> get auth => {if (login.isNotEmpty) _loginParam: login, if (apiKey.isNotEmpty) _keyParam: apiKey};
+  /// The credentials each engine expects, named its way. Every engine needs
+  /// both halves, so half a login is not sent.
+  Map<String, String> get auth => login.isEmpty || apiKey.isEmpty ? const {} : {_loginParam: login, _keyParam: apiKey};
 
   String get _loginParam => engine == BooruEngine.gelbooruV2 ? 'user_id' : 'login';
 

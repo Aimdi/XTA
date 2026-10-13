@@ -253,6 +253,16 @@ void main() {
       expect(auth(BooruEngine.moebooru), {'login': 'me', 'password_hash': 'k'});
     });
 
+    test('half a login is never sent', () {
+      for (final engine in BooruEngine.values) {
+        BooruSite site(String login, String apiKey) =>
+            BooruSite(engine: engine, host: 'https://x.org', login: login, apiKey: apiKey);
+        expect(site('me', '').auth, isEmpty, reason: '${engine.id}: a login without its key');
+        expect(site('', 'k').auth, isEmpty, reason: '${engine.id}: a key without its login');
+        expect(site('me', 'k').auth, hasLength(2), reason: engine.id);
+      }
+    });
+
     test('Rule34 is asked on its API host', () {
       const site = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://rule34.xxx');
       final uri = booruTagInfoUri(site, postId: '1', tags: ['a', 'b'])!;
