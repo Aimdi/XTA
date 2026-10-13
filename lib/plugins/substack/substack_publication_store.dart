@@ -173,7 +173,7 @@ class SubstackPublicationStore extends Store<SubstackPublicationState> {
       return null;
     }
     try {
-      final fresh = await client.fetchPublication(Uri.parse(prior.baseUrl));
+      final fresh = await client.fetchPublication(Uri.parse(prior.baseUrl), subdomainHint: prior.subdomain);
       if (_closed) return null;
       final merged = SubstackPublication(
         subdomain: prior.subdomain.isEmpty ? fresh.subdomain : prior.subdomain,

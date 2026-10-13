@@ -53,6 +53,21 @@ Map<String, Object?> _replyChain(int deepest) {
   return node;
 }
 
+Map<String, Object?> _bylined(String title, {required String subdomain, String? customDomain}) => {
+  'id': 2,
+  'slug': 'own',
+  'title': title,
+  'publishedBylines': [
+    {
+      'publicationUsers': [
+        {
+          'publication': {'name': title, 'subdomain': subdomain, 'custom_domain': ?customDomain},
+        },
+      ],
+    },
+  ],
+};
+
 class _Publications extends SubstackPublicationsStore {
   _Publications(List<SubstackPublication> pubs) : super(PrefServiceCache(cache: {})) {
     update(pubs);
@@ -152,26 +167,46 @@ void main() {
     expect(requests.map((uri) => '${uri.host}${uri.path}').toSet(), {'fieldnotes.substack.com/api/v1/posts'});
   });
 
-  test('BUG-04: an unreachable custom domain shows posts of an unrelated {label}.substack.com', () async {
+  test('BUG-04 (fixed): an unreachable custom domain never borrows another publication\'s posts', () async {
     const followed = SubstackPublication(
       subdomain: 'examplecorp',
       baseUrl: 'https://newsletter.example.com',
       name: 'Example Weekly',
     );
+    final hosts = <String>{};
     final client = _client((request) async {
-      if (request.url.host == 'newsletter.substack.com' && request.url.path == '/api/v1/posts') {
+      hosts.add(request.url.host);
+      if (request.url.host == 'newsletter.substack.com') {
         return _json([
           {'id': 1, 'slug': 'welcome', 'title': 'Somebody else'},
+        ], request);
+      }
+      if (request.url.host == 'examplecorp.substack.com' && request.url.path == '/api/v1/posts') {
+        return _json([
+          _bylined('Also somebody else', subdomain: 'someone', customDomain: 'elsewhere.example'),
         ], request);
       }
       return http.Response('', 503, request: request);
     });
 
-    final posts = await client.fetchPosts(followed, limit: 8);
+    await expectLater(client.fetchPosts(followed, limit: 8), throwsA(isA<SubstackClientException>()));
+    expect(hosts, contains('examplecorp.substack.com'));
+    expect(hosts, isNot(contains('newsletter.substack.com')), reason: 'the guessed twin was read before the fix');
+  });
 
-    expect(posts.single.title, 'Somebody else');
-    expect(posts.single.publicationName, 'Example Weekly');
-    expect(posts.single.publicationBaseUrl, 'https://newsletter.example.com');
+  test('BUG-04 (fixed): a followed custom domain looks itself up on its stored subdomain only', () async {
+    final hosts = <String>{};
+    final client = _client((request) async {
+      hosts.add(request.url.host);
+      return http.Response('', 404, request: request);
+    });
+
+    await expectLater(
+      client.fetchPublication(Uri.parse('https://newsletter.example.com'), subdomainHint: 'examplecorp'),
+      throwsA(isA<SubstackNotPublicationException>()),
+    );
+    expect(hosts, containsAll(['newsletter.example.com', 'examplecorp.substack.com']));
+    expect(hosts, isNot(contains('newsletter.substack.com')));
   });
 
   test('BUG-05 (fixed): a refresh reads all 30 followed publications', () async {

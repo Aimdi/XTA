@@ -36,7 +36,7 @@ Refresh fetches the first page of every followed publication, still three at a t
 
 For a followed custom domain, posts, post bodies, comments and archive search use `{stored subdomain}.substack.com`. The guess `{first host label}.substack.com` is used only when the stored subdomain is unknown (`www` or empty). That is the legacy follow that needs it.
 
-A twin listing is rejected if its publication names a different custom domain, or a different subdomain from the one stored. Resolving a pasted URL keeps its probing, because the user previews the result before following.
+A twin listing is rejected if its publication names a different custom domain, or a different subdomain from the one stored. Resolving a pasted URL keeps its probing, because the user previews the result before following; a twin that names another custom domain is rejected there too. A publication that moved to a new custom domain while its old one went dark is no longer read through its twin: showing nothing is safer than showing someone else's posts, and following the new domain fixes it.
 
 ### 4. A paid post without a body (BUG-11)
 

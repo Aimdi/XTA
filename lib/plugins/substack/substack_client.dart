@@ -40,9 +40,12 @@ class SubstackClient {
 
   static const _rssPaths = ['/feed', '/rss', '/feed.xml'];
 
-  Future<SubstackPublication> fetchPublication(Uri base) async {
-    final requested = requestedPublicationHosts(base);
-    final leftover = leftoverSubstackHosts(base);
+  /// [subdomainHint] is the stored subdomain of a followed publication; with
+  /// it, a guessed `{first label}.substack.com` twin is never asked.
+  Future<SubstackPublication> fetchPublication(Uri base, {String? subdomainHint}) async {
+    final requested = requestedPublicationHosts(base, subdomainHint: subdomainHint);
+    final leftover = leftoverSubstackHosts(base, subdomainHint: subdomainHint);
+    final followed = SubstackPublication(subdomain: subdomainHint ?? '', baseUrl: base.origin, name: '');
 
     for (final candidate in requested) {
       final fromJson = await _publicationFromListing(candidate);
@@ -56,7 +59,7 @@ class SubstackClient {
     }
 
     for (final candidate in leftover) {
-      final fromJson = await _publicationFromListing(candidate);
+      final fromJson = await _publicationFromListing(candidate, followed: followed);
       if (fromJson != null) return _bindFollowedHost(fromJson, base);
     }
     for (final candidate in leftover) {
@@ -236,6 +239,7 @@ class SubstackClient {
     if (result == null) {
       throw SubstackClientException('No JSON listing at $base');
     }
+    _checkTwin(base, publication, result.posts);
     return result.posts
         .map(
           (e) => SubstackPost.fromJson(
@@ -253,7 +257,7 @@ class SubstackClient {
     final uri = base.replace(path: '/api/v1/posts/$slug');
     final response = await _get(uri);
     final decoded = jsonDecode(response.body);
-    if (decoded is! Map) return null;
+    if (decoded is! Map || !_servesFollowed(base, publication, decoded)) return null;
     final post = SubstackPost.fromJson(
       Map<String, dynamic>.from(decoded),
       publicationBaseUrl: publication.baseUrl,
@@ -344,6 +348,19 @@ class SubstackClient {
     }
   }
 
+  /// Whether [post], served by [base], belongs to [publication]. Only a twin
+  /// host can serve someone else; the followed host is taken at its word.
+  bool _servesFollowed(Uri base, SubstackPublication publication, Object? post) {
+    final followed = Uri.tryParse(publication.baseUrl)?.host ?? '';
+    return !isLeftoverSubstackTwin(base.host, followed) || substackTwinMatches(publication, post);
+  }
+
+  void _checkTwin(Uri base, SubstackPublication publication, List<Object?> posts) {
+    if (posts.isNotEmpty && !_servesFollowed(base, publication, posts.first)) {
+      throw SubstackClientException('${base.host} serves another publication');
+    }
+  }
+
   bool _rssIsSubstack(Uri base, SubstackRssChannel rss) =>
       isSubstackPublicationHost(base.host) || rss.looksLikeSubstack;
 
@@ -383,10 +400,11 @@ class SubstackClient {
     return empty;
   }
 
-  Future<SubstackPublication?> _publicationFromListing(Uri base) async {
+  Future<SubstackPublication?> _publicationFromListing(Uri base, {SubstackPublication? followed}) async {
     try {
       final result = await _fetchListingMaps(base, limit: 1, offset: 0);
       if (result == null || result.posts.isEmpty) return null;
+      if (followed != null && !_servesFollowed(base, followed, result.posts.first)) return null;
       return publicationFromPostJson(result.posts.first, fallbackBase: result.base);
     } on SubstackRateLimitedException {
       rethrow;
@@ -643,6 +661,7 @@ class SubstackClient {
     if (decoded is! List) {
       throw SubstackClientException('Unexpected archive search response');
     }
+    _checkTwin(base, publication, decoded);
     return decoded
         .whereType<Map>()
         .map(

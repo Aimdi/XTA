@@ -133,6 +133,55 @@ void main() {
     );
   });
 
+  test('a stored subdomain replaces the guessed twin; www still guesses', () {
+    List<String> twins(String url, String? subdomain) => leftoverSubstackHosts(
+      Uri.parse(url),
+      subdomainHint: subdomain,
+    ).map((e) => e.host).toList();
+
+    expect(twins('https://newsletter.example.com', 'examplecorp'), [
+      'examplecorp.substack.com',
+    ]);
+    expect(twins('https://www.garbageday.email', 'www'), [
+      'garbageday.substack.com',
+    ]);
+    expect(twins('https://newsletter.example.com', null), [
+      'newsletter.substack.com',
+    ]);
+  });
+
+  test('a twin must not name another custom domain or subdomain', () {
+    const followed = SubstackPublication(
+      subdomain: 'platformer',
+      baseUrl: 'https://www.platformer.news',
+      name: 'Platformer',
+    );
+    const legacy = SubstackPublication(
+      subdomain: 'www',
+      baseUrl: 'https://www.platformer.news',
+      name: 'Platformer',
+    );
+    Map<String, Object?> post(String subdomain, [String? custom]) => {
+      'publishedBylines': [
+        {
+          'publicationUsers': [
+            {
+              'publication': {'subdomain': subdomain, 'custom_domain': ?custom},
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(substackTwinMatches(followed, post('platformer', 'platformer.news')), isTrue);
+    expect(substackTwinMatches(followed, post('platformer')), isTrue);
+    expect(substackTwinMatches(followed, {'id': 1}), isTrue);
+    expect(substackTwinMatches(followed, post('someone')), isFalse);
+    expect(substackTwinMatches(followed, post('platformer', 'moved.example')), isFalse);
+    expect(substackTwinMatches(legacy, post('anyone', 'www.platformer.news')), isTrue);
+    expect(substackTwinMatches(legacy, post('anyone', 'elsewhere.example')), isFalse);
+  });
+
   test('publicationFromHomepageHtml reads the real title and avatar', () {
     const html = '''
       <html><head>

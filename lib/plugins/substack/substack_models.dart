@@ -1065,8 +1065,30 @@ List<Uri> substackHostCandidates(Uri base, {String? subdomainHint}) {
   }
 
   addSubstackTwin(subdomainHint);
-  addSubstackTwin(registrableLabel(base.host));
+  // The host's first label only guesses at the Substack subdomain, and can
+  // name another publication: use it when no subdomain is known.
+  if (_unknownSubdomain(subdomainHint)) addSubstackTwin(registrableLabel(base.host));
   return out;
+}
+
+bool _unknownSubdomain(String? subdomain) {
+  final value = subdomain?.trim().toLowerCase() ?? '';
+  return value.isEmpty || value == 'www';
+}
+
+/// Whether a post served by a `{subdomain}.substack.com` twin belongs to the
+/// publication followed on its own domain: a twin that names another custom
+/// domain, or another subdomain than the one stored, is someone else.
+bool substackTwinMatches(SubstackPublication followed, Object? post) {
+  final publication = Json(post)['publishedBylines'][0]['publicationUsers'][0]['publication'];
+  final custom = publication['custom_domain'].string?.trim().toLowerCase() ?? '';
+  final followedHost = Uri.tryParse(followed.baseUrl)?.host ?? '';
+  if (custom.isNotEmpty && !sameSubstackHost(Uri.tryParse('https://$custom')?.host ?? custom, followedHost)) {
+    return false;
+  }
+  final subdomain = publication['subdomain'].string?.trim().toLowerCase() ?? '';
+  final stored = followed.subdomain.trim().toLowerCase();
+  return subdomain.isEmpty || _unknownSubdomain(stored) || !_isHandle(stored) || subdomain == stored;
 }
 
 Uri? _parseUserUri(String input) {
