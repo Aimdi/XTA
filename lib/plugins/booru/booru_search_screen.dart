@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_download.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_search_field.dart';
@@ -186,6 +187,12 @@ class _BooruSearchScreenState extends State<BooruSearchScreen> {
             ),
           ),
           _SaveSearchButton(text: state.text, onToggle: _toggleSaved),
+          if (state.showsResults && _store.results != null)
+            IconButton(
+              tooltip: L10n.of(context).plugin_booru_download_all,
+              icon: const Icon(Icons.download_for_offline_outlined),
+              onPressed: () => confirmBooruDownloadAll(context, _store.results!.state),
+            ),
         ],
       ),
     );

@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Скачать все",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Загружено постов: {count}. Файлы, которые уже есть в загрузках, пропускаются.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "В очереди: {queued}. Уже скачано: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Изменить как текст",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Нажмите, чтобы изменить",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Имя скачанного файла",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Оставьте пустым, чтобы сохранить имя файла с сайта. Можно использовать {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

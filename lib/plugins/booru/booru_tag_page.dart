@@ -5,6 +5,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_download.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_feed_view.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
@@ -88,6 +89,11 @@ class _BooruTagPageState extends State<BooruTagPage> {
             tooltip: l10n.plugin_booru_search_tag,
             icon: const Icon(Icons.search),
             onPressed: () => searchBooruTag(context, widget.tag),
+          ),
+          IconButton(
+            tooltip: l10n.plugin_booru_download_all,
+            icon: const Icon(Icons.download_for_offline_outlined),
+            onPressed: () => confirmBooruDownloadAll(context, _posts.state),
           ),
         ],
       ),

@@ -9,6 +9,7 @@ import 'package:xta/plugins/booru/booru_adult_consent.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_display_settings.dart';
+import 'package:xta/plugins/booru/booru_download.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
@@ -371,6 +372,8 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
           ),
           const BooruDisplaySettings(),
           const BooruPromptSettings(),
+          PrefTitle(title: Text(l10n.download)),
+          const BooruDownloadSettings(),
           PrefTitle(
             title: Text(
               l10n.plugin_booru_mute_section_on(

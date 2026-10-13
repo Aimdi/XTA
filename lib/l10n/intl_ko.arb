@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "모두 다운로드",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "지금까지 불러온 게시물: {count}개. 이미 다운로드한 파일은 건너뜁니다.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "대기열에 추가: {queued}개. 이미 다운로드됨: {skipped}개.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "텍스트로 편집",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "탭하여 편집",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "다운로드 파일 이름",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "비워 두면 사이트의 파일 이름을 그대로 씁니다. 사용할 수 있는 항목: {tokens}",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

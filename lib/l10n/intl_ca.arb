@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Baixa-ho tot",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Publicacions carregades fins ara: {count}. Els fitxers que ja tens a les baixades s'ometen.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "A la cua: {queued}. Ja baixats: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Edita com a text",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Toca per editar",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Nom del fitxer baixat",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Deixa-ho buit per mantenir el nom del fitxer del lloc. Pots fer servir {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

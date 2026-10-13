@@ -9,6 +9,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_download.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_prompt.dart';
@@ -65,7 +66,15 @@ class BooruPostActions extends StatelessWidget {
           key: const ValueKey('booru-download'),
           tooltip: l10n.download,
           icon: const Icon(Icons.download_outlined),
-          onPressed: () => downloadPluginMediaItem(context, booruDownloadItem(post), sourceName: pluginIdBooru),
+          onPressed: () => downloadPluginMediaItem(
+            context,
+            booruDownloadItem(post),
+            sourceName: pluginIdBooru,
+            fileName: booruDownloadFileName(
+              post,
+              PrefService.of(context, listen: false).get<String>(optionPluginBooruFileNameTemplate) ?? '',
+            ),
+          ),
         ),
         _SaveButton(archive: booruPostArchive(post)),
         PopupMenuButton<_PostMenu>(

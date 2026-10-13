@@ -482,6 +482,8 @@ const optionPluginBooruOriginalInViewer = 'plugin.booru.original_in_viewer';
 const optionPluginBooruTileDetails = 'plugin.booru.tile_details';
 const optionPluginBooruBlurExplicit = 'plugin.booru.blur_explicit';
 const optionPluginBooruTagSort = 'plugin.booru.tag_sort';
+// How downloaded Booru files are named, with {id}, {md5}, {site}…; empty keeps the file's own name.
+const optionPluginBooruFileNameTemplate = 'plugin.booru.file_name_template';
 // The kinds of tag "Copy tags as prompt" writes, in order; empty means the default.
 const optionPluginBooruPromptKinds = 'plugin.booru.prompt_kinds';
 const pluginIdEhViewer = 'ehviewer';

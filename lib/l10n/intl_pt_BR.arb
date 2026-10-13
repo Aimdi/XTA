@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Baixar tudo",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Postagens carregadas até agora: {count}. Arquivos que já estão nos seus downloads são ignorados.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "Na fila: {queued}. Já baixados: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Editar como texto",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Toque para editar",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Nome do arquivo baixado",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Deixe vazio para manter o nome do arquivo do site. Você pode usar {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

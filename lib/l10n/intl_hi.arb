@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "सभी डाउनलोड करें",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "अब तक लोड की गई पोस्ट: {count}। जो फ़ाइलें पहले से डाउनलोड में हैं, वे छोड़ दी जाती हैं।",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "कतार में: {queued}। पहले से डाउनलोड: {skipped}।",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "टेक्स्ट के रूप में संपादित करें",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "संपादित करने के लिए टैप करें",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "डाउनलोड फ़ाइल का नाम",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "साइट का अपना फ़ाइल नाम रखने के लिए खाली छोड़ें। आप {tokens} का उपयोग कर सकते हैं।",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

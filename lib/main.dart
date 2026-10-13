@@ -687,6 +687,7 @@ Future<void> main() async {
       optionPluginBooruTagSort: 'name',
       optionPluginBooruPromptKinds: '',
       optionPluginBooruSiteSettings: '{}',
+      optionPluginBooruFileNameTemplate: '',
       optionPluginBooruSiteCredentials: '{}',
       optionPluginEhEnabled: false,
       optionPluginEhShowTab: true,

@@ -3,7 +3,7 @@ import 'package:xta/downloads/download_entry.dart';
 /// Characters no file system accepts in a name.
 final illegalFileNameCharacters = RegExp(r'[\x00-\x1f/\\:*?"<>|]');
 
-final _token = RegExp(r'\{[a-z_]+\}');
+final _token = RegExp(r'\{[a-z0-9_]+\}');
 
 /// [template] with each `{token}` replaced from [values] in one pass, so a
 /// value that itself reads like a token stays as written. A token [values]

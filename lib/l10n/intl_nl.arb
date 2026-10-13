@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Alles downloaden",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Tot nu toe geladen berichten: {count}. Bestanden die al in je downloads staan, worden overgeslagen.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "In de wachtrij: {queued}. Al gedownload: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Als tekst bewerken",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Tik om te bewerken",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Bestandsnaam voor downloads",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Laat leeg om de bestandsnaam van de site te houden. Je kunt {tokens} gebruiken.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Завантажити все",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Завантажено дописів: {count}. Файли, які вже є в завантаженнях, пропускаються.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "У черзі: {queued}. Уже завантажено: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Змінити як текст",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Торкніться, щоб змінити",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Ім’я завантаженого файлу",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Залиште порожнім, щоб зберегти ім’я файлу із сайту. Можна використовувати {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

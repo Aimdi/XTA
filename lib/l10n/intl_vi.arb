@@ -1454,6 +1454,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Tải xuống tất cả",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Số bài đăng đã tải: {count}. Các tệp đã có trong mục tải xuống sẽ được bỏ qua.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "Đã xếp hàng: {queued}. Đã tải trước đó: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Sửa dạng văn bản",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Chạm để sửa",
@@ -1513,6 +1534,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Tên tệp tải xuống",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Để trống để giữ tên tệp của trang. Bạn có thể dùng {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "全部下載",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "已載入的貼文：{count}。下載紀錄中已有的檔案會被略過。",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "已加入佇列：{queued}。已下載過：{skipped}。",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "以文字編輯",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "輕觸即可編輯",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "下載檔案名稱",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "留空則沿用站點的檔案名稱。可以使用 {tokens}。",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },

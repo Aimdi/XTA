@@ -1457,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Pobierz wszystko",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Wczytane dotąd posty: {count}. Pliki, które już są w pobranych, zostaną pominięte.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "W kolejce: {queued}. Już pobrane: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Edytuj jako tekst",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Dotknij, aby edytować",
@@ -1516,6 +1537,16 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "plugin_booru_file_name_template": "Nazwa pobieranego pliku",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Zostaw puste, aby zachować nazwę pliku z witryny. Możesz użyć {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
       }
     }
   },
