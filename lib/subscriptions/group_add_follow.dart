@@ -98,7 +98,7 @@ Future<String> _followSubstack(
 ) async {
   final publication = await lookup.lookup(input);
   await publications.add(publication);
-  return publication.id;
+  return (publications.followOf(publication) ?? publication).id;
 }
 
 Future<String> _followBluesky(

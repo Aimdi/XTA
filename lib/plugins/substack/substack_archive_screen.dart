@@ -53,17 +53,19 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
     _enrichHeader(_store);
   }
 
+  /// Writes fresh metadata back to the follow this page is, and to no other.
   Future<void> _enrichHeader(SubstackPublicationStore store) async {
     final publications = context.read<SubstackPublicationsStore>();
-    final original = store.state.publication;
     final fresh = await store.enrich();
     if (!mounted || store != _store || fresh == null) return;
-    if (!publications.state.any((pub) => pub.id == original.id || pub.id == fresh.id)) return;
-    final pinned = publications.isPinned(original.id);
-    await publications.add(fresh);
-    if (original.id != fresh.id) {
-      if (pinned && !publications.isPinned(fresh.id)) await publications.togglePinned(fresh.id);
-      await publications.remove(original.id);
+    final follow = publications.followOf(fresh);
+    if (follow == null) return;
+    final placed = placeSubstackFollow(publications.state, fresh);
+    final pinned = publications.isPinned(follow.id);
+    await publications.add(placed);
+    if (placed.id != follow.id) {
+      if (pinned && !publications.isPinned(placed.id)) await publications.togglePinned(placed.id);
+      await publications.remove(follow.id);
     }
   }
 
@@ -345,10 +347,11 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
     return ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
       store: store,
       onState: (_, pubs) {
-        if (!pubs.any((pub) => pub.id == publication.id)) return const SizedBox.shrink();
-        final pinned = store.isPinned(publication.id);
+        final follow = substackFollowOf(pubs, publication);
+        if (follow == null) return const SizedBox.shrink();
+        final pinned = store.isPinned(follow.id);
         return OutlinedButton.icon(
-          onPressed: () => store.togglePinned(publication.id),
+          onPressed: () => store.togglePinned(follow.id),
           icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined, size: 18),
           label: Text(pinned ? l10n.unpin : l10n.pin),
         );
@@ -385,14 +388,15 @@ class SubstackFollowButton extends StatelessWidget {
     return ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
       store: store,
       onState: (context, followed) {
-        final isFollowed = followed.any((e) => e.id == publication.id);
+        final follow = substackFollowOf(followed, publication);
+        final isFollowed = follow != null;
 
         return FilledButton.tonalIcon(
           icon: Icon(isFollowed ? Icons.check : Icons.add, size: 18),
           label: Text(isFollowed ? l10n.plugin_substack_unfollow : l10n.plugin_substack_follow),
           onPressed: () async {
             final subscriptions = context.read<SubscriptionsModel>();
-            isFollowed ? await store.remove(publication.id) : await store.add(publication);
+            follow != null ? await store.remove(follow.id) : await store.add(publication);
             await subscriptions.reloadSubscriptions();
           },
         );

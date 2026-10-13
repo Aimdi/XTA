@@ -107,12 +107,16 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
     );
   }
 
+  /// Follows [publication], or refreshes the follow it already is.
   Future<void> add(SubstackPublication publication) async {
     await execute(() async {
-      await _write(publication);
+      await _write(placeSubstackFollow(await _read(), publication));
       return _read();
     });
   }
+
+  /// The follow [publication] is, if it is followed at all.
+  SubstackPublication? followOf(SubstackPublication publication) => substackFollowOf(state, publication);
 
   Future<void> remove(String id) async {
     await _changePins(() async {

@@ -20,6 +20,14 @@ class SubstackPublication {
 
   String get id => subdomain.toLowerCase();
 
+  SubstackPublication withSubdomain(String subdomain) => SubstackPublication(
+    subdomain: subdomain,
+    baseUrl: baseUrl,
+    name: name,
+    description: description,
+    logoUrl: logoUrl,
+  );
+
   /// Custom-domain follows can land on `www`; never show that as the title.
   String get displayName {
     final trimmed = name.trim();
@@ -585,6 +593,55 @@ bool sameSubstackHost(String a, String b) {
   }
 
   return norm(a) == norm(b);
+}
+
+/// The follow that [publication] is, if any: the same host, or the same id
+/// when neither id is a guess. A publication built from a post only guesses
+/// its id from its host, and that guess can be another publication's.
+SubstackPublication? substackFollowOf(Iterable<SubstackPublication> follows, SubstackPublication publication) {
+  final host = _hostOf(publication);
+  final sameHost = host.isEmpty
+      ? const <SubstackPublication>[]
+      : follows.where((follow) => sameSubstackHost(_hostOf(follow), host)).toList();
+  if (sameHost.isNotEmpty) {
+    return sameHost.firstWhere((follow) => follow.id == publication.id, orElse: () => sameHost.first);
+  }
+  if (_guessedId(publication)) return null;
+  return follows.where((follow) => follow.id == publication.id && !_guessedId(follow)).firstOrNull;
+}
+
+/// Where [publication] goes among [follows]: over the follow it already is,
+/// under that follow's id, or under its own host when another publication
+/// holds its id. Nothing is overwritten.
+SubstackPublication placeSubstackFollow(Iterable<SubstackPublication> follows, SubstackPublication publication) {
+  final follow = substackFollowOf(follows, publication);
+  if (follow != null) return follow.subdomain.isEmpty ? publication : publication.withSubdomain(follow.subdomain);
+  final host = substackHostId(publication.baseUrl);
+  if (host.isEmpty || !follows.any((other) => other.id == publication.id)) return publication;
+  return publication.withSubdomain(host);
+}
+
+/// A follow id for a site found without Substack's JSON: its host, so two
+/// sites never share one.
+String substackHostId(String baseUrl) {
+  final host = Uri.tryParse(baseUrl)?.host.toLowerCase() ?? '';
+  return host.startsWith('www.') ? host.substring(4) : host;
+}
+
+/// A custom domain with more than two labels once `www.` is dropped, such as
+/// `newsletter.example.com`: its first label is a prefix, not a subdomain.
+bool isDeepCustomHost(String host) {
+  if (isSubstackPublicationHost(host) || isSubstackServiceHost(host)) return false;
+  return substackHostId('https://$host').split('.').where((e) => e.isNotEmpty).length > 2;
+}
+
+String _hostOf(SubstackPublication publication) => Uri.tryParse(publication.baseUrl)?.host.toLowerCase() ?? '';
+
+bool _guessedId(SubstackPublication publication) {
+  final id = publication.id;
+  if (_unknownSubdomain(id)) return true;
+  final host = _hostOf(publication);
+  return isDeepCustomHost(host) && id == registrableLabel(host);
 }
 
 /// First label of a custom domain (`www.platformer.news` → `platformer`).

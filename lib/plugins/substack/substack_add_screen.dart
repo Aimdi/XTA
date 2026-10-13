@@ -44,7 +44,7 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
     final subscriptions = context.read<SubscriptionsModel>();
     await _store.follow((publication) async {
       await pubs.add(publication);
-      if (!pubs.state.any((pub) => pub.id == publication.id)) throw StateError('Follow was not saved');
+      if (pubs.followOf(publication) == null) throw StateError('Follow was not saved');
       await subscriptions.reloadSubscriptions();
     });
   }
