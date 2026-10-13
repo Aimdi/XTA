@@ -11,6 +11,7 @@ import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
+import 'package:xta/plugins/substack/substack_error_view.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
@@ -24,7 +25,6 @@ import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
 /// Substack Home / Inbox / Notes / Library — account features as local stand-ins.
@@ -294,12 +294,7 @@ class _PostsPane extends StatelessWidget {
       },
       child: ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
         store: pubs,
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: L10n.of(context).plugin_substack_load_error,
-          onRetry: pubs.load,
-        ),
+        onError: (_, error) => SubstackErrorView(error: error, onRetry: pubs.load),
         onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, publications) {
           if (publications.isEmpty) {
@@ -344,12 +339,7 @@ class _PostsPane extends StatelessWidget {
 
           return ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
             store: feed,
-            onError: (_, error) => FullPageErrorWidget(
-              error: error,
-              stackTrace: null,
-              prefix: L10n.of(context).plugin_substack_load_error,
-              onRetry: () => feed.refresh(force: true),
-            ),
+            onError: (_, error) => SubstackErrorView(error: error, onRetry: () => feed.refresh(force: true)),
             onLoading: (_) => const Center(child: CircularProgressIndicator()),
             onState: (context, snapshot) {
               return ScopedBuilder<SubstackReadStore, Set<String>>(
@@ -463,12 +453,7 @@ class _InboxPane extends StatelessWidget {
       onRefresh: () => feed.refresh(force: true),
       child: ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
         store: feed,
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: l10n.plugin_substack_load_error,
-          onRetry: () => feed.refresh(force: true),
-        ),
+        onError: (_, error) => SubstackErrorView(error: error, onRetry: () => feed.refresh(force: true)),
         onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, _) {
           return ScopedBuilder<SubstackReadStore, Set<String>>(
@@ -840,12 +825,7 @@ class _NotesPane extends StatelessWidget {
       onRefresh: () => notes.refresh(force: true),
       child: ScopedBuilder<SubstackNotesStore, SubstackNotesPage>(
         store: notes,
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: l10n.plugin_substack_load_error,
-          onRetry: () => notes.refresh(force: true),
-        ),
+        onError: (_, error) => SubstackErrorView(error: error, onRetry: () => notes.refresh(force: true)),
         onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, page) {
           if (page.notes.isEmpty) {
@@ -924,7 +904,7 @@ class _FeedStatus extends StatelessWidget {
       child: Column(
         children: [
           if (feed.refreshError != null || feed.loadMoreError != null) ...[
-            Text(l10n.plugin_substack_load_error),
+            Text(substackFailureLabel(l10n, feed.loadMoreError ?? feed.refreshError)),
             TextButton(
               onPressed: feed.refreshing || feed.loadingMore
                   ? null

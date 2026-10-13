@@ -184,6 +184,11 @@ Under a blanket 429, one `fetchPosts` call makes 12 requests for a `*.substack.c
 Substack publication"; BUG-03 in `test/substack_audit_probes_test.dart` pins that. The same mock against a custom domain
 counted 22.
 
+After the transport fix (BUG-03), on the same mocks with a virtual clock, one 30-publication refresh under a blanket 429
+sends 7 requests in total when the publications are on `*.substack.com` (one shared bucket; 288 before) and 72 when they
+are 24 distinct custom domains (three each; about 528 before). Both end in a rate-limit message rather than "not a
+Substack publication".
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

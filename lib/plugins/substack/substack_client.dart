@@ -5,14 +5,21 @@ import 'package:logging/logging.dart';
 import 'package:xta/utils/json.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_rss.dart';
+import 'package:xta/plugins/substack/substack_transport.dart';
+
+export 'package:xta/plugins/substack/substack_transport.dart'
+    show SubstackClientException, SubstackNotPublicationException, SubstackRateLimitedException;
 
 /// Read-only Substack client using public per-publication JSON endpoints,
 /// with RSS `/feed` as a fallback when JSON is empty or fails.
+///
+/// A rate limit is never a reason to try the next host or format: it ends the
+/// fallback chain and reaches the caller as [SubstackRateLimitedException].
 class SubstackClient {
   static final log = Logger('SubstackClient');
 
-  final http.Client httpClient;
-  static const _requestTimeout = Duration(seconds: 20);
+  final SubstackTransport transport;
+  http.Client get httpClient => transport.client;
   final _rssPages = <String, List<SubstackPost>>{};
   String _sourceKey(SubstackPublication publication) => '${publication.id}\n${publication.baseUrl}';
 
@@ -25,7 +32,8 @@ class SubstackClient {
     }
   }
 
-  SubstackClient({http.Client? httpClient}) : httpClient = httpClient ?? http.Client();
+  SubstackClient({http.Client? httpClient, SubstackTransport? transport})
+    : transport = transport ?? SubstackTransport(httpClient ?? http.Client());
 
   static const _ua =
       'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
@@ -74,6 +82,8 @@ class SubstackClient {
       if (base == null || !tried.add(base.host.toLowerCase())) return null;
       try {
         return await fetchPublication(base);
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (_) {
         return null;
       }
@@ -121,6 +131,8 @@ class SubstackClient {
             _rssPages.remove(_sourceKey(publication));
             return posts;
           }
+        } on SubstackRateLimitedException {
+          rethrow;
         } catch (e) {
           log.info('JSON posts failed for $base: $e — trying next host');
         }
@@ -177,6 +189,8 @@ class SubstackClient {
       try {
         final post = await _postFromJson(base, publication, slug);
         if (post != null) return post;
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         log.info('JSON post failed for $slug at $base: $e');
       }
@@ -197,6 +211,8 @@ class SubstackClient {
       try {
         final post = await _postFromJson(base, publication, slug);
         if (post != null) return post;
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         log.info('JSON post failed for $slug at $base: $e');
       }
@@ -255,6 +271,8 @@ class SubstackClient {
       final decoded = jsonDecode(response.body);
       if (decoded is! Map) return null;
       return publicationFromProfileJson(Map<String, dynamic>.from(decoded));
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('Profile lookup failed for @$handle: $e');
       return null;
@@ -268,11 +286,15 @@ class SubstackClient {
     for (final base in publicationFetchBases(pub)) {
       try {
         return await fetchPublication(base);
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (_) {}
     }
     if (pub.subdomain.isEmpty) return null;
     try {
       return await fetchPublication(Uri(scheme: 'https', host: '${pub.subdomain}.substack.com'));
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (_) {
       return null;
     }
@@ -290,6 +312,8 @@ class SubstackClient {
       if (sameSubstackHost(candidate.host, uri.host)) continue;
       try {
         return _bindFollowedHost(await fetchPublication(candidate), uri);
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (_) {}
     }
     return null;
@@ -300,9 +324,10 @@ class SubstackClient {
     final uri = Uri.tryParse(raw);
     if (uri == null || !isSubstackServiceHost(uri.host)) return null;
     try {
-      final response = await httpClient
-          .get(uri, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
-          .timeout(_requestTimeout);
+      final response = await transport.get(
+        uri,
+        headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
+      );
       final landed = response.request?.url;
       if (landed == null || landed.host.isEmpty) return null;
       if (sameSubstackHost(landed.host, uri.host)) return null;
@@ -311,6 +336,8 @@ class SubstackClient {
       final base = resolveSubstackBase(landed.toString());
       if (base == null) return null;
       return fetchPublication(base);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('Redirect follow failed for $uri: $e');
       return null;
@@ -347,6 +374,8 @@ class SubstackClient {
         final result = await fetch(base, limit: limit, offset: offset);
         if (result.posts.isNotEmpty) return result;
         empty = result;
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         log.info('Listing failed for $base: $e');
       }
@@ -359,6 +388,8 @@ class SubstackClient {
       final result = await _fetchListingMaps(base, limit: 1, offset: 0);
       if (result == null || result.posts.isEmpty) return null;
       return publicationFromPostJson(result.posts.first, fallbackBase: result.base);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('JSON publication probe failed for $base: $e');
       return null;
@@ -378,12 +409,15 @@ class SubstackClient {
 
   Future<SubstackPublication?> _publicationFromHomepage(Uri base) async {
     try {
-      final response = await httpClient
-          .get(base, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
-          .timeout(_requestTimeout);
+      final response = await transport.get(
+        base,
+        headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
+      );
       if (response.statusCode != 200) return null;
       final html = utf8.decode(response.bodyBytes);
       return publicationFromBeehiivHomepageHtml(html, base) ?? publicationFromHomepageHtml(html, base);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('Homepage probe failed for $base: $e');
       return null;
@@ -438,9 +472,10 @@ class SubstackClient {
   Future<SubstackPost?> _postFromBeehiivPage(Uri base, SubstackPublication publication, String slug) async {
     final uri = base.replace(path: '/p/$slug', queryParameters: {});
     try {
-      final response = await httpClient
-          .get(uri, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
-          .timeout(_requestTimeout);
+      final response = await transport.get(
+        uri,
+        headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
+      );
       if (response.statusCode != 200) return null;
       return postFromBeehiivHtml(
         utf8.decode(response.bodyBytes),
@@ -448,6 +483,8 @@ class SubstackClient {
         publicationBaseUrl: publication.baseUrl,
         publicationName: publication.displayName,
       );
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('Beehiiv post page failed for $uri: $e');
       return null;
@@ -457,9 +494,10 @@ class SubstackClient {
   Future<_BeehiivListing?> _fetchBeehiivListingMaps(Uri base, {required int page}) async {
     final uri = base.replace(path: '/posts', queryParameters: {'page': '$page'});
     try {
-      final response = await httpClient
-          .get(uri, headers: {'Accept': 'application/json, text/javascript, */*;q=0.1', 'User-Agent': _ua})
-          .timeout(_requestTimeout);
+      final response = await transport.get(
+        uri,
+        headers: {'Accept': 'application/json, text/javascript, */*;q=0.1', 'User-Agent': _ua},
+      );
       if (response.statusCode != 200) return null;
       final body = utf8.decode(response.bodyBytes);
       if (!body.trimLeft().startsWith('{')) return null;
@@ -474,6 +512,8 @@ class SubstackClient {
         if (totalPages < 1) totalPages = 1;
       }
       return _BeehiivListing(posts: posts, totalPages: totalPages);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('Beehiiv listing failed for $base: $e');
       return null;
@@ -523,9 +563,10 @@ class SubstackClient {
     for (final path in _rssPaths) {
       final uri = base.replace(path: path, queryParameters: {});
       try {
-        final response = await httpClient
-            .get(uri, headers: {'Accept': 'application/rss+xml, application/xml, text/xml, */*', 'User-Agent': _ua})
-            .timeout(_requestTimeout);
+        final response = await transport.get(
+          uri,
+          headers: {'Accept': 'application/rss+xml, application/xml, text/xml, */*', 'User-Agent': _ua},
+        );
         if (response.statusCode != 200) continue;
         final body = utf8.decode(response.bodyBytes);
         if (!body.contains('<rss') && !body.contains('<feed')) continue;
@@ -534,6 +575,8 @@ class SubstackClient {
           publicationBaseUrl: publication?.baseUrl ?? base.origin,
           publicationName: publication?.displayName ?? subdomainOf(base),
         );
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         log.info('RSS failed for $uri: $e');
       }
@@ -553,6 +596,8 @@ class SubstackClient {
       try {
         final response = await _get(uri);
         return flattenSubstackComments(jsonDecode(response.body));
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         lastError = e;
       }
@@ -572,6 +617,8 @@ class SubstackClient {
     for (final base in publicationFetchBases(publication)) {
       try {
         return await _searchPostsOn(base, publication, query, limit.clamp(1, 100), offset < 0 ? 0 : offset);
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         lastError = e;
         log.info('Archive search failed for $base: $e');
@@ -665,14 +712,17 @@ class SubstackClient {
     for (final base in publicationFetchBases(publication)) {
       final uri = Uri(scheme: 'https', host: base.host, path: '/recommendations');
       try {
-        final response = await httpClient
-            .get(uri, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
-            .timeout(_requestTimeout);
+        final response = await transport.get(
+          uri,
+          headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
+        );
         if (response.statusCode != 200) {
           lastError = SubstackClientException('HTTP ${response.statusCode} loading $uri');
           continue;
         }
         return parseSubstackRecommendationsHtml(utf8.decode(response.bodyBytes));
+      } on SubstackRateLimitedException {
+        rethrow;
       } catch (e) {
         lastError = e;
       }
@@ -686,6 +736,8 @@ class SubstackClient {
     var recommended = const <SubstackRecommendation>[];
     try {
       recommended = await fetchRecommendedPublications(publication);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       recError = e;
       log.info('Recommendations page failed for ${publication.baseUrl}: $e');
@@ -696,6 +748,8 @@ class SubstackClient {
     try {
       final query = publication.name.trim().isNotEmpty ? publication.name.trim() : publication.subdomain;
       searched = await searchPublications(query);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       searchError = e;
       log.info('Similar search failed for ${publication.subdomain}: $e');
@@ -717,6 +771,8 @@ class SubstackClient {
     Object? searchError;
     try {
       searched = await searchPublications(trimmed);
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       searchError = e;
       log.info('Publication search failed: $e');
@@ -731,6 +787,8 @@ class SubstackClient {
 
     try {
       return [await resolvePublication(trimmed)];
+    } on SubstackRateLimitedException {
+      rethrow;
     } catch (e) {
       log.info('Publication resolve failed: $e');
       if (searchError != null) throw searchError;
@@ -774,9 +832,7 @@ class SubstackClient {
   }
 
   Future<http.Response> _get(Uri uri) async {
-    final response = await httpClient
-        .get(uri, headers: {'Accept': 'application/json', 'User-Agent': _ua})
-        .timeout(_requestTimeout);
+    final response = await transport.get(uri, headers: {'Accept': 'application/json', 'User-Agent': _ua});
     if (response.statusCode != 200) {
       throw SubstackClientException('HTTP ${response.statusCode} loading $uri');
     }
@@ -833,16 +889,4 @@ SubstackPublication publicationFromPostJson(Map<String, dynamic> post, {required
     description: Json(publication)['hero_text'].string,
     logoUrl: Json(publication)['logo_url'].string,
   );
-}
-
-class SubstackClientException implements Exception {
-  final String message;
-  SubstackClientException(this.message);
-  @override
-  String toString() => message;
-}
-
-/// The pasted address is a real site, but it is not a Substack publication.
-class SubstackNotPublicationException extends SubstackClientException {
-  SubstackNotPublicationException() : super('This is not a Substack publication');
 }

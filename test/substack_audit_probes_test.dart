@@ -12,6 +12,9 @@ import 'package:xta/plugins/substack/substack_links.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_rss.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_transport.dart';
+
+import 'support/substack_clock.dart';
 
 /// Pins the current behaviour behind each bug in docs/substack/audit.md. A fix
 /// flips its probe on purpose, and the flipped probe becomes the regression test.
@@ -26,7 +29,7 @@ http.Response _json(Object? value, http.Request request) => http.Response(
 );
 
 SubstackClient _client(Future<http.Response> Function(http.Request request) respond) {
-  final client = SubstackClient(httpClient: MockClient(respond));
+  final client = SubstackClient(transport: SubstackTransport(MockClient(respond), clock: FakeSubstackClock()));
   addTearDown(client.httpClient.close);
   return client;
 }
@@ -137,16 +140,16 @@ void main() {
     expect(substackFeedPostKey(rss), isNot(substackFeedPostKey(api)));
   });
 
-  test('BUG-03: a rate-limited publication costs twelve requests and reads as "not a publication"', () async {
+  test('BUG-03 (fixed): a rate limit ends the fallback chain and says so', () async {
     final requests = <Uri>[];
     final client = _client((request) async {
       requests.add(request.url);
       return http.Response('', 429, request: request);
     });
 
-    await expectLater(client.fetchPosts(_fieldNotes, limit: 8), throwsA(isA<SubstackNotPublicationException>()));
-    expect(requests, hasLength(12));
-    expect(requests.map((uri) => uri.host).toSet(), {'fieldnotes.substack.com', 'www.fieldnotes.substack.com'});
+    await expectLater(client.fetchPosts(_fieldNotes, limit: 8), throwsA(isA<SubstackRateLimitedException>()));
+    expect(requests, hasLength(SubstackTransport.retries + 1), reason: 'twelve before the fix');
+    expect(requests.map((uri) => '${uri.host}${uri.path}').toSet(), {'fieldnotes.substack.com/api/v1/posts'});
   });
 
   test('BUG-04: an unreachable custom domain shows posts of an unrelated {label}.substack.com', () async {

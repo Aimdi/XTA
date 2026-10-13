@@ -4,13 +4,13 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/ui/x_controls.dart';
+import 'package:xta/plugins/substack/substack_error_view.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/plugins/substack/substack_similar_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/plugins/substack/substack_publication_store.dart';
 
 SubstackPublication publicationForPost(SubstackPost post, {String? logoUrl}) {
@@ -172,12 +172,7 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
       if (page.error != null && page.posts.isEmpty)
         SliverFillRemaining(
           hasScrollBody: false,
-          child: FullPageErrorWidget(
-            error: page.error,
-            stackTrace: null,
-            prefix: l10n.plugin_substack_load_error,
-            onRetry: _store.retry,
-          ),
+          child: SubstackErrorView(error: page.error, onRetry: _store.retry),
         )
       else ...[
         if (posts.isEmpty && !page.loading)

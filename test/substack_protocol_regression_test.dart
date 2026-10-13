@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_transport.dart';
+
+import 'support/substack_clock.dart';
 
 const _publication = SubstackPublication(
   subdomain: 'fieldnotes',
@@ -28,7 +31,7 @@ http.Response _json(Object? value, http.Request request) => http.Response(
 );
 
 SubstackClient _client(Future<http.Response> Function(http.Request request) respond) {
-  final client = SubstackClient(httpClient: MockClient(respond));
+  final client = SubstackClient(transport: SubstackTransport(MockClient(respond), clock: FakeSubstackClock()));
   addTearDown(client.httpClient.close);
   return client;
 }

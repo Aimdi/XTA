@@ -12,6 +12,7 @@ import 'package:xta/offline/offline_store.dart';
 import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_bridge.dart';
 import 'package:xta/reading/article_reading_store.dart';
+import 'package:xta/plugins/substack/substack_error_view.dart';
 import 'package:xta/plugins/substack/substack_reader_store.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/substack/substack_article_cache.dart';
@@ -28,7 +29,6 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_engines.dart';
 import 'package:xta/speech/tts_settings.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -560,10 +560,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   Widget _articleBody(BuildContext context) => _error != null
-      ? FullPageErrorWidget(
+      ? SubstackErrorView(
           error: _error,
-          stackTrace: null,
-          prefix: L10n.of(context).plugin_substack_load_error,
           onRetry: () {
             _content.change(error: null);
             _content.change(empty: false);
