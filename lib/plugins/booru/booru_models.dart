@@ -165,6 +165,17 @@ class BooruPost {
     return thumbnailUrl;
   }
 
+  /// Whether the host gave a file to show. It withholds the file of a deleted
+  /// post, or one banned or restricted for guests, and a Flash file is nothing
+  /// the viewer can open.
+  bool get hasFile =>
+      !_isFlash &&
+      [sampleUrl, fileUrl].any((url) => url != null && url.isNotEmpty);
+
+  bool get _isFlash =>
+      (fileExt ?? '').toLowerCase() == 'swf' ||
+      _extensionOf(fileUrl ?? '') == 'swf';
+
   double get aspectRatio {
     if (width <= 0 || height <= 0) return 1;
     return width / height;

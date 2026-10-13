@@ -351,7 +351,7 @@ void main() {
           if (failing.contains(tags)) return http.Response('', 503);
           return http.Response(
             jsonEncode([
-              {'id': tags.length, 'tag_string': tags, 'rating': 'g'},
+              {'id': tags.length, 'tag_string': tags, 'rating': 'g', 'file_url': 'https://cdn.example/$tags.png'},
             ]),
             200,
           );

@@ -139,8 +139,8 @@ class BooruClient {
     return _page(parsed, page: page, hasMore: parsed.length >= limit);
   }
 
-  /// Pagination follows the raw API page: rating/mute filters must not make
-  /// an empty filtered page look like the end of the feed.
+  /// Pagination follows the raw API page: the file, rating and mute filters
+  /// must not make an empty filtered page look like the end of the feed.
   BooruPostPage _page(
     List<BooruPost> parsed, {
     required int page,
@@ -150,7 +150,9 @@ class BooruClient {
     return BooruPostPage(
       posts: [
         for (final post in parsed)
-          if (booruPostAllowed(post, maxRating) && !booruPostMuted(post, muted))
+          if (post.hasFile &&
+              booruPostAllowed(post, maxRating) &&
+              !booruPostMuted(post, muted))
             post,
       ],
       page: page,

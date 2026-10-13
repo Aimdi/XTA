@@ -519,9 +519,9 @@ void main() {
         MockClient(
           (request) async => http.Response(
             jsonEncode([
-              {'id': 1, 'rating': 'e', 'tag_string': 'a'},
-              {'id': 2, 'rating': 'g', 'tag_string': 'muted'},
-              {'id': 3, 'rating': 'g', 'tag_string': 'kept'},
+              {'id': 1, 'rating': 'e', 'tag_string': 'a', 'file_url': 'https://cdn.example/1.png'},
+              {'id': 2, 'rating': 'g', 'tag_string': 'muted', 'file_url': 'https://cdn.example/2.png'},
+              {'id': 3, 'rating': 'g', 'tag_string': 'kept', 'file_url': 'https://cdn.example/3.png'},
             ]),
             200,
           ),
@@ -533,6 +533,70 @@ void main() {
       );
       final page = await client.popular(BooruPopularQuery.today());
       expect(page.posts.map((p) => p.id), ['3']);
+    });
+
+    // Shapes the audit read in Boorusama's parsers, not recorded from a live host: Danbooru withholds the
+    // file URLs of a post banned or restricted for guests, and a Flash post's file is a .swf.
+    test('posts with no file to show are left out, and the page still continues', () async {
+      final client = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient(
+          (request) async => http.Response(
+            jsonEncode([
+              {'id': 1, 'rating': 'g', 'tag_string': 'banned_artist', 'is_banned': true, 'file_ext': 'jpg'},
+              {
+                'id': 2,
+                'rating': 'g',
+                'tag_string': 'flash',
+                'file_ext': 'swf',
+                'file_url': 'https://cdn.donmai.us/original/a.swf',
+                'preview_file_url': 'https://cdn.donmai.us/preview/a.jpg',
+              },
+              {'id': 3, 'rating': 'g', 'tag_string': 'kept', 'preview_file_url': 'https://cdn.donmai.us/preview/b.jpg'},
+              {'id': 4, 'rating': 'g', 'tag_string': 'kept', 'file_url': 'https://cdn.donmai.us/original/c.png'},
+            ]),
+            200,
+          ),
+        ),
+      );
+
+      final page = await client.latest(limit: 4);
+
+      expect(page.posts.map((post) => post.id), ['4']);
+      expect(page.hasMore, isTrue, reason: 'the host sent a full page');
+    });
+
+    test('an e621 post whose file the host withholds is left out', () async {
+      final client = _client(
+        'e621',
+        'https://e621.net',
+        MockClient(
+          (request) async => http.Response(
+            jsonEncode({
+              'posts': [
+                {
+                  'id': 10,
+                  'rating': 's',
+                  'file': {'ext': 'png', 'url': null},
+                  'sample': {'url': null},
+                  'preview': {'url': null},
+                },
+                {
+                  'id': 11,
+                  'rating': 's',
+                  'file': {'ext': 'png', 'url': 'https://static1.e621.net/data/b.png'},
+                  'sample': {'url': null},
+                  'preview': {'url': null},
+                },
+              ],
+            }),
+            200,
+          ),
+        ),
+      );
+
+      expect((await client.latest()).posts.map((post) => post.id), ['11']);
     });
 
     test('a missing wiki page is no page, not an error', () async {
