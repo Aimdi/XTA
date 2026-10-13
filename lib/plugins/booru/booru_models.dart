@@ -76,6 +76,15 @@ enum BooruRating {
   bool exceeds(BooruRating max) => index > max.index;
 }
 
+/// One size the host keeps of a post's picture: Danbooru's
+/// `media_asset.variants`.
+class BooruImageVariant {
+  final String url;
+  final int width;
+
+  const BooruImageVariant({required this.url, required this.width});
+}
+
 /// Whether [url] names a file the player opens rather than a picture.
 bool booruIsVideoUrl(String url) =>
     BooruPost._videoExtensions.contains(BooruPost._extensionOf(url));
@@ -114,6 +123,10 @@ class BooruPost {
   final bool hasChildren;
   final String? uploader;
 
+  /// Still sizes the host keeps of the picture, smallest first; empty where
+  /// it names none (all but Danbooru).
+  final List<BooruImageVariant> variants;
+
   const BooruPost({
     required this.id,
     required this.host,
@@ -139,6 +152,7 @@ class BooruPost {
     this.parentId,
     this.hasChildren = false,
     this.uploader,
+    this.variants = const [],
   });
 
   /// What feeds order the post by: when it went up, else when it last
@@ -192,6 +206,15 @@ class BooruPost {
   bool get _isFlash =>
       (fileExt ?? '').toLowerCase() == 'swf' ||
       _extensionOf(fileUrl ?? '') == 'swf';
+
+  /// The smallest still variant at least [pixelWidth] wide, else the
+  /// catalogue picture.
+  String tileUrlFor(int pixelWidth) =>
+      variants
+          .where((variant) => variant.width >= pixelWidth)
+          .firstOrNull
+          ?.url ??
+      catalogUrl;
 
   double get aspectRatio {
     if (width <= 0 || height <= 0) return 1;

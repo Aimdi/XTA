@@ -138,7 +138,26 @@ BooruPost? _parseOne(
           json['owner'].string ??
           json['uploader_name'].string,
     ),
+    variants: _stillVariants(json['media_asset']['variants']),
   );
+}
+
+const _stillExtensions = {'jpg', 'jpeg', 'png', 'webp'};
+
+/// Danbooru's sizes of the picture that are stills, smallest first. The
+/// original is left out: tiles never fetch it.
+List<BooruImageVariant> _stillVariants(Json variants) => [
+  for (final variant in variants.list)
+    if (variant['type'].string != 'original' &&
+        _stillExtensions.contains(variant['file_ext'].string?.toLowerCase()))
+      ?_variantOf(variant),
+]..sort((a, b) => a.width.compareTo(b.width));
+
+BooruImageVariant? _variantOf(Json json) {
+  final url = json['url'].string;
+  final width = json['width'].integer;
+  if (url == null || url.isEmpty || width == null || width <= 0) return null;
+  return BooruImageVariant(url: url, width: width);
 }
 
 const _danbooruCategoryFields = {

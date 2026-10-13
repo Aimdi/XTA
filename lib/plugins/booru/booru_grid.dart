@@ -1,3 +1,4 @@
+import 'dart:math' show max;
 import 'dart:ui' show ImageFilter;
 
 import 'package:extended_image/extended_image.dart';
@@ -203,7 +204,7 @@ class BooruPostTile extends StatelessWidget {
                 children: [
                   Hero(
                     tag: booruPostHeroTag(post),
-                    child: RepaintBoundary(child: _image(theme)),
+                    child: RepaintBoundary(child: _image(theme, ratio)),
                   ),
                   if (display.blurs(post))
                     Center(child: Icon(Icons.visibility_off_outlined, color: theme.colorScheme.onSurface)),
@@ -259,23 +260,32 @@ class BooruPostTile extends StatelessWidget {
     );
   }
 
-  Widget _image(ThemeData theme) {
-    final image = BooruNetworkImage(
-      url: display.tileUrl(post),
-      fit: BoxFit.cover,
-      loadStateChanged: (state) {
-        if (state.extendedImageLoadState == LoadState.failed) {
-          return ColoredBox(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
-          );
-        }
-        return null;
-      },
-    );
-    if (!display.blurs(post)) return image;
-    return ImageFiltered(imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), child: image);
-  }
+  /// The picture at the size the tile shows it: as wide as the tile, or
+  /// wider where the tile crops a picture wider than [ratio].
+  Widget _image(ThemeData theme, double ratio) => LayoutBuilder(
+    builder: (context, constraints) {
+      final width = constraints.maxWidth;
+      final pixels = width.isFinite && width > 0
+          ? (width * MediaQuery.devicePixelRatioOf(context) * max(1.0, post.aspectRatio / ratio)).ceil()
+          : null;
+      final image = BooruNetworkImage(
+        url: display.tileUrl(post, pixelWidth: pixels),
+        fit: BoxFit.cover,
+        cacheWidth: pixels,
+        loadStateChanged: (state) {
+          if (state.extendedImageLoadState == LoadState.failed) {
+            return ColoredBox(
+              color: theme.colorScheme.surfaceContainerHighest,
+              child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
+            );
+          }
+          return null;
+        },
+      );
+      if (!display.blurs(post)) return image;
+      return ImageFiltered(imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), child: image);
+    },
+  );
 
   Widget _chip(BuildContext context, IconData icon, String label) {
     final theme = Theme.of(context);
