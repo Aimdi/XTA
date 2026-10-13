@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
@@ -13,7 +14,9 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
+import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_text.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 
 BooruPost _post({
   String id = '1',
@@ -22,6 +25,7 @@ BooruPost _post({
   List<String> tags = const ['solo', 'smile'],
   BooruRating? rating = BooruRating.general,
   Map<String, BooruTagCategory> categories = const {},
+  String? fileUrl,
 }) => BooruPost(
   id: id,
   host: host,
@@ -33,7 +37,7 @@ BooruPost _post({
   height: 1,
   previewUrl: null,
   sampleUrl: null,
-  fileUrl: null,
+  fileUrl: fileUrl,
   fileExt: 'jpg',
   source: null,
   createdAt: null,
@@ -55,6 +59,17 @@ BooruClient _client(String engine, String host, http.Client http, {Map<String, O
 
 void main() {
   group('post details', () {
+    test('a Moebooru download is named after the site, the post and its tags', () {
+      final post = _post(
+        id: '123456',
+        engine: 'moebooru',
+        host: 'https://yande.re',
+        fileUrl: 'https://files.yande.re/image/0f1e/yande.re%20123456%20blue_eyes%20re:zero.jpg',
+      );
+      final name = pluginMediaFileName(booruDownloadItem(post), pluginIdBooru);
+      expect(safeDownloadName(name), 'booru-yande.re 123456 blue_eyes re_zero.jpg');
+    });
+
     test('Danbooru posts carry tag kinds, file facts and family', () {
       final post = parseBooruPosts(
         [

@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/_video.dart';
@@ -578,11 +579,31 @@ Future<void> showPluginAltText(BuildContext context, String alt) {
   );
 }
 
+/// `<source>-<file name>`, the file name decoded from the URL. A long one keeps
+/// its start, where sites put their name and the post id, and its extension.
 String pluginMediaFileName(PluginMediaItem item, String sourceName) {
   final uri = Uri.tryParse(item.resolvedDownloadUrl);
-  final base = uri == null ? '' : path.basename(uri.path);
+  final base = uri == null ? '' : _lastPathSegment(uri);
   final safeSource = sourceName.trim().isEmpty ? 'xta' : sourceName.trim();
-  return base.isEmpty ? '$safeSource-media' : '$safeSource-$base';
+  if (base.isEmpty) return '$safeSource-media';
+  final extension = _fileExtension(base);
+  final stem = base.substring(0, base.length - extension.length);
+  final start = fitUtf8Bytes('$safeSource-$stem', maxDownloadStemBytes).replaceAll(RegExp(r'[. ]+$'), '');
+  return '$start$extension';
+}
+
+/// [name]'s extension with its dot; nothing when what follows the last dot is
+/// not an extension.
+String _fileExtension(String name) {
+  final extension = path.extension(name);
+  return RegExp(r'^\.[A-Za-z0-9]{1,5}$').hasMatch(extension) ? extension : '';
+}
+
+/// The last part of [uri]'s path, percent-decoded, with the separators that
+/// would split it into folders replaced.
+String _lastPathSegment(Uri uri) {
+  final segments = uri.pathSegments.where((segment) => segment.isNotEmpty);
+  return segments.isEmpty ? '' : segments.last.replaceAll(RegExp(r'[/\\?]'), '_');
 }
 
 /// True once the file is saved. A plugin with its own naming passes [fileName]
