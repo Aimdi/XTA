@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -70,9 +72,14 @@ class _BooruScreenState extends State<BooruScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final tags = context.read<BooruTagsStore>();
+      final mutes = context.read<BooruMuteStore>();
+      // Latest and Popular need neither store, so their first page goes out
+      // now; Following waits for the followed tags.
+      final opening = _tabs.state;
+      if (opening != _followingTab) unawaited(_ensureLoaded(opening));
       await tags.load();
       if (!mounted) return;
-      await context.read<BooruMuteStore>().load();
+      await mutes.load();
       if (!mounted) return;
       _tagsDisposer = tags.observer(
         onState: (next) {
@@ -84,7 +91,7 @@ class _BooruScreenState extends State<BooruScreen> {
           }
         },
       );
-      await _ensureLoaded(_tabs.state);
+      if (opening == _followingTab) await _ensureLoaded(opening);
     });
   }
 

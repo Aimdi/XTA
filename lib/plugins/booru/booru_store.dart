@@ -213,8 +213,12 @@ class BooruFeedStore extends Store<List<BooruPost>>
       _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
       _land(generation, failed: first.page.failedQueries);
       return first.page.posts;
-    });
+    }, delay: generation == 1 ? Duration.zero : _debounce);
   }
+
+  /// How long a refresh waits for a newer one before it asks. The first
+  /// has nothing to wait for.
+  static const _debounce = Duration(milliseconds: 50);
 
   /// The first page with posts: the rating and mute filters can empty a raw
   /// page, so a few are skipped while the host still has more.

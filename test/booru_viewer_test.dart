@@ -69,6 +69,7 @@ class _Client extends BooruClient {
 
   /// Latest's next page, answered when the test completes it.
   final latestPage = Completer<BooruPostPage>();
+  var latestCalls = 0;
   final searches = <String>[];
   final searchSites = <String?>[];
   final popularQueries = <BooruPopularQuery>[];
@@ -89,7 +90,10 @@ class _Client extends BooruClient {
   }
 
   @override
-  Future<BooruPostPage> latest({int page = 1, int limit = BooruClient.defaultPageSize}) => latestPage.future;
+  Future<BooruPostPage> latest({int page = 1, int limit = BooruClient.defaultPageSize}) {
+    latestCalls++;
+    return latestPage.future;
+  }
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -785,6 +789,18 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(PluginGridSkeleton), findsNothing);
       expect(find.byType(BooruPostGrid), findsOneWidget);
+    });
+
+    testWidgets('Latest asks for its first page in its first frame', (tester) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+
+      await tester.pump(Duration.zero);
+
+      expect(client.latestCalls, 1, reason: 'neither the stores reloading nor a 50 ms debounce stands in front of it');
+      client.latestPage.complete(const BooruPostPage(posts: [], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
     });
 
     testWidgets('leaving settings while a site or a mute is being saved throws nothing', (tester) async {
