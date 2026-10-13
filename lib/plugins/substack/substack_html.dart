@@ -101,7 +101,7 @@ String substackHtmlToPlainText(String raw) {
     }
     // A footnote's number, in the text or at its note, read aloud runs into
     // the sentence: "a claim1".
-    if (node.classes.contains('footnote-anchor') || node.classes.contains('footnote-number')) return;
+    if (tag == 'a' && (node.classes.contains('footnote-anchor') || node.classes.contains('footnote-number'))) return;
     if (tag == 'br') {
       buffer.write('\n');
       return;
