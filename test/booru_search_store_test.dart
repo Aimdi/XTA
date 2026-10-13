@@ -11,6 +11,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_metatags.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
@@ -298,6 +299,40 @@ void main() {
       expect(store.closeEditor(), isTrue);
       expect(store.state.tags, ['cat']);
       expect(store.state.showsResults, isTrue);
+    });
+  });
+
+  group('metatags', () {
+    test("two letters of a metatag offer it on its site's engine only, and its known values after the colon", () {
+      List<String> names(BooruEngine engine, String input, {BooruRating cap = BooruRating.general}) => [
+        for (final suggestion in booruMetatagSuggestions(engine, input, host: 'https://example.com', maxRating: cap))
+          suggestion.name,
+      ];
+      expect(names(BooruEngine.danbooru, 'sc'), ['score:']);
+      expect(names(BooruEngine.danbooru, 'or'), ['order:', 'ordfav:']);
+      expect(names(BooruEngine.gelbooruV2, 'or'), isEmpty, reason: 'Gelbooru sorts with sort:');
+      expect(names(BooruEngine.gelbooruV2, 'so'), ['sort:']);
+      expect(names(BooruEngine.danbooru, 's'), isEmpty, reason: 'one letter is too little to go on');
+      expect(names(BooruEngine.danbooru, 'order:f'), ['order:favcount', 'order:filesize']);
+      expect(names(BooruEngine.danbooru, 'order:score'), isEmpty, reason: 'already complete');
+      expect(names(BooruEngine.danbooru, '-rating:'), ['rating:g'], reason: 'only up to the rating cap');
+      expect(names(BooruEngine.e621, 'rating:', cap: BooruRating.explicit), ['rating:s', 'rating:q', 'rating:e']);
+      expect(names(BooruEngine.danbooru, 'score:'), isEmpty, reason: 'any number goes');
+    });
+
+    test('a picked metatag stays in the field for its value, and a picked value becomes a chip', () async {
+      final prefs = PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru'});
+      final store = BooruSearchStore(_Client(prefs), _history(prefs), debounce: Duration.zero);
+      store.type('cat_ears ord');
+      expect(store.state.suggestions.map((s) => s.name), ['order:', 'ordfav:'], reason: 'before the host answers');
+      await _settle();
+
+      expect(store.pick(store.state.suggestions.first), 'order:');
+      expect(store.state.tags, ['cat_ears']);
+      expect(store.state.suggestions.map((s) => s.name), contains('order:score'));
+
+      expect(store.pick(const BooruTagSuggestion(name: 'order:score')), isEmpty);
+      expect(store.state.tags, ['cat_ears', 'order:score']);
     });
   });
 

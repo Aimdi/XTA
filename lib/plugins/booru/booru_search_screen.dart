@@ -87,8 +87,13 @@ class _BooruSearchScreenState extends State<BooruSearchScreen> {
   }
 
   void _pick(BooruTagSuggestion suggestion) {
-    _store.pick(suggestion);
-    _controller.clear();
+    _setInput(_store.pick(suggestion));
+    _focus.requestFocus();
+  }
+
+  /// Starts [metatag] in the field after whatever is typed there.
+  void _startMetatag(String metatag) {
+    _setInput(_store.type('${_controller.text} $metatag'.trimLeft()));
     _focus.requestFocus();
   }
 
@@ -205,6 +210,7 @@ class _BooruSearchScreenState extends State<BooruSearchScreen> {
       maxRating: client.maxRating,
       onRun: _run,
       onPick: _pick,
+      onMetatag: _startMetatag,
       onOperator: _applyOperator,
       onEditAsText: _editAsText,
       onClear: _clear,

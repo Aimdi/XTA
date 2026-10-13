@@ -1551,6 +1551,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "最高分级",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "元标签",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name} 的更多作品",
   "@plugin_booru_more_from": {
     "placeholders": {

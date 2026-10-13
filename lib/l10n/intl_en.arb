@@ -1644,6 +1644,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "Metatags",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "More from {name}",
   "@plugin_booru_more_from": {
     "placeholders": {

@@ -319,6 +319,20 @@ void main() {
       expect(_chip('rating:g'), findsNothing);
     });
 
+    testWidgets("the site's metatags are listed, and one tapped is started in the field", (tester) async {
+      await _open(tester);
+      expect(find.text('Metatags'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(ActionChip, 'order:'));
+      await _settle(tester);
+      expect(tester.widget<TextField>(_field).controller!.text, 'order:');
+
+      await tester.tap(find.text('order:score'));
+      await _settle(tester);
+      expect(_chip('order:score'), findsOneWidget);
+      expect(tester.widget<TextField>(_field).controller!.text, isEmpty);
+    });
+
     testWidgets('tapping a chip moves it back into the field', (tester) async {
       await _open(tester);
       await _type(tester, 'cat_ears solo ');

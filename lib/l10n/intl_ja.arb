@@ -1551,6 +1551,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "最大レーティング",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "メタタグ",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name}の他の作品",
   "@plugin_booru_more_from": {
     "placeholders": {

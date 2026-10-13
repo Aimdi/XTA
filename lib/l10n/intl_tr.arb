@@ -1551,6 +1551,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "Meta etiketler",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "Diğer {name} gönderileri",
   "@plugin_booru_more_from": {
     "placeholders": {
