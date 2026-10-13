@@ -18,6 +18,7 @@ import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
+import 'package:xta/plugins/booru/booru_tag_page.dart';
 import 'package:xta/plugins/booru/booru_tag_sheet.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 
@@ -127,7 +128,8 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     );
   }
 
-  void _searchTag(String tag, BooruTagCategory? _) => searchBooruTag(context, tag);
+  void _searchTag(String tag, BooruTagCategory? category) =>
+      openBooruTag(context, tag, category: category, site: context.read<BooruClient>().siteOf(_post));
 
   void _openTag(String tag, BooruTagCategory? category) => showBooruTagActions(
     context,

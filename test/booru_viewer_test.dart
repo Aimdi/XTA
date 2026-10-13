@@ -30,6 +30,7 @@ import 'package:xta/plugins/booru/booru_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
+import 'package:xta/plugins/booru/booru_tag_page.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
@@ -81,6 +82,9 @@ class _Client extends BooruClient {
   final popularQueries = <BooruPopularQuery>[];
   var commentCalls = 0;
   var wikiCalls = 0;
+
+  /// What the host keeps about an artist; nothing by default.
+  BooruArtist? artistAnswer;
   final wikiSites = <String?>[];
 
   @override
@@ -101,6 +105,9 @@ class _Client extends BooruClient {
     final again = latestAgain;
     return again != null && latestPage.isCompleted ? again() : latestPage.future;
   }
+
+  @override
+  Future<BooruArtist?> artist(String tag, {BooruSite? site}) async => artistAnswer;
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -157,6 +164,15 @@ class _MemoryFeedCache extends BooruFeedCache {
 class _Tags extends BooruTagsStore {
   @override
   Future<void> load() async {}
+
+  @override
+  Future<void> add(String tag) async => update([...state, tag]);
+
+  @override
+  Future<void> remove(String tag) async => update([
+    for (final followed in state)
+      if (followed != tag) followed,
+  ]);
 }
 
 Future<_Client> _pump(
@@ -735,6 +751,33 @@ void main() {
       expect(find.text('Most used'), findsOneWidget);
       final prefs = PrefService.of(tester.element(find.byType(BooruPostScreen)), listen: false);
       expect(prefs.get<String>(optionPluginBooruTagSort), 'count');
+    });
+
+    testWidgets("an artist tag opens the artist's page: posts, other names, links and follow", (tester) async {
+      final tags = _Tags();
+      final client = await _pump(
+        tester,
+        BooruPostScreen(post: _post('1', categories: const {'kantoku': BooruTagCategory.artist})),
+        tags: tags,
+      );
+      client.artistAnswer = const BooruArtist(
+        name: 'kantoku',
+        otherNames: ['カントク'],
+        urls: ['https://www.pixiv.net/users/1'],
+      );
+
+      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruTagPage), findsOneWidget);
+      expect(find.text('Also known as カントク'), findsOneWidget);
+      expect(find.widgetWithText(ActionChip, 'pixiv.net'), findsOneWidget);
+      expect(find.byType(BooruPostTile), findsNWidgets(3));
+
+      await tester.tap(find.byTooltip('Follow tag'));
+      await tester.pumpAndSettle();
+      expect(tags.state, ['kantoku']);
+      expect(find.byTooltip('Unfollow tag'), findsOneWidget);
     });
 
     testWidgets('comments load when opened', (tester) async {

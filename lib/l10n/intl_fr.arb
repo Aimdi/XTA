@@ -1405,6 +1405,14 @@
   },
   "plugin_booru_adult_title": "Afficher les publications pour adultes ?",
   "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "Aussi connu sous le nom de {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "Clé API",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Facultatif — certains hôtes (Gelbooru, Danbooru) exigent une clé pour un accès fiable.",

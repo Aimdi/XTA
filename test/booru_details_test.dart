@@ -283,6 +283,47 @@ void main() {
   });
 
   group('endpoints', () {
+    test('artist entries come from Danbooru and e621', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+      const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
+
+      expect(booruArtistUri(danbooru, 'kantoku')!.queryParameters, {
+        'search[any_name_matches]': 'kantoku',
+        'only': 'name,is_deleted,other_names,urls',
+        'limit': '10',
+      });
+      expect(booruArtistUri(e621, 'wolfy')!.queryParameters, {'search[name]': 'wolfy', 'limit': '1'});
+      expect(booruArtistUri(moebooru, 'kantoku'), isNull);
+    });
+
+    test('the artist the tag names is picked, without deleted entries or dead links', () {
+      final raw = [
+        {'name': 'kantoku_(old)', 'is_deleted': false, 'other_names': <String>[], 'urls': <Object>[]},
+        {
+          'name': 'kantoku',
+          'is_deleted': false,
+          'other_names': ['カントク', 'kantoku_art'],
+          'urls': [
+            {'url': 'https://www.pixiv.net/users/1', 'is_active': true},
+            {'url': 'https://old.example.com', 'is_active': false},
+            {'url': 'https://x.com/kantoku'},
+          ],
+        },
+      ];
+
+      final artist = parseBooruArtist(raw, 'kantoku')!;
+      expect(artist.otherNames, ['カントク', 'kantoku_art']);
+      expect(artist.urls, ['https://www.pixiv.net/users/1', 'https://x.com/kantoku']);
+      expect(
+        parseBooruArtist([
+          {'name': 'kantoku', 'is_deleted': true},
+        ], 'kantoku'),
+        isNull,
+      );
+      expect(parseBooruArtist('not json', 'kantoku'), isNull);
+    });
+
     test('related tags come from Danbooru for any search and from e621 for one tag', () {
       const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
       const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');

@@ -114,6 +114,18 @@ Uri? booruRelatedTagsUri(BooruSite site, List<String> tags) => switch (site.engi
   _ => null,
 };
 
+/// The artist entries matching [name]: Danbooru and e621 keep them. Null
+/// elsewhere.
+Uri? booruArtistUri(BooruSite site, String name) => switch (site.engine) {
+  BooruEngine.danbooru => site.endpoint('/artists.json', {
+    'search[any_name_matches]': name,
+    'only': 'name,is_deleted,other_names,urls',
+    'limit': '10',
+  }),
+  BooruEngine.e621 => site.endpoint('/artists.json', {'search[name]': name, 'limit': '1'}),
+  _ => null,
+};
+
 bool booruSupportsWiki(BooruEngine engine) => engine != BooruEngine.gelbooruV2;
 
 /// Gelbooru only answers comments in XML.

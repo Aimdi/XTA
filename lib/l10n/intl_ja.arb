@@ -1405,6 +1405,14 @@
   },
   "plugin_booru_adult_title": "成人向けの投稿を表示しますか？",
   "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "別名: {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "APIキー",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "任意。一部ホスト（Gelbooru、Danbooru）では安定したアクセスにキーが必要です。",

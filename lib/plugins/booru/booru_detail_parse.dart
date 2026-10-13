@@ -88,3 +88,25 @@ List<String> _e621RelatedTags(String? pairs) {
       if (double.tryParse(words[i + 1]) != null) words[i],
   ];
 }
+
+/// The artist entry for [name] from the host's list: the one with that
+/// name, else the first. Deleted entries are skipped, and links the host
+/// marks inactive are left out.
+BooruArtist? parseBooruArtist(Object? raw, String name) {
+  final entries = [
+    for (final entry in Json(raw).list)
+      if (entry['is_deleted'].boolean != true && entry['name'].string != null) entry,
+  ];
+  final entry =
+      entries.where((entry) => entry['name'].string!.toLowerCase() == name.toLowerCase()).firstOrNull ??
+      entries.firstOrNull;
+  if (entry == null) return null;
+  return BooruArtist(
+    name: entry['name'].string!,
+    otherNames: [for (final other in entry['other_names'].list) ?other.string],
+    urls: [
+      for (final url in entry['urls'].list)
+        if (url['is_active'].boolean != false) ?url['url'].string,
+    ],
+  );
+}

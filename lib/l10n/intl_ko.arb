@@ -1405,6 +1405,14 @@
   },
   "plugin_booru_adult_title": "성인용 게시물을 표시할까요?",
   "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "다른 이름: {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

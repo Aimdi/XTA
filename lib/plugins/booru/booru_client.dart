@@ -276,6 +276,20 @@ class BooruClient {
     }
   }
 
+  /// What [site] (the site in use by default) keeps about the artist behind
+  /// [tag]: other names and links. Null where it keeps no artist entries,
+  /// has none for the tag, or cannot be reached; the page simply goes
+  /// without.
+  Future<BooruArtist?> artist(String tag, {BooruSite? site}) async {
+    final uri = booruArtistUri(site ?? this.site, tag);
+    if (uri == null) return null;
+    try {
+      return parseBooruArtist(await fetchJson(uri), tag);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<List<BooruComment>> comments(BooruPost post) async {
     final uri = booruCommentsUri(siteOf(post), post.id);
     if (uri == null) return const [];

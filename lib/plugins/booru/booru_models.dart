@@ -357,6 +357,21 @@ class BooruTagSuggestion {
   const BooruTagSuggestion({required this.name, this.postCount, this.category});
 }
 
+/// What a host keeps about the artist behind an artist tag.
+class BooruArtist {
+  final String name;
+  final List<String> otherNames;
+
+  /// The artist's pages elsewhere that the host still lists as active.
+  final List<String> urls;
+
+  const BooruArtist({
+    required this.name,
+    this.otherNames = const [],
+    this.urls = const [],
+  });
+}
+
 class BooruComment {
   final String id;
   final String? author;

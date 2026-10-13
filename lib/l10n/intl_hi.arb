@@ -1405,6 +1405,14 @@
   },
   "plugin_booru_adult_title": "वयस्कों के लिए पोस्ट दिखाएँ?",
   "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "{names} के नाम से भी जाने जाते हैं",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",

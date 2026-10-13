@@ -1405,6 +1405,14 @@
   },
   "plugin_booru_adult_title": "显示成人内容？",
   "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "又名 {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API 密钥",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "可选。部分站点（Gelbooru、Danbooru）需要密钥才能稳定访问。",

@@ -1405,6 +1405,14 @@
   },
   "plugin_booru_adult_title": "¿Mostrar publicaciones para adultos?",
   "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "También conocido como {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "Clave API",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Opcional: algunos servidores (Gelbooru, Danbooru) requieren una clave para un acceso fiable.",
