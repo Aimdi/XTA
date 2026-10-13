@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "लिंक कॉपी करें",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "टैग को प्रॉम्प्ट के रूप में कॉपी करें",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "टैग कॉपी करें",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "सभी टैग कॉपी करें",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«टैग को प्रॉम्प्ट के रूप में कॉपी करें» इन प्रकारों को इसी क्रम में लिखता है, अंडरस्कोर की जगह स्पेस और एस्केप किए गए कोष्ठकों के साथ। क्रम बदलने के लिए खींचें; किसी प्रकार को छोड़ने के लिए उसे बंद करें।",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "प्रॉम्प्ट के रूप में टैग",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

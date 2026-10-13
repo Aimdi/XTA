@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Kopier lenke",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Kopier tagger som prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Kopier taggen",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopier tagger",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Kopier tagger som prompt» skriver disse typene i denne rekkefølgen, med mellomrom i stedet for understreker og escapede parenteser. Dra for å endre rekkefølgen; slå av en type for å utelate den.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tagger som prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

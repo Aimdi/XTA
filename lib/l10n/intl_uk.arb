@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Копіювати посилання",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Скопіювати теги як промпт",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Копіювати тег",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Копіювати теги",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Скопіювати теги як промпт» записує ці види в цьому порядку, з пробілами замість підкреслень і екранованими дужками. Перетягніть, щоб змінити порядок; вимкніть вид, щоб пропустити його.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Теги як промпт",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

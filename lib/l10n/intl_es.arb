@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Copiar enlace",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Copiar etiquetas como prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Copiar etiqueta",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copiar etiquetas",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Copiar etiquetas como prompt» escribe estos tipos en este orden, con espacios en lugar de guiones bajos y paréntesis escapados. Arrastra para reordenar; desactiva un tipo para omitirlo.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Etiquetas como prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explícito",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

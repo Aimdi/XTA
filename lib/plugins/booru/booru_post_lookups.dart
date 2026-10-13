@@ -1,3 +1,6 @@
+import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_models.dart';
+
 /// What one viewer has already asked a host about its posts: a post's tag
 /// kinds and its related posts.
 ///
@@ -32,4 +35,11 @@ class BooruPostLookups {
     }
     return answer;
   }
+}
+
+/// [post]'s tag kinds and counts, asked once per open viewer when
+/// [lookups] is given.
+Future<Map<String, BooruTagInfo>> booruPostTagInfo(BooruClient client, BooruPostLookups? lookups, BooruPost post) {
+  Future<Map<String, BooruTagInfo>> ask() => client.tagInfo(post);
+  return lookups?.remember('tags:${post.key}', ask) ?? ask();
 }

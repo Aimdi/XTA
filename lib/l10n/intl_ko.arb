@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "링크 복사",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "태그를 프롬프트로 복사",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "태그 복사",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "모든 태그 복사",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "‘태그를 프롬프트로 복사’는 이 종류들을 이 순서대로, 밑줄은 공백으로 바꾸고 괄호는 이스케이프해서 씁니다. 끌어서 순서를 바꾸고, 종류를 끄면 빠집니다.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "프롬프트로 쓸 태그",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

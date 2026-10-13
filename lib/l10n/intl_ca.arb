@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Copia l’enllaç",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Copia les etiquetes com a prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Copia l’etiqueta",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copia les etiquetes",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Copia les etiquetes com a prompt» escriu aquests tipus en aquest ordre, amb espais en lloc de guions baixos i parèntesis escapats. Arrossega per reordenar; desactiva un tipus per ometre'l.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Etiquetes com a prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

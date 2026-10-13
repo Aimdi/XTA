@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Salin tautan",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Salin tag sebagai prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Salin tag",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Salin semua tag",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Salin tag sebagai prompt» menulis jenis-jenis ini dalam urutan ini, dengan spasi sebagai ganti garis bawah dan tanda kurung yang di-escape. Seret untuk mengubah urutan; matikan jenis untuk melewatinya.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tag sebagai prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

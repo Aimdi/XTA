@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Link kopieren",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Tags als Prompt kopieren",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Tag kopieren",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Tags kopieren",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "„Tags als Prompt kopieren“ schreibt diese Arten in dieser Reihenfolge, mit Leerzeichen statt Unterstrichen und maskierten Klammern. Zum Umsortieren ziehen; eine Art ausschalten, um sie wegzulassen.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tags als Prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explizit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "Allgemein",

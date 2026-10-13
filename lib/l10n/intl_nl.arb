@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Link kopiëren",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Tags kopiëren als prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Tag kopiëren",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Tags kopiëren",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "‘Tags kopiëren als prompt’ schrijft deze soorten in deze volgorde, met spaties in plaats van underscores en geëscapete haakjes. Sleep om de volgorde te wijzigen; zet een soort uit om hem weg te laten.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tags als prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

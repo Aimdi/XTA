@@ -12,6 +12,7 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_prompt_settings.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
@@ -336,6 +337,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
             },
           ),
           const BooruDisplaySettings(),
+          const BooruPromptSettings(),
           PrefTitle(title: Text(l10n.plugin_booru_mute_section)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

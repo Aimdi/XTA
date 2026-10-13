@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "نسخ الرابط",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "نسخ الوسوم كموجّه",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "نسخ الوسم",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "نسخ الوسوم",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "يكتب «نسخ الوسوم كموجّه» هذه الأنواع بهذا الترتيب، بمسافات بدل الشرطات السفلية وأقواس مُهرَّبة. اسحب لإعادة الترتيب، وأوقف نوعًا لاستبعاده.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "الوسوم كموجّه",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "复制链接",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "将标签复制为提示词",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "复制标签",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "复制所有标签",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "“将标签复制为提示词”会按此顺序写出这些种类，用空格替换下划线并转义括号。拖动可调整顺序；关闭某一种类即可将其略去。",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "标签作为提示词",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "限制级",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "一般",

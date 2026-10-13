@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Kopírovat odkaz",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Kopírovat štítky jako prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Kopírovat štítek",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopírovat štítky",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "„Kopírovat štítky jako prompt“ píše tyto druhy v tomto pořadí, s mezerami místo podtržítek a escapovanými závorkami. Přetažením změníte pořadí; vypnutím druh vynecháte.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Štítky jako prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

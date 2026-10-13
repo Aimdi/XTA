@@ -1416,6 +1416,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Sao chép liên kết",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Sao chép thẻ thành prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Sao chép thẻ",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Sao chép các thẻ",
@@ -1588,6 +1590,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "“Sao chép thẻ thành prompt” ghi các loại này theo thứ tự này, thay dấu gạch dưới bằng dấu cách và thoát dấu ngoặc. Kéo để sắp xếp lại; tắt một loại để bỏ qua.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Thẻ dạng prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

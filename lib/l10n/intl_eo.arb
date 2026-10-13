@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Kopii ligilon",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Kopii etikedojn kiel instigon",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Kopii etikedon",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopii etikedojn",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Kopii etikedojn kiel instigon» skribas ĉi tiujn specojn en ĉi tiu ordo, kun spacetoj anstataŭ substrekoj kaj eskapitaj krampoj. Trenu por reordigi; malŝaltu specon por preterlasi ĝin.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Etikedoj kiel instigo",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

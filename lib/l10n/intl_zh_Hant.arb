@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "複製連結",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "將標籤複製為提示詞",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "複製標籤",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "複製所有標籤",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "「將標籤複製為提示詞」會依此順序寫出這些種類，以空格取代底線並跳脫括號。拖曳可調整順序；關閉某一種類即可略去。",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "標籤作為提示詞",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

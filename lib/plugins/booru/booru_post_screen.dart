@@ -58,8 +58,7 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     final client = context.read<BooruClient>();
     _engine = BooruEngine.tryParse(_post.engine) ?? client.engine;
     final lookups = context.read<BooruPostLookups?>();
-    Future<Map<String, BooruTagInfo>> lookUp() => client.tagInfo(_post);
-    _tagInfo = BooruLoadStore(() => lookups?.remember('tags:${_post.key}', lookUp) ?? lookUp());
+    _tagInfo = BooruLoadStore(() => booruPostTagInfo(client, lookups, _post));
     unawaited(_tagInfo.ensure());
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -434,6 +435,37 @@ void main() {
       expect(booruPostsExtend(a, [...a, _post('3')]), isTrue);
       expect(booruPostsExtend(a, [_post('9'), _post('2'), _post('3')]), isFalse);
       expect(booruPostsExtend(a, a), isFalse);
+    });
+  });
+
+  group('copy as prompt', () {
+    testWidgets('the post menu copies the tags as a prompt, in the order chosen in settings', (tester) async {
+      final copied = <String>[];
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.setData') copied.add((call.arguments as Map)['text'] as String);
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+      final post = _post(
+        '1',
+        tags: const ['highres', 'solo', 'kantoku', 'cat_(animal)'],
+        categories: const {'kantoku': BooruTagCategory.artist, 'highres': BooruTagCategory.meta},
+      );
+      await _pump(
+        tester,
+        Scaffold(
+          appBar: AppBar(actions: [BooruPostActions(post: post)]),
+        ),
+        prefs: {optionPluginBooruPromptKinds: 'general,artist'},
+      );
+
+      await tester.tap(find.byKey(const ValueKey('booru-post-menu')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Copy tags as prompt'));
+      await tester.pumpAndSettle();
+
+      expect(copied, [r'solo, cat \(animal\), kantoku']);
     });
   });
 

@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Copiar link",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Copiar tags como prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Copiar tag",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copiar tags",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "“Copiar tags como prompt” escreve estes tipos nesta ordem, com espaços no lugar de sublinhados e parênteses escapados. Arraste para reordenar; desative um tipo para deixá-lo de fora.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tags como prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

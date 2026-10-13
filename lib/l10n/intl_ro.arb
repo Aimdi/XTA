@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Copiază linkul",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Copiază etichetele ca prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Copiază eticheta",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copiază etichetele",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "„Copiază etichetele ca prompt” scrie aceste tipuri în această ordine, cu spații în loc de liniuțe de subliniere și paranteze escapate. Trage pentru a reordona; dezactivează un tip pentru a-l omite.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Etichete ca prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

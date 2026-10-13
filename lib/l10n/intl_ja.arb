@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "リンクをコピー",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "タグをプロンプトとしてコピー",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "タグをコピー",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "すべてのタグをコピー",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "「タグをプロンプトとしてコピー」は、これらの種類をこの順に、アンダースコアを空白に、括弧をエスケープして書き出します。ドラッグで並べ替え、オフにした種類は除外されます。",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "プロンプトとしてのタグ",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "過激",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "全年齢",

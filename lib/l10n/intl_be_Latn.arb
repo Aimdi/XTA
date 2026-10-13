@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Skapijavać spasyłku",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Skapijavać tehi jak prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Skapijavać teh",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Skapijavać tehi",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Skapijavać tehi jak prompt» zapisvaje hetyja vidy ŭ hetym paradku, z prabiełami zamiest padkreślivanniaŭ i ekranavanymi dužkami. Pieraciahvajcie, kab źmianić paradak; vykliučycie vid, kab prapuscić jaho.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tehi jak prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

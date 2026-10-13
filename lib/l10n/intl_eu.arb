@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Kopiatu esteka",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Kopiatu etiketak prompt gisa",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Kopiatu etiketa",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopiatu etiketak",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Kopiatu etiketak prompt gisa» aukerak mota hauek ordena honetan idazten ditu, azpimarren ordez zuriuneekin eta parentesiak ihes eginda. Arrastatu ordena aldatzeko; desaktibatu mota bat kanpoan uzteko.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Etiketak prompt gisa",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

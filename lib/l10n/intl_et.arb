@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Kopeeri link",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Kopeeri sildid viibana",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Kopeeri silt",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Kopeeri sildid",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "„Kopeeri sildid viibana“ kirjutab need liigid selles järjekorras, alakriipsude asemel tühikud ja sulud paomärgiga. Lohista järjekorra muutmiseks; lülita liik välja, et see välja jätta.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Sildid viibana",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

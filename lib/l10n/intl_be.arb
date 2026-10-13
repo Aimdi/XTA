@@ -1419,6 +1419,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Скапіяваць спасылку",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Скапіяваць тэгі як промпт",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Скапіяваць тэг",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Скапіяваць тэгі",
@@ -1591,6 +1593,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Скапіяваць тэгі як промпт» запісвае гэтыя віды ў гэтым парадку, з прабеламі замест падкрэсліванняў і экранаванымі дужкамі. Перацягвайце, каб змяніць парадак; выключыце від, каб прапусціць яго.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Тэгі як промпт",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

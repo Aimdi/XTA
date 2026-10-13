@@ -477,6 +477,8 @@ const optionPluginBooruOriginalInViewer = 'plugin.booru.original_in_viewer';
 const optionPluginBooruTileDetails = 'plugin.booru.tile_details';
 const optionPluginBooruBlurExplicit = 'plugin.booru.blur_explicit';
 const optionPluginBooruTagSort = 'plugin.booru.tag_sort';
+// The kinds of tag "Copy tags as prompt" writes, in order; empty means the default.
+const optionPluginBooruPromptKinds = 'plugin.booru.prompt_kinds';
 const pluginIdEhViewer = 'ehviewer';
 const optionPluginEhEnabled = 'plugin.ehviewer.enabled';
 const optionPluginEhShowTab = 'plugin.ehviewer.show_tab';

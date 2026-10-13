@@ -173,6 +173,7 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBooruTileDetails, true);
     await prefs.set(optionPluginBooruBlurExplicit, false);
     await prefs.set(optionPluginBooruTagSort, 'name');
+    await prefs.set(optionPluginBooruPromptKinds, '');
   }
 
   @override

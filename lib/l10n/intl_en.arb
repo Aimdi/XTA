@@ -1512,6 +1512,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Copy link",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Copy tags as prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Copy tag",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copy tags",
@@ -1684,6 +1686,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "Copy tags as prompt writes these kinds in this order, with spaces for underscores and escaped parentheses. Drag to reorder; switch a kind off to leave it out.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tags as a prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",

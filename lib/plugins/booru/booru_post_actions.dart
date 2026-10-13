@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
+import 'package:xta/plugins/booru/booru_prompt.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
@@ -43,7 +47,7 @@ Future<void> copyBooruText(BuildContext context, String text) async {
   if (context.mounted) showSnackBar(context, icon: '📋', message: message);
 }
 
-enum _PostMenu { share, copyLink, copyTags, host, source, file }
+enum _PostMenu { share, copyLink, copyTags, copyPrompt, host, source, file }
 
 /// Download, save and the rest of a post's actions, for the viewer's app bar.
 class BooruPostActions extends StatelessWidget {
@@ -71,6 +75,8 @@ class BooruPostActions extends StatelessWidget {
             _item(_PostMenu.share, Icons.share_outlined, l10n.share_link),
             _item(_PostMenu.copyLink, Icons.link, l10n.plugin_booru_copy_link),
             if (post.tags.isNotEmpty) _item(_PostMenu.copyTags, Icons.sell_outlined, l10n.plugin_booru_copy_tags),
+            if (post.tags.isNotEmpty)
+              _item(_PostMenu.copyPrompt, Icons.auto_awesome_outlined, l10n.plugin_booru_copy_prompt),
             if (post.hostPageUrl != null) _item(_PostMenu.host, Icons.public, l10n.plugin_booru_open_on_host),
             if (_source != null) _item(_PostMenu.source, Icons.open_in_new, l10n.plugin_booru_open_source),
             _item(_PostMenu.file, Icons.insert_drive_file_outlined, l10n.plugin_booru_open_file),
@@ -85,6 +91,25 @@ class BooruPostActions extends StatelessWidget {
     return source == null || source.isEmpty ? null : source;
   }
 
+  /// The post's tags as a prompt in the reader's order. Kinds come from the
+  /// tag lookup the viewer has usually made already; without it, the kinds
+  /// the post carries are used and the rest count as general.
+  Future<void> _copyPrompt(BuildContext context) async {
+    final order = booruPromptOrder(PrefService.of(context, listen: false));
+    Map<String, BooruTagInfo> info;
+    try {
+      info = await booruPostTagInfo(context.read<BooruClient>(), context.read<BooruPostLookups?>(), post);
+    } catch (_) {
+      info = const {};
+    }
+    if (!context.mounted) return;
+    final kinds = {
+      ...post.tagCategories,
+      for (final MapEntry(key: tag, value: tagInfo) in info.entries) tag: ?tagInfo.category,
+    };
+    await copyBooruText(context, booruPrompt(post.tags, kinds, order));
+  }
+
   PopupMenuItem<_PostMenu> _item(_PostMenu value, IconData icon, String label) => PopupMenuItem(
     value: value,
     child: ListTile(leading: Icon(icon), title: Text(label), contentPadding: EdgeInsets.zero),
@@ -94,6 +119,7 @@ class BooruPostActions extends StatelessWidget {
     _PostMenu.share => SharePlus.instance.share(ShareParams(text: booruShareUrl(post))),
     _PostMenu.copyLink => copyBooruText(context, booruShareUrl(post)),
     _PostMenu.copyTags => copyBooruText(context, post.tagLine),
+    _PostMenu.copyPrompt => _copyPrompt(context),
     _PostMenu.host => openBooruLink(post.hostPageUrl!),
     _PostMenu.source => openBooruLink(_source!),
     _PostMenu.file => openBooruLink(post.originalUrl),
