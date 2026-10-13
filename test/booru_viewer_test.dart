@@ -17,6 +17,7 @@ import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
@@ -863,5 +864,11 @@ void main() {
     expect(ugoira.isVideo, isTrue);
     expect(ugoira.videoUrl, 'https://cdn/s.webm');
     expect(ugoira.catalogUrl, 'https://cdn/p.jpg');
+    expect(
+      booruDownloadItem(ugoira).resolvedDownloadUrl,
+      'https://cdn/s.webm',
+      reason: 'Download saves the animation that plays, not the zip of its frames',
+    );
+    expect(booruDownloadItem(_post('2')).resolvedDownloadUrl, _post('2').originalUrl);
   });
 }

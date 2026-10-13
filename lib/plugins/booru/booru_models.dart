@@ -197,6 +197,11 @@ class BooruPost {
   String get originalUrl =>
       (fileUrl != null && fileUrl!.isNotEmpty) ? fileUrl! : displayUrl;
 
+  /// What Download saves: the file the post plays, when that is not the
+  /// original (a Danbooru animation's original is a zip of its frames), else
+  /// the original.
+  String get downloadUrl => videoUrl ?? originalUrl;
+
   /// Whether the post belongs to a parent/child set on the host.
   bool get hasFamily => parentId != null || hasChildren;
 
