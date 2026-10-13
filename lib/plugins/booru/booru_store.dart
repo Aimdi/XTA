@@ -116,15 +116,25 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   var _page = 0;
   var _hasMore = true;
   var _loadingMore = false;
+  String? _loadedFor;
 
   BooruFeedStore(this.client, this.loader) : super(const []);
 
   bool get hasMore => _hasMore;
   bool get loadingMore => _loadingMore;
 
+  /// Whether the site, rating cap or blacklist changed since the feed loaded.
+  bool get isStale => _loadedFor != null && _loadedFor != client.feedKey;
+
+  /// Loads the feed when it is empty or stale.
+  Future<void> ensureFresh() async {
+    if (state.isEmpty || isStale) await refresh();
+  }
+
   Future<void> refresh() async {
     _page = 0;
     _hasMore = true;
+    _loadedFor = client.feedKey;
     await execute(() async {
       // Rating / mute filters can zero the first raw page. Skip a few so Latest
       // does not open empty while the host still has posts.
@@ -147,8 +157,11 @@ class BooruFeedStore extends Store<List<BooruPost>> {
     });
   }
 
+  /// The next page; a stale feed starts over from the first page instead,
+  /// so another site's posts are never appended to it.
   Future<void> loadMore() async {
     if (!_hasMore || _loadingMore) return;
+    if (isStale) return refresh();
     _loadingMore = true;
     try {
       // Skip empty filtered pages while the API still has more raw results.

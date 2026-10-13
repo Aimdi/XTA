@@ -93,7 +93,7 @@ class _BooruScreenState extends State<BooruScreen> {
   }
 
   Future<void> _ensureFollowing() async {
-    if (_followingBootstrapped) return;
+    if (_followingBootstrapped && !_following.isStale) return;
     _followingBootstrapped = true;
     await _following.refresh();
   }
@@ -121,8 +121,7 @@ class _BooruScreenState extends State<BooruScreen> {
 
   Future<void> _ensureLoaded(int tab) async {
     if (tab == _followingTab) return _ensureFollowing();
-    final feed = tab == _popularTab ? _popular : _latest;
-    if (feed.state.isEmpty) await feed.refresh();
+    await (tab == _popularTab ? _popular : _latest).ensureFresh();
   }
 
   void _select(int index) {
@@ -180,8 +179,11 @@ class _BooruScreenState extends State<BooruScreen> {
                 PluginHomeSecondaryAction(
                   label: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const BooruSettingsScreen())),
+                  // The site or filters may have changed there.
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const BooruSettingsScreen()),
+                  ).then((_) => mounted ? _ensureLoaded(_tabs.state) : null),
                 ),
               ],
             ),

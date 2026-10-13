@@ -144,6 +144,46 @@ void main() {
       await pager.destroy();
     });
 
+    test('after a site change a feed starts over instead of growing', () async {
+      final prefs = PrefServiceCache(
+        cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruHost: 'https://danbooru.donmai.us'},
+      );
+      final client = _Client(prefs);
+      final asked = <String>[];
+      final feed = BooruFeedStore(client, ({required page}) async {
+        asked.add('${client.host} $page');
+        return BooruPostPage(posts: [_post('${asked.length}')], page: page, hasMore: true);
+      });
+      await feed.refresh();
+      expect(feed.isStale, isFalse);
+
+      await prefs.set(optionPluginBooruEngine, 'e621');
+      await prefs.set(optionPluginBooruHost, 'https://e621.net');
+      expect(feed.isStale, isTrue);
+      await feed.loadMore();
+      expect(asked, ['https://danbooru.donmai.us 1', 'https://e621.net 1'], reason: 'not page 2 of the old list');
+      expect(feed.state.map((p) => p.id), ['2']);
+      expect(feed.isStale, isFalse);
+      await feed.destroy();
+    });
+
+    test('a new rating cap or blacklist entry makes a feed stale', () async {
+      final prefs = PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruMaxRating: 'g'});
+      final feed = BooruFeedStore(
+        _Client(prefs),
+        ({required page}) async => BooruPostPage(posts: [_post('$page')], page: page, hasMore: true),
+      );
+      await feed.ensureFresh();
+      expect(feed.state, isNotEmpty);
+      await prefs.set(optionPluginBooruMaxRating, 'e');
+      expect(feed.isStale, isTrue);
+      await feed.ensureFresh();
+      expect(feed.isStale, isFalse);
+      await prefs.set(optionPluginBooruMutedTags, '["solo"]');
+      expect(feed.isStale, isTrue);
+      await feed.destroy();
+    });
+
     test('the feed skips posts it already shows', () async {
       final pages = {
         1: [_post('1'), _post('2')],

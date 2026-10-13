@@ -73,6 +73,15 @@ class BooruClient {
 
   bool get isConfigured => host.isNotEmpty;
 
+  /// What a feed's posts depend on: the site, the rating cap and the
+  /// blacklist. A feed loaded under another key is stale.
+  String get feedKey => [
+    engine.id,
+    host,
+    maxRating.code,
+    ...(mutedTags.toList()..sort()),
+  ].join('\n');
+
   Future<BooruPostPage> latest({int page = 1, int limit = defaultPageSize}) =>
       posts(tags: const [], page: page, limit: limit);
 
