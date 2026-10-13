@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "सहेजी गई खोजों से हटाएँ",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "{date} को अपडेट किया गया",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "{name} द्वारा अपलोड किया गया",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Vydalić z zachavanych pošukaŭ",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Abnoŭlena {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Zahružana karystalnikam {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Usuń z zapisanych wyszukiwań",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Zaktualizowano {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Przesłane przez {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "保存した検索から削除",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "更新日時: {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "投稿者: {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

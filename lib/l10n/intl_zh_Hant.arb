@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "從已儲存的搜尋中移除",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "更新於 {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "上傳者：{name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

@@ -538,6 +538,30 @@ void main() {
       );
       expect(booruPostFacts(bare, l10n, 'en'), isEmpty);
     });
+
+    test('a time the post last changed is shown as updated, not posted', () async {
+      final l10n = await L10n.load(const Locale('en'));
+      final changed = BooruPost(
+        id: '1',
+        host: 'h',
+        engine: 'gelbooru',
+        tags: const [],
+        rating: null,
+        score: null,
+        width: 0,
+        height: 0,
+        previewUrl: null,
+        sampleUrl: null,
+        fileUrl: null,
+        fileExt: null,
+        source: null,
+        createdAt: null,
+        updatedAt: DateTime.utc(2024, 1, 2, 3, 4),
+      );
+      final fact = booruPostFacts(changed, l10n, 'en').single;
+      expect(fact.text, startsWith('Updated '));
+      expect(fact.text, contains('2024'));
+    });
   });
 
   group('popular tab', () {

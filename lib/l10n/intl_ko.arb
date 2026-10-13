@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "저장된 검색에서 삭제",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "업데이트: {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "업로더: {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

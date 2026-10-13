@@ -315,8 +315,8 @@ class BooruClient {
 
     final merged = byId.values.toList(growable: false);
     merged.sort((a, b) {
-      final ad = a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bd = b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final ad = a.feedDate ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bd = b.feedDate ?? DateTime.fromMillisecondsSinceEpoch(0);
       return bd.compareTo(ad);
     });
     return merged;

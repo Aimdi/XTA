@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Aus gespeicherten Suchen entfernen",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Aktualisiert am {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Hochgeladen von {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

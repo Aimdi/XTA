@@ -1702,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Kendu gordetako bilaketetatik",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Eguneratze-data: {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "{name} erabiltzaileak igoa",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

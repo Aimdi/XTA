@@ -88,7 +88,7 @@ List<InterleavedItem> booruInterleavedItems(Iterable<BooruPost> posts) => [
   for (final post in posts)
     provenanceInterleavedItem(
       // Gelbooru sometimes omits dates — still show the card rather than drop it.
-      date: post.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      date: post.feedDate ?? DateTime.fromMillisecondsSinceEpoch(0),
       pluginId: pluginIdBooru,
       build: (_) => BooruPostCard(post: post),
     ),

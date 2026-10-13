@@ -135,7 +135,7 @@ void main() {
       expect(post.hasChildren, isTrue);
     });
 
-    test('an unreadable date falls back to the change time', () {
+    test('a change time is kept apart from when the post went up', () {
       final post = parseBooruPosts(
         [
           {'id': 3, 'tags': 'solo', 'created_at': 'someday', 'change': 1700000000},
@@ -143,7 +143,10 @@ void main() {
         engine: BooruEngine.gelbooruV2,
         host: 'https://safebooru.org',
       ).single;
-      expect(post.createdAt, DateTime.fromMillisecondsSinceEpoch(1700000000 * 1000));
+      final changed = DateTime.fromMillisecondsSinceEpoch(1700000000 * 1000);
+      expect(post.createdAt, isNull, reason: 'a re-tag is not the upload');
+      expect(post.updatedAt, changed);
+      expect(post.feedDate, changed, reason: 'feeds still order the post by it');
     });
 
     test('Moebooru author and children', () {
