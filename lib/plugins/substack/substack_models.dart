@@ -865,38 +865,13 @@ SubstackPost? postFromBeehiivHtml(
   );
   if (fromRemix != null) return fromRemix;
 
-  final ld = _jsonLdArticle(html);
-  if (ld != null) {
-    final title = (ld['headline'] as String?)?.trim() ?? (ld['name'] as String?)?.trim() ?? '';
-    if (title.isNotEmpty) {
-      String? author;
-      final authorRaw = ld['author'];
-      if (authorRaw is Map) {
-        author = (authorRaw['name'] as String?)?.trim();
-      }
-      String? image;
-      final imageRaw = ld['image'];
-      if (imageRaw is Map) {
-        image = (imageRaw['url'] as String?)?.trim();
-      } else if (imageRaw is String) {
-        image = imageRaw.trim();
-      }
-      final origin = Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
-      return SubstackPost(
-        id: slug,
-        title: title,
-        subtitle: (ld['description'] as String?)?.trim(),
-        slug: slug,
-        postDate: ld['datePublished'] as String?,
-        canonicalUrl: (ld['url'] as String?)?.trim().isNotEmpty == true ? ld['url'] as String : '$origin/p/$slug',
-        coverImage: image == null || image.isEmpty ? null : image,
-        audience: ld['isAccessibleForFree'] == false ? 'only_paid' : 'everyone',
-        authorName: author == null || author.isEmpty ? null : author,
-        publicationBaseUrl: publicationBaseUrl,
-        publicationName: publicationName,
-      );
-    }
-  }
+  final fromLd = _postFromJsonLd(
+    Json(_jsonLdArticle(html)),
+    slug: slug,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+  if (fromLd != null) return fromLd;
 
   final ogType = _metaContent(html, 'og:type')?.toLowerCase();
   final title = _metaContent(html, 'og:title')?.trim();
@@ -914,6 +889,33 @@ SubstackPost? postFromBeehiivHtml(
     coverImage: image == null || image.isEmpty ? null : image,
     audience: 'everyone',
     authorName: author == null || author.isEmpty ? null : author,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+}
+
+/// A JSON-LD article; a field of an unexpected shape is left out, and no
+/// title means the next parser gets its turn.
+SubstackPost? _postFromJsonLd(
+  Json ld, {
+  required String slug,
+  required String publicationBaseUrl,
+  required String publicationName,
+}) {
+  String? text(Json value) => value.string?.trim().isNotEmpty == true ? value.string!.trim() : null;
+  final title = text(ld['headline']) ?? text(ld['name']);
+  if (title == null) return null;
+  final origin = Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
+  return SubstackPost(
+    id: slug,
+    title: title,
+    subtitle: text(ld['description']),
+    slug: slug,
+    postDate: ld['datePublished'].string,
+    canonicalUrl: text(ld['url']) ?? '$origin/p/$slug',
+    coverImage: text(ld['image']['url']) ?? text(ld['image']),
+    audience: ld['isAccessibleForFree'].boolean == false ? 'only_paid' : 'everyone',
+    authorName: text(ld['author']['name']),
     publicationBaseUrl: publicationBaseUrl,
     publicationName: publicationName,
   );

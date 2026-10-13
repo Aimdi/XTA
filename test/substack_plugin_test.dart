@@ -286,6 +286,44 @@ void main() {
     expect(post?.canonicalUrl, 'https://www.garbageday.email/p/microdramas');
   });
 
+  test('postFromBeehiivHtml reads JSON-LD, and an odd JSON-LD shape falls through to OG tags', () {
+    String page(String ld) => '''
+      <html><head>
+        <script type="application/ld+json">$ld</script>
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="From the OG tags">
+      </head></html>
+    ''';
+    SubstackPost? read(String ld) => postFromBeehiivHtml(
+      page(ld),
+      slug: 'odd',
+      publicationBaseUrl: 'https://www.garbageday.email',
+      publicationName: 'Garbage Day',
+    );
+
+    final post = read(
+      '{"@type":"Article","headline":"From JSON-LD","author":{"name":"Ryan"},'
+      '"image":{"url":"https://example.com/c.png"},"datePublished":"2026-08-26","isAccessibleForFree":false}',
+    );
+    expect(post?.title, 'From JSON-LD');
+    expect(post?.authorName, 'Ryan');
+    expect(post?.coverImage, 'https://example.com/c.png');
+    expect(post?.postDate, '2026-08-26');
+    expect(post?.isPaywalled, isTrue);
+    expect(post?.canonicalUrl, 'https://www.garbageday.email/p/odd');
+
+    final odd = read(
+      '{"@type":"Article","headline":"Odd","description":["a","b"],"datePublished":20260826,'
+      '"url":{"@id":"x"},"author":[{"name":"Ryan"}]}',
+    );
+    expect(odd?.title, 'Odd', reason: 'threw a TypeError before the fix');
+    expect(odd?.subtitle, isNull);
+    expect(odd?.postDate, isNull);
+    expect(odd?.canonicalUrl, 'https://www.garbageday.email/p/odd');
+
+    expect(read('{"@type":"Article","headline":["Not","a","title"]}')?.title, 'From the OG tags');
+  });
+
   test('publicationFromBeehiivRemix reads name and logo', () {
     final remix = {
       'state': {
