@@ -108,20 +108,29 @@ class BooruMuteStore extends Store<Set<String>> {
   }
 }
 
+/// Where loading a feed's next page stands, for the footer under its grid.
+enum BooruPaging { idle, loading, failed, end }
+
+class BooruPagingStore extends Store<BooruPaging> {
+  BooruPagingStore() : super(BooruPaging.idle);
+}
+
 /// Paginated post list for Latest / Search / Following.
 class BooruFeedStore extends Store<List<BooruPost>> {
   final BooruClient client;
   final Future<BooruPostPage> Function({required int page}) loader;
 
+  /// Where loading the next page stands; the grid's footer shows it.
+  final paging = BooruPagingStore();
+
   var _page = 0;
   var _hasMore = true;
-  var _loadingMore = false;
+  var _closed = false;
   String? _loadedFor;
 
   BooruFeedStore(this.client, this.loader) : super(const []);
 
   bool get hasMore => _hasMore;
-  bool get loadingMore => _loadingMore;
 
   /// Whether the site, rating cap or blacklist changed since the feed loaded.
   bool get isStale => _loadedFor != null && _loadedFor != client.feedKey;
@@ -135,6 +144,7 @@ class BooruFeedStore extends Store<List<BooruPost>> {
     _page = 0;
     _hasMore = true;
     _loadedFor = client.feedKey;
+    _setPaging(BooruPaging.idle);
     await execute(() async {
       // Rating / mute filters can zero the first raw page. Skip a few so Latest
       // does not open empty while the host still has posts.
@@ -153,38 +163,63 @@ class BooruFeedStore extends Store<List<BooruPost>> {
       }
       _page = pageNo;
       _hasMore = hasMore;
+      _setPaging(hasMore ? BooruPaging.idle : BooruPaging.end);
       return posts;
     });
   }
 
   /// The next page; a stale feed starts over from the first page instead,
-  /// so another site's posts are never appended to it.
+  /// so another site's posts are never appended to it. After a failure it
+  /// waits for [retryMore], however often the grid asks.
   Future<void> loadMore() async {
-    if (!_hasMore || _loadingMore) return;
+    if (!_hasMore || paging.state != BooruPaging.idle) return;
     if (isStale) return refresh();
-    _loadingMore = true;
+    _setPaging(BooruPaging.loading);
     try {
-      // Skip empty filtered pages while the API still has more raw results.
-      var repeats = 0;
-      for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
-        final next = _page + 1;
-        final page = await loader(page: next);
-        _page = next;
-        _hasMore = page.hasMore;
-        final fresh = _unseen(page.posts);
-        if (fresh.isNotEmpty) {
-          update([...state, ...fresh]);
-          return;
-        }
-        if (page.posts.isNotEmpty) repeats++;
-      }
-      // A host that ignores the page number sends the same posts forever.
-      if (repeats == 3) _hasMore = false;
+      await _appendNextPage();
+      _setPaging(_hasMore ? BooruPaging.idle : BooruPaging.end);
     } catch (_) {
-      // Keep what we have; the reader can pull-to-refresh.
-    } finally {
-      _loadingMore = false;
+      _setPaging(BooruPaging.failed);
     }
+  }
+
+  /// Asks again for the page that failed.
+  Future<void> retryMore() async {
+    if (paging.state != BooruPaging.failed) return;
+    _setPaging(BooruPaging.idle);
+    await loadMore();
+  }
+
+  /// Appends the next page with posts not shown yet, skipping pages the
+  /// filters emptied while the host still has more.
+  Future<void> _appendNextPage() async {
+    var repeats = 0;
+    for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
+      final next = _page + 1;
+      final page = await loader(page: next);
+      if (_closed) return;
+      _page = next;
+      _hasMore = page.hasMore;
+      final fresh = _unseen(page.posts);
+      if (fresh.isNotEmpty) {
+        update([...state, ...fresh]);
+        return;
+      }
+      if (page.posts.isNotEmpty) repeats++;
+    }
+    // A host that ignores the page number sends the same posts forever.
+    if (repeats == 3) _hasMore = false;
+  }
+
+  void _setPaging(BooruPaging value) {
+    if (!_closed) paging.update(value);
+  }
+
+  @override
+  Future<void> destroy() async {
+    _closed = true;
+    await paging.destroy();
+    await super.destroy();
   }
 
   /// New uploads shift a host's pages, so a page can repeat posts already

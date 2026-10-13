@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -193,6 +195,25 @@ void main() {
       expect(feed.isStale, isFalse);
       await prefs.set(optionPluginBooruMutedTags, '["solo"]');
       expect(feed.isStale, isTrue);
+      await feed.destroy();
+    });
+
+    test('a failed page is asked for once, until the reader retries', () async {
+      var calls = 0;
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        if (page == 1) return BooruPostPage(posts: [_post('1')], page: 1, hasMore: true);
+        calls++;
+        throw BooruException(BooruErrorKind.rateLimited, '429');
+      });
+      await feed.refresh();
+      for (var notification = 0; notification < 5; notification++) {
+        await feed.loadMore();
+      }
+      expect(calls, 1, reason: 'scrolling near the end does not ask again');
+      expect(feed.paging.state, BooruPaging.failed);
+
+      await feed.retryMore();
+      expect(calls, 2);
       await feed.destroy();
     });
 
@@ -474,6 +495,34 @@ void main() {
       await tester.pumpAndSettle();
       expect(prefs.get<int>(optionPluginBooruGridColumns), 3);
       expect(find.text('3'), findsOneWidget);
+    });
+
+    testWidgets('the grid footer offers a retry after a failed page, then marks the end', (tester) async {
+      var failNext = true;
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        if (failNext) {
+          failNext = false;
+          throw BooruException(BooruErrorKind.network, 'offline');
+        }
+        return BooruPostPage(posts: [_post('b')], page: page, hasMore: false);
+      })..update([_post('a')]);
+      addTearDown(feed.destroy);
+      await _pump(
+        tester,
+        Scaffold(
+          body: BooruPostGrid(posts: feed.state, feed: feed),
+        ),
+      );
+
+      unawaited(feed.loadMore());
+      await tester.pumpAndSettle();
+      expect(find.text('Could not load more posts'), findsOneWidget);
+
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+      expect(find.text('Could not load more posts'), findsNothing);
+      expect(find.text('No more posts'), findsOneWidget);
+      expect(feed.state.map((p) => p.id), ['a', 'b']);
     });
 
     testWidgets('settings keep the login and key with the site they belong to', (tester) async {

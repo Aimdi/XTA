@@ -236,7 +236,6 @@ class _FeedTab extends StatelessWidget {
               feed: store,
               scrollController: scrollController,
               onRefresh: store.refresh,
-              loadingMore: store.loadingMore,
               onNearEnd: store.loadMore,
             )
           : const PluginGridSkeleton(columns: 2),
@@ -265,7 +264,6 @@ class _FeedTab extends StatelessWidget {
           feed: store,
           scrollController: scrollController,
           onRefresh: store.refresh,
-          loadingMore: store.loadingMore,
           onNearEnd: store.loadMore,
         );
       },

@@ -42,7 +42,6 @@ class BooruSearchResults extends StatelessWidget {
                 posts: posts,
                 feed: results,
                 onRefresh: results.refresh,
-                loadingMore: results.loadingMore,
                 onNearEnd: results.loadMore,
               ),
             ),
