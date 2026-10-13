@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Hiljutised",
   "@home_networks_recent": {},
+  "image_cache_clear": "Tühjenda",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Pildid laaditakse uuesti alla, kui sa neid järgmine kord näed.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Kas tühjendada piltide vahemälu?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} selles seadmes. Üle {days} päeva vanad pildid eemaldatakse ise.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Piltide vahemälu",
+  "@image_cache_title": {},
   "image_quality": "Piltide kvaliteet",
   "@image_quality": {},
   "import": "Import",

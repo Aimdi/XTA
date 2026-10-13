@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Son kullanılanlar",
   "@home_networks_recent": {},
+  "image_cache_clear": "Temizle",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Görseller bir sonraki görüşünüzde yeniden indirilir.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Görsel önbelleği temizlensin mi?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "Bu cihazda {size}. {days} günden eski görseller kendiliğinden silinir.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Görsel önbelleği",
+  "@image_cache_title": {},
   "image_quality": "Görüntü kalitesi",
   "@image_quality": {},
   "import": "İçe aktar",

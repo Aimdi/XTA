@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "最近使用",
   "@home_networks_recent": {},
+  "image_cache_clear": "清除",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "下次查看時會重新下載圖片。",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "清除圖片快取？",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "此裝置上有 {size}。超過 {days} 天的圖片會自動刪除。",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "圖片快取",
+  "@image_cache_title": {},
   "image_quality": "圖片品質",
   "@image_quality": {},
   "import": "匯入",

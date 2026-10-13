@@ -4,6 +4,7 @@ import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/utils/download_directory.dart';
+import 'package:xta/utils/byte_size.dart';
 
 class DownloadsScreen extends StatelessWidget {
   final DownloadStore? store;
@@ -117,7 +118,10 @@ class _DownloadRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    l10n.downloads_progress(_bytes(entry.received), entry.total == null ? '—' : _bytes(entry.total!)),
+                    l10n.downloads_progress(
+                      formatByteSize(entry.received),
+                      entry.total == null ? '—' : formatByteSize(entry.total!),
+                    ),
                     textDirection: TextDirection.ltr,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -148,12 +152,6 @@ class _DownloadRow extends StatelessWidget {
       ),
     );
   }
-}
-
-String _bytes(int value) {
-  if (value >= 1048576) return '${(value / 1048576).toStringAsFixed(1)} MB';
-  if (value >= 1024) return '${(value / 1024).toStringAsFixed(1)} KB';
-  return '$value B';
 }
 
 IconData _icon(DownloadStatus status) => switch (status) {

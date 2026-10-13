@@ -821,6 +821,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recent",
   "@home_networks_recent": {},
+  "image_cache_clear": "Clear",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Pictures download again the next time you see them.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Clear the image cache?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} on this device. Pictures older than {days} days are removed on their own.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Image cache",
+  "@image_cache_title": {},
   "image_quality": "Image quality",
   "@image_quality": {},
   "import": "Import",

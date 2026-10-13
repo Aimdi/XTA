@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Niadaŭnija",
   "@home_networks_recent": {},
+  "image_cache_clear": "Ačyscić",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Vyjavy spampujucca znoŭ, kali vy ŭbačycie ich nastupnym razam.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Ačyscić keš vyjaŭ?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} na hetaj pryładzie. Vyjavy, starejšyja za {days} dzion, vydalajucca sami.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Keš vyjaŭ",
+  "@image_cache_title": {},
   "image_quality": "Jakasć vyjaŭ",
   "@image_quality": {},
   "import": "Import",

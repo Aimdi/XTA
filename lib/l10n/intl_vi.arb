@@ -764,6 +764,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Gần đây",
   "@home_networks_recent": {},
+  "image_cache_clear": "Xóa",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Hình ảnh sẽ được tải lại vào lần tới bạn xem.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Xóa bộ nhớ đệm hình ảnh?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} trên thiết bị này. Hình ảnh cũ hơn {days} ngày sẽ tự động bị xóa.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Bộ nhớ đệm hình ảnh",
+  "@image_cache_title": {},
   "image_quality": "Chất lượng hình ảnh",
   "@image_quality": {},
   "import": "Nhập",

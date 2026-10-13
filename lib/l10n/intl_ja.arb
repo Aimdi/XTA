@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "最近",
   "@home_networks_recent": {},
+  "image_cache_clear": "消去",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "画像は次に表示するときに再ダウンロードされます。",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "画像キャッシュを消去しますか？",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "この端末で {size}。{days} 日より古い画像は自動的に削除されます。",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "画像キャッシュ",
+  "@image_cache_title": {},
   "image_quality": "画像の画質",
   "@image_quality": {},
   "import": "インポート",

@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recente",
   "@home_networks_recent": {},
+  "image_cache_clear": "Golește",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Imaginile se vor descărca din nou data viitoare când le vezi.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Golești memoria cache pentru imagini?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} pe acest dispozitiv. Imaginile mai vechi de {days} zile sunt șterse automat.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Memoria cache pentru imagini",
+  "@image_cache_title": {},
   "image_quality": "Calitatea imaginilor",
   "@image_quality": {},
   "import": "Import",

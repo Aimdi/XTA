@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "最近使用",
   "@home_networks_recent": {},
+  "image_cache_clear": "清除",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "下次查看时会重新下载图片。",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "清除图片缓存？",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "此设备上有 {size}。超过 {days} 天的图片会自动删除。",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "图片缓存",
+  "@image_cache_title": {},
   "image_quality": "图片质量",
   "@image_quality": {},
   "import": "导入",

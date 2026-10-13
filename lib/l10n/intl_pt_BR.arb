@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recentes",
   "@home_networks_recent": {},
+  "image_cache_clear": "Limpar",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "As imagens serão baixadas de novo na próxima vez que você as vir.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Limpar o cache de imagens?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} neste dispositivo. Imagens com mais de {days} dias são removidas automaticamente.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Cache de imagens",
+  "@image_cache_title": {},
   "image_quality": "Qualidade das imagens",
   "@image_quality": {},
   "import": "Importar",

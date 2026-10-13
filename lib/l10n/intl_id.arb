@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Terbaru",
   "@home_networks_recent": {},
+  "image_cache_clear": "Hapus",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Gambar akan diunduh lagi saat Anda melihatnya berikutnya.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Hapus cache gambar?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} di perangkat ini. Gambar yang lebih lama dari {days} hari dihapus otomatis.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Cache gambar",
+  "@image_cache_title": {},
   "image_quality": "Kualitas gambar",
   "@image_quality": {},
   "import": "Impor",

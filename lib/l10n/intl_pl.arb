@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Ostatnie",
   "@home_networks_recent": {},
+  "image_cache_clear": "Wyczyść",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Obrazy zostaną pobrane ponownie, gdy następnym razem je zobaczysz.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Wyczyścić pamięć podręczną obrazów?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} na tym urządzeniu. Obrazy starsze niż {days} dni są usuwane automatycznie.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Pamięć podręczna obrazów",
+  "@image_cache_title": {},
   "image_quality": "Jakość obrazów",
   "@image_quality": {},
   "import": "Importuj",

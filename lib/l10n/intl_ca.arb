@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recents",
   "@home_networks_recent": {},
+  "image_cache_clear": "Buida",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Les imatges es tornaran a baixar la propera vegada que les vegis.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Vols buidar la memòria cau d'imatges?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} en aquest dispositiu. Les imatges de fa més de {days} dies s'eliminen soles.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Memòria cau d'imatges",
+  "@image_cache_title": {},
   "image_quality": "Qualitat de les imatges",
   "@image_quality": {},
   "import": "Importar",

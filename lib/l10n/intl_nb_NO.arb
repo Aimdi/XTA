@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Nylige",
   "@home_networks_recent": {},
+  "image_cache_clear": "Tøm",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Bildene lastes ned på nytt neste gang du ser dem.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Tømme bildebufferen?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} på denne enheten. Bilder eldre enn {days} dager fjernes automatisk.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Bildebuffer",
+  "@image_cache_title": {},
   "image_quality": "Bildekvalitet",
   "@image_quality": {},
   "import": "Importer",

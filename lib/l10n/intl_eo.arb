@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Lastaj",
   "@home_networks_recent": {},
+  "image_cache_clear": "Malplenigi",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Bildoj elŝutiĝos denove, kiam vi venontfoje vidos ilin.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Ĉu malplenigi la bildkaŝmemoron?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} en ĉi tiu aparato. Bildoj pli malnovaj ol {days} tagoj foriĝas memstare.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Bildkaŝmemoro",
+  "@image_cache_title": {},
   "image_quality": "Kvalito de bildoj",
   "@image_quality": {},
   "import": "Importi",

@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Недавние",
   "@home_networks_recent": {},
+  "image_cache_clear": "Очистить",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Изображения загрузятся заново, когда вы увидите их в следующий раз.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Очистить кэш изображений?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} на этом устройстве. Изображения старше {days} дней удаляются сами.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Кэш изображений",
+  "@image_cache_title": {},
   "image_quality": "Качество изображений",
   "@image_quality": {},
   "import": "Импортировать",

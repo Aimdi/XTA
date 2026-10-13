@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Нядаўнія",
   "@home_networks_recent": {},
+  "image_cache_clear": "Ачысціць",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Выявы спампуюцца зноў, калі вы ўбачыце іх наступным разам.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Ачысціць кэш выяў?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} на гэтай прыладзе. Выявы, старэйшыя за {days} дзён, выдаляюцца самі.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Кэш выяў",
+  "@image_cache_title": {},
   "image_quality": "Якасць выяў",
   "@image_quality": {},
   "import": "Імпартаваць",

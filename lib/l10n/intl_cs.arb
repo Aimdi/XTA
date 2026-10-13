@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Nedávné",
   "@home_networks_recent": {},
+  "image_cache_clear": "Vymazat",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Obrázky se znovu stáhnou, až je příště uvidíte.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Vymazat mezipaměť obrázků?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} v tomto zařízení. Obrázky starší než {days} dní se mažou samy.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Mezipaměť obrázků",
+  "@image_cache_title": {},
   "image_quality": "Kvalita obrázků",
   "@image_quality": {},
   "import": "Importovat",

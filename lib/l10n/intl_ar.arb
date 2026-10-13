@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "الأخيرة",
   "@home_networks_recent": {},
+  "image_cache_clear": "مسح",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "تُنزَّل الصور مرة أخرى عندما تراها في المرة القادمة.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "مسح ذاكرة الصور المؤقتة؟",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} على هذا الجهاز. تُحذف الصور الأقدم من {days} يومًا تلقائيًا.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "ذاكرة الصور المؤقتة",
+  "@image_cache_title": {},
   "image_quality": "جودة الصور",
   "@image_quality": {},
   "import": "استيراد",

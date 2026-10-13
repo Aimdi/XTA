@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Azkenak",
   "@home_networks_recent": {},
+  "image_cache_clear": "Garbitu",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Irudiak berriro deskargatuko dira hurrengoan ikusten dituzunean.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Irudien cachea garbitu?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} gailu honetan. {days} egun baino zaharragoak diren irudiak berez ezabatzen dira.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Irudien cachea",
+  "@image_cache_title": {},
   "image_quality": "Irudien kalitatea",
   "@image_quality": {},
   "import": "Inportatu",

@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Недавні",
   "@home_networks_recent": {},
+  "image_cache_clear": "Очистити",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Зображення завантажаться знову, коли ви побачите їх наступного разу.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Очистити кеш зображень?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} на цьому пристрої. Зображення, старші за {days} днів, видаляються самі.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Кеш зображень",
+  "@image_cache_title": {},
   "image_quality": "Якість зображень",
   "@image_quality": {},
   "import": "Імпорт",

@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "हालिया",
   "@home_networks_recent": {},
+  "image_cache_clear": "साफ़ करें",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "अगली बार देखने पर तस्वीरें फिर से डाउनलोड होंगी।",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "इमेज कैश साफ़ करें?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "इस डिवाइस पर {size}। {days} दिन से पुरानी तस्वीरें अपने-आप हट जाती हैं।",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "इमेज कैश",
+  "@image_cache_title": {},
   "image_quality": "छवि गुणवत्ता",
   "@image_quality": {},
   "import": "आयात",

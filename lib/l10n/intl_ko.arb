@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "최근",
   "@home_networks_recent": {},
+  "image_cache_clear": "지우기",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "이미지는 다음에 볼 때 다시 내려받습니다.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "이미지 캐시를 지울까요?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "이 기기에 {size}. {days}일이 지난 이미지는 자동으로 삭제됩니다.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "이미지 캐시",
+  "@image_cache_title": {},
   "image_quality": "이미지 화질",
   "@image_quality": {},
   "import": "가져오기",

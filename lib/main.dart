@@ -156,6 +156,7 @@ import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/desktop.dart';
+import 'package:xta/utils/image_disk_cache.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -796,6 +797,10 @@ Future<void> main() async {
     } catch (_) {
       // Ignore, as we'll catch it later instead
     }
+
+    // The image disk cache is shared by X and every plugin and never shrank
+    // on its own; old pictures go once per launch, off the startup path.
+    unawaited(trimImageDiskCache());
 
     var importDataModel = ImportDataModel();
 

@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recent",
   "@home_networks_recent": {},
+  "image_cache_clear": "Wissen",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Afbeeldingen worden opnieuw gedownload wanneer je ze weer ziet.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Afbeeldingscache wissen?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} op dit apparaat. Afbeeldingen ouder dan {days} dagen worden vanzelf verwijderd.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Afbeeldingscache",
+  "@image_cache_title": {},
   "image_quality": "Beeldkwaliteit",
   "@image_quality": {},
   "import": "Importeren",
