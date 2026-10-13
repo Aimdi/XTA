@@ -1622,6 +1622,16 @@
   },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Nowe",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Nowe od ostatniej wizyty: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Na razie brak komentarzy",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "Notatki: {count}",

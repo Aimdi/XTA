@@ -1622,6 +1622,16 @@
   },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "नया",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "आपकी पिछली विज़िट के बाद से नई: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "अभी कोई टिप्पणी नहीं",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "नोट: {count}",

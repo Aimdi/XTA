@@ -689,6 +689,7 @@ Future<void> main() async {
       optionPluginBooruSiteSettings: '{}',
       optionPluginBooruFileNameTemplate: '',
       optionPluginBooruSiteCredentials: '{}',
+      optionPluginBooruFollowingSeen: '{}',
       optionPluginEhEnabled: false,
       optionPluginEhShowTab: true,
       optionPluginEhCookies: '',

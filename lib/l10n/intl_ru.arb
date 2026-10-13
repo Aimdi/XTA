@@ -1622,6 +1622,16 @@
   },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Новое",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Новые с прошлого визита: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Комментариев пока нет",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "Заметки: {count}",

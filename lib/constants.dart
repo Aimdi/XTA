@@ -486,6 +486,8 @@ const optionPluginBooruTagSort = 'plugin.booru.tag_sort';
 const optionPluginBooruFileNameTemplate = 'plugin.booru.file_name_template';
 // The kinds of tag "Copy tags as prompt" writes, in order; empty means the default.
 const optionPluginBooruPromptKinds = 'plugin.booru.prompt_kinds';
+// Each site's newest post id seen on Following, as JSON by host, for what is new since.
+const optionPluginBooruFollowingSeen = 'plugin.booru.following_seen';
 const pluginIdEhViewer = 'ehviewer';
 const optionPluginEhEnabled = 'plugin.ehviewer.enabled';
 const optionPluginEhShowTab = 'plugin.ehviewer.show_tab';

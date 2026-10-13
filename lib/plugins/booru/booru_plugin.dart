@@ -181,6 +181,7 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBooruSiteSettings, '{}');
     await prefs.set(optionPluginBooruFileNameTemplate, '');
     await prefs.set(optionPluginBooruSiteCredentials, '{}');
+    await prefs.set(optionPluginBooruFollowingSeen, '{}');
   }
 
   @override

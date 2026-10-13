@@ -1622,6 +1622,16 @@
   },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Ny",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Nye siden forrige besøk: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Ingen kommentarer ennå",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "Notater: {count}",

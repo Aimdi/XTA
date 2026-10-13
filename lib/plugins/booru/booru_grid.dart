@@ -32,6 +32,9 @@ class BooruPostGrid extends StatelessWidget {
   /// Where [posts] come from, so the viewer can keep loading past them.
   final BooruFeedStore? feed;
 
+  /// Which posts came in since the reader's last visit; none without it.
+  final bool Function(BooruPost post)? isNew;
+
   const BooruPostGrid({
     super.key,
     required this.posts,
@@ -40,6 +43,7 @@ class BooruPostGrid extends StatelessWidget {
     this.onNearEnd,
     this.padding = const EdgeInsets.all(8),
     this.feed,
+    this.isNew,
   });
 
   @override
@@ -72,6 +76,7 @@ class BooruPostGrid extends StatelessWidget {
                   itemBuilder: (context, index) => BooruPostTile(
                     post: posts[index],
                     display: display,
+                    isNew: isNew?.call(posts[index]) ?? false,
                     onOpen: () => openBooruPost(context, posts, index, feed: feed),
                   ),
                 ),
@@ -218,6 +223,30 @@ class BooruHiddenNotice extends StatelessWidget {
   }
 }
 
+/// Above a feed: how many of its posts came in since the reader's last visit.
+class BooruNewPostsNotice extends StatelessWidget {
+  final BooruFeedStore feed;
+  final bool Function(BooruPost post) isNew;
+
+  const BooruNewPostsNotice({super.key, required this.feed, required this.isNew});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruFeedStore, List<BooruPost>>(
+      store: feed,
+      onState: (context, posts) => switch (posts.where(isNew).length) {
+        0 => const SizedBox.shrink(),
+        final count => ListTile(
+          dense: true,
+          leading: const Icon(Icons.new_releases_outlined),
+          title: Text(l10n.plugin_booru_new_since_visit(count)),
+        ),
+      },
+    );
+  }
+}
+
 /// Opens [posts] at [index] in the post viewer, which swipes through the rest
 /// and, given the [feed] they came from, on into what it loads next.
 void openBooruPost(BuildContext context, List<BooruPost> posts, int index, {BooruFeedStore? feed}) {
@@ -235,7 +264,16 @@ class BooruPostTile extends StatelessWidget {
   final BooruDisplay display;
   final VoidCallback onOpen;
 
-  const BooruPostTile({super.key, required this.post, required this.onOpen, this.display = const BooruDisplay()});
+  /// Whether the post came in since the reader's last visit.
+  final bool isNew;
+
+  const BooruPostTile({
+    super.key,
+    required this.post,
+    required this.onOpen,
+    this.display = const BooruDisplay(),
+    this.isNew = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -278,6 +316,12 @@ class BooruPostTile extends StatelessWidget {
                       top: 6,
                       right: 6,
                       child: _chip(context, Icons.warning_amber_outlined, post.rating!.code.toUpperCase()),
+                    ),
+                  if (isNew)
+                    Positioned(
+                      bottom: 6,
+                      left: 6,
+                      child: _chip(context, Icons.new_releases_outlined, l10n.plugin_booru_new_post),
                     ),
                 ],
               ),

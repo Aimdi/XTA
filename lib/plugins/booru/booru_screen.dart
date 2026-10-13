@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
@@ -15,11 +16,13 @@ import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_feed_view.dart';
+import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
+import 'package:xta/plugins/booru/booru_visits.dart';
 import 'package:xta/ui/empty_pane.dart';
 
 const _latestTab = 0;
@@ -43,6 +46,9 @@ class _BooruScreenState extends State<BooruScreen> {
   late final PluginViewStore<BooruPopularQuery> _popularQuery;
   late final BooruFeedStore _popular;
   late final BooruFeedStore _following;
+
+  /// Each site's newest post Following had shown before this visit.
+  late final Map<String, int> _seenBefore;
   Disposer? _tagsDisposer;
   var _followingBootstrapped = false;
   List<String> _lastFollowingTags = const [];
@@ -69,11 +75,16 @@ class _BooruScreenState extends State<BooruScreen> {
       () => BooruFeedStore(client, ({required page}) => client.popular(_popularQuery.state, page: page)),
     );
     final tagStore = context.read<BooruTagsStore>();
+    final prefs = PrefService.of(context, listen: false);
+    _seenBefore = _session.obtain('following-seen', () => booruSeenIds(prefs));
     _following = _session.obtain(
       'following',
       () => BooruFeedStore(
         client,
-        ({required page}) => loadBooruFollowing(client, tagStore.state, page: page),
+        ({required page}) => loadBooruFollowing(client, tagStore.state, page: page).then((loaded) {
+          unawaited(booruMarkSeen(prefs, loaded.posts));
+          return loaded;
+        }),
         cache: cache,
         cacheKey: () => ['following', ...tagStore.state].join('\n'),
       ),
@@ -221,7 +232,7 @@ class _BooruScreenState extends State<BooruScreen> {
                       child: BooruFeedView(store: _popular, emptyLabel: l10n.plugin_booru_empty_popular),
                     ),
                   ),
-                  (_) => _FollowingTab(store: _following),
+                  (_) => _FollowingTab(store: _following, isNew: (post) => booruPostIsNew(_seenBefore, post)),
                 ],
               ),
             ),
@@ -234,8 +245,9 @@ class _BooruScreenState extends State<BooruScreen> {
 
 class _FollowingTab extends StatelessWidget {
   final BooruFeedStore store;
+  final bool Function(BooruPost post) isNew;
 
-  const _FollowingTab({required this.store});
+  const _FollowingTab({required this.store, required this.isNew});
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +286,7 @@ class _FollowingTab extends StatelessWidget {
             ),
             BooruFollowingNotice(failed: store.failedQueries, onRetry: store.refresh),
             Expanded(
-              child: BooruFeedView(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts),
+              child: BooruFeedView(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts, isNew: isNew),
             ),
           ],
         );

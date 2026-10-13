@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,6 +99,9 @@ class _Client extends BooruClient {
 
   /// The post a link names; none by default.
   BooruPost? postAtAnswer;
+
+  /// What the followed tags answer on Following; nothing by default.
+  List<BooruPost> followedAnswer = const [];
   final postsAsked = <BooruPostRef>[];
   final wikiSites = <String?>[];
 
@@ -128,6 +132,10 @@ class _Client extends BooruClient {
 
   @override
   Future<List<BooruNote>> notes(BooruPost post) async => notesAnswer;
+
+  @override
+  Future<BooruFollowedPosts> followedPosts(Iterable<String> tags, {int limitPerTag = 10}) async =>
+      (posts: followedAnswer, asked: tags.length, failed: 0, error: null);
 
   @override
   Future<BooruPost?> postAt(BooruPostRef ref) async {
@@ -1514,6 +1522,56 @@ void main() {
       await tester.pumpAndSettle();
       expect(client.postsAsked, isEmpty);
       expect(handled, isFalse);
+    });
+  });
+  group('following', () {
+    Future<_Client> openFollowing(WidgetTester tester, PrefServiceCache service, List<BooruPost> posts) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(
+        tester,
+        BooruScreen(scrollController: scroll),
+        service: service,
+        tags: _Tags()..update(['kantoku']),
+        client: (service) => _Client(service)..followedAnswer = posts,
+        settle: false,
+      );
+      client.latestPage.complete(const BooruPostPage(posts: [], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Following'));
+      await tester.pumpAndSettle();
+      return client;
+    }
+
+    testWidgets('marks the posts that came in since the last visit, once', (tester) async {
+      final service = PrefServiceCache(
+        cache: {
+          optionPluginBooruEngine: 'danbooru',
+          optionPluginBooruFollowingSeen: jsonEncode({'https://danbooru.donmai.us': 10}),
+        },
+      );
+      final posts = [_post('12'), _post('9'), _post('11'), _post('10')];
+      await openFollowing(tester, service, posts);
+
+      expect(find.byType(BooruPostTile), findsNWidgets(4));
+      expect(find.text('New since your last visit: 2'), findsOneWidget);
+      expect(find.text('New'), findsNWidgets(2));
+      final marked = find.ancestor(of: find.text('New'), matching: find.byType(BooruPostTile));
+      expect(tester.widgetList<BooruPostTile>(marked).map((tile) => tile.post.id), unorderedEquals(['12', '11']));
+
+      await tester.pumpWidget(const SizedBox());
+      await openFollowing(tester, service, posts);
+      expect(find.byType(BooruPostTile), findsNWidgets(4));
+      expect(find.text('New'), findsNothing, reason: 'the last visit saw them');
+      expect(find.textContaining('New since your last visit'), findsNothing);
+    });
+
+    testWidgets('a first visit marks nothing new', (tester) async {
+      final service = PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru'});
+      await openFollowing(tester, service, [_post('12'), _post('11')]);
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
+      expect(find.text('New'), findsNothing);
+      expect(jsonDecode(service.get<String>(optionPluginBooruFollowingSeen)!), {'https://danbooru.donmai.us': 12});
     });
   });
 }

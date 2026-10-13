@@ -1622,6 +1622,16 @@
   },
   "plugin_booru_mute_tag": "タグをミュート",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "新着",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "前回の訪問以降の新着: {count} 件",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "コメントはまだありません",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "注釈: {count} 件",

@@ -1622,6 +1622,16 @@
   },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Нове",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Нові з останнього візиту: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Коментарів поки немає",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "Нотатки: {count}",

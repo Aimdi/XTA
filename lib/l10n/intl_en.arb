@@ -1715,6 +1715,16 @@
   },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "New",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "New since your last visit: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "No comments yet",
   "@plugin_booru_no_comments": {},
   "plugin_booru_notes": "Notes: {count}",
