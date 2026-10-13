@@ -5,6 +5,7 @@ library;
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
+import 'package:xta/plugins/booru/booru_text.dart';
 import 'package:xta/utils/json.dart';
 
 /// Moebooru answers `include_tags` with a name → kind map; the others with
@@ -120,4 +121,20 @@ List<BooruPool> parseBooruPools(Object? raw) => [
         final String name,
       ))
         BooruPool(id: id, name: name, postCount: pool['post_count'].integer),
+];
+
+/// The active notes in a `/notes.json` answer, their HTML read as plain
+/// text; notes without a box or text are left out.
+List<BooruNote> parseBooruNotes(Object? raw) => [
+  for (final note in Json(raw).list)
+    if (note['is_active'].boolean != false)
+      if ((
+            note['x'].integer,
+            note['y'].integer,
+            note['width'].integer,
+            note['height'].integer,
+            booruPlainText(note['body'].string ?? ''),
+          )
+          case (final int x, final int y, final int width, final int height, final String text) when text.isNotEmpty)
+        BooruNote(x: x, y: y, width: width, height: height, text: text),
 ];

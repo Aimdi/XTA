@@ -24,6 +24,7 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_notes.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
@@ -89,6 +90,9 @@ class _Client extends BooruClient {
 
   /// The pools a post is in; none by default.
   List<BooruPool> poolsAnswer = const [];
+
+  /// The translation notes on a post; none by default.
+  List<BooruNote> notesAnswer = const [];
   final wikiSites = <String?>[];
 
   @override
@@ -115,6 +119,9 @@ class _Client extends BooruClient {
 
   @override
   Future<List<BooruPool>> pools(BooruPost post) async => poolsAnswer;
+
+  @override
+  Future<List<BooruNote>> notes(BooruPost post) async => notesAnswer;
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -842,6 +849,27 @@ void main() {
 
       expect(find.byType(BooruQueryPage), findsOneWidget);
       expect(client.searches.last, 'ordpool:7');
+    });
+
+    testWidgets('translation notes show over the picture once switched on', (tester) async {
+      await _pump(
+        tester,
+        BooruPostScreen(post: _post('1')),
+        client: (service) =>
+            _Client(service)
+              ..notesAnswer = const [BooruNote(x: 100, y: 100, width: 200, height: 100, text: 'Good morning')],
+      );
+      expect(find.byTooltip('Good morning'), findsNothing);
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Notes: 1'));
+      await tester.pumpAndSettle();
+      final box = tester.getRect(find.byTooltip('Good morning'));
+      final picture = tester.getRect(find.byType(BooruNotesOverlay));
+      expect(box.width, closeTo(200 * picture.width / 800, 0.5), reason: 'notes scale with the picture');
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Notes: 1'));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Good morning'), findsNothing);
     });
 
     testWidgets('comments load when opened', (tester) async {

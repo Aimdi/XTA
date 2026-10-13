@@ -362,6 +362,24 @@ class BooruTagSuggestion {
   const BooruTagSuggestion({required this.name, this.postCount, this.category});
 }
 
+/// A translation note: a box on the picture, in the picture's own pixels,
+/// and what it says.
+class BooruNote {
+  final int x;
+  final int y;
+  final int width;
+  final int height;
+  final String text;
+
+  const BooruNote({
+    required this.x,
+    required this.y,
+    required this.width,
+    required this.height,
+    required this.text,
+  });
+}
+
 /// A pool a post belongs to: a series or collection read in its own order.
 class BooruPool {
   final String id;

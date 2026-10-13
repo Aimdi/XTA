@@ -283,6 +283,25 @@ void main() {
   });
 
   group('endpoints', () {
+    test('translation notes come from Danbooru and e621, active ones only, as plain text', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const gelbooru = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://gelbooru.com');
+
+      expect(booruNotesUri(danbooru, '42')!.queryParameters, {'search[post_id]': '42', 'limit': '200'});
+      expect(booruNotesUri(gelbooru, '42'), isNull);
+
+      final notes = parseBooruNotes([
+        {'x': 10, 'y': 20, 'width': 30, 'height': 40, 'body': '<b>Hello</b> &amp; bye', 'is_active': true},
+        {'x': 1, 'y': 1, 'width': 1, 'height': 1, 'body': 'old', 'is_active': false},
+        {'x': 1, 'y': 1, 'width': 1, 'height': 1, 'body': '  '},
+        {'x': 1, 'body': 'no size'},
+      ]);
+      expect(
+        [for (final note in notes) (note.x, note.y, note.width, note.height, note.text)],
+        [(10, 20, 30, 40, 'Hello & bye')],
+      );
+    });
+
     test("a post's pools come from Danbooru, and read in order through ordpool", () {
       const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
       const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');

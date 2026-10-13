@@ -1624,6 +1624,14 @@
   "@plugin_booru_mute_tag": {},
   "plugin_booru_no_comments": "Încă nu există comentarii",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "Note: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",

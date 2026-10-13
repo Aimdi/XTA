@@ -6,6 +6,7 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_notes.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/tweet/_video.dart';
@@ -32,9 +33,15 @@ class BooruPostMedia extends StatelessWidget {
           image: true,
           button: true,
           label: L10n.of(context).plugin_booru_full_screen,
-          child: GestureDetector(
-            onTap: () => _openFullScreen(context),
-            child: BooruNetworkImage(url: post.isVideo ? post.thumbnailUrl : post.displayUrl, fit: BoxFit.contain),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              GestureDetector(
+                onTap: () => _openFullScreen(context),
+                child: BooruNetworkImage(url: post.isVideo ? post.thumbnailUrl : post.displayUrl, fit: BoxFit.contain),
+              ),
+              if (!post.isVideo) BooruNotesOverlay(post: post),
+            ],
           ),
         ),
       ),

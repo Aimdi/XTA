@@ -132,6 +132,13 @@ Uri? booruPostPoolsUri(BooruSite site, String postId) => switch (site.engine) {
   _ => null,
 };
 
+/// The translation notes on post [postId]; Danbooru and e621 keep them the
+/// same way. Null elsewhere.
+Uri? booruNotesUri(BooruSite site, String postId) => switch (site.engine) {
+  BooruEngine.danbooru || BooruEngine.e621 => site.endpoint('/notes.json', {'search[post_id]': postId, 'limit': '200'}),
+  _ => null,
+};
+
 /// Only Danbooru's pools are read so far.
 bool booruSupportsPools(BooruEngine engine) => engine == BooruEngine.danbooru;
 

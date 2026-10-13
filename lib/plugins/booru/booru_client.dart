@@ -306,6 +306,18 @@ class BooruClient {
     }
   }
 
+  /// The translation notes on [post], on its own site; none where the host
+  /// keeps none or cannot be reached.
+  Future<List<BooruNote>> notes(BooruPost post) async {
+    final uri = booruNotesUri(siteOf(post), post.id);
+    if (uri == null) return const [];
+    try {
+      return parseBooruNotes(await fetchJson(uri));
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<List<BooruComment>> comments(BooruPost post) async {
     final uri = booruCommentsUri(siteOf(post), post.id);
     if (uri == null) return const [];
