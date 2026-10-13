@@ -14,6 +14,7 @@ import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/plugin_account_subscription.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/subscription_source.dart';
@@ -86,14 +87,18 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
   List<String> get tables => const [tableBooruSubscription];
 
   @override
+  String get groupMembershipPrefix => '$id:';
+
+  @override
   String get subscriptionTable => tableBooruSubscription;
 
   @override
   Subscription subscriptionFromMap(Map<String, Object?> row) =>
-      BooruSubscription.fromMap(row);
+      PluginAccountSubscription(id, row);
 
   @override
-  bool owns(Subscription subscription) => subscription is BooruSubscription;
+  bool owns(Subscription subscription) =>
+      subscription is PluginAccountSubscription && subscription.pluginId == id;
 
   @override
   String subtitleFor(Subscription subscription) => 'tag:${subscription.name}';
@@ -115,8 +120,11 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
       () => BooruSearchScreen(initialQuery: subscription.name);
 
   @override
-  Future<void> reloadFromDatabase(BuildContext context) =>
-      context.read<BooruTagsStore>().load();
+  Future<void> reloadFromDatabase(BuildContext context) async {
+    final tags = context.read<BooruTagsStore>();
+    await prefixBooruMemberships(await Repository.writable());
+    await tags.load();
+  }
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
@@ -126,14 +134,15 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
   Future<List<InterleavedItem>> interleavedPosts(
     BuildContext context,
     List<String> ids,
-  ) => loadBooruInterleaved(context, ids);
+  ) => loadBooruInterleaved(context, ids.map(booruMemberTag).toList());
 
   @override
   bool inHomeFeed(BuildContext context) =>
       booruInHomeFeed(PrefService.of(context, listen: false));
 
   @override
-  List<String> homeFeedIds(BuildContext context) => booruHomeTags(context);
+  List<String> homeFeedIds(BuildContext context) =>
+      booruHomeTags(context).map(booruMemberId).toList();
 
   @override
   List<PluginBackupSection> get backupSections => [

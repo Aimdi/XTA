@@ -12,6 +12,16 @@ import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:sqflite/sqflite.dart';
 
+/// A followed tag's id as a group member. The prefix keeps a subreddit or saved
+/// search called `art` a different member from the tag `art`.
+String booruMemberId(String tag) => '$pluginIdBooru:$tag';
+
+/// The tag a group member id names. Ids without the prefix are tags already.
+String booruMemberTag(String id) {
+  const prefix = '$pluginIdBooru:';
+  return id.startsWith(prefix) ? id.substring(prefix.length) : id;
+}
+
 /// Followed tags and saved searches (a followed entry may hold several tags),
 /// stored so they can be group members.
 class BooruTagsStore extends Store<List<String>> {
@@ -49,7 +59,7 @@ class BooruTagsStore extends Store<List<String>> {
       await database.delete(
         tableSubscriptionGroupMember,
         where: 'profile_id = ?',
-        whereArgs: [id],
+        whereArgs: [booruMemberId(id)],
       );
     }
     await load();
