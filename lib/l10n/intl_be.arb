@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Па шырыні экрана",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Схавана вашымі тэгамі: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Усе допісы дагэтуль схаваныя вашым максімальным рэйтынгам або заглушанымі тэгамі",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Схаваць допісы з гэтым тэгам",

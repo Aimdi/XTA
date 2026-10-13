@@ -289,6 +289,10 @@ class BooruPost {
 
 class BooruPostPage {
   final List<BooruPost> posts;
+
+  /// Every post the rating cap let through, in the host's order: [posts]
+  /// and those the blacklist hid. A page built without it hid nothing.
+  final List<BooruPost> allowed;
   final int page;
   final bool hasMore;
 
@@ -300,7 +304,8 @@ class BooruPostPage {
     required this.page,
     required this.hasMore,
     this.failedQueries = 0,
-  });
+    List<BooruPost>? allowed,
+  }) : allowed = allowed ?? posts;
 }
 
 /// Tag kinds the hosts colour differently. Each engine numbers them its own

@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Ajustar à tela",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Ocultas pelas tags silenciadas: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Todas as postagens até agora estão ocultas pela classificação máxima ou pelas tags silenciadas",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Ocultar postagens com esta tag",

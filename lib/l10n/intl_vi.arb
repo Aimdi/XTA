@@ -1559,6 +1559,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Vừa màn hình",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Bị ẩn bởi thẻ đã chặn: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Mọi bài đăng cho đến giờ đều bị ẩn do mức phân loại tối đa hoặc các thẻ đã tắt tiếng",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Ẩn bài đăng có thẻ này",

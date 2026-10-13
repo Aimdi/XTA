@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Přizpůsobit obrazovce",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Skryto ztlumenými štítky: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Všechny dosavadní příspěvky skrývá vaše maximální hodnocení nebo ztlumené štítky",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Skrýt příspěvky s tímto štítkem",

@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Aanpassen aan scherm",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Verborgen door je gedempte tags: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Alle berichten tot nu toe worden verborgen door je maximale classificatie of gedempte tags",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Posts met deze tag verbergen",

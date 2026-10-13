@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Ajustar ao ecrã",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Ocultas pelas etiquetas silenciadas: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Todas as publicações até agora estão ocultas pela classificação máxima ou pelas etiquetas silenciadas",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Ocultar publicações com esta etiqueta",

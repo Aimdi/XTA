@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "依螢幕寬度",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "被封鎖標籤隱藏：{count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "目前所有貼文都被你的最高分級或靜音標籤隱藏了",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "封鎖此標籤",

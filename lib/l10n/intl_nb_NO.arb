@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Tilpass skjermen",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Skjult av dempede tagger: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Alle innlegg så langt er skjult av maksimal vurdering eller dempede tagger",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Skjul innlegg med denne taggen",

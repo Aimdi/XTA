@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "По ширине экрана",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Скрыто вашими тегами: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Все посты до сих пор скрыты вашим максимальным рейтингом или заглушёнными тегами",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Скрыть посты с этим тегом",

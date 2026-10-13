@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Ajuster à l’écran",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Masquées par vos tags : {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Toutes les publications jusqu’ici sont masquées par votre classification maximale ou vos tags masqués",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Masquer les publications avec ce tag",

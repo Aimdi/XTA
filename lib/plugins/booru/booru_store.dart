@@ -166,6 +166,20 @@ class BooruRefreshFailureStore extends Store<({Object? error})> {
 /// Where a feed's shown posts stand, for a failed refresh to go back to.
 typedef _Shown = ({int page, bool hasMore, BooruPaging paging});
 
+/// The first page with posts, its number, and every page asked for on the
+/// way to it.
+typedef _FirstPage = ({
+  BooruPostPage page,
+  int number,
+  List<BooruPostPage> pages,
+});
+
+/// How many of a feed's posts the blacklist hid, and whether the reader
+/// asked to see them anyway.
+class BooruHiddenStore extends Store<({int count, bool shown})> {
+  BooruHiddenStore() : super((count: 0, shown: false));
+}
+
 /// Paginated post list for Latest / Search / Following.
 class BooruFeedStore extends Store<List<BooruPost>>
     with BooruClosableStore<List<BooruPost>> {
@@ -187,6 +201,13 @@ class BooruFeedStore extends Store<List<BooruPost>>
 
   /// Why the latest refresh failed while the posts from before stay shown.
   final refreshFailure = BooruRefreshFailureStore();
+
+  /// The posts the blacklist hid from the pages loaded since the last
+  /// refresh; [showHidden] puts them back in their places.
+  final hidden = BooruHiddenStore();
+  final _muted = <BooruPost>[];
+  final _order = <String, int>{};
+  var _showMuted = false;
 
   var _page = 0;
   var _hasMore = true;
@@ -228,7 +249,7 @@ class BooruFeedStore extends Store<List<BooruPost>>
     _loadedFor = client.feedKey;
     _setPaging(BooruPaging.idle);
     await execute(() async {
-      final ({BooruPostPage page, int number}) first;
+      final _FirstPage first;
       try {
         first = await _firstPage();
       } catch (error) {
@@ -255,7 +276,8 @@ class BooruFeedStore extends Store<List<BooruPost>>
       if (cacheId != null && first.page.posts.isNotEmpty) {
         unawaited(cache?.write(cacheId, _pageOf(first)));
       }
-      return first.page.posts;
+      _forgetHidden();
+      return _take(first.pages, known: {});
     }, delay: generation == 1 ? Duration.zero : _debounce);
   }
 
@@ -264,15 +286,16 @@ class BooruFeedStore extends Store<List<BooruPost>>
   static const _debounce = Duration(milliseconds: 50);
 
   /// The first page with posts: the rating and mute filters can empty a raw
-  /// page, so a few are skipped while the host still has more.
-  Future<({BooruPostPage page, int number})> _firstPage() async {
+  /// page, so a few are skipped while the host still has more. [pages] holds
+  /// every page asked for, for what the blacklist hid on them.
+  Future<_FirstPage> _firstPage() async {
     var page = const BooruPostPage(posts: [], page: 0, hasMore: true);
-    var number = 0;
-    while (!closed && number < 4 && page.hasMore && page.posts.isEmpty) {
-      number += 1;
-      page = await loader(page: number);
+    final pages = <BooruPostPage>[];
+    while (!closed && pages.length < 4 && page.hasMore && page.posts.isEmpty) {
+      page = await loader(page: pages.length + 1);
+      pages.add(page);
     }
-    return (page: page, number: number);
+    return (page: page, number: pages.length, pages: pages);
   }
 
   void _land(int generation, {required int failed}) {
@@ -301,12 +324,11 @@ class BooruFeedStore extends Store<List<BooruPost>>
     _ => null,
   };
 
-  static BooruPostPage _pageOf(({BooruPostPage page, int number}) first) =>
-      BooruPostPage(
-        posts: first.page.posts,
-        page: first.number,
-        hasMore: first.page.hasMore,
-      );
+  static BooruPostPage _pageOf(_FirstPage first) => BooruPostPage(
+    posts: first.page.posts,
+    page: first.number,
+    hasMore: first.page.hasMore,
+  );
 
   static _Shown _shownOf(BooruPostPage kept) => (
     page: kept.page,
@@ -364,7 +386,7 @@ class BooruFeedStore extends Store<List<BooruPost>>
       if (!_isCurrent(generation)) return;
       _page = next;
       _hasMore = page.hasMore;
-      final fresh = _unseen(page.posts);
+      final fresh = _take([page], known: {..._shownKeys(), ..._mutedKeys()});
       if (fresh.isNotEmpty) {
         update([...state, ...fresh]);
         return;
@@ -385,15 +407,73 @@ class BooruFeedStore extends Store<List<BooruPost>>
     await paging.destroy();
     await failedQueries.destroy();
     await refreshFailure.destroy();
+    await hidden.destroy();
   }
 
-  /// New uploads shift a host's pages, so a page can repeat posts already
-  /// shown.
-  List<BooruPost> _unseen(List<BooruPost> posts) {
-    final seen = {for (final post in state) post.key};
-    return [
-      for (final post in posts)
-        if (seen.add(post.key)) post,
-    ];
+  /// Puts the posts the blacklist hid back in their places.
+  void showHidden() {
+    if (closed || _showMuted) return;
+    _showMuted = true;
+    update([...state, ..._muted]..sort(_hostOrder));
+    _publishHidden();
   }
+
+  /// Hides the blacklisted posts [showHidden] put back.
+  void hideHidden() {
+    if (closed || !_showMuted) return;
+    _showMuted = false;
+    final muted = _mutedKeys();
+    update([
+      for (final post in state)
+        if (!muted.contains(post.key)) post,
+    ]);
+    _publishHidden();
+  }
+
+  /// The posts of [pages] to show, in the host's order, noting those the
+  /// blacklist hid. Posts [known] already, shown or hidden, are skipped: new
+  /// uploads shift a host's pages, so a page can repeat earlier posts.
+  List<BooruPost> _take(
+    Iterable<BooruPostPage> pages, {
+    required Set<String> known,
+  }) {
+    final fresh = [
+      for (final page in pages)
+        for (final post in page.allowed)
+          if (known.add(post.key)) post,
+    ];
+    final visible = {
+      for (final page in pages)
+        for (final post in page.posts) post.key,
+    };
+    for (final post in fresh) {
+      _order.putIfAbsent(post.key, () => _order.length);
+    }
+    _muted.addAll(fresh.where((post) => !visible.contains(post.key)));
+    _publishHidden();
+    return _showMuted
+        ? fresh
+        : [
+            for (final post in fresh)
+              if (visible.contains(post.key)) post,
+          ];
+  }
+
+  /// A refresh starts over, with what the blacklist hid hidden again.
+  void _forgetHidden() {
+    _muted.clear();
+    _order.clear();
+    _showMuted = false;
+  }
+
+  void _publishHidden() {
+    if (!closed) hidden.update((count: _muted.length, shown: _showMuted));
+  }
+
+  Set<String> _shownKeys() => {for (final post in state) post.key};
+
+  Set<String> _mutedKeys() => {for (final post in _muted) post.key};
+
+  int _hostOrder(BooruPost a, BooruPost b) =>
+      (_order[a.key] ?? 0).compareTo(_order[b.key] ?? 0);
 }

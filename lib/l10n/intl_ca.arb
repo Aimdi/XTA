@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Ajusta a la pantalla",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Amagades per les teves etiquetes silenciades: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Totes les publicacions fins ara queden amagades per la classificació màxima o les etiquetes silenciades",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Amaga les publicacions amb aquesta etiqueta",

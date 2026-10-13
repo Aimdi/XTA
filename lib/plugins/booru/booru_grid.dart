@@ -190,6 +190,34 @@ class BooruRefreshNotice extends StatelessWidget {
   }
 }
 
+/// Above a feed whose posts the blacklist partly hid: how many, and a
+/// button to show them in their places, or hide them again. Posts over the
+/// rating cap are never among them.
+class BooruHiddenNotice extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  const BooruHiddenNotice({super.key, required this.feed});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruHiddenStore, ({int count, bool shown})>(
+      store: feed.hidden,
+      onState: (context, hidden) => hidden.count == 0
+          ? const SizedBox.shrink()
+          : ListTile(
+              dense: true,
+              leading: Icon(hidden.shown ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+              title: Text(l10n.plugin_booru_hidden_count(hidden.count)),
+              trailing: TextButton(
+                onPressed: hidden.shown ? feed.hideHidden : feed.showHidden,
+                child: Text(hidden.shown ? l10n.hide : l10n.show),
+              ),
+            ),
+    );
+  }
+}
+
 /// Opens [posts] at [index] in the post viewer, which swipes through the rest
 /// and, given the [feed] they came from, on into what it loads next.
 void openBooruPost(BuildContext context, List<BooruPost> posts, int index, {BooruFeedStore? feed}) {

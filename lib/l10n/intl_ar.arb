@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "ملاءمة الشاشة",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "مخفية بسبب وسومك المكتومة: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "كل المنشورات حتى الآن مخفية بسبب الحد الأقصى للتصنيف أو الوسوم المكتومة",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "إخفاء المنشورات التي تحمل هذا الوسم",

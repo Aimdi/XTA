@@ -165,20 +165,24 @@ class BooruClient {
 
   /// Pagination follows the raw API page: the file, rating and mute filters
   /// must not make an empty filtered page look like the end of the feed.
+  /// The posts the blacklist hid stay in the page's `allowed` list, for a
+  /// feed to count and show on request; those over the rating cap do not.
   BooruPostPage _page(
     List<BooruPost> parsed, {
     required int page,
     required bool hasMore,
   }) {
     final muted = mutedTags;
+    final allowed = [
+      for (final post in parsed)
+        if (post.hasFile && booruPostAllowed(post, maxRating)) post,
+    ];
     return BooruPostPage(
       posts: [
-        for (final post in parsed)
-          if (post.hasFile &&
-              booruPostAllowed(post, maxRating) &&
-              !booruPostMuted(post, muted))
-            post,
+        for (final post in allowed)
+          if (!booruPostMuted(post, muted)) post,
       ],
+      allowed: allowed,
       page: page,
       hasMore: hasMore,
     );

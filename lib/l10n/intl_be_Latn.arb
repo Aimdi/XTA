@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Pa šyryni ekrana",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Schavana vašymi tehami: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Usie dopisy dahetul schavanyja vašym maksimalnym rejtynham abo zahlušanymi tehami",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Schavać dopisy z hetym teham",

@@ -302,6 +302,35 @@ void main() {
     });
   });
 
+  group('hidden posts', () {
+    test('a page keeps the posts the muted tags hid, but never one over the rating cap', () async {
+      final client = BooruClient(
+        PrefServiceCache(
+          cache: {
+            optionPluginBooruEngine: 'danbooru',
+            optionPluginBooruMaxRating: 'g',
+            optionPluginBooruMutedTags: '["solo"]',
+          },
+        ),
+        httpClient: MockClient(
+          (request) async => http.Response(
+            jsonEncode([
+              {'id': 1, 'tag_string': 'solo', 'rating': 'g', 'file_url': 'https://cdn.example/1.png'},
+              {'id': 2, 'tag_string': 'smile', 'rating': 'g', 'file_url': 'https://cdn.example/2.png'},
+              {'id': 3, 'tag_string': 'solo', 'rating': 'e', 'file_url': 'https://cdn.example/3.png'},
+            ]),
+            200,
+          ),
+        ),
+      );
+
+      final page = await client.latest();
+
+      expect(page.posts.map((post) => post.id), ['2']);
+      expect(page.allowed.map((post) => post.id), ['1', '2']);
+    });
+  });
+
   group('metatags', () {
     test("two letters of a metatag offer it on its site's engine only, and its known values after the colon", () {
       List<String> names(BooruEngine engine, String input, {BooruRating cap = BooruRating.general}) => [

@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Sesuaikan dengan layar",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Disembunyikan oleh tag yang dibisukan: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Semua postingan sejauh ini disembunyikan oleh rating maksimum atau tag yang dibisukan",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Sembunyikan postingan dengan tag ini",

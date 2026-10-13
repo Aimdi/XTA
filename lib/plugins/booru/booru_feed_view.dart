@@ -23,6 +23,7 @@ class BooruFeedView extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     children: [
       BooruRefreshNotice(feed: store),
+      BooruHiddenNotice(feed: store),
       Expanded(child: _posts(context)),
     ],
   );

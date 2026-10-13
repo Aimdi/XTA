@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "화면에 맞추기",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "숨긴 태그로 가려진 게시물: {count}개",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "지금까지의 게시물은 모두 최대 등급이나 숨긴 태그 때문에 가려져 있습니다",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "이 태그가 있는 게시물 숨기기",

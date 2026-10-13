@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Adapti al la ekrano",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Kaŝitaj de viaj silentigitaj etikedoj: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Ĉiuj afiŝoj ĝis nun estas kaŝitaj de via maksimuma takso aŭ silentigitaj etikedoj",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Kaŝi afiŝojn kun ĉi tiu etikedo",

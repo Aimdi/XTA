@@ -1655,6 +1655,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Fit to screen",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Hidden by your muted tags: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Every post so far is hidden by your maximum rating or muted tags",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Hide posts with this tag",

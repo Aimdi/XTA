@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Ekrana sığdır",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Sessize alınan etiketlerce gizlenen: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Şimdiye kadarki tüm gönderiler en yüksek derecelendirmeniz veya sessize alınan etiketler nedeniyle gizlendi",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Bu etiketli gönderileri gizle",

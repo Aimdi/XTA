@@ -1562,6 +1562,14 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Doitu pantailara",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Isilarazitako etiketek ezkutatuta: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_hidden_so_far": "Orain arteko argitalpen guztiak ezkutatuta daude zure gehienezko sailkapenagatik edo isilarazitako etiketengatik",
   "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Ezkutatu etiketa hau duten argitalpenak",

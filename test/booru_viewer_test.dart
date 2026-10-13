@@ -466,6 +466,43 @@ void main() {
       expect(other.error, isA<BooruException>(), reason: 'nothing was kept for that feed');
     });
 
+    test('posts the muted tags hid are counted, and shown in their places on request', () async {
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        final all = [_post('${page}a'), _post('${page}b'), _post('${page}c')];
+        return BooruPostPage(posts: [all[0], all[2]], allowed: all, page: page, hasMore: page < 2);
+      });
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+      expect(feed.state.map((p) => p.id), ['1a', '1c']);
+      expect(feed.hidden.state, (count: 1, shown: false));
+      await feed.loadMore();
+      expect(feed.hidden.state.count, 2);
+
+      feed.showHidden();
+      expect(feed.state.map((p) => p.id), ['1a', '1b', '1c', '2a', '2b', '2c']);
+      feed.hideHidden();
+      expect(feed.state.map((p) => p.id), ['1a', '1c', '2a', '2c']);
+
+      feed.showHidden();
+      await feed.refresh();
+      expect(feed.state.map((p) => p.id), ['1a', '1c'], reason: 'a refresh hides them again');
+      expect(feed.hidden.state, (count: 1, shown: false));
+    });
+
+    test('pages the muted tags emptied are skipped, and what they hid still counts', () async {
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        final post = _post('$page');
+        return BooruPostPage(posts: page < 3 ? const [] : [post], allowed: [post], page: page, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+
+      expect(feed.state.map((p) => p.id), ['3']);
+      expect(feed.hidden.state.count, 2);
+    });
+
     test('no next page is asked for while a refresh is on its way', () async {
       final asked = <int>[];
       final first = Completer<BooruPostPage>();
@@ -1114,6 +1151,24 @@ void main() {
 
       expect(find.byType(BooruPostTile), findsNWidgets(2));
       expect(find.text('Showing the posts from before'), findsOneWidget);
+    });
+
+    testWidgets('Latest says how many posts the muted tags hid, and shows them on request', (tester) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+      final all = [_post('1'), _post('2'), _post('3')];
+      client.latestPage.complete(BooruPostPage(posts: [all.first], allowed: all, page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruPostTile), findsOneWidget);
+      expect(find.text('Hidden by your muted tags: 2'), findsOneWidget);
+      await tester.tap(find.widgetWithText(TextButton, 'Show'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BooruPostTile), findsNWidgets(3));
+      await tester.tap(find.widgetWithText(TextButton, 'Hide'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BooruPostTile), findsOneWidget);
     });
 
     testWidgets('Latest asks for its first page in its first frame', (tester) async {
