@@ -236,7 +236,7 @@ class BooruClient {
     if (uri == null) return fromPost;
     try {
       final looked = parseBooruTagInfo(
-        await fetchJson(uri),
+        await fetchTags(uri),
         engine: from.engine,
       );
       return {
@@ -280,7 +280,7 @@ class BooruClient {
 
     final uri = _tagsUri(query: query, limit: limit);
     try {
-      return parseBooruTagSuggestions(await fetchJson(uri), engine: engine);
+      return parseBooruTagSuggestions(await fetchTags(uri), engine: engine);
     } catch (_) {
       return const [];
     }
@@ -435,6 +435,15 @@ class BooruClient {
   }
 
   Future<Object?> fetchJson(Uri uri) async => _decodeJson(await _get(uri), uri);
+
+  /// A tag list: decoded JSON, or the XML text Gelbooru 0.2 forks send for
+  /// tags whatever `json=1` asks.
+  Future<Object?> fetchTags(Uri uri) async {
+    final response = await _get(uri);
+    final body = response.body.trimLeft();
+    if (response.statusCode == 200 && body.startsWith('<')) return body;
+    return _decodeJson(response, uri);
+  }
 
   /// What a status says went wrong, when it says something more specific than
   /// an unexpected answer. A 403 blames the credentials only if some went out.

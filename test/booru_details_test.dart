@@ -548,6 +548,29 @@ void main() {
       }
     });
 
+    // Gelbooru 0.2 forks answer the tag dapi in XML whatever json=1 asks, as the audit read in Boorusama's
+    // Gelbooru tag parser. The body is built, not recorded from a live host.
+    test('a Gelbooru 0.2 tag reply in XML gives suggestions, kinds and counts', () async {
+      const xml =
+          '<?xml version="1.0" encoding="UTF-8"?><tags type="array">'
+          '<tag type="0" count="81234" name="blue_eyes" ambiguous="false" id="12"/>'
+          '<tag type="4" count="900" name="girls&#039;_frontline" ambiguous="false" id="13"/>'
+          '</tags>';
+      final client = _client('gelbooru_v2', 'https://safebooru.org', MockClient((_) async => http.Response(xml, 200)));
+
+      final suggestions = await client.suggestTags('b');
+      final info = await client.tagInfo(
+        _post(engine: 'gelbooru_v2', host: 'https://safebooru.org', tags: const ['blue_eyes', "girls'_frontline"]),
+      );
+
+      expect(suggestions.map((tag) => tag.name), ['blue_eyes', "girls'_frontline"]);
+      expect(suggestions.first.postCount, 81234);
+      expect(suggestions.last.category, BooruTagCategory.character);
+      expect(info['blue_eyes']?.category, BooruTagCategory.general);
+      expect(info['blue_eyes']?.postCount, 81234);
+      expect(info["girls'_frontline"]?.category, BooruTagCategory.character);
+    });
+
     test('Gelbooru popular shows its highest-scored posts', () async {
       final asked = <Uri>[];
       final client = _client(

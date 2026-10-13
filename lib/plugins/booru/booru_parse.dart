@@ -29,10 +29,12 @@ List<BooruPost> parseBooruPosts(
   ];
 }
 
+/// Tag rows from JSON, or from the XML text Gelbooru 0.2 forks answer with.
 List<BooruTagSuggestion> parseBooruTagSuggestions(
   Object? raw, {
   required BooruEngine engine,
 }) {
+  if (raw is String) return _xmlTags(raw, engine);
   final root = Json(raw);
   final list = switch (engine) {
     BooruEngine.gelbooruV2 => root['tag'].exists ? root['tag'] : root,
@@ -45,6 +47,21 @@ List<BooruTagSuggestion> parseBooruTagSuggestions(
     for (final item in list.raw as List) ?_suggestionOf(Json(item), engine),
   ];
 }
+
+final _xmlTag = RegExp(r'<tag\s([^>]*?)/?>');
+final _xmlAttribute = RegExp(r'(\w+)="([^"]*)"');
+
+/// `<tag type="4" count="900" name="..."/>` rows, attributes unescaped.
+List<BooruTagSuggestion> _xmlTags(String xml, BooruEngine engine) => [
+  for (final tag in _xmlTag.allMatches(xml))
+    ?_suggestionOf(
+      Json({
+        for (final attribute in _xmlAttribute.allMatches(tag.group(1)!))
+          attribute.group(1)!: _entities.convert(attribute.group(2)!),
+      }),
+      engine,
+    ),
+];
 
 BooruTagSuggestion? _suggestionOf(Json json, BooruEngine engine) {
   final name = json['name'].string ?? json['tag'].string;
