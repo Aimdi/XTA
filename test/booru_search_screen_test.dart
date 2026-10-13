@@ -25,6 +25,13 @@ class _Client extends BooruClient {
 
   final prefixes = <String>[];
   final queries = <String>[];
+  final tagLookups = <String>[];
+
+  @override
+  Future<Map<String, BooruTagInfo>> tagInfo(BooruPost post) async {
+    tagLookups.add(post.id);
+    return const {};
+  }
 
   @override
   Future<List<BooruTagSuggestion>> suggestTags(String prefix, {int limit = 12}) async {
@@ -482,6 +489,23 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-hide')));
       await _settle(tester);
       expect(readMuted(harness.prefs), contains('smile'));
+    });
+
+    testWidgets("swiping back to a post asks for its tags once, and a page change keeps the pages", (tester) async {
+      final harness = await _open(tester, initialQuery: 'cat');
+      await tester.tap(find.byType(BooruPostTile).first);
+      await _settle(tester);
+      final pages = tester.widget<PageView>(find.byType(PageView));
+
+      await tester.fling(find.byType(PageView), const Offset(-600, 0), 1000);
+      await _settle(tester);
+      expect(find.text('#2'), findsOneWidget);
+      expect(tester.widget<PageView>(find.byType(PageView)), same(pages), reason: 'only the app bar is rebuilt');
+      await tester.fling(find.byType(PageView), const Offset(600, 0), 1000);
+      await _settle(tester);
+
+      expect(find.text('#1'), findsOneWidget);
+      expect(harness.client.tagLookups, ['1', '2']);
     });
 
     testWidgets('the viewer swipes on to the next post', (tester) async {

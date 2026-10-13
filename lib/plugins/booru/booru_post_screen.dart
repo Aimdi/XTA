@@ -12,6 +12,7 @@ import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
@@ -56,7 +57,9 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     super.initState();
     final client = context.read<BooruClient>();
     _engine = BooruEngine.tryParse(_post.engine) ?? client.engine;
-    _tagInfo = BooruLoadStore(() => client.tagInfo(_post));
+    final lookups = context.read<BooruPostLookups?>();
+    Future<Map<String, BooruTagInfo>> lookUp() => client.tagInfo(_post);
+    _tagInfo = BooruLoadStore(() => lookups?.remember('tags:${_post.key}', lookUp) ?? lookUp());
     unawaited(_tagInfo.ensure());
   }
 

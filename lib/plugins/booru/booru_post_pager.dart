@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
@@ -28,6 +30,7 @@ class BooruPostPager extends StatefulWidget {
 class _BooruPostPagerState extends State<BooruPostPager> {
   late final _store = BooruPagerStore(posts: widget.posts, index: widget.initialIndex, feed: widget.feed);
   late final _pages = PageController(initialPage: _store.state.index);
+  final _lookups = BooruPostLookups();
 
   @override
   void dispose() {
@@ -36,21 +39,37 @@ class _BooruPostPagerState extends State<BooruPostPager> {
     super.dispose();
   }
 
+  /// A page change rebuilds the app bar alone; the pages are rebuilt only
+  /// when the feed adds posts.
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<BooruPagerStore, BooruPagerState>(
-      store: _store,
-      onState: (context, state) => Scaffold(
-        appBar: AppBar(
-          title: Text('#${state.current.id}'),
-          actions: [BooruPostActions(key: ValueKey(state.current.key), post: state.current)],
+    return Provider<BooruPostLookups>.value(
+      value: _lookups,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: ScopedBuilder<BooruPagerStore, BooruPagerState>(
+            store: _store,
+            distinct: (state) => state.current.key,
+            onState: (context, state) => AppBar(
+              title: Text('#${state.current.id}'),
+              actions: [BooruPostActions(key: ValueKey(state.current.key), post: state.current)],
+            ),
+          ),
         ),
-        body: PageView.builder(
-          controller: _pages,
-          itemCount: state.posts.length,
-          onPageChanged: _store.show,
-          itemBuilder: (context, index) =>
-              BooruPostDetails(key: ValueKey(state.posts[index].key), post: state.posts[index], search: widget.search),
+        body: ScopedBuilder<BooruPagerStore, BooruPagerState>(
+          store: _store,
+          distinct: (state) => state.posts,
+          onState: (context, state) => PageView.builder(
+            controller: _pages,
+            itemCount: state.posts.length,
+            onPageChanged: _store.show,
+            itemBuilder: (context, index) => BooruPostDetails(
+              key: ValueKey(state.posts[index].key),
+              post: state.posts[index],
+              search: widget.search,
+            ),
+          ),
         ),
       ),
     );
