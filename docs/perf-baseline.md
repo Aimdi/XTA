@@ -245,3 +245,17 @@ bytes for a GIF post. The rest (Gelbooru-family rating tags, XML tags and
 entities, text refusals, page and tag limits, Rule34 paths, the Moebooru
 wiki, group member ids) is off the scripted path. None of this has been
 measured: the baseline itself has not yet run on a phone.
+
+### Tier 2 changes, not yet measured
+
+`f8d57c09` to `d732c7cc` (docs/booru/plan.md, tier 2) change what the scripted
+Danbooru run does. Requests to one site start at most ten a second, the rate
+Boorusama uses, and pause after a 429 or 5xx, so S2 and S3 can take longer
+on a busy site and should show no 429. Tiles fetch Danbooru's smallest
+variant that fills them, which should lower S7's bytes per screenful and S2's
+raster work. Latest asks for its first page in the first frame (S1). A swipe
+in the viewer rebuilds the app bar alone, posts seen again make no new
+request, and the next and previous pictures load while the reader looks
+(S3; S7 per viewer post rises by the preloads). Launches delete pictures
+cached more than 30 days ago. Every one of these is a prediction until the
+scenarios run on the same phone before and after.

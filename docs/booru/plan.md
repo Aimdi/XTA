@@ -1,6 +1,6 @@
 # Booru plugin: ranked plan
 
-Status: **approved 2026-10-12; tier 1 done except the live checks named below.** Ranks marked **Done**
+Status: **approved 2026-10-12; tiers 1 and 2 done except the live checks and phone measurements named below; tier 3 next.** Ranks marked **Done**
 name the commit that fixed them.
 Evidence for every item is in `docs/booru/audit.md` (IDs B*, P*, §4 rows);
 baseline scenarios are in `docs/perf-baseline.md`.
@@ -72,21 +72,23 @@ host sends, and each is unverified until checked live.
 
 ## Tier 2: performance of existing screens
 
-Starts after tier 1, and only after the baseline has been measured on a phone.
-Each item names the scenario it must improve. The baseline will reorder this
-list: an item whose scenario already meets its target drops out.
+Started on your go-ahead before the baseline could run on a phone. Each item
+names the scenario it must improve; every metric stays UNVERIFIED until that
+scenario runs, and an item that does not improve its scenario then is
+reverted. The tests check what can be counted without a device: requests
+made, the picture chosen, rebuilds and when the first request goes out.
 
 | Rank | Item | From | Scenario | Impact | Effort | Risk |
 |---|---|---|---|---|---|---|
-| 1 | Throttle requests per site and back off exponentially on 429 and 5xx; cap the Following fan-out | §3 X3, X4 | Request counts; no 429 | H | M | L |
-| 2 | Pick the tile image by size: the smallest variant at least as wide as the tile × device pixel ratio (Danbooru's 360/720 px variants; sample or preview elsewhere). Originals only on request | P1 | S7, S2 | H | M | M |
-| 3 | Start Latest's first request without waiting for the tag and mute stores, and without `execute`'s 50 ms delays on a cold open | P3 | S1 | M | S | L |
-| 4 | Viewer: rebuild only the app bar on a page change; cache each post's tag lookup by post key | P7 | S3 | M | M | L |
-| 5 | Cancel tile downloads that scroll away; precache the next and previous post at sample size, cancelled on fast swipes, never for video | P5 | S7, S3 | M | M | M |
-| 6 | Cap the full-screen viewer's decode size (shared `TweetPhoto`: X's viewer too) | P6 | S6 | M | M | M |
-| 7 | Bound the image disk cache, with its size and a clear button in settings. The folder is app-wide, shared with X media, so this is an app-wide policy | P8 | Storage, S7 | M | M | M |
-| 8 | Narrow the grid's preference dependency to the five display preferences | P4 | S2 rebuild counts | L–M | S | L |
-| 9 | Decode responses off the UI isolate with `compute`, as `lib/group/feed_cache.dart:41` already does, if the S2/S3 traces show parse cost | P2 | S2, S3 | Unknown until traced | S | L |
+| 1 | **Done** (`f8d57c09`). Throttle requests per site and back off exponentially on 429 and 5xx; cap the Following fan-out | §3 X3, X4 | Request counts; no 429 | H | M | L |
+| 2 | **Done** (`5a9c7b02`) for Danbooru, the one engine that lists variants. Pick the tile image by size: the smallest variant at least as wide as the tile × device pixel ratio (Danbooru's 360/720 px variants; sample or preview elsewhere). Originals only on request | P1 | S7, S2 | H | M | M |
+| 3 | **Done** (`1536ac45`). Start Latest's first request without waiting for the tag and mute stores, and without `execute`'s 50 ms delays on a cold open | P3 | S1 | M | S | L |
+| 4 | **Done** (`5ffeeb8e`); related posts are asked for once per viewer as well. Viewer: rebuild only the app bar on a page change; cache each post's tag lookup by post key | P7 | S3 | M | M | L |
+| 5 | **Precaching done** (`a2993c50`). Open: cancelling tile downloads, since the image library shares one load per picture between widgets. Cancel tile downloads that scroll away; precache the next and previous post at sample size, cancelled on fast swipes, never for video | P5 | S7, S3 | M | M | M |
+| 6 | **Waiting for S6 on a phone**: it trades zoom detail in a viewer X shares for memory. Cap the full-screen viewer's decode size (shared `TweetPhoto`: X's viewer too) | P6 | S6 | M | M | M |
+| 7 | **Done** (`d732c7cc`) as a 30-day age bound with the size and a clear button in Settings > Data; the task's size budget is open. Bound the image disk cache, with its size and a clear button in settings. The folder is app-wide, shared with X media, so this is an app-wide policy | P8 | Storage, S7 | M | M | M |
+| 8 | **Dropped**: on the browsing path only a search writes preferences, so the rebuilds it would save are rare. Narrow the grid's preference dependency to the five display preferences | P4 | S2 rebuild counts | L–M | S | L |
+| 9 | **Not started**: it waits for an S2/S3 trace that shows parse cost. Decode responses off the UI isolate with `compute`, as `lib/group/feed_cache.dart:41` already does, if the S2/S3 traces show parse cost | P2 | S2, S3 | Unknown until traced | S | L |
 
 ## Tier 3: finishing partial features (§4)
 
@@ -122,13 +124,13 @@ approval first. Secure credential storage is deferred until per-site profiles.
 
 ## Proposed next
 
-Every tier 1 rank is done or partly done. Ranks 10–16, 24 and 27 were fixed
-without the booru hosts, which this environment's network policy refuses:
-their tests use answers built from the shapes the audit read in Boorusama, so
-each stays unverified until it is checked live. What is still open in tier 1
-needs a live host: the `api-cdn` rewrite and `Referer` for Rule34 (rank 27),
-an exact Moebooru wiki lookup (rank 24), and a warning when a Danbooru search
-past the tag limit is saved (rank 13).
+Tier 1 is done apart from the live checks named in its table, and tier 2
+apart from rank 5's tile cancelling and rank 6, which need a phone, and rank
+9, which needs a trace. Every tier 2 metric is UNVERIFIED until S1–S7 run on
+a phone.
 
-Tier 2 is next. Without a phone, its items get static diagnosis and tests,
-and every metric stays UNVERIFIED until the S1–S7 baseline runs on a device.
+Tier 3 is next, starting with the items that need no live host, no new
+dependency and no change to the read-only rule: semantic labels on
+thumbnails (14a), "copy tags as prompt" options (12), one-tap tag search
+with long-press actions (5b, 5c), and keeping the last page through a failed
+refresh and across restarts (10c).

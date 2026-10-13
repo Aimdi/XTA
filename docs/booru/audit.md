@@ -110,6 +110,14 @@ None should be acted on before that scenario has been measured on a phone.
 | P7 | Every page change rebuilds the viewer's whole `Scaffold` and `PageView`. Pages are not kept alive, so swiping back re-runs a post's tag lookup and up to two related-post searches | `booru_post_pager.dart:39-56`; `booru_post_screen.dart:53-61, 91-92, 117-123` | S3 build times, request counts |
 | P8 | The image disk cache never shrinks: no size cap, no maximum age, and the plugin declares no `caches` | `pub:extended_image_library-5.0.1/lib/src/network/network_image_io.dart:185-215`; `lib/plugins/plugin.dart:77` | Storage; S7 |
 
+Acted on since, none of it measured (UNVERIFIED until S1–S7 run on a phone):
+X3 and X4, a per-site request gate with backoff (`f8d57c09`); P1, Danbooru's
+variants for tiles (`5a9c7b02`); P3 (`1536ac45`); P5's viewer half,
+neighbours preloaded (`a2993c50`); P7 (`5ffeeb8e`); and P8, a 30-day age
+bound with the size and a clear button in settings (`d732c7cc`). P4 was
+dropped: on the browsing path only a search writes preferences. P2 waits for
+a trace that shows parse cost, and P6 and P5's tile cancelling for a phone.
+
 ### Decisions (2026-10-12)
 
 1. **Writing to sites: no.** The plugin stays read-only, as its spec says
