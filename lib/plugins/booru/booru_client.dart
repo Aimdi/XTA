@@ -14,6 +14,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
+import 'package:xta/plugins/booru/booru_request_gate.dart';
 
 enum BooruErrorKind {
   notConfigured,
@@ -67,8 +68,18 @@ class BooruClient {
   final http.Client httpClient;
   final BasePrefService prefs;
 
-  BooruClient(this.prefs, {http.Client? httpClient})
-    : httpClient = httpClient ?? http.Client();
+  BooruClient(
+    this.prefs, {
+    http.Client? httpClient,
+    BooruRequestGate Function()? requestGate,
+  }) : httpClient = httpClient ?? http.Client(),
+       _newGate = requestGate ?? BooruRequestGate.new;
+
+  final BooruRequestGate Function() _newGate;
+
+  /// One per host: a burst to one site (Following's fan-out, a post's
+  /// lookups) waits its turn without holding up another.
+  final _gates = <String, BooruRequestGate>{};
 
   static const _timeout = Duration(seconds: 20);
   static const _userAgent =
@@ -422,8 +433,11 @@ class BooruClient {
   }
 
   Future<http.Response> _get(Uri uri) async {
+    final gate = _gates.putIfAbsent(uri.host, _newGate);
+    await gate.admit();
+    final http.Response response;
     try {
-      return await httpClient
+      response = await httpClient
           .get(
             uri,
             headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
@@ -432,6 +446,11 @@ class BooruClient {
     } catch (e) {
       throw BooruException(BooruErrorKind.network, '$e');
     }
+    gate.answered(
+      response.statusCode,
+      retryAfter: booruRetryAfter(response.headers['retry-after']),
+    );
+    return response;
   }
 
   Future<Object?> fetchJson(Uri uri) async => _decodeJson(await _get(uri), uri);

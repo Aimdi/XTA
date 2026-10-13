@@ -18,6 +18,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
+import 'package:xta/plugins/booru/booru_request_gate.dart';
 import 'package:xta/plugins/booru/booru_text.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 
@@ -569,6 +570,42 @@ void main() {
       expect(info['blue_eyes']?.category, BooruTagCategory.general);
       expect(info['blue_eyes']?.postCount, 81234);
       expect(info["girls'_frontline"]?.category, BooruTagCategory.character);
+    });
+
+    test('after a 429 the next request to that host waits, and another host does not', () async {
+      final waits = <Duration>[];
+      var now = DateTime.utc(2026, 10, 13);
+      var calls = 0;
+      final client = BooruClient(
+        PrefServiceCache(
+          cache: {
+            optionPluginBooruEngine: 'danbooru',
+            optionPluginBooruHost: 'https://danbooru.donmai.us',
+            optionPluginBooruMaxRating: 'e',
+          },
+        ),
+        httpClient: MockClient((request) async {
+          calls++;
+          return calls == 1 ? http.Response('', 429, headers: {'retry-after': '3'}) : http.Response('[]', 200);
+        }),
+        requestGate: () => BooruRequestGate(
+          now: () => now,
+          wait: (duration) async {
+            waits.add(duration);
+            now = now.add(duration);
+          },
+        ),
+      );
+
+      await client.latest().then<void>((_) {}, onError: (Object _) {});
+      await client.latest();
+      await client.search(
+        'solo',
+        site: const BooruSite(engine: BooruEngine.danbooru, host: 'https://safebooru.donmai.us'),
+      );
+
+      expect(waits, [const Duration(seconds: 3)], reason: 'the other host has a gate of its own');
+      expect(calls, 3);
     });
 
     test('Gelbooru popular shows its highest-scored posts', () async {
