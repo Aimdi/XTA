@@ -31,7 +31,10 @@ class BooruSearchResults extends StatelessWidget {
       ),
       onState: (context, posts) {
         if (posts.isEmpty) {
-          return Center(child: Text(l10n.plugin_booru_empty_search));
+          return BooruEmptyFeed(
+            feed: results,
+            empty: Center(child: Text(l10n.plugin_booru_empty_search)),
+          );
         }
         final related = booruRelatedTags(posts, store.state.tags);
         return Column(

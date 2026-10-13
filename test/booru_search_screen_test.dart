@@ -47,6 +47,24 @@ class _Client extends BooruClient {
   }
 }
 
+/// A host whose first pages the rating limit or blacklist emptied: only page 6 has a post left to show.
+class _HiddenClient extends _Client {
+  _HiddenClient(super.prefs);
+
+  final pages = <int>[];
+
+  @override
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async {
+    pages.add(page);
+    return BooruPostPage(posts: page < 6 ? const [] : [_post('6')], page: page, hasMore: true);
+  }
+}
+
 BooruPost _post(String id) => BooruPost(
   id: id,
   host: 'https://danbooru.donmai.us',
@@ -104,9 +122,10 @@ Future<_Harness> _open(
   PrefServiceCache? prefs,
   String? initialQuery,
   List<String> saved = const [],
+  _Client Function(PrefServiceCache prefs) client = _Client.new,
 }) async {
   final service = prefs ?? PrefServiceCache();
-  final harness = _Harness(service, _Client(service), _SavedSearches(saved));
+  final harness = _Harness(service, client(service), _SavedSearches(saved));
   await tester.pumpWidget(
     PrefService(
       service: service,
@@ -211,6 +230,20 @@ void main() {
     await _settle(tester);
     expect(spinner, findsNothing);
     expect(find.byType(BooruPostGrid), findsOneWidget);
+  });
+
+  testWidgets('results the filters hid on the first pages still lead on to later pages', (tester) async {
+    final harness = await _open(tester, initialQuery: 'solo', client: _HiddenClient.new);
+    final client = harness.client as _HiddenClient;
+    expect(client.pages, [1, 2, 3, 4]);
+    expect(find.text('No posts matched those tags'), findsNothing, reason: 'the host has more pages');
+    expect(find.text('Every post so far is hidden by your maximum rating or muted tags'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('booru-load-more')));
+    await _settle(tester);
+
+    expect(client.pages, [1, 2, 3, 4, 5, 6]);
+    expect(find.byType(BooruPostTile), findsOneWidget);
   });
 
   group('tags as chips', () {

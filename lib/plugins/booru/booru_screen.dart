@@ -243,15 +243,19 @@ class _FeedTab extends StatelessWidget {
       ),
       onState: (context, posts) {
         if (posts.isEmpty) {
-          return EmptyPane(
-            icon: Icons.photo_outlined,
-            message: emptyLabel,
+          return BooruEmptyFeed(
+            feed: store,
             scrollController: scrollController,
-            onRefresh: store.refresh,
-            action: FilledButton.icon(
-              onPressed: store.refresh,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.retry),
+            empty: EmptyPane(
+              icon: Icons.photo_outlined,
+              message: emptyLabel,
+              scrollController: scrollController,
+              onRefresh: store.refresh,
+              action: FilledButton.icon(
+                onPressed: store.refresh,
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n.retry),
+              ),
             ),
           );
         }

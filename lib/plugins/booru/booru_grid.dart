@@ -15,6 +15,7 @@ import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/ui/empty_pane.dart';
 
 String booruPostHeroTag(BooruPost post) => 'booru-${post.host}-${post.id}';
 
@@ -120,6 +121,44 @@ class _PagingFooter extends StatelessWidget {
         style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
       ),
     };
+  }
+}
+
+/// What an empty feed shows. While the host has more pages, the posts so far
+/// were all hidden by the rating limit, the blacklist or a missing file, so
+/// the reader can go on to the next pages instead of being stuck on the first.
+class BooruEmptyFeed extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  /// Shown once the host has nothing more.
+  final Widget empty;
+  final ScrollController? scrollController;
+
+  const BooruEmptyFeed({super.key, required this.feed, required this.empty, this.scrollController});
+
+  @override
+  Widget build(BuildContext context) => ScopedBuilder<BooruPagingStore, BooruPaging>(
+    store: feed.paging,
+    onState: (context, paging) => paging == BooruPaging.end ? empty : _hiddenSoFar(context, paging),
+  );
+
+  Widget _hiddenSoFar(BuildContext context, BooruPaging paging) {
+    final l10n = L10n.of(context);
+    final failed = paging == BooruPaging.failed;
+    return EmptyPane(
+      icon: Icons.visibility_off_outlined,
+      message: failed ? l10n.plugin_booru_load_more_failed : l10n.plugin_booru_hidden_so_far,
+      scrollController: scrollController,
+      onRefresh: feed.refresh,
+      action: paging == BooruPaging.loading
+          ? const CircularProgressIndicator()
+          : FilledButton.icon(
+              key: const ValueKey('booru-load-more'),
+              onPressed: failed ? feed.retryMore : feed.loadMore,
+              icon: Icon(failed ? Icons.refresh : Icons.expand_more),
+              label: Text(failed ? l10n.retry : l10n.plugin_booru_load_more),
+            ),
+    );
   }
 }
 
