@@ -2,6 +2,7 @@ import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/downloads/download_entry.dart';
+import 'package:xta/downloads/download_naming.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
 const pixivFileNameTemplateDefault = '{illust_id}_p{part}';
@@ -32,26 +33,17 @@ extension PixivNameTokenText on PixivNameToken {
 
 bool pixivTemplateHasPart(String template) => template.contains(pixivPartToken);
 
-final _illegal = RegExp(r'[\x00-\x1f/\\:*?"<>|]');
-final _token = RegExp(r'\{[a-z_]+\}');
-
 /// [template] filled in for [page] of [illust]: characters no file system
 /// accepts become `_`, and [extension] (with its dot) is kept at the end.
 String pixivFileName(String template, PixivIllust illust, int page, {required String extension}) {
   final values = {for (final token in PixivNameToken.values) token.token: token.valueFor(illust, page)};
   // One pass, so a title that itself reads "{user_id}" stays as written.
-  final filled = template.replaceAllMapped(_token, (match) => values[match[0]] ?? match[0]!);
-  final stem = pixivSafeFileStem(filled);
+  final stem = pixivSafeFileStem(fillNameTemplate(template, values));
   return '${stem.isEmpty ? '${illust.id}_p$page' : stem}$extension';
 }
 
-/// [value] as the part of a file name before its extension: characters no
-/// file system accepts become `_`, spaces fold, it fits Android's limit, and
-/// dots and spaces at either end go. Empty when nothing is left.
-String pixivSafeFileStem(String value) {
-  final stem = value.replaceAll(_illegal, '_').replaceAll(RegExp(r'\s+'), ' ').trim();
-  return fitUtf8Bytes(stem, maxDownloadStemBytes).replaceAll(RegExp(r'^[. ]+|[. ]+$'), '');
-}
+/// [value] as the part of a file name before its extension; see [safeFileStem].
+String pixivSafeFileStem(String value) => safeFileStem(value);
 
 /// The extension of the file at [url], `.jpg` when it has none.
 String pixivExtensionOf(String url) {
@@ -92,7 +84,7 @@ class PixivSaveNaming {
   String? subfolder(PixivIllust illust) {
     final parts = [
       if (folderR18 && illust.isR18) 'R-18',
-      if (folderPerArtist) '${illust.userName}_${illust.userId}'.replaceAll(_illegal, '_'),
+      if (folderPerArtist) '${illust.userName}_${illust.userId}'.replaceAll(illegalFileNameCharacters, '_'),
     ];
     return parts.isEmpty ? null : safeDownloadFolder(parts.join('/'));
   }
