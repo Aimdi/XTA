@@ -135,6 +135,7 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginSubstackSavedPosts, '[]');
     await prefs.set(optionPluginSubstackPinnedPublications, '');
     await prefs.set(substackSearchHistoryKey, '[]');
+    await prefs.set(optionPluginSubstackFeedMemory, '');
   }
 
   @override

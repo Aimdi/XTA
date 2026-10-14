@@ -71,8 +71,11 @@ class _SubstackScreenState extends State<SubstackScreen> {
       feed.syncReadIds(read.state);
       if (_tab == 2) {
         _selectTab(2);
-      } else if (_tab < 2 && feed.allPosts.isEmpty) {
-        await feed.refresh(force: true);
+      } else if (_tab < 2) {
+        // The remembered feed paints at once; only stale publications are
+        // then asked again. With nothing remembered, everything is.
+        final restored = feed.restore();
+        if (restored || feed.allPosts.isEmpty) await feed.refresh(force: !restored);
       }
     });
   }

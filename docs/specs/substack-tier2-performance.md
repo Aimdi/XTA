@@ -58,3 +58,5 @@ refresh of every followed publication, even one read a minute earlier.
 
 Measure: requests sent by a refresh right after a restart (mock client, host), and the restore itself. S1 on a device
 stays UNVERIFIED.
+
+Result: on the mock client, a restart inside the window sends 0 requests where it sent one per followed publication, and a stale publication alone is asked again. A failed page is never fresh, so a normal refresh retries it at once.

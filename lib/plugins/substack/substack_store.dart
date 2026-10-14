@@ -11,6 +11,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:xta/plugins/account_posts.dart';
 import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
+import 'package:xta/plugins/substack/substack_feed_memory.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
 /// The publications the reader follows, kept in the database.
@@ -316,6 +317,8 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   final SubstackClient client;
   final SubstackPublicationsStore publications;
   final _pages = <String, _PublicationPage>{};
+  final _answeredAt = <String, DateTime>{};
+  var _restored = false;
   var _allPosts = const <SubstackPost>[];
   var _filter = SubstackFeedFilter.all;
   Set<String> _readIds = const {};
@@ -371,7 +374,45 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
       return;
     }
-    await _load(more: false);
+    await _load(more: false, force: force);
+  }
+
+  /// Paints the feed as it last stood, before anything is asked of Substack.
+  /// A publication that answered within [kAccountPostsCacheTtl] counts as
+  /// loaded; the others show and are refreshed behind. Whether it painted.
+  bool restore() {
+    if (_closed || _restored || _allPosts.isNotEmpty) return false;
+    _restored = true;
+    final followed = {for (final pub in _sources) _publicationKey(pub)};
+    final memory = SubstackFeedMemory.decode(publications.prefs.get<String>(optionPluginSubstackFeedMemory));
+    for (final MapEntry(key: key, value: page) in memory.pages.entries) {
+      if (!followed.contains(key) || page.posts.isEmpty) continue;
+      final fresh = _answeredRecently(page.answeredAt);
+      _pages[key] = _PublicationPage(posts: page.posts, offset: page.posts.length, loaded: fresh);
+      if (fresh) _answeredAt[key] = page.answeredAt;
+    }
+    _publish();
+    return _allPosts.isNotEmpty;
+  }
+
+  bool _answeredRecently(DateTime? at) => at != null && pluginFeedIsFresh(at, ttl: kAccountPostsCacheTtl);
+
+  /// Loaded, without an error, and answered inside the cache window: a
+  /// non-forced refresh leaves it be. A failed page is retried at once.
+  bool _fresh(String key) =>
+      _pages[key]?.loaded == true && _pages[key]?.error == null && _answeredRecently(_answeredAt[key]);
+
+  Future<void> _remember() async {
+    final memory = SubstackFeedMemory({
+      for (final MapEntry(key: key, value: page) in _pages.entries)
+        if ((_answeredAt[key], page.posts) case (final at?, final posts) when posts.isNotEmpty)
+          key: (answeredAt: at, posts: posts),
+    });
+    try {
+      await publications.prefs.set(optionPluginSubstackFeedMemory, memory.encode());
+    } catch (_) {
+      // Only a faster next start is lost.
+    }
   }
 
   Future<void> loadMore() async {
@@ -395,7 +436,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     _publish();
   }
 
-  Future<void> _load({required bool more}) async {
+  Future<void> _load({required bool more, bool force = true}) async {
     final identity = _identity;
     final request = ++_generation;
     final done = Completer<void>();
@@ -413,7 +454,9 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     _publish();
     if (_allPosts.isEmpty) setLoading(true);
     try {
-      final candidates = _candidates(more: more);
+      final candidates = _candidates(
+        more: more,
+      ).where((pub) => more || force || !_fresh(_publicationKey(pub))).toList();
       await mapWithConcurrency(
         more ? candidates.take(substackPublicationsPerBatch) : candidates,
         substackPublicationConcurrency,
@@ -430,6 +473,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       }
       if (failure == null) _fetchedAt = DateTime.now();
       _publish();
+      unawaited(_remember());
       if (_allPosts.isEmpty && failure != null) setError(failure);
     } catch (error) {
       if (!_current(request, identity)) return;
@@ -486,6 +530,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       final progressed =
           offset == 0 ||
           posts.any((post) => !before.posts.any((old) => substackPostKey(old) == substackPostKey(post)));
+      if (offset == 0) _answeredAt[key] = DateTime.now();
       _pages[key] = _PublicationPage(
         posts: _mergeSubstackPosts([if (offset > 0) ...before.posts, ...posts]),
         offset: offset + substackFeedPageSize,

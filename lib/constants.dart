@@ -242,6 +242,7 @@ const optionPluginSubstackLikedPosts = 'plugin.substack.liked_posts';
 const optionPluginSubstackSavedPosts = 'plugin.substack.saved_posts';
 const optionPluginSubstackPinnedPublications =
     'plugin.substack.pinned_publications';
+const optionPluginSubstackFeedMemory = 'plugin.substack.feed_snapshot';
 const substackFeedPageSize = 8;
 const substackReadIdsCap = 400;
 const substackLikedPostsCap = 400;
