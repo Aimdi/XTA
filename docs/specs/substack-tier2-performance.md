@@ -60,3 +60,18 @@ Measure: requests sent by a refresh right after a restart (mock client, host), a
 stays UNVERIFIED.
 
 Result: on the mock client, a restart inside the window sends 0 requests where it sent one per followed publication, and a stale publication alone is asked again. A failed page is never fresh, so a normal refresh retries it at once.
+
+## 4. Click-to-load embeds (S2, privacy; plan item 6)
+
+An embedded YouTube video, Spotify or Apple player, or other iframe in a post loads its third-party page, with its
+scripts and requests, the moment the post opens.
+
+- The reader's one parse (§1) puts each `<iframe>` inside an inert `<template>` in a placeholder that records the
+  iframe's host. Nothing inside a template loads.
+- The page script turns each placeholder into a real button, "Load embedded content · youtube.com", with the label
+  from l10n (`plugin_substack_load_embed`, all locales). Tapping it puts the original iframe back unchanged.
+- Navigation, search and speech are unchanged: an iframe has no text. The offline page already drops iframes.
+
+Measure: requests to embed hosts when a post opens go from one per embed to zero until tapped (the template is inert
+by HTML's definition; on-device confirmation is UNVERIFIED). Tests: the parse output has no live iframe, the
+template keeps the original iframe, and the page carries the escaped label.
