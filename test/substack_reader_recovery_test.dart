@@ -33,8 +33,13 @@ class MemoryCache implements FFCache {
   }
 
   @override
+  Future<bool> remove(String key) async => entries.remove(key) != null;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+Iterable<String> _articles(MemoryCache memory) => memory.entries.keys.where((key) => key.contains('::'));
 
 void main() {
   test('refresh keeps the existing readable document after a network failure', () async {
@@ -134,6 +139,44 @@ void main() {
     final key = SubstackArticleCache.keyFor(preview.publication, preview.slug);
     memory.entries[key] = jsonEncode({'slug': 'other', 'body_html': 'Other writing'});
     expect(await cache.get(preview.publication, preview.slug), isNull);
+  });
+
+  test('the article cache keeps the 200 most recently read articles', () async {
+    final memory = MemoryCache();
+    final cache = SubstackArticleCache(cache: memory);
+    for (var i = 0; i <= 200; i++) {
+      await cache.put(post('Article $i', slug: 'article-$i'));
+    }
+
+    expect(_articles(memory), hasLength(200), reason: '201 files before the bound');
+    expect(await cache.get(post('').publication, 'article-0'), isNull);
+    expect((await cache.get(post('').publication, 'article-200'))?.title, 'Article 200');
+  });
+
+  test('the article cache drops the least recently read first, by count and by size', () async {
+    final memory = MemoryCache();
+    final byCount = SubstackArticleCache(cache: memory, maxArticles: 3);
+    for (final slug in ['a', 'b', 'c', 'a', 'd']) {
+      await byCount.put(post('Article', slug: slug));
+    }
+    expect(_articles(memory).map((key) => key.split('::').last), unorderedEquals(['c', 'a', 'd']));
+
+    final sized = MemoryCache();
+    await SubstackArticleCache(cache: sized).put(post('Article', slug: 'x'));
+    final size = (sized.entries.values.firstWhere((value) => '$value'.contains('"slug":"x"')) as String).length;
+    final bySize = SubstackArticleCache(cache: sized, maxBytes: size * 2 + size ~/ 2);
+    for (final slug in ['y', 'z']) {
+      await bySize.put(post('Article', slug: slug));
+    }
+    expect(_articles(sized).map((key) => key.split('::').last), unorderedEquals(['y', 'z']));
+  });
+
+  test('the newest article stays even when it alone is over the size limit', () {
+    final index = [(key: 'old', bytes: 10, savedAt: 1), (key: 'new', bytes: 500, savedAt: 2)];
+    expect(substackCacheKeep(index, articles: 10, bytes: 100).map((e) => e.key), ['new']);
+    expect(substackCacheKeep(index, articles: 10, bytes: 510).map((e) => e.key), ['old', 'new']);
+    expect(substackCacheKeep(index, articles: 1, bytes: 1000).map((e) => e.key), ['new']);
+    expect(substackCacheKeep(const [], articles: 10, bytes: 100), isEmpty);
   });
 
   test('malformed or unavailable optional cache never breaks reading', () async {
