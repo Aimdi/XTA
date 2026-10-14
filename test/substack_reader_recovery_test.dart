@@ -171,6 +171,23 @@ void main() {
     expect(_articles(sized).map((key) => key.split('::').last), unorderedEquals(['y', 'z']));
   });
 
+  test('a cached copy is used only while the listed post keeps its date and title', () {
+    SubstackPost listed({String title = 'Original', String? date = '2026-09-25T10:00:00.000Z'}) => SubstackPost(
+      id: '42',
+      title: title,
+      slug: 'article',
+      postDate: date,
+      publicationBaseUrl: 'https://example.substack.com',
+      publicationName: 'Example',
+    );
+    final cached = listed();
+
+    expect(substackCachedCopyIsCurrent(cached, listed()), isTrue);
+    expect(substackCachedCopyIsCurrent(cached, listed(title: 'A corrected title')), isFalse);
+    expect(substackCachedCopyIsCurrent(cached, listed(date: '2026-09-26T08:00:00.000Z')), isFalse);
+    expect(substackCachedCopyIsCurrent(cached, listed(title: '', date: null)), isTrue, reason: 'a deep link knows neither');
+  });
+
   test('the newest article stays even when it alone is over the size limit', () {
     final index = [(key: 'old', bytes: 10, savedAt: 1), (key: 'new', bytes: 500, savedAt: 2)];
     expect(substackCacheKeep(index, articles: 10, bytes: 100).map((e) => e.key), ['new']);

@@ -145,7 +145,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       final offline = pinned?.substackPost;
       if (offline?.bodyHtml?.trim().isNotEmpty == true) return offline!;
       final cached = await _articleCache.get(post.publication, post.slug);
-      if (cached?.bodyHtml?.trim().isNotEmpty == true) return cached!;
+      if (cached != null && cached.bodyHtml?.trim().isNotEmpty == true && substackCachedCopyIsCurrent(cached, post)) {
+        return cached;
+      }
       if (post.bodyHtml?.trim().isNotEmpty == true) return post;
     }
     return client.fetchPost(post.publication, post.slug);

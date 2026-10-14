@@ -20,6 +20,19 @@ List<SubstackCacheEntry> substackCacheKeep(List<SubstackCacheEntry> index, {requ
   return index.sublist(start);
 }
 
+/// Whether [cached] still matches [listed], the copy the reader was opened
+/// with: a different date or title means the post was edited or rescheduled.
+/// A side that does not know a field, like a deep link, does not count.
+bool substackCachedCopyIsCurrent(SubstackPost cached, SubstackPost listed) {
+  bool same(String? a, String? b) {
+    final left = a?.trim() ?? '';
+    final right = b?.trim() ?? '';
+    return left.isEmpty || right.isEmpty || left == right;
+  }
+
+  return same(cached.postDate, listed.postDate) && same(cached.title, listed.title);
+}
+
 /// Public article bodies kept on device after the first successful open.
 ///
 /// Cache-only — never a source of truth. Cleared by the OS at will; a miss
