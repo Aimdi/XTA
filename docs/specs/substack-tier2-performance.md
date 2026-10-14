@@ -40,3 +40,21 @@ Measure: S4 refresh CPU against the base commit, same session, alternating. A te
 missing and differently formatted dates.
 
 Result: S4 refresh CPU fell from a median of 210.5 to 25.8 ms on the host, so coalescing was not done.
+
+## 3. Feed memory across restarts; refresh only stale publications (S1, S4; plan item 2)
+
+The feed lives in memory only. A cold start shows nothing until the network answers, and the screen then forces a
+refresh of every followed publication, even one read a minute earlier.
+
+- **Memory.** After each load, the store keeps each followed publication's first page (8 posts, without bodies) and
+  when it answered, in `plugin.substack.feed_snapshot`, the way the Threads tab does (`threads_feed_snapshot.dart`).
+  Tolerant decoding: a missing, old or malformed value is an empty memory.
+- **Restore.** When the screen opens on an empty feed, the store paints the remembered pages of publications still
+  followed, before any request. A publication that answered within the existing 10-minute window
+  (`kAccountPostsCacheTtl`) counts as loaded; the others are shown and refreshed behind them.
+- **Stale only.** A non-forced refresh fetches only publications not answered within the window. Pull to refresh,
+  retry and following something new stay forced and fetch everything, as now.
+- **Forget.** Resetting the plugin clears the memory; an unfollowed publication is never restored.
+
+Measure: requests sent by a refresh right after a restart (mock client, host), and the restore itself. S1 on a device
+stays UNVERIFIED.
