@@ -209,6 +209,16 @@ alternating, two runs each (median ms per run). Only differences larger than tha
 
 The device rows stay UNVERIFIED: no device, and no route to Substack from this environment.
 
+### Batch 2 (post identity, article cache): same-session host comparison
+
+Batch 2 changed the feed's merge, which now keys each post by its canonical URL. The previous HEAD `645f288` and
+`d53183b` were measured alternately in one session. That session was noisier: the untouched S2 path ranged 37–50 ms.
+
+| Path | `645f288` | `d53183b` | Reading |
+|---|---|---|---|
+| S4 refresh CPU, 30 follows, five runs each | 130.3, 126.1, 120.8, 122.0, 128.3 (median 126.1) | 123.8, 144.3, 136.1, 123.5, 123.8 (median 123.8) | No measurable change; 33 publishes in both. |
+| S2 open, S3, S7 render | two runs each | two runs each | Code untouched; differences within the session's noise. S7 page bytes identical (8,274,936). |
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

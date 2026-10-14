@@ -265,6 +265,8 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 
 **After the Tier 1 batch:** the same files hold 337 tests (23 `test/substack_*.dart` files with 279, plus 58 in the five others), and the full suite passed: 4,895 tests, 10 skipped, 0 failed, in 7 min 52 s.
 
+**After batch 2:** 350 tests (24 `test/substack_*.dart` files with 292, plus the same 58), and the full suite passed: 4,908 tests, 10 skipped, 0 failed, in 8 min 59 s.
+
 | Gate in the brief (§5) | Today | Gap |
 |---|---|---|
 | HTML-to-block parser for every §4 construct | No block parser exists. Sanitizer tests cover scripts, handlers and URLs (`substack_sanitize_test.dart`, 7 tests). | No recorded Substack constructs; the probes use reconstructed markup. |
