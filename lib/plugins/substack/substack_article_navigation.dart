@@ -42,6 +42,7 @@ class SubstackArticleDocument {
       node.attributes.remove('data-xta-block');
     }
     final plainText = substackPlainTextOf(fragment);
+    _holdEmbeds(fragment);
     const selector = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,figcaption,td,th';
     var blocks = fragment.querySelectorAll(selector).where((node) => node.querySelector(selector) == null).toList();
     if (blocks.isEmpty && fragment.text?.trim().isNotEmpty == true) {
@@ -76,6 +77,19 @@ class SubstackArticleDocument {
           return terms.every(text.contains);
         })
         .toList(growable: false);
+  }
+}
+
+/// Puts each iframe in an inert template behind a placeholder naming its
+/// host, so nothing from another site loads until the reader asks for it.
+void _holdEmbeds(DocumentFragment fragment) {
+  for (final frame in List<Element>.from(fragment.querySelectorAll('iframe'))) {
+    final host = Uri.tryParse(frame.attributes['src'] ?? '')?.host ?? '';
+    final held = Element.tag('div')
+      ..classes.add('xta-embed')
+      ..attributes['data-host'] = host.startsWith('www.') ? host.substring(4) : host;
+    frame.replaceWith(held);
+    held.append(Element.tag('template')..append(frame));
   }
 }
 

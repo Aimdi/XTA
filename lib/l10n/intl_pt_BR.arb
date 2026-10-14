@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Entre no x.com pelo navegador, abra as ferramentas de desenvolvedor (F12) e copie os cookies auth_token e ct0 em Armazenamento → Cookies. Cole-os abaixo no formato auth_token=…; ct0=…. Eles ficam salvos só neste computador e nunca são compartilhados.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Entrar aqui exige o navegador integrado do app para Android, que o app para computador não tem.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Carregar conteúdo incorporado",
+  "@plugin_substack_load_embed": {}
 }

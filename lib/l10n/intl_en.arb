@@ -5652,5 +5652,7 @@
   "sign_in_needs_android": "Signing in here needs the Android app's built-in browser, which the desktop app doesn't have.",
   "@sign_in_needs_android": {
     "description": "Shown on the Linux desktop app when a source's sign-in needs a web view that only the Android app has"
-  }
+  },
+  "plugin_substack_load_embed": "Load embedded content",
+  "@plugin_substack_load_embed": {"description": "Button in a Substack article that stands in for an embedded video, audio player or post from another website; tapping it loads that content, which contacts the other website. The website's host name follows after a ' · ' separator."}
 }

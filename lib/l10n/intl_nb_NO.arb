@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Logg inn på x.com i nettleseren, åpne utviklerverktøyene (F12) og kopier informasjonskapslene auth_token og ct0 fra Lagring → Informasjonskapsler. Lim dem inn nedenfor som auth_token=…; ct0=…. De lagres bare på denne datamaskinen og deles aldri.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Innlogging her krever den innebygde nettleseren i Android-appen, som skrivebordsappen ikke har.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Last inn innebygd innhold",
+  "@plugin_substack_load_embed": {}
 }

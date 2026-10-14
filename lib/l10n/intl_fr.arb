@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Connectez-vous à x.com dans votre navigateur, ouvrez les outils de développement (F12) et copiez les cookies auth_token et ct0 depuis Stockage → Cookies. Collez-les ci-dessous sous la forme auth_token=…; ct0=…. Ils restent uniquement sur cet ordinateur et ne sont jamais partagés.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "La connexion ici nécessite le navigateur intégré de l'app Android, que l'app de bureau n'a pas.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Charger le contenu intégré",
+  "@plugin_substack_load_embed": {}
 }

@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Inicia sesión en x.com en tu navegador, abre las herramientas para desarrolladores (F12) y copia las cookies auth_token y ct0 desde Almacenamiento → Cookies. Pégalas abajo con el formato auth_token=…; ct0=…. Solo se guardan en este ordenador y nunca se comparten.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Para iniciar sesión aquí hace falta el navegador integrado de la app de Android, que la app de escritorio no tiene.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Cargar contenido insertado",
+  "@plugin_substack_load_embed": {}
 }

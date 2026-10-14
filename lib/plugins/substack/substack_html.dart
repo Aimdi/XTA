@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 
@@ -234,6 +236,27 @@ const substackTtsFromHereJs = r'''
 })();
 ''';
 
+/// Turns each held embed into a button that puts the original iframe back.
+const substackEmbedJs = r'''
+(function(){
+  document.querySelectorAll('.xta-embed').forEach(function(box){
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'xta-embed-load';
+    var host = box.getAttribute('data-host');
+    button.textContent = [window.xtaEmbedLabel, host].filter(Boolean).join(' \u00b7 ');
+    button.addEventListener('click', function(){
+      var held = box.querySelector('template');
+      if (held) box.replaceWith(held.content.cloneNode(true));
+    });
+    box.appendChild(button);
+  });
+})();
+''';
+
+/// [value] as a JavaScript string literal that cannot close its script tag.
+String _scriptString(String value) => jsonEncode(value).replaceAll('<', r'\u003c');
+
 String wrapSubstackHtml({
   required String title,
   required String body,
@@ -252,6 +275,7 @@ String wrapSubstackHtml({
   String? footerLink,
   String? footerLinkLabel,
   bool bodySanitized = false,
+  String embedLabel = '',
 }) {
   final cleanBody = bodySanitized ? body : sanitizeSubstackBodyHtml(body);
   final meta = [
@@ -351,6 +375,10 @@ String wrapSubstackHtml({
     display: block;
   }
   iframe { width: 100%; min-height: 220px; border: 0; }
+  .xta-embed-load {
+    width: 100%; min-height: 48px; padding: 12px 16px; border: 1px solid $rule; border-radius: 12px;
+    background: transparent; color: $link; font: inherit; text-align: center;
+  }
   figcaption, .image-caption, .caption {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: $muted;
@@ -410,6 +438,7 @@ String wrapSubstackHtml({
     ${_footerHtml(footer, footerLink, footerLinkLabel)}
   </article>
   <script>$substackTtsFromHereJs</script>
+  <script>window.xtaEmbedLabel = ${_scriptString(embedLabel)};$substackEmbedJs</script>
 </body>
 </html>
 ''';

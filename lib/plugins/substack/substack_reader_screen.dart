@@ -345,6 +345,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       footer: post.isPaywalled ? l10n.plugin_substack_preview_ends : null,
       footerLink: post.isPaywalled ? post.canonicalUrl : null,
       footerLinkLabel: post.isPaywalled ? l10n.plugin_substack_continue_on_site : null,
+      embedLabel: l10n.plugin_substack_load_embed,
     );
   }
 

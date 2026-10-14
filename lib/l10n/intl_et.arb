@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Logi brauseris sisse x.com-i, ava arendaja tööriistad (F12) ja kopeeri küpsised auth_token ja ct0 jaotisest Salvestusruum → Küpsised. Kleebi need allapoole kujul auth_token=…; ct0=…. Need salvestatakse ainult sellesse arvutisse ja neid ei jagata kunagi.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Siin sisselogimiseks on vaja Androidi rakenduse sisseehitatud brauserit, mida töölauarakendusel pole.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Laadi manustatud sisu",
+  "@plugin_substack_load_embed": {}
 }

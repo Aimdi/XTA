@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Ensalutu al x.com en via retumilo, malfermu ĝiajn programistajn ilojn (F12) kaj kopiu la kuketojn auth_token kaj ct0 el Konservado → Kuketoj. Algluu ilin sube kiel auth_token=…; ct0=…. Ili restas nur en ĉi tiu komputilo kaj neniam estas kunhavigataj.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Por ensaluti ĉi tie necesas la enkonstruita retumilo de la Android-aplikaĵo, kiun la labortabla aplikaĵo ne havas.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Ŝargi enigitan enhavon",
+  "@plugin_substack_load_embed": {}
 }

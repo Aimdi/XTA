@@ -75,3 +75,5 @@ scripts and requests, the moment the post opens.
 Measure: requests to embed hosts when a post opens go from one per embed to zero until tapped (the template is inert
 by HTML's definition; on-device confirmation is UNVERIFIED). Tests: the parse output has no live iframe, the
 template keeps the original iframe, and the page carries the escaped label.
+
+Result: in headless Chromium (Playwright 1.56.1), a page with one held embed made 0 requests to the embed host before the tap and 1 after; the button showed the label and host and was replaced by the original iframe. On an Android WebView it is UNVERIFIED.

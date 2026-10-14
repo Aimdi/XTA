@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Uvajdzicie na x.com u braŭziery, adkryjcie instrumienty raspracoŭščyka (F12) i skapirujcie cookie auth_token i ct0 z razdziela «Schovišča» → «Cookie». Ustaŭcie ich nižej u vyhladzie auth_token=…; ct0=…. Jany zachoŭvajucca tolki na hetym kampjutary i nikomu nie pieradajucca.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Dla ŭvachodu tut patrebny ŭbudavany braŭzier prahramy dla Android, jakoha niama ŭ versii dla kampjutara.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Zahruzić ubudavany zmiest",
+  "@plugin_substack_load_embed": {}
 }

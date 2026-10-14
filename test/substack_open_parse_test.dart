@@ -33,4 +33,28 @@ void main() {
       expect(_page(document.body, sanitized: true), _page(document.body));
     });
   }
+
+  test('an embed is held behind a button until the reader asks for it', () {
+    const frame = '<iframe src="https://www.youtube.com/embed/abc" allowfullscreen></iframe>';
+    final document = SubstackArticleDocument.parse('<p>Before</p><div class="youtube-wrap">$frame</div><p>After</p>');
+
+    expect(RegExp(r'<iframe').allMatches(document.body), hasLength(1));
+    expect(document.body, contains('<div class="xta-embed" data-host="youtube.com"><template><iframe'));
+    expect(document.body, contains('src="https://www.youtube.com/embed/abc"'));
+    expect(document.plainText, 'Before\n\nAfter');
+
+    final page = wrapSubstackHtml(
+      title: 'A post',
+      body: document.body,
+      bodySanitized: true,
+      background: '#000000',
+      foreground: '#ffffff',
+      muted: '#888888',
+      link: '#1d9bf0',
+      isDark: true,
+      embedLabel: 'Load </script> "content"',
+    );
+    expect(page, contains(r'window.xtaEmbedLabel = "Load \u003c/script> \"content\"";'));
+    expect(page, contains("box.replaceWith(held.content.cloneNode(true))"));
+  });
 }

@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "سجّل الدخول إلى x.com في متصفحك، ثم افتح أدوات المطوّر (F12) وانسخ ملفَّي تعريف الارتباط auth_token وct0 من قسم التخزين ← ملفات تعريف الارتباط. الصقهما أدناه بالشكل auth_token=…; ct0=…. يُحفظان على هذا الحاسوب فقط ولا تتم مشاركتهما أبدًا.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "يتطلب تسجيل الدخول هنا المتصفح المدمج في تطبيق Android، وهو غير متوفر في تطبيق سطح المكتب.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "تحميل المحتوى المضمَّن",
+  "@plugin_substack_load_embed": {}
 }

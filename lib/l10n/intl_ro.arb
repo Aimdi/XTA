@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Conectează-te la x.com în browser, deschide instrumentele pentru dezvoltatori (F12) și copiază cookie-urile auth_token și ct0 din Stocare → Cookie-uri. Lipește-le mai jos sub forma auth_token=…; ct0=…. Sunt păstrate doar pe acest computer și nu sunt partajate niciodată.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Conectarea aici necesită browserul integrat al aplicației Android, pe care aplicația pentru desktop nu îl are.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Încarcă conținutul încorporat",
+  "@plugin_substack_load_embed": {}
 }

@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Увійдіть на x.com у браузері, відкрийте інструменти розробника (F12) і скопіюйте cookie auth_token і ct0 з розділу «Сховище» → «Cookie». Вставте їх нижче у вигляді auth_token=…; ct0=…. Вони зберігаються лише на цьому комп'ютері й нікому не передаються.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Для входу тут потрібен вбудований браузер застосунку для Android, якого немає у версії для комп'ютера.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Завантажити вбудований вміст",
+  "@plugin_substack_load_embed": {}
 }

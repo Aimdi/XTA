@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "अपने ब्राउज़र में x.com पर साइन इन करें, डेवलपर टूल (F12) खोलें और स्टोरेज → कुकीज़ से auth_token और ct0 कुकीज़ कॉपी करें। उन्हें नीचे auth_token=…; ct0=… के रूप में चिपकाएँ। ये केवल इसी कंप्यूटर पर रहती हैं और कभी साझा नहीं की जातीं।",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "यहाँ साइन इन करने के लिए Android ऐप का बिल्ट-इन ब्राउज़र चाहिए, जो डेस्कटॉप ऐप में नहीं है।",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "एम्बेड की गई सामग्री लोड करें",
+  "@plugin_substack_load_embed": {}
 }

@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Hasi saioa x.com-en nabigatzailean, ireki garatzaileentzako tresnak (F12) eta kopiatu auth_token eta ct0 cookieak Biltegiratzea → Cookieak ataletik. Itsatsi behean auth_token=…; ct0=… formatuan. Ordenagailu honetan bakarrik gordetzen dira eta ez dira inoiz partekatzen.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Kargatu txertatutako edukia",
+  "@plugin_substack_load_embed": {}
 }

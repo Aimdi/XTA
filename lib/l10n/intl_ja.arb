@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "ブラウザで x.com にログインし、開発者ツール (F12) を開いて、ストレージ → Cookie から auth_token と ct0 をコピーしてください。下に auth_token=…; ct0=… の形式で貼り付けます。このパソコンにだけ保存され、共有されることはありません。",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "ここでのログインには Android アプリの内蔵ブラウザが必要ですが、デスクトップ版にはありません。",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "埋め込みコンテンツを読み込む",
+  "@plugin_substack_load_embed": {}
 }

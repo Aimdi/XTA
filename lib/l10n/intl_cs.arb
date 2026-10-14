@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Přihlaste se na x.com v prohlížeči, otevřete nástroje pro vývojáře (F12) a zkopírujte cookies auth_token a ct0 z části Úložiště → Cookies. Vložte je níže ve tvaru auth_token=…; ct0=…. Uloží se jen v tomto počítači a nikam se neodesílají.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Přihlášení zde vyžaduje vestavěný prohlížeč aplikace pro Android, který desktopová aplikace nemá.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Načíst vložený obsah",
+  "@plugin_substack_load_embed": {}
 }

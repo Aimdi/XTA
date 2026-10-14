@@ -5255,5 +5255,7 @@
   "x_cookie_login_help": "Zaloguj się na x.com w przeglądarce, otwórz narzędzia deweloperskie (F12) i skopiuj pliki cookie auth_token i ct0 z sekcji Pamięć → Pliki cookie. Wklej je poniżej w postaci auth_token=…; ct0=…. Są przechowywane tylko na tym komputerze i nigdy nie są udostępniane.",
   "@x_cookie_login_help": {},
   "sign_in_needs_android": "Logowanie tutaj wymaga wbudowanej przeglądarki aplikacji na Androida, której nie ma aplikacja na komputer.",
-  "@sign_in_needs_android": {}
+  "@sign_in_needs_android": {},
+  "plugin_substack_load_embed": "Wczytaj osadzoną treść",
+  "@plugin_substack_load_embed": {}
 }
