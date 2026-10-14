@@ -219,6 +219,18 @@ Batch 2 changed the feed's merge, which now keys each post by its canonical URL.
 | S4 refresh CPU, 30 follows, five runs each | 130.3, 126.1, 120.8, 122.0, 128.3 (median 126.1) | 123.8, 144.3, 136.1, 123.5, 123.8 (median 123.8) | No measurable change; 33 publishes in both. |
 | S2 open, S3, S7 render | two runs each | two runs each | Code untouched; differences within the session's noise. S7 page bytes identical (8,274,936). |
 
+### Tier 2, item 1: one parse per open (S2), same-session host comparison
+
+`431bbc7` (five parses) against HEAD (one parse), alternating, three runs each, the synthetic 9,223-word post. The
+benchmark's open pipeline follows each commit's reader. This session was slower overall than earlier ones.
+
+| Path | `431bbc7` | HEAD | Reading |
+|---|---|---|---|
+| S2 open pipeline (median ms per run) | 85.1, 69.3, 64.7 | 54.5, 42.3, 39.2 | About 39 % less CPU (medians of runs 69.3 → 42.3); every HEAD run is below every base run. |
+| S2 navigation index | 47.6, 30.1, 35.3 | 54.8, 53.7, 45.9 | Higher on purpose: it now also produces the speech text, so the separate speech parse is gone. |
+
+Bodies over 20,000 characters are now parsed off the UI isolate. What that saves in frames is device-only: UNVERIFIED.
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

@@ -55,9 +55,10 @@ SubstackPost _decodePost(String payload) => SubstackPost.fromJson(
   publicationName: 'XTA Perf',
 );
 
-String _page(SubstackPost post, String body) => wrapSubstackHtml(
+String _page(SubstackPost post, String body, {bool sanitized = false}) => wrapSubstackHtml(
   title: post.title,
   body: body,
+  bodySanitized: sanitized,
   background: '#000000',
   foreground: '#ffffff',
   muted: '#999999',
@@ -65,13 +66,13 @@ String _page(SubstackPost post, String body) => wrapSubstackHtml(
   isDark: true,
 );
 
-/// What `SubstackReaderScreen._showContent` does to one body before the web
-/// view gets it: the navigation index, the page wrapper and the speech text.
+/// What `SubstackReaderScreen._showArticle` does to one body before the web
+/// view gets it: one parse for the navigation index and the speech text, then
+/// the page wrapper around the already sanitized body.
 void _openPipeline(SubstackPost post) {
-  final html = post.bodyHtml!;
-  final document = SubstackArticleDocument.parse(html);
-  _page(post, document.body);
-  buildSubstackSpeakText(title: post.title, bodyHtml: html);
+  final document = SubstackArticleDocument.parse(post.bodyHtml!);
+  _page(post, document.body, sanitized: true);
+  buildSubstackSpeakText(title: post.title, bodyPlain: document.plainText);
 }
 
 class _InstantClient extends SubstackClient {

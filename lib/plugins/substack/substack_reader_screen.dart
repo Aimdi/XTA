@@ -29,6 +29,7 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_engines.dart';
 import 'package:xta/speech/tts_settings.dart';
+import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -291,21 +292,43 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   // lock icon where there was something to read.
   Future<void> _showArticle(SubstackPost post, String html) async {
     final generation = _content.generation;
-    _content.change(paywalled: false);
-    _content.change(empty: false);
-    _content.change(liveSite: false);
-    _content.change(speakText: _fallbackSpeakText(post, bodyHtml: html));
-    _content.change(partial: post.isPaywalled, document: SubstackArticleDocument.parse(html));
+    final wrap = _pageWrapper(post);
+    // One parse gives the page, the navigation index and the speech text; a
+    // long body is parsed off the UI isolate.
+    final parsed = await parseInBackground(SubstackArticleDocument.parse, html);
+    if (!mounted || !_content.accepts(generation)) return;
+    _content.change(
+      paywalled: false,
+      empty: false,
+      liveSite: false,
+      speakText: _fallbackSpeakText(post, bodyPlain: parsed.plainText),
+      partial: post.isPaywalled,
+      document: parsed,
+    );
     _reading.allowAutomaticCompletion = !post.isPaywalled;
     _stopSpinnerWhenLoaded();
 
-    // Built before the first await: everything below it reads the theme and
-    // the strings, and `context` is not ours to touch across an async gap.
+    // Article HTML is sanitized; JS stays on so a long-press can start
+    // Vorlesen from that paragraph.
+    await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    final document = await OfflineStore.shared.renderArticle(_offlineId, wrap(parsed.body));
+    if (!mounted || !_content.accepts(generation)) return;
+    await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
+  }
+
+  /// The page around a sanitized body. Theme, text scale and strings are read
+  /// now: `context` is not ours to touch across the parse's async gap.
+  String Function(String body) _pageWrapper(SubstackPost post) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final page = wrapSubstackHtml(
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final fontSizePx = MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18;
+    final lineHeight = _reading.state.lineHeight;
+    final l10n = L10n.of(context);
+    return (body) => wrapSubstackHtml(
       title: post.title,
-      body: _content.state.document!.body,
+      body: body,
+      bodySanitized: true,
       subtitle: post.excerpt,
       authorName: post.authorName,
       publicationName: post.publicationName,
@@ -314,22 +337,15 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       muted: _cssColor(scheme.onSurfaceVariant),
       link: _cssColor(scheme.primary),
       isDark: isDark,
-      isRtl: Directionality.of(context) == TextDirection.rtl,
-      fontSizePx: MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18,
-      lineHeight: _reading.state.lineHeight,
+      isRtl: isRtl,
+      fontSizePx: fontSizePx,
+      lineHeight: lineHeight,
       // Says where the free part stops, so the end of the preview does not
       // read as the end of the article.
-      footer: post.isPaywalled ? L10n.of(context).plugin_substack_preview_ends : null,
+      footer: post.isPaywalled ? l10n.plugin_substack_preview_ends : null,
       footerLink: post.isPaywalled ? post.canonicalUrl : null,
-      footerLinkLabel: post.isPaywalled ? L10n.of(context).plugin_substack_continue_on_site : null,
+      footerLinkLabel: post.isPaywalled ? l10n.plugin_substack_continue_on_site : null,
     );
-
-    // Article HTML is sanitized; JS stays on so a long-press can start
-    // Vorlesen from that paragraph.
-    await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
-    final document = await OfflineStore.shared.renderArticle(_offlineId, page);
-    if (!mounted || !_content.accepts(generation)) return;
-    await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
   }
 
   /// True when what is being read aloud is this article, rather than one the

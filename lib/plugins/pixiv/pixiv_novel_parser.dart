@@ -2,13 +2,11 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:xta/utils/background_parse.dart';
 
-/// Texts this long are read off the UI thread; shorter ones take less than a frame.
-const pixivNovelBackgroundLength = 20000;
+const pixivNovelBackgroundLength = backgroundParseLength;
 
-/// [parse] of [input], in a background isolate once [input] is long enough to stall a frame.
-Future<R> pixivNovelParse<R>(R Function(String input) parse, String input) =>
-    input.length < pixivNovelBackgroundLength ? Future.value(parse(input)) : compute(parse, input);
+Future<R> pixivNovelParse<R>(R Function(String input) parse, String input) => parseInBackground(parse, input);
 
 const _novelKey = 'novel:';
 const _openBrace = 0x7B;

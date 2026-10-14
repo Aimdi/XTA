@@ -82,10 +82,12 @@ String sanitizeSubstackBodyHtml(String raw) {
 
 /// Plain text suitable for device TTS, with paragraph breaks preserved.
 String substackHtmlToPlainText(String raw) {
-  final document = html_parser.parse(sanitizeSubstackBodyHtml(raw));
-  final body = document.body;
-  if (body == null) return '';
+  final body = html_parser.parse(sanitizeSubstackBodyHtml(raw)).body;
+  return body == null ? '' : substackPlainTextOf(body);
+}
 
+/// The speech text of an already sanitized [root].
+String substackPlainTextOf(Node root) {
   final buffer = StringBuffer();
   void walk(Node node) {
     if (node is Text) {
@@ -136,7 +138,7 @@ String substackHtmlToPlainText(String raw) {
     if (isBlock) buffer.write('\n');
   }
 
-  walk(body);
+  root.nodes.forEach(walk);
   return buffer.toString().replaceAll(RegExp(r'[ \t]+\n'), '\n').replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
 }
 
@@ -249,8 +251,9 @@ String wrapSubstackHtml({
   String? footer,
   String? footerLink,
   String? footerLinkLabel,
+  bool bodySanitized = false,
 }) {
-  final cleanBody = sanitizeSubstackBodyHtml(body);
+  final cleanBody = bodySanitized ? body : sanitizeSubstackBodyHtml(body);
   final meta = [
     if (publicationName != null && publicationName.isNotEmpty) _escape(publicationName),
     if (authorName != null && authorName.isNotEmpty) _escape(authorName),

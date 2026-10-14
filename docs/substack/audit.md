@@ -450,7 +450,7 @@ Order is by score, except where a dependency forces a change; the last column sa
 
 | Rank | Item | I | E | S | Score | Scenario |
 |---|---|---|---|---|---|---|
-| 1 | Parse each body once, off the UI isolate, and cache the result by post id + `post_date` (on the existing WebView path) | 4 | 4 | 4 | 64 | S2 |
+| 1 ✅ (no result cache) | Parse each body once, off the UI isolate, and cache the result by post id + `post_date` (on the existing WebView path) | 4 | 4 | 4 | 64 | S2. One parse, off the UI isolate above 20,000 characters; open pipeline −39 % CPU on the host. The parsed result is not cached between opens. |
 | 2 | Persisted feed snapshot on the Threads pattern; refresh only stale publications | 4 | 4 | 4 | 64 | S1, S4 |
 | 3 | Feed publish cost: parse dates and keys once per post, coalesce publishes per frame | 3 | 4 | 4 | 48 | S4 |
 | 4 | Offline render without base64 inlining | 4 | 3 | 3 | 36 | S7 |

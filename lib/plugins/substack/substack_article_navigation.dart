@@ -21,18 +21,27 @@ class SubstackArticlePassage {
   }
 }
 
+/// A post body parsed once: the sanitized page body, its passages for
+/// navigation and search, and its speech text.
 class SubstackArticleDocument {
   final String body;
   final List<SubstackArticlePassage> passages;
   final List<SubstackArticlePassage> headings;
+  final String plainText;
 
-  const SubstackArticleDocument({required this.body, required this.passages, required this.headings});
+  const SubstackArticleDocument({
+    required this.body,
+    required this.passages,
+    required this.headings,
+    this.plainText = '',
+  });
 
   factory SubstackArticleDocument.parse(String raw) {
     final fragment = html.parseFragment(sanitizeSubstackBodyHtml(raw));
     for (final node in fragment.querySelectorAll('[data-xta-block]')) {
       node.attributes.remove('data-xta-block');
     }
+    final plainText = substackPlainTextOf(fragment);
     const selector = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,figcaption,td,th';
     var blocks = fragment.querySelectorAll(selector).where((node) => node.querySelector(selector) == null).toList();
     if (blocks.isEmpty && fragment.text?.trim().isNotEmpty == true) {
@@ -54,6 +63,7 @@ class SubstackArticleDocument {
       body: fragment.outerHtml,
       passages: List.unmodifiable(passages),
       headings: List.unmodifiable(passages.where((passage) => passage.headingLevel > 0)),
+      plainText: plainText,
     );
   }
 
