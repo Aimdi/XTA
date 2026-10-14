@@ -57,4 +57,24 @@ void main() {
     expect(page, contains(r'window.xtaEmbedLabel = "Load \u003c/script> \"content\"";'));
     expect(page, contains("box.replaceWith(held.content.cloneNode(true))"));
   });
+
+  test('a parsed article is reused only for the same post, date and body', () {
+    final cache = SubstackParsedArticles(capacity: 2);
+    final one = SubstackArticleDocument.parse('<p>One</p>');
+    final two = SubstackArticleDocument.parse('<p>Two</p>');
+    final three = SubstackArticleDocument.parse('<p>Three</p>');
+
+    cache.put('a\n2026-09-01', '<p>One</p>', one);
+    expect(cache.get('a\n2026-09-01', '<p>One</p>'), same(one));
+    expect(cache.get('a\n2026-09-01', '<p>One, edited</p>'), isNull);
+    expect(cache.get('a\n2026-09-02', '<p>One</p>'), isNull);
+
+    cache.put('a\n2026-09-01', '<p>One</p>', one);
+    cache.put('b', '<p>Two</p>', two);
+    cache.get('a\n2026-09-01', '<p>One</p>');
+    cache.put('c', '<p>Three</p>', three);
+    expect(cache.get('b', '<p>Two</p>'), isNull, reason: 'least recently used goes first');
+    expect(cache.get('a\n2026-09-01', '<p>One</p>'), same(one));
+    expect(cache.get('c', '<p>Three</p>'), same(three));
+  });
 }

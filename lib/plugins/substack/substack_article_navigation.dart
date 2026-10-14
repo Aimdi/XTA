@@ -80,6 +80,33 @@ class SubstackArticleDocument {
   }
 }
 
+/// The last [capacity] parsed articles, oldest first. An entry is reused
+/// only for the very same body, so an edited post is parsed again.
+class SubstackParsedArticles {
+  SubstackParsedArticles({this.capacity = 16});
+
+  final int capacity;
+  final _entries = <String, ({String body, SubstackArticleDocument document})>{};
+
+  SubstackArticleDocument? get(String key, String body) {
+    final entry = _entries.remove(key);
+    if (entry == null || entry.body != body) return null;
+    _entries[key] = entry;
+    return entry.document;
+  }
+
+  void put(String key, String body, SubstackArticleDocument document) {
+    _entries.remove(key);
+    _entries[key] = (body: body, document: document);
+    while (_entries.length > capacity) {
+      _entries.remove(_entries.keys.first);
+    }
+  }
+}
+
+/// Parses shared by every reader in this run of the app.
+final substackParsedArticles = SubstackParsedArticles();
+
 /// Puts each iframe in an inert template behind a placeholder naming its
 /// host, so nothing from another site loads until the reader asks for it.
 void _holdEmbeds(DocumentFragment fragment) {

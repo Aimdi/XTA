@@ -86,3 +86,5 @@ is written to disk; the cache holds the sanitized body and the passage list, und
 
 Measure: a reopen of the synthetic long post skips the parse entirely (host benchmark of the lookup against the
 parse). Test: a hit returns the same document, a changed body or date misses, and the oldest entry goes first.
+
+Result: on the host, looking up the synthetic long post with an equal but distinct body string took 0.008 ms against 46.6 ms for its parse (medians of 25).

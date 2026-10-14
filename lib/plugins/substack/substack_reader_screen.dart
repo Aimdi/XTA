@@ -295,7 +295,11 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     final wrap = _pageWrapper(post);
     // One parse gives the page, the navigation index and the speech text; a
     // long body is parsed off the UI isolate.
-    final parsed = await parseInBackground(SubstackArticleDocument.parse, html);
+    final key = '${substackPostKey(post)}\n${post.postDate}';
+    final parsed =
+        substackParsedArticles.get(key, html) ??
+        await parseInBackground<SubstackArticleDocument>(SubstackArticleDocument.parse, html);
+    substackParsedArticles.put(key, html, parsed);
     if (!mounted || !_content.accepts(generation)) return;
     _content.change(
       paywalled: false,
