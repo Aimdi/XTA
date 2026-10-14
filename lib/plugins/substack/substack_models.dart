@@ -208,6 +208,10 @@ class SubstackPost {
 
   bool get isPodcast => audioUrl != null && audioUrl!.isNotEmpty;
 
+  /// Whether this copy came from the API, which names posts by number. The
+  /// RSS fallback has no number and uses the slug.
+  bool get hasApiId => _apiId.hasMatch(id);
+
   /// Whether the post leads with a video, which the tile marks and the reader
   /// plays. A video post used to be indistinguishable from any other, so the
   /// only clue that there was one was opening it.
@@ -305,7 +309,7 @@ enum SubstackFeedFilter { all, unread, free, podcast, video }
 bool postMatchesSubstackFilter(SubstackPost post, SubstackFeedFilter filter, Set<String> readIds) {
   return switch (filter) {
     SubstackFeedFilter.all => true,
-    SubstackFeedFilter.unread => !readIds.contains(post.id),
+    SubstackFeedFilter.unread => !substackPostIsRead(readIds, post),
     SubstackFeedFilter.free => !post.isPaywalled,
     SubstackFeedFilter.podcast => post.isPodcast,
     SubstackFeedFilter.video => post.isVideo,
@@ -593,6 +597,42 @@ bool sameSubstackHost(String a, String b) {
   }
 
   return norm(a) == norm(b);
+}
+
+final _apiId = RegExp(r'^\d+$');
+final _postKeys = Expando<String>();
+
+/// One key for a post, whichever copy it is: the API names it by number and
+/// the RSS fallback by slug, but both carry the same canonical URL.
+String substackPostKey(SubstackPost post) => _postKeys[post] ??= _postKeyOf(post);
+
+String _postKeyOf(SubstackPost post) {
+  final url = Uri.tryParse(post.canonicalUrl?.trim() ?? '');
+  final path = url?.path.replaceFirst(RegExp(r'/+$'), '') ?? '';
+  if (url != null && url.host.isNotEmpty && path.isNotEmpty) return '${_withoutWww(url.host.toLowerCase())}$path';
+  final host = substackHostId(post.publicationBaseUrl);
+  return host.isNotEmpty && post.slug.isNotEmpty ? '$host/p/${post.slug}' : post.id;
+}
+
+/// Whether [a] and [b] are copies of one post.
+bool sameSubstackPost(SubstackPost a, SubstackPost b) =>
+    substackPostKey(a) == substackPostKey(b) || (a.hasApiId && a.id == b.id);
+
+/// Whether [post] is among [readIds]: by its key, or by its own id as reads
+/// were stored before posts had keys.
+bool substackPostIsRead(Set<String> readIds, SubstackPost post) =>
+    readIds.contains(substackPostKey(post)) || readIds.contains(post.id);
+
+/// [posts] with one copy of each post, in first-seen order. An RSS copy never
+/// replaces the API copy, which carries the numeric id and the counts.
+List<SubstackPost> mergeSubstackCopies(Iterable<SubstackPost> posts) {
+  final unique = <String, SubstackPost>{};
+  for (final post in posts) {
+    final key = substackPostKey(post);
+    final kept = unique[key];
+    if (kept == null || !kept.hasApiId || post.hasApiId) unique[key] = post;
+  }
+  return unique.values.toList();
 }
 
 /// The follow that [publication] is, if any: the same host, or the same id

@@ -138,7 +138,7 @@ void main() {
     expect(comments.last.depth, 8);
   });
 
-  test('BUG-02: one post read through RSS and through the API has two identities', () {
+  test('BUG-02 (fixed): one post read through RSS and through the API is one post', () {
     final api = SubstackPost.fromJson(
       {'id': 4242, 'slug': 'hello', 'title': 'Hello', 'canonical_url': '$_base/p/hello'},
       publicationBaseUrl: _base,
@@ -151,8 +151,9 @@ void main() {
     ).posts.single;
 
     expect(rss.canonicalUrl, api.canonicalUrl);
-    expect(rss.id, isNot(api.id));
-    expect(substackFeedPostKey(rss), isNot(substackFeedPostKey(api)));
+    expect(rss.id, isNot(api.id), reason: 'Substack RSS carries no numeric id');
+    expect(substackPostKey(rss), substackPostKey(api));
+    expect(sameSubstackPost(rss, api), isTrue, reason: 'two posts before the fix');
   });
 
   test('BUG-03 (fixed): a rate limit ends the fallback chain and says so', () async {

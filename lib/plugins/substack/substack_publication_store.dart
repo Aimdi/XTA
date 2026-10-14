@@ -149,18 +149,12 @@ class SubstackPublicationStore extends Store<SubstackPublicationState> {
   bool _current(bool search, int request) => !_closed && request == (search ? _searchRequest : _archiveRequest);
 
   SubstackPublicationPage _merge(SubstackPublicationPage prior, List<SubstackPost> incoming, bool more, int offset) {
-    final posts = {
-      if (more)
-        for (final post in prior.posts) publicationPostKey(post): post,
-    };
-    final oldLength = posts.length;
-    for (final post in incoming) {
-      posts[publicationPostKey(post)] = post;
-    }
+    final before = more ? prior.posts : const <SubstackPost>[];
+    final posts = mergeSubstackCopies([...before, ...incoming]);
     return SubstackPublicationPage(
-      posts: posts.values.toList(growable: false),
+      posts: posts,
       offset: offset + pageSize,
-      canLoadMore: incoming.length >= pageSize && posts.length > oldLength,
+      canLoadMore: incoming.length >= pageSize && posts.length > before.length,
     );
   }
 
@@ -204,7 +198,7 @@ List<SubstackPost> visiblePublicationPosts(SubstackPublicationState state, Set<S
       .where(
         (post) => switch (state.filter) {
           SubstackPublicationFilter.all => true,
-          SubstackPublicationFilter.unread => !read.contains(post.id),
+          SubstackPublicationFilter.unread => !substackPostIsRead(read, post),
           SubstackPublicationFilter.free => !post.isPaywalled,
           SubstackPublicationFilter.podcasts => post.isPodcast,
           SubstackPublicationFilter.videos => post.isVideo,

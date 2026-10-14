@@ -331,7 +331,7 @@ class _PublicationPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final unreadPublications = posts
-        .where((post) => !readIds.contains(post.id))
+        .where((post) => !substackPostIsRead(readIds, post))
         .map((post) => post.publicationBaseUrl.toLowerCase())
         .toSet();
     return Column(

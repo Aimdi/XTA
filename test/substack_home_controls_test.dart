@@ -530,7 +530,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Mark as read').first);
     await tester.pumpAndSettle();
-    expect(h.read.state, contains('0'));
+    expect(h.read.isPostRead(h.feed.allPosts.firstWhere((post) => post.id == '0')), isTrue);
     expect(find.byTooltip('Mark as unread'), findsOneWidget);
     await tester.tap(find.byTooltip('Mark as unread'));
     await tester.pumpAndSettle();
@@ -617,7 +617,7 @@ void main() {
     expect(find.text('Add publication'), findsOneWidget);
     await tester.tap(find.text('Mark all as read'));
     await tester.pumpAndSettle();
-    expect(h.read.state, unorderedEquals(h.feed.allPosts.map((post) => post.id)));
+    expect(h.read.state, unorderedEquals(h.feed.allPosts.map(substackPostKey)));
     expect(tester.takeException(), isNull);
     await h.close(tester);
   });

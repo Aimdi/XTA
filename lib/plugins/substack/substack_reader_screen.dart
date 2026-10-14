@@ -66,8 +66,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     _reading = ArticleReadingStore(
       prefs: read.prefs,
       articleId: substackArticleReadingId(widget.post),
-      onCompleted: () => read.markRead(_post.id),
-      alreadyCompleted: read.isRead(widget.post.id),
+      onCompleted: () => read.markPostRead(_post),
+      alreadyCompleted: read.isPostRead(widget.post),
       allowAutomaticCompletion: false,
     );
     // Seed speech from whatever we already know — title and excerpt — so Listen
@@ -255,7 +255,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   Future<void> _showContent(SubstackPost post) async {
-    if (context.read<SubstackReadStore>().isRead(post.id)) unawaited(_reading.complete());
+    if (context.read<SubstackReadStore>().isPostRead(post)) unawaited(_reading.complete());
     switch (substackReaderBodyFor(post)) {
       case SubstackReaderBody.article:
         await _showArticle(post, post.bodyHtml!);
@@ -423,7 +423,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
           ScopedBuilder<SubstackSavedStore, List<SubstackPost>>(
             store: context.read<SubstackSavedStore>(),
             onState: (context, saved) {
-              final isSaved = saved.any((p) => p.id == _post.id);
+              final isSaved = saved.any((p) => sameSubstackPost(p, _post));
               return IconButton(
                 tooltip: isSaved ? L10n.of(context).plugin_substack_unsave : L10n.of(context).plugin_substack_save,
                 icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_outline),
@@ -450,7 +450,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
             onSelected: (action) => action(),
             itemBuilder: (context) {
               final l10n = L10n.of(context);
-              final liked = context.read<SubstackLikesStore>().state.any((p) => p.id == _post.id);
+              final liked = context.read<SubstackLikesStore>().contains(_post);
               return [
                 if (!_liveSite && _content.state.document != null) ...[
                   _menu(Icons.format_list_bulleted, l10n.article_reader_contents, () => _openArticleNavigation()),

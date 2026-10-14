@@ -229,6 +229,12 @@ class SubstackReadStore extends _SubstackLocalStore<Set<String>> {
   }
 
   bool isRead(String id) => state.contains(id);
+
+  /// Reads are stored under the post's key, so either copy of a post finds it.
+  Future<void> markPostRead(SubstackPost post) => markAllRead([substackPostKey(post)]);
+  Future<void> markPostsRead(Iterable<SubstackPost> posts) => markAllRead(posts.map(substackPostKey));
+  Future<void> markPostUnread(SubstackPost post) => markAllUnread([substackPostKey(post), post.id]);
+  bool isPostRead(SubstackPost post) => substackPostIsRead(state, post);
 }
 
 abstract class _SubstackPostLibrary extends _SubstackLocalStore<List<SubstackPost>> {
@@ -241,12 +247,15 @@ abstract class _SubstackPostLibrary extends _SubstackLocalStore<List<SubstackPos
   Future<void> toggle(SubstackPost post) {
     if (post.id.isEmpty) return Future.value();
     return serial(() async {
-      final remaining = state.where((item) => item.id != post.id);
-      final next = (state.any((item) => item.id == post.id) ? remaining : [post, ...remaining]).take(capacity).toList();
+      final remaining = state.where((item) => !sameSubstackPost(item, post));
+      final next = (contains(post) ? remaining : [post, ...remaining]).take(capacity).toList();
       await persist(preference, SubstackPost.listToPrefs(next));
       return next;
     });
   }
+
+  /// Whether either copy of [post] is here.
+  bool contains(SubstackPost post) => state.any((item) => sameSubstackPost(item, post));
 }
 
 /// Hearts and bookmarks are local; no Substack write endpoint is used.
@@ -291,13 +300,8 @@ String _sourceUrl(String value) {
 String _publicationKey(SubstackPublication publication) => '${publication.id}\n${_sourceUrl(publication.baseUrl)}';
 String substackFeedPostKey(SubstackPost post) => '${_sourceUrl(post.publicationBaseUrl)}\n${post.id}';
 
-List<SubstackPost> _mergeSubstackPosts(Iterable<SubstackPost> posts) {
-  final unique = <String, SubstackPost>{};
-  for (final post in posts) {
-    if (post.id.isNotEmpty) unique[substackFeedPostKey(post)] = post;
-  }
-  return unique.values.toList();
-}
+List<SubstackPost> _mergeSubstackPosts(Iterable<SubstackPost> posts) =>
+    mergeSubstackCopies(posts.where((post) => post.id.isNotEmpty));
 
 class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   final SubstackClient client;
@@ -472,7 +476,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       if (!_current(request, identity)) return;
       final progressed =
           offset == 0 ||
-          posts.any((post) => !before.posts.any((old) => substackFeedPostKey(old) == substackFeedPostKey(post)));
+          posts.any((post) => !before.posts.any((old) => substackPostKey(old) == substackPostKey(post)));
       _pages[key] = _PublicationPage(
         posts: _mergeSubstackPosts([if (offset > 0) ...before.posts, ...posts]),
         offset: offset + substackFeedPageSize,

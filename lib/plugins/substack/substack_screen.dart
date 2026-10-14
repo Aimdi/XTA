@@ -120,7 +120,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
   Future<void> _markAllRead() async {
     final feed = context.read<SubstackFeedStore>();
     final read = context.read<SubstackReadStore>();
-    await read.markAllRead(feed.allPosts.map((p) => p.id));
+    await read.markPostsRead(feed.allPosts);
     feed.syncReadIds(read.state);
   }
 
@@ -217,7 +217,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
                         PopupMenuItem(value: 'discover', child: Text(l10n.plugin_substack_discover)),
                         PopupMenuItem(value: 'add', child: Text(l10n.plugin_substack_add)),
                         if (_tab < 2 &&
-                            feed.allPosts.any((post) => !context.read<SubstackReadStore>().state.contains(post.id)))
+                            feed.allPosts.any((post) => !context.read<SubstackReadStore>().isPostRead(post)))
                           PopupMenuItem(value: 'read', child: Text(l10n.plugin_substack_mark_all_read)),
                       ],
                     ),

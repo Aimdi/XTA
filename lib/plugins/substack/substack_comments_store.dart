@@ -167,6 +167,7 @@ class SubstackCommentsStore extends Store<SubstackCommentsState> {
   final SubstackPost post;
   bool _closed = false;
   int _request = 0;
+  String? _resolvedId;
   SubstackCommentsStore(this.client, this.post) : super(const SubstackCommentsState());
 
   void search(String query) {
@@ -203,7 +204,7 @@ class SubstackCommentsStore extends Store<SubstackCommentsState> {
     final request = ++_request;
     update(state.copy(loading: true, clearError: true));
     try {
-      final comments = await client.fetchComments(post.publication, post.id);
+      final comments = await client.fetchComments(post.publication, await _apiId());
       if (_closed || request != _request) return;
       update(
         state.copy(
@@ -218,6 +219,12 @@ class SubstackCommentsStore extends Store<SubstackCommentsState> {
       if (!_closed && request == _request) update(state.copy(loading: false, error: error));
     }
   }
+
+  /// Comments are filed under the API's numeric id. An RSS copy knows only its
+  /// slug, so it asks the API for the post first.
+  Future<String> _apiId() async => _resolvedId ??= post.hasApiId || post.slug.isEmpty
+      ? post.id
+      : (await client.fetchPost(post.publication, post.slug)).id;
 
   @override
   Future<void> destroy() {
