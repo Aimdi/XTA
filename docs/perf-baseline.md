@@ -231,6 +231,18 @@ benchmark's open pipeline follows each commit's reader. This session was slower 
 
 Bodies over 20,000 characters are now parsed off the UI isolate. What that saves in frames is device-only: UNVERIFIED.
 
+### Tier 2, item 3: feed sort keys computed once (S4), same-session host comparison
+
+`cebf43c` against HEAD, alternating, four runs each, one 30-publication refresh with an instant fake network.
+
+| Path | `cebf43c` | HEAD | Reading |
+|---|---|---|---|
+| S4 refresh CPU (median ms per run) | 228.3, 212.5, 208.5, 191.6 (median 210.5) | 27.7, 27.4, 24.1, 23.1 (median 25.8) | −88 %. Each comparison parsed two dates; now each post's sort time and key are worked out once. |
+
+The order is pinned by `test/substack_feed_order_test.dart`. Coalescing publishes per frame, the other half of the plan
+item, is not done: the publish path no longer dominates S4. The base's 210 ms against 124 ms earlier today is the
+session's host load; only the alternating pairs compare.
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

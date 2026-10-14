@@ -298,7 +298,16 @@ String _sourceUrl(String value) {
 }
 
 String _publicationKey(SubstackPublication publication) => '${publication.id}\n${_sourceUrl(publication.baseUrl)}';
-String substackFeedPostKey(SubstackPost post) => '${_sourceUrl(post.publicationBaseUrl)}\n${post.id}';
+String substackFeedPostKey(SubstackPost post) =>
+    _feedKeys[post] ??= '${_sourceUrl(post.publicationBaseUrl)}\n${post.id}';
+
+// Every publish sorts the whole feed; each post's date and key are worked
+// out once, not on every comparison.
+final _feedKeys = Expando<String>();
+final _sortTimes = Expando<int>();
+final _undated = DateTime(0).millisecondsSinceEpoch;
+
+int _sortTime(SubstackPost post) => _sortTimes[post] ??= post.publishedAt?.millisecondsSinceEpoch ?? _undated;
 
 List<SubstackPost> _mergeSubstackPosts(Iterable<SubstackPost> posts) =>
     mergeSubstackCopies(posts.where((post) => post.id.isNotEmpty));
@@ -504,7 +513,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   void _publish() {
     _allPosts = _mergeSubstackPosts(_pages.values.expand((page) => page.posts))
       ..sort((a, b) {
-        final date = (b.publishedAt ?? DateTime(0)).compareTo(a.publishedAt ?? DateTime(0));
+        final date = _sortTime(b).compareTo(_sortTime(a));
         return date == 0 ? substackFeedPostKey(a).compareTo(substackFeedPostKey(b)) : date;
       });
     update(
