@@ -77,3 +77,12 @@ by HTML's definition; on-device confirmation is UNVERIFIED). Tests: the parse ou
 template keeps the original iframe, and the page carries the escaped label.
 
 Result: in headless Chromium (Playwright 1.56.1), a page with one held embed made 0 requests to the embed host before the tap and 1 after; the button showed the label and host and was replaced by the original iframe. On an Android WebView it is UNVERIFIED.
+
+## 5. Parsed-article cache (S2; rest of plan item 1)
+
+Reopening a post in the same session parses its body again. The reader keeps the last 16 parsed documents in memory,
+keyed by the post's key (BUG-02), its date and the body itself, so an edited body never reuses an old parse. Nothing
+is written to disk; the cache holds the sanitized body and the passage list, under a few MB for long posts.
+
+Measure: a reopen of the synthetic long post skips the parse entirely (host benchmark of the lookup against the
+parse). Test: a hit returns the same document, a changed body or date misses, and the oldest entry goes first.
