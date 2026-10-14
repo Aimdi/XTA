@@ -64,9 +64,28 @@ Trade-offs, kept on purpose:
 - Two follows of different apex sites that share a label (`example.com` found without JSON, and `example.substack.com`) still match by id, so following the second updates the first. Host ids would avoid that, but on an apex domain the first label is usually the publication's own Substack subdomain, which the twin lookup and existing tests rely on. The case needs a non-Substack apex site whose label is another publication's subdomain.
 - When the rule cannot tell, a publication is shown as not followed. Following it again adds a second follow rather than replacing one.
 
+### 7. The article cache: bound and freshness (BUG-09, rest)
+
+The video flag is fixed (§5). Two parts were left:
+
+- **Bound.** FFCache keeps one file per entry in the OS temporary directory, with a 14-day expiry, and cannot list
+  its entries. The article cache therefore keeps its own index: each entry's key, size and time of writing, oldest
+  first, under a key no article can have. A write moves its entry to the end and drops the oldest entries until at
+  most 200 articles and 16 MiB remain, always keeping the newest. Opening an article writes it again, so the bound
+  drops the least recently read. Entries older than the expiry leave the index. The OS may still clear everything;
+  a missing index starts a new one.
+- **Freshness.** A cached copy is used only while it matches the post the reader was opened with: the same date and
+  the same title, wherever both are known. A different date or title means the post was edited or rescheduled, so
+  the reader fetches it again and the new copy replaces the old. An edit to the body alone does not show in the
+  listing; a manual refresh or the expiry replaces that copy.
+
+The 200 articles and 16 MiB are a choice: the synthetic long post is 112 KB, so the bound holds over a hundred long
+reads. Real sizes are UNVERIFIED (no route to Substack).
+
 ## Tests
 
 - **Flipped probes.** The probes for BUG-03, 04, 05, 06 and 09 in `test/substack_audit_probes_test.dart` flip into regression tests.
+- **Article cache:** the bound keeps the newest entries within both limits and drops the oldest files; a copy whose date or title changed is not used.
 - **Follow identity:** `test/substack_follow_identity_test.dart` covers the publication page (BUG-16), two `newsletter.*` follows (BUG-06), following the same site again, and the same publication on two hosts. Each case fails before §6 except the last, which pins behaviour kept.
 - **Transport unit tests**, with a fake clock:
   - bucket sharing;
