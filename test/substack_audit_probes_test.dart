@@ -129,12 +129,12 @@ const _clientRenderedBlocks = {
 };
 
 void main() {
-  test('BUG-01: replies nested deeper than nine levels are dropped', () {
+  test('BUG-01 (fixed): replies nested deeper than nine levels are kept at the deepest indent', () {
     final comments = flattenSubstackComments({
       'comments': [_replyChain(11)],
     });
 
-    expect(comments, hasLength(9), reason: 'twelve comments were sent');
+    expect(comments, hasLength(12), reason: 'nine before the fix; twelve comments were sent');
     expect(comments.last.depth, 8);
   });
 

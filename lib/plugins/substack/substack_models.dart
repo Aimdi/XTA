@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:collection';
 import 'package:xta/utils/json.dart';
 
@@ -1253,7 +1254,8 @@ class SubstackComment {
 ///
 /// The shape is a list of comments each carrying `children`; anything that no
 /// longer fits is skipped rather than thrown, in the same spirit as every
-/// other reverse-engineered payload here.
+/// other reverse-engineered payload here. Replies deeper than [maxDepth] are
+/// kept at that depth: a long back-and-forth stops indenting, not reading.
 List<SubstackComment> flattenSubstackComments(Object? json, {int maxDepth = 8}) {
   final out = <SubstackComment>[];
   final root = json is Map ? Json(json)['comments'].raw : json;
@@ -1281,10 +1283,9 @@ List<SubstackComment> flattenSubstackComments(Object? json, {int maxDepth = 8}) 
         ),
       );
     }
-    if (entry.depth < maxDepth) {
-      for (final child in node['children'].list.reversed) {
-        pending.add((node: child.raw, depth: entry.depth + (visible ? 1 : 0), parent: visible ? id : entry.parent));
-      }
+    final depth = min(entry.depth + (visible ? 1 : 0), maxDepth);
+    for (final child in node['children'].list.reversed) {
+      pending.add((node: child.raw, depth: depth, parent: visible ? id : entry.parent));
     }
   }
   return out;

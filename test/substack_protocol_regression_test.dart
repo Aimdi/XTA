@@ -413,7 +413,8 @@ void main() {
         'children': [visible],
       };
     }
-    expect(flattenSubstackComments([visible], maxDepth: 2).map((comment) => comment.depth), [0, 1, 2]);
+    // Deeper replies are kept at the deepest indent (BUG-01); the walk still ends.
+    expect(flattenSubstackComments([visible], maxDepth: 2).map((comment) => comment.depth), [0, 1, ...List.filled(9, 2)]);
     Map<String, Object?> deleted = {'id': 'leaf', 'body': 'Leaf'};
     for (var index = 0; index < 21000; index++) {
       deleted = {
