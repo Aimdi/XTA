@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Eingebetteten Inhalt laden",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Dieser Teil des Beitrags wird nur im Web angezeigt.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Nativer Reader (Vorschau)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Artikel ohne Webansicht anzeigen: Text lässt sich markieren und kopieren, eingebettete Player öffnen sich im Browser. Manche Layouts sehen eventuell anders aus.",
+  "@plugin_substack_native_reader_description": {}
 }

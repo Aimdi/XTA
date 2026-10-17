@@ -19,6 +19,7 @@ import 'package:xta/plugins/substack/substack_screen.dart';
 import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_search_store.dart';
+import 'package:xta/plugins/substack/substack_settings.dart';
 
 class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   SubstackPlugin();
@@ -127,6 +128,9 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   ];
 
   @override
+  Widget? settingsScreen(BuildContext context) => const SubstackSettingsScreen();
+
+  @override
   Future<void> resetPreferences(BasePrefService prefs) async {
     await prefs.set(optionPluginSubstackPublications, '[]');
     await prefs.set(optionPluginSubstackReadIds, '[]');
@@ -136,6 +140,7 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginSubstackPinnedPublications, '');
     await prefs.set(substackSearchHistoryKey, '[]');
     await prefs.set(optionPluginSubstackFeedMemory, '');
+    await prefs.set(optionPluginSubstackNativeReader, false);
   }
 
   @override

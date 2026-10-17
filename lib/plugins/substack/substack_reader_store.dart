@@ -1,5 +1,6 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/substack/substack_article_navigation.dart';
+import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
 const _unchanged = Object();
@@ -17,6 +18,9 @@ class SubstackReaderState {
   final Object? refreshError;
   final SubstackArticleDocument? document;
 
+  /// The post as native blocks, when the native reader shows it.
+  final List<SubstackBlock>? blocks;
+
   const SubstackReaderState({
     required this.post,
     this.error,
@@ -29,6 +33,7 @@ class SubstackReaderState {
     this.refreshing = false,
     this.refreshError,
     this.document,
+    this.blocks,
   });
 }
 
@@ -68,6 +73,7 @@ class SubstackReaderStore extends Store<SubstackReaderState> {
     bool? refreshing,
     Object? refreshError = _unchanged,
     Object? document = _unchanged,
+    Object? blocks = _unchanged,
   }) {
     if (_closed) return;
     update(
@@ -83,6 +89,7 @@ class SubstackReaderStore extends Store<SubstackReaderState> {
         refreshing: refreshing ?? state.refreshing,
         refreshError: identical(refreshError, _unchanged) ? state.refreshError : refreshError,
         document: identical(document, _unchanged) ? state.document : document as SubstackArticleDocument?,
+        blocks: identical(blocks, _unchanged) ? state.blocks : blocks as List<SubstackBlock>?,
       ),
     );
   }

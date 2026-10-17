@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Загрузіць убудаваны змест",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Гэтая частка допісу паказваецца толькі ў вэбе.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Убудаваны чытальнік (папярэдні прагляд)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Паказваць артыкулы без вэб-прагляду: тэкст можна вылучаць і капіяваць, а ўбудаваныя прайгравальнікі адкрываюцца ў браўзеры. Некаторыя макеты могуць выглядаць інакш.",
+  "@plugin_substack_native_reader_description": {}
 }

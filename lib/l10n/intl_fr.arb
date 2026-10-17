@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Charger le contenu intégré",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Cette partie de l’article ne s’affiche que sur le web.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Lecteur natif (aperçu)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Affiche les articles sans vue web : le texte peut être sélectionné et copié, et les lecteurs intégrés s’ouvrent dans le navigateur. Certaines mises en page peuvent différer.",
+  "@plugin_substack_native_reader_description": {}
 }

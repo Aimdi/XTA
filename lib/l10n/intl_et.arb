@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Laadi manustatud sisu",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "See osa postitusest on nähtav ainult veebis.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Omalugeja (eelvaade)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Näita artikleid ilma veebivaateta: teksti saab valida ja kopeerida ning manustatud mängijad avanevad brauseris. Mõni paigutus võib välja näha teistmoodi.",
+  "@plugin_substack_native_reader_description": {}
 }

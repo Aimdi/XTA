@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "삽입된 콘텐츠 불러오기",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "게시물의 이 부분은 웹에서만 표시됩니다.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "기본 리더(미리 보기)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "웹 보기 없이 글을 표시합니다. 텍스트를 선택하고 복사할 수 있으며, 삽입된 플레이어는 브라우저에서 열립니다. 일부 레이아웃은 다르게 보일 수 있습니다.",
+  "@plugin_substack_native_reader_description": {}
 }

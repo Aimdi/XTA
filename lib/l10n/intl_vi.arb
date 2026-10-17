@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Tải nội dung nhúng",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Phần này của bài viết chỉ hiển thị trên web.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Trình đọc gốc (xem trước)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Hiển thị bài viết không qua chế độ xem web: có thể chọn và sao chép văn bản, trình phát nhúng mở trong trình duyệt. Một số bố cục có thể trông khác.",
+  "@plugin_substack_native_reader_description": {}
 }

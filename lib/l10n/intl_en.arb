@@ -5656,5 +5656,9 @@
   "plugin_substack_load_embed": "Load embedded content",
   "@plugin_substack_load_embed": {"description": "Button in a Substack article that stands in for an embedded video, audio player or post from another website; tapping it loads that content, which contacts the other website. The website's host name follows after a ' · ' separator."},
   "plugin_substack_web_only_block": "This part of the post shows only on the web.",
-  "@plugin_substack_web_only_block": {"description": "Italic note inside a Substack article where a block (maths, a photo gallery, a poll, an audio player) can only be drawn by Substack's website. It is followed by the existing 'Open in browser' link to the post."}
+  "@plugin_substack_web_only_block": {"description": "Italic note inside a Substack article where a block (maths, a photo gallery, a poll, an audio player) can only be drawn by Substack's website. It is followed by the existing 'Open in browser' link to the post."},
+  "plugin_substack_native_reader": "Native reader (preview)",
+  "@plugin_substack_native_reader": {"description": "Title of a switch in the Substack plugin settings that turns on reading articles natively instead of in a web view; still a preview feature."},
+  "plugin_substack_native_reader_description": "Show articles without a web view: text can be selected and copied, and embedded players open in the browser. Some layouts may look different.",
+  "@plugin_substack_native_reader_description": {"description": "Explanation under that switch."}
 }

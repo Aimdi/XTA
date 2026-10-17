@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Cargar contenido insertado",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Esta parte de la publicación solo se muestra en la web.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Lector nativo (vista previa)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Muestra los artículos sin vista web: el texto se puede seleccionar y copiar, y los reproductores insertados se abren en el navegador. Algunos diseños pueden verse distintos.",
+  "@plugin_substack_native_reader_description": {}
 }

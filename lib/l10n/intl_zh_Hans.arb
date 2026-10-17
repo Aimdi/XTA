@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "加载嵌入内容",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "帖子的这一部分只能在网页上显示。",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "原生阅读器（预览）",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "不使用网页视图显示文章：可以选择和复制文字，嵌入的播放器会在浏览器中打开。部分排版可能看起来不同。",
+  "@plugin_substack_native_reader_description": {}
 }

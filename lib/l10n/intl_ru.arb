@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Загрузить встроенное содержимое",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Эта часть публикации отображается только в вебе.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Встроенный просмотр (тест)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Показывать статьи без веб-просмотра: текст можно выделять и копировать, а встроенные плееры открываются в браузере. Некоторые макеты могут выглядеть иначе.",
+  "@plugin_substack_native_reader_description": {}
 }

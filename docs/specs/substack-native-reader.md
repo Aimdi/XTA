@@ -1,7 +1,14 @@
 # Substack native reader (proposal)
 
-Status: **in progress.** The owner said to continue with Tier 2 (2026-10-17). Done: the block model
-(`substack_blocks.dart`, step 1). Not wired to any screen yet; the WebView reader is unchanged.
+Status: **in progress.** The owner said to continue with Tier 2 (2026-10-17). Done:
+
+1. the block model (`substack_blocks.dart`);
+2. the native view (`substack_native_article.dart`) behind the setting *Native reader (preview)* in the new Substack
+   settings screen, off by default. With it on, the reader shows blocks instead of the web view; contents and find
+   are hidden until they learn to jump in the native list. Widget-tested, including 200 % text at 320 px.
+
+Left: footnote sheet and image viewer (step 3), position save and restore and contents/find jumps (step 4), offline
+images from files (step 5), then the device gates below.
 
 ## Why
 

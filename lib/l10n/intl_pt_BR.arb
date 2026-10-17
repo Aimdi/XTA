@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Carregar conteúdo incorporado",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Esta parte da publicação só aparece na web.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Leitor nativo (prévia)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Mostra os artigos sem visualização web: o texto pode ser selecionado e copiado, e os players incorporados abrem no navegador. Alguns layouts podem ficar diferentes.",
+  "@plugin_substack_native_reader_description": {}
 }

@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Ŝargi enigitan enhavon",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Ĉi tiu parto de la afiŝo aperas nur en la reto.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Denaska legilo (antaŭprovo)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Montri artikolojn sen retvido: teksto elekteblas kaj kopieblas, kaj enigitaj ludiloj malfermiĝas en la retumilo. Iuj aranĝoj povas aspekti alie.",
+  "@plugin_substack_native_reader_description": {}
 }

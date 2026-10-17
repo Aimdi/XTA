@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Kargatu txertatutako edukia",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Argitalpenaren zati hau webean bakarrik ikusten da.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Irakurgailu natiboa (aurrebista)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Erakutsi artikuluak web-ikuspegirik gabe: testua hautatu eta kopiatu daiteke, eta txertatutako erreproduzigailuak nabigatzailean irekitzen dira. Diseinu batzuk desberdin ikus daitezke.",
+  "@plugin_substack_native_reader_description": {}
 }

@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "載入嵌入內容",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "貼文的這一部分只能在網頁上顯示。",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "原生閱讀器（預覽）",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "不使用網頁檢視顯示文章：可以選取和複製文字，嵌入的播放器會在瀏覽器中開啟。部分版面可能看起來不同。",
+  "@plugin_substack_native_reader_description": {}
 }

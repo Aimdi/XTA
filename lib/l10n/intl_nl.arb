@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Ingesloten inhoud laden",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Dit deel van het bericht is alleen op het web te zien.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Native lezer (voorproef)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Toon artikelen zonder webweergave: tekst kan worden geselecteerd en gekopieerd, en ingesloten spelers openen in de browser. Sommige opmaak kan er anders uitzien.",
+  "@plugin_substack_native_reader_description": {}
 }

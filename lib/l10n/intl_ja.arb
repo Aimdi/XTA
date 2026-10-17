@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "埋め込みコンテンツを読み込む",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "投稿のこの部分はウェブでのみ表示されます。",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "ネイティブリーダー（プレビュー）",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "ウェブビューを使わずに記事を表示します。テキストを選択・コピーでき、埋め込みプレーヤーはブラウザで開きます。一部のレイアウトは見た目が異なる場合があります。",
+  "@plugin_substack_native_reader_description": {}
 }

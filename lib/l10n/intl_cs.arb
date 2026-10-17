@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Načíst vložený obsah",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Tato část příspěvku se zobrazí jen na webu.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Nativní čtečka (náhled)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Zobrazovat články bez webového zobrazení: text lze označit a kopírovat a vložené přehrávače se otevřou v prohlížeči. Některá rozvržení mohou vypadat jinak.",
+  "@plugin_substack_native_reader_description": {}
 }

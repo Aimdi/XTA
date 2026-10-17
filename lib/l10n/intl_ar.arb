@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "تحميل المحتوى المضمَّن",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "لا يظهر هذا الجزء من المنشور إلا على الويب.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "القارئ الأصلي (معاينة)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "عرض المقالات دون عارض ويب: يمكن تحديد النص ونسخه، وتُفتح المشغلات المضمّنة في المتصفح. قد يبدو بعض التنسيق مختلفًا.",
+  "@plugin_substack_native_reader_description": {}
 }

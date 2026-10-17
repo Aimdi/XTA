@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Muat konten sematan",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Bagian kiriman ini hanya tampil di web.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Pembaca bawaan (pratinjau)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Tampilkan artikel tanpa tampilan web: teks bisa dipilih dan disalin, dan pemutar sematan dibuka di browser. Beberapa tata letak mungkin terlihat berbeda.",
+  "@plugin_substack_native_reader_description": {}
 }

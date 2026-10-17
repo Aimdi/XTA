@@ -5259,5 +5259,9 @@
   "plugin_substack_load_embed": "Carrega el contingut incrustat",
   "@plugin_substack_load_embed": {},
   "plugin_substack_web_only_block": "Aquesta part de la publicació només es mostra al web.",
-  "@plugin_substack_web_only_block": {}
+  "@plugin_substack_web_only_block": {},
+  "plugin_substack_native_reader": "Lector natiu (prova)",
+  "@plugin_substack_native_reader": {},
+  "plugin_substack_native_reader_description": "Mostra els articles sense vista web: el text es pot seleccionar i copiar, i els reproductors incrustats s’obren al navegador. Algunes maquetacions poden veure’s diferents.",
+  "@plugin_substack_native_reader_description": {}
 }
