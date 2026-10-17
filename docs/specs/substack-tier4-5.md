@@ -1,7 +1,7 @@
 # Substack Tiers 4 and 5: what can be done without the open decisions
 
-Status: **in progress.** The owner asked for the remaining tiers (2026-10-17). Tier 3 comes first
-(`docs/specs/substack-tier3-features.md`).
+Status: items 1 and 2 **done** (2026-10-17), one commit each with tests; item 3 deferred, see below. The owner
+asked for the remaining tiers; Tier 3 came first (`docs/specs/substack-tier3-features.md`).
 
 ## Blocked, and on what
 
@@ -44,5 +44,7 @@ These are native reader only: the web view's selection never reaches Dart.
 ## 3. TTS sentence highlighting (Tier 5)
 
 The speech store speaks long text in chunks. It would expose the chunk being spoken, and the native reader would draw
-it. This needs the chunking to follow block boundaries, which changes speech for every reader. It is written down
-here and left until items 1 and 2 are done and the speech tests are mapped.
+it. This needs the chunking to follow block boundaries, which changes speech for every reader. Deferred: chunks
+are up to 3,500 characters and span paragraphs, so a highlight would need smaller, block-aligned chunks for every
+reader, and whether each engine (system, Sherpa) reports progress inside an utterance can only be checked on a
+device with audio. It waits for the device gates.

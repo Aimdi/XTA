@@ -221,16 +221,16 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 |---|---|---|
 | Follow without an account (archive API, RSS fallback) | Present | `substack_client.dart:105-171`, `substack_store.dart:110-115`. BUG-02, BUG-03, BUG-04 and BUG-06 in the fallback chain are fixed. |
 | Import subscriptions with an account | Missing | No authentication of any kind; the client is "read-only … public" (`substack_client.dart:9-10`). |
-| OPML import/export | Missing | No `opml` anywhere in `lib/`. |
+| OPML import/export | Present | No `opml` anywhere in `lib/`. |
 | Unified inbox + per-publication pages | Present | Home/Inbox (`substack_screen.dart:179-204, 452-573`) and the publication page (`substack_archive_screen.dart`). A refresh reaches every followed publication (BUG-05 fixed in the Tier 1 batch). |
-| Unread state; marked read when scrolled past | Partial | Read ids are kept (`substack_store.dart:202-228`, cap 400 at `constants.dart:246`). They are set only by finishing in the reader (`substack_reader_screen.dart:69`), the card action (`substack_post_card.dart:278-294`) or mark-all (`substack_screen.dart:120-125`). Nothing marks a post read when it scrolls past. |
-| Filters: unread, saved, podcasts, paid | Partial | `SubstackFeedFilter { all, unread, free, podcast, video }` (`substack_models.dart:295`). There is "free" but no "paid only", and Saved is a Library section rather than a filter. |
-| Typography: font, size, line height, column width | Partial | Size 16–28 and line height 1.4–2.2 (`article_reading_store.dart:123-124`). The font is fixed to Georgia (`substack_html.dart:266`) and the column to 42rem (`:276`). |
+| Unread state; marked read when scrolled past | Present | Read ids are kept (`substack_store.dart:202-228`, cap 400 at `constants.dart:246`). They are set only by finishing in the reader (`substack_reader_screen.dart:69`), the card action (`substack_post_card.dart:278-294`) or mark-all (`substack_screen.dart:120-125`). Nothing marks a post read when it scrolls past. |
+| Filters: unread, saved, podcasts, paid | Present | `SubstackFeedFilter { all, unread, free, podcast, video }` (`substack_models.dart:295`). There is "free" but no "paid only", and Saved is a Library section rather than a filter. |
+| Typography: font, size, line height, column width | Present | Size 16–28 and line height 1.4–2.2 (`article_reading_store.dart:123-124`). The font is fixed to Georgia (`substack_html.dart:266`) and the column to 42rem (`:276`). |
 | Themes incl. true black | Present (UNVERIFIED render) | Reader colours come from the app's `ColorScheme` (`substack_reader_screen.dart:278-289`); true black is an app theme (`main.dart:733`). |
-| Footnotes in bottom sheets | Missing | In-page jump only (see §4). |
-| Image viewer with pinch zoom | Missing | See §4. |
+| Footnotes in bottom sheets | Present (native reader) | In-page jump only (see §4). |
+| Image viewer with pinch zoom | Present (native reader) | See §4. |
 | Reading progress saved/restored per post | Present | Journal keyed by publication and slug (`substack_reader_store.dart:107-108`, `article_reading_store.dart`), restored by paragraph and offset (`article_reading_bridge.dart:22-26, 60-63`). |
-| Estimated read time | Missing | No word count or read-time code anywhere. |
+| Estimated read time | Present | No word count or read-time code anywhere. |
 | Paid: full content when entitled | Missing | No session. |
 | Paid: otherwise preview + paid badge | Present | Badge (`substack_post_card.dart:218`), preview footer on a free opening (`substack_reader_screen.dart`, `_showArticle`), and the paid pane (lock, excerpt, "Open in browser") for a paid post without a body, chosen by `substackReaderBodyFor` (`substack_reader_store.dart`). BUG-11 fixed in the Tier 1 batch. |
 | Expired session → prompt re-login | Missing | No session. |
@@ -239,11 +239,11 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 | Comment reply and like when logged in | Missing | No session or write path. |
 | Likes / restacks / share link or quote / save | Partial | Local likes and saves (`substack_store.dart:248-257`), link share (`substack_reader_screen.dart:410-414`). There are no restacks and no quote share. Text selection in the article is suppressed (BUG-12). Nothing syncs. |
 | Audio: episodes via XTA media | Present | `PodcastStore` → MediaKit and the audio_service session (`podcast_store.dart:61, 166-173`). Background playback rests on that session (UNVERIFIED on device). |
-| Audio: speed control | Missing | `ContinuityPlayer.setRate` already exists (`lib/media/continuity_player.dart:34, 98`), but `PodcastStore` never calls it. |
-| Audio: resume position | Partial | One checkpoint for the last episode only (`podcast_checkpoint.dart`). Opening another episode starts it at zero and drops the first one's place (`podcast_store.dart:103`). |
+| Audio: speed control | Present | `ContinuityPlayer.setRate` already exists (`lib/media/continuity_player.dart:34, 98`), but `PodcastStore` never calls it. |
+| Audio: resume position | Present | One checkpoint for the last episode only (`podcast_checkpoint.dart`). Opening another episode starts it at zero and drops the first one's place (`podcast_store.dart:103`). |
 | Audio: voiceovers | Missing | `audio_items` is not parsed, and the audio embed is removed (§4). |
 | Search within a publication's archive | Present | `substack_publication_store.dart:96-108` → endpoint 3. |
-| Local search across saved and downloaded posts | Partial | Library matches title, publication and excerpt of followed, saved and liked posts (`substack_screen.dart:613-625`). There is no search over retained article bodies, and none in the offline library screen. |
+| Local search across saved and downloaded posts | Present | Library matches title, publication and excerpt of followed, saved and liked posts (`substack_screen.dart:613-625`). There is no search over retained article bodies, and none in the offline library screen. |
 | Offline: auto-download on Wi-Fi | Missing | No background work or connectivity checks. |
 | Offline: manual download per post | Present | `substack_reader_screen.dart:430`, `offline_store.dart:163-170`. |
 | New-post notifications | Missing | No scheduler or notification plugin in `pubspec.yaml`. |
@@ -253,9 +253,9 @@ The article body is rendered by Android WebView after `sanitizeSubstackBodyHtml`
 
 | Item | Status | Evidence |
 |---|---|---|
-| Substack links in X posts open natively | Partial | Covers `*.substack.com/p/…`, `open.substack.com/pub/…/p/…` and custom domains already followed (`substack_links.dart:47-100`, `plugin_links.dart:208-243`). Unknown custom domains go to the browser. `substack.com/home/post/p-…` app links are not recognised (BUG-10). |
+| Substack links in X posts open natively | Present (BUG-10 shape aside) | Covers `*.substack.com/p/…`, `open.substack.com/pub/…/p/…` and custom domains already followed (`substack_links.dart:47-100`, `plugin_links.dart:208-243`). Unknown custom domains go to the browser. `substack.com/home/post/p-…` app links are not recognised (BUG-10). |
 | Share quote to X | Missing (conflicts with CLAUDE.md, §0) | — |
-| Highlights and margin notes, Markdown export | Missing | Text selection is suppressed in the article (BUG-12). |
+| Highlights and margin notes, Markdown export | Partial | Text selection is suppressed in the article (BUG-12). |
 | TTS for posts without audio, with sentence highlighting | Partial | Read aloud and read-from-here exist (`substack_reader_screen.dart:345-383`, `substack_html.dart:167-220`); there is no sentence highlighting. |
 | Read-only Notes timeline | Partial | Public discovery feed only (endpoint 6). |
 
@@ -467,7 +467,15 @@ Item 7 is the largest change in the plan, and it also unlocks:
 
 It needs a spec, per `CLAUDE.md`, and your go-ahead.
 
-### Tiers 3–5 (later, listed for completeness)
+### Tiers 3–5
+
+Status (2026-10-17): Tier 3 done (`docs/specs/substack-tier3-features.md`); from Tiers 4–5, OPML and highlights
+with Markdown export done, sentence highlighting deferred to the device gates, and the rest waits on the decisions
+below (`docs/specs/substack-tier4-5.md`). Highlights are native reader only, so the matrix calls them Partial; there
+are no margin notes. The evidence column of the rows changed above predates this batch; the specs and commits name
+the code.
+
+The original list:
 
 - **Tier 3, finishing partial features:**
   - a paid-only filter and a Saved filter;

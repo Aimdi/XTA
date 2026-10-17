@@ -1,7 +1,9 @@
 # Substack Tier 3: finishing partial features
 
-Status: **in progress.** The owner asked for the remaining tiers (2026-10-17). Tier 2 still has items open, but each
-is waiting on a device or a HAR (`docs/substack/audit.md` §9), so nothing in Tier 2 can move here.
+Status: **done** (2026-10-17), one commit per item, each with its tests. The owner asked for the remaining tiers;
+Tier 2's open items each wait on a device or a HAR (`docs/substack/audit.md` §9). Two choices made on the way:
+mark-read-on-scroll does not re-filter the feed while scrolling (an Unread list would jump), and the custom-domain
+probe runs only after every other plugin has declined a link, never for Instagram's `/p/` links.
 
 Each item below is one commit with its tests. All are local: no new endpoint, no write to Substack, no new
 dependency. Every new UI string goes into all 29 ARB files.
