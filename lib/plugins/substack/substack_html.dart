@@ -167,7 +167,8 @@ String buildSubstackSpeakText({
   return parts.join('\n\n');
 }
 
-/// Long-press a paragraph → post the rest of the article to [XtaTts].
+/// With text selected, `xtaSpeakFromSelection()` posts the rest of the article
+/// from the selected paragraph to [XtaTts].
 ///
 /// The reader screen installs that channel. Body HTML is still stripped of
 /// scripts and `on*` handlers; this is the only script on the page.
@@ -221,18 +222,13 @@ const substackTtsFromHereJs = r'''
     }
     post(parts.join('\n\n'));
   }
-  var timer = 0;
-  document.addEventListener('touchstart', function(e){
-    if (e.touches.length !== 1) return;
-    var target = e.target;
-    timer = setTimeout(function(){ fromHere(blockOf(target)); }, 450);
-  }, {passive:true});
-  document.addEventListener('touchend', function(){ clearTimeout(timer); });
-  document.addEventListener('touchmove', function(){ clearTimeout(timer); });
-  document.addEventListener('contextmenu', function(e){
-    e.preventDefault();
-    fromHere(blockOf(e.target));
-  });
+  // Long-press selects text as usual; Listen then reads from the selection.
+  window.xtaSpeakFromSelection = function(){
+    var s = window.getSelection && window.getSelection();
+    if (!s || s.isCollapsed || !s.anchorNode) return false;
+    fromHere(blockOf(s.anchorNode));
+    return true;
+  };
 })();
 ''';
 
@@ -426,7 +422,6 @@ String wrapSubstackHtml({
   [data-xta-block], [id], a[name] { scroll-margin-top: 16px; }
   [data-xta-selected] { outline: 2px solid $link; outline-offset: 5px; }
   :focus-visible { outline: 2px solid $link; outline-offset: 4px; }
-  body { -webkit-touch-callout: none; }
 </style>
 </head>
 <body>

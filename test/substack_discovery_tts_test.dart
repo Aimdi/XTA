@@ -176,6 +176,22 @@ void main() {
       expect(plain, isNot(contains('1')));
     });
   });
+
+  test('the article page leaves long-press to text selection and reads from a selection', () {
+    final page = wrapSubstackHtml(
+      title: 'A post',
+      body: '<p>Text</p>',
+      background: '#000000',
+      foreground: '#ffffff',
+      muted: '#888888',
+      link: '#1d9bf0',
+      isDark: true,
+    );
+
+    expect(page, isNot(contains('touch-callout: none')), reason: 'selection was blocked before BUG-12');
+    expect(page, isNot(contains("addEventListener('contextmenu'")));
+    expect(page, contains('window.xtaSpeakFromSelection'));
+  });
 }
 
 String _preloadsHtml(Map<String, dynamic> preloads) {

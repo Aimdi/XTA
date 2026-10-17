@@ -363,6 +363,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       return;
     }
 
+    if (await _speakFromSelection()) return;
+    if (!mounted) return;
     final choice = readTtsChoice(PrefService.of(context, listen: false));
     var text = _speakText?.trim() ?? '';
     if (text.length < 40 && _liveSite) {
@@ -379,6 +381,20 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     final spoke = await speech.speak(title: _post.title, text: text, choice: choice);
     if (!spoke && mounted) {
       await _onTtsFailed(speech, choice);
+    }
+  }
+
+  /// Selected text in the article means "read from here": the page posts the
+  /// rest of the article from that paragraph through the speech channel.
+  Future<bool> _speakFromSelection() async {
+    if (_liveSite || _content.state.document == null) return false;
+    try {
+      final started = await _controller.runJavaScriptReturningResult(
+        'window.xtaSpeakFromSelection ? window.xtaSpeakFromSelection() : false',
+      );
+      return '$started' == 'true';
+    } catch (_) {
+      return false;
     }
   }
 
