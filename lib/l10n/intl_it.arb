@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Mostra gli articoli senza vista web: il testo si può selezionare e copiare e i lettori incorporati si aprono nel browser. Alcuni layout potrebbero apparire diversi.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "A pagamento",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min di lettura} other{{minutes} min di lettura}}",
+  "@plugin_substack_read_minutes": {}
 }

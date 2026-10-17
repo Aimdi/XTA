@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "लेख वेब व्यू के बिना दिखाएँ: टेक्स्ट चुना और कॉपी किया जा सकता है, और एम्बेड किए गए प्लेयर ब्राउज़र में खुलते हैं। कुछ लेआउट अलग दिख सकते हैं।",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "सशुल्क",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} मिनट में पढ़ें} other{{minutes} मिनट में पढ़ें}}",
+  "@plugin_substack_read_minutes": {}
 }

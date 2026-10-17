@@ -142,6 +142,11 @@ class SubstackPostCard extends StatelessWidget {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
     final logo = logoUrl;
     final hasBadges = showSourceBadge || post.isPaywalled || post.isPodcast;
+    final minutes = substackReadMinutes(post);
+    final meta = [
+      if (date != null) createRelativeDate(date),
+      if (minutes != null) L10n.of(context).plugin_substack_read_minutes(minutes),
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,15 +202,15 @@ class SubstackPostCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                meta: date == null || largeText ? const [] : [createRelativeDate(date)],
+                meta: largeText ? const [] : meta,
               ),
             ),
           ],
         ),
-        if (largeText && date != null)
+        if (largeText && meta.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
+            child: Text(meta.join(' · '), style: theme.textTheme.bodySmall),
           ),
         if (hasBadges) ...[
           const SizedBox(height: 6),

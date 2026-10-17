@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Hiển thị bài viết không qua chế độ xem web: có thể chọn và sao chép văn bản, trình phát nhúng mở trong trình duyệt. Một số bố cục có thể trông khác.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "Trả phí",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, other{Đọc trong {minutes} phút}}",
+  "@plugin_substack_read_minutes": {}
 }

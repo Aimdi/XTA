@@ -19,6 +19,9 @@ class SubstackNativeArticle extends StatelessWidget {
 
   /// Keeps the reader's place; the screen owns it.
   final ArticleBlockReading place;
+
+  /// The estimate shown under the title, when there is one.
+  final int? readMinutes;
   final ValueChanged<String> onLink;
 
   /// The images of a kept post, by the address they were kept from; read
@@ -32,6 +35,7 @@ class SubstackNativeArticle extends StatelessWidget {
     required this.post,
     required this.blocks,
     required this.place,
+    this.readMinutes,
     required this.onLink,
     this.keptImages = const {},
     this.fontSize = 18,
@@ -73,7 +77,7 @@ class SubstackNativeArticle extends StatelessWidget {
           slivers: [
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              sliver: SliverToBoxAdapter(child: _Header(post: post)),
+              sliver: SliverToBoxAdapter(child: _Header(post: post, readMinutes: readMinutes)),
             ),
             SliverPadding(
               padding: side,
@@ -142,13 +146,18 @@ class _Scope {
 
 class _Header extends StatelessWidget {
   final SubstackPost post;
+  final int? readMinutes;
 
-  const _Header({required this.post});
+  const _Header({required this.post, this.readMinutes});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final meta = [post.publicationName, ?post.authorName].where((part) => part.trim().isNotEmpty).join(' · ');
+    final meta = [
+      post.publicationName,
+      ?post.authorName,
+      if (readMinutes case final minutes?) L10n.of(context).plugin_substack_read_minutes(minutes),
+    ].where((part) => part.trim().isNotEmpty).join(' · ');
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(

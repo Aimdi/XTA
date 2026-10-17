@@ -325,7 +325,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     // Article HTML is sanitized; JS stays on so a long-press can start
     // Vorlesen from that paragraph.
     await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
-    final document = await OfflineStore.shared.renderArticle(_offlineId, wrap(parsed.body));
+    final document = await OfflineStore.shared.renderArticle(_offlineId, wrap(parsed));
     if (!mounted || !_content.accepts(generation)) return;
     await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
   }
@@ -356,20 +356,24 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
 
   /// The page around a sanitized body. Theme, text scale and strings are read
   /// now: `context` is not ours to touch across the parse's async gap.
-  String Function(String body) _pageWrapper(SubstackPost post) {
+  String Function(SubstackArticleDocument parsed) _pageWrapper(SubstackPost post) {
     final scheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final fontSizePx = MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18;
     final lineHeight = _reading.state.lineHeight;
     final l10n = L10n.of(context);
-    return (body) => wrapSubstackHtml(
+    return (parsed) => wrapSubstackHtml(
       title: post.title,
-      body: body,
+      body: parsed.body,
       bodySanitized: true,
       subtitle: post.excerpt,
       authorName: post.authorName,
       publicationName: post.publicationName,
+      readTime: switch (substackReadMinutes(post, plainText: parsed.plainText)) {
+        final minutes? => l10n.plugin_substack_read_minutes(minutes),
+        null => null,
+      },
       background: _cssColor(scheme.surface),
       foreground: _cssColor(scheme.onSurface),
       muted: _cssColor(scheme.onSurfaceVariant),
@@ -667,6 +671,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
                         post: _post,
                         blocks: blocks,
                         place: _place,
+                        readMinutes: substackReadMinutes(_post, plainText: _content.state.document?.plainText),
                         onLink: _openNativeLink,
                         keptImages: _content.state.keptImages,
                         fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,

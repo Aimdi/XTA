@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Mostra os artigos sem visualização web: o texto pode ser selecionado e copiado, e os players incorporados abrem no navegador. Alguns layouts podem ficar diferentes.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "Pagos",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min de leitura} other{{minutes} min de leitura}}",
+  "@plugin_substack_read_minutes": {}
 }

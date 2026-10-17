@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Tampilkan artikel tanpa tampilan web: teks bisa dipilih dan disalin, dan pemutar sematan dibuka di browser. Beberapa tata letak mungkin terlihat berbeda.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "Berbayar",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, other{{minutes} menit baca}}",
+  "@plugin_substack_read_minutes": {}
 }

@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Показувати статті без веб-перегляду: текст можна виділяти й копіювати, а вбудовані програвачі відкриваються в браузері. Деякі макети можуть виглядати інакше.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "Платні",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} хвилина читання} few{{minutes} хвилини читання} many{{minutes} хвилин читання} other{{minutes} хвилини читання}}",
+  "@plugin_substack_read_minutes": {}
 }

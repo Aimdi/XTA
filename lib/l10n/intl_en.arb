@@ -5662,5 +5662,7 @@
   "plugin_substack_native_reader_description": "Show articles without a web view: text can be selected and copied, and embedded players open in the browser. Some layouts may look different.",
   "@plugin_substack_native_reader_description": {"description": "Explanation under that switch."},
   "plugin_substack_filter_paid": "Paid",
-  "@plugin_substack_filter_paid": {"description": "Feed filter chip in the Substack plugin that shows only paid (subscriber-only) posts; the opposite of the Free filter."}
+  "@plugin_substack_filter_paid": {"description": "Feed filter chip in the Substack plugin that shows only paid (subscriber-only) posts; the opposite of the Free filter."},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min read} other{{minutes} min read}}",
+  "@plugin_substack_read_minutes": {"description": "Estimated reading time of a Substack post, shown in its card and at the top of the article; minutes is a whole number, at least 1.", "placeholders": {"minutes": {"type": "int"}}}
 }

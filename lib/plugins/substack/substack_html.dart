@@ -301,6 +301,7 @@ String wrapSubstackHtml({
   String? subtitle,
   String? authorName,
   String? publicationName,
+  String? readTime,
   double fontSizePx = 18,
   double lineHeight = 1.7,
   String? footer,
@@ -316,6 +317,7 @@ String wrapSubstackHtml({
   final meta = [
     if (publicationName != null && publicationName.isNotEmpty) _escape(publicationName),
     if (authorName != null && authorName.isNotEmpty) _escape(authorName),
+    if (readTime != null && readTime.isNotEmpty) _escape(readTime),
   ].join(' · ');
 
   final codeBg = isDark ? '#1E1E1E' : '#F1F3F5';

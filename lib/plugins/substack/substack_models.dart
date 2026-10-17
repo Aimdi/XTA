@@ -108,6 +108,9 @@ class SubstackPost {
   final int? reactionCount;
   final int? commentCount;
 
+  /// The words in the whole post, as the API counts them (UNVERIFIED field).
+  final int? wordCount;
+
   const SubstackPost({
     required this.id,
     required this.title,
@@ -127,6 +130,7 @@ class SubstackPost {
     this.audioUrl,
     this.reactionCount,
     this.commentCount,
+    this.wordCount,
   });
 
   /// Substack uses `only_paid` (and occasionally founding tiers) for gated posts.
@@ -185,6 +189,7 @@ class SubstackPost {
       audioUrl: Json(json)['podcast_url'].string,
       reactionCount: _countOf(json['reaction_count']) ?? _sumOfReactions(json['reactions']),
       commentCount: _countOf(json['comment_count']),
+      wordCount: _countOf(json['wordcount']),
       publicationBaseUrl: publicationBaseUrl,
       publicationName: publicationName,
     );
@@ -241,6 +246,7 @@ class SubstackPost {
     'podcast_url': audioUrl,
     'reaction_count': reactionCount,
     'comment_count': commentCount,
+    'wordcount': wordCount,
     'publicationBaseUrl': publicationBaseUrl,
     'publicationName': publicationName,
   };
@@ -265,6 +271,7 @@ class SubstackPost {
       audioUrl: Json(json)['podcast_url'].string ?? Json(json)['audioUrl'].string,
       reactionCount: _countOf(json['reaction_count']),
       commentCount: _countOf(json['comment_count']),
+      wordCount: _countOf(json['wordcount']),
       publicationBaseUrl: base,
       publicationName: name,
     );
@@ -326,6 +333,18 @@ bool postMatchesSubstackFilter(
 }
 
 bool _nothingSaved(SubstackPost post) => false;
+
+const substackWordsPerMinute = 230;
+
+/// Minutes to read [post]: the words of [plainText] when the body is at
+/// hand, else the API's count. None for an episode or a video, or when
+/// neither count is known.
+int? substackReadMinutes(SubstackPost post, {String? plainText}) {
+  if (post.isPodcast || post.isVideo) return null;
+  final words = plainText == null ? post.wordCount : RegExp(r'\S+').allMatches(plainText).length;
+  if (words == null || words <= 0) return null;
+  return max(1, (words / substackWordsPerMinute).ceil());
+}
 
 /// One public Note from Substack's reader discovery feed.
 class SubstackNote {

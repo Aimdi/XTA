@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Wyświetlaj artykuły bez widoku WWW: tekst można zaznaczać i kopiować, a osadzone odtwarzacze otwierają się w przeglądarce. Niektóre układy mogą wyglądać inaczej.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "Płatne",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} minuta czytania} few{{minutes} minuty czytania} many{{minutes} minut czytania} other{{minutes} minuty czytania}}",
+  "@plugin_substack_read_minutes": {}
 }

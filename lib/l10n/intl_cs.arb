@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Zobrazovat články bez webového zobrazení: text lze označit a kopírovat a vložené přehrávače se otevřou v prohlížeči. Některá rozvržení mohou vypadat jinak.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "Placené",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} minuta čtení} few{{minutes} minuty čtení} many{{minutes} minuty čtení} other{{minutes} minut čtení}}",
+  "@plugin_substack_read_minutes": {}
 }

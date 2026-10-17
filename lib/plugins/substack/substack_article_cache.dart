@@ -95,6 +95,7 @@ class SubstackArticleCache {
       if (post.hasVideoUpload) 'videoUpload': true,
       'reaction_count': post.reactionCount,
       'comment_count': post.commentCount,
+      'wordcount': post.wordCount,
       'publishedBylines': [
         if (post.authorName != null) {'name': post.authorName},
       ],

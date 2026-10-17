@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "ウェブビューを使わずに記事を表示します。テキストを選択・コピーでき、埋め込みプレーヤーはブラウザで開きます。一部のレイアウトは見た目が異なる場合があります。",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "有料",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, other{{minutes}分で読めます}}",
+  "@plugin_substack_read_minutes": {}
 }

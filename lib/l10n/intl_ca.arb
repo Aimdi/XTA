@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "Mostra els articles sense vista web: el text es pot seleccionar i copiar, i els reproductors incrustats s’obren al navegador. Algunes maquetacions poden veure’s diferents.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "De pagament",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min de lectura} other{{minutes} min de lectura}}",
+  "@plugin_substack_read_minutes": {}
 }

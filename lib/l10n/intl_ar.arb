@@ -5265,5 +5265,7 @@
   "plugin_substack_native_reader_description": "عرض المقالات دون عارض ويب: يمكن تحديد النص ونسخه، وتُفتح المشغلات المضمّنة في المتصفح. قد يبدو بعض التنسيق مختلفًا.",
   "@plugin_substack_native_reader_description": {},
   "plugin_substack_filter_paid": "مدفوع",
-  "@plugin_substack_filter_paid": {}
+  "@plugin_substack_filter_paid": {},
+  "plugin_substack_read_minutes": "{minutes, plural, zero{قراءة في {minutes} دقيقة} one{قراءة في دقيقة واحدة} two{قراءة في دقيقتين} few{قراءة في {minutes} دقائق} many{قراءة في {minutes} دقيقة} other{قراءة في {minutes} دقيقة}}",
+  "@plugin_substack_read_minutes": {}
 }
