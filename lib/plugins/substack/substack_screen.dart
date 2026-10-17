@@ -17,6 +17,7 @@ import 'package:xta/plugins/substack/substack_error_view.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
+import 'package:xta/plugins/substack/substack_body_search.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_home_controls.dart';
 import 'package:xta/plugins/substack/substack_compact_header.dart';
@@ -616,19 +617,25 @@ class _LibraryPane extends StatefulWidget {
 class _LibraryPaneState extends State<_LibraryPane> {
   late final SubstackHomeControlsStore _controls;
   late final TextEditingController _query;
+  final _bodies = SubstackBodySearchStore(substackKeptBody);
   int get _section => _controls.state.librarySection;
   @override
   void initState() {
     super.initState();
     _controls = context.read<SubstackHomeControlsStore>();
     _query = TextEditingController(text: _controls.state.libraryQuery);
+    if (_query.text.trim().isNotEmpty) _searchBodies(_query.text);
   }
 
   @override
   void dispose() {
     _query.dispose();
+    _bodies.destroy();
     super.dispose();
   }
+
+  void _searchBodies(String query) =>
+      _bodies.search(query, [...context.read<SubstackSavedStore>().state, ...context.read<SubstackLikesStore>().state]);
 
   bool _matches(String query, SubstackPost post) {
     if (query.isEmpty) return true;
@@ -661,7 +668,10 @@ class _LibraryPaneState extends State<_LibraryPane> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: TextField(
             controller: _query,
-            onChanged: (query) => _controls.library(query: query),
+            onChanged: (query) {
+              _controls.library(query: query);
+              _searchBodies(query);
+            },
             decoration: InputDecoration(
               hintText: l10n.plugin_substack_library_search,
               prefixIcon: const Icon(Icons.search),
@@ -807,37 +817,11 @@ class _LibraryPaneState extends State<_LibraryPane> {
                   onState: (context, savedPosts) {
                     return ScopedBuilder<SubstackLikesStore, List<SubstackPost>>(
                       store: likes,
-                      onState: (context, likedPosts) {
-                        final source = _section == 1 ? savedPosts : likedPosts;
-                        final q = _query.text.trim();
-                        final visible = source.where((p) => _matches(q, p)).toList();
-                        if (visible.isEmpty) {
-                          return ListView(
-                            controller: pluginInnerScrollController(context, widget.scrollController),
-                            children: [
-                              const SizedBox(height: 48),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 32),
-                                child: Text(
-                                  q.isEmpty
-                                      ? (_section == 1
-                                            ? l10n.plugin_substack_saved_empty
-                                            : l10n.plugin_substack_liked_empty)
-                                      : l10n.plugin_substack_library_search_empty,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                        return ListView.builder(
-                          controller: pluginInnerScrollController(context, widget.scrollController),
-                          padding: const EdgeInsets.only(bottom: 24),
-                          itemCount: visible.length,
-                          itemBuilder: (context, index) =>
-                              SubstackPostCard(post: visible[index], showSourceBadge: false),
-                        );
-                      },
+                      onState: (context, likedPosts) => ScopedBuilder<SubstackBodySearchStore, Map<String, String>>(
+                        store: _bodies,
+                        onState: (context, passages) =>
+                            _posts(context, _section == 1 ? savedPosts : likedPosts, passages),
+                      ),
                     );
                   },
                 ),
@@ -845,6 +829,59 @@ class _LibraryPaneState extends State<_LibraryPane> {
       ],
     );
   }
+
+  /// The saved or liked [source] that match the query by title or by a
+  /// kept body, whose matching passage shows under its card.
+  Widget _posts(BuildContext context, List<SubstackPost> source, Map<String, String> passages) {
+    final l10n = L10n.of(context);
+    final q = _query.text.trim();
+    final visible = source.where((p) => _matches(q, p) || passages.containsKey(substackPostKey(p))).toList();
+    if (visible.isEmpty) {
+      return ListView(
+        controller: pluginInnerScrollController(context, widget.scrollController),
+        children: [
+          const SizedBox(height: 48),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              q.isEmpty
+                  ? (_section == 1 ? l10n.plugin_substack_saved_empty : l10n.plugin_substack_liked_empty)
+                  : l10n.plugin_substack_library_search_empty,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    }
+    return ListView.builder(
+      controller: pluginInnerScrollController(context, widget.scrollController),
+      padding: const EdgeInsets.only(bottom: 24),
+      itemCount: visible.length,
+      itemBuilder: (context, index) => _withPassage(
+        context,
+        SubstackPostCard(post: visible[index], showSourceBadge: false),
+        _matches(q, visible[index]) ? null : passages[substackPostKey(visible[index])],
+      ),
+    );
+  }
+
+  Widget _withPassage(BuildContext context, Widget card, String? passage) => passage == null
+      ? card
+      : Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Text(
+                passage,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
+              ),
+            ),
+            card,
+          ],
+        );
 }
 
 class _NotesPane extends StatelessWidget {
