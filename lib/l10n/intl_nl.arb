@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Inloggen kan hier alleen met de ingebouwde browser van de Android-app, en die heeft de desktopapp niet.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Ingesloten inhoud laden",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Dit deel van het bericht is alleen op het web te zien.",
+  "@plugin_substack_web_only_block": {}
 }

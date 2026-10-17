@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "يتطلب تسجيل الدخول هنا المتصفح المدمج في تطبيق Android، وهو غير متوفر في تطبيق سطح المكتب.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "تحميل المحتوى المضمَّن",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "لا يظهر هذا الجزء من المنشور إلا على الويب.",
+  "@plugin_substack_web_only_block": {}
 }

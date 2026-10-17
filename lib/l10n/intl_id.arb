@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Masuk di sini memerlukan browser bawaan aplikasi Android, yang tidak dimiliki aplikasi desktop.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Muat konten sematan",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Bagian kiriman ini hanya tampil di web.",
+  "@plugin_substack_web_only_block": {}
 }

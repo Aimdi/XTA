@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Entrar aqui exige o navegador integrado do app para Android, que o app para computador não tem.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Carregar conteúdo incorporado",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Esta parte da publicação só aparece na web.",
+  "@plugin_substack_web_only_block": {}
 }

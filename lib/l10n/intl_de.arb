@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Die Anmeldung hier braucht den integrierten Browser der Android-App, den die Desktop-App nicht hat.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Eingebetteten Inhalt laden",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Dieser Teil des Beitrags wird nur im Web angezeigt.",
+  "@plugin_substack_web_only_block": {}
 }

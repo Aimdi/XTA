@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Přihlášení zde vyžaduje vestavěný prohlížeč aplikace pro Android, který desktopová aplikace nemá.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Načíst vložený obsah",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Tato část příspěvku se zobrazí jen na webu.",
+  "@plugin_substack_web_only_block": {}
 }

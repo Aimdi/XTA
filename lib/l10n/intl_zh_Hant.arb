@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "在此登入需要 Android 應用程式的內建瀏覽器，桌面版沒有這個瀏覽器。",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "載入嵌入內容",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "貼文的這一部分只能在網頁上顯示。",
+  "@plugin_substack_web_only_block": {}
 }

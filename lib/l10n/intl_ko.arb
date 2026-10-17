@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "여기서 로그인하려면 Android 앱의 내장 브라우저가 필요하지만 데스크톱 앱에는 없습니다.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "삽입된 콘텐츠 불러오기",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "게시물의 이 부분은 웹에서만 표시됩니다.",
+  "@plugin_substack_web_only_block": {}
 }

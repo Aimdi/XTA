@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "La connexion ici nécessite le navigateur intégré de l'app Android, que l'app de bureau n'a pas.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Charger le contenu intégré",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Cette partie de l’article ne s’affiche que sur le web.",
+  "@plugin_substack_web_only_block": {}
 }

@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Para iniciar sesión aquí hace falta el navegador integrado de la app de Android, que la app de escritorio no tiene.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Cargar contenido insertado",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Esta parte de la publicación solo se muestra en la web.",
+  "@plugin_substack_web_only_block": {}
 }

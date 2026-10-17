@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Iniciar sessão aqui requer o navegador integrado da app Android, que a app para computador não tem.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Carregar conteúdo incorporado",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Esta parte da publicação só é apresentada na web.",
+  "@plugin_substack_web_only_block": {}
 }

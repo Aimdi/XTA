@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Siin sisselogimiseks on vaja Androidi rakenduse sisseehitatud brauserit, mida töölauarakendusel pole.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Laadi manustatud sisu",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "See osa postitusest on nähtav ainult veebis.",
+  "@plugin_substack_web_only_block": {}
 }

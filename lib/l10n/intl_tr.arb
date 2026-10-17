@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Burada giriş yapmak için Android uygulamasının yerleşik tarayıcısı gerekir; masaüstü uygulamasında bu tarayıcı yok.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Gömülü içeriği yükle",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Gönderinin bu bölümü yalnızca web’de görünür.",
+  "@plugin_substack_web_only_block": {}
 }

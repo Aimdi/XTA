@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Por ensaluti ĉi tie necesas la enkonstruita retumilo de la Android-aplikaĵo, kiun la labortabla aplikaĵo ne havas.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Ŝargi enigitan enhavon",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Ĉi tiu parto de la afiŝo aperas nur en la reto.",
+  "@plugin_substack_web_only_block": {}
 }

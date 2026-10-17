@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Logowanie tutaj wymaga wbudowanej przeglądarki aplikacji na Androida, której nie ma aplikacja na komputer.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Wczytaj osadzoną treść",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Ta część wpisu wyświetla się tylko w sieci.",
+  "@plugin_substack_web_only_block": {}
 }

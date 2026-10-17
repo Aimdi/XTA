@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Для ўваходу тут патрэбны ўбудаваны браўзер праграмы для Android, якога няма ў версіі для камп'ютара.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Загрузіць убудаваны змест",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Гэтая частка допісу паказваецца толькі ў вэбе.",
+  "@plugin_substack_web_only_block": {}
 }

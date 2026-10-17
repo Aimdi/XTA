@@ -5654,5 +5654,7 @@
     "description": "Shown on the Linux desktop app when a source's sign-in needs a web view that only the Android app has"
   },
   "plugin_substack_load_embed": "Load embedded content",
-  "@plugin_substack_load_embed": {"description": "Button in a Substack article that stands in for an embedded video, audio player or post from another website; tapping it loads that content, which contacts the other website. The website's host name follows after a ' · ' separator."}
+  "@plugin_substack_load_embed": {"description": "Button in a Substack article that stands in for an embedded video, audio player or post from another website; tapping it loads that content, which contacts the other website. The website's host name follows after a ' · ' separator."},
+  "plugin_substack_web_only_block": "This part of the post shows only on the web.",
+  "@plugin_substack_web_only_block": {"description": "Italic note inside a Substack article where a block (maths, a photo gallery, a poll, an audio player) can only be drawn by Substack's website. It is followed by the existing 'Open in browser' link to the post."}
 }

@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Per iniciar la sessió aquí cal el navegador integrat de l'app d'Android, que l'app d'escriptori no té.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Carrega el contingut incrustat",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Aquesta part de la publicació només es mostra al web.",
+  "@plugin_substack_web_only_block": {}
 }

@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Conectarea aici necesită browserul integrat al aplicației Android, pe care aplicația pentru desktop nu îl are.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Încarcă conținutul încorporat",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Această parte a postării apare doar pe web.",
+  "@plugin_substack_web_only_block": {}
 }

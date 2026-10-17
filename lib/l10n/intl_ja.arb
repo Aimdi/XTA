@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "ここでのログインには Android アプリの内蔵ブラウザが必要ですが、デスクトップ版にはありません。",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "埋め込みコンテンツを読み込む",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "投稿のこの部分はウェブでのみ表示されます。",
+  "@plugin_substack_web_only_block": {}
 }

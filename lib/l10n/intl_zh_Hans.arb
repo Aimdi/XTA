@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "在此登录需要 Android 应用的内置浏览器，桌面版没有这个浏览器。",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "加载嵌入内容",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "帖子的这一部分只能在网页上显示。",
+  "@plugin_substack_web_only_block": {}
 }

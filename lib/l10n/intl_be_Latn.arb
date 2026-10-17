@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Dla ŭvachodu tut patrebny ŭbudavany braŭzier prahramy dla Android, jakoha niama ŭ versii dla kampjutara.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Zahruzić ubudavany zmiest",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Hetaja častka dopisu pakazvajecca toĺki ŭ vebie.",
+  "@plugin_substack_web_only_block": {}
 }

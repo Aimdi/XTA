@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Đăng nhập ở đây cần trình duyệt tích hợp của ứng dụng Android, mà ứng dụng máy tính không có.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Tải nội dung nhúng",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Phần này của bài viết chỉ hiển thị trên web.",
+  "@plugin_substack_web_only_block": {}
 }

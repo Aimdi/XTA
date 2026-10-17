@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Kargatu txertatutako edukia",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Argitalpenaren zati hau webean bakarrik ikusten da.",
+  "@plugin_substack_web_only_block": {}
 }

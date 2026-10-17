@@ -256,10 +256,14 @@ void main() {
     expect(clean, contains('<p>Intro</p>'));
   });
 
-  test('BUG-08 (reconstructed markup): client-rendered blocks vanish without a trace', () {
+  test('BUG-08 (gap marked; reconstructed markup): client-rendered blocks leave a placeholder', () {
+    const placeholder = '<div class="xta-web-only" data-component-name="XtaWebOnly"></div>';
     for (final markup in _clientRenderedBlocks.values) {
-      expect(sanitizeSubstackBodyHtml('<p>Before</p>$markup<p>After</p>'), '<p>Before</p><p>After</p>');
+      final clean = sanitizeSubstackBodyHtml('<p>Before</p>$markup<p>After</p>');
+      expect(clean, '<p>Before</p>$placeholder<p>After</p>', reason: 'removed without a trace before');
+      expect(sanitizeSubstackBodyHtml(clean), clean);
     }
+    expect(sanitizeSubstackBodyHtml('<p>A</p><div></div><span> </span>'), '<p>A</p>', reason: 'unmarked empties go');
   });
 
   test('BUG-09 (fixed): the article cache remembers that a post is a video', () async {

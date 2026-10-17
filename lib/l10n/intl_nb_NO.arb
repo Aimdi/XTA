@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Innlogging her krever den innebygde nettleseren i Android-appen, som skrivebordsappen ikke har.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Last inn innebygd innhold",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Denne delen av innlegget vises bare på nettet.",
+  "@plugin_substack_web_only_block": {}
 }

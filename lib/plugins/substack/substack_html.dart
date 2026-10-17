@@ -76,8 +76,11 @@ String sanitizeSubstackBodyHtml(String raw) {
   }
 
   for (final node in List<Element>.from(fragment.querySelectorAll('div, span'))) {
+    if (node.parentNode == null) continue;
     if (node.text.trim().isEmpty && node.querySelector('img, iframe, video, picture, table') == null) {
-      node.remove();
+      // Substack's scripts draw LaTeX, galleries and polls into empty
+      // component blocks; the reader marks where one was rather than losing it.
+      _drawnOnTheWeb(node) ? node.replaceWith(_webOnlyBlock()) : node.remove();
     }
   }
 
@@ -87,6 +90,13 @@ String sanitizeSubstackBodyHtml(String raw) {
 
   return fragment.outerHtml;
 }
+
+bool _drawnOnTheWeb(Element node) =>
+    node.attributes.containsKey('data-component-name') || node.attributes.containsKey('data-attrs');
+
+Element _webOnlyBlock() => Element.tag('div')
+  ..classes.add('xta-web-only')
+  ..attributes['data-component-name'] = 'XtaWebOnly';
 
 /// Plain text suitable for device TTS, with paragraph breaks preserved.
 String substackHtmlToPlainText(String raw) {
@@ -256,6 +266,26 @@ const substackEmbedJs = r'''
 })();
 ''';
 
+/// Says where a block drawn only by Substack's own scripts was, with a link
+/// to the post on the web.
+const substackWebOnlyJs = r'''
+(function(){
+  var note = window.xtaWebOnly || {};
+  document.querySelectorAll('.xta-web-only').forEach(function(box){
+    var p = document.createElement('p');
+    p.textContent = note.label || '';
+    if (note.url && note.link) {
+      var a = document.createElement('a');
+      a.href = note.url;
+      a.textContent = note.link;
+      p.appendChild(document.createTextNode(' '));
+      p.appendChild(a);
+    }
+    box.appendChild(p);
+  });
+})();
+''';
+
 /// [value] as a JavaScript string literal that cannot close its script tag.
 String _scriptString(String value) => jsonEncode(value).replaceAll('<', r'\u003c');
 
@@ -278,6 +308,9 @@ String wrapSubstackHtml({
   String? footerLinkLabel,
   bool bodySanitized = false,
   String embedLabel = '',
+  String webOnlyLabel = '',
+  String openLabel = '',
+  String? postUrl,
 }) {
   final cleanBody = bodySanitized ? body : sanitizeSubstackBodyHtml(body);
   final meta = [
@@ -377,6 +410,7 @@ String wrapSubstackHtml({
     display: block;
   }
   iframe { width: 100%; min-height: 220px; border: 0; }
+  .xta-web-only p { color: $muted; font-style: italic; }
   .xta-embed-load {
     width: 100%; min-height: 48px; padding: 12px 16px; border: 1px solid $rule; border-radius: 12px;
     background: transparent; color: $link; font: inherit; text-align: center;
@@ -440,6 +474,7 @@ String wrapSubstackHtml({
   </article>
   <script>$substackTtsFromHereJs</script>
   <script>window.xtaEmbedLabel = ${_scriptString(embedLabel)};$substackEmbedJs</script>
+  <script>window.xtaWebOnly = {label: ${_scriptString(webOnlyLabel)}, link: ${_scriptString(openLabel)}, url: ${_scriptString(postUrl ?? '')}};$substackWebOnlyJs</script>
 </body>
 </html>
 ''';

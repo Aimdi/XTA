@@ -5257,5 +5257,7 @@
   "sign_in_needs_android": "Для входа здесь нужен встроенный браузер приложения для Android, которого нет в версии для компьютера.",
   "@sign_in_needs_android": {},
   "plugin_substack_load_embed": "Загрузить встроенное содержимое",
-  "@plugin_substack_load_embed": {}
+  "@plugin_substack_load_embed": {},
+  "plugin_substack_web_only_block": "Эта часть публикации отображается только в вебе.",
+  "@plugin_substack_web_only_block": {}
 }
