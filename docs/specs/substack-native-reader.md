@@ -7,8 +7,11 @@ Status: **in progress.** The owner said to continue with Tier 2 (2026-10-17). Do
    settings screen, off by default. With it on, the reader shows blocks instead of the web view; contents and find
    are hidden until they learn to jump in the native list. Widget-tested, including 200 % text at 320 px.
 
-Left: footnote sheet and image viewer (step 3), position save and restore and contents/find jumps (step 4), offline
-images from files (step 5), then the device gates below.
+3. a footnote marker opens its note in a bottom sheet; an image opens the app's shared full-screen viewer with every
+   image of the post. A loading or failed image is a plain box, so a tap always reaches the viewer.
+
+Left: position save and restore and contents/find jumps (step 4), offline images from files (step 5), then the device
+gates below.
 
 ## Why
 

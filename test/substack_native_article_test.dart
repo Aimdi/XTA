@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_article_navigation.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
@@ -125,5 +127,41 @@ void main() {
 
     await tester.runAsync(() => SubstackPlugin().resetPreferences(prefs));
     expect(prefs.get<bool>(optionPluginSubstackNativeReader), isFalse);
+  });
+
+  testWidgets('a footnote marker opens its note in a sheet; an image opens the viewer', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        SubstackNativeArticle(
+          post: _post(),
+          blocks: _blocks('$_body${syntheticImage(0, 'https://cdn.example/a.jpg')}'),
+          onLink: (_) {},
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final paragraph = find.textContaining('this link', findRichText: true);
+    final text = tester.renderObject<RenderParagraph>(paragraph);
+    final marker = text.text.toPlainText().indexOf('note1') + 4;
+    final offset = text.getOffsetForCaret(TextPosition(offset: marker), Rect.zero);
+    await tester.tapAt(tester.getTopLeft(paragraph) + offset + const Offset(2, 8));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byType(BottomSheet), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(BottomSheet), matching: find.textContaining('The note.', findRichText: true)),
+      findsOneWidget,
+    );
+    tester.state<NavigatorState>(find.byType(Navigator)).pop();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byType(BottomSheet), findsNothing);
+
+    await tester.ensureVisible(find.byType(ExtendedImage));
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.byType(ExtendedImage));
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.byType(PluginImageViewer), findsOneWidget);
   });
 }

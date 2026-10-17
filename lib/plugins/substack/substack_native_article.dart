@@ -2,6 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
@@ -26,7 +27,27 @@ class SubstackNativeArticle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: fontSize, height: lineHeight);
-    final scope = _Scope(style: body, onLink: onLink, postUrl: post.canonicalUrl);
+    final images = blocks.whereType<SubstackImageBlock>().toList(growable: false);
+    late final _Scope scope;
+    scope = _Scope(
+      style: body,
+      onLink: onLink,
+      postUrl: post.canonicalUrl,
+      onFootnote: (number) => _showFootnote(context, number, scope),
+      onImage: (image) => openPluginImageViewer(
+        context,
+        items: [
+          for (final each in images)
+            PluginMediaItem(
+              url: each.src,
+              alt: each.alt.isEmpty ? null : each.alt,
+              aspectRatio: each.width != null && (each.height ?? 0) > 0 ? each.width! / each.height! : null,
+            ),
+        ],
+        initialIndex: images.indexOf(image),
+        sourceName: 'substack',
+      ),
+    );
     return SelectionArea(
       child: CustomScrollView(
         slivers: [
@@ -48,14 +69,41 @@ class SubstackNativeArticle extends StatelessWidget {
       ),
     );
   }
+
+  /// A footnote's own text in a sheet over the article, where it was tapped.
+  Future<void> _showFootnote(BuildContext context, int number, _Scope scope) {
+    final notes = blocks.whereType<SubstackTextBlock>().where(
+      (block) => block.kind == SubstackTextKind.footnote && block.marker == '$number',
+    );
+    if (notes.isEmpty) return Future.value();
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SelectionArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
+          children: [for (final note in notes) _BlockView(block: note, scope: scope)],
+        ),
+      ),
+    );
+  }
 }
 
 class _Scope {
   final TextStyle style;
   final ValueChanged<String> onLink;
   final String? postUrl;
+  final ValueChanged<int> onFootnote;
+  final ValueChanged<SubstackImageBlock> onImage;
 
-  const _Scope({required this.style, required this.onLink, this.postUrl});
+  const _Scope({
+    required this.style,
+    required this.onLink,
+    required this.onFootnote,
+    required this.onImage,
+    this.postUrl,
+  });
 }
 
 class _Header extends StatelessWidget {
@@ -235,13 +283,25 @@ class _SubstackImage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AspectRatio(
-          aspectRatio: ratio,
-          child: ExtendedImage.network(
-            image.src,
-            fit: BoxFit.contain,
-            cacheWidth: (width * MediaQuery.devicePixelRatioOf(context)).ceil(),
-            semanticLabel: image.alt.isEmpty ? null : image.alt,
+        Semantics(
+          button: true,
+          hint: L10n.of(context).plugin_pixiv_novel_image_view,
+          child: GestureDetector(
+            onTap: () => scope.onImage(image),
+            child: AspectRatio(
+              aspectRatio: ratio,
+              child: ExtendedImage.network(
+                image.src,
+                fit: BoxFit.contain,
+                cacheWidth: (width * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                semanticLabel: image.alt.isEmpty ? null : image.alt,
+                // A plain box while loading or after a failure, so a tap
+                // always opens the viewer, which tries again full size.
+                loadStateChanged: (state) => state.extendedImageLoadState == LoadState.completed
+                    ? null
+                    : ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest),
+              ),
+            ),
           ),
         ),
         if (image.caption.isNotEmpty) ...[
@@ -292,7 +352,9 @@ class _SubstackRunsState extends State<_SubstackRuns> {
 
   List<TapGestureRecognizer?> _recognizers() => [
     for (final run in widget.runs)
-      if (run.href case final href? when run.footnote == null)
+      if (run.footnote case final number?)
+        TapGestureRecognizer()..onTap = () => widget.scope.onFootnote(number)
+      else if (run.href case final href?)
         TapGestureRecognizer()..onTap = () => widget.scope.onLink(href)
       else
         null,
