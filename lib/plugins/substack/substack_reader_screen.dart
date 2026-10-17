@@ -56,7 +56,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   final _articleCache = SubstackArticleCache();
   late final SubstackReaderStore _content;
   late final ArticleReadingStore _reading;
-  late final _highlights = SubstackHighlightsStore(context.read<SubstackReadStore>().prefs);
+  late final SubstackHighlightsStore _highlights;
   late final _place = ArticleBlockReading(_reading, blocks: () => _content.state.blocks?.length ?? 0);
   SubstackPost get _post => _content.state.post;
   Object? get _error => _content.state.error;
@@ -74,6 +74,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     WidgetsBinding.instance.addObserver(this);
     _content = SubstackReaderStore(widget.post);
     final read = context.read<SubstackReadStore>();
+    _highlights = SubstackHighlightsStore(read.prefs);
     _reading = ArticleReadingStore(
       prefs: read.prefs,
       articleId: substackArticleReadingId(widget.post),

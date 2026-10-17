@@ -108,4 +108,21 @@ void main() {
     await tester.tap(find.text(L10n.current.plugin_substack_highlights_share));
     expect(shared.single, endsWith('> Second thought'));
   });
+
+  test('two readers open on two posts keep each other\'s highlights', () async {
+    final prefs = PrefServiceCache();
+    final first = SubstackHighlightsStore(prefs);
+    final second = SubstackHighlightsStore(prefs);
+    addTearDown(first.destroy);
+    addTearDown(second.destroy);
+
+    await first.add(_post('a'), ['from a']);
+    await second.add(_post('b'), ['from b']);
+    await first.add(_post('a'), ['again a']);
+
+    final read = SubstackHighlightsStore(prefs);
+    addTearDown(read.destroy);
+    expect(read.of(_post('b')), ['from b'], reason: 'the first reader wrote over these before the fix');
+    expect(read.of(_post('a')), ['from a', 'again a']);
+  });
 }

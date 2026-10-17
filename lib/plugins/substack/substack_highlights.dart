@@ -68,17 +68,21 @@ class SubstackHighlightsStore extends Store<Map<String, List<String>>> {
 
   List<String> of(SubstackPost post) => state[substackPostKey(post)] ?? const [];
 
+  /// Each change starts from what is saved now, so two readers open on two
+  /// posts never write one another's highlights away.
   Future<void> add(SubstackPost post, Iterable<String> quotes) {
+    final saved = _read();
     final key = substackPostKey(post);
-    final kept = of(post);
+    final kept = saved[key] ?? const [];
     final added = [...kept, ...quotes.where((quote) => !kept.contains(quote))];
-    return _save({...Map.of(state)..remove(key), key: added});
+    return _save({...Map.of(saved)..remove(key), key: added});
   }
 
   Future<void> remove(SubstackPost post, String quote) {
+    final saved = _read();
     final key = substackPostKey(post);
-    final left = of(post).where((kept) => kept != quote).toList();
-    return _save(left.isEmpty ? (Map.of(state)..remove(key)) : {...state, key: left});
+    final left = (saved[key] ?? const []).where((kept) => kept != quote).toList();
+    return _save(left.isEmpty ? (Map.of(saved)..remove(key)) : {...saved, key: left});
   }
 
   Future<void> _save(Map<String, List<String>> highlights) async {
