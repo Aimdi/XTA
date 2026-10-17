@@ -1,4 +1,5 @@
 import 'package:xta/plugins/substack/podcast_store.dart';
+import 'package:xta/media/podcast_places.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -136,6 +137,7 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginSubstackReadIds, '[]');
     await prefs.set('plugin.substack.podcast.v1', '');
     await prefs.set(podcastSpeedPreference, 1.0);
+    await prefs.set(podcastPlacesPreference, '');
     await prefs.set(optionPluginSubstackLikedPosts, '[]');
     await prefs.set(optionPluginSubstackSavedPosts, '[]');
     await prefs.set(optionPluginSubstackPinnedPublications, '');

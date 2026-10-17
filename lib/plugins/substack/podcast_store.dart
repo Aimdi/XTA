@@ -7,6 +7,7 @@ import 'package:xta/media/continuity_player.dart';
 import 'package:xta/media/playback_command_gate.dart';
 import 'package:xta/media/playback_restore.dart';
 import 'package:xta/media/podcast_checkpoint.dart';
+import 'package:xta/media/podcast_places.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 
 const podcastSpeedPreference = 'plugin.substack.podcast.speed';
@@ -56,6 +57,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
   Future<void> _writes = Future.value();
   Completer<void>? _cancel;
   Timer? _timer;
+  PodcastPlaces _places = PodcastPlaces.empty;
   int _generation = 0;
   String? _loadedUrl;
   bool _receiving = false;
@@ -74,6 +76,8 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
   }
 
   void _restore() {
+    _places = PodcastPlaces.decode(prefs?.getKeys().contains(podcastPlacesPreference) == true
+      ? prefs?.get<String>(podcastPlacesPreference) : null);
     final speed = _storedSpeed();
     if (speed != 1) update(state.copyWith(speed: speed));
     try {
@@ -113,7 +117,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     if (_closed || !_receiving || !state.active || _loadedUrl != state.url) return;
     final frame = _player.frame;
     if (frame.failed) { _failed(); return; }
-    if (frame.completed) { unawaited(stop()); return; }
+    if (frame.completed) { unawaited(stop(finished: true)); return; }
     final wasPlaying = state.playing;
     update(state.copyWith(playing: frame.playing, position: frame.position,
       duration: frame.duration > Duration.zero ? frame.duration : state.duration));
@@ -128,8 +132,11 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
       if (!state.loading) await _control(_wantsPlay);
       return;
     }
-    final position = state.url == url ? state.position : Duration.zero;
-    final duration = state.url == url ? state.duration : Duration.zero;
+    // Another episode starts where it was left; the one playing keeps its place.
+    if (state.url != url) _rememberCurrent();
+    final left = _places.of(url);
+    final position = state.url == url ? state.position : left?.position ?? Duration.zero;
+    final duration = state.url == url ? state.duration : left?.duration ?? Duration.zero;
     _wantsPlay = true;
     _receiving = false;
     _cancel?.complete();
@@ -229,8 +236,15 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     await flush();
   }
 
-  Future<void> stop() async {
+  /// Stops playback. A [finished] episode forgets its place; one stopped
+  /// midway keeps it for the next time it is opened.
+  Future<void> stop({bool finished = false}) async {
     if (_closed) return;
+    if (finished && state.url != null) {
+      _places = _places.without(state.url!);
+    } else {
+      _rememberCurrent();
+    }
     _generation++;
     _cancel?.complete();
     _cancel = null;
@@ -249,6 +263,11 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     await _operations;
   }
 
+  void _rememberCurrent() {
+    final url = state.url;
+    if (url != null) _places = _places.leftAt(url, state.position, state.duration);
+  }
+
   void _schedule() {
     if (prefs == null || _closed) return;
     // A trailing debounce alone would never write during continuous playback.
@@ -261,8 +280,12 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     final current = state;
     final raw = current.url == null ? '' : PodcastCheckpoint(url: current.url!,
       title: current.title, position: current.position, duration: current.duration).encode();
-    _writes = _writes.then((_) async { await prefs?.set(podcastCheckpointPreference, raw); })
-      .catchError((Object _) {});
+    _rememberCurrent();
+    final places = _places.encode();
+    _writes = _writes.then((_) async {
+      await prefs?.set(podcastCheckpointPreference, raw);
+      await prefs?.set(podcastPlacesPreference, places);
+    }).catchError((Object _) {});
     return _writes;
   }
 

@@ -285,6 +285,30 @@ void main() {
     expect(store.state.speed, 1);
     await store.destroy();
   });
+
+  test('each episode resumes where it was left, and a finished one starts over', () async {
+    final prefs = PrefServiceCache();
+    final player = FakeContinuityPlayer();
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one');
+    player.emit(position: _position, playing: true);
+
+    await store.toggle(url: _nextUrl, title: 'Episode two');
+    expect(player.opens.last.start, Duration.zero, reason: 'a new episode starts at the top');
+    player.emit(position: const Duration(minutes: 3), playing: true);
+
+    await store.toggle(url: _url, title: 'Episode one');
+    expect(player.opens.last.start, _position, reason: 'the first one picks up where it was');
+    await store.destroy();
+
+    final again = _store(prefs, FakeContinuityPlayer());
+    await again.toggle(url: _nextUrl, title: 'Episode two');
+    expect(again.state.position, const Duration(minutes: 3), reason: 'places survive a restart');
+    await again.stop(finished: true);
+    await again.toggle(url: _nextUrl, title: 'Episode two');
+    expect(again.state.position, Duration.zero, reason: 'a finished episode forgets its place');
+    await again.destroy();
+  });
 }
 
 class _DelayedPrefs extends PrefServiceCache {
