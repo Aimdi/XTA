@@ -257,6 +257,34 @@ void main() {
     expect(player.commands, isNot(contains('play')));
     expect(PodcastCheckpoint.decode(prefs.get(podcastCheckpointPreference)), isNull);
   });
+
+  test('a chosen speed applies now, survives a restart, and opens the next episode at it', () async {
+    final prefs = PrefServiceCache();
+    final player = FakeContinuityPlayer();
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one');
+
+    await store.setSpeed(1.5);
+    expect(store.state.speed, 1.5);
+    expect(player.commands.last, 'rate:1.5');
+    await store.setSpeed(3);
+    expect(store.state.speed, 1.5, reason: 'only the offered speeds');
+
+    await store.toggle(url: _nextUrl, title: 'Episode two');
+    final opened = player.commands.lastIndexOf('open:$_nextUrl');
+    expect(player.commands.sublist(opened), containsAllInOrder(['open:$_nextUrl', 'rate:1.5', 'play']));
+    await store.destroy();
+
+    final again = _store(prefs, FakeContinuityPlayer());
+    expect(again.state.speed, 1.5);
+    await again.destroy();
+  });
+
+  test('a stored speed that is not offered reads as normal speed', () async {
+    final store = _store(PrefServiceCache(defaults: {podcastSpeedPreference: 7.0}), FakeContinuityPlayer());
+    expect(store.state.speed, 1);
+    await store.destroy();
+  });
 }
 
 class _DelayedPrefs extends PrefServiceCache {

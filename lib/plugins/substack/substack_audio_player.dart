@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/substack/podcast_store.dart';
+import 'package:xta/utils/number_locale.dart';
 
 /// The reader screen's controls for a podcast post's episode.
 ///
@@ -45,7 +47,14 @@ class SubstackAudioPlayer extends StatelessWidget {
                   tooltip: failed ? L10n.of(context).retry : title,
                   icon: loading
                       ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Icon(failed ? Icons.refresh : playing ? Icons.pause_circle : Icons.play_circle, size: 34),
+                      : Icon(
+                          failed
+                              ? Icons.refresh
+                              : playing
+                              ? Icons.pause_circle
+                              : Icons.play_circle,
+                          size: 34,
+                        ),
                   color: theme.colorScheme.primary,
                   onPressed: loading ? null : () => store.toggle(url: url, title: title),
                 ),
@@ -53,9 +62,7 @@ class SubstackAudioPlayer extends StatelessWidget {
                 Expanded(
                   child: hasLength
                       ? Slider(
-                          value: playback.position.inMilliseconds
-                              .clamp(0, playback.duration.inMilliseconds)
-                              .toDouble(),
+                          value: playback.position.inMilliseconds.clamp(0, playback.duration.inMilliseconds).toDouble(),
                           max: playback.duration.inMilliseconds.toDouble(),
                           onChanged: loading ? null : (value) => store.seek(Duration(milliseconds: value.round())),
                         )
@@ -69,12 +76,47 @@ class SubstackAudioPlayer extends StatelessWidget {
                 if (hasLength)
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: Text('${_clock(playback.position)} / ${_clock(playback.duration)}',
-                        style: theme.textTheme.bodySmall),
+                    child: Text(
+                      '${_clock(playback.position)} / ${_clock(playback.duration)}',
+                      style: theme.textTheme.bodySmall,
+                    ),
                   ),
+                _SpeedMenu(speed: playback.speed, onSelected: store.setSpeed),
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+/// Picks the playback speed, shown as its own label ("1.5×").
+class _SpeedMenu extends StatelessWidget {
+  final double speed;
+  final ValueChanged<double> onSelected;
+
+  const _SpeedMenu({required this.speed, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final format = NumberFormat.decimalPattern(numberFormatLocale(context));
+    String label(double value) => '${format.format(value)}×';
+    return PopupMenuButton<double>(
+      tooltip: L10n.of(context).playback_speed,
+      initialValue: speed,
+      onSelected: onSelected,
+      itemBuilder: (context) => [
+        for (final value in podcastSpeeds)
+          CheckedPopupMenuItem(value: value, checked: value == speed, child: Text(label(value))),
+      ],
+      child: SizedBox(
+        height: 48,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(label(speed), style: Theme.of(context).textTheme.labelLarge),
+          ),
         ),
       ),
     );

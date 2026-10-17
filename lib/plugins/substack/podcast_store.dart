@@ -9,6 +9,11 @@ import 'package:xta/media/playback_restore.dart';
 import 'package:xta/media/podcast_checkpoint.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 
+const podcastSpeedPreference = 'plugin.substack.podcast.speed';
+
+/// The speeds the player offers; anything else stored is read as 1×.
+const podcastSpeeds = [0.8, 1.0, 1.25, 1.5, 1.75, 2.0];
+
 class PodcastPlayback {
   final String? url;
   final String title;
@@ -18,17 +23,21 @@ class PodcastPlayback {
   final Duration position;
   final Duration duration;
 
+  /// The playback rate, kept for the next episode too.
+  final double speed;
+
   const PodcastPlayback({this.url, this.title = '', this.playing = false,
     this.loading = false, this.failed = false,
-    this.position = Duration.zero, this.duration = Duration.zero});
+    this.position = Duration.zero, this.duration = Duration.zero, this.speed = 1});
 
   bool get active => url != null;
 
   PodcastPlayback copyWith({bool? playing, bool? loading, bool? failed,
-    Duration? position, Duration? duration}) => PodcastPlayback(
+    Duration? position, Duration? duration, double? speed}) => PodcastPlayback(
     url: url, title: title, playing: playing ?? this.playing,
     loading: loading ?? this.loading, failed: failed ?? this.failed,
     position: position ?? this.position, duration: duration ?? this.duration,
+    speed: speed ?? this.speed,
   );
 }
 
@@ -65,13 +74,32 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
   }
 
   void _restore() {
+    final speed = _storedSpeed();
+    if (speed != 1) update(state.copyWith(speed: speed));
     try {
       final raw = prefs?.getKeys().contains(podcastCheckpointPreference) == true
         ? prefs?.get<String>(podcastCheckpointPreference) : null;
       final checkpoint = PodcastCheckpoint.decode(raw);
       if (checkpoint != null) update(PodcastPlayback(url: checkpoint.url,
-        title: checkpoint.title, position: checkpoint.position, duration: checkpoint.duration));
+        title: checkpoint.title, position: checkpoint.position, duration: checkpoint.duration, speed: speed));
     } catch (_) { /* A damaged preference must not prevent startup. */ }
+  }
+
+  double _storedSpeed() {
+    final raw = prefs?.getKeys().contains(podcastSpeedPreference) == true ? prefs?.get<Object>(podcastSpeedPreference) : null;
+    return raw is num && podcastSpeeds.contains(raw.toDouble()) ? raw.toDouble() : 1;
+  }
+
+  /// Plays at [speed] from now on, this episode and the next.
+  Future<void> setSpeed(double speed) async {
+    if (_closed || !podcastSpeeds.contains(speed)) return;
+    update(state.copyWith(speed: speed));
+    _writes = _writes.then((_) async { await prefs?.set(podcastSpeedPreference, speed); }).catchError((Object _) {});
+    if (_loadedUrl == null || _loadedUrl != state.url) return;
+    final generation = _generation;
+    try {
+      await _command(generation, () => _player.setRate(speed));
+    } catch (_) { /* The next episode opens at this speed. */ }
   }
 
   ContinuityPlayer get _player {
@@ -107,7 +135,8 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     _cancel?.complete();
     final cancel = _cancel = Completer<void>();
     final generation = ++_generation;
-    update(PodcastPlayback(url: url, title: title, position: position, duration: duration, loading: true));
+    update(PodcastPlayback(url: url, title: title, position: position, duration: duration, loading: true,
+      speed: state.speed));
     _schedule();
     _operations = _operations.then((_) => _open(url, position, generation, cancel));
     await _operations;
@@ -139,6 +168,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
       update(state.copyWith(loading: false, failed: false));
       _bind();
       _receive();
+      if (state.speed != 1) await _command(generation, () => _player.setRate(state.speed));
       if (_current(generation) && !state.failed && _wantsPlay) await _command(generation, _player.play);
     } catch (_) {
       if (!_current(generation)) return;
@@ -207,7 +237,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     _receiving = false;
     _wantsPlay = false;
     _loadedUrl = null;
-    update(const PodcastPlayback());
+    update(PodcastPlayback(speed: state.speed));
     audioHandler?.clearSession();
     final pending = _operations;
     final generation = _generation;
