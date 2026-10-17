@@ -19,7 +19,12 @@ Status: **in progress.** The owner said to continue with Tier 2 (2026-10-17). Do
    the other lands by its scroll fraction, near but not on the passage. Only someone switching the preview setting
    mid-article meets it.
 
-Left: offline images from files (step 5), then the device gates below.
+5. a kept post's images are read from their files (`OfflineStore.articleImages`), the rest from the network. The
+   native path never builds the offline page, so the base64 inlining measured in S7 (115 KB of HTML becoming
+   8.27 MB) does not happen there. The full-screen viewer still loads images by address; reading a kept image there
+   offline needs the shared viewer to take files, which is outside this plugin.
+
+Left: the device gates below. The native reader stays behind its setting, off by default, until they pass.
 
 ## Why
 

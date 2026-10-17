@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +61,12 @@ Widget _article({
   required List<SubstackBlock> blocks,
   required ValueChanged<String> onLink,
   ArticleBlockReading? place,
+  Map<String, File> keptImages = const {},
 }) => SubstackNativeArticle(
   post: post,
   blocks: blocks,
   onLink: onLink,
+  keptImages: keptImages,
   place: place ?? ArticleBlockReading(_store(), blocks: () => blocks.length),
 );
 
@@ -241,6 +244,27 @@ void main() {
     final part = find.text('Part 40', findRichText: true);
     expect(part, findsOneWidget);
     expect(tester.getTopLeft(part).dy, closeTo(tester.getTopLeft(find.byType(CustomScrollView)).dy, 2));
+    await _finish(tester);
+  });
+
+  testWidgets('a kept post shows its images from their files, the rest from the network', (tester) async {
+    tester.view.physicalSize = const Size(390, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final kept = File('${Directory.systemTemp.path}/xta-native-kept.png');
+    final blocks = _blocks(
+      '${syntheticImage(0, 'https://cdn.example/kept.jpg')}${syntheticImage(1, 'https://cdn.example/new.jpg')}',
+    );
+    await tester.pumpWidget(
+      _app(_article(post: _post(), blocks: blocks, onLink: (_) {}, keptImages: {'https://cdn.example/kept.jpg': kept})),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final images = tester.widgetList<ExtendedImage>(find.byType(ExtendedImage)).toList();
+    expect(images, hasLength(2));
+    ImageProvider source(ExtendedImage image) => (image.image as ExtendedResizeImage).imageProvider;
+    expect((source(images[0]) as ExtendedFileImageProvider).file.path, kept.path);
+    expect((source(images[1]) as ExtendedNetworkImageProvider).url, 'https://cdn.example/new.jpg');
     await _finish(tester);
   });
 }

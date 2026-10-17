@@ -366,10 +366,20 @@ class OfflineStore extends Store<OfflineState> {
     return await file.exists() && await file.length() == media.bytes ? file : null;
   }
 
+  /// The kept images of article [id], by the address they were kept from;
+  /// empty when the article is not kept.
+  Future<Map<String, File>> articleImages(String id) async {
+    await load();
+    final entry = state.entry(id);
+    if (entry == null || !entry.hasArticle) return const {};
+    return {for (final media in entry.files) media.url: ?await mediaFile(entry, media)};
+  }
+
   Future<String> renderArticle(String id, String sanitizedDocument) async {
     await load();
     final entry = state.entry(id);
     if (entry == null || !entry.hasArticle) return sanitizedDocument;
+    final kept = await articleImages(id);
     final document = html.parse(sanitizedDocument);
     document.head?.nodes.insert(
       0,
@@ -378,11 +388,8 @@ class OfflineStore extends Store<OfflineState> {
         ..attributes['content'] =
             "default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'",
     );
-    final files = {for (final file in entry.files) file.url: file};
     for (final image in document.querySelectorAll('img')) {
-      final resolved = resolveOfflineUrl(image.attributes['src'], entry.url);
-      final media = files[resolved];
-      final file = media == null ? null : await mediaFile(entry, media);
+      final file = kept[resolveOfflineUrl(image.attributes['src'], entry.url)];
       image.attributes.remove('srcset');
       image.attributes.remove('onerror');
       if (file == null) {

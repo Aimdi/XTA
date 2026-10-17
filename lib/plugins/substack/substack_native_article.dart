@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/offline/offline_store.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
@@ -17,6 +20,10 @@ class SubstackNativeArticle extends StatelessWidget {
   /// Keeps the reader's place; the screen owns it.
   final ArticleBlockReading place;
   final ValueChanged<String> onLink;
+
+  /// The images of a kept post, by the address they were kept from; read
+  /// from their files instead of the network.
+  final Map<String, File> keptImages;
   final double fontSize;
   final double lineHeight;
 
@@ -26,6 +33,7 @@ class SubstackNativeArticle extends StatelessWidget {
     required this.blocks,
     required this.place,
     required this.onLink,
+    this.keptImages = const {},
     this.fontSize = 18,
     this.lineHeight = 1.7,
   });
@@ -39,6 +47,7 @@ class SubstackNativeArticle extends StatelessWidget {
       style: body,
       onLink: onLink,
       postUrl: post.canonicalUrl,
+      keptImage: (src) => keptImages[resolveOfflineUrl(src, post.canonicalUrl)],
       onFootnote: (number) => _showFootnote(context, number, scope),
       onImage: (image) => openPluginImageViewer(
         context,
@@ -119,12 +128,14 @@ class _Scope {
   final String? postUrl;
   final ValueChanged<int> onFootnote;
   final ValueChanged<SubstackImageBlock> onImage;
+  final File? Function(String src) keptImage;
 
   const _Scope({
     required this.style,
     required this.onLink,
     required this.onFootnote,
     required this.onImage,
+    required this.keptImage,
     this.postUrl,
   });
 }
@@ -313,17 +324,7 @@ class _SubstackImage extends StatelessWidget {
             onTap: () => scope.onImage(image),
             child: AspectRatio(
               aspectRatio: ratio,
-              child: ExtendedImage.network(
-                image.src,
-                fit: BoxFit.contain,
-                cacheWidth: (width * MediaQuery.devicePixelRatioOf(context)).ceil(),
-                semanticLabel: image.alt.isEmpty ? null : image.alt,
-                // A plain box while loading or after a failure, so a tap
-                // always opens the viewer, which tries again full size.
-                loadStateChanged: (state) => state.extendedImageLoadState == LoadState.completed
-                    ? null
-                    : ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest),
-              ),
+              child: _picture(context, (width * MediaQuery.devicePixelRatioOf(context)).ceil()),
             ),
           ),
         ),
@@ -340,6 +341,32 @@ class _SubstackImage extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  /// The kept file when there is one, else the network. A plain box while
+  /// loading or after a failure, so a tap always opens the viewer, which
+  /// tries again full size.
+  Widget _picture(BuildContext context, int cacheWidth) {
+    Widget? placeholder(ExtendedImageState state) => state.extendedImageLoadState == LoadState.completed
+        ? null
+        : ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest);
+    final label = image.alt.isEmpty ? null : image.alt;
+    return switch (scope.keptImage(image.src)) {
+      final File file => ExtendedImage.file(
+        file,
+        fit: BoxFit.contain,
+        cacheWidth: cacheWidth,
+        semanticLabel: label,
+        loadStateChanged: placeholder,
+      ),
+      null => ExtendedImage.network(
+        image.src,
+        fit: BoxFit.contain,
+        cacheWidth: cacheWidth,
+        semanticLabel: label,
+        loadStateChanged: placeholder,
+      ),
+    };
   }
 }
 

@@ -456,7 +456,7 @@ Order is by score, except where a dependency forces a change; the last column sa
 | 4 | Offline render without base64 inlining | 4 | 3 | 3 | 36 | S7 |
 | 5 | CDN-sized covers and logos | 3 | 4 | 3 | 36 | S6 (needs the URL grammar from a HAR) |
 | 6 ✅ | Click-to-load embeds | 2 | 4 | 4 | 32 | S2, privacy. Iframes wait in inert templates behind a localized button; in headless Chromium, 0 requests to the embed host before the tap and 1 after. Android WebView UNVERIFIED. |
-| 7 | **Native block reader** (brief §3): block model + lazy `SliverList` in a `SelectionArea`, reusing the Pixiv reader patterns | 5 | 1 | 2 | 10 | S2, S5, S7 |
+| 7 ◐ | **Native block reader** (brief §3): block model + lazy `SliverList` in a `SelectionArea`, reusing the Pixiv reader patterns | 5 | 1 | 2 | 10 | S2, S5, S7. Steps 1–5 of `docs/specs/substack-native-reader.md` done behind a setting, off by default: blocks, footnote sheet, image viewer, place keeping, contents and find, kept images from files (no base64 page on that path). Device gates S2/S5/S7 UNVERIFIED. |
 
 Item 7 is the largest change in the plan, and it also unlocks:
 - footnote sheets;

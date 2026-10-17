@@ -333,10 +333,11 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   /// The native reader: the parsed body as blocks, no web view.
   Future<void> _showNative(String body, int generation) async {
     final blocks = await parseInBackground<List<SubstackBlock>>(substackBlocksOfBody, body);
+    final kept = await OfflineStore.shared.articleImages(_offlineId);
     if (!mounted || !_content.accepts(generation)) return;
     // A refresh keeps the passage being read; a first open goes back to the saved place.
     final point = (_content.state.blocks == null ? null : _place.place) ?? _reading.state.point;
-    _content.change(blocks: blocks, loading: false);
+    _content.change(blocks: blocks, keptImages: kept, loading: false);
     _reading.setActive(true);
     await _place.open(point);
   }
@@ -667,6 +668,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
                         blocks: blocks,
                         place: _place,
                         onLink: _openNativeLink,
+                        keptImages: _content.state.keptImages,
                         fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,
                         lineHeight: reading.lineHeight,
                       ),

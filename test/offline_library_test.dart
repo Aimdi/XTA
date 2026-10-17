@@ -132,6 +132,22 @@ void main() {
     expect(cold.state.bytes, entry.articleBytes + _png.length);
   });
 
+  test('a kept article hands its images over as files, for readers that need no page', () async {
+    final model = store(
+      client: MockClient(
+        (request) async => request.url.path == '/good.png' ? http.Response.bytes(_png, 200) : http.Response('', 503),
+      ),
+    );
+    final article = _article(body: '<p>Text</p><img src="/good.png"><img src="/missing.png">');
+    await model.keepArticle(article);
+
+    final cold = store(client: MockClient((_) async => throw StateError('No network on offline read')));
+    final images = await cold.articleImages(article.id);
+    expect(images.keys, ['https://example.com/good.png']);
+    expect(await images.values.single.readAsBytes(), _png);
+    expect(await cold.articleImages('not-kept'), isEmpty);
+  });
+
   test('missing files downgrade actual availability and storage bytes', () async {
     final model = store();
     final article = _article(body: '<img src="https://example.com/a.png">');
