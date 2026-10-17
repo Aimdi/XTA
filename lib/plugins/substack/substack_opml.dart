@@ -65,12 +65,22 @@ class SubstackOpmlImportStore extends Store<SubstackOpmlImport?> {
   final SubstackClient client;
   final SubstackPublicationsStore publications;
 
+  var _closed = false;
+
   SubstackOpmlImportStore(this.client, this.publications) : super(null);
+
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    return super.destroy();
+  }
 
   Future<SubstackOpmlImport> run(List<Uri> sites) async {
     var progress = SubstackOpmlImport(total: sites.length);
-    update(progress);
+    if (!_closed) update(progress);
     for (final (index, site) in sites.indexed) {
+      // Leaving the settings ends the import; what was added stays followed.
+      if (_closed) return progress;
       try {
         final publication = await client.resolvePublication(site.toString());
         if (publications.followOf(publication) != null) {
@@ -85,9 +95,9 @@ class SubstackOpmlImportStore extends Store<SubstackOpmlImport?> {
       } catch (_) {
         progress = progress._with(failed: 1);
       }
-      update(progress);
+      if (!_closed) update(progress);
     }
-    update(progress);
+    if (!_closed) update(progress);
     return progress;
   }
 }

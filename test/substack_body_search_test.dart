@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/substack/substack_body_search.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
@@ -41,5 +43,28 @@ void main() {
 
     await store.search('h', posts);
     expect(store.state, isEmpty, reason: 'one letter is too short to search bodies');
+  });
+
+  test('a post kept after a search is found once the search is cleared and typed again', () async {
+    String? body;
+    final store = SubstackBodySearchStore((_) async => body);
+    addTearDown(store.destroy);
+    final posts = [_post('later')];
+
+    await store.search('harbour', posts);
+    expect(store.state, isEmpty);
+    body = '<p>The harbour at dawn.</p>';
+    await store.search('', posts);
+    await store.search('harbour', posts);
+    expect(store.state, hasLength(1));
+  });
+
+  test('a search still reading bodies when the store goes away does not touch it', () async {
+    final gate = Completer<String?>();
+    final store = SubstackBodySearchStore((_) => gate.future);
+    final searching = store.search('harbour', [_post('slow')]);
+    await store.destroy();
+    gate.complete('<p>harbour</p>');
+    await searching;
   });
 }

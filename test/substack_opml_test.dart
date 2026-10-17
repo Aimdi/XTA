@@ -151,4 +151,13 @@ void main() {
     expect(pubs.state.map((pub) => pub.name), contains('New'));
     expect(find.text(L10n.current.plugin_substack_opml_result(1, 0, 0)), findsOneWidget);
   });
+
+  test('an import whose settings screen closed stops asking', () async {
+    final client = _Client({'new.substack.com': _pub('new.substack.com', 'New')});
+    final store = SubstackOpmlImportStore(client, _Publications(const []));
+    await store.destroy();
+    final result = await store.run([Uri.parse('https://new.substack.com'), Uri.parse('https://other.substack.com')]);
+    expect(client.resolved, isEmpty);
+    expect(result.done, 0);
+  });
 }

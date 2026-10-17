@@ -34,22 +34,33 @@ class SubstackBodySearchStore extends Store<Map<String, String>> {
   /// The kept body of a post, or null when the device has none.
   final Future<String?> Function(SubstackPost post) bodyOf;
   final _texts = <String, ({String text, String lower})>{};
+  final _missing = <String>{};
   var _request = 0;
+  var _closed = false;
 
   SubstackBodySearchStore(this.bodyOf) : super(const {});
 
   Future<void> search(String query, Iterable<SubstackPost> posts) async {
     final request = ++_request;
     final q = query.trim().toLowerCase();
-    if (q.length < 2) return update(const {});
+    if (q.length < 2) {
+      // A cleared search looks again for bodies kept since.
+      _missing.clear();
+      return update(const {});
+    }
     for (final post in posts) {
       final key = substackPostKey(post);
-      if (_texts.containsKey(key)) continue;
+      if (_texts.containsKey(key) || _missing.contains(key)) continue;
       final body = await bodyOf(post);
-      final text = body == null || body.isEmpty ? '' : await parseInBackground<String>(substackBodyText, body);
+      if (_closed) return;
+      if (body == null || body.isEmpty) {
+        _missing.add(key);
+        continue;
+      }
+      final text = await parseInBackground<String>(substackBodyText, body);
       _texts[key] = (text: text, lower: text.toLowerCase());
     }
-    if (request != _request) return;
+    if (_closed || request != _request) return;
     update({for (final post in posts) substackPostKey(post): ?_passage(post, q)});
   }
 
@@ -57,4 +68,10 @@ class SubstackBodySearchStore extends Store<Map<String, String>> {
     final kept? => substackMatchSnippet(kept.text, kept.lower, query),
     null => null,
   };
+
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    return super.destroy();
+  }
 }
