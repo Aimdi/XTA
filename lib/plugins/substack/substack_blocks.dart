@@ -12,16 +12,33 @@ class SubstackRun {
   /// The footnote this run points at, for a footnote marker.
   final int? footnote;
 
-  const SubstackRun(this.text, {this.bold = false, this.italic = false, this.code = false, this.href, this.footnote});
+  /// Whether the reader highlighted this text.
+  final bool highlighted;
 
-  SubstackRun _styled({bool? bold, bool? italic, bool? code, String? href}) => SubstackRun(
-    text,
-    bold: bold ?? this.bold,
-    italic: italic ?? this.italic,
-    code: code ?? this.code,
-    href: href ?? this.href,
-    footnote: footnote,
-  );
+  const SubstackRun(
+    this.text, {
+    this.bold = false,
+    this.italic = false,
+    this.code = false,
+    this.href,
+    this.footnote,
+    this.highlighted = false,
+  });
+
+  SubstackRun _styled({bool? bold, bool? italic, bool? code, String? href}) =>
+      copy(bold: bold ?? this.bold, italic: italic ?? this.italic, code: code ?? this.code, href: href ?? this.href);
+
+  /// This run with [text] instead, or other styles.
+  SubstackRun copy({String? text, bool? bold, bool? italic, bool? code, String? href, bool? highlighted}) =>
+      SubstackRun(
+        text ?? this.text,
+        bold: bold ?? this.bold,
+        italic: italic ?? this.italic,
+        code: code ?? this.code,
+        href: href ?? this.href,
+        footnote: footnote,
+        highlighted: highlighted ?? this.highlighted,
+      );
 }
 
 enum SubstackTextKind { paragraph, heading, quote, listItem, code, footnote }
@@ -321,8 +338,7 @@ List<SubstackRun> runsOf(Node node) {
 List<SubstackRun> _trimmed(List<SubstackRun> runs) {
   final kept = runs.where((run) => run.text.isNotEmpty).toList();
   if (kept.isEmpty) return const [];
-  SubstackRun trim(SubstackRun run, String text) =>
-      SubstackRun(text, bold: run.bold, italic: run.italic, code: run.code, href: run.href, footnote: run.footnote);
+  SubstackRun trim(SubstackRun run, String text) => run.copy(text: text);
   kept[0] = trim(kept.first, kept.first.text.trimLeft());
   kept[kept.length - 1] = trim(kept.last, kept.last.text.trimRight());
   return kept.where((run) => run.text.isNotEmpty).toList(growable: false);

@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Aldonitaj: {added} · Jam sekataj: {existing} · Malsukcesis: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Neniu publikaĵo en ĉi tiu dosiero",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Emfazi",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Emfazoj",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Elektu tekston en la artikolo kaj elektu «Emfazi».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Kunhavigi kiel Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Forigi emfazon",
+  "@plugin_substack_highlight_remove": {}
 }

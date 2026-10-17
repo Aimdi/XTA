@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Afegides: {added} · Ja seguides: {existing} · Errors: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Aquest fitxer no conté cap publicació",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Ressalta",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Ressaltats",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Selecciona text de l’article i tria «Ressalta».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Comparteix en Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Elimina el ressaltat",
+  "@plugin_substack_highlight_remove": {}
 }

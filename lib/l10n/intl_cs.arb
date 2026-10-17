@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Přidáno: {added} · Už sledováno: {existing} · Selhalo: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "V tomto souboru nejsou žádné publikace",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Zvýraznit",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Zvýraznění",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Označte text v článku a zvolte Zvýraznit.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Sdílet jako Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Odstranit zvýraznění",
+  "@plugin_substack_highlight_remove": {}
 }

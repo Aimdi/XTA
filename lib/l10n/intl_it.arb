@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Aggiunte: {added} · Già seguite: {existing} · Non riuscite: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Nessuna pubblicazione in questo file",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Evidenzia",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Evidenziazioni",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Seleziona del testo nell’articolo e scegli «Evidenzia».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Condividi come Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Rimuovi evidenziazione",
+  "@plugin_substack_highlight_remove": {}
 }

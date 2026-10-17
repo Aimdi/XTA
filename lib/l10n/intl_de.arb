@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Hinzugefügt: {added} · Schon abonniert: {existing} · Fehlgeschlagen: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Diese Datei enthält keine Publikationen",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Markieren",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Markierungen",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Text im Artikel auswählen und „Markieren“ wählen.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Als Markdown teilen",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Markierung entfernen",
+  "@plugin_substack_highlight_remove": {}
 }

@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Dadadziena: {added} · Užo ŭ padpiskach: {existing} · Nie ŭdałosia: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "U hetym fajle niama vydanniaŭ",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Vyłučyć",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Vyłučenni",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Vyłučycie tekst u artykule i vybierycie «Vyłučyć».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Padzialicca ŭ Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Vydalić vyłučennie",
+  "@plugin_substack_highlight_remove": {}
 }

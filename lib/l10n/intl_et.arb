@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Lisatud: {added} · Juba jälgitud: {existing} · Ebaõnnestus: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Selles failis pole väljaandeid",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Tõsta esile",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Esiletõstud",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Vali artiklis tekst ja vajuta „Tõsta esile“.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Jaga Markdownina",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Eemalda esiletõst",
+  "@plugin_substack_highlight_remove": {}
 }

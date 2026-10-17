@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Додано: {added} · Уже в підписках: {existing} · Не вдалося: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "У цьому файлі немає видань",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Виділити",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Виділене",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Виділіть текст у статті й виберіть «Виділити».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Поділитися в Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Видалити виділення",
+  "@plugin_substack_highlight_remove": {}
 }

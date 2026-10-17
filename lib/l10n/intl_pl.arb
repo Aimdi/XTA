@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Dodano: {added} · Już obserwowane: {existing} · Nieudane: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "W tym pliku nie ma publikacji",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Wyróżnij",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Wyróżnienia",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Zaznacz tekst w artykule i wybierz „Wyróżnij”.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Udostępnij jako Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Usuń wyróżnienie",
+  "@plugin_substack_highlight_remove": {}
 }

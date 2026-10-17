@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "追加: {added} · フォロー済み: {existing} · 失敗: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "このファイルにはパブリケーションがありません",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "ハイライト",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "ハイライト",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "記事のテキストを選択して「ハイライト」を選んでください。",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Markdownで共有",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "ハイライトを削除",
+  "@plugin_substack_highlight_remove": {}
 }

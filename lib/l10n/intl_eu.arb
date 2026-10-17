@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Gehituak: {added} · Lehendik jarraituak: {existing} · Hutsegiteak: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Fitxategi honetan ez dago argitalpenik",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Nabarmendu",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Nabarmenduak",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Hautatu testua artikuluan eta aukeratu «Nabarmendu».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Partekatu Markdown gisa",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Kendu nabarmendua",
+  "@plugin_substack_highlight_remove": {}
 }

@@ -5696,5 +5696,15 @@
   "plugin_substack_opml_result": "Added: {added} · Already followed: {existing} · Failed: {failed}",
   "@plugin_substack_opml_result": {"description": "Summary after an OPML import; three counts of publications.", "placeholders": {"added": {"type": "int"}, "existing": {"type": "int"}, "failed": {"type": "int"}}},
   "plugin_substack_opml_empty": "No publications in this file",
-  "@plugin_substack_opml_empty": {"description": "Shown when a chosen OPML file lists no publication."}
+  "@plugin_substack_opml_empty": {"description": "Shown when a chosen OPML file lists no publication."},
+  "plugin_substack_highlight": "Highlight",
+  "@plugin_substack_highlight": {"description": "Button in the text selection menu of a Substack article that saves the selected text as a highlight (a verb)."},
+  "plugin_substack_highlights": "Highlights",
+  "@plugin_substack_highlights": {"description": "Title of the reader menu item and sheet listing the reader's highlights in a Substack article (a noun, plural)."},
+  "plugin_substack_highlights_empty": "Select text in the article and choose Highlight.",
+  "@plugin_substack_highlights_empty": {"description": "Shown in the highlights sheet when the article has none yet."},
+  "plugin_substack_highlights_share": "Share as Markdown",
+  "@plugin_substack_highlights_share": {"description": "Button in the highlights sheet that shares all highlights of the article as Markdown text."},
+  "plugin_substack_highlight_remove": "Remove highlight",
+  "@plugin_substack_highlight_remove": {"description": "Tooltip of the button that deletes one highlight in the highlights sheet."}
 }

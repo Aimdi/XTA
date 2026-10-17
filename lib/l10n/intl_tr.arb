@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Eklendi: {added} · Zaten takipte: {existing} · Başarısız: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Bu dosyada yayın yok",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Vurgula",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Vurgular",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Makalede metin seçip Vurgula'ya dokunun.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Markdown olarak paylaş",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Vurguyu kaldır",
+  "@plugin_substack_highlight_remove": {}
 }

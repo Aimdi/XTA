@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "已新增：{added} · 已追蹤：{existing} · 失敗：{failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "此檔案中沒有刊物",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "醒目提示",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "醒目提示",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "在文章中選取文字，然後選擇「醒目提示」。",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "以 Markdown 分享",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "移除醒目提示",
+  "@plugin_substack_highlight_remove": {}
 }

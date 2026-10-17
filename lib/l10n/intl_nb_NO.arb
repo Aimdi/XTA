@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Lagt til: {added} · Fulgt fra før: {existing} · Mislyktes: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Ingen publikasjoner i denne filen",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Uthev",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Uthevinger",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Merk tekst i artikkelen og velg Uthev.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Del som Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Fjern utheving",
+  "@plugin_substack_highlight_remove": {}
 }

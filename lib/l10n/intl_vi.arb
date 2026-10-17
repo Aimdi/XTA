@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Đã thêm: {added} · Đã theo dõi: {existing} · Thất bại: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Tệp này không có ấn phẩm nào",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Đánh dấu",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Đánh dấu",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Chọn văn bản trong bài và chọn Đánh dấu.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Chia sẻ dạng Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Xóa đánh dấu",
+  "@plugin_substack_highlight_remove": {}
 }

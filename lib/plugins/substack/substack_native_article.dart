@@ -9,6 +9,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_store.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
+import 'package:xta/plugins/substack/substack_highlights.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_reader_style.dart';
 import 'package:xta/reading/article_block_reading.dart';
@@ -32,6 +33,10 @@ class SubstackNativeArticle extends StatelessWidget {
   /// The images of a kept post, by the address they were kept from; read
   /// from their files instead of the network.
   final Map<String, File> keptImages;
+
+  /// The reader's highlights in this post, and what saves a new one.
+  final List<String> highlights;
+  final ValueChanged<List<String>>? onHighlight;
   final double fontSize;
   final double lineHeight;
 
@@ -44,6 +49,8 @@ class SubstackNativeArticle extends StatelessWidget {
     this.style = (font: SubstackReaderFont.serif, column: SubstackColumnWidth.medium),
     required this.onLink,
     this.keptImages = const {},
+    this.highlights = const [],
+    this.onHighlight,
     this.fontSize = 18,
     this.lineHeight = 1.7,
   });
@@ -59,6 +66,7 @@ class SubstackNativeArticle extends StatelessWidget {
       style: body,
       onLink: onLink,
       postUrl: post.canonicalUrl,
+      highlights: highlights,
       keptImage: (src) => keptImages[resolveOfflineUrl(src, post.canonicalUrl)],
       onFootnote: (number) => _showFootnote(context, number, scope),
       onImage: (image) => openPluginImageViewer(
@@ -86,7 +94,8 @@ class SubstackNativeArticle extends StatelessWidget {
 
   Widget _scrollView(_Scope scope, double margin) {
     final side = EdgeInsets.symmetric(horizontal: margin);
-    return SelectionArea(
+    return _HighlightableSelection(
+      onHighlight: onHighlight,
       child: NotificationListener<ScrollNotification>(
         onNotification: place.onScroll,
         child: CustomScrollView(
@@ -95,7 +104,9 @@ class SubstackNativeArticle extends StatelessWidget {
           slivers: [
             SliverPadding(
               padding: side.copyWith(top: 16),
-              sliver: SliverToBoxAdapter(child: _Header(post: post, readMinutes: readMinutes)),
+              sliver: SliverToBoxAdapter(
+                child: _Header(post: post, readMinutes: readMinutes),
+              ),
             ),
             SliverPadding(
               padding: side,
@@ -151,6 +162,7 @@ class _Scope {
   final ValueChanged<int> onFootnote;
   final ValueChanged<SubstackImageBlock> onImage;
   final File? Function(String src) keptImage;
+  final List<String> highlights;
 
   const _Scope({
     required this.style,
@@ -158,6 +170,7 @@ class _Scope {
     required this.onFootnote,
     required this.onImage,
     required this.keptImage,
+    this.highlights = const [],
     this.postUrl,
   });
 }
@@ -421,14 +434,16 @@ class _SubstackRunsState extends State<_SubstackRuns> {
   @override
   void didUpdateWidget(_SubstackRuns oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.runs != widget.runs) {
+    if (oldWidget.runs != widget.runs || oldWidget.scope.highlights != widget.scope.highlights) {
       _dispose();
       _taps = _recognizers();
     }
   }
 
+  List<SubstackRun> get _runs => substackHighlightRuns(widget.runs, widget.scope.highlights);
+
   List<TapGestureRecognizer?> _recognizers() => [
-    for (final run in widget.runs)
+    for (final run in _runs)
       if (run.footnote case final number?)
         TapGestureRecognizer()..onTap = () => widget.scope.onFootnote(number)
       else if (run.href case final href?)
@@ -452,19 +467,25 @@ class _SubstackRunsState extends State<_SubstackRuns> {
   @override
   Widget build(BuildContext context) {
     final base = widget.style ?? widget.scope.style;
-    final link = Theme.of(context).colorScheme.primary;
+    final scheme = Theme.of(context).colorScheme;
+    final runs = _runs;
     return Text.rich(
       TextSpan(
         style: base,
         children: [
-          for (var i = 0; i < widget.runs.length; i++)
-            TextSpan(text: widget.runs[i].text, recognizer: _taps[i], style: _styleOf(widget.runs[i], link)),
+          for (var i = 0; i < runs.length; i++)
+            TextSpan(text: runs[i].text, recognizer: _taps[i], style: _styleOf(runs[i], scheme)),
         ],
       ),
     );
   }
 
-  TextStyle _styleOf(SubstackRun run, Color link) => TextStyle(
+  TextStyle _styleOf(SubstackRun run, ColorScheme scheme) => _runStyle(run, scheme.primary).copyWith(
+    backgroundColor: run.highlighted ? scheme.tertiaryContainer : null,
+    color: run.highlighted && run.href == null && run.footnote == null ? scheme.onTertiaryContainer : null,
+  );
+
+  TextStyle _runStyle(SubstackRun run, Color link) => TextStyle(
     fontWeight: run.bold ? FontWeight.w700 : null,
     fontStyle: run.italic ? FontStyle.italic : null,
     fontFamily: run.code ? 'monospace' : null,
@@ -472,4 +493,44 @@ class _SubstackRunsState extends State<_SubstackRuns> {
     decoration: run.href != null && run.footnote == null ? TextDecoration.underline : null,
     fontFeatures: run.footnote != null ? const [FontFeature.superscripts()] : null,
   );
+}
+
+/// A selection area whose menu also offers to highlight what is selected.
+class _HighlightableSelection extends StatefulWidget {
+  final ValueChanged<List<String>>? onHighlight;
+  final Widget child;
+
+  const _HighlightableSelection({required this.onHighlight, required this.child});
+
+  @override
+  State<_HighlightableSelection> createState() => _HighlightableSelectionState();
+}
+
+class _HighlightableSelectionState extends State<_HighlightableSelection> {
+  /// What is selected now; read when the menu's button is pressed, never drawn.
+  var _selected = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final onHighlight = widget.onHighlight;
+    return SelectionArea(
+      onSelectionChanged: (content) => _selected = content?.plainText ?? '',
+      contextMenuBuilder: (context, region) => AdaptiveTextSelectionToolbar.buttonItems(
+        anchors: region.contextMenuAnchors,
+        buttonItems: [
+          ...region.contextMenuButtonItems,
+          if (onHighlight != null)
+            ContextMenuButtonItem(
+              label: L10n.of(context).plugin_substack_highlight,
+              onPressed: () {
+                final quotes = substackSelectionQuotes(_selected);
+                region.hideToolbar();
+                if (quotes.isNotEmpty) onHighlight(quotes);
+              },
+            ),
+        ],
+      ),
+      child: widget.child,
+    );
+  }
 }

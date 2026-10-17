@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Añadidas: {added} · Ya seguidas: {existing} · Fallidas: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Este archivo no contiene publicaciones",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Resaltar",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Resaltados",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Selecciona texto del artículo y elige «Resaltar».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Compartir como Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Quitar resaltado",
+  "@plugin_substack_highlight_remove": {}
 }

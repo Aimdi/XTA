@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "추가: {added} · 이미 팔로우: {existing} · 실패: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "이 파일에는 간행물이 없습니다",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "하이라이트",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "하이라이트",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "글에서 텍스트를 선택하고 '하이라이트'를 고르세요.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Markdown으로 공유",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "하이라이트 삭제",
+  "@plugin_substack_highlight_remove": {}
 }

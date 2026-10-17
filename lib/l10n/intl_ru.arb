@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Добавлено: {added} · Уже в подписках: {existing} · Не удалось: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "В этом файле нет изданий",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Выделить",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Выделенное",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Выделите текст в статье и выберите «Выделить».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Поделиться в Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Удалить выделение",
+  "@plugin_substack_highlight_remove": {}
 }

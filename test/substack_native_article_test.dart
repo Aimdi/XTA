@@ -66,6 +66,8 @@ Widget _article({
   required ValueChanged<String> onLink,
   ArticleBlockReading? place,
   Map<String, File> keptImages = const {},
+  List<String> highlights = const [],
+  ValueChanged<List<String>>? onHighlight,
   ({SubstackReaderFont font, SubstackColumnWidth column}) style = (
     font: SubstackReaderFont.serif,
     column: SubstackColumnWidth.medium,
@@ -76,6 +78,8 @@ Widget _article({
   blocks: blocks,
   onLink: onLink,
   keptImages: keptImages,
+  highlights: highlights,
+  onHighlight: onHighlight,
   place: place ?? ArticleBlockReading(_store(), blocks: () => blocks.length),
 );
 
@@ -320,6 +324,39 @@ void main() {
     expect(await widthWith(SubstackColumnWidth.wide), closeTo(52 * 16, 1));
     final text = tester.widget<RichText>(find.textContaining('Words', findRichText: true));
     expect(text.text.style?.fontFamily, isNot('serif'));
+    await _finish(tester);
+  });
+
+  testWidgets('highlights show behind their text, and the selection menu saves a new one', (tester) async {
+    final saved = <List<String>>[];
+    await tester.pumpWidget(
+      _app(
+        _article(
+          post: _post(),
+          blocks: _blocks('<p>Read this link and a note.</p><p>Another paragraph.</p>'),
+          onLink: (_) {},
+          highlights: const ['this link'],
+          onHighlight: saved.add,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final paragraph = tester.widget<RichText>(find.textContaining('Read this', findRichText: true));
+    final spans = <TextSpan>[];
+    paragraph.text.visitChildren((span) {
+      if (span is TextSpan && span.text != null) spans.add(span);
+      return true;
+    });
+    expect(spans.where((span) => span.style?.backgroundColor != null).map((span) => span.text), ['this link']);
+
+    await tester.longPressAt(
+      tester.getTopLeft(find.textContaining('Another', findRichText: true)) + const Offset(12, 10),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(L10n.current.plugin_substack_highlight));
+    await tester.pumpAndSettle();
+    expect(saved.single, ['Another']);
     await _finish(tester);
   });
 }

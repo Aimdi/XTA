@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "जोड़े गए: {added} · पहले से फ़ॉलो: {existing} · विफल: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "इस फ़ाइल में कोई प्रकाशन नहीं है",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "हाइलाइट करें",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "हाइलाइट",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "लेख में टेक्स्ट चुनें और «हाइलाइट करें» चुनें।",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Markdown के रूप में साझा करें",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "हाइलाइट हटाएँ",
+  "@plugin_substack_highlight_remove": {}
 }

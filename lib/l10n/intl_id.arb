@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Ditambahkan: {added} · Sudah diikuti: {existing} · Gagal: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Tidak ada publikasi di file ini",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Sorot",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Sorotan",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Pilih teks di artikel lalu pilih Sorot.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Bagikan sebagai Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Hapus sorotan",
+  "@plugin_substack_highlight_remove": {}
 }

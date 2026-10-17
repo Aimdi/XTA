@@ -24,6 +24,8 @@ import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_html.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_highlights.dart';
+import 'package:xta/plugins/substack/substack_highlights_sheet.dart';
 import 'package:xta/plugins/substack/substack_native_article.dart';
 import 'package:xta/plugins/substack/substack_reader_style.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
@@ -54,6 +56,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   final _articleCache = SubstackArticleCache();
   late final SubstackReaderStore _content;
   late final ArticleReadingStore _reading;
+  late final _highlights = SubstackHighlightsStore(context.read<SubstackReadStore>().prefs);
   late final _place = ArticleBlockReading(_reading, blocks: () => _content.state.blocks?.length ?? 0);
   SubstackPost get _post => _content.state.post;
   Object? get _error => _content.state.error;
@@ -536,6 +539,12 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
               final l10n = L10n.of(context);
               final liked = context.read<SubstackLikesStore>().contains(_post);
               return [
+                if (_content.state.blocks != null)
+                  _menu(
+                    Icons.format_quote_outlined,
+                    l10n.plugin_substack_highlights,
+                    () => showSubstackHighlights(context, _highlights, _post),
+                  ),
                 if (!_liveSite && _content.state.document != null) ...[
                   _menu(Icons.format_list_bulleted, l10n.article_reader_contents, () => _openArticleNavigation()),
                   _menu(Icons.manage_search, l10n.article_reader_find, () => _openArticleNavigation(find: true)),
@@ -671,16 +680,21 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
                   if (_content.state.blocks case final blocks?)
                     ScopedBuilder<ArticleReadingStore, ArticleReadingState>(
                       store: _reading,
-                      onState: (_, reading) => SubstackNativeArticle(
-                        post: _post,
-                        blocks: blocks,
-                        place: _place,
-                        readMinutes: substackReadMinutes(_post, plainText: _content.state.document?.plainText),
-                        style: substackReaderStyle(PrefService.of(context, listen: false)),
-                        onLink: _openNativeLink,
-                        keptImages: _content.state.keptImages,
-                        fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,
-                        lineHeight: reading.lineHeight,
+                      onState: (_, reading) => ScopedBuilder<SubstackHighlightsStore, Map<String, List<String>>>(
+                        store: _highlights,
+                        onState: (_, _) => SubstackNativeArticle(
+                          highlights: _highlights.of(_post),
+                          onHighlight: (quotes) => _highlights.add(_post, quotes),
+                          post: _post,
+                          blocks: blocks,
+                          place: _place,
+                          readMinutes: substackReadMinutes(_post, plainText: _content.state.document?.plainText),
+                          style: substackReaderStyle(PrefService.of(context, listen: false)),
+                          onLink: _openNativeLink,
+                          keptImages: _content.state.keptImages,
+                          fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,
+                          lineHeight: reading.lineHeight,
+                        ),
                       ),
                     )
                   else
@@ -724,6 +738,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _place.close(then: _reading.destroy);
+    unawaited(_highlights.destroy());
     unawaited(_content.destroy());
     super.dispose();
   }

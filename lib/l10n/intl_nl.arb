@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Toegevoegd: {added} · Al gevolgd: {existing} · Mislukt: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Geen publicaties in dit bestand",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Markeren",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Markeringen",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Selecteer tekst in het artikel en kies Markeren.",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Delen als Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Markering verwijderen",
+  "@plugin_substack_highlight_remove": {}
 }

@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Дададзена: {added} · Ужо ў падпісках: {existing} · Не ўдалося: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "У гэтым файле няма выданняў",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Вылучыць",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Вылучэнні",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Вылучыце тэкст у артыкуле і выберыце «Вылучыць».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Падзяліцца ў Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Выдаліць вылучэнне",
+  "@plugin_substack_highlight_remove": {}
 }

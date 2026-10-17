@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "已添加：{added} · 已关注：{existing} · 失败：{failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "此文件中没有刊物",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "高亮",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "高亮内容",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "在文章中选中文字，然后选择“高亮”。",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "以 Markdown 分享",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "移除高亮",
+  "@plugin_substack_highlight_remove": {}
 }

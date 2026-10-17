@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "أُضيف: {added} · مُتابَع مسبقًا: {existing} · فشل: {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "لا توجد نشرات في هذا الملف",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "تمييز",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "التمييزات",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "حدّد نصًا في المقالة واختر «تمييز».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "مشاركة بصيغة Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "إزالة التمييز",
+  "@plugin_substack_highlight_remove": {}
 }

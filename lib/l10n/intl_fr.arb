@@ -5299,5 +5299,15 @@
   "plugin_substack_opml_result": "Ajoutées : {added} · Déjà suivies : {existing} · Échecs : {failed}",
   "@plugin_substack_opml_result": {},
   "plugin_substack_opml_empty": "Aucune publication dans ce fichier",
-  "@plugin_substack_opml_empty": {}
+  "@plugin_substack_opml_empty": {},
+  "plugin_substack_highlight": "Surligner",
+  "@plugin_substack_highlight": {},
+  "plugin_substack_highlights": "Surlignages",
+  "@plugin_substack_highlights": {},
+  "plugin_substack_highlights_empty": "Sélectionnez du texte dans l’article et choisissez « Surligner ».",
+  "@plugin_substack_highlights_empty": {},
+  "plugin_substack_highlights_share": "Partager en Markdown",
+  "@plugin_substack_highlights_share": {},
+  "plugin_substack_highlight_remove": "Retirer le surlignage",
+  "@plugin_substack_highlight_remove": {}
 }
