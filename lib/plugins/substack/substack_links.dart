@@ -99,6 +99,22 @@ SubstackPostLink? parseSubstackPostLink(
   return null;
 }
 
+/// Hosts whose `/p/` links are known not to be posts of a publication.
+const _notPublications = {'instagram.com', 'www.instagram.com', 'm.instagram.com', 'instagr.am'};
+
+/// A `/p/{slug}` link on a host that is not Substack's and not followed: it
+/// may be a publication on its own domain, which only asking it can tell.
+SubstackPostLink? parseCustomDomainPostCandidate(String url, {Iterable<String> knownBaseUrls = const []}) {
+  final uri = Uri.tryParse(url.trim());
+  if (uri == null || (uri.scheme != 'http' && uri.scheme != 'https') || uri.host.isEmpty) return null;
+  final host = uri.host.toLowerCase();
+  if (host == 'substack.com' || host.endsWith('.substack.com') || _notPublications.contains(host)) return null;
+  if (parseSubstackPostLink(url, knownBaseUrls: knownBaseUrls) != null) return null;
+  final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
+  if (segments.length < 2 || segments[0] != 'p' || !_isSlug(segments[1])) return null;
+  return SubstackPostLink(publicationBase: Uri.parse('https://$host'), slug: segments[1]);
+}
+
 bool _isSlug(String value) =>
     value.isNotEmpty &&
     !_nonPostSegments.contains(value.toLowerCase()) &&

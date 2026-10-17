@@ -50,10 +50,11 @@ class SubstackBodySearchStore extends Store<Map<String, String>> {
       _texts[key] = (text: text, lower: text.toLowerCase());
     }
     if (request != _request) return;
-    update({
-      for (final post in posts)
-        if (_texts[substackPostKey(post)] case final kept?)
-          if (substackMatchSnippet(kept.text, kept.lower, q) case final snippet?) substackPostKey(post): snippet,
-    });
+    update({for (final post in posts) substackPostKey(post): ?_passage(post, q)});
   }
+
+  String? _passage(SubstackPost post, String query) => switch (_texts[substackPostKey(post)]) {
+    final kept? => substackMatchSnippet(kept.text, kept.lower, query),
+    null => null,
+  };
 }

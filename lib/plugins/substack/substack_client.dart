@@ -253,6 +253,23 @@ class SubstackClient {
         .toList();
   }
 
+  /// The post at `{origin}/p/{slug}` on a host nobody follows, when that host
+  /// answers Substack's post API for exactly this slug; null otherwise. Only
+  /// that one request is made: no twin, no RSS, no other platform.
+  Future<SubstackPost?> probeCustomDomainPost(Uri origin, String slug) async {
+    final host = substackHostId(origin.origin);
+    final publication = SubstackPublication(subdomain: host, baseUrl: origin.origin, name: host);
+    try {
+      final post = await _postFromJson(origin, publication, slug);
+      return post?.slug == slug ? post : null;
+    } on SubstackRateLimitedException {
+      rethrow;
+    } catch (e) {
+      log.info('${origin.host} is not a Substack post: $e');
+      return null;
+    }
+  }
+
   Future<SubstackPost?> _postFromJson(Uri base, SubstackPublication publication, String slug) async {
     final uri = base.replace(path: '/api/v1/posts/$slug');
     final response = await _get(uri);
