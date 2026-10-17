@@ -53,6 +53,12 @@ String sanitizeSubstackBodyHtml(String raw) {
       'embed',
       'math',
       'button',
+      // A reader posts nothing: a subscribe or any other form in a body is
+      // dropped whatever markup Substack wraps it in.
+      'form',
+      'input',
+      'textarea',
+      'select',
       'svg',
       'noscript',
       '.image-link-expand',

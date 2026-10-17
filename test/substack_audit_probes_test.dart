@@ -244,11 +244,16 @@ void main() {
     );
   });
 
-  test('BUG-07 (reconstructed markup): the subscribe widget survives as a live form', () {
-    final clean = sanitizeSubstackBodyHtml('<p>Intro</p>$_subscribeWidget');
+  test('BUG-07 (fixed; reconstructed markup): no live form survives in an article', () {
+    final clean = sanitizeSubstackBodyHtml(
+      '<p>Intro</p>$_subscribeWidget<form><textarea></textarea><select></select></form>',
+    );
 
-    expect(clean, contains('<form'));
-    expect(clean, contains('type="email"'));
+    expect(clean, isNot(contains('<form')), reason: 'a live email form before the fix');
+    expect(clean, isNot(contains('<input')));
+    expect(clean, isNot(contains('<textarea')));
+    expect(clean, isNot(contains('<select')));
+    expect(clean, contains('<p>Intro</p>'));
   });
 
   test('BUG-08 (reconstructed markup): client-rendered blocks vanish without a trace', () {
