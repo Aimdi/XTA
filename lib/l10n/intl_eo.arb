@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Meza",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Larĝa",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Marki legitaj dum rulumado preter ili",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "En la hejma fluo, afiŝo validas kiel legita, kiam ĝia karto forlasas la supron de la ekrano.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

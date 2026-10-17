@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Средняя",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Широкая",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Отмечать прочитанными при прокрутке",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "В ленте «Главная» пост считается прочитанным, как только его карточка уходит за верхний край экрана.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

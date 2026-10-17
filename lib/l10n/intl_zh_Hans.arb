@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "中",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "宽",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "滚动经过即标为已读",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "在首页信息流中，文章卡片移出屏幕顶部后即视为已读。",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

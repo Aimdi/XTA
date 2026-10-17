@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "보통",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "넓게",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "스크롤해서 지나가면 읽음으로 표시",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "홈 피드에서 카드가 화면 위쪽으로 사라진 게시물은 읽은 것으로 처리됩니다.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

@@ -5678,5 +5678,9 @@
   "plugin_substack_column_medium": "Medium",
   "@plugin_substack_column_medium": {"description": "Choice in the column width setting; the default."},
   "plugin_substack_column_wide": "Wide",
-  "@plugin_substack_column_wide": {"description": "Choice in the column width setting."}
+  "@plugin_substack_column_wide": {"description": "Choice in the column width setting."},
+  "plugin_substack_mark_read_on_scroll": "Mark posts read as you scroll past",
+  "@plugin_substack_mark_read_on_scroll": {"description": "Title of a switch in the Substack plugin settings, off by default."},
+  "plugin_substack_mark_read_on_scroll_description": "On the Home feed, a post counts as read once its card leaves the top of the screen.",
+  "@plugin_substack_mark_read_on_scroll_description": {"description": "Explanation under that switch."}
 }

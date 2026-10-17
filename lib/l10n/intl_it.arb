@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Media",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Larga",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Segna come letti scorrendo oltre",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Nel feed Home, un post conta come letto appena la sua scheda esce dalla parte alta dello schermo.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

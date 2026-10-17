@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Middel",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Breed",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Als gelezen markeren bij voorbij scrollen",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "In de startfeed telt een bericht als gelezen zodra de kaart boven uit beeld verdwijnt.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

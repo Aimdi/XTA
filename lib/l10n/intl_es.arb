@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Media",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Ancha",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Marcar como leídas al desplazarte",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "En el feed de inicio, una publicación cuenta como leída cuando su tarjeta sale por la parte superior de la pantalla.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

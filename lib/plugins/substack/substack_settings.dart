@@ -22,6 +22,11 @@ class SubstackSettingsScreen extends StatelessWidget {
             subtitle: Text(l10n.plugin_substack_native_reader_description),
             pref: optionPluginSubstackNativeReader,
           ),
+          PrefSwitch(
+            title: Text(l10n.plugin_substack_mark_read_on_scroll),
+            subtitle: Text(l10n.plugin_substack_mark_read_on_scroll_description),
+            pref: optionPluginSubstackMarkReadOnScroll,
+          ),
           PrefDropdown<String>(
             fullWidth: false,
             title: Text(l10n.plugin_substack_reader_font),

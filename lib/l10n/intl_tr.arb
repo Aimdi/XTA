@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Orta",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Geniş",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Kaydırıp geçince okundu olarak işaretle",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Ana akışta, kartı ekranın üstünden çıkan gönderi okunmuş sayılır.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Siaredni",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Šyroki",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Paznačać pračytanymi pry prakrutcy",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "U stužcy «Hałoŭnaja» dopis ličycca pračytanym, kali jaho kartka vychodzić za vierchni kraj ekrana.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Ertaina",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Zabala",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Markatu irakurrita korritzean",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Hasierako jarioan, argitalpen bat irakurritzat jotzen da bere txartela pantailaren goialdetik ateratzen denean.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

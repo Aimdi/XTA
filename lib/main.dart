@@ -617,6 +617,7 @@ Future<void> main() async {
       optionPluginSubstackNativeReader: false,
       optionPluginSubstackReaderFont: 'serif',
       optionPluginSubstackColumnWidth: 'medium',
+      optionPluginSubstackMarkReadOnScroll: false,
       optionPluginBlueskyEnabled: false,
       optionPluginBlueskyShowTab: true,
       optionPluginBlueskyInstance: kBlueskyDefaultAppView,

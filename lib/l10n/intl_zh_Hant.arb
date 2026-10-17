@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "中",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "寬",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "捲動經過即標為已讀",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "在首頁動態中，文章卡片移出螢幕頂端後即視為已讀。",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

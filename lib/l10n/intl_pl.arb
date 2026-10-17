@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Średnia",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Szeroka",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Oznaczaj jako przeczytane podczas przewijania",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "W kanale głównym wpis uznaje się za przeczytany, gdy jego karta zniknie za górną krawędzią ekranu.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

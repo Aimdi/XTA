@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Middels",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Bred",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Merk som lest når du blar forbi",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "I Hjem-feeden regnes et innlegg som lest når kortet forsvinner over toppen av skjermen.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

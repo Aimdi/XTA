@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Mitjana",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Ampla",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Marca com a llegides en desplaçar-te",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Al canal d’inici, una publicació compta com a llegida quan la targeta surt per la part superior de la pantalla.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

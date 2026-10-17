@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "標準",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "広い",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "スクロールで通過したら既読にする",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "ホームフィードで、カードが画面の上端から出た投稿を既読として扱います。",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

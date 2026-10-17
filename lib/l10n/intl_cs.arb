@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Střední",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Široký",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Označit jako přečtené při posouvání",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "V kanálu Domů se příspěvek počítá jako přečtený, jakmile jeho karta zmizí z horního okraje obrazovky.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Keskmine",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Lai",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Märgi kerimisel loetuks",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Avalehe voos loetakse postitus loetuks, kui selle kaart ekraani ülaservast välja liigub.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

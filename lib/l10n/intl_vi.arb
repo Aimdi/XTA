@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Vừa",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Rộng",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Đánh dấu đã đọc khi cuộn qua",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Trên bảng tin Trang chủ, bài viết được tính là đã đọc khi thẻ của nó cuộn khỏi mép trên màn hình.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

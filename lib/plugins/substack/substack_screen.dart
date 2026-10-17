@@ -3,6 +3,8 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
@@ -21,6 +23,7 @@ import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/substack/substack_note_card.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_reading_toolbar.dart';
+import 'package:xta/plugins/substack/substack_scrolled_past.dart';
 import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_group.dart';
@@ -47,6 +50,11 @@ class _SubstackScreenState extends State<SubstackScreen> {
   final _inboxScrollController = ScrollController();
   final _libraryScrollController = ScrollController();
   late final void Function() _stopFollowingSaved;
+  late final _scrolledPast = SubstackScrolledPast(
+    onPast: (posts) => context.read<SubstackReadStore>().markPostsRead(
+      posts.where((post) => !context.read<SubstackReadStore>().isPostRead(post)).toList(),
+    ),
+  );
 
   @override
   void initState() {
@@ -86,6 +94,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
   @override
   void dispose() {
     _stopFollowingSaved();
+    _scrolledPast.dispose();
     _dock.destroy();
     _session.dispose();
     _notesScrollController.dispose();
@@ -249,6 +258,9 @@ class _SubstackScreenState extends State<SubstackScreen> {
                         onAdd: _openAdd,
                         onDiscover: _openDiscover,
                         onFilter: _setFilter,
+                        scrolledPast: PrefService.of(context).get<bool>(optionPluginSubstackMarkReadOnScroll) == true
+                            ? _scrolledPast
+                            : null,
                       ),
                       (_) => _InboxPane(scrollController: _inboxScrollController, feed: feed, onAdd: _openAdd),
                       (_) => _NotesPane(scrollController: _notesScrollController, notes: notes),
@@ -273,6 +285,9 @@ class _PostsPane extends StatelessWidget {
   final Future<void> Function() onDiscover;
   final void Function(SubstackFeedFilter) onFilter;
 
+  /// Marks posts read as they scroll past, when the setting is on.
+  final SubstackScrolledPast? scrolledPast;
+
   const _PostsPane({
     required this.scrollController,
     required this.pubs,
@@ -280,6 +295,7 @@ class _PostsPane extends StatelessWidget {
     required this.onAdd,
     required this.onDiscover,
     required this.onFilter,
+    this.scrolledPast,
   });
 
   String? _logoFor(List<SubstackPublication> publications, SubstackPost post) {
@@ -415,7 +431,7 @@ class _PostsPane extends StatelessWidget {
                     );
                   }
 
-                  return FeedListView(
+                  final list = FeedListView(
                     controller: pluginInnerScrollController(context, scrollController),
                     padding: pluginFeedPadding(context),
                     itemCount: 2 + visible.length,
@@ -426,16 +442,28 @@ class _PostsPane extends StatelessWidget {
                       final postIndex = index - 1;
                       if (postIndex < visible.length) {
                         final post = visible[postIndex];
-                        return SubstackPostCard(
-                          key: ValueKey(substackFeedPostKey(post)),
+                        final card = SubstackPostCard(
                           post: post,
                           showSourceBadge: false,
                           logoUrl: _logoFor(publications, post),
                         );
+                        final tracker = scrolledPast;
+                        return tracker == null
+                            ? KeyedSubtree(key: ValueKey(substackFeedPostKey(post)), child: card)
+                            : SubstackScrolledPastTag(
+                                key: ValueKey(substackFeedPostKey(post)),
+                                tracker: tracker,
+                                post: post,
+                                child: card,
+                              );
                       }
                       return _FeedStatus(feed: feed);
                     },
                   );
+                  final tracker = scrolledPast;
+                  return tracker == null
+                      ? list
+                      : NotificationListener<ScrollNotification>(onNotification: tracker.onScroll, child: list);
                 },
               );
             },

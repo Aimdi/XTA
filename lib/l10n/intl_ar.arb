@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "متوسط",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "عريض",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "تمييز المنشورات كمقروءة عند تجاوزها",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "في موجز الصفحة الرئيسية، يُعدّ المنشور مقروءًا بمجرد أن تغادر بطاقته أعلى الشاشة.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

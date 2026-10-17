@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Середня",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Широка",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Позначати прочитаними під час прокручування",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "У стрічці «Головна» допис вважається прочитаним, щойно його картка виходить за верхній край екрана.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

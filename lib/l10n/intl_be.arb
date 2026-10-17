@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Сярэдні",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Шырокі",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Пазначаць прачытанымі пры пракрутцы",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "У стужцы «Галоўная» допіс лічыцца прачытаным, калі яго картка выходзіць за верхні край экрана.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }

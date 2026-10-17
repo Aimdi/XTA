@@ -5281,5 +5281,9 @@
   "plugin_substack_column_medium": "Sedang",
   "@plugin_substack_column_medium": {},
   "plugin_substack_column_wide": "Lebar",
-  "@plugin_substack_column_wide": {}
+  "@plugin_substack_column_wide": {},
+  "plugin_substack_mark_read_on_scroll": "Tandai sudah dibaca saat digulir lewat",
+  "@plugin_substack_mark_read_on_scroll": {},
+  "plugin_substack_mark_read_on_scroll_description": "Di umpan Beranda, postingan dianggap sudah dibaca begitu kartunya keluar dari bagian atas layar.",
+  "@plugin_substack_mark_read_on_scroll_description": {}
 }
