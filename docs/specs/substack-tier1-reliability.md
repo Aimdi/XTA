@@ -113,3 +113,11 @@ Long-press read-aloud blocked selection and copy. The least disruptive change: l
 **Listen** reads from the selected paragraph when text is selected; with nothing selected it reads from the top, as
 before. The page no longer cancels `contextmenu` or disables the touch callout. On a device, whether tapping Listen
 keeps the WebView selection is UNVERIFIED; if it is lost, Listen falls back to reading from the top.
+
+### 9. Blocks drawn only on the web (BUG-08, first part)
+
+LaTeX, galleries, polls and native audio embeds are empty elements that Substack's own scripts fill in; the sanitizer
+removes empty elements, so they vanish without a trace. Rendering each one needs its recorded markup (HAR). Until
+then, an empty element carrying Substack's `data-component-name` marker is kept as a placeholder instead of removed,
+and the page shows "This part of the post shows only on the web." with the existing "Open in browser" link to the
+post. Empty elements without the marker are still removed. New string: `plugin_substack_web_only_block`, all locales.
