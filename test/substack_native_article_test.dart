@@ -12,6 +12,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_article_navigation.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
+import 'package:xta/plugins/substack/substack_client.dart';
+import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_native_article.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
@@ -157,7 +160,15 @@ void main() {
         optionPluginSubstackColumnWidth: 'medium',
       },
     );
-    await tester.pumpWidget(PrefService(service: prefs, child: _app(const SubstackSettingsScreen())));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider<SubstackClient>.value(value: SubstackClient()),
+          Provider<SubstackPublicationsStore>.value(value: SubstackPublicationsStore(prefs)),
+        ],
+        child: PrefService(service: prefs, child: _app(const SubstackSettingsScreen())),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(prefs.get<bool>(optionPluginSubstackNativeReader), isFalse);

@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Đánh dấu đã đọc khi cuộn qua",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Trên bảng tin Trang chủ, bài viết được tính là đã đọc khi thẻ của nó cuộn khỏi mép trên màn hình.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Xuất danh sách theo dõi ra OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Một tệp mà các trình đọc nguồn cấp khác có thể nhập.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Nhập danh sách theo dõi từ OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Theo dõi từng ấn phẩm trong tệp; các ấn phẩm bạn đã theo dõi vẫn giữ nguyên.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Đang nhập {done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Đã thêm: {added} · Đã theo dõi: {existing} · Thất bại: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Tệp này không có ấn phẩm nào",
+  "@plugin_substack_opml_empty": {}
 }

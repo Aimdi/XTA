@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Позначати прочитаними під час прокручування",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "У стрічці «Головна» допис вважається прочитаним, щойно його картка виходить за верхній край екрана.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Експортувати підписки в OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Файл, який можуть імпортувати інші читачі стрічок.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Імпортувати підписки з OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Підписується на кожне видання з файлу; наявні підписки лишаються як є.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Імпорт: {done} з {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Додано: {added} · Уже в підписках: {existing} · Не вдалося: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "У цьому файлі немає видань",
+  "@plugin_substack_opml_empty": {}
 }

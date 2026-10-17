@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Označit jako přečtené při posouvání",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "V kanálu Domů se příspěvek počítá jako přečtený, jakmile jeho karta zmizí z horního okraje obrazovky.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Exportovat sledované jako OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Soubor, který umí načíst jiné čtečky kanálů.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importovat sledované z OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Začne sledovat každou publikaci ze souboru; ty, které už sledujete, zůstanou beze změny.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Import: {done} z {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Přidáno: {added} · Už sledováno: {existing} · Selhalo: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "V tomto souboru nejsou žádné publikace",
+  "@plugin_substack_opml_empty": {}
 }

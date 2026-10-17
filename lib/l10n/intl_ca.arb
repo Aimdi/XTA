@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Marca com a llegides en desplaçar-te",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Al canal d’inici, una publicació compta com a llegida quan la targeta surt per la part superior de la pantalla.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Exporta els seguiments en OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Un fitxer que altres lectors de canals poden importar.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importa seguiments des d’OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Segueix cada publicació del fitxer; les que ja segueixes queden igual.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "S’està important: {done} de {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Afegides: {added} · Ja seguides: {existing} · Errors: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Aquest fitxer no conté cap publicació",
+  "@plugin_substack_opml_empty": {}
 }

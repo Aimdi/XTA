@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Marcar como leídas al desplazarte",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "En el feed de inicio, una publicación cuenta como leída cuando su tarjeta sale por la parte superior de la pantalla.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Exportar suscripciones como OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Un archivo que otros lectores de feeds pueden importar.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importar suscripciones desde OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Sigue cada publicación del archivo; las que ya sigues quedan igual.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Importando: {done} de {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Añadidas: {added} · Ya seguidas: {existing} · Fallidas: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Este archivo no contiene publicaciones",
+  "@plugin_substack_opml_empty": {}
 }

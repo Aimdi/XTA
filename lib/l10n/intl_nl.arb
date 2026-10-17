@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Als gelezen markeren bij voorbij scrollen",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "In de startfeed telt een bericht als gelezen zodra de kaart boven uit beeld verdwijnt.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Gevolgde publicaties exporteren als OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Een bestand dat andere feedlezers kunnen importeren.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Gevolgde publicaties importeren uit OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Volgt elke publicatie uit het bestand; wat je al volgt, blijft zoals het is.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Importeren: {done} van {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Toegevoegd: {added} · Al gevolgd: {existing} · Mislukt: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Geen publicaties in dit bestand",
+  "@plugin_substack_opml_empty": {}
 }

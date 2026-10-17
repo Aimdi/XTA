@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Marki legitaj dum rulumado preter ili",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "En la hejma fluo, afiŝo validas kiel legita, kiam ĝia karto forlasas la supron de la ekrano.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Eksporti sekatojn kiel OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Dosiero, kiun aliaj fluo-legiloj povas importi.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importi sekatojn el OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Sekas ĉiun publikaĵon de la dosiero; tiuj, kiujn vi jam sekas, restas kiel ili estas.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Importado: {done} el {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Aldonitaj: {added} · Jam sekataj: {existing} · Malsukcesis: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Neniu publikaĵo en ĉi tiu dosiero",
+  "@plugin_substack_opml_empty": {}
 }

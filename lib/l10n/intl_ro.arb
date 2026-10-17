@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Marchează ca citite la derulare",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "În fluxul principal, o postare contează ca citită odată ce cardul ei iese pe sus din ecran.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Exportă abonările ca OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Un fișier pe care alte cititoare de fluxuri îl pot importa.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importă abonări din OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Urmărește fiecare publicație din fișier; cele pe care le urmărești deja rămân la fel.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Se importă: {done} din {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Adăugate: {added} · Deja urmărite: {existing} · Eșuate: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Fișierul nu conține publicații",
+  "@plugin_substack_opml_empty": {}
 }

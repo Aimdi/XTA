@@ -5682,5 +5682,19 @@
   "plugin_substack_mark_read_on_scroll": "Mark posts read as you scroll past",
   "@plugin_substack_mark_read_on_scroll": {"description": "Title of a switch in the Substack plugin settings, off by default."},
   "plugin_substack_mark_read_on_scroll_description": "On the Home feed, a post counts as read once its card leaves the top of the screen.",
-  "@plugin_substack_mark_read_on_scroll_description": {"description": "Explanation under that switch."}
+  "@plugin_substack_mark_read_on_scroll_description": {"description": "Explanation under that switch."},
+  "plugin_substack_opml_export": "Export follows as OPML",
+  "@plugin_substack_opml_export": {"description": "Title of a row in the Substack plugin settings that saves the followed publications as an OPML file."},
+  "plugin_substack_opml_export_description": "A file other feed readers can import.",
+  "@plugin_substack_opml_export_description": {"description": "Explanation under the export row."},
+  "plugin_substack_opml_import": "Import follows from OPML",
+  "@plugin_substack_opml_import": {"description": "Title of a row in the Substack plugin settings that follows every publication listed in an OPML file."},
+  "plugin_substack_opml_import_description": "Follows each publication the file lists; ones you already follow stay as they are.",
+  "@plugin_substack_opml_import_description": {"description": "Explanation under the import row."},
+  "plugin_substack_opml_importing": "Importing {done} of {total}",
+  "@plugin_substack_opml_importing": {"description": "Progress line while an OPML import runs.", "placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
+  "plugin_substack_opml_result": "Added: {added} · Already followed: {existing} · Failed: {failed}",
+  "@plugin_substack_opml_result": {"description": "Summary after an OPML import; three counts of publications.", "placeholders": {"added": {"type": "int"}, "existing": {"type": "int"}, "failed": {"type": "int"}}},
+  "plugin_substack_opml_empty": "No publications in this file",
+  "@plugin_substack_opml_empty": {"description": "Shown when a chosen OPML file lists no publication."}
 }

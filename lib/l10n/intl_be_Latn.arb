@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Paznačać pračytanymi pry prakrutcy",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "U stužcy «Hałoŭnaja» dopis ličycca pračytanym, kali jaho kartka vychodzić za vierchni kraj ekrana.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Ekspartavać padpiski ŭ OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Fajł, jaki mohuć impartavać inšyja čytałki stužak.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Impartavać padpiski z OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Padpisvajecca na kožnaje vydannie z fajła; isnyja padpiski zastajucca jak josć.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Impart: {done} z {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Dadadziena: {added} · Užo ŭ padpiskach: {existing} · Nie ŭdałosia: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "U hetym fajle niama vydanniaŭ",
+  "@plugin_substack_opml_empty": {}
 }

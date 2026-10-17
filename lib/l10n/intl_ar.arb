@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "تمييز المنشورات كمقروءة عند تجاوزها",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "في موجز الصفحة الرئيسية، يُعدّ المنشور مقروءًا بمجرد أن تغادر بطاقته أعلى الشاشة.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "تصدير المتابَعات بصيغة OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "ملف يمكن لقارئات الخلاصات الأخرى استيراده.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "استيراد المتابَعات من OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "يتابع كل نشرة يذكرها الملف؛ وتبقى التي تتابعها كما هي.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "جارٍ الاستيراد: {done} من {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "أُضيف: {added} · مُتابَع مسبقًا: {existing} · فشل: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "لا توجد نشرات في هذا الملف",
+  "@plugin_substack_opml_empty": {}
 }

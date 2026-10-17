@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/substack/substack_opml_section.dart';
 import 'package:xta/plugins/substack/substack_reader_style.dart';
 
 class SubstackSettingsScreen extends StatelessWidget {
@@ -27,6 +28,8 @@ class SubstackSettingsScreen extends StatelessWidget {
             subtitle: Text(l10n.plugin_substack_mark_read_on_scroll_description),
             pref: optionPluginSubstackMarkReadOnScroll,
           ),
+          const Divider(),
+          const SubstackOpmlSection(),
           PrefDropdown<String>(
             fullWidth: false,
             title: Text(l10n.plugin_substack_reader_font),

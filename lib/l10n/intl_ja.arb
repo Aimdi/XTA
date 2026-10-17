@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "スクロールで通過したら既読にする",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "ホームフィードで、カードが画面の上端から出た投稿を既読として扱います。",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "フォロー中をOPMLで書き出す",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "ほかのフィードリーダーで読み込めるファイルです。",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "OPMLからフォローを読み込む",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "ファイルにある各パブリケーションをフォローします。フォロー中のものはそのままです。",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "読み込み中: {done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "追加: {added} · フォロー済み: {existing} · 失敗: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "このファイルにはパブリケーションがありません",
+  "@plugin_substack_opml_empty": {}
 }

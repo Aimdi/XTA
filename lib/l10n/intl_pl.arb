@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Oznaczaj jako przeczytane podczas przewijania",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "W kanale głównym wpis uznaje się za przeczytany, gdy jego karta zniknie za górną krawędzią ekranu.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Eksportuj obserwowane jako OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Plik, który mogą zaimportować inne czytniki kanałów.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importuj obserwowane z OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Obserwuje każdą publikację z pliku; te, które już obserwujesz, pozostają bez zmian.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Importowanie: {done} z {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Dodano: {added} · Już obserwowane: {existing} · Nieudane: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "W tym pliku nie ma publikacji",
+  "@plugin_substack_opml_empty": {}
 }

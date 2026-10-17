@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Märgi kerimisel loetuks",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Avalehe voos loetakse postitus loetuks, kui selle kaart ekraani ülaservast välja liigub.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Ekspordi jälgitavad OPML-ina",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Fail, mida teised voolugejad oskavad importida.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Impordi jälgitavad OPML-ist",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Hakkab jälgima iga failis olevat väljaannet; juba jälgitavad jäävad samaks.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Importimine: {done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Lisatud: {added} · Juba jälgitud: {existing} · Ebaõnnestus: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Selles failis pole väljaandeid",
+  "@plugin_substack_opml_empty": {}
 }

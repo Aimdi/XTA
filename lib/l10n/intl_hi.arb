@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "स्क्रॉल करके आगे बढ़ने पर पढ़ा हुआ चिह्नित करें",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "होम फ़ीड में, किसी पोस्ट का कार्ड स्क्रीन के ऊपर से निकलते ही उसे पढ़ा हुआ माना जाता है।",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "फ़ॉलो की गई सूची OPML में निर्यात करें",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "एक फ़ाइल जिसे दूसरे फ़ीड रीडर आयात कर सकते हैं।",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "OPML से फ़ॉलो आयात करें",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "फ़ाइल में दिए हर प्रकाशन को फ़ॉलो करता है; जिन्हें आप पहले से फ़ॉलो करते हैं वे जैसे हैं वैसे रहते हैं।",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "आयात हो रहा है: {total} में से {done}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "जोड़े गए: {added} · पहले से फ़ॉलो: {existing} · विफल: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "इस फ़ाइल में कोई प्रकाशन नहीं है",
+  "@plugin_substack_opml_empty": {}
 }

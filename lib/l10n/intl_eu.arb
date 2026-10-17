@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Markatu irakurrita korritzean",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Hasierako jarioan, argitalpen bat irakurritzat jotzen da bere txartela pantailaren goialdetik ateratzen denean.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Esportatu jarraipenak OPML gisa",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Beste jario-irakurgailuek inporta dezaketen fitxategia.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Inportatu jarraipenak OPMLtik",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Fitxategiko argitalpen bakoitza jarraitzen du; lehendik jarraitzen dituzunak bere horretan geratzen dira.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Inportatzen: {done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Gehituak: {added} · Lehendik jarraituak: {existing} · Hutsegiteak: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Fitxategi honetan ez dago argitalpenik",
+  "@plugin_substack_opml_empty": {}
 }

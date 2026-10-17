@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "스크롤해서 지나가면 읽음으로 표시",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "홈 피드에서 카드가 화면 위쪽으로 사라진 게시물은 읽은 것으로 처리됩니다.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "팔로우 목록을 OPML로 내보내기",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "다른 피드 리더에서 가져올 수 있는 파일입니다.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "OPML에서 팔로우 가져오기",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "파일에 있는 각 간행물을 팔로우합니다. 이미 팔로우 중인 항목은 그대로 둡니다.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "가져오는 중: {done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "추가: {added} · 이미 팔로우: {existing} · 실패: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "이 파일에는 간행물이 없습니다",
+  "@plugin_substack_opml_empty": {}
 }

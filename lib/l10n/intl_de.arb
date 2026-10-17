@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Beim Scrollen als gelesen markieren",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Im Home-Feed gilt ein Beitrag als gelesen, sobald seine Karte oben aus dem Bildschirm verschwindet.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Abos als OPML exportieren",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Eine Datei, die andere Feedreader importieren können.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Abos aus OPML importieren",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Abonniert jede Publikation aus der Datei; bestehende Abos bleiben unverändert.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Import: {done} von {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Hinzugefügt: {added} · Schon abonniert: {existing} · Fehlgeschlagen: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Diese Datei enthält keine Publikationen",
+  "@plugin_substack_opml_empty": {}
 }

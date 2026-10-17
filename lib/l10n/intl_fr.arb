@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Marquer comme lu en faisant défiler",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Dans le fil d’accueil, un article compte comme lu dès que sa carte sort par le haut de l’écran.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Exporter les abonnements en OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Un fichier que d’autres lecteurs de flux peuvent importer.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importer des abonnements depuis un OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Suit chaque publication du fichier ; celles que vous suivez déjà restent inchangées.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Importation : {done} sur {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Ajoutées : {added} · Déjà suivies : {existing} · Échecs : {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Aucune publication dans ce fichier",
+  "@plugin_substack_opml_empty": {}
 }

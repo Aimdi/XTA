@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Kaydırıp geçince okundu olarak işaretle",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "Ana akışta, kartı ekranın üstünden çıkan gönderi okunmuş sayılır.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Takip edilenleri OPML olarak dışa aktar",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Diğer akış okuyucularının içe aktarabileceği bir dosya.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "OPML'den takip edilenleri içe aktar",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Dosyadaki her yayını takip eder; zaten takip ettikleriniz olduğu gibi kalır.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "İçe aktarılıyor: {done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Eklendi: {added} · Zaten takipte: {existing} · Başarısız: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Bu dosyada yayın yok",
+  "@plugin_substack_opml_empty": {}
 }

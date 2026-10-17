@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Пазначаць прачытанымі пры пракрутцы",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "У стужцы «Галоўная» допіс лічыцца прачытаным, калі яго картка выходзіць за верхні край экрана.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Экспартаваць падпіскі ў OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Файл, які могуць імпартаваць іншыя чыталкі стужак.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Імпартаваць падпіскі з OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Падпісваецца на кожнае выданне з файла; існыя падпіскі застаюцца як ёсць.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Імпарт: {done} з {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Дададзена: {added} · Ужо ў падпісках: {existing} · Не ўдалося: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "У гэтым файле няма выданняў",
+  "@plugin_substack_opml_empty": {}
 }

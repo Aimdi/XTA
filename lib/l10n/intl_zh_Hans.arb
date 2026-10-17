@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "滚动经过即标为已读",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "在首页信息流中，文章卡片移出屏幕顶部后即视为已读。",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "将关注导出为 OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "其他订阅阅读器可以导入的文件。",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "从 OPML 导入关注",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "关注文件中列出的每个刊物；已关注的保持不变。",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "正在导入：{done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "已添加：{added} · 已关注：{existing} · 失败：{failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "此文件中没有刊物",
+  "@plugin_substack_opml_empty": {}
 }

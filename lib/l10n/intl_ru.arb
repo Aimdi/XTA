@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Отмечать прочитанными при прокрутке",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "В ленте «Главная» пост считается прочитанным, как только его карточка уходит за верхний край экрана.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Экспортировать подписки в OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Файл, который могут импортировать другие читалки лент.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Импортировать подписки из OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Подписывается на каждое издание из файла; существующие подписки остаются как есть.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "Импорт: {done} из {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Добавлено: {added} · Уже в подписках: {existing} · Не удалось: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "В этом файле нет изданий",
+  "@plugin_substack_opml_empty": {}
 }

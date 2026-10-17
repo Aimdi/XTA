@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "捲動經過即標為已讀",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "在首頁動態中，文章卡片移出螢幕頂端後即視為已讀。",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "將追蹤匯出為 OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "其他訂閱閱讀器可以匯入的檔案。",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "從 OPML 匯入追蹤",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "追蹤檔案中列出的每個刊物；已追蹤的保持不變。",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "正在匯入：{done}/{total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "已新增：{added} · 已追蹤：{existing} · 失敗：{failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "此檔案中沒有刊物",
+  "@plugin_substack_opml_empty": {}
 }

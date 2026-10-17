@@ -5285,5 +5285,19 @@
   "plugin_substack_mark_read_on_scroll": "Marcar como lidas ao percorrer",
   "@plugin_substack_mark_read_on_scroll": {},
   "plugin_substack_mark_read_on_scroll_description": "No feed inicial, uma publicação conta como lida assim que o cartão sai pelo topo do ecrã.",
-  "@plugin_substack_mark_read_on_scroll_description": {}
+  "@plugin_substack_mark_read_on_scroll_description": {},
+  "plugin_substack_opml_export": "Exportar subscrições como OPML",
+  "@plugin_substack_opml_export": {},
+  "plugin_substack_opml_export_description": "Um ficheiro que outros leitores de feeds podem importar.",
+  "@plugin_substack_opml_export_description": {},
+  "plugin_substack_opml_import": "Importar subscrições de OPML",
+  "@plugin_substack_opml_import": {},
+  "plugin_substack_opml_import_description": "Segue cada publicação do ficheiro; as que já segue ficam como estão.",
+  "@plugin_substack_opml_import_description": {},
+  "plugin_substack_opml_importing": "A importar: {done} de {total}",
+  "@plugin_substack_opml_importing": {},
+  "plugin_substack_opml_result": "Adicionadas: {added} · Já seguidas: {existing} · Falhadas: {failed}",
+  "@plugin_substack_opml_result": {},
+  "plugin_substack_opml_empty": "Este ficheiro não tem publicações",
+  "@plugin_substack_opml_empty": {}
 }
