@@ -309,6 +309,21 @@ void main() {
     expect(again.state.position, Duration.zero, reason: 'a finished episode forgets its place');
     await again.destroy();
   });
+
+  test('normal speed is set on open too, so a rate the player kept is not carried over', () async {
+    final prefs = PrefServiceCache();
+    final player = FakeContinuityPlayer();
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one');
+    await store.setSpeed(1.5);
+    await store.stop();
+    await store.setSpeed(1.0);
+
+    await store.toggle(url: _nextUrl, title: 'Episode two');
+    final opened = player.commands.lastIndexOf('open:$_nextUrl');
+    expect(player.commands.sublist(opened), contains('rate:1.0'));
+    await store.destroy();
+  });
 }
 
 class _DelayedPrefs extends PrefServiceCache {

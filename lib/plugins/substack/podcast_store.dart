@@ -106,6 +106,16 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     } catch (_) { /* The next episode opens at this speed. */ }
   }
 
+  /// The player may keep the last episode's rate, so the chosen one is set on
+  /// every open; a player that refuses it still plays.
+  Future<void> _applySpeed(int generation) async {
+    try {
+      await _command(generation, () => _player.setRate(state.speed));
+    } on PlaybackCommandCancelled {
+      rethrow;
+    } catch (_) {}
+  }
+
   ContinuityPlayer get _player {
     if (_playerOrNull != null) return _playerOrNull!;
     final player = _playerOrNull = createPlayer();
@@ -175,7 +185,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
       update(state.copyWith(loading: false, failed: false));
       _bind();
       _receive();
-      if (state.speed != 1) await _command(generation, () => _player.setRate(state.speed));
+      await _applySpeed(generation);
       if (_current(generation) && !state.failed && _wantsPlay) await _command(generation, _player.play);
     } catch (_) {
       if (!_current(generation)) return;
