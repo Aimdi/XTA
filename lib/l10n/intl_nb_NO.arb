@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Innebygd leser (forhåndsvisning)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Vis artikler uten nettvisning: tekst kan merkes og kopieres, og innebygde avspillere åpnes i nettleseren. Noen oppsett kan se annerledes ut.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Betalt",
+  "@plugin_substack_filter_paid": {}
 }

@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Lector natiu (prova)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Mostra els articles sense vista web: el text es pot seleccionar i copiar, i els reproductors incrustats s’obren al navegador. Algunes maquetacions poden veure’s diferents.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "De pagament",
+  "@plugin_substack_filter_paid": {}
 }

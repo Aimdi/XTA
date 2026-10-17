@@ -5660,5 +5660,7 @@
   "plugin_substack_native_reader": "Native reader (preview)",
   "@plugin_substack_native_reader": {"description": "Title of a switch in the Substack plugin settings that turns on reading articles natively instead of in a web view; still a preview feature."},
   "plugin_substack_native_reader_description": "Show articles without a web view: text can be selected and copied, and embedded players open in the browser. Some layouts may look different.",
-  "@plugin_substack_native_reader_description": {"description": "Explanation under that switch."}
+  "@plugin_substack_native_reader_description": {"description": "Explanation under that switch."},
+  "plugin_substack_filter_paid": "Paid",
+  "@plugin_substack_filter_paid": {"description": "Feed filter chip in the Substack plugin that shows only paid (subscriber-only) posts; the opposite of the Free filter."}
 }

@@ -46,10 +46,13 @@ class _SubstackScreenState extends State<SubstackScreen> {
   final _notesScrollController = ScrollController();
   final _inboxScrollController = ScrollController();
   final _libraryScrollController = ScrollController();
+  late final void Function() _stopFollowingSaved;
 
   @override
   void initState() {
     super.initState();
+    final saved = context.read<SubstackSavedStore>();
+    _stopFollowingSaved = saved.observer(onState: (_) => context.read<SubstackFeedStore>().syncSaved(saved.contains));
     _session = PluginSessionLease(context, 'substack');
     _view = _session.obtain('view', () => PluginViewStore<int>(0));
     _controls = _session.obtain('controls', SubstackHomeControlsStore.new);
@@ -82,6 +85,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
 
   @override
   void dispose() {
+    _stopFollowingSaved();
     _dock.destroy();
     _session.dispose();
     _notesScrollController.dispose();
@@ -117,7 +121,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
 
   void _setFilter(SubstackFeedFilter filter) {
     final read = context.read<SubstackReadStore>().state;
-    context.read<SubstackFeedStore>().setFilter(filter, read);
+    context.read<SubstackFeedStore>().setFilter(filter, read, isSaved: context.read<SubstackSavedStore>().contains);
   }
 
   Future<void> _markAllRead() async {

@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Native lezer (voorproef)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Toon artikelen zonder webweergave: tekst kan worden geselecteerd en gekopieerd, en ingesloten spelers openen in de browser. Sommige opmaak kan er anders uitzien.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Betaald",
+  "@plugin_substack_filter_paid": {}
 }

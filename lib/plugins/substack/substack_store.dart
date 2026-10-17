@@ -322,6 +322,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   var _allPosts = const <SubstackPost>[];
   var _filter = SubstackFeedFilter.all;
   Set<String> _readIds = const {};
+  bool Function(SubstackPost post) _isSaved = (_) => false;
   DateTime? _fetchedAt;
   String? _loadedIdentity;
   String? _activeIdentity;
@@ -423,11 +424,19 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
 
   Future<void> retryLoadMore() => loadMore();
 
-  void setFilter(SubstackFeedFilter filter, Set<String> readIds) {
+  void setFilter(SubstackFeedFilter filter, Set<String> readIds, {bool Function(SubstackPost post)? isSaved}) {
     if (_closed) return;
     _filter = filter;
     _readIds = Set.of(readIds);
+    if (isSaved != null) _isSaved = isSaved;
     _publish();
+  }
+
+  /// The Saved library changed: a Saved-filtered feed follows it at once.
+  void syncSaved(bool Function(SubstackPost post) isSaved) {
+    if (_closed) return;
+    _isSaved = isSaved;
+    if (_filter == SubstackFeedFilter.saved) _publish();
   }
 
   void syncReadIds(Set<String> readIds) {
@@ -563,7 +572,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       });
     update(
       SubstackFeedSnapshot(
-        posts: _allPosts.where((post) => postMatchesSubstackFilter(post, _filter, _readIds)).toList(),
+        posts: _allPosts.where((post) => postMatchesSubstackFilter(post, _filter, _readIds, isSaved: _isSaved)).toList(),
         canLoadMore: pendingCount > 0 || _pages.values.any((page) => page.hasMore || page.error != null),
         failedCount: _pages.values.where((page) => page.error != null).length,
       ),

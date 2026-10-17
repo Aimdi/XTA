@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Omalugeja (eelvaade)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Näita artikleid ilma veebivaateta: teksti saab valida ja kopeerida ning manustatud mängijad avanevad brauseris. Mõni paigutus võib välja näha teistmoodi.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Tasulised",
+  "@plugin_substack_filter_paid": {}
 }

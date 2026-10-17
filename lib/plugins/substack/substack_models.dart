@@ -305,17 +305,27 @@ class SubstackFeedSnapshot {
 }
 
 /// Local filter on the merged Substack feed (inbox-style, no account needed).
-enum SubstackFeedFilter { all, unread, free, podcast, video }
+enum SubstackFeedFilter { all, unread, saved, free, paid, podcast, video }
 
-bool postMatchesSubstackFilter(SubstackPost post, SubstackFeedFilter filter, Set<String> readIds) {
+/// Whether [post] passes [filter]; [isSaved] answers for the Saved library.
+bool postMatchesSubstackFilter(
+  SubstackPost post,
+  SubstackFeedFilter filter,
+  Set<String> readIds, {
+  bool Function(SubstackPost post) isSaved = _nothingSaved,
+}) {
   return switch (filter) {
     SubstackFeedFilter.all => true,
     SubstackFeedFilter.unread => !substackPostIsRead(readIds, post),
+    SubstackFeedFilter.saved => isSaved(post),
     SubstackFeedFilter.free => !post.isPaywalled,
+    SubstackFeedFilter.paid => post.isPaywalled,
     SubstackFeedFilter.podcast => post.isPodcast,
     SubstackFeedFilter.video => post.isVideo,
   };
 }
+
+bool _nothingSaved(SubstackPost post) => false;
 
 /// One public Note from Substack's reader discovery feed.
 class SubstackNote {

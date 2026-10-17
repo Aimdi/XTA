@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Встроенный просмотр (тест)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Показывать статьи без веб-просмотра: текст можно выделять и копировать, а встроенные плееры открываются в браузере. Некоторые макеты могут выглядеть иначе.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Платные",
+  "@plugin_substack_filter_paid": {}
 }

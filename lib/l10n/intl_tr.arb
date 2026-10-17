@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Yerel okuyucu (önizleme)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Makaleleri web görünümü olmadan göster: metin seçilip kopyalanabilir, gömülü oynatıcılar tarayıcıda açılır. Bazı düzenler farklı görünebilir.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Ücretli",
+  "@plugin_substack_filter_paid": {}
 }

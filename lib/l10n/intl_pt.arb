@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Leitor nativo (pré-visualização)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Mostra os artigos sem vista web: o texto pode ser selecionado e copiado, e os leitores incorporados abrem no navegador. Algumas disposições podem parecer diferentes.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Pagos",
+  "@plugin_substack_filter_paid": {}
 }

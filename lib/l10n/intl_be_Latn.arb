@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Ubudavany čytaĺnik (papiaredni prahliad)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Pakazvać artykuly biez veb-prahliadu: tekst možna vyliučać i kapijavać, a ŭbudavanyja prajhravaĺniki adkryvajucca ŭ braŭzery. Niekatoryja makiety mohuć vyhliadać inakš.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Płatnyja",
+  "@plugin_substack_filter_paid": {}
 }

@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Cititor nativ (previzualizare)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Afișează articolele fără vizualizare web: textul poate fi selectat și copiat, iar playerele încorporate se deschid în browser. Unele aranjamente pot arăta diferit.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Plătite",
+  "@plugin_substack_filter_paid": {}
 }

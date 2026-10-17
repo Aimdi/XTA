@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Trình đọc gốc (xem trước)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Hiển thị bài viết không qua chế độ xem web: có thể chọn và sao chép văn bản, trình phát nhúng mở trong trình duyệt. Một số bố cục có thể trông khác.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Trả phí",
+  "@plugin_substack_filter_paid": {}
 }

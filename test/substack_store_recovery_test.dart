@@ -284,6 +284,34 @@ void main() {
       expect(client.postCalls, hasLength(1));
     });
 
+    test('the paid filter keeps paid posts; the saved filter follows the Saved library', () async {
+      final pub = _pub('alpha');
+      final paid = SubstackPost(
+        id: 'p',
+        title: 'Paid',
+        slug: 'p',
+        publicationBaseUrl: pub.baseUrl,
+        publicationName: pub.name,
+        audience: 'only_paid',
+      );
+      final client = _Client()..posts = (_, _) async => [_post(pub, 'a'), paid];
+      final store = SubstackFeedStore(client, _Publications([pub]));
+      addTearDown(store.destroy);
+      await store.refresh();
+
+      store.setFilter(SubstackFeedFilter.paid, const {});
+      expect(store.state.posts.map((post) => post.id), ['p']);
+      store.setFilter(SubstackFeedFilter.free, const {});
+      expect(store.state.posts.map((post) => post.id), ['a']);
+
+      var saved = <String>{'a'};
+      store.setFilter(SubstackFeedFilter.saved, const {}, isSaved: (post) => saved.contains(post.id));
+      expect(store.state.posts.map((post) => post.id), ['a']);
+      saved = {'p'};
+      store.syncSaved((post) => saved.contains(post.id));
+      expect(store.state.posts.map((post) => post.id), ['p'], reason: 'unsaving shows at once');
+    });
+
     test('disposed feeds ignore pending requests', () async {
       final pub = _pub('alpha');
       final delayed = Completer<List<SubstackPost>>();

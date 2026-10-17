@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "القارئ الأصلي (معاينة)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "عرض المقالات دون عارض ويب: يمكن تحديد النص ونسخه، وتُفتح المشغلات المضمّنة في المتصفح. قد يبدو بعض التنسيق مختلفًا.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "مدفوع",
+  "@plugin_substack_filter_paid": {}
 }

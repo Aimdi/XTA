@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Natywny czytnik (podgląd)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Wyświetlaj artykuły bez widoku WWW: tekst można zaznaczać i kopiować, a osadzone odtwarzacze otwierają się w przeglądarce. Niektóre układy mogą wyglądać inaczej.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Płatne",
+  "@plugin_substack_filter_paid": {}
 }

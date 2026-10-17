@@ -5263,5 +5263,7 @@
   "plugin_substack_native_reader": "Denaska legilo (antaŭprovo)",
   "@plugin_substack_native_reader": {},
   "plugin_substack_native_reader_description": "Montri artikolojn sen retvido: teksto elekteblas kaj kopieblas, kaj enigitaj ludiloj malfermiĝas en la retumilo. Iuj aranĝoj povas aspekti alie.",
-  "@plugin_substack_native_reader_description": {}
+  "@plugin_substack_native_reader_description": {},
+  "plugin_substack_filter_paid": "Pagaj",
+  "@plugin_substack_filter_paid": {}
 }
