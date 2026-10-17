@@ -21,7 +21,7 @@ import 'package:xta/plugins/pixiv/pixiv_novel_card.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_content.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_export.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
-import 'package:xta/plugins/pixiv/pixiv_novel_reader_position.dart';
+import 'package:xta/reading/article_block_position.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_series_screen.dart';
@@ -739,13 +739,13 @@ void main() {
 
   test('the first block showing is the first whose bottom is below the top', () {
     expect(
-      pixivFirstVisibleBlock([
+      articleFirstVisibleBlock([
         (index: 5, top: 40, height: 20),
         (index: 4, top: -10, height: 30),
         (index: 3, top: -50, height: 30),
       ]),
       (index: 4, leading: -10),
     );
-    expect(pixivFirstVisibleBlock([(index: 1, top: -40, height: 30)]), isNull);
+    expect(articleFirstVisibleBlock([(index: 1, top: -40, height: 30)]), isNull);
   });
 }
