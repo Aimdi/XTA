@@ -545,6 +545,26 @@ void main() {
     expect(tester.takeException(), isNull);
     await h.close(tester);
   });
+  testWidgets('the Saved filter shows the saved posts on Home, and follows an unsave', (tester) async {
+    _viewport(tester);
+    final h = _Harness();
+    await tester.pumpWidget(h.app());
+    await tester.pumpAndSettle();
+    final post = h.feed.allPosts.firstWhere((post) => post.id == '0');
+    await h.saved.toggle(post);
+    await _options(tester);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Saved'));
+    await tester.pumpAndSettle();
+    await _closeOptions(tester);
+
+    final cards = find.byType(SubstackPostCard);
+    expect(tester.widgetList<SubstackPostCard>(cards).map((card) => card.post.id), ['0']);
+    await h.saved.toggle(post);
+    await tester.pumpAndSettle();
+    expect(cards, findsNothing, reason: 'unsaving takes it out at once');
+    expect(tester.takeException(), isNull);
+    await h.close(tester);
+  });
   testWidgets('an empty loaded Inbox can page to older unread articles', (tester) async {
     _viewport(tester);
     final h = _Harness();

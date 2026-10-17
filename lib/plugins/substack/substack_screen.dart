@@ -376,7 +376,12 @@ class _PostsPane extends StatelessWidget {
                         .where(
                           (post) =>
                               publications.any((pub) => pub.baseUrl == post.publicationBaseUrl) &&
-                              postMatchesSubstackFilter(post, feed.filter, readIds),
+                              postMatchesSubstackFilter(
+                                post,
+                                feed.filter,
+                                readIds,
+                                isSaved: context.read<SubstackSavedStore>().contains,
+                              ),
                         )
                         .toList(),
                     options,
