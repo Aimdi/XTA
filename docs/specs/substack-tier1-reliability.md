@@ -106,3 +106,10 @@ reads. Real sizes are UNVERIFIED (no route to Substack).
 Host VM: the requests one 30-publication refresh makes under a blanket 429, before and after the change. Device S4 stays UNVERIFIED until a phone run.
 
 No dependency, schema, frozen-client or localization changes.
+
+### 8. Text selection in articles (BUG-12; decided while finishing Tier 1)
+
+Long-press read-aloud blocked selection and copy. The least disruptive change: long-press selects text as usual, and
+**Listen** reads from the selected paragraph when text is selected; with nothing selected it reads from the top, as
+before. The page no longer cancels `contextmenu` or disables the touch callout. On a device, whether tapping Listen
+keeps the WebView selection is UNVERIFIED; if it is lost, Listen falls back to reading from the top.
