@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "有料",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, other{{minutes}分で読めます}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "記事のフォント",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "明朝体",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "ゴシック体",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "列の幅",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "狭い",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "標準",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "広い",
+  "@plugin_substack_column_wide": {}
 }

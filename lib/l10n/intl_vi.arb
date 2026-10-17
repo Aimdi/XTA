@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Trả phí",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, other{Đọc trong {minutes} phút}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Phông chữ bài viết",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Có chân",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Không chân",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Độ rộng cột",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Hẹp",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Vừa",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Rộng",
+  "@plugin_substack_column_wide": {}
 }

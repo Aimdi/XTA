@@ -144,6 +144,8 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(substackSearchHistoryKey, '[]');
     await prefs.set(optionPluginSubstackFeedMemory, '');
     await prefs.set(optionPluginSubstackNativeReader, false);
+    await prefs.set(optionPluginSubstackReaderFont, 'serif');
+    await prefs.set(optionPluginSubstackColumnWidth, 'medium');
   }
 
   @override

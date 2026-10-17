@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Платныя",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} хвіліна чытання} few{{minutes} хвіліны чытання} many{{minutes} хвілін чытання} other{{minutes} хвіліны чытання}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Шрыфт артыкулаў",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "З засечкамі",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Без засечак",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Шырыня слупка",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Вузкі",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Сярэдні",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Шырокі",
+  "@plugin_substack_column_wide": {}
 }

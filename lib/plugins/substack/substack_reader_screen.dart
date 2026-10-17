@@ -25,6 +25,7 @@ import 'package:xta/plugins/substack/substack_html.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_native_article.dart';
+import 'package:xta/plugins/substack/substack_reader_style.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_audio_player.dart';
 import 'package:xta/plugins/substack/substack_comments_screen.dart';
@@ -363,6 +364,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     final fontSizePx = MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18;
     final lineHeight = _reading.state.lineHeight;
     final l10n = L10n.of(context);
+    final style = substackReaderStyle(PrefService.of(context, listen: false));
     return (parsed) => wrapSubstackHtml(
       title: post.title,
       body: parsed.body,
@@ -382,6 +384,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       isRtl: isRtl,
       fontSizePx: fontSizePx,
       lineHeight: lineHeight,
+      font: style.font,
+      column: style.column,
       // Says where the free part stops, so the end of the preview does not
       // read as the end of the article.
       footer: post.isPaywalled ? l10n.plugin_substack_preview_ends : null,
@@ -672,6 +676,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
                         blocks: blocks,
                         place: _place,
                         readMinutes: substackReadMinutes(_post, plainText: _content.state.document?.plainText),
+                        style: substackReaderStyle(PrefService.of(context, listen: false)),
                         onLink: _openNativeLink,
                         keptImages: _content.state.keptImages,
                         fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,

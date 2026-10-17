@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Placené",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} minuta čtení} few{{minutes} minuty čtení} many{{minutes} minuty čtení} other{{minutes} minut čtení}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Písmo článků",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Patkové",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Bezpatkové",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Šířka sloupce",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Úzký",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Střední",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Široký",
+  "@plugin_substack_column_wide": {}
 }

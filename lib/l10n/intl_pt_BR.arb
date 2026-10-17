@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Pagos",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min de leitura} other{{minutes} min de leitura}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Fonte dos artigos",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Com serifa",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Sem serifa",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Largura da coluna",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Estreita",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Média",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Larga",
+  "@plugin_substack_column_wide": {}
 }

@@ -5664,5 +5664,19 @@
   "plugin_substack_filter_paid": "Paid",
   "@plugin_substack_filter_paid": {"description": "Feed filter chip in the Substack plugin that shows only paid (subscriber-only) posts; the opposite of the Free filter."},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min read} other{{minutes} min read}}",
-  "@plugin_substack_read_minutes": {"description": "Estimated reading time of a Substack post, shown in its card and at the top of the article; minutes is a whole number, at least 1.", "placeholders": {"minutes": {"type": "int"}}}
+  "@plugin_substack_read_minutes": {"description": "Estimated reading time of a Substack post, shown in its card and at the top of the article; minutes is a whole number, at least 1.", "placeholders": {"minutes": {"type": "int"}}},
+  "plugin_substack_reader_font": "Article font",
+  "@plugin_substack_reader_font": {"description": "Title of a setting in the Substack plugin settings choosing the typeface of article text."},
+  "plugin_substack_font_serif": "Serif",
+  "@plugin_substack_font_serif": {"description": "Choice in the article font setting: a serif typeface such as Georgia."},
+  "plugin_substack_font_sans": "Sans serif",
+  "@plugin_substack_font_sans": {"description": "Choice in the article font setting: a sans-serif typeface, the system's default."},
+  "plugin_substack_column_width": "Column width",
+  "@plugin_substack_column_width": {"description": "Title of a setting in the Substack plugin settings choosing how wide the column of article text may grow on a wide screen."},
+  "plugin_substack_column_narrow": "Narrow",
+  "@plugin_substack_column_narrow": {"description": "Choice in the column width setting."},
+  "plugin_substack_column_medium": "Medium",
+  "@plugin_substack_column_medium": {"description": "Choice in the column width setting; the default."},
+  "plugin_substack_column_wide": "Wide",
+  "@plugin_substack_column_wide": {"description": "Choice in the column width setting."}
 }

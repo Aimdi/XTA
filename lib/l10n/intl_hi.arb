@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "सशुल्क",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} मिनट में पढ़ें} other{{minutes} मिनट में पढ़ें}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "लेख का फ़ॉन्ट",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "सेरिफ़",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "सैन्स-सेरिफ़",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "कॉलम की चौड़ाई",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "संकरा",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "मध्यम",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "चौड़ा",
+  "@plugin_substack_column_wide": {}
 }

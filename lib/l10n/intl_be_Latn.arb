@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Płatnyja",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} chvilina čytannia} few{{minutes} chviliny čytannia} many{{minutes} chvilin čytannia} other{{minutes} chviliny čytannia}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Šryft artykułaŭ",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Z zasiečkami",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Biez zasiečak",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Šyrynia słupka",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Vuzki",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Siaredni",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Šyroki",
+  "@plugin_substack_column_wide": {}
 }

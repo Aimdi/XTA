@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:xta/plugins/substack/substack_reader_style.dart';
 
 /// URL schemes that are code rather than a destination.
 ///
@@ -302,6 +303,8 @@ String wrapSubstackHtml({
   String? authorName,
   String? publicationName,
   String? readTime,
+  SubstackReaderFont font = SubstackReaderFont.serif,
+  SubstackColumnWidth column = SubstackColumnWidth.medium,
   double fontSizePx = 18,
   double lineHeight = 1.7,
   String? footer,
@@ -340,7 +343,7 @@ String wrapSubstackHtml({
     color: $foreground;
   }
   body {
-    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+    font-family: ${font.cssStack};
     font-size: ${fontSizePx}px;
     line-height: $lineHeight;
     padding: 20px 18px 48px;
@@ -350,7 +353,7 @@ String wrapSubstackHtml({
     overflow-wrap: anywhere;
   }
   .reader {
-    max-width: 42rem;
+    max-width: ${column.rem}rem;
     margin: 0 auto;
   }
   .title {

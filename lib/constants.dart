@@ -244,6 +244,8 @@ const optionPluginSubstackPinnedPublications =
     'plugin.substack.pinned_publications';
 const optionPluginSubstackFeedMemory = 'plugin.substack.feed_snapshot';
 const optionPluginSubstackNativeReader = 'plugin.substack.native_reader';
+const optionPluginSubstackReaderFont = 'plugin.substack.reader_font';
+const optionPluginSubstackColumnWidth = 'plugin.substack.column_width';
 const substackFeedPageSize = 8;
 const substackReadIdsCap = 400;
 const substackLikedPostsCap = 400;

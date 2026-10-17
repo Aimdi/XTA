@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "유료",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, other{{minutes}분 분량}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "글꼴",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "세리프",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "산세리프",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "단 너비",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "좁게",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "보통",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "넓게",
+  "@plugin_substack_column_wide": {}
 }

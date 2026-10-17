@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Berbayar",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, other{{minutes} menit baca}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Font artikel",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Serif",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Sans serif",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Lebar kolom",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Sempit",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Sedang",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Lebar",
+  "@plugin_substack_column_wide": {}
 }

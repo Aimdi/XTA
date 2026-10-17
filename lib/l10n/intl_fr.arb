@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Payants",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min de lecture} other{{minutes} min de lecture}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Police des articles",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Avec empattements",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Sans empattements",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Largeur de colonne",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Étroite",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Moyenne",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Large",
+  "@plugin_substack_column_wide": {}
 }

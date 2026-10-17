@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Betaald",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min lezen} other{{minutes} min lezen}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Lettertype van artikelen",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Schreef",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Schreefloos",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Kolombreedte",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Smal",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Middel",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Breed",
+  "@plugin_substack_column_wide": {}
 }

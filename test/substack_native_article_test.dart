@@ -15,6 +15,7 @@ import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_native_article.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
+import 'package:xta/plugins/substack/substack_reader_style.dart';
 import 'package:xta/plugins/substack/substack_settings.dart';
 import 'package:xta/reading/article_block_reading.dart';
 import 'package:xta/reading/article_reading_store.dart';
@@ -62,7 +63,12 @@ Widget _article({
   required ValueChanged<String> onLink,
   ArticleBlockReading? place,
   Map<String, File> keptImages = const {},
+  ({SubstackReaderFont font, SubstackColumnWidth column}) style = (
+    font: SubstackReaderFont.serif,
+    column: SubstackColumnWidth.medium,
+  ),
 }) => SubstackNativeArticle(
+  style: style,
   post: post,
   blocks: blocks,
   onLink: onLink,
@@ -144,7 +150,13 @@ void main() {
   });
 
   testWidgets('the setting is off by default, switches on, and a reset turns it off', (tester) async {
-    final prefs = PrefServiceCache(defaults: {optionPluginSubstackNativeReader: false});
+    final prefs = PrefServiceCache(
+      defaults: {
+        optionPluginSubstackNativeReader: false,
+        optionPluginSubstackReaderFont: 'serif',
+        optionPluginSubstackColumnWidth: 'medium',
+      },
+    );
     await tester.pumpWidget(PrefService(service: prefs, child: _app(const SubstackSettingsScreen())));
     await tester.pumpAndSettle();
 
@@ -153,8 +165,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(prefs.get<bool>(optionPluginSubstackNativeReader), isTrue);
 
+    expect(find.text(L10n.current.plugin_substack_reader_font), findsOneWidget);
+    expect(find.text(L10n.current.plugin_substack_column_width), findsOneWidget);
+    await prefs.set(optionPluginSubstackColumnWidth, 'wide');
+
     await tester.runAsync(() => SubstackPlugin().resetPreferences(prefs));
     expect(prefs.get<bool>(optionPluginSubstackNativeReader), isFalse);
+    expect(prefs.get<String>(optionPluginSubstackColumnWidth), 'medium');
   });
 
   testWidgets('a footnote marker opens its note in a sheet; an image opens the viewer', (tester) async {
@@ -265,6 +282,33 @@ void main() {
     ImageProvider source(ExtendedImage image) => (image.image as ExtendedResizeImage).imageProvider;
     expect((source(images[0]) as ExtendedFileImageProvider).file.path, kept.path);
     expect((source(images[1]) as ExtendedNetworkImageProvider).url, 'https://cdn.example/new.jpg');
+    await _finish(tester);
+  });
+
+  testWidgets('on a wide screen the text keeps its column width and font', (tester) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    Future<double> widthWith(SubstackColumnWidth column) async {
+      await tester.pumpWidget(
+        _app(
+          _article(
+            post: _post(),
+            blocks: _blocks('<p>${'Words ' * 200}</p>'),
+            onLink: (_) {},
+            style: (font: SubstackReaderFont.sans, column: column),
+          ),
+          width: 1200,
+        ),
+      );
+      await tester.pump();
+      return tester.getSize(find.textContaining('Words', findRichText: true)).width;
+    }
+
+    expect(await widthWith(SubstackColumnWidth.narrow), closeTo(36 * 16, 1));
+    expect(await widthWith(SubstackColumnWidth.wide), closeTo(52 * 16, 1));
+    final text = tester.widget<RichText>(find.textContaining('Words', findRichText: true));
+    expect(text.text.style?.fontFamily, isNot('serif'));
     await _finish(tester);
   });
 }

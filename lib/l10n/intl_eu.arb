@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Ordainpekoak",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min irakurtzeko} other{{minutes} min irakurtzeko}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Artikuluen letra-tipoa",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Serifaduna",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Serifagabea",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Zutabearen zabalera",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Estua",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Ertaina",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Zabala",
+  "@plugin_substack_column_wide": {}
 }

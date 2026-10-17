@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
@@ -9,6 +10,7 @@ import 'package:xta/offline/offline_store.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_reader_style.dart';
 import 'package:xta/reading/article_block_reading.dart';
 
 /// A post read without a web view: its blocks in a lazy list that can be
@@ -22,6 +24,9 @@ class SubstackNativeArticle extends StatelessWidget {
 
   /// The estimate shown under the title, when there is one.
   final int? readMinutes;
+
+  /// The font and column width chosen in the plugin settings.
+  final ({SubstackReaderFont font, SubstackColumnWidth column}) style;
   final ValueChanged<String> onLink;
 
   /// The images of a kept post, by the address they were kept from; read
@@ -36,6 +41,7 @@ class SubstackNativeArticle extends StatelessWidget {
     required this.blocks,
     required this.place,
     this.readMinutes,
+    this.style = (font: SubstackReaderFont.serif, column: SubstackColumnWidth.medium),
     required this.onLink,
     this.keptImages = const {},
     this.fontSize = 18,
@@ -44,7 +50,9 @@ class SubstackNativeArticle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final body = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: fontSize, height: lineHeight);
+    final body = Theme.of(
+      context,
+    ).textTheme.bodyLarge!.copyWith(fontSize: fontSize, height: lineHeight, fontFamily: style.font.fontFamily);
     final images = blocks.whereType<SubstackImageBlock>().toList(growable: false);
     late final _Scope scope;
     scope = _Scope(
@@ -67,7 +75,17 @@ class SubstackNativeArticle extends StatelessWidget {
         sourceName: 'substack',
       ),
     );
-    const side = EdgeInsets.symmetric(horizontal: 20);
+    return LayoutBuilder(
+      builder: (context, constraints) => _scrollView(
+        scope,
+        // The column grows to its chosen width, then the margins do.
+        max(20, (constraints.maxWidth - style.column.logicalPixels) / 2),
+      ),
+    );
+  }
+
+  Widget _scrollView(_Scope scope, double margin) {
+    final side = EdgeInsets.symmetric(horizontal: margin);
     return SelectionArea(
       child: NotificationListener<ScrollNotification>(
         onNotification: place.onScroll,
@@ -76,7 +94,7 @@ class SubstackNativeArticle extends StatelessWidget {
           controller: place.controller,
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              padding: side.copyWith(top: 16),
               sliver: SliverToBoxAdapter(child: _Header(post: post, readMinutes: readMinutes)),
             ),
             SliverPadding(
@@ -95,7 +113,7 @@ class SubstackNativeArticle extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 48),
+              padding: side.copyWith(bottom: 48),
               sliver: SliverToBoxAdapter(
                 child: _Footer(post: post, scope: scope),
               ),

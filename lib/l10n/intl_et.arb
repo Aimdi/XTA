@@ -5267,5 +5267,19 @@
   "plugin_substack_filter_paid": "Tasulised",
   "@plugin_substack_filter_paid": {},
   "plugin_substack_read_minutes": "{minutes, plural, one{{minutes} min lugemist} other{{minutes} min lugemist}}",
-  "@plugin_substack_read_minutes": {}
+  "@plugin_substack_read_minutes": {},
+  "plugin_substack_reader_font": "Artiklite kiri",
+  "@plugin_substack_reader_font": {},
+  "plugin_substack_font_serif": "Seriifidega",
+  "@plugin_substack_font_serif": {},
+  "plugin_substack_font_sans": "Seriifideta",
+  "@plugin_substack_font_sans": {},
+  "plugin_substack_column_width": "Veeru laius",
+  "@plugin_substack_column_width": {},
+  "plugin_substack_column_narrow": "Kitsas",
+  "@plugin_substack_column_narrow": {},
+  "plugin_substack_column_medium": "Keskmine",
+  "@plugin_substack_column_medium": {},
+  "plugin_substack_column_wide": "Lai",
+  "@plugin_substack_column_wide": {}
 }
