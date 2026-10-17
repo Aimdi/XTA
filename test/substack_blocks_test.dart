@@ -87,4 +87,37 @@ void main() {
     );
     expect(text.where((block) => block.anchor != null).length, greaterThan(200));
   });
+
+  test('every passage the contents or find can name leads to the block it is drawn in', () {
+    final document = SubstackArticleDocument.parse(
+      '<h2>Start</h2><figure><img src="https://cdn.example/a.jpg"><figcaption>Caption</figcaption></figure>'
+      '<ul><li><p>Item</p><ul><li>Nested</li></ul></li></ul><table><tr><td>Cell</td></tr></table><p>End</p>',
+    );
+    final blocks = substackBlocksOfBody(document.body);
+    final passages = [for (final passage in document.passages) passage.anchor];
+    String kind(int? index) => switch (blocks[index!]) {
+      SubstackTextBlock(:final text) => text,
+      SubstackImageBlock() => 'image',
+      SubstackTableBlock() => 'table',
+      _ => 'other',
+    };
+
+    expect(
+      [for (final passage in document.passages) kind(substackBlockOfPassage(blocks, passages, passage.anchor))],
+      ['Start', 'image', 'Item', 'Nested', 'table', 'End'],
+    );
+    expect(document.passages.map((passage) => passage.text), ['Start', 'Caption', 'Item', 'Nested', 'Cell', 'End']);
+  });
+
+  test('a passage folded into no block of its own leads to the one before it', () {
+    const blocks = [
+      SubstackTextBlock(SubstackTextKind.paragraph, [SubstackRun('A')], anchors: ['xta-passage-0']),
+      SubstackTextBlock(SubstackTextKind.paragraph, [SubstackRun('C')], anchors: ['xta-passage-2']),
+    ];
+    const passages = ['xta-passage-0', 'xta-passage-1', 'xta-passage-2'];
+
+    expect(substackBlockOfPassage(blocks, passages, 'xta-passage-1'), 0);
+    expect(substackBlockOfPassage(blocks, passages, 'xta-passage-2'), 1);
+    expect(substackBlockOfPassage(blocks, passages, 'unknown'), isNull);
+  });
 }

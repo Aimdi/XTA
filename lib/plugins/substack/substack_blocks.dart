@@ -28,7 +28,10 @@ enum SubstackTextKind { paragraph, heading, quote, listItem, code, footnote }
 
 /// One block of a post as the native reader shows it.
 sealed class SubstackBlock {
-  const SubstackBlock();
+  /// The navigation anchors of the passages drawn in this block.
+  final List<String> anchors;
+
+  const SubstackBlock({this.anchors = const []});
 }
 
 class SubstackTextBlock extends SubstackBlock {
@@ -44,7 +47,7 @@ class SubstackTextBlock extends SubstackBlock {
   /// The navigation anchor of this passage, when it has one.
   final String? anchor;
 
-  const SubstackTextBlock(this.kind, this.runs, {this.level = 0, this.marker, this.anchor});
+  const SubstackTextBlock(this.kind, this.runs, {this.level = 0, this.marker, this.anchor, super.anchors});
 
   String get text => runs.map((run) => run.text).join();
 }
@@ -56,7 +59,7 @@ class SubstackImageBlock extends SubstackBlock {
   final int? height;
   final List<SubstackRun> caption;
 
-  const SubstackImageBlock(this.src, {this.alt = '', this.width, this.height, this.caption = const []});
+  const SubstackImageBlock(this.src, {this.alt = '', this.width, this.height, this.caption = const [], super.anchors});
 }
 
 class SubstackEmbedBlock extends SubstackBlock {
@@ -78,7 +81,7 @@ class SubstackDividerBlock extends SubstackBlock {
 class SubstackTableBlock extends SubstackBlock {
   final List<List<String>> rows;
 
-  const SubstackTableBlock(this.rows);
+  const SubstackTableBlock(this.rows, {super.anchors});
 }
 
 /// The blocks of a [SubstackArticleDocument]'s body: sanitized, with passage
@@ -123,7 +126,14 @@ class _BlockWalker {
       case 'p':
         _text(node, SubstackTextKind.paragraph);
       case 'pre':
-        _add(SubstackTextBlock(SubstackTextKind.code, [SubstackRun(node.text, code: true)], anchor: _anchor(node)));
+        _add(
+          SubstackTextBlock(
+            SubstackTextKind.code,
+            [SubstackRun(node.text, code: true)],
+            anchor: _anchor(node),
+            anchors: _anchorsIn([node]),
+          ),
+        );
       case 'blockquote':
         _quote(node);
       case 'ul' || 'ol':
@@ -139,8 +149,16 @@ class _BlockWalker {
     }
   }
 
-  void _text(Element node, SubstackTextKind kind, {int level = 0, String? marker}) =>
-      _add(SubstackTextBlock(kind, _trimmed(runsOf(node)), level: level, marker: marker, anchor: _anchor(node)));
+  void _text(Element node, SubstackTextKind kind, {int level = 0, String? marker}) => _add(
+    SubstackTextBlock(
+      kind,
+      _trimmed(runsOf(node)),
+      level: level,
+      marker: marker,
+      anchor: _anchor(node),
+      anchors: _anchorsIn([node]),
+    ),
+  );
 
   void _quote(Element node) {
     final paragraphs = node.children.where((child) => child.localName == 'p').toList();
@@ -155,10 +173,11 @@ class _BlockWalker {
     for (final item in node.children.where((child) => child.localName == 'li')) {
       index++;
       final nested = item.children.where((child) => child.localName == 'ul' || child.localName == 'ol').toList();
-      final own = [
+      final ownNodes = [
         for (final child in item.nodes)
-          if (child is! Element || (child.localName != 'ul' && child.localName != 'ol')) ...runsOf(child),
+          if (child is! Element || (child.localName != 'ul' && child.localName != 'ol')) child,
       ];
+      final own = [for (final child in ownNodes) ...runsOf(child)];
       _add(
         SubstackTextBlock(
           SubstackTextKind.listItem,
@@ -166,6 +185,7 @@ class _BlockWalker {
           level: depth,
           marker: ordered ? '$index.' : '•',
           anchor: _anchor(item),
+          anchors: [?_anchor(item), ..._anchorsIn(ownNodes.whereType<Element>())],
         ),
       );
       for (final list in nested) {
@@ -194,6 +214,7 @@ class _BlockWalker {
         width: int.tryParse(img.attributes['width'] ?? ''),
         height: int.tryParse(img.attributes['height'] ?? ''),
         caption: caption == null ? const [] : _trimmed(runsOf(caption)),
+        anchors: _anchorsIn([node]),
       ),
     );
   }
@@ -209,7 +230,7 @@ class _BlockWalker {
       for (final row in node.querySelectorAll('tr'))
         [for (final cell in row.children) cell.text.replaceAll(RegExp(r'\s+'), ' ').trim()],
     ].where((row) => row.any((cell) => cell.isNotEmpty)).toList();
-    if (rows.isNotEmpty) out.add(SubstackTableBlock(rows));
+    if (rows.isNotEmpty) out.add(SubstackTableBlock(rows, anchors: _anchorsIn([node])));
   }
 
   void _add(SubstackTextBlock block) {
@@ -224,6 +245,28 @@ class _BlockWalker {
 }
 
 String? _anchor(Element node) => node.attributes['data-xta-block'];
+
+/// The anchors on [nodes] and inside them, in reading order.
+List<String> _anchorsIn(Iterable<Element> nodes) => [
+  for (final node in nodes) ...[
+    ?_anchor(node),
+    for (final inner in node.querySelectorAll('[data-xta-block]')) ?_anchor(inner),
+  ],
+];
+
+/// The block a passage is drawn in: the passage's own block, else the block
+/// of the nearest passage before it, since a passage the native view folds
+/// into a neighbour (a caption cell, a heading in a list) reads there.
+int? substackBlockOfPassage(List<SubstackBlock> blocks, List<String> passages, String anchor) {
+  final where = {
+    for (var i = 0; i < blocks.length; i++)
+      for (final each in blocks[i].anchors) each: i,
+  };
+  for (var i = passages.indexOf(anchor); i >= 0; i--) {
+    if (where[passages[i]] case final index?) return index;
+  }
+  return null;
+}
 
 bool _isBlock(Element node) {
   const blocks = {

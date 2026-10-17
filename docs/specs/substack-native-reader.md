@@ -4,14 +4,22 @@ Status: **in progress.** The owner said to continue with Tier 2 (2026-10-17). Do
 
 1. the block model (`substack_blocks.dart`);
 2. the native view (`substack_native_article.dart`) behind the setting *Native reader (preview)* in the new Substack
-   settings screen, off by default. With it on, the reader shows blocks instead of the web view; contents and find
-   are hidden until they learn to jump in the native list. Widget-tested, including 200 % text at 320 px.
+   settings screen, off by default. With it on, the reader shows blocks instead of the web view. Widget-tested,
+   including 200 % text at 320 px.
 
 3. a footnote marker opens its note in a bottom sheet; an image opens the app's shared full-screen viewer with every
    image of the post. A loading or failed image is a plain box, so a tap always reaches the viewer.
 
-Left: position save and restore and contents/find jumps (step 4), offline images from files (step 5), then the device
-gates below.
+4. the place is kept by block and offset with the Pixiv reader's own code, now shared as `ArticleBlockReading`
+   (`lib/reading/`): put back on open, kept across a refresh and a text size change, saved on leave. Contents and
+   find are back in native mode: each block carries the anchors of the passages drawn in it
+   (`substackBlockOfPassage`), and a passage folded into a neighbour (a table cell, a caption) leads to that block.
+
+   Known gap: the web view and the native view count passages differently, so a place saved by one and put back by
+   the other lands by its scroll fraction, near but not on the passage. Only someone switching the preview setting
+   mid-article meets it.
+
+Left: offline images from files (step 5), then the device gates below.
 
 ## Why
 

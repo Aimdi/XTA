@@ -10,6 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_article.dart';
 import 'package:xta/offline/offline_article_action.dart';
 import 'package:xta/offline/offline_store.dart';
+import 'package:xta/reading/article_block_reading.dart';
 import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_bridge.dart';
 import 'package:xta/reading/article_reading_store.dart';
@@ -32,6 +33,7 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_engines.dart';
 import 'package:xta/speech/tts_settings.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
@@ -51,6 +53,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   final _articleCache = SubstackArticleCache();
   late final SubstackReaderStore _content;
   late final ArticleReadingStore _reading;
+  late final _place = ArticleBlockReading(_reading, blocks: () => _content.state.blocks?.length ?? 0);
   SubstackPost get _post => _content.state.post;
   Object? get _error => _content.state.error;
   bool get _loading => _content.state.loading;
@@ -331,8 +334,11 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   Future<void> _showNative(String body, int generation) async {
     final blocks = await parseInBackground<List<SubstackBlock>>(substackBlocksOfBody, body);
     if (!mounted || !_content.accepts(generation)) return;
+    // A refresh keeps the passage being read; a first open goes back to the saved place.
+    final point = (_content.state.blocks == null ? null : _place.place) ?? _reading.state.point;
     _content.change(blocks: blocks, loading: false);
     _reading.setActive(true);
+    await _place.open(point);
   }
 
   /// A link tapped in the native reader goes where a web view link would.
@@ -521,7 +527,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
               final l10n = L10n.of(context);
               final liked = context.read<SubstackLikesStore>().contains(_post);
               return [
-                if (!_liveSite && _content.state.document != null && _content.state.blocks == null) ...[
+                if (!_liveSite && _content.state.document != null) ...[
                   _menu(Icons.format_list_bulleted, l10n.article_reader_contents, () => _openArticleNavigation()),
                   _menu(Icons.manage_search, l10n.article_reader_find, () => _openArticleNavigation(find: true)),
                 ],
@@ -580,8 +586,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
             store: _reading,
             supportsAppearance: !_liveSite && !_empty && !_paywalled,
             canComplete: !_loading,
-            onAppearanceChanged: _applyReadingAppearance,
+            onAppearanceChanged: _content.state.blocks == null ? _applyReadingAppearance : _place.keepPlace,
             onStartOver: () {
+              if (_content.state.blocks != null) return _place.startOver();
               if (!_liveSite) _controller.runJavaScript('window.xtaArticle?.startOver();');
             },
           ),
@@ -608,10 +615,16 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     _reading.setActive(false);
     final anchor = await showSubstackArticleNavigation(context, document, find: find);
     if (!mounted || _liveSite) return;
-    if (anchor != null && identical(document, _content.state.document)) {
-      await _controller.runJavaScript(substackArticleJumpJs(anchor));
-    }
+    if (anchor != null && identical(document, _content.state.document)) await _jumpTo(document, anchor);
     if (mounted && !_loading) _reading.setActive(true);
+  }
+
+  Future<void> _jumpTo(SubstackArticleDocument document, String anchor) async {
+    final blocks = _content.state.blocks;
+    if (blocks == null) return _controller.runJavaScript(substackArticleJumpJs(anchor));
+    final passages = [for (final passage in document.passages) passage.anchor];
+    final index = substackBlockOfPassage(blocks, passages, anchor);
+    if (index != null) await _place.showBlock(index, duration: xtaMotionDuration(context, kXtaMotionNavigation));
   }
 
   Future<void> _openReaderRoute(Widget screen) async {
@@ -652,6 +665,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
                       onState: (_, reading) => SubstackNativeArticle(
                         post: _post,
                         blocks: blocks,
+                        place: _place,
                         onLink: _openNativeLink,
                         fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,
                         lineHeight: reading.lineHeight,
@@ -683,9 +697,21 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   @override
+  void deactivate() {
+    _place.deactivate();
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    _place.activate();
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_reading.destroy());
+    _place.close(then: _reading.destroy);
     unawaited(_content.destroy());
     super.dispose();
   }

@@ -1,16 +1,21 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/reading/article_block_reading.dart';
 
 /// A post read without a web view: its blocks in a lazy list that can be
 /// selected and copied (plan item 7, behind a setting while in preview).
 class SubstackNativeArticle extends StatelessWidget {
   final SubstackPost post;
   final List<SubstackBlock> blocks;
+
+  /// Keeps the reader's place; the screen owns it.
+  final ArticleBlockReading place;
   final ValueChanged<String> onLink;
   final double fontSize;
   final double lineHeight;
@@ -19,6 +24,7 @@ class SubstackNativeArticle extends StatelessWidget {
     super.key,
     required this.post,
     required this.blocks,
+    required this.place,
     required this.onLink,
     this.fontSize = 18,
     this.lineHeight = 1.7,
@@ -48,24 +54,41 @@ class SubstackNativeArticle extends StatelessWidget {
         sourceName: 'substack',
       ),
     );
+    const side = EdgeInsets.symmetric(horizontal: 20);
     return SelectionArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 16, 20, 48),
-            sliver: SliverList.builder(
-              itemCount: blocks.length + 2,
-              itemBuilder: (context, index) {
-                if (index == 0) return _Header(post: post);
-                if (index == blocks.length + 1) return _Footer(post: post, scope: scope);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _BlockView(block: blocks[index - 1], scope: scope),
-                );
-              },
+      child: NotificationListener<ScrollNotification>(
+        onNotification: place.onScroll,
+        child: CustomScrollView(
+          key: place.viewport,
+          controller: place.controller,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              sliver: SliverToBoxAdapter(child: _Header(post: post)),
             ),
-          ),
-        ],
+            SliverPadding(
+              padding: side,
+              sliver: SliverList.builder(
+                itemCount: blocks.length,
+                itemBuilder: (context, index) => AutoScrollTag(
+                  key: ValueKey(index),
+                  controller: place.controller,
+                  index: index,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _BlockView(block: blocks[index], scope: scope),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 48),
+              sliver: SliverToBoxAdapter(
+                child: _Footer(post: post, scope: scope),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

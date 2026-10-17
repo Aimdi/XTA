@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -13,6 +15,8 @@ import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_native_article.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/substack/substack_settings.dart';
+import 'package:xta/reading/article_block_reading.dart';
+import 'package:xta/reading/article_reading_store.dart';
 
 import 'fixtures/substack_synthetic.dart';
 
@@ -50,13 +54,32 @@ Widget _app(Widget home, {double scale = 1, double width = 390}) => MaterialApp(
   home: Scaffold(body: home),
 );
 
+/// The article with a place keeper, as the reader screen hands it over.
+Widget _article({
+  required SubstackPost post,
+  required List<SubstackBlock> blocks,
+  required ValueChanged<String> onLink,
+  ArticleBlockReading? place,
+}) => SubstackNativeArticle(
+  post: post,
+  blocks: blocks,
+  onLink: onLink,
+  place: place ?? ArticleBlockReading(_store(), blocks: () => blocks.length),
+);
+
+ArticleReadingStore _store([PrefServiceCache? prefs]) => ArticleReadingStore(
+  prefs: prefs ?? PrefServiceCache(),
+  articleId: 'substack:fieldnotes:native',
+  onCompleted: () async {},
+);
+
 List<SubstackBlock> _blocks(String html) => substackBlocksOfBody(SubstackArticleDocument.parse(html).body);
 
 void main() {
   testWidgets('a post reads natively: header, text, embeds as links, web-only gaps and footnotes', (tester) async {
     final links = <String>[];
     final semantics = tester.ensureSemantics();
-    await tester.pumpWidget(_app(SubstackNativeArticle(post: _post(), blocks: _blocks(_body), onLink: links.add)));
+    await tester.pumpWidget(_app(_article(post: _post(), blocks: _blocks(_body), onLink: links.add)));
     await tester.pumpAndSettle();
 
     expect(find.byType(SelectionArea), findsOneWidget);
@@ -79,18 +102,20 @@ void main() {
       'https://example.com/x',
     ]);
     semantics.dispose();
+    await _finish(tester);
   });
 
   testWidgets('a paid preview ends with the note and the way to the site', (tester) async {
     final links = <String>[];
     await tester.pumpWidget(
-      _app(SubstackNativeArticle(post: _post(paid: true), blocks: _blocks('<p>The free part.</p>'), onLink: links.add)),
+      _app(_article(post: _post(paid: true), blocks: _blocks('<p>The free part.</p>'), onLink: links.add)),
     );
     await tester.pumpAndSettle();
 
     expect(find.text(L10n.current.plugin_substack_preview_ends), findsOneWidget);
     await tester.tap(find.text(L10n.current.plugin_substack_continue_on_site));
     expect(links, ['https://fieldnotes.substack.com/p/native']);
+    await _finish(tester);
   });
 
   testWidgets('the long post scrolls on a narrow screen at 200 % text without overflow', (tester) async {
@@ -99,7 +124,7 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       _app(
-        SubstackNativeArticle(post: _post(), blocks: _blocks(syntheticSubstackBody(sections: 6)), onLink: (_) {}),
+        _article(post: _post(), blocks: _blocks(syntheticSubstackBody(sections: 6)), onLink: (_) {}),
         scale: 2,
         width: 320,
       ),
@@ -132,7 +157,7 @@ void main() {
   testWidgets('a footnote marker opens its note in a sheet; an image opens the viewer', (tester) async {
     await tester.pumpWidget(
       _app(
-        SubstackNativeArticle(
+        _article(
           post: _post(),
           blocks: _blocks('$_body${syntheticImage(0, 'https://cdn.example/a.jpg')}'),
           onLink: (_) {},
@@ -164,4 +189,74 @@ void main() {
     }
     expect(find.byType(PluginImageViewer), findsOneWidget);
   });
+
+  testWidgets('the place reached is kept by block and comes back on reopening', (tester) async {
+    final prefs = PrefServiceCache();
+    final blocks = _blocks([for (var i = 0; i < 300; i++) '<p>Line $i</p>'].join());
+    final first = _store(prefs);
+    final place = ArticleBlockReading(first, blocks: () => blocks.length);
+    await tester.pumpWidget(_app(_article(post: _post(), blocks: blocks, onLink: (_) {}, place: place)));
+    await _settle(tester, place.open(first.state.point));
+
+    for (var i = 0; i < 4; i++) {
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pump(const Duration(milliseconds: 300));
+    final saved = first.state.point;
+    expect(saved.paragraph, greaterThan(20));
+    place.close(then: first.destroy);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump(const Duration(seconds: 1));
+
+    final again = _store(prefs);
+    addTearDown(again.destroy);
+    expect(again.state.point.paragraph, saved.paragraph, reason: 'the place is in the journal');
+    final reopened = ArticleBlockReading(again, blocks: () => blocks.length);
+    addTearDown(reopened.close);
+    await tester.pumpWidget(_app(_article(post: _post(), blocks: blocks, onLink: (_) {}, place: reopened)));
+    await _settle(tester, reopened.open(again.state.point));
+
+    final line = find.text('Line ${saved.paragraph}', findRichText: true);
+    expect(line, findsOneWidget);
+    final list = tester.getTopLeft(find.byType(CustomScrollView)).dy;
+    expect(tester.getTopLeft(line).dy - list, closeTo(saved.leading, 2));
+    await _finish(tester);
+  });
+
+  testWidgets('a jump from the contents puts its block at the top', (tester) async {
+    final document = SubstackArticleDocument.parse(
+      [for (var i = 0; i < 60; i++) '<h2>Part $i</h2><p>${'Words ' * 80}</p>'].join(),
+    );
+    final blocks = substackBlocksOfBody(document.body);
+    final place = ArticleBlockReading(_store(), blocks: () => blocks.length);
+    await tester.pumpWidget(_app(_article(post: _post(), blocks: blocks, onLink: (_) {}, place: place)));
+    await _settle(tester, place.open(const ArticleReadPoint()));
+
+    final heading = document.headings[40];
+    final passages = [for (final passage in document.passages) passage.anchor];
+    final index = substackBlockOfPassage(blocks, passages, heading.anchor)!;
+    await _settle(tester, place.showBlock(index, duration: const Duration(milliseconds: 250)));
+
+    final part = find.text('Part 40', findRichText: true);
+    expect(part, findsOneWidget);
+    expect(tester.getTopLeft(part).dy, closeTo(tester.getTopLeft(find.byType(CustomScrollView)).dy, 2));
+    await _finish(tester);
+  });
+}
+
+/// Takes the article down and lets the reading store's last write run.
+Future<void> _finish(WidgetTester tester) async {
+  await tester.pumpWidget(const SizedBox());
+  await tester.pump(const Duration(seconds: 1));
+}
+
+/// Pumps frames until [done] completes: a restore waits on laid-out frames.
+Future<void> _settle(WidgetTester tester, Future<void> done) async {
+  var finished = false;
+  unawaited(done.whenComplete(() => finished = true));
+  for (var i = 0; i < 200 && !finished; i++) {
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+  expect(finished, isTrue);
 }
