@@ -1,7 +1,7 @@
 # Substack native reader (proposal)
 
-Status: **proposed, not started.** Plan item 7 in `docs/substack/audit.md` §9 waits on the owner's go-ahead. This file
-is what that decision is about; nothing here is implemented.
+Status: **in progress.** The owner said to continue with Tier 2 (2026-10-17). Done: the block model
+(`substack_blocks.dart`, step 1). Not wired to any screen yet; the WebView reader is unchanged.
 
 ## Why
 
