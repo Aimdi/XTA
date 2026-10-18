@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_transport.dart';
+
+import 'support/substack_clock.dart';
 
 const _publication = SubstackPublication(
   subdomain: 'fieldnotes',
@@ -28,7 +31,7 @@ http.Response _json(Object? value, http.Request request) => http.Response(
 );
 
 SubstackClient _client(Future<http.Response> Function(http.Request request) respond) {
-  final client = SubstackClient(httpClient: MockClient(respond));
+  final client = SubstackClient(transport: SubstackTransport(MockClient(respond), clock: FakeSubstackClock()));
   addTearDown(client.httpClient.close);
   return client;
 }
@@ -410,7 +413,8 @@ void main() {
         'children': [visible],
       };
     }
-    expect(flattenSubstackComments([visible], maxDepth: 2).map((comment) => comment.depth), [0, 1, 2]);
+    // Deeper replies are kept at the deepest indent (BUG-01); the walk still ends.
+    expect(flattenSubstackComments([visible], maxDepth: 2).map((comment) => comment.depth), [0, 1, ...List.filled(9, 2)]);
     Map<String, Object?> deleted = {'id': 'leaf', 'body': 'Leaf'};
     for (var index = 0; index < 21000; index++) {
       deleted = {

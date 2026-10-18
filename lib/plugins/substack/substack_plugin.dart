@@ -1,4 +1,5 @@
 import 'package:xta/plugins/substack/podcast_store.dart';
+import 'package:xta/media/podcast_places.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ import 'package:xta/plugins/substack/substack_screen.dart';
 import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_search_store.dart';
+import 'package:xta/plugins/substack/substack_settings.dart';
 
 class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   SubstackPlugin();
@@ -127,14 +129,24 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   ];
 
   @override
+  Widget? settingsScreen(BuildContext context) => const SubstackSettingsScreen();
+
+  @override
   Future<void> resetPreferences(BasePrefService prefs) async {
     await prefs.set(optionPluginSubstackPublications, '[]');
     await prefs.set(optionPluginSubstackReadIds, '[]');
     await prefs.set('plugin.substack.podcast.v1', '');
+    await prefs.set(podcastSpeedPreference, 1.0);
+    await prefs.set(podcastPlacesPreference, '');
     await prefs.set(optionPluginSubstackLikedPosts, '[]');
     await prefs.set(optionPluginSubstackSavedPosts, '[]');
     await prefs.set(optionPluginSubstackPinnedPublications, '');
     await prefs.set(substackSearchHistoryKey, '[]');
+    await prefs.set(optionPluginSubstackFeedMemory, '');
+    await prefs.set(optionPluginSubstackNativeReader, false);
+    await prefs.set(optionPluginSubstackReaderFont, 'serif');
+    await prefs.set(optionPluginSubstackColumnWidth, 'medium');
+    await prefs.set(optionPluginSubstackMarkReadOnScroll, false);
   }
 
   @override

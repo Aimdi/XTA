@@ -103,4 +103,25 @@ void main() {
       expect(substackPostStub(link, publicationName: 'Platformer').publicationName, 'Platformer');
     });
   });
+
+  group('custom-domain candidates', () {
+    test('a /p/ link on an unknown domain is a candidate on its own host', () {
+      expect(
+        parseCustomDomainPostCandidate('https://www.example.org/p/hello-world?utm=x'),
+        SubstackPostLink(publicationBase: Uri.parse('https://www.example.org'), slug: 'hello-world'),
+      );
+    });
+
+    test('Substack hosts, followed domains, other shapes and Instagram are not candidates', () {
+      expect(parseCustomDomainPostCandidate('https://foo.substack.com/p/x'), isNull);
+      expect(
+        parseCustomDomainPostCandidate('https://news.example.org/p/x', knownBaseUrls: ['https://news.example.org']),
+        isNull,
+      );
+      expect(parseCustomDomainPostCandidate('https://example.org/posts/x'), isNull);
+      expect(parseCustomDomainPostCandidate('https://example.org/p/archive'), isNull);
+      expect(parseCustomDomainPostCandidate('https://www.instagram.com/p/Cabc123/'), isNull);
+      expect(parseCustomDomainPostCandidate('ftp://example.org/p/x'), isNull);
+    });
+  });
 }

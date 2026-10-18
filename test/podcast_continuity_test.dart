@@ -257,6 +257,73 @@ void main() {
     expect(player.commands, isNot(contains('play')));
     expect(PodcastCheckpoint.decode(prefs.get(podcastCheckpointPreference)), isNull);
   });
+
+  test('a chosen speed applies now, survives a restart, and opens the next episode at it', () async {
+    final prefs = PrefServiceCache();
+    final player = FakeContinuityPlayer();
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one');
+
+    await store.setSpeed(1.5);
+    expect(store.state.speed, 1.5);
+    expect(player.commands.last, 'rate:1.5');
+    await store.setSpeed(3);
+    expect(store.state.speed, 1.5, reason: 'only the offered speeds');
+
+    await store.toggle(url: _nextUrl, title: 'Episode two');
+    final opened = player.commands.lastIndexOf('open:$_nextUrl');
+    expect(player.commands.sublist(opened), containsAllInOrder(['open:$_nextUrl', 'rate:1.5', 'play']));
+    await store.destroy();
+
+    final again = _store(prefs, FakeContinuityPlayer());
+    expect(again.state.speed, 1.5);
+    await again.destroy();
+  });
+
+  test('a stored speed that is not offered reads as normal speed', () async {
+    final store = _store(PrefServiceCache(defaults: {podcastSpeedPreference: 7.0}), FakeContinuityPlayer());
+    expect(store.state.speed, 1);
+    await store.destroy();
+  });
+
+  test('each episode resumes where it was left, and a finished one starts over', () async {
+    final prefs = PrefServiceCache();
+    final player = FakeContinuityPlayer();
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one');
+    player.emit(position: _position, playing: true);
+
+    await store.toggle(url: _nextUrl, title: 'Episode two');
+    expect(player.opens.last.start, Duration.zero, reason: 'a new episode starts at the top');
+    player.emit(position: const Duration(minutes: 3), playing: true);
+
+    await store.toggle(url: _url, title: 'Episode one');
+    expect(player.opens.last.start, _position, reason: 'the first one picks up where it was');
+    await store.destroy();
+
+    final again = _store(prefs, FakeContinuityPlayer());
+    await again.toggle(url: _nextUrl, title: 'Episode two');
+    expect(again.state.position, const Duration(minutes: 3), reason: 'places survive a restart');
+    await again.stop(finished: true);
+    await again.toggle(url: _nextUrl, title: 'Episode two');
+    expect(again.state.position, Duration.zero, reason: 'a finished episode forgets its place');
+    await again.destroy();
+  });
+
+  test('normal speed is set on open too, so a rate the player kept is not carried over', () async {
+    final prefs = PrefServiceCache();
+    final player = FakeContinuityPlayer();
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one');
+    await store.setSpeed(1.5);
+    await store.stop();
+    await store.setSpeed(1.0);
+
+    await store.toggle(url: _nextUrl, title: 'Episode two');
+    final opened = player.commands.lastIndexOf('open:$_nextUrl');
+    expect(player.commands.sublist(opened), contains('rate:1.0'));
+    await store.destroy();
+  });
 }
 
 class _DelayedPrefs extends PrefServiceCache {

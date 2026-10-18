@@ -242,6 +242,11 @@ const optionPluginSubstackLikedPosts = 'plugin.substack.liked_posts';
 const optionPluginSubstackSavedPosts = 'plugin.substack.saved_posts';
 const optionPluginSubstackPinnedPublications =
     'plugin.substack.pinned_publications';
+const optionPluginSubstackFeedMemory = 'plugin.substack.feed_snapshot';
+const optionPluginSubstackNativeReader = 'plugin.substack.native_reader';
+const optionPluginSubstackReaderFont = 'plugin.substack.reader_font';
+const optionPluginSubstackColumnWidth = 'plugin.substack.column_width';
+const optionPluginSubstackMarkReadOnScroll = 'plugin.substack.mark_read_on_scroll';
 const substackFeedPageSize = 8;
 const substackReadIdsCap = 400;
 const substackLikedPostsCap = 400;

@@ -21,10 +21,10 @@ import 'package:xta/plugins/pixiv/pixiv_novel_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_blocks.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_header.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_menu.dart';
-import 'package:xta/plugins/pixiv/pixiv_novel_reader_position.dart';
 import 'package:xta/plugins/pixiv/pixiv_novel_reader_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_share_link.dart';
+import 'package:xta/reading/article_block_reading.dart';
 import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_store.dart';
 import 'package:xta/ui/errors.dart';
@@ -66,28 +66,8 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
   late final ArticleReadingStore _reading;
   late final PixivEmbeddedWorksStore _works;
   final _loads = PixivLoads();
-  final _scroll = AutoScrollController();
-  final _viewport = GlobalKey();
-  late final _position = PixivNovelScrollPosition(_scroll, _viewport);
-  Timer? _report;
-
-  /// Set while the reader's place is put back, so the moves made for it are not reported as reading.
-  bool _restoring = true;
-
-  /// The place being put back, and how many restores are queued for it: a
-  /// text size changed meanwhile holds this place rather than reading a view
-  /// still on its way there.
-  ArticleReadPoint? _holding;
-  int _queued = 0;
-  Future<void> _restores = Future.value();
-  bool _interacted = false;
-  bool _userScrolled = false;
   bool _opened = false;
-
-  /// Where the reader was when leaving before the last scroll was reported.
-  /// Read while the view is still laid out, handed over in [dispose], once
-  /// nothing on screen listens any more.
-  ArticleReadPoint? _leftAt;
+  late final _place = ArticleBlockReading(_reading, blocks: () => _novel.state?.blocks.length ?? 0);
 
   @override
   void initState() {
@@ -116,27 +96,7 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
     _opened = true;
     recordPixivNovelVisit(context, reading.novel);
     _reading.setActive(true);
-    if (await _putBack(_reading.state.point)) _reportNow();
-  }
-
-  /// Puts [point] back once the next frame is laid out, after the restores
-  /// queued before it; only the last of a burst moves the list. True when it
-  /// was the last and the place is back.
-  Future<bool> _putBack(ArticleReadPoint point) async {
-    _holding = point;
-    _restoring = true;
-    _queued++;
-    final previous = _restores;
-    final restore = _restores = () async {
-      await previous;
-      await WidgetsBinding.instance.endOfFrame;
-      if (mounted && _queued == 1) await _position.restore(point, blocks: _novel.state?.blocks.length ?? 0);
-    }();
-    await restore;
-    if (--_queued > 0 || !mounted) return false;
-    _holding = null;
-    _restoring = false;
-    return true;
+    await _place.open(_reading.state.point);
   }
 
   @override
@@ -145,77 +105,29 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
 
   @override
   void deactivate() {
-    if (_report?.isActive ?? false) _leftAt = _restoring ? null : _position.read();
+    _place.deactivate();
     super.deactivate();
   }
 
   @override
   void activate() {
     super.activate();
-    _leftAt = null;
+    _place.activate();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _report?.cancel();
-    _scroll.dispose();
-    _saveAndClose(_reading, _leftAt, interacted: _interacted);
+    _place.close(then: _reading.destroy);
     _works.destroyWhenSettled();
     _loads.destroyAfter([_novel]);
     super.dispose();
   }
 
-  /// Saving the place writes preferences, which rebuilds what listens to them,
-  /// so it waits until this frame has finished taking the reader down.
-  static void _saveAndClose(ArticleReadingStore reading, ArticleReadPoint? leftAt, {required bool interacted}) =>
-      scheduleMicrotask(() {
-        if (leftAt != null) reading.receivePoint(leftAt, interacted: interacted);
-        unawaited(reading.destroy());
-      });
-
-  bool _onScroll(ScrollNotification notification) {
-    if (notification.depth != 0 || _restoring) return false;
-    if (notification is ScrollStartNotification && notification.dragDetails != null) _interacted = true;
-    if (notification is ScrollUpdateNotification) {
-      if (_interacted) _userScrolled = true;
-      _report?.cancel();
-      _report = Timer(const Duration(milliseconds: 200), _reportNow);
-    }
-    return false;
-  }
-
-  void _reportNow() {
-    _report?.cancel();
-    final point = _restoring ? null : _position.read();
-    if (point == null) return;
-    final position = _scroll.position;
-    _reading.receivePoint(
-      point,
-      interacted: _interacted,
-      userScrolled: _userScrolled,
-      atEnd: position.maxScrollExtent > 24 && position.pixels >= position.maxScrollExtent - 24,
-    );
-  }
-
-  /// A new text size or spacing keeps the passage being read at the top.
-  void _keepPlace() {
-    final point = _holding ?? _position.read();
-    if (point != null) unawaited(_putBack(point));
-  }
-
-  void _startOver() {
-    _interacted = true;
-    _userScrolled = false;
-    if (_scroll.hasClients) _scroll.jumpTo(0);
-    _reportNow();
-  }
-
   void _jumpToPage(int page) {
     final index = _novel.state?.pageStarts[page];
     if (index == null) return;
-    _interacted = true;
-    unawaited(_position.showBlock(index, duration: xtaMotionDuration(context, kXtaMotionNavigation)));
+    unawaited(_place.showBlock(index, duration: xtaMotionDuration(context, kXtaMotionNavigation)));
   }
 
   void _openChapter(int novelId) => Navigator.pushReplacement(context, pixivNovelReaderRoute(novelId));
@@ -237,7 +149,7 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
       case PixivNovelMenuAction.next:
         if (reading.content.next case final chapter?) _openChapter(chapter.id);
       case PixivNovelMenuAction.appearance:
-        unawaited(showArticleAppearanceSheet(context, _reading, onChanged: _keepPlace));
+        unawaited(showArticleAppearanceSheet(context, _reading, onChanged: _place.keepPlace));
       case PixivNovelMenuAction.export:
         unawaited(exportPixivNovel(context, reading));
       case PixivNovelMenuAction.share:
@@ -297,7 +209,7 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
       ),
       body: Column(
         children: [
-          ArticleReaderControls(store: _reading, onAppearanceChanged: _keepPlace, onStartOver: _startOver),
+          ArticleReaderControls(store: _reading, onAppearanceChanged: _place.keepPlace, onStartOver: _place.startOver),
           Expanded(child: _text(reading)),
         ],
       ),
@@ -334,10 +246,10 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
         final scope = _scope(context, reading, appearance);
         return SelectionArea(
           child: NotificationListener<ScrollNotification>(
-            onNotification: _onScroll,
+            onNotification: _place.onScroll,
             child: CustomScrollView(
-              key: _viewport,
-              controller: _scroll,
+              key: _place.viewport,
+              controller: _place.controller,
               slivers: [
                 SliverPadding(
                   padding: side,
@@ -369,7 +281,7 @@ class _PixivNovelReaderScreenState extends State<PixivNovelReaderScreen> with Wi
     itemCount: reading.blocks.length,
     itemBuilder: (context, index) => AutoScrollTag(
       key: ValueKey(index),
-      controller: _scroll,
+      controller: _place.controller,
       index: index,
       child: PixivNovelBlockView(block: reading.blocks[index], scope: scope),
     ),

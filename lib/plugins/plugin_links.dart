@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -18,6 +19,7 @@ import 'package:xta/plugins/plugin_url.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_thread_screen.dart';
+import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_links.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_reader_screen.dart';
@@ -111,7 +113,15 @@ Future<bool> openWithPlugins(BuildContext context, String url) async {
   if (!context.mounted) {
     return false;
   }
-  return _openParsed(context, url);
+  if (await _openParsed(context, url)) {
+    return true;
+  }
+  // Last: asking an unknown domain whether it is Substack costs a request,
+  // which no link another plugin reads should pay.
+  if (!context.mounted || isDesktop) {
+    return false;
+  }
+  return _openSubstackCandidate(context, url);
 }
 
 Future<bool> _openParsed(BuildContext context, String url) async {
@@ -227,6 +237,42 @@ Future<bool> _openSubstack(BuildContext context, String url) async {
   );
   return true;
 }
+
+/// A `/p/slug` link on an unknown domain opens in the reader only when that
+/// domain answers as a Substack publication for this post; otherwise the
+/// browser has it, as before.
+Future<bool> _openSubstackCandidate(BuildContext context, String url) async {
+  final prefs = _prefsOf(context);
+  if (prefs == null || prefs.get(optionPluginSubstackEnabled) != true) return false;
+  final candidate = parseCustomDomainPostCandidate(
+    url,
+    knownBaseUrls: _knownPublications(context).map((e) => e.baseUrl),
+  );
+  if (candidate == null) return false;
+  final SubstackClient client;
+  try {
+    client = context.read<SubstackClient>();
+  } catch (_) {
+    return false;
+  }
+  // The domain may take a moment to answer; the reader sees why nothing opened yet.
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  final note = messenger?.showSnackBar(
+    SnackBar(content: Text(L10n.of(context).plugin_substack_checking_link), duration: substackCandidateTimeout),
+  );
+  final post = await client
+      .probeCustomDomainPost(candidate.publicationBase, candidate.slug)
+      .timeout(substackCandidateTimeout, onTimeout: () => null)
+      .catchError((Object _) => null);
+  note?.close();
+  if (post == null || !context.mounted) return false;
+  await Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)));
+  return true;
+}
+
+/// How long a tapped link waits to learn whether its domain is a Substack
+/// publication before the browser opens it instead.
+const substackCandidateTimeout = Duration(seconds: 4);
 
 /// The Substack post [url] points at, or null when the plugin is off or the
 /// link is not a readable post.

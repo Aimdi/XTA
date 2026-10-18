@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:collection';
 import 'package:xta/utils/json.dart';
 
@@ -19,6 +20,14 @@ class SubstackPublication {
   });
 
   String get id => subdomain.toLowerCase();
+
+  SubstackPublication withSubdomain(String subdomain) => SubstackPublication(
+    subdomain: subdomain,
+    baseUrl: baseUrl,
+    name: name,
+    description: description,
+    logoUrl: logoUrl,
+  );
 
   /// Custom-domain follows can land on `www`; never show that as the title.
   String get displayName {
@@ -99,6 +108,9 @@ class SubstackPost {
   final int? reactionCount;
   final int? commentCount;
 
+  /// The words in the whole post, as the API counts them (UNVERIFIED field).
+  final int? wordCount;
+
   const SubstackPost({
     required this.id,
     required this.title,
@@ -118,6 +130,7 @@ class SubstackPost {
     this.audioUrl,
     this.reactionCount,
     this.commentCount,
+    this.wordCount,
   });
 
   /// Substack uses `only_paid` (and occasionally founding tiers) for gated posts.
@@ -176,6 +189,7 @@ class SubstackPost {
       audioUrl: Json(json)['podcast_url'].string,
       reactionCount: _countOf(json['reaction_count']) ?? _sumOfReactions(json['reactions']),
       commentCount: _countOf(json['comment_count']),
+      wordCount: _countOf(json['wordcount']),
       publicationBaseUrl: publicationBaseUrl,
       publicationName: publicationName,
     );
@@ -199,6 +213,10 @@ class SubstackPost {
   }
 
   bool get isPodcast => audioUrl != null && audioUrl!.isNotEmpty;
+
+  /// Whether this copy came from the API, which names posts by number. The
+  /// RSS fallback has no number and uses the slug.
+  bool get hasApiId => _apiId.hasMatch(id);
 
   /// Whether the post leads with a video, which the tile marks and the reader
   /// plays. A video post used to be indistinguishable from any other, so the
@@ -228,6 +246,7 @@ class SubstackPost {
     'podcast_url': audioUrl,
     'reaction_count': reactionCount,
     'comment_count': commentCount,
+    'wordcount': wordCount,
     'publicationBaseUrl': publicationBaseUrl,
     'publicationName': publicationName,
   };
@@ -252,6 +271,7 @@ class SubstackPost {
       audioUrl: Json(json)['podcast_url'].string ?? Json(json)['audioUrl'].string,
       reactionCount: _countOf(json['reaction_count']),
       commentCount: _countOf(json['comment_count']),
+      wordCount: _countOf(json['wordcount']),
       publicationBaseUrl: base,
       publicationName: name,
     );
@@ -292,16 +312,38 @@ class SubstackFeedSnapshot {
 }
 
 /// Local filter on the merged Substack feed (inbox-style, no account needed).
-enum SubstackFeedFilter { all, unread, free, podcast, video }
+enum SubstackFeedFilter { all, unread, saved, free, paid, podcast, video }
 
-bool postMatchesSubstackFilter(SubstackPost post, SubstackFeedFilter filter, Set<String> readIds) {
+/// Whether [post] passes [filter]; [isSaved] answers for the Saved library.
+bool postMatchesSubstackFilter(
+  SubstackPost post,
+  SubstackFeedFilter filter,
+  Set<String> readIds, {
+  bool Function(SubstackPost post) isSaved = _nothingSaved,
+}) {
   return switch (filter) {
     SubstackFeedFilter.all => true,
-    SubstackFeedFilter.unread => !readIds.contains(post.id),
+    SubstackFeedFilter.unread => !substackPostIsRead(readIds, post),
+    SubstackFeedFilter.saved => isSaved(post),
     SubstackFeedFilter.free => !post.isPaywalled,
+    SubstackFeedFilter.paid => post.isPaywalled,
     SubstackFeedFilter.podcast => post.isPodcast,
     SubstackFeedFilter.video => post.isVideo,
   };
+}
+
+bool _nothingSaved(SubstackPost post) => false;
+
+const substackWordsPerMinute = 230;
+
+/// Minutes to read [post]: the words of [plainText] when the body is at
+/// hand, else the API's count. None for an episode or a video, or when
+/// neither count is known.
+int? substackReadMinutes(SubstackPost post, {String? plainText}) {
+  if (post.isPodcast || post.isVideo) return null;
+  final words = plainText == null ? post.wordCount : RegExp(r'\S+').allMatches(plainText).length;
+  if (words == null || words <= 0) return null;
+  return max(1, (words / substackWordsPerMinute).ceil());
 }
 
 /// One public Note from Substack's reader discovery feed.
@@ -587,6 +629,95 @@ bool sameSubstackHost(String a, String b) {
   return norm(a) == norm(b);
 }
 
+final _apiId = RegExp(r'^\d+$');
+final _postKeys = Expando<String>();
+
+/// One key for a post, whichever copy it is: the API names it by number and
+/// the RSS fallback by slug, but both carry the same canonical URL.
+String substackPostKey(SubstackPost post) => _postKeys[post] ??= _postKeyOf(post);
+
+String _postKeyOf(SubstackPost post) {
+  final url = Uri.tryParse(post.canonicalUrl?.trim() ?? '');
+  final path = url?.path.replaceFirst(RegExp(r'/+$'), '') ?? '';
+  if (url != null && url.host.isNotEmpty && path.isNotEmpty) return '${_withoutWww(url.host.toLowerCase())}$path';
+  final host = substackHostId(post.publicationBaseUrl);
+  return host.isNotEmpty && post.slug.isNotEmpty ? '$host/p/${post.slug}' : post.id;
+}
+
+/// Whether [a] and [b] are copies of one post.
+bool sameSubstackPost(SubstackPost a, SubstackPost b) =>
+    substackPostKey(a) == substackPostKey(b) || (a.hasApiId && a.id == b.id);
+
+/// Whether [post] is among [readIds]: by its key, or by its own id as reads
+/// were stored before posts had keys.
+bool substackPostIsRead(Set<String> readIds, SubstackPost post) =>
+    readIds.contains(substackPostKey(post)) || readIds.contains(post.id);
+
+/// [posts] with one copy of each post, in first-seen order. An RSS copy never
+/// replaces the API copy, which carries the numeric id and the counts.
+List<SubstackPost> mergeSubstackCopies(Iterable<SubstackPost> posts) {
+  final unique = <String, SubstackPost>{};
+  for (final post in posts) {
+    final key = substackPostKey(post);
+    final kept = unique[key];
+    if (kept == null || !kept.hasApiId || post.hasApiId) unique[key] = post;
+  }
+  return unique.values.toList();
+}
+
+/// The follow that [publication] is, if any: the same host, or the same id
+/// when neither id is a guess. A publication built from a post only guesses
+/// its id from its host, and that guess can be another publication's.
+SubstackPublication? substackFollowOf(Iterable<SubstackPublication> follows, SubstackPublication publication) {
+  final host = _hostOf(publication);
+  final sameHost = host.isEmpty
+      ? const <SubstackPublication>[]
+      : follows.where((follow) => sameSubstackHost(_hostOf(follow), host)).toList();
+  if (sameHost.isNotEmpty) {
+    return sameHost.firstWhere((follow) => follow.id == publication.id, orElse: () => sameHost.first);
+  }
+  if (_guessedId(publication)) return null;
+  return follows.where((follow) => follow.id == publication.id && !_guessedId(follow)).firstOrNull;
+}
+
+/// Where [publication] goes among [follows]: over the follow it already is,
+/// under that follow's id, or under its own host when another publication
+/// holds its id. Nothing is overwritten.
+SubstackPublication placeSubstackFollow(Iterable<SubstackPublication> follows, SubstackPublication publication) {
+  final follow = substackFollowOf(follows, publication);
+  if (follow != null) return follow.subdomain.isEmpty ? publication : publication.withSubdomain(follow.subdomain);
+  final host = substackHostId(publication.baseUrl);
+  if (host.isEmpty || !follows.any((other) => other.id == publication.id)) return publication;
+  return publication.withSubdomain(host);
+}
+
+/// A follow id that no other site can hold: the host without `www.`.
+String substackHostId(String baseUrl) => _withoutWww(Uri.tryParse(baseUrl)?.host.toLowerCase() ?? '');
+
+String _withoutWww(String host) => host.startsWith('www.') ? host.substring(4) : host;
+
+/// A custom domain with more than two labels once `www.` is dropped, such as
+/// `newsletter.example.com`: its first label is a prefix, not a subdomain.
+bool isDeepCustomHost(String host) {
+  if (isSubstackPublicationHost(host) || isSubstackServiceHost(host)) return false;
+  return _withoutWww(host.toLowerCase()).split('.').where((e) => e.isNotEmpty).length > 2;
+}
+
+/// The id of a publication found without Substack's JSON. On a deep host the
+/// first label is a prefix unrelated sites share, so the host is the id; on
+/// an apex domain the first label usually is the Substack subdomain.
+String substackGuessedId(Uri base) =>
+    isDeepCustomHost(base.host) ? _withoutWww(base.host.toLowerCase()) : subdomainOf(base);
+
+String _hostOf(SubstackPublication publication) => Uri.tryParse(publication.baseUrl)?.host.toLowerCase() ?? '';
+
+bool _guessedId(SubstackPublication publication) {
+  final id = publication.id;
+  if (_unknownSubdomain(id)) return true;
+  final host = _hostOf(publication);
+  return isDeepCustomHost(host) && id == registrableLabel(host);
+}
+
 /// First label of a custom domain (`www.platformer.news` → `platformer`).
 String? registrableLabel(String host) {
   var h = host.toLowerCase();
@@ -642,7 +773,7 @@ SubstackPublication? publicationFromHomepageHtml(String html, Uri base) {
   if (name == null || publicationNameLooksGeneric(name)) return null;
   final image = _metaContent(html, 'og:image');
   return SubstackPublication(
-    subdomain: subdomainOf(base),
+    subdomain: substackGuessedId(base),
     baseUrl: base.origin,
     name: name,
     logoUrl: image == null || image.isEmpty ? null : image,
@@ -749,7 +880,7 @@ SubstackPublication? publicationFromBeehiivRemix(Object? remix, Uri base) {
   }
   final description = (Json(pub)['description'].string)?.trim();
   return SubstackPublication(
-    subdomain: subdomainOf(base),
+    subdomain: substackGuessedId(base),
     baseUrl: base.origin,
     name: name,
     description: description == null || description.isEmpty ? null : description,
@@ -804,38 +935,13 @@ SubstackPost? postFromBeehiivHtml(
   );
   if (fromRemix != null) return fromRemix;
 
-  final ld = _jsonLdArticle(html);
-  if (ld != null) {
-    final title = (ld['headline'] as String?)?.trim() ?? (ld['name'] as String?)?.trim() ?? '';
-    if (title.isNotEmpty) {
-      String? author;
-      final authorRaw = ld['author'];
-      if (authorRaw is Map) {
-        author = (authorRaw['name'] as String?)?.trim();
-      }
-      String? image;
-      final imageRaw = ld['image'];
-      if (imageRaw is Map) {
-        image = (imageRaw['url'] as String?)?.trim();
-      } else if (imageRaw is String) {
-        image = imageRaw.trim();
-      }
-      final origin = Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
-      return SubstackPost(
-        id: slug,
-        title: title,
-        subtitle: (ld['description'] as String?)?.trim(),
-        slug: slug,
-        postDate: ld['datePublished'] as String?,
-        canonicalUrl: (ld['url'] as String?)?.trim().isNotEmpty == true ? ld['url'] as String : '$origin/p/$slug',
-        coverImage: image == null || image.isEmpty ? null : image,
-        audience: ld['isAccessibleForFree'] == false ? 'only_paid' : 'everyone',
-        authorName: author == null || author.isEmpty ? null : author,
-        publicationBaseUrl: publicationBaseUrl,
-        publicationName: publicationName,
-      );
-    }
-  }
+  final fromLd = _postFromJsonLd(
+    Json(_jsonLdArticle(html)),
+    slug: slug,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+  if (fromLd != null) return fromLd;
 
   final ogType = _metaContent(html, 'og:type')?.toLowerCase();
   final title = _metaContent(html, 'og:title')?.trim();
@@ -853,6 +959,33 @@ SubstackPost? postFromBeehiivHtml(
     coverImage: image == null || image.isEmpty ? null : image,
     audience: 'everyone',
     authorName: author == null || author.isEmpty ? null : author,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+}
+
+/// A JSON-LD article; a field of an unexpected shape is left out, and no
+/// title means the next parser gets its turn.
+SubstackPost? _postFromJsonLd(
+  Json ld, {
+  required String slug,
+  required String publicationBaseUrl,
+  required String publicationName,
+}) {
+  String? text(Json value) => value.string?.trim().isNotEmpty == true ? value.string!.trim() : null;
+  final title = text(ld['headline']) ?? text(ld['name']);
+  if (title == null) return null;
+  final origin = Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
+  return SubstackPost(
+    id: slug,
+    title: title,
+    subtitle: text(ld['description']),
+    slug: slug,
+    postDate: ld['datePublished'].string,
+    canonicalUrl: text(ld['url']) ?? '$origin/p/$slug',
+    coverImage: text(ld['image']['url']) ?? text(ld['image']),
+    audience: ld['isAccessibleForFree'].boolean == false ? 'only_paid' : 'everyone',
+    authorName: text(ld['author']['name']),
     publicationBaseUrl: publicationBaseUrl,
     publicationName: publicationName,
   );
@@ -1064,9 +1197,34 @@ List<Uri> substackHostCandidates(Uri base, {String? subdomainHint}) {
     add('$slug.substack.com');
   }
 
-  addSubstackTwin(subdomainHint);
-  addSubstackTwin(registrableLabel(base.host));
+  // The host's first label only guesses at the Substack subdomain, and can
+  // name another publication: an apex domain uses it when no subdomain is
+  // known, and a deep host, whose first label is a prefix, never does.
+  final deep = isDeepCustomHost(base.host);
+  final label = registrableLabel(base.host);
+  if (!deep || subdomainHint?.trim().toLowerCase() != label) addSubstackTwin(subdomainHint);
+  if (!deep && _unknownSubdomain(subdomainHint)) addSubstackTwin(label);
   return out;
+}
+
+bool _unknownSubdomain(String? subdomain) {
+  final value = subdomain?.trim().toLowerCase() ?? '';
+  return value.isEmpty || value == 'www';
+}
+
+/// Whether a post served by a `{subdomain}.substack.com` twin belongs to the
+/// publication followed on its own domain: a twin that names another custom
+/// domain, or another subdomain than the one stored, is someone else.
+bool substackTwinMatches(SubstackPublication followed, Object? post) {
+  final publication = Json(post)['publishedBylines'][0]['publicationUsers'][0]['publication'];
+  final custom = publication['custom_domain'].string?.trim().toLowerCase() ?? '';
+  final followedHost = Uri.tryParse(followed.baseUrl)?.host ?? '';
+  if (custom.isNotEmpty && !sameSubstackHost(Uri.tryParse('https://$custom')?.host ?? custom, followedHost)) {
+    return false;
+  }
+  final subdomain = publication['subdomain'].string?.trim().toLowerCase() ?? '';
+  final stored = followed.subdomain.trim().toLowerCase();
+  return subdomain.isEmpty || _unknownSubdomain(stored) || !_isHandle(stored) || subdomain == stored;
 }
 
 Uri? _parseUserUri(String input) {
@@ -1125,7 +1283,8 @@ class SubstackComment {
 ///
 /// The shape is a list of comments each carrying `children`; anything that no
 /// longer fits is skipped rather than thrown, in the same spirit as every
-/// other reverse-engineered payload here.
+/// other reverse-engineered payload here. Replies deeper than [maxDepth] are
+/// kept at that depth: a long back-and-forth stops indenting, not reading.
 List<SubstackComment> flattenSubstackComments(Object? json, {int maxDepth = 8}) {
   final out = <SubstackComment>[];
   final root = json is Map ? Json(json)['comments'].raw : json;
@@ -1153,10 +1312,9 @@ List<SubstackComment> flattenSubstackComments(Object? json, {int maxDepth = 8}) 
         ),
       );
     }
-    if (entry.depth < maxDepth) {
-      for (final child in node['children'].list.reversed) {
-        pending.add((node: child.raw, depth: entry.depth + (visible ? 1 : 0), parent: visible ? id : entry.parent));
-      }
+    final depth = min(entry.depth + (visible ? 1 : 0), maxDepth);
+    for (final child in node['children'].list.reversed) {
+      pending.add((node: child.raw, depth: depth, parent: visible ? id : entry.parent));
     }
   }
   return out;

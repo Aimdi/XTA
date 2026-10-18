@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_article.dart';
 import 'package:xta/offline/offline_article_action.dart';
 import 'package:xta/offline/offline_store.dart';
+import 'package:xta/reading/article_block_reading.dart';
 import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_bridge.dart';
 import 'package:xta/reading/article_reading_store.dart';
+import 'package:xta/plugins/substack/substack_error_view.dart';
 import 'package:xta/plugins/substack/substack_reader_store.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/substack/substack_article_cache.dart';
@@ -19,7 +22,12 @@ import 'package:xta/plugins/substack/substack_article_navigation.dart';
 import 'package:xta/plugins/substack/substack_article_navigation_sheet.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_html.dart';
+import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_highlights.dart';
+import 'package:xta/plugins/substack/substack_highlights_sheet.dart';
+import 'package:xta/plugins/substack/substack_native_article.dart';
+import 'package:xta/plugins/substack/substack_reader_style.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_audio_player.dart';
 import 'package:xta/plugins/substack/substack_comments_screen.dart';
@@ -28,7 +36,8 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_engines.dart';
 import 'package:xta/speech/tts_settings.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
+import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -47,6 +56,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   final _articleCache = SubstackArticleCache();
   late final SubstackReaderStore _content;
   late final ArticleReadingStore _reading;
+  late final SubstackHighlightsStore _highlights;
+  late final _place = ArticleBlockReading(_reading, blocks: () => _content.state.blocks?.length ?? 0);
   SubstackPost get _post => _content.state.post;
   Object? get _error => _content.state.error;
   bool get _loading => _content.state.loading;
@@ -63,11 +74,12 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     WidgetsBinding.instance.addObserver(this);
     _content = SubstackReaderStore(widget.post);
     final read = context.read<SubstackReadStore>();
+    _highlights = SubstackHighlightsStore(read.prefs);
     _reading = ArticleReadingStore(
       prefs: read.prefs,
       articleId: substackArticleReadingId(widget.post),
-      onCompleted: () => read.markRead(_post.id),
-      alreadyCompleted: read.isRead(widget.post.id),
+      onCompleted: () => read.markPostRead(_post),
+      alreadyCompleted: read.isPostRead(widget.post),
       allowAutomaticCompletion: false,
     );
     // Seed speech from whatever we already know — title and excerpt — so Listen
@@ -145,7 +157,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       final offline = pinned?.substackPost;
       if (offline?.bodyHtml?.trim().isNotEmpty == true) return offline!;
       final cached = await _articleCache.get(post.publication, post.slug);
-      if (cached?.bodyHtml?.trim().isNotEmpty == true) return cached!;
+      if (cached != null && cached.bodyHtml?.trim().isNotEmpty == true && substackCachedCopyIsCurrent(cached, post)) {
+        return cached;
+      }
       if (post.bodyHtml?.trim().isNotEmpty == true) return post;
     }
     return client.fetchPost(post.publication, post.slug);
@@ -245,7 +259,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   Future<void> _loadLiveSite(String url) async {
     _reading.allowAutomaticCompletion = false;
     _reading.setActive(false);
-    _content.change(liveSite: true, document: null);
+    _content.change(liveSite: true, document: null, blocks: null);
     if (_speakText == null || _speakText!.trim().isEmpty) {
       _content.change(speakText: _fallbackSpeakText(_post));
     }
@@ -255,87 +269,137 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   Future<void> _showContent(SubstackPost post) async {
+    if (context.read<SubstackReadStore>().isPostRead(post)) unawaited(_reading.complete());
+    switch (substackReaderBodyFor(post)) {
+      case SubstackReaderBody.article:
+        await _showArticle(post, post.bodyHtml!);
+      case SubstackReaderBody.liveSite:
+        _content.change(paywalled: false, partial: false, empty: false, speakText: _fallbackSpeakText(post));
+        await _loadLiveSite(post.canonicalUrl!);
+      case SubstackReaderBody.paywall:
+        _showPane(post, paywalled: true);
+      case SubstackReaderBody.empty:
+        _showPane(post, paywalled: false);
+    }
+  }
+
+  /// The paid pane or the empty note: nothing goes into the web view.
+  void _showPane(SubstackPost post, {required bool paywalled}) {
+    _reading.allowAutomaticCompletion = false;
+    _reading.setActive(false);
+    _content.change(
+      blocks: null,
+      paywalled: paywalled,
+      empty: !paywalled,
+      partial: false,
+      loading: false,
+      liveSite: false,
+      speakText: _fallbackSpeakText(post),
+    );
+  }
+
+  // A paid post usually arrives with its opening paragraphs — the part the
+  // publication chose to give away. Refusing to render any of it because the
+  // post is marked paid threw away what had already been sent, and left a
+  // lock icon where there was something to read.
+  Future<void> _showArticle(SubstackPost post, String html) async {
     final generation = _content.generation;
-    if (context.read<SubstackReadStore>().isRead(post.id)) unawaited(_reading.complete());
-    final html = post.bodyHtml;
-    final hasBody = html != null && html.trim().isNotEmpty;
+    final wrap = _pageWrapper(post);
+    final native = PrefService.of(context, listen: false).get<bool>(optionPluginSubstackNativeReader) == true;
+    // One parse gives the page, the navigation index and the speech text; a
+    // long body is parsed off the UI isolate.
+    final key = '${substackPostKey(post)}\n${post.postDate}';
+    final parsed =
+        substackParsedArticles.get(key, html) ??
+        await parseInBackground<SubstackArticleDocument>(SubstackArticleDocument.parse, html);
+    substackParsedArticles.put(key, html, parsed);
+    if (!mounted || !_content.accepts(generation)) return;
+    _content.change(
+      paywalled: false,
+      empty: false,
+      liveSite: false,
+      speakText: _fallbackSpeakText(post, bodyPlain: parsed.plainText),
+      partial: post.isPaywalled,
+      document: parsed,
+    );
+    _reading.allowAutomaticCompletion = !post.isPaywalled;
+    if (native) return _showNative(parsed.body, generation);
+    _content.change(blocks: null);
+    _stopSpinnerWhenLoaded();
 
-    // A paid post usually arrives with its opening paragraphs — the part the
-    // publication chose to give away. Refusing to render any of it because the
-    // post is marked paid threw away what had already been sent, and left a
-    // lock icon where there was something to read.
-    if (hasBody) {
-      _content.change(paywalled: false);
-      _content.change(empty: false);
-      _content.change(liveSite: false);
-      _content.change(speakText: _fallbackSpeakText(post, bodyHtml: html));
-      _content.change(partial: post.isPaywalled, document: SubstackArticleDocument.parse(html));
-      _reading.allowAutomaticCompletion = !post.isPaywalled;
-      _stopSpinnerWhenLoaded();
+    // Article HTML is sanitized; JS stays on so a long-press can start
+    // Vorlesen from that paragraph.
+    await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    final document = await OfflineStore.shared.renderArticle(_offlineId, wrap(parsed));
+    if (!mounted || !_content.accepts(generation)) return;
+    await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
+  }
 
-      // Built before the first await: everything below it reads the theme and
-      // the strings, and `context` is not ours to touch across an async gap.
-      final scheme = Theme.of(context).colorScheme;
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      final page = wrapSubstackHtml(
-        title: post.title,
-        body: _content.state.document!.body,
-        subtitle: post.excerpt,
-        authorName: post.authorName,
-        publicationName: post.publicationName,
-        background: _cssColor(scheme.surface),
-        foreground: _cssColor(scheme.onSurface),
-        muted: _cssColor(scheme.onSurfaceVariant),
-        link: _cssColor(scheme.primary),
-        isDark: isDark,
-        isRtl: Directionality.of(context) == TextDirection.rtl,
-        fontSizePx: MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18,
-        lineHeight: _reading.state.lineHeight,
-        // Says where the free part stops, so the end of the preview does not
-        // read as the end of the article.
-        footer: post.isPaywalled ? L10n.of(context).plugin_substack_preview_ends : null,
-        footerLink: post.isPaywalled ? post.canonicalUrl : null,
-        footerLinkLabel: post.isPaywalled ? L10n.of(context).plugin_substack_continue_on_site : null,
+  /// The native reader: the parsed body as blocks, no web view.
+  Future<void> _showNative(String body, int generation) async {
+    final blocks = await parseInBackground<List<SubstackBlock>>(substackBlocksOfBody, body);
+    final kept = await OfflineStore.shared.articleImages(_offlineId);
+    if (!mounted || !_content.accepts(generation)) return;
+    // A refresh keeps the passage being read; a first open goes back to the saved place.
+    final point = (_content.state.blocks == null ? null : _place.place) ?? _reading.state.point;
+    _content.change(blocks: blocks, keptImages: kept, loading: false);
+    _reading.setActive(true);
+    await _place.open(point);
+  }
+
+  /// A link tapped in the native reader goes where a web view link would.
+  void _openNativeLink(String url) {
+    final link = substackLinkFor(context, url);
+    if (link != null && (link.slug != _post.slug || link.publicationBase.origin != _post.publicationBaseUrl)) {
+      unawaited(
+        _openReaderRoute(SubstackReaderScreen(post: substackPostStub(link, publicationName: _post.publicationName))),
       );
-
-      // Article HTML is sanitized; JS stays on so a long-press can start
-      // Vorlesen from that paragraph.
-      await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
-      final document = await OfflineStore.shared.renderArticle(_offlineId, page);
-      if (!mounted || !_content.accepts(generation)) return;
-      await _controller.loadHtmlString(document, baseUrl: post.canonicalUrl);
-
       return;
     }
+    unawaited(openLink(context, url));
+  }
 
-    if (post.canonicalUrl != null) {
-      _content.change(paywalled: false);
-      _content.change(partial: false);
-      _content.change(empty: false);
-      _content.change(speakText: _fallbackSpeakText(post));
-      await _loadLiveSite(post.canonicalUrl!);
-      return;
-    }
-
-    if (post.isPaywalled) {
-      _content.change(paywalled: true);
-      _content.change(partial: false);
-      _content.change(empty: false);
-      _content.change(loading: false);
-      _content.change(liveSite: false);
-      _content.change(speakText: _fallbackSpeakText(post));
-
-      return;
-    }
-
-    if (mounted) {
-      _content.change(loading: false);
-      _content.change(empty: true);
-      _content.change(paywalled: false);
-      _content.change(partial: false);
-      _content.change(liveSite: false);
-      _content.change(speakText: _fallbackSpeakText(post));
-    }
+  /// The page around a sanitized body. Theme, text scale and strings are read
+  /// now: `context` is not ours to touch across the parse's async gap.
+  String Function(SubstackArticleDocument parsed) _pageWrapper(SubstackPost post) {
+    final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final fontSizePx = MediaQuery.textScalerOf(context).scale(18) * _reading.state.fontSize / 18;
+    final lineHeight = _reading.state.lineHeight;
+    final l10n = L10n.of(context);
+    final style = substackReaderStyle(PrefService.of(context, listen: false));
+    return (parsed) => wrapSubstackHtml(
+      title: post.title,
+      body: parsed.body,
+      bodySanitized: true,
+      subtitle: post.excerpt,
+      authorName: post.authorName,
+      publicationName: post.publicationName,
+      readTime: switch (substackReadMinutes(post, plainText: parsed.plainText)) {
+        final minutes? => l10n.plugin_substack_read_minutes(minutes),
+        null => null,
+      },
+      background: _cssColor(scheme.surface),
+      foreground: _cssColor(scheme.onSurface),
+      muted: _cssColor(scheme.onSurfaceVariant),
+      link: _cssColor(scheme.primary),
+      isDark: isDark,
+      isRtl: isRtl,
+      fontSizePx: fontSizePx,
+      lineHeight: lineHeight,
+      font: style.font,
+      column: style.column,
+      // Says where the free part stops, so the end of the preview does not
+      // read as the end of the article.
+      footer: post.isPaywalled ? l10n.plugin_substack_preview_ends : null,
+      footerLink: post.isPaywalled ? post.canonicalUrl : null,
+      footerLinkLabel: post.isPaywalled ? l10n.plugin_substack_continue_on_site : null,
+      embedLabel: l10n.plugin_substack_load_embed,
+      webOnlyLabel: l10n.plugin_substack_web_only_block,
+      openLabel: l10n.open_in_browser,
+      postUrl: post.canonicalUrl,
+    );
   }
 
   /// True when what is being read aloud is this article, rather than one the
@@ -348,6 +412,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       return;
     }
 
+    if (await _speakFromSelection()) return;
+    if (!mounted) return;
     final choice = readTtsChoice(PrefService.of(context, listen: false));
     var text = _speakText?.trim() ?? '';
     if (text.length < 40 && _liveSite) {
@@ -364,6 +430,20 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     final spoke = await speech.speak(title: _post.title, text: text, choice: choice);
     if (!spoke && mounted) {
       await _onTtsFailed(speech, choice);
+    }
+  }
+
+  /// Selected text in the article means "read from here": the page posts the
+  /// rest of the article from that paragraph through the speech channel.
+  Future<bool> _speakFromSelection() async {
+    if (_liveSite || _content.state.document == null) return false;
+    try {
+      final started = await _controller.runJavaScriptReturningResult(
+        'window.xtaSpeakFromSelection ? window.xtaSpeakFromSelection() : false',
+      );
+      return '$started' == 'true';
+    } catch (_) {
+      return false;
     }
   }
 
@@ -431,7 +511,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
           ScopedBuilder<SubstackSavedStore, List<SubstackPost>>(
             store: context.read<SubstackSavedStore>(),
             onState: (context, saved) {
-              final isSaved = saved.any((p) => p.id == _post.id);
+              final isSaved = saved.any((p) => sameSubstackPost(p, _post));
               return IconButton(
                 tooltip: isSaved ? L10n.of(context).plugin_substack_unsave : L10n.of(context).plugin_substack_save,
                 icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_outline),
@@ -458,8 +538,14 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
             onSelected: (action) => action(),
             itemBuilder: (context) {
               final l10n = L10n.of(context);
-              final liked = context.read<SubstackLikesStore>().state.any((p) => p.id == _post.id);
+              final liked = context.read<SubstackLikesStore>().contains(_post);
               return [
+                if (_content.state.blocks != null)
+                  _menu(
+                    Icons.format_quote_outlined,
+                    l10n.plugin_substack_highlights,
+                    () => showSubstackHighlights(context, _highlights, _post),
+                  ),
                 if (!_liveSite && _content.state.document != null) ...[
                   _menu(Icons.format_list_bulleted, l10n.article_reader_contents, () => _openArticleNavigation()),
                   _menu(Icons.manage_search, l10n.article_reader_find, () => _openArticleNavigation(find: true)),
@@ -519,8 +605,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
             store: _reading,
             supportsAppearance: !_liveSite && !_empty && !_paywalled,
             canComplete: !_loading,
-            onAppearanceChanged: _applyReadingAppearance,
+            onAppearanceChanged: _content.state.blocks == null ? _applyReadingAppearance : _place.keepPlace,
             onStartOver: () {
+              if (_content.state.blocks != null) return _place.startOver();
               if (!_liveSite) _controller.runJavaScript('window.xtaArticle?.startOver();');
             },
           ),
@@ -547,10 +634,16 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
     _reading.setActive(false);
     final anchor = await showSubstackArticleNavigation(context, document, find: find);
     if (!mounted || _liveSite) return;
-    if (anchor != null && identical(document, _content.state.document)) {
-      await _controller.runJavaScript(substackArticleJumpJs(anchor));
-    }
+    if (anchor != null && identical(document, _content.state.document)) await _jumpTo(document, anchor);
     if (mounted && !_loading) _reading.setActive(true);
+  }
+
+  Future<void> _jumpTo(SubstackArticleDocument document, String anchor) async {
+    final blocks = _content.state.blocks;
+    if (blocks == null) return _controller.runJavaScript(substackArticleJumpJs(anchor));
+    final passages = [for (final passage in document.passages) passage.anchor];
+    final index = substackBlockOfPassage(blocks, passages, anchor);
+    if (index != null) await _place.showBlock(index, duration: xtaMotionDuration(context, kXtaMotionNavigation));
   }
 
   Future<void> _openReaderRoute(Widget screen) async {
@@ -560,10 +653,8 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   Widget _articleBody(BuildContext context) => _error != null
-      ? FullPageErrorWidget(
+      ? SubstackErrorView(
           error: _error,
-          stackTrace: null,
-          prefix: L10n.of(context).plugin_substack_load_error,
           onRetry: () {
             _content.change(error: null);
             _content.change(empty: false);
@@ -587,7 +678,28 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
             Expanded(
               child: Stack(
                 children: [
-                  WebViewWidget(controller: _controller),
+                  if (_content.state.blocks case final blocks?)
+                    ScopedBuilder<ArticleReadingStore, ArticleReadingState>(
+                      store: _reading,
+                      onState: (_, reading) => ScopedBuilder<SubstackHighlightsStore, Map<String, List<String>>>(
+                        store: _highlights,
+                        onState: (_, _) => SubstackNativeArticle(
+                          highlights: _highlights.of(_post),
+                          onHighlight: (quotes) => _highlights.add(_post, quotes),
+                          post: _post,
+                          blocks: blocks,
+                          place: _place,
+                          readMinutes: substackReadMinutes(_post, plainText: _content.state.document?.plainText),
+                          style: substackReaderStyle(PrefService.of(context, listen: false)),
+                          onLink: _openNativeLink,
+                          keptImages: _content.state.keptImages,
+                          fontSize: MediaQuery.textScalerOf(context).scale(18) * reading.fontSize / 18,
+                          lineHeight: reading.lineHeight,
+                        ),
+                      ),
+                    )
+                  else
+                    WebViewWidget(controller: _controller),
                   if (_loading) const Center(child: CircularProgressIndicator()),
                 ],
               ),
@@ -612,9 +724,22 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
   }
 
   @override
+  void deactivate() {
+    _place.deactivate();
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    _place.activate();
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_reading.destroy());
+    _place.close(then: _reading.destroy);
+    unawaited(_highlights.destroy());
     unawaited(_content.destroy());
     super.dispose();
   }

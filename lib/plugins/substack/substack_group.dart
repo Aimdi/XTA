@@ -19,14 +19,13 @@ Future<void> addSubstackPublicationToGroup(
   final subscriptions = context.read<SubscriptionsModel>();
   final groupsModel = context.read<GroupsModel>();
 
-  final alreadyFollowed = pubs.state.any((e) => e.id == publication.id);
-  if (!alreadyFollowed) {
+  if (pubs.followOf(publication) == null) {
     await pubs.add(publication);
     await subscriptions.reloadSubscriptions();
   }
   if (!context.mounted) return;
 
-  final user = subscriptionOf(publication);
+  final user = subscriptionOf(pubs.followOf(publication) ?? publication);
   final groups = await groupsModel.listGroupsForUser(user.id);
   if (!context.mounted) return;
 

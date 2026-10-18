@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/substack/substack_error_view.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_comments_store.dart';
 import 'package:xta/plugins/substack/substack_discussion_text.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/ui/dates.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 
 class SubstackCommentsScreen extends StatefulWidget {
@@ -92,12 +92,7 @@ class _SubstackCommentsScreenState extends State<SubstackCommentsScreen> {
       if (state.error != null)
         Padding(
           padding: const EdgeInsets.all(16),
-          child: FullPageErrorWidget(
-            error: state.error,
-            stackTrace: null,
-            prefix: l10n.plugin_substack_load_error,
-            onRetry: _store.refresh,
-          ),
+          child: SubstackErrorView(error: state.error, onRetry: _store.refresh),
         ),
       if (!state.loading && state.error == null && rows.isEmpty)
         Padding(

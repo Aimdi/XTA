@@ -86,7 +86,7 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
     final subscriptions = context.read<SubscriptionsModel>();
     final success = await _actions.run(publication.id, () async {
       await publications.add(publication);
-      if (!publications.state.any((item) => item.id == publication.id)) throw StateError('Follow was not saved');
+      if (publications.followOf(publication) == null) throw StateError('Follow was not saved');
       await subscriptions.reloadSubscriptions();
     });
     if (!mounted) return;
@@ -342,7 +342,7 @@ class SubstackDiscoveryPublicationTile extends StatelessWidget {
     store: context.read<SubstackPublicationsStore>(),
     onState: (context, followed) {
       final l10n = L10n.of(context);
-      final following = followed.any((pub) => pub.id == publication.id);
+      final following = substackFollowOf(followed, publication) != null;
       return ListTile(
         leading: _logo(context),
         title: Text(publication.displayName, maxLines: 2, overflow: TextOverflow.ellipsis),

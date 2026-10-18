@@ -133,6 +133,64 @@ void main() {
     );
   });
 
+  test('a stored subdomain replaces the guessed twin; only apex domains guess', () {
+    List<String> twins(String url, String? subdomain) => leftoverSubstackHosts(
+      Uri.parse(url),
+      subdomainHint: subdomain,
+    ).map((e) => e.host).toList();
+
+    expect(twins('https://newsletter.example.com', 'examplecorp'), [
+      'examplecorp.substack.com',
+    ]);
+    expect(twins('https://www.garbageday.email', 'www'), [
+      'garbageday.substack.com',
+    ]);
+    expect(twins('https://newsletter.example.com', null), isEmpty);
+    expect(twins('https://newsletter.example.com', 'newsletter'), isEmpty);
+    expect(twins('https://www.example.com', null), ['example.substack.com']);
+  });
+
+  test('a deep host found without JSON is followed under its host', () {
+    expect(
+      substackGuessedId(Uri.parse('https://www.newsletter.example.com')),
+      'newsletter.example.com',
+    );
+    expect(substackGuessedId(Uri.parse('https://www.garbageday.email')), 'garbageday');
+    expect(substackGuessedId(Uri.parse('https://fieldnotes.substack.com')), 'fieldnotes');
+  });
+
+  test('a twin must not name another custom domain or subdomain', () {
+    const followed = SubstackPublication(
+      subdomain: 'platformer',
+      baseUrl: 'https://www.platformer.news',
+      name: 'Platformer',
+    );
+    const legacy = SubstackPublication(
+      subdomain: 'www',
+      baseUrl: 'https://www.platformer.news',
+      name: 'Platformer',
+    );
+    Map<String, Object?> post(String subdomain, [String? custom]) => {
+      'publishedBylines': [
+        {
+          'publicationUsers': [
+            {
+              'publication': {'subdomain': subdomain, 'custom_domain': ?custom},
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(substackTwinMatches(followed, post('platformer', 'platformer.news')), isTrue);
+    expect(substackTwinMatches(followed, post('platformer')), isTrue);
+    expect(substackTwinMatches(followed, {'id': 1}), isTrue);
+    expect(substackTwinMatches(followed, post('someone')), isFalse);
+    expect(substackTwinMatches(followed, post('platformer', 'moved.example')), isFalse);
+    expect(substackTwinMatches(legacy, post('anyone', 'www.platformer.news')), isTrue);
+    expect(substackTwinMatches(legacy, post('anyone', 'elsewhere.example')), isFalse);
+  });
+
   test('publicationFromHomepageHtml reads the real title and avatar', () {
     const html = '''
       <html><head>
@@ -226,6 +284,44 @@ void main() {
     expect(post?.authorName, 'Ryan Broderick');
     expect(post?.coverImage, 'https://example.com/cover.png');
     expect(post?.canonicalUrl, 'https://www.garbageday.email/p/microdramas');
+  });
+
+  test('postFromBeehiivHtml reads JSON-LD, and an odd JSON-LD shape falls through to OG tags', () {
+    String page(String ld) => '''
+      <html><head>
+        <script type="application/ld+json">$ld</script>
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="From the OG tags">
+      </head></html>
+    ''';
+    SubstackPost? read(String ld) => postFromBeehiivHtml(
+      page(ld),
+      slug: 'odd',
+      publicationBaseUrl: 'https://www.garbageday.email',
+      publicationName: 'Garbage Day',
+    );
+
+    final post = read(
+      '{"@type":"Article","headline":"From JSON-LD","author":{"name":"Ryan"},'
+      '"image":{"url":"https://example.com/c.png"},"datePublished":"2026-08-26","isAccessibleForFree":false}',
+    );
+    expect(post?.title, 'From JSON-LD');
+    expect(post?.authorName, 'Ryan');
+    expect(post?.coverImage, 'https://example.com/c.png');
+    expect(post?.postDate, '2026-08-26');
+    expect(post?.isPaywalled, isTrue);
+    expect(post?.canonicalUrl, 'https://www.garbageday.email/p/odd');
+
+    final odd = read(
+      '{"@type":"Article","headline":"Odd","description":["a","b"],"datePublished":20260826,'
+      '"url":{"@id":"x"},"author":[{"name":"Ryan"}]}',
+    );
+    expect(odd?.title, 'Odd', reason: 'threw a TypeError before the fix');
+    expect(odd?.subtitle, isNull);
+    expect(odd?.postDate, isNull);
+    expect(odd?.canonicalUrl, 'https://www.garbageday.email/p/odd');
+
+    expect(read('{"@type":"Article","headline":["Not","a","title"]}')?.title, 'From the OG tags');
   });
 
   test('publicationFromBeehiivRemix reads name and logo', () {

@@ -1,0 +1,536 @@
+import 'dart:io';
+import 'dart:math';
+
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/offline/offline_store.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
+import 'package:xta/plugins/substack/substack_blocks.dart';
+import 'package:xta/plugins/substack/substack_highlights.dart';
+import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_reader_style.dart';
+import 'package:xta/reading/article_block_reading.dart';
+
+/// A post read without a web view: its blocks in a lazy list that can be
+/// selected and copied (plan item 7, behind a setting while in preview).
+class SubstackNativeArticle extends StatelessWidget {
+  final SubstackPost post;
+  final List<SubstackBlock> blocks;
+
+  /// Keeps the reader's place; the screen owns it.
+  final ArticleBlockReading place;
+
+  /// The estimate shown under the title, when there is one.
+  final int? readMinutes;
+
+  /// The font and column width chosen in the plugin settings.
+  final ({SubstackReaderFont font, SubstackColumnWidth column}) style;
+  final ValueChanged<String> onLink;
+
+  /// The images of a kept post, by the address they were kept from; read
+  /// from their files instead of the network.
+  final Map<String, File> keptImages;
+
+  /// The reader's highlights in this post, and what saves a new one.
+  final List<String> highlights;
+  final ValueChanged<List<String>>? onHighlight;
+  final double fontSize;
+  final double lineHeight;
+
+  const SubstackNativeArticle({
+    super.key,
+    required this.post,
+    required this.blocks,
+    required this.place,
+    this.readMinutes,
+    this.style = (font: SubstackReaderFont.serif, column: SubstackColumnWidth.medium),
+    required this.onLink,
+    this.keptImages = const {},
+    this.highlights = const [],
+    this.onHighlight,
+    this.fontSize = 18,
+    this.lineHeight = 1.7,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final body = Theme.of(
+      context,
+    ).textTheme.bodyLarge!.copyWith(fontSize: fontSize, height: lineHeight, fontFamily: style.font.fontFamily);
+    final images = blocks.whereType<SubstackImageBlock>().toList(growable: false);
+    late final _Scope scope;
+    scope = _Scope(
+      style: body,
+      onLink: onLink,
+      postUrl: post.canonicalUrl,
+      highlights: highlights,
+      keptImage: (src) => keptImages[resolveOfflineUrl(src, post.canonicalUrl)],
+      onFootnote: (number) => _showFootnote(context, number, scope),
+      onImage: (image) => openPluginImageViewer(
+        context,
+        items: [
+          for (final each in images)
+            PluginMediaItem(
+              url: each.src,
+              alt: each.alt.isEmpty ? null : each.alt,
+              aspectRatio: each.width != null && (each.height ?? 0) > 0 ? each.width! / each.height! : null,
+            ),
+        ],
+        initialIndex: images.indexOf(image),
+        sourceName: 'substack',
+      ),
+    );
+    return LayoutBuilder(
+      builder: (context, constraints) => _scrollView(
+        scope,
+        // The column grows to its chosen width, then the margins do.
+        max(20, (constraints.maxWidth - style.column.logicalPixels) / 2),
+      ),
+    );
+  }
+
+  Widget _scrollView(_Scope scope, double margin) {
+    final side = EdgeInsets.symmetric(horizontal: margin);
+    return _HighlightableSelection(
+      onHighlight: onHighlight,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: place.onScroll,
+        child: CustomScrollView(
+          key: place.viewport,
+          controller: place.controller,
+          slivers: [
+            SliverPadding(
+              padding: side.copyWith(top: 16),
+              sliver: SliverToBoxAdapter(
+                child: _Header(post: post, readMinutes: readMinutes),
+              ),
+            ),
+            SliverPadding(
+              padding: side,
+              sliver: SliverList.builder(
+                itemCount: blocks.length,
+                itemBuilder: (context, index) => AutoScrollTag(
+                  key: ValueKey(index),
+                  controller: place.controller,
+                  index: index,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _BlockView(block: blocks[index], scope: scope),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: side.copyWith(bottom: 48),
+              sliver: SliverToBoxAdapter(
+                child: _Footer(post: post, scope: scope),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// A footnote's own text in a sheet over the article, where it was tapped.
+  Future<void> _showFootnote(BuildContext context, int number, _Scope scope) {
+    final notes = blocks.whereType<SubstackTextBlock>().where(
+      (block) => block.kind == SubstackTextKind.footnote && block.marker == '$number',
+    );
+    if (notes.isEmpty) return Future.value();
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SelectionArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 24),
+          children: [for (final note in notes) _BlockView(block: note, scope: scope)],
+        ),
+      ),
+    );
+  }
+}
+
+class _Scope {
+  final TextStyle style;
+  final ValueChanged<String> onLink;
+  final String? postUrl;
+  final ValueChanged<int> onFootnote;
+  final ValueChanged<SubstackImageBlock> onImage;
+  final File? Function(String src) keptImage;
+  final List<String> highlights;
+
+  const _Scope({
+    required this.style,
+    required this.onLink,
+    required this.onFootnote,
+    required this.onImage,
+    required this.keptImage,
+    this.highlights = const [],
+    this.postUrl,
+  });
+}
+
+class _Header extends StatelessWidget {
+  final SubstackPost post;
+  final int? readMinutes;
+
+  const _Header({required this.post, this.readMinutes});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final meta = [
+      post.publicationName,
+      ?post.authorName,
+      if (readMinutes case final minutes?) L10n.of(context).plugin_substack_read_minutes(minutes),
+    ].where((part) => part.trim().isNotEmpty).join(' · ');
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(post.title, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+          ),
+          if (meta.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(meta, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ],
+          if (post.excerpt case final excerpt?) ...[
+            const SizedBox(height: 12),
+            Text(excerpt, style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Says where the free part of a paid post stops.
+class _Footer extends StatelessWidget {
+  final SubstackPost post;
+  final _Scope scope;
+
+  const _Footer({required this.post, required this.scope});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!post.isPaywalled) return const SizedBox.shrink();
+    final l10n = L10n.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Divider(height: 32),
+        Text(l10n.plugin_substack_preview_ends, style: scope.style.copyWith(fontStyle: FontStyle.italic)),
+        if (post.canonicalUrl case final url?)
+          TextButton(onPressed: () => scope.onLink(url), child: Text(l10n.plugin_substack_continue_on_site)),
+      ],
+    );
+  }
+}
+
+/// One block, drawn the way its kind reads.
+class _BlockView extends StatelessWidget {
+  final SubstackBlock block;
+  final _Scope scope;
+
+  const _BlockView({required this.block, required this.scope});
+
+  @override
+  Widget build(BuildContext context) => switch (block) {
+    SubstackTextBlock text => _text(context, text),
+    SubstackImageBlock image => _SubstackImage(image: image, scope: scope),
+    SubstackEmbedBlock(:final host, :final src) => OutlinedButton.icon(
+      onPressed: () => scope.onLink(src),
+      icon: const Icon(Icons.open_in_new),
+      label: Text([L10n.of(context).plugin_substack_load_embed, if (host.isNotEmpty) host].join(' · ')),
+    ),
+    SubstackWebOnlyBlock() => _webOnly(context),
+    SubstackDividerBlock() => const Divider(),
+    SubstackTableBlock(:final rows) => _table(context, rows),
+  };
+
+  Widget _text(BuildContext context, SubstackTextBlock block) {
+    final theme = Theme.of(context);
+    final runs = _SubstackRuns(runs: block.runs, scope: scope);
+    return switch (block.kind) {
+      SubstackTextKind.paragraph => runs,
+      SubstackTextKind.heading => Semantics(
+        header: true,
+        child: _SubstackRuns(
+          runs: block.runs,
+          scope: scope,
+          style: scope.style.copyWith(
+            fontSize: (scope.style.fontSize ?? 18) * (block.level <= 2 ? 1.35 : 1.15),
+            fontWeight: FontWeight.w700,
+            height: 1.35,
+          ),
+        ),
+      ),
+      SubstackTextKind.quote => Container(
+        padding: const EdgeInsetsDirectional.only(start: 16),
+        decoration: BoxDecoration(
+          border: BorderDirectional(start: BorderSide(color: theme.colorScheme.primary, width: 3)),
+        ),
+        child: _SubstackRuns(
+          runs: block.runs,
+          scope: scope,
+          style: scope.style.copyWith(fontStyle: FontStyle.italic),
+        ),
+      ),
+      SubstackTextKind.listItem || SubstackTextKind.footnote => Padding(
+        padding: EdgeInsetsDirectional.only(start: 20.0 * block.level),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 28, child: Text(block.marker ?? '', style: scope.style)),
+            Expanded(child: runs),
+          ],
+        ),
+      ),
+      SubstackTextKind.code => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Text(block.text, style: scope.style.copyWith(fontFamily: 'monospace', fontSize: 14, height: 1.4)),
+        ),
+      ),
+    };
+  }
+
+  Widget _webOnly(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(l10n.plugin_substack_web_only_block, style: scope.style.copyWith(fontStyle: FontStyle.italic)),
+        if (scope.postUrl case final url?)
+          TextButton(onPressed: () => scope.onLink(url), child: Text(l10n.open_in_browser)),
+      ],
+    );
+  }
+
+  Widget _table(BuildContext context, List<List<String>> rows) {
+    final columns = rows.map((row) => row.length).reduce((a, b) => a > b ? a : b);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Table(
+        defaultColumnWidth: const IntrinsicColumnWidth(),
+        border: TableBorder.all(color: Theme.of(context).colorScheme.outlineVariant),
+        children: [
+          for (final row in rows)
+            TableRow(
+              children: [
+                for (var i = 0; i < columns; i++)
+                  Padding(padding: const EdgeInsets.all(8), child: Text(i < row.length ? row[i] : '')),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SubstackImage extends StatelessWidget {
+  final SubstackImageBlock image;
+  final _Scope scope;
+
+  const _SubstackImage({required this.image, required this.scope});
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final ratio = image.width != null && image.height != null && image.height! > 0
+        ? image.width! / image.height!
+        : 16 / 9;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          button: true,
+          hint: L10n.of(context).plugin_pixiv_novel_image_view,
+          child: GestureDetector(
+            onTap: () => scope.onImage(image),
+            child: AspectRatio(
+              aspectRatio: ratio,
+              child: _picture(context, (width * MediaQuery.devicePixelRatioOf(context)).ceil()),
+            ),
+          ),
+        ),
+        if (image.caption.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          _SubstackRuns(
+            runs: image.caption,
+            scope: scope,
+            style: scope.style.copyWith(
+              fontSize: (scope.style.fontSize ?? 18) * 0.85,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// The kept file when there is one, else the network. A plain box while
+  /// loading or after a failure, so a tap always opens the viewer, which
+  /// tries again full size.
+  Widget _picture(BuildContext context, int cacheWidth) {
+    Widget? placeholder(ExtendedImageState state) => state.extendedImageLoadState == LoadState.completed
+        ? null
+        : ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest);
+    final label = image.alt.isEmpty ? null : image.alt;
+    return switch (scope.keptImage(image.src)) {
+      final File file => ExtendedImage.file(
+        file,
+        fit: BoxFit.contain,
+        cacheWidth: cacheWidth,
+        semanticLabel: label,
+        loadStateChanged: placeholder,
+      ),
+      null => ExtendedImage.network(
+        image.src,
+        fit: BoxFit.contain,
+        cacheWidth: cacheWidth,
+        semanticLabel: label,
+        loadStateChanged: placeholder,
+      ),
+    };
+  }
+}
+
+/// Styled runs as one paragraph; links are tappable.
+class _SubstackRuns extends StatefulWidget {
+  final List<SubstackRun> runs;
+  final _Scope scope;
+  final TextStyle? style;
+
+  const _SubstackRuns({required this.runs, required this.scope, this.style});
+
+  @override
+  State<_SubstackRuns> createState() => _SubstackRunsState();
+}
+
+class _SubstackRunsState extends State<_SubstackRuns> {
+  var _taps = <TapGestureRecognizer?>[];
+
+  @override
+  void initState() {
+    super.initState();
+    _taps = _recognizers();
+  }
+
+  @override
+  void didUpdateWidget(_SubstackRuns oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.runs != widget.runs || oldWidget.scope.highlights != widget.scope.highlights) {
+      _dispose();
+      _taps = _recognizers();
+    }
+  }
+
+  List<SubstackRun> get _runs => substackHighlightRuns(widget.runs, widget.scope.highlights);
+
+  List<TapGestureRecognizer?> _recognizers() => [
+    for (final run in _runs)
+      if (run.footnote case final number?)
+        TapGestureRecognizer()..onTap = () => widget.scope.onFootnote(number)
+      else if (run.href case final href?)
+        TapGestureRecognizer()..onTap = () => widget.scope.onLink(href)
+      else
+        null,
+  ];
+
+  void _dispose() {
+    for (final tap in _taps) {
+      tap?.dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+    _dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final base = widget.style ?? widget.scope.style;
+    final scheme = Theme.of(context).colorScheme;
+    final runs = _runs;
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          for (var i = 0; i < runs.length; i++)
+            TextSpan(text: runs[i].text, recognizer: _taps[i], style: _styleOf(runs[i], scheme)),
+        ],
+      ),
+    );
+  }
+
+  TextStyle _styleOf(SubstackRun run, ColorScheme scheme) => _runStyle(run, scheme.primary).copyWith(
+    backgroundColor: run.highlighted ? scheme.tertiaryContainer : null,
+    color: run.highlighted && run.href == null && run.footnote == null ? scheme.onTertiaryContainer : null,
+  );
+
+  TextStyle _runStyle(SubstackRun run, Color link) => TextStyle(
+    fontWeight: run.bold ? FontWeight.w700 : null,
+    fontStyle: run.italic ? FontStyle.italic : null,
+    fontFamily: run.code ? 'monospace' : null,
+    color: run.href != null || run.footnote != null ? link : null,
+    decoration: run.href != null && run.footnote == null ? TextDecoration.underline : null,
+    fontFeatures: run.footnote != null ? const [FontFeature.superscripts()] : null,
+  );
+}
+
+/// A selection area whose menu also offers to highlight what is selected.
+class _HighlightableSelection extends StatefulWidget {
+  final ValueChanged<List<String>>? onHighlight;
+  final Widget child;
+
+  const _HighlightableSelection({required this.onHighlight, required this.child});
+
+  @override
+  State<_HighlightableSelection> createState() => _HighlightableSelectionState();
+}
+
+class _HighlightableSelectionState extends State<_HighlightableSelection> {
+  /// What is selected now; read when the menu's button is pressed, never drawn.
+  var _selected = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final onHighlight = widget.onHighlight;
+    return SelectionArea(
+      onSelectionChanged: (content) => _selected = content?.plainText ?? '',
+      contextMenuBuilder: (context, region) => AdaptiveTextSelectionToolbar.buttonItems(
+        anchors: region.contextMenuAnchors,
+        buttonItems: [
+          ...region.contextMenuButtonItems,
+          if (onHighlight != null)
+            ContextMenuButtonItem(
+              label: L10n.of(context).plugin_substack_highlight,
+              onPressed: () {
+                final quotes = substackSelectionQuotes(_selected);
+                region.hideToolbar();
+                if (quotes.isNotEmpty) onHighlight(quotes);
+              },
+            ),
+        ],
+      ),
+      child: widget.child,
+    );
+  }
+}

@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:xta/plugins/substack/substack_reader_style.dart';
 
 /// URL schemes that are code rather than a destination.
 ///
@@ -51,6 +54,12 @@ String sanitizeSubstackBodyHtml(String raw) {
       'embed',
       'math',
       'button',
+      // A reader posts nothing: a subscribe or any other form in a body is
+      // dropped whatever markup Substack wraps it in.
+      'form',
+      'input',
+      'textarea',
+      'select',
       'svg',
       'noscript',
       '.image-link-expand',
@@ -68,8 +77,11 @@ String sanitizeSubstackBodyHtml(String raw) {
   }
 
   for (final node in List<Element>.from(fragment.querySelectorAll('div, span'))) {
+    if (node.parentNode == null) continue;
     if (node.text.trim().isEmpty && node.querySelector('img, iframe, video, picture, table') == null) {
-      node.remove();
+      // Substack's scripts draw LaTeX, galleries and polls into empty
+      // component blocks; the reader marks where one was rather than losing it.
+      _drawnOnTheWeb(node) ? node.replaceWith(_webOnlyBlock()) : node.remove();
     }
   }
 
@@ -80,12 +92,21 @@ String sanitizeSubstackBodyHtml(String raw) {
   return fragment.outerHtml;
 }
 
+bool _drawnOnTheWeb(Element node) =>
+    node.attributes.containsKey('data-component-name') || node.attributes.containsKey('data-attrs');
+
+Element _webOnlyBlock() => Element.tag('div')
+  ..classes.add('xta-web-only')
+  ..attributes['data-component-name'] = 'XtaWebOnly';
+
 /// Plain text suitable for device TTS, with paragraph breaks preserved.
 String substackHtmlToPlainText(String raw) {
-  final document = html_parser.parse(sanitizeSubstackBodyHtml(raw));
-  final body = document.body;
-  if (body == null) return '';
+  final body = html_parser.parse(sanitizeSubstackBodyHtml(raw)).body;
+  return body == null ? '' : substackPlainTextOf(body);
+}
 
+/// The speech text of an already sanitized [root].
+String substackPlainTextOf(Node root) {
   final buffer = StringBuffer();
   void walk(Node node) {
     if (node is Text) {
@@ -99,6 +120,9 @@ String substackHtmlToPlainText(String raw) {
     if (tag == 'script' || tag == 'style' || tag == 'svg' || tag == 'button') {
       return;
     }
+    // A footnote's number, in the text or at its note, read aloud runs into
+    // the sentence: "a claim1".
+    if (tag == 'a' && (node.classes.contains('footnote-anchor') || node.classes.contains('footnote-number'))) return;
     if (tag == 'br') {
       buffer.write('\n');
       return;
@@ -133,7 +157,7 @@ String substackHtmlToPlainText(String raw) {
     if (isBlock) buffer.write('\n');
   }
 
-  walk(body);
+  root.nodes.forEach(walk);
   return buffer.toString().replaceAll(RegExp(r'[ \t]+\n'), '\n').replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
 }
 
@@ -160,7 +184,8 @@ String buildSubstackSpeakText({
   return parts.join('\n\n');
 }
 
-/// Long-press a paragraph → post the rest of the article to [XtaTts].
+/// With text selected, `xtaSpeakFromSelection()` posts the rest of the article
+/// from the selected paragraph to [XtaTts].
 ///
 /// The reader screen installs that channel. Body HTML is still stripped of
 /// scripts and `on*` handlers; this is the only script on the page.
@@ -171,6 +196,16 @@ const substackTtsFromHereJs = r'''
   function post(text){
     if (!text || !window.XtaTts || !XtaTts.postMessage) return;
     XtaTts.postMessage(text);
+  }
+  // A block's text without its footnote numbers, as the reader speaks it.
+  function textOf(b){
+    if (!b) return '';
+    var marks = b.querySelectorAll ? b.querySelectorAll('.footnote-anchor,.footnote-number') : [];
+    var kept = [];
+    for (var i = 0; i < marks.length; i++) { kept.push(marks[i].textContent); marks[i].textContent = ''; }
+    var t = (b.innerText || '').trim();
+    for (var j = 0; j < marks.length; j++) marks[j].textContent = kept[j];
+    return t;
   }
   function blockOf(node){
     var n = node && node.nodeType === 3 ? node.parentElement : node;
@@ -191,33 +226,69 @@ const substackTtsFromHereJs = r'''
       var b = blocks[i];
       if (b === el || b.contains(el) || (el && el.contains && el.contains(b))) started = true;
       if (started) {
-        var t = (b.innerText || '').trim();
+        var t = textOf(b);
         if (t) parts.push(t);
       }
     }
     if (!parts.length) {
-      var all = (root.innerText || '').trim();
-      var needle = ((el && el.innerText) || '').trim().slice(0, 80);
+      var all = textOf(root);
+      var needle = textOf(el).slice(0, 80);
       var at = needle ? all.indexOf(needle) : -1;
       post(at >= 0 ? all.slice(at) : (needle || all));
       return;
     }
     post(parts.join('\n\n'));
   }
-  var timer = 0;
-  document.addEventListener('touchstart', function(e){
-    if (e.touches.length !== 1) return;
-    var target = e.target;
-    timer = setTimeout(function(){ fromHere(blockOf(target)); }, 450);
-  }, {passive:true});
-  document.addEventListener('touchend', function(){ clearTimeout(timer); });
-  document.addEventListener('touchmove', function(){ clearTimeout(timer); });
-  document.addEventListener('contextmenu', function(e){
-    e.preventDefault();
-    fromHere(blockOf(e.target));
+  // Long-press selects text as usual; Listen then reads from the selection.
+  window.xtaSpeakFromSelection = function(){
+    var s = window.getSelection && window.getSelection();
+    if (!s || s.isCollapsed || !s.anchorNode) return false;
+    fromHere(blockOf(s.anchorNode));
+    return true;
+  };
+})();
+''';
+
+/// Turns each held embed into a button that puts the original iframe back.
+const substackEmbedJs = r'''
+(function(){
+  document.querySelectorAll('.xta-embed').forEach(function(box){
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'xta-embed-load';
+    var host = box.getAttribute('data-host');
+    button.textContent = [window.xtaEmbedLabel, host].filter(Boolean).join(' \u00b7 ');
+    button.addEventListener('click', function(){
+      var held = box.querySelector('template');
+      if (held) box.replaceWith(held.content.cloneNode(true));
+    });
+    box.appendChild(button);
   });
 })();
 ''';
+
+/// Says where a block drawn only by Substack's own scripts was, with a link
+/// to the post on the web.
+const substackWebOnlyJs = r'''
+(function(){
+  var note = window.xtaWebOnly || {};
+  document.querySelectorAll('.xta-web-only').forEach(function(box){
+    var p = document.createElement('p');
+    p.textContent = note.label || '';
+    if (note.url && note.link) {
+      var a = document.createElement('a');
+      a.href = note.url;
+      a.textContent = note.link;
+      p.appendChild(document.createTextNode(' '));
+      p.appendChild(a);
+    }
+    box.appendChild(p);
+  });
+})();
+''';
+
+/// [value] as a JavaScript string literal that cannot close its script tag.
+String _scriptString(String value) => jsonEncode(value).replaceAll('<', r'\u003c');
 
 String wrapSubstackHtml({
   required String title,
@@ -231,16 +302,25 @@ String wrapSubstackHtml({
   String? subtitle,
   String? authorName,
   String? publicationName,
+  String? readTime,
+  SubstackReaderFont font = SubstackReaderFont.serif,
+  SubstackColumnWidth column = SubstackColumnWidth.medium,
   double fontSizePx = 18,
   double lineHeight = 1.7,
   String? footer,
   String? footerLink,
   String? footerLinkLabel,
+  bool bodySanitized = false,
+  String embedLabel = '',
+  String webOnlyLabel = '',
+  String openLabel = '',
+  String? postUrl,
 }) {
-  final cleanBody = sanitizeSubstackBodyHtml(body);
+  final cleanBody = bodySanitized ? body : sanitizeSubstackBodyHtml(body);
   final meta = [
     if (publicationName != null && publicationName.isNotEmpty) _escape(publicationName),
     if (authorName != null && authorName.isNotEmpty) _escape(authorName),
+    if (readTime != null && readTime.isNotEmpty) _escape(readTime),
   ].join(' · ');
 
   final codeBg = isDark ? '#1E1E1E' : '#F1F3F5';
@@ -263,7 +343,7 @@ String wrapSubstackHtml({
     color: $foreground;
   }
   body {
-    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+    font-family: ${font.cssStack};
     font-size: ${fontSizePx}px;
     line-height: $lineHeight;
     padding: 20px 18px 48px;
@@ -273,7 +353,7 @@ String wrapSubstackHtml({
     overflow-wrap: anywhere;
   }
   .reader {
-    max-width: 42rem;
+    max-width: ${column.rem}rem;
     margin: 0 auto;
   }
   .title {
@@ -335,6 +415,11 @@ String wrapSubstackHtml({
     display: block;
   }
   iframe { width: 100%; min-height: 220px; border: 0; }
+  .xta-web-only p { color: $muted; font-style: italic; }
+  .xta-embed-load {
+    width: 100%; min-height: 48px; padding: 12px 16px; border: 1px solid $rule; border-radius: 12px;
+    background: transparent; color: $link; font: inherit; text-align: center;
+  }
   figcaption, .image-caption, .caption {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: $muted;
@@ -382,7 +467,6 @@ String wrapSubstackHtml({
   [data-xta-block], [id], a[name] { scroll-margin-top: 16px; }
   [data-xta-selected] { outline: 2px solid $link; outline-offset: 5px; }
   :focus-visible { outline: 2px solid $link; outline-offset: 4px; }
-  body { -webkit-touch-callout: none; }
 </style>
 </head>
 <body>
@@ -394,6 +478,8 @@ String wrapSubstackHtml({
     ${_footerHtml(footer, footerLink, footerLinkLabel)}
   </article>
   <script>$substackTtsFromHereJs</script>
+  <script>window.xtaEmbedLabel = ${_scriptString(embedLabel)};$substackEmbedJs</script>
+  <script>window.xtaWebOnly = {label: ${_scriptString(webOnlyLabel)}, link: ${_scriptString(openLabel)}, url: ${_scriptString(postUrl ?? '')}};$substackWebOnlyJs</script>
 </body>
 </html>
 ''';

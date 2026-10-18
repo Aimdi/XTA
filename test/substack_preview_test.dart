@@ -1,15 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/substack/substack_html.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_reader_store.dart';
 
-SubstackPost _post({String? audience, String? body}) => SubstackPost.fromJson(
+SubstackPost _post({
+  String? audience,
+  String? body,
+  String? canonical = 'https://example.substack.com/p/a-post',
+}) =>
+    SubstackPost.fromJson(
       {
         'id': 1,
         'slug': 'a-post',
         'title': 'A post',
         'audience': audience,
         'body_html': body,
-        'canonical_url': 'https://example.substack.com/p/a-post',
+        'canonical_url': canonical,
       },
       publicationBaseUrl: 'https://example.substack.com',
       publicationName: 'Example',
@@ -44,6 +50,33 @@ void main() {
 
     test('a free post is not marked paid', () {
       expect(_post(audience: 'everyone', body: '<p>All of it.</p>').isPaywalled, isFalse);
+    });
+  });
+
+  group('what the reader shows', () {
+    test('a paid post without a body gets the paid pane, not the live site',
+        () {
+      expect(substackReaderBodyFor(_post(audience: 'only_paid')),
+          SubstackReaderBody.paywall);
+      expect(
+          substackReaderBodyFor(
+              _post(audience: 'only_paid', body: '  ', canonical: null)),
+          SubstackReaderBody.paywall);
+    });
+
+    test('a paid post with its free opening is rendered as an article', () {
+      expect(
+          substackReaderBodyFor(
+              _post(audience: 'only_paid', body: '<p>The opening.</p>')),
+          SubstackReaderBody.article);
+    });
+
+    test('a free post without a body opens its page, or says it is empty', () {
+      expect(substackReaderBodyFor(_post(audience: 'everyone')),
+          SubstackReaderBody.liveSite);
+      expect(
+          substackReaderBodyFor(_post(audience: 'everyone', canonical: null)),
+          SubstackReaderBody.empty);
     });
   });
 

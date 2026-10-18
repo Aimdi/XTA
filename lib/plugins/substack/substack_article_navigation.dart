@@ -21,18 +21,28 @@ class SubstackArticlePassage {
   }
 }
 
+/// A post body parsed once: the sanitized page body, its passages for
+/// navigation and search, and its speech text.
 class SubstackArticleDocument {
   final String body;
   final List<SubstackArticlePassage> passages;
   final List<SubstackArticlePassage> headings;
+  final String plainText;
 
-  const SubstackArticleDocument({required this.body, required this.passages, required this.headings});
+  const SubstackArticleDocument({
+    required this.body,
+    required this.passages,
+    required this.headings,
+    this.plainText = '',
+  });
 
   factory SubstackArticleDocument.parse(String raw) {
     final fragment = html.parseFragment(sanitizeSubstackBodyHtml(raw));
     for (final node in fragment.querySelectorAll('[data-xta-block]')) {
       node.attributes.remove('data-xta-block');
     }
+    final plainText = substackPlainTextOf(fragment);
+    _holdEmbeds(fragment);
     const selector = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,figcaption,td,th';
     var blocks = fragment.querySelectorAll(selector).where((node) => node.querySelector(selector) == null).toList();
     if (blocks.isEmpty && fragment.text?.trim().isNotEmpty == true) {
@@ -54,6 +64,7 @@ class SubstackArticleDocument {
       body: fragment.outerHtml,
       passages: List.unmodifiable(passages),
       headings: List.unmodifiable(passages.where((passage) => passage.headingLevel > 0)),
+      plainText: plainText,
     );
   }
 
@@ -66,6 +77,46 @@ class SubstackArticleDocument {
           return terms.every(text.contains);
         })
         .toList(growable: false);
+  }
+}
+
+/// The last [capacity] parsed articles, oldest first. An entry is reused
+/// only for the very same body, so an edited post is parsed again.
+class SubstackParsedArticles {
+  SubstackParsedArticles({this.capacity = 16});
+
+  final int capacity;
+  final _entries = <String, ({String body, SubstackArticleDocument document})>{};
+
+  SubstackArticleDocument? get(String key, String body) {
+    final entry = _entries.remove(key);
+    if (entry == null || entry.body != body) return null;
+    _entries[key] = entry;
+    return entry.document;
+  }
+
+  void put(String key, String body, SubstackArticleDocument document) {
+    _entries.remove(key);
+    _entries[key] = (body: body, document: document);
+    while (_entries.length > capacity) {
+      _entries.remove(_entries.keys.first);
+    }
+  }
+}
+
+/// Parses shared by every reader in this run of the app.
+final substackParsedArticles = SubstackParsedArticles();
+
+/// Puts each iframe in an inert template behind a placeholder naming its
+/// host, so nothing from another site loads until the reader asks for it.
+void _holdEmbeds(DocumentFragment fragment) {
+  for (final frame in List<Element>.from(fragment.querySelectorAll('iframe'))) {
+    final host = Uri.tryParse(frame.attributes['src'] ?? '')?.host ?? '';
+    final held = Element.tag('div')
+      ..classes.add('xta-embed')
+      ..attributes['data-host'] = host.startsWith('www.') ? host.substring(4) : host;
+    frame.replaceWith(held);
+    held.append(Element.tag('template')..append(frame));
   }
 }
 

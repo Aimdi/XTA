@@ -292,7 +292,9 @@ class _ContentFilters extends StatelessWidget {
     final labels = {
       SubstackFeedFilter.all: l10n.plugin_substack_filter_all,
       SubstackFeedFilter.unread: l10n.plugin_substack_filter_unread,
+      SubstackFeedFilter.saved: l10n.plugin_substack_library_saved,
       SubstackFeedFilter.free: l10n.plugin_substack_filter_free,
+      SubstackFeedFilter.paid: l10n.plugin_substack_filter_paid,
       SubstackFeedFilter.podcast: l10n.plugin_substack_filter_podcast,
       SubstackFeedFilter.video: l10n.videos,
     };
@@ -331,7 +333,7 @@ class _PublicationPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final unreadPublications = posts
-        .where((post) => !readIds.contains(post.id))
+        .where((post) => !substackPostIsRead(readIds, post))
         .map((post) => post.publicationBaseUrl.toLowerCase())
         .toSet();
     return Column(

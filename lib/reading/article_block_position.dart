@@ -4,11 +4,11 @@ import 'package:xta/reading/article_reading_store.dart';
 
 /// One laid-out block: its index in the text, and its top and height in the
 /// viewport's coordinates.
-typedef PixivNovelBlockExtent = ({int index, double top, double height});
+typedef ArticleBlockExtent = ({int index, double top, double height});
 
 /// The first block still showing below the viewport's top, and how far above
 /// (negative) or below the top its own top sits; null when no block shows.
-({int index, double leading})? pixivFirstVisibleBlock(Iterable<PixivNovelBlockExtent> blocks) {
+({int index, double leading})? articleFirstVisibleBlock(Iterable<ArticleBlockExtent> blocks) {
   final showing = blocks.where((block) => block.top + block.height > 0).toList()
     ..sort((a, b) => a.index.compareTo(b.index));
   final first = showing.firstOrNull;
@@ -20,22 +20,22 @@ typedef PixivNovelBlockExtent = ({int index, double top, double height});
 /// [defaultDurationUnit], and a step must last.
 const _instant = Duration(microseconds: defaultDurationUnit);
 
-/// Where the reader stands in a novel's blocks, read from and put back on
+/// Where the reader stands in a text's blocks, read from and put back on
 /// [controller]: a block and the offset of its top, as the article readers
 /// keep it, so a place survives a change of text size.
-class PixivNovelScrollPosition {
+class ArticleBlockScrollPosition {
   final AutoScrollController controller;
 
   /// On the scroll view, whose top the offsets are measured from.
   final GlobalKey viewport;
 
-  const PixivNovelScrollPosition(this.controller, this.viewport);
+  const ArticleBlockScrollPosition(this.controller, this.viewport);
 
   /// The place now, or null before the view is laid out.
   ArticleReadPoint? read() {
     final view = viewport.currentContext?.findRenderObject();
     if (view is! RenderBox || !view.hasSize || !controller.hasClients) return null;
-    final first = pixivFirstVisibleBlock([
+    final first = articleFirstVisibleBlock([
       for (final MapEntry(key: index, value: tag) in controller.tagMap.entries)
         if (_extentIn(view, tag.context) case final rect?) (index: index, top: rect.top, height: rect.height),
     ]);

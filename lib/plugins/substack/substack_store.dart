@@ -11,6 +11,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:xta/plugins/account_posts.dart';
 import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
+import 'package:xta/plugins/substack/substack_feed_memory.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
 /// The publications the reader follows, kept in the database.
@@ -107,12 +108,16 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
     );
   }
 
+  /// Follows [publication], or refreshes the follow it already is.
   Future<void> add(SubstackPublication publication) async {
     await execute(() async {
-      await _write(publication);
+      await _write(placeSubstackFollow(await _read(), publication));
       return _read();
     });
   }
+
+  /// The follow [publication] is, if it is followed at all.
+  SubstackPublication? followOf(SubstackPublication publication) => substackFollowOf(state, publication);
 
   Future<void> remove(String id) async {
     await _changePins(() async {
@@ -225,6 +230,12 @@ class SubstackReadStore extends _SubstackLocalStore<Set<String>> {
   }
 
   bool isRead(String id) => state.contains(id);
+
+  /// Reads are stored under the post's key, so either copy of a post finds it.
+  Future<void> markPostRead(SubstackPost post) => markAllRead([substackPostKey(post)]);
+  Future<void> markPostsRead(Iterable<SubstackPost> posts) => markAllRead(posts.map(substackPostKey));
+  Future<void> markPostUnread(SubstackPost post) => markAllUnread([substackPostKey(post), post.id]);
+  bool isPostRead(SubstackPost post) => substackPostIsRead(state, post);
 }
 
 abstract class _SubstackPostLibrary extends _SubstackLocalStore<List<SubstackPost>> {
@@ -237,12 +248,15 @@ abstract class _SubstackPostLibrary extends _SubstackLocalStore<List<SubstackPos
   Future<void> toggle(SubstackPost post) {
     if (post.id.isEmpty) return Future.value();
     return serial(() async {
-      final remaining = state.where((item) => item.id != post.id);
-      final next = (state.any((item) => item.id == post.id) ? remaining : [post, ...remaining]).take(capacity).toList();
+      final remaining = state.where((item) => !sameSubstackPost(item, post));
+      final next = (contains(post) ? remaining : [post, ...remaining]).take(capacity).toList();
       await persist(preference, SubstackPost.listToPrefs(next));
       return next;
     });
   }
+
+  /// Whether either copy of [post] is here.
+  bool contains(SubstackPost post) => state.any((item) => sameSubstackPost(item, post));
 }
 
 /// Hearts and bookmarks are local; no Substack write endpoint is used.
@@ -256,6 +270,7 @@ class SubstackSavedStore extends _SubstackPostLibrary {
   bool isSaved(String id) => state.any((post) => post.id == id);
 }
 
+/// Publications read per load-more pass. A refresh reads every one.
 const substackPublicationsPerBatch = 24;
 const substackPublicationConcurrency = 3;
 
@@ -284,23 +299,30 @@ String _sourceUrl(String value) {
 }
 
 String _publicationKey(SubstackPublication publication) => '${publication.id}\n${_sourceUrl(publication.baseUrl)}';
-String substackFeedPostKey(SubstackPost post) => '${_sourceUrl(post.publicationBaseUrl)}\n${post.id}';
+String substackFeedPostKey(SubstackPost post) =>
+    _feedKeys[post] ??= '${_sourceUrl(post.publicationBaseUrl)}\n${post.id}';
 
-List<SubstackPost> _mergeSubstackPosts(Iterable<SubstackPost> posts) {
-  final unique = <String, SubstackPost>{};
-  for (final post in posts) {
-    if (post.id.isNotEmpty) unique[substackFeedPostKey(post)] = post;
-  }
-  return unique.values.toList();
-}
+// Every publish sorts the whole feed; each post's date and key are worked
+// out once, not on every comparison.
+final _feedKeys = Expando<String>();
+final _sortTimes = Expando<int>();
+final _undated = DateTime(0).millisecondsSinceEpoch;
+
+int _sortTime(SubstackPost post) => _sortTimes[post] ??= post.publishedAt?.millisecondsSinceEpoch ?? _undated;
+
+List<SubstackPost> _mergeSubstackPosts(Iterable<SubstackPost> posts) =>
+    mergeSubstackCopies(posts.where((post) => post.id.isNotEmpty));
 
 class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   final SubstackClient client;
   final SubstackPublicationsStore publications;
   final _pages = <String, _PublicationPage>{};
+  final _answeredAt = <String, DateTime>{};
+  var _restored = false;
   var _allPosts = const <SubstackPost>[];
   var _filter = SubstackFeedFilter.all;
   Set<String> _readIds = const {};
+  bool Function(SubstackPost post) _isSaved = (_) => false;
   DateTime? _fetchedAt;
   String? _loadedIdentity;
   String? _activeIdentity;
@@ -353,7 +375,45 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
       return;
     }
-    await _load(more: false);
+    await _load(more: false, force: force);
+  }
+
+  /// Paints the feed as it last stood, before anything is asked of Substack.
+  /// A publication that answered within [kAccountPostsCacheTtl] counts as
+  /// loaded; the others show and are refreshed behind. Whether it painted.
+  bool restore() {
+    if (_closed || _restored || _allPosts.isNotEmpty) return false;
+    _restored = true;
+    final followed = {for (final pub in _sources) _publicationKey(pub)};
+    final memory = SubstackFeedMemory.decode(publications.prefs.get<String>(optionPluginSubstackFeedMemory));
+    for (final MapEntry(key: key, value: page) in memory.pages.entries) {
+      if (!followed.contains(key) || page.posts.isEmpty) continue;
+      final fresh = _answeredRecently(page.answeredAt);
+      _pages[key] = _PublicationPage(posts: page.posts, offset: page.posts.length, loaded: fresh);
+      if (fresh) _answeredAt[key] = page.answeredAt;
+    }
+    _publish();
+    return _allPosts.isNotEmpty;
+  }
+
+  bool _answeredRecently(DateTime? at) => at != null && pluginFeedIsFresh(at, ttl: kAccountPostsCacheTtl);
+
+  /// Loaded, without an error, and answered inside the cache window: a
+  /// non-forced refresh leaves it be. A failed page is retried at once.
+  bool _fresh(String key) =>
+      _pages[key]?.loaded == true && _pages[key]?.error == null && _answeredRecently(_answeredAt[key]);
+
+  Future<void> _remember() async {
+    final memory = SubstackFeedMemory({
+      for (final MapEntry(key: key, value: page) in _pages.entries)
+        if ((_answeredAt[key], page.posts) case (final at?, final posts) when posts.isNotEmpty)
+          key: (answeredAt: at, posts: posts),
+    });
+    try {
+      await publications.prefs.set(optionPluginSubstackFeedMemory, memory.encode());
+    } catch (_) {
+      // Only a faster next start is lost.
+    }
   }
 
   Future<void> loadMore() async {
@@ -364,11 +424,19 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
 
   Future<void> retryLoadMore() => loadMore();
 
-  void setFilter(SubstackFeedFilter filter, Set<String> readIds) {
+  void setFilter(SubstackFeedFilter filter, Set<String> readIds, {bool Function(SubstackPost post)? isSaved}) {
     if (_closed) return;
     _filter = filter;
     _readIds = Set.of(readIds);
+    if (isSaved != null) _isSaved = isSaved;
     _publish();
+  }
+
+  /// The Saved library changed: a Saved-filtered feed follows it at once.
+  void syncSaved(bool Function(SubstackPost post) isSaved) {
+    if (_closed) return;
+    _isSaved = isSaved;
+    if (_filter == SubstackFeedFilter.saved) _publish();
   }
 
   void syncReadIds(Set<String> readIds) {
@@ -377,7 +445,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     _publish();
   }
 
-  Future<void> _load({required bool more}) async {
+  Future<void> _load({required bool more, bool force = true}) async {
     final identity = _identity;
     final request = ++_generation;
     final done = Completer<void>();
@@ -395,9 +463,11 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     _publish();
     if (_allPosts.isEmpty) setLoading(true);
     try {
-      final candidates = _candidates(more: more);
+      final candidates = _candidates(
+        more: more,
+      ).where((pub) => more || force || !_fresh(_publicationKey(pub))).toList();
       await mapWithConcurrency(
-        candidates.take(substackPublicationsPerBatch),
+        more ? candidates.take(substackPublicationsPerBatch) : candidates,
         substackPublicationConcurrency,
         (pub) => _readPublication(pub, request, identity, more: more),
       );
@@ -412,6 +482,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       }
       if (failure == null) _fetchedAt = DateTime.now();
       _publish();
+      unawaited(_remember());
       if (_allPosts.isEmpty && failure != null) setError(failure);
     } catch (error) {
       if (!_current(request, identity)) return;
@@ -467,7 +538,8 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       if (!_current(request, identity)) return;
       final progressed =
           offset == 0 ||
-          posts.any((post) => !before.posts.any((old) => substackFeedPostKey(old) == substackFeedPostKey(post)));
+          posts.any((post) => !before.posts.any((old) => substackPostKey(old) == substackPostKey(post)));
+      if (offset == 0) _answeredAt[key] = DateTime.now();
       _pages[key] = _PublicationPage(
         posts: _mergeSubstackPosts([if (offset > 0) ...before.posts, ...posts]),
         offset: offset + substackFeedPageSize,
@@ -495,12 +567,12 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   void _publish() {
     _allPosts = _mergeSubstackPosts(_pages.values.expand((page) => page.posts))
       ..sort((a, b) {
-        final date = (b.publishedAt ?? DateTime(0)).compareTo(a.publishedAt ?? DateTime(0));
+        final date = _sortTime(b).compareTo(_sortTime(a));
         return date == 0 ? substackFeedPostKey(a).compareTo(substackFeedPostKey(b)) : date;
       });
     update(
       SubstackFeedSnapshot(
-        posts: _allPosts.where((post) => postMatchesSubstackFilter(post, _filter, _readIds)).toList(),
+        posts: _allPosts.where((post) => postMatchesSubstackFilter(post, _filter, _readIds, isSaved: _isSaved)).toList(),
         canLoadMore: pendingCount > 0 || _pages.values.any((page) => page.hasMore || page.error != null),
         failedCount: _pages.values.where((page) => page.error != null).length,
       ),

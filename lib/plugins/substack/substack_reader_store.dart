@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/substack/substack_article_navigation.dart';
+import 'package:xta/plugins/substack/substack_blocks.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
 const _unchanged = Object();
@@ -17,6 +20,12 @@ class SubstackReaderState {
   final Object? refreshError;
   final SubstackArticleDocument? document;
 
+  /// The post as native blocks, when the native reader shows it.
+  final List<SubstackBlock>? blocks;
+
+  /// The kept images the native reader reads from files, by address.
+  final Map<String, File> keptImages;
+
   const SubstackReaderState({
     required this.post,
     this.error,
@@ -29,6 +38,8 @@ class SubstackReaderState {
     this.refreshing = false,
     this.refreshError,
     this.document,
+    this.blocks,
+    this.keptImages = const {},
   });
 }
 
@@ -68,6 +79,8 @@ class SubstackReaderStore extends Store<SubstackReaderState> {
     bool? refreshing,
     Object? refreshError = _unchanged,
     Object? document = _unchanged,
+    Object? blocks = _unchanged,
+    Map<String, File>? keptImages,
   }) {
     if (_closed) return;
     update(
@@ -83,6 +96,8 @@ class SubstackReaderStore extends Store<SubstackReaderState> {
         refreshing: refreshing ?? state.refreshing,
         refreshError: identical(refreshError, _unchanged) ? state.refreshError : refreshError,
         document: identical(document, _unchanged) ? state.document : document as SubstackArticleDocument?,
+        blocks: identical(blocks, _unchanged) ? state.blocks : blocks as List<SubstackBlock>?,
+        keptImages: keptImages ?? state.keptImages,
       ),
     );
   }
@@ -101,6 +116,18 @@ class SubstackArticleNavigationStore extends Store<String> {
 
   void search(String query) => update(query);
   List<SubstackArticlePassage> get results => state.trim().isEmpty ? document.headings : document.search(state);
+}
+
+enum SubstackReaderBody { article, paywall, liveSite, empty }
+
+/// What the reader shows for [post]. A paid post without a body gets the paid
+/// pane, never the publisher's page: that page runs the publisher's scripts
+/// and is not ours to render the paywall of.
+SubstackReaderBody substackReaderBodyFor(SubstackPost post) {
+  if (post.bodyHtml?.trim().isNotEmpty == true) return SubstackReaderBody.article;
+  if (post.isPaywalled) return SubstackReaderBody.paywall;
+  if (post.canonicalUrl != null) return SubstackReaderBody.liveSite;
+  return SubstackReaderBody.empty;
 }
 
 /// A deep link starts with a slug ID; the full API post uses a numeric ID.

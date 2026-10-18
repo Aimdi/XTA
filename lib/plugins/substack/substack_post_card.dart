@@ -44,8 +44,8 @@ class SubstackPostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
       store: context.read<SubstackReadStore>(),
-      distinct: (_) => !context.read<SubstackReadStore>().state.contains(post.id),
-      onState: (context, readIds) => _build(context, unread: !readIds.contains(post.id)),
+      distinct: (_) => !context.read<SubstackReadStore>().isPostRead(post),
+      onState: (context, readIds) => _build(context, unread: !substackPostIsRead(readIds, post)),
     );
   }
 
@@ -142,6 +142,11 @@ class SubstackPostCard extends StatelessWidget {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
     final logo = logoUrl;
     final hasBadges = showSourceBadge || post.isPaywalled || post.isPodcast;
+    final minutes = substackReadMinutes(post);
+    final meta = [
+      if (date != null) createRelativeDate(date),
+      if (minutes != null) L10n.of(context).plugin_substack_read_minutes(minutes),
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,15 +202,15 @@ class SubstackPostCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                meta: date == null || largeText ? const [] : [createRelativeDate(date)],
+                meta: largeText ? const [] : meta,
               ),
             ),
           ],
         ),
-        if (largeText && date != null)
+        if (largeText && meta.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
+            child: Text(meta.join(' · '), style: theme.textTheme.bodySmall),
           ),
         if (hasBadges) ...[
           const SizedBox(height: 6),
@@ -234,14 +239,14 @@ class SubstackPostCard extends StatelessWidget {
     return ScopedBuilder<SubstackLikesStore, List<SubstackPost>>(
       store: likes,
       onState: (context, _) {
-        final isLiked = likes.isLiked(post.id);
+        final isLiked = likes.contains(post);
         final remote = post.reactionCount ?? 0;
         final shown = remote + (isLiked ? 1 : 0);
 
         return ScopedBuilder<SubstackSavedStore, List<SubstackPost>>(
           store: saved,
           onState: (context, _) {
-            final isSaved = saved.isSaved(post.id);
+            final isSaved = saved.contains(post);
             return Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
@@ -287,9 +292,9 @@ class SubstackPostCard extends StatelessWidget {
                   onPressed: () {
                     final read = context.read<SubstackReadStore>();
                     if (unread) {
-                      read.markRead(post.id);
+                      read.markPostRead(post);
                     } else {
-                      read.markUnread(post.id);
+                      read.markPostUnread(post);
                     }
                   },
                 ),

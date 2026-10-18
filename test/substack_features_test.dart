@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
@@ -97,7 +99,9 @@ void main() {
 
       final comments = flattenSubstackComments({'comments': [nest(0)]});
 
-      expect(comments, hasLength(9), reason: 'the cap ends the walk, not the list');
+      expect(comments, hasLength(13), reason: 'nine before BUG-01 was fixed: the cap ended the walk');
+      expect(comments.map((comment) => comment.depth).reduce(max), 8);
+      expect(comments.last.parentId, '11');
     });
   });
 }

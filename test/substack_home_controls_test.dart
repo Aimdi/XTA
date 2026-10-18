@@ -530,7 +530,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Mark as read').first);
     await tester.pumpAndSettle();
-    expect(h.read.state, contains('0'));
+    expect(h.read.isPostRead(h.feed.allPosts.firstWhere((post) => post.id == '0')), isTrue);
     expect(find.byTooltip('Mark as unread'), findsOneWidget);
     await tester.tap(find.byTooltip('Mark as unread'));
     await tester.pumpAndSettle();
@@ -542,6 +542,26 @@ void main() {
     await tester.tap(find.byTooltip('Mark as read').first);
     await tester.pumpAndSettle();
     expect(find.byWidgetPredicate((widget) => widget is SubstackPostCard && widget.post.id == '0'), findsNothing);
+    expect(tester.takeException(), isNull);
+    await h.close(tester);
+  });
+  testWidgets('the Saved filter shows the saved posts on Home, and follows an unsave', (tester) async {
+    _viewport(tester);
+    final h = _Harness();
+    await tester.pumpWidget(h.app());
+    await tester.pumpAndSettle();
+    final post = h.feed.allPosts.firstWhere((post) => post.id == '0');
+    await h.saved.toggle(post);
+    await _options(tester);
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Saved'));
+    await tester.pumpAndSettle();
+    await _closeOptions(tester);
+
+    final cards = find.byType(SubstackPostCard);
+    expect(tester.widgetList<SubstackPostCard>(cards).map((card) => card.post.id), ['0']);
+    await h.saved.toggle(post);
+    await tester.pumpAndSettle();
+    expect(cards, findsNothing, reason: 'unsaving takes it out at once');
     expect(tester.takeException(), isNull);
     await h.close(tester);
   });
@@ -617,7 +637,7 @@ void main() {
     expect(find.text('Add publication'), findsOneWidget);
     await tester.tap(find.text('Mark all as read'));
     await tester.pumpAndSettle();
-    expect(h.read.state, unorderedEquals(h.feed.allPosts.map((post) => post.id)));
+    expect(h.read.state, unorderedEquals(h.feed.allPosts.map(substackPostKey)));
     expect(tester.takeException(), isNull);
     await h.close(tester);
   });

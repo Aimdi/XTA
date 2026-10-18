@@ -148,7 +148,7 @@ void main() {
       expect(store.refreshError, isNull);
     });
 
-    test('publication requests obey concurrency and pass budgets without starving untouched publications', () async {
+    test('a refresh reads every publication within the concurrency bound; paging passes rotate failures', () async {
       final pubs = List.generate(27, (i) => _pub('pub$i'));
       final gate = Completer<void>();
       var active = 0;
@@ -170,12 +170,12 @@ void main() {
       gate.complete();
       await refresh;
       expect(maximum, substackPublicationConcurrency);
-      expect(client.postCalls, hasLength(substackPublicationsPerBatch));
-      expect(store.pendingCount, 27);
-      await store.loadMore();
       expect(client.postCalls.map((call) => call.baseUrl).toSet(), hasLength(27));
       expect(store.allPosts, hasLength(3 * substackFeedPageSize));
       expect(store.pendingCount, 24);
+      await store.loadMore();
+      expect(client.postCalls, hasLength(27 + substackPublicationsPerBatch));
+      expect(client.postCalls.skip(27).every((call) => call.offset == 0), isTrue, reason: 'failed pages retry first');
       await store.loadMore();
       expect(client.postCalls.where((call) => call.offset == 8), hasLength(3));
     });
@@ -282,6 +282,34 @@ void main() {
       store.syncReadIds({});
       expect(store.state.posts, hasLength(2));
       expect(client.postCalls, hasLength(1));
+    });
+
+    test('the paid filter keeps paid posts; the saved filter follows the Saved library', () async {
+      final pub = _pub('alpha');
+      final paid = SubstackPost(
+        id: 'p',
+        title: 'Paid',
+        slug: 'p',
+        publicationBaseUrl: pub.baseUrl,
+        publicationName: pub.name,
+        audience: 'only_paid',
+      );
+      final client = _Client()..posts = (_, _) async => [_post(pub, 'a'), paid];
+      final store = SubstackFeedStore(client, _Publications([pub]));
+      addTearDown(store.destroy);
+      await store.refresh();
+
+      store.setFilter(SubstackFeedFilter.paid, const {});
+      expect(store.state.posts.map((post) => post.id), ['p']);
+      store.setFilter(SubstackFeedFilter.free, const {});
+      expect(store.state.posts.map((post) => post.id), ['a']);
+
+      var saved = <String>{'a'};
+      store.setFilter(SubstackFeedFilter.saved, const {}, isSaved: (post) => saved.contains(post.id));
+      expect(store.state.posts.map((post) => post.id), ['a']);
+      saved = {'p'};
+      store.syncSaved((post) => saved.contains(post.id));
+      expect(store.state.posts.map((post) => post.id), ['p'], reason: 'unsaving shows at once');
     });
 
     test('disposed feeds ignore pending requests', () async {

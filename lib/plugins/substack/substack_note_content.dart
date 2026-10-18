@@ -190,7 +190,7 @@ class _NotePublication extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = L10n.of(context);
     await store.add(publication);
-    final followed = store.state.any((pub) => pub.id == publication.id);
+    final followed = store.followOf(publication) != null;
     if (followed) await subscriptions?.reloadSubscriptions();
     if (!context.mounted) return;
     messenger.showSnackBar(
@@ -209,7 +209,7 @@ class _NotePublication extends StatelessWidget {
     return TripleBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
       store: store,
       builder: (context, triple) {
-        final followed = triple.state.any((pub) => pub.id == publication.id);
+        final followed = substackFollowOf(triple.state, publication) != null;
         return Wrap(
           spacing: 8,
           runSpacing: 4,

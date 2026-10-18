@@ -64,7 +64,8 @@ class PublicationClient extends SubstackClient {
   }
 
   @override
-  Future<SubstackPublication> fetchPublication(Uri base) async => metadata?.call(base) ?? publication;
+  Future<SubstackPublication> fetchPublication(Uri base, {String? subdomainHint}) async =>
+      metadata?.call(base) ?? publication;
 
   @override
   Future<List<SubstackRecommendation>> fetchSimilarPublications(SubstackPublication publication) =>
