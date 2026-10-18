@@ -1,9 +1,10 @@
 # Substack Tier 3: finishing partial features
 
-Status: **done** (2026-10-17), one commit per item, each with its tests. The owner asked for the remaining tiers;
-Tier 2's open items each wait on a device or a HAR (`docs/substack/audit.md` §9). Two choices made on the way:
-mark-read-on-scroll does not re-filter the feed while scrolling (an Unread list would jump), and the custom-domain
-probe runs only after every other plugin has declined a link, never for Instagram's `/p/` links.
+Status: **done** (2026-10-17) and **shipped in aimdi179** (#371), one commit per item, each with its tests. The
+owner asked for the remaining tiers; Tier 2's open items each wait on a device or a HAR (`docs/substack/audit.md`
+§9). Two choices made on the way: mark-read-on-scroll does not re-filter the feed while scrolling (an Unread list
+would jump), and the custom-domain probe runs only after every other plugin has declined a link, never for
+Instagram's `/p/` links.
 
 Each item below is one commit with its tests. All are local: no new endpoint, no write to Substack, no new
 dependency. Every new UI string goes into all 29 ARB files.
@@ -27,9 +28,10 @@ choice is one preference and applies to the next episode too. A menu on the audi
 
 ## 4. Per-episode resume
 
-The single checkpoint becomes a small journal: the last 50 episodes by URL, newest first, each with its position.
-Opening an episode starts where that episode stopped, and finishing one removes it. The old single-checkpoint
-preference is read once into the journal, so no place is lost on upgrade.
+Beside the single checkpoint, a small journal keeps the last 50 episodes by URL, newest first, each with its
+position. Opening an episode starts where that episode stopped, and finishing one removes it. The checkpoint still
+restores the current episode on a cold start and joins the journal when another episode opens, so no place is lost
+on upgrade.
 
 ## 5. Font and column width
 
