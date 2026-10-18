@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Markdown olarak paylaş",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Vurguyu kaldır",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Bağlantı kontrol ediliyor…",
+  "@plugin_substack_checking_link": {}
 }

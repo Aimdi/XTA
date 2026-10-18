@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Markdown के रूप में साझा करें",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "हाइलाइट हटाएँ",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "लिंक जाँचा जा रहा है…",
+  "@plugin_substack_checking_link": {}
 }

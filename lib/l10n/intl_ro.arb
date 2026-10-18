@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Distribuie ca Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Elimină evidențierea",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Se verifică linkul…",
+  "@plugin_substack_checking_link": {}
 }

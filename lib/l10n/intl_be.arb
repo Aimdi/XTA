@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Падзяліцца ў Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Выдаліць вылучэнне",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Правяраем спасылку…",
+  "@plugin_substack_checking_link": {}
 }

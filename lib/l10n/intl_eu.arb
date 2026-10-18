@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Partekatu Markdown gisa",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Kendu nabarmendua",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Esteka egiaztatzen…",
+  "@plugin_substack_checking_link": {}
 }

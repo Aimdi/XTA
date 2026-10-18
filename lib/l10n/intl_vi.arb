@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Chia sẻ dạng Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Xóa đánh dấu",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Đang kiểm tra liên kết…",
+  "@plugin_substack_checking_link": {}
 }

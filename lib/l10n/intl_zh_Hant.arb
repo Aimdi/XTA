@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "以 Markdown 分享",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "移除醒目提示",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "正在檢查連結…",
+  "@plugin_substack_checking_link": {}
 }

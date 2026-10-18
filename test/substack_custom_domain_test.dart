@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_transport.dart';
@@ -76,10 +78,19 @@ void main() {
         child: Provider<SubstackClient>.value(
           value: client,
           child: MaterialApp(
-            home: Builder(
-              builder: (context) => TextButton(
-                onPressed: () async => handled = await openWithPlugins(context, 'https://news.example.org/p/hello'),
-                child: const Text('open'),
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => TextButton(
+                  onPressed: () async => handled = await openWithPlugins(context, 'https://news.example.org/p/hello'),
+                  child: const Text('open'),
+                ),
               ),
             ),
           ),
@@ -96,5 +107,11 @@ void main() {
 
     expect(handled, isFalse);
     expect(requests.single.path, '/api/v1/posts/hello');
+    await tester.pumpAndSettle();
+    expect(
+      find.text(L10n.current.plugin_substack_checking_link),
+      findsNothing,
+      reason: 'the note goes with the answer',
+    );
   });
 }

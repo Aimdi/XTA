@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Kunhavigi kiel Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Forigi emfazon",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Kontrolante la ligilon…",
+  "@plugin_substack_checking_link": {}
 }

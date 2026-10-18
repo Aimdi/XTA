@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -254,10 +255,16 @@ Future<bool> _openSubstackCandidate(BuildContext context, String url) async {
   } catch (_) {
     return false;
   }
+  // The domain may take a moment to answer; the reader sees why nothing opened yet.
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  final note = messenger?.showSnackBar(
+    SnackBar(content: Text(L10n.of(context).plugin_substack_checking_link), duration: substackCandidateTimeout),
+  );
   final post = await client
       .probeCustomDomainPost(candidate.publicationBase, candidate.slug)
       .timeout(substackCandidateTimeout, onTimeout: () => null)
       .catchError((Object _) => null);
+  note?.close();
   if (post == null || !context.mounted) return false;
   await Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)));
   return true;

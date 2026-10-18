@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Comparteix en Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Elimina el ressaltat",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "S’està comprovant l’enllaç…",
+  "@plugin_substack_checking_link": {}
 }

@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Bagikan sebagai Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Hapus sorotan",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Memeriksa tautan…",
+  "@plugin_substack_checking_link": {}
 }

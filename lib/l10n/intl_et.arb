@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Jaga Markdownina",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Eemalda esiletõst",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Linki kontrollimine…",
+  "@plugin_substack_checking_link": {}
 }

@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Condividi come Markdown",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "Rimuovi evidenziazione",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "Controllo del link…",
+  "@plugin_substack_checking_link": {}
 }

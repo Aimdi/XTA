@@ -5309,5 +5309,7 @@
   "plugin_substack_highlights_share": "Markdown으로 공유",
   "@plugin_substack_highlights_share": {},
   "plugin_substack_highlight_remove": "하이라이트 삭제",
-  "@plugin_substack_highlight_remove": {}
+  "@plugin_substack_highlight_remove": {},
+  "plugin_substack_checking_link": "링크 확인 중…",
+  "@plugin_substack_checking_link": {}
 }
