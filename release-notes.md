@@ -1,37 +1,40 @@
-## XTA — aimdi178
+## XTA — aimdi179
 
-### Booru: safer sign-in, steadier feeds
+### Substack: steadier feeds, faster articles, more to read with
 
-This release fixes 17 problems in the Booru plugin.
+**Feeds that load, and stay yours**
 
-**Your login and API key**
+- **Every publication you follow is refreshed**, not only the first 24.
+- **A rate limit is said plainly** and waits before asking again, instead of trying every fallback and failing.
+- **A custom domain that does not answer no longer shows another publication's posts.**
+- **One post is one post**, whether it came from the API or the RSS feed, for read state, likes, saves and offline copies.
+- **Following is never overwritten** by a publication found while browsing.
+- **The feed opens at once** with what it showed last time, and asks again only for publications that are out of date.
 
-- **Never shown in error messages.** A failed request used to print them on screen.
-- **Sent only to their own site.** A key entered for one site was sent to every site you switched to. Settings now say which site the key belongs to.
-- **Sent only as a pair.** A login without its key, or a key without its login, is no longer sent at all.
+**Articles**
 
-**Feeds**
+- **Opening an article is faster**: it is read once, off the screen's thread when it is long, and the last 16 opened stay ready.
+- **Paid posts show their free part** with the paid badge. A paid post without one shows its preview, not the publisher's page.
+- **Embedded players load when you tap them**, so nothing contacts YouTube or Spotify until then.
+- **Text can be selected and copied.**
+- **Replies nested very deep are kept**, and forms and blocks that only work on the web are replaced by a note with a link.
+- **New settings for the article font (serif or sans) and the column width.**
+- **Read time** is shown on cards and at the top of articles.
 
-- **Changing the site, rating limit or blacklist starts the feeds over**, so posts from two sites no longer mix, and a post's tags, comments and wiki come from its own site.
-- **A page that fails to load says so** and offers Retry, instead of asking again every time you scroll. The end of a feed is marked.
-- **Following shows its failures.** When none of your tags load you get the error with Retry. When some fail, a notice says so above the rest, instead of "No recent posts".
-- **No more "No posts yet" flash.** A feed shows its loading skeleton until the first page arrives.
-- **Popular opens on a day the site has already reached**, so it should no longer be empty early in the day in Asia and Australia.
-- **Pages that arrive late are dropped**, so a refresh is never mixed with the list it replaced, and a screen you leave stops asking for more.
+**Native reader (preview, off by default)**
 
-**Messages and sites**
+In Substack's settings (Settings → Plugin store, then the settings button on Substack), *Native reader (preview)* shows articles without a web view. Footnotes open in a sheet and images in the full-screen viewer. Your place is kept, and contents and find work. Saved posts read their images from the device. You can highlight passages and share them as Markdown.
 
-- **Clearer refusals.** A site that refuses guests, or puts a browser check in front of apps, now says so. A busy site asks you to try again later.
-- **"Updated", not "Posted".** On Safebooru, Rule34 and similar sites, the only date sent is when a post last changed, and it is now labelled that way.
-- **hypnohub.net** is added as a Gelbooru 0.2 site, not Moebooru.
+**Library, podcasts and links**
 
-**Downloads and videos**
+- **Paid and Saved feed filters.**
+- **Library search looks inside the text** of posts kept on the device, and shows the matching passage.
+- **Podcast speed** from 0.8× to 2×, and **each episode resumes where you left it**.
+- **Mark posts read as you scroll past**, an option, off by default.
+- **Export and import your follows as OPML.**
+- **Links to Substack posts on their own domains open in the app**, after a short check. Other links still open in the browser.
 
-- **Readable file names.** Downloads no longer contain `%20` and the like, and long names keep their beginning, where sites put their name and the post number.
-- **Danbooru animations** download as a playable video, not a zip of frames.
-- **Videos wait for a tap** when "Load media only on tap" is on.
-
-Everything else is as in aimdi177.
+Everything else is as in aimdi178.
 
 ### Licence note
 
@@ -39,10 +42,10 @@ The downloadable voices use sherpa-onnx, whose library includes espeak-ng under 
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi178_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001470**, above every aimdi177 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
+For most Android phones, use **`xta-aimdi179_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001480**, above every aimdi178 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
 
-For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.178-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
+For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.179-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
 
 The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi177)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi178)
