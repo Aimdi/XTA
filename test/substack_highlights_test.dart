@@ -25,13 +25,12 @@ void main() {
 
   test('highlighted text is split out of its runs, keeping their styles', () {
     const runs = [SubstackRun('Read '), SubstackRun('this link', href: 'https://e.x'), SubstackRun(' now.')];
-    final out = substackHighlightRuns(runs, ['d this', 'now']);
+    final out = substackHighlightRuns(runs, ['Read this', 'now']);
 
     expect(
       [for (final run in out) (run.text, run.highlighted, run.href)],
       [
-        ('Rea', false, null),
-        ('d ', true, null),
+        ('Read ', true, null),
         ('this', true, 'https://e.x'),
         (' link', false, 'https://e.x'),
         (' ', false, null),
@@ -40,6 +39,21 @@ void main() {
       ],
     );
     expect(substackHighlightRuns(runs, ['absent']), same(runs));
+  });
+
+  test('a short quote is highlighted as a word, not inside other words; Chinese matches anywhere', () {
+    List<String> lit(List<SubstackRun> runs, List<String> quotes) => [
+      for (final run in substackHighlightRuns(runs, quotes))
+        if (run.highlighted) run.text,
+    ];
+
+    expect(lit(const [SubstackRun('An plan, an answer and an.')], ['an']), ['an', 'an']);
+    expect(lit(const [SubstackRun('Ein Haus, kein Haus.')], ['Haus']), ['Haus', 'Haus']);
+    expect(lit(const [SubstackRun('我们的世界很大')], ['世界']), ['世界']);
+    expect(lit(const [SubstackRun('re-read, read')], ['read']), ['read', 'read'], reason: 'a hyphen ends a word');
+    expect(lit(const [SubstackRun('Reading it')], ['eading']), [
+      'eading',
+    ], reason: 'no whole word: where it was selected');
   });
 
   test('highlights are kept by post, survive a restart, drop the oldest beyond the limit', () async {

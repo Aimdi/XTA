@@ -22,8 +22,11 @@ List<SubstackRun> substackHighlightRuns(List<SubstackRun> runs, List<String> quo
   final text = runs.map((run) => run.text).join();
   final marked = List.filled(text.length, false);
   for (final quote in quotes) {
-    for (var at = text.indexOf(quote); at >= 0; at = text.indexOf(quote, at + quote.length)) {
-      marked.fillRange(at, at + quote.length, true);
+    final at = [for (var i = text.indexOf(quote); i >= 0; i = text.indexOf(quote, i + 1)) i];
+    final words = at.where((i) => _wholeWords(text, i, quote)).toList();
+    // A selection dragged from inside a word still shows where it was made.
+    for (final i in words.isEmpty ? at : words) {
+      marked.fillRange(i, i + quote.length, true);
     }
   }
   if (!marked.contains(true)) return runs;
@@ -43,6 +46,23 @@ List<SubstackRun> substackHighlightRuns(List<SubstackRun> runs, List<String> quo
     offset += run.text.length;
   }
   return out;
+}
+
+/// Letters of scripts that put spaces between words, where a quote must
+/// not begin or end inside a word ("an" is not highlighted in "plan").
+/// Scripts without spaces, such as Chinese, match anywhere.
+final _spacedWordChar = RegExp(
+  r'[\p{Script=Latin}\p{Script=Greek}\p{Script=Cyrillic}\p{Script=Armenian}\p{N}]',
+  unicode: true,
+);
+
+bool _wordChar(String text, int at) => at >= 0 && at < text.length && _spacedWordChar.hasMatch(text[at]);
+
+bool _wholeWords(String text, int at, String quote) {
+  final end = at + quote.length;
+  final startsInWord = _wordChar(quote, 0) && _wordChar(text, at - 1);
+  final endsInWord = _wordChar(quote, quote.length - 1) && _wordChar(text, end);
+  return !startsInWord && !endsInWord;
 }
 
 /// [quotes] of [post] as Markdown: the title, where it is from, then each quote.
