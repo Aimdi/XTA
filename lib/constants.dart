@@ -469,6 +469,8 @@ const optionPluginBooruHost = 'plugin.booru.host';
 const optionPluginBooruPreset = 'plugin.booru.preset';
 const optionPluginBooruLogin = 'plugin.booru.login';
 const optionPluginBooruApiKey = 'plugin.booru.api_key';
+/// The host the Booru login and key were entered for; no other host is sent them.
+const optionPluginBooruCredentialsHost = 'plugin.booru.credentials_host';
 const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
 const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
 const optionPluginBooruSearchHistory = 'plugin.booru.search_history';

@@ -15,7 +15,7 @@ class BooruPopularQuery {
   BooruPopularQuery({required this.scale, required DateTime date}) : date = _dateOnly(date);
 
   factory BooruPopularQuery.today([BooruPopularScale scale = BooruPopularScale.day]) =>
-      BooruPopularQuery(scale: scale, date: DateTime.now());
+      BooruPopularQuery(scale: scale, date: booruPopularToday());
 
   BooruPopularQuery withScale(BooruPopularScale next) => BooruPopularQuery(scale: next, date: date);
 
@@ -27,17 +27,30 @@ class BooruPopularQuery {
       BooruPopularScale.week => DateTime(date.year, date.month, date.day + 7 * direction),
       BooruPopularScale.month => _addMonths(date, direction),
     };
-    final limit = _dateOnly(today ?? DateTime.now());
+    final limit = _dateOnly(today ?? booruPopularToday());
     return BooruPopularQuery(scale: scale, date: next.isAfter(limit) ? limit : next);
   }
 
-  bool isLatest({DateTime? today}) => !date.isBefore(_dateOnly(today ?? DateTime.now()));
+  bool isLatest({DateTime? today}) => !date.isBefore(_dateOnly(today ?? booruPopularToday()));
 
   @override
   bool operator ==(Object other) => other is BooruPopularQuery && other.scale == scale && other.date == date;
 
   @override
   int get hashCode => Object.hash(scale, date);
+}
+
+/// The newest day a host can have a popular list for: its own date, taken as
+/// UTC's, but never past the reader's own. East of UTC the reader's morning is
+/// a day the host has not reached; west of it, the host's new day has only
+/// just begun in the reader's evening. [now] and its UTC [offset] default to
+/// this moment and the device's zone.
+DateTime booruPopularToday({DateTime? now, Duration? offset}) {
+  final utc = (now ?? DateTime.now()).toUtc();
+  final local = utc.add(offset ?? DateTime.now().timeZoneOffset);
+  final hostDay = DateTime(utc.year, utc.month, utc.day);
+  final readerDay = DateTime(local.year, local.month, local.day);
+  return hostDay.isBefore(readerDay) ? hostDay : readerDay;
 }
 
 /// The same day [months] away, kept inside a shorter month (Mar 31 − 1 → Feb 28).

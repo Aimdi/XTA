@@ -15,8 +15,12 @@ List<BooruFact> booruPostFacts(BooruPost post, L10n l10n, String locale) {
   final down = post.downScore;
   final rating = post.rating;
   final created = post.createdAt;
+  final updated = post.updatedAt;
   final uploader = post.uploader;
-  final date = created == null ? null : DateFormat.yMMMd(locale).add_jm().format(created.toLocal());
+  final when = DateFormat.yMMMd(locale).add_jm();
+  final date = created == null ? null : when.format(created.toLocal());
+  // A change time alone is not when the post went up, so it says what it is.
+  final changed = created != null || updated == null ? null : when.format(updated.toLocal());
   return [
     if (post.score case final score?)
       (icon: Icons.thumb_up_alt_outlined, text: numbers.format(score), label: l10n.plugin_booru_score(score)),
@@ -33,6 +37,7 @@ List<BooruFact> booruPostFacts(BooruPost post, L10n l10n, String locale) {
       (icon: Icons.aspect_ratio, text: '${post.width} × ${post.height}', label: null),
     if (_fileText(post) case final file?) (icon: Icons.insert_drive_file_outlined, text: file, label: null),
     if (date != null) (icon: Icons.schedule, text: date, label: l10n.plugin_booru_posted_on(date)),
+    if (changed != null) (icon: Icons.update, text: l10n.plugin_booru_updated_on(changed), label: null),
     if (uploader != null) (icon: Icons.person_outline, text: uploader, label: l10n.plugin_booru_uploaded_by(uploader)),
   ];
 }

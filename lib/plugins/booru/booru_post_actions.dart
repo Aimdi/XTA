@@ -26,10 +26,10 @@ PluginPostArchive booruPostArchive(BooruPost post) => PluginLinkPost(
   images: [post.isVideo ? post.thumbnailUrl : post.displayUrl],
 ).archive;
 
-/// The original file, videos included: the shared download path skips
-/// anything marked as video.
+/// The post's [BooruPost.downloadUrl], videos included: the shared download
+/// path skips anything marked as video.
 PluginMediaItem booruDownloadItem(BooruPost post) =>
-    PluginMediaItem(url: post.displayUrl, downloadUrl: post.originalUrl, shareUrl: booruShareUrl(post));
+    PluginMediaItem(url: post.displayUrl, downloadUrl: post.downloadUrl, shareUrl: booruShareUrl(post));
 
 Future<void> openBooruLink(String url) async {
   final uri = Uri.tryParse(url.trim());

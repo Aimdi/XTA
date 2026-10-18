@@ -125,6 +125,11 @@ class _BooruPostDetailsState extends State<BooruPostDetails> {
     );
   }
 
-  void _openTag(String tag, BooruTagCategory? category) =>
-      showBooruTagActions(context, tag: tag, category: category, search: widget.search);
+  void _openTag(String tag, BooruTagCategory? category) => showBooruTagActions(
+    context,
+    tag: tag,
+    category: category,
+    search: widget.search,
+    site: context.read<BooruClient>().siteOf(_post),
+  );
 }

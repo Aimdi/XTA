@@ -1401,6 +1401,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Sao chép các thẻ",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "Thông tin đăng nhập của bạn được lưu cho {site} và chỉ được gửi đến trang đó. Nếu bạn nhập thông tin mới ở đây, thông tin cũ sẽ bị thay thế.",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "Sửa dạng văn bản",
@@ -1419,6 +1427,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "Không còn bài đăng nào",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "API engine",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1429,6 +1439,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "Trang đã từ chối truy cập — có thể cần đăng nhập hoặc xác minh trên trình duyệt",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1441,6 +1453,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "Trang đang quá tải hoặc giới hạn yêu cầu — hãy thử lại sau",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "Loại trừ khỏi tìm kiếm hiện tại",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "Loại trừ",
@@ -1459,6 +1473,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "Không thể tải một số thẻ đang theo dõi",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "Mở toàn màn hình",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "Số cột lưới",
@@ -1477,6 +1493,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "Không thể tải thêm bài đăng",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "Optional account login or numeric user id, depending on the host.",
@@ -1681,6 +1699,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "Xóa khỏi tìm kiếm đã lưu",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "Cập nhật lúc {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "Tải lên bởi {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

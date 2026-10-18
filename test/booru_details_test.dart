@@ -1,28 +1,37 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/downloads/download_entry.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_credentials.dart';
 import 'package:xta/plugins/booru/booru_detail_parse.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
+import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_text.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 
 BooruPost _post({
   String id = '1',
   String engine = 'danbooru',
+  String host = 'https://example.com',
   List<String> tags = const ['solo', 'smile'],
   BooruRating? rating = BooruRating.general,
   Map<String, BooruTagCategory> categories = const {},
+  String? fileUrl,
 }) => BooruPost(
   id: id,
-  host: 'https://example.com',
+  host: host,
   engine: engine,
   tags: tags,
   rating: rating,
@@ -31,7 +40,7 @@ BooruPost _post({
   height: 1,
   previewUrl: null,
   sampleUrl: null,
-  fileUrl: null,
+  fileUrl: fileUrl,
   fileExt: 'jpg',
   source: null,
   createdAt: null,
@@ -53,6 +62,17 @@ BooruClient _client(String engine, String host, http.Client http, {Map<String, O
 
 void main() {
   group('post details', () {
+    test('a Moebooru download is named after the site, the post and its tags', () {
+      final post = _post(
+        id: '123456',
+        engine: 'moebooru',
+        host: 'https://yande.re',
+        fileUrl: 'https://files.yande.re/image/0f1e/yande.re%20123456%20blue_eyes%20re:zero.jpg',
+      );
+      final name = pluginMediaFileName(booruDownloadItem(post), pluginIdBooru);
+      expect(safeDownloadName(name), 'booru-yande.re 123456 blue_eyes re_zero.jpg');
+    });
+
     test('Danbooru posts carry tag kinds, file facts and family', () {
       final post = parseBooruPosts(
         [
@@ -115,7 +135,7 @@ void main() {
       expect(post.hasChildren, isTrue);
     });
 
-    test('an unreadable date falls back to the change time', () {
+    test('a change time is kept apart from when the post went up', () {
       final post = parseBooruPosts(
         [
           {'id': 3, 'tags': 'solo', 'created_at': 'someday', 'change': 1700000000},
@@ -123,7 +143,10 @@ void main() {
         engine: BooruEngine.gelbooruV2,
         host: 'https://safebooru.org',
       ).single;
-      expect(post.createdAt, DateTime.fromMillisecondsSinceEpoch(1700000000 * 1000));
+      final changed = DateTime.fromMillisecondsSinceEpoch(1700000000 * 1000);
+      expect(post.createdAt, isNull, reason: 'a re-tag is not the upload');
+      expect(post.updatedAt, changed);
+      expect(post.feedDate, changed, reason: 'feeds still order the post by it');
     });
 
     test('Moebooru author and children', () {
@@ -249,6 +272,16 @@ void main() {
       expect(auth(BooruEngine.danbooru), {'login': 'me', 'api_key': 'k'});
       expect(auth(BooruEngine.gelbooruV2), {'user_id': 'me', 'api_key': 'k'});
       expect(auth(BooruEngine.moebooru), {'login': 'me', 'password_hash': 'k'});
+    });
+
+    test('half a login is never sent', () {
+      for (final engine in BooruEngine.values) {
+        BooruSite site(String login, String apiKey) =>
+            BooruSite(engine: engine, host: 'https://x.org', login: login, apiKey: apiKey);
+        expect(site('me', '').auth, isEmpty, reason: '${engine.id}: a login without its key');
+        expect(site('', 'k').auth, isEmpty, reason: '${engine.id}: a key without its login');
+        expect(site('me', 'k').auth, hasLength(2), reason: engine.id);
+      }
     });
 
     test('Rule34 is asked on its API host', () {
@@ -400,9 +433,54 @@ void main() {
       expect(query.step(1, today: today).isLatest(today: today), isTrue);
       expect(query.isLatest(today: today), isFalse);
     });
+
+    test("today is the host's day, never one it has not reached", () {
+      DateTime todayAt(DateTime utc, int hours) => booruPopularToday(
+        now: utc,
+        offset: Duration(hours: hours),
+      );
+      expect(
+        todayAt(DateTime.utc(2026, 10, 12, 23, 30), 9),
+        DateTime(2026, 10, 12),
+        reason: 'at 08:30 in Tokyo the host is still on the 12th',
+      );
+      expect(
+        todayAt(DateTime.utc(2026, 10, 13, 2), -5),
+        DateTime(2026, 10, 12),
+        reason: 'at 21:00 in New York the 13th has only just begun for the host',
+      );
+      expect(todayAt(DateTime.utc(2026, 10, 13, 12), 0), DateTime(2026, 10, 13));
+      expect(BooruPopularQuery.today().date, booruPopularToday());
+    });
   });
 
   group('client', () {
+    test('a refusal with no key set, and a busy host, each say so', () async {
+      final l10n = await L10n.load(const Locale('en'));
+      const keyed = {
+        optionPluginBooruLogin: 'reader',
+        optionPluginBooruApiKey: 'secret',
+        optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+      };
+      Future<String> messageFor(int status, {Map<String, Object> prefs = const {}}) async {
+        final client = _client(
+          'danbooru',
+          'https://danbooru.donmai.us',
+          MockClient((_) async => http.Response('', status)),
+          prefs: prefs,
+        );
+        final error = await client.latest().then<Object?>((_) => null, onError: (Object error) => error);
+        return booruErrorMessage(l10n, error);
+      }
+
+      expect(await messageFor(403), l10n.plugin_booru_error_forbidden, reason: 'no key was sent to check');
+      expect(await messageFor(403, prefs: keyed), l10n.plugin_booru_error_unauthorized);
+      expect(await messageFor(401, prefs: keyed), l10n.plugin_booru_error_unauthorized);
+      expect(await messageFor(503), l10n.plugin_booru_error_unavailable);
+      expect(await messageFor(429), l10n.plugin_booru_error_rate_limited);
+      expect(await messageFor(500), l10n.plugin_booru_error_response);
+    });
+
     test('Gelbooru popular shows its highest-scored posts', () async {
       final asked = <Uri>[];
       final client = _client(
@@ -517,6 +595,149 @@ void main() {
         MockClient((request) async => http.Response('<xml/>', 200)),
       );
       expect(await client.tagInfo(_post(engine: 'gelbooru_v2')), isEmpty);
+    });
+
+    test('error text never carries the login or the key', () async {
+      const sites = {
+        'danbooru': 'https://danbooru.donmai.us',
+        'moebooru': 'https://yande.re',
+        'gelbooru_v2': 'https://safebooru.org',
+        'e621': 'https://e621.net',
+      };
+      Future<String> failure(String engine, MockClient http) => _client(
+        engine,
+        sites[engine]!,
+        http,
+        prefs: {optionPluginBooruLogin: 'reader', optionPluginBooruApiKey: 'secret-key'},
+      ).latest().then((_) => 'no error', onError: (Object error) => '$error');
+
+      for (final engine in sites.keys) {
+        final refused = await failure(engine, MockClient((request) async => http.Response('', 401)));
+        final unreachable = await failure(
+          engine,
+          MockClient((request) async => throw http.ClientException('Connection refused', request.url)),
+        );
+        for (final text in [refused, unreachable]) {
+          expect(text, contains(Uri.parse(sites[engine]!).host), reason: 'still names what failed');
+          expect(text, isNot(contains('secret-key')), reason: engine);
+          expect(text, isNot(contains('reader')), reason: engine);
+        }
+      }
+    });
+
+    test('every engine sends credentials under a name the error text masks', () {
+      for (final engine in BooruEngine.values) {
+        final site = BooruSite(engine: engine, host: 'https://example.org', login: 'a', apiKey: 'b');
+        expect(booruCredentialParameters, containsAll(site.auth.keys), reason: engine.id);
+      }
+    });
+    test("a post's details come from its own site", () async {
+      final asked = <Uri>[];
+      final client = _client(
+        'e621',
+        'https://e621.net',
+        MockClient((request) async {
+          asked.add(request.url);
+          return http.Response('[]', 200);
+        }),
+        prefs: {
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      final post = _post(host: 'https://danbooru.donmai.us');
+      final site = client.siteOf(post);
+      await client.tagInfo(post);
+      await client.comments(post);
+      await client.wiki('kantoku', site: site);
+      await client.search('kantoku', site: site);
+      expect(asked.map((uri) => uri.host).toSet(), {'danbooru.donmai.us'});
+      expect(asked.map((uri) => uri.path), ['/tags.json', '/comments.json', '/wiki_pages.json', '/posts.json']);
+      expect(asked.map((uri) => uri.queryParameters['api_key']).toSet(), {
+        'secret-key',
+      }, reason: 'the key is that site\'s');
+
+      asked.clear();
+      await client.tagInfo(_post(host: 'https://e621.net', engine: 'e621'));
+      await client.latest();
+      expect(asked.map((uri) => uri.host).toSet(), {'e621.net'});
+      expect(asked.map((uri) => uri.queryParameters['api_key']).toSet(), {null}, reason: "Danbooru's key stays home");
+    });
+  });
+
+  group('credentials', () {
+    test('they are sent only to the host they were entered for', () async {
+      final sent = <Map<String, String>>[];
+      final prefs = PrefServiceCache(
+        cache: {
+          optionPluginBooruEngine: 'danbooru',
+          optionPluginBooruHost: 'https://danbooru.donmai.us',
+          optionPluginBooruMaxRating: 'e',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      final client = BooruClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          sent.add(request.url.queryParameters);
+          return http.Response('[]', 200);
+        }),
+      );
+
+      await client.latest();
+      await prefs.set(optionPluginBooruEngine, 'e621');
+      await prefs.set(optionPluginBooruHost, 'https://e621.net');
+      await client.latest();
+      await prefs.set(optionPluginBooruEngine, 'danbooru');
+      await prefs.set(optionPluginBooruHost, 'https://danbooru.donmai.us');
+      await client.latest();
+
+      expect(sent.map((query) => query['api_key']), ['secret-key', null, 'secret-key']);
+      expect(sent.map((query) => query['login']), ['reader', null, 'reader']);
+    });
+
+    test('typing one on another host starts a new pair there', () async {
+      final prefs = PrefServiceCache(
+        cache: {
+          optionPluginBooruHost: 'https://e621.net',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruApiKey: 'secret-key',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      await saveBooruCredential(prefs, optionPluginBooruLogin, 'fox');
+      expect(prefs.get<String>(optionPluginBooruLogin), 'fox');
+      expect(prefs.get<String>(optionPluginBooruApiKey), '', reason: "the other host's key must not follow");
+      expect(prefs.get<String>(optionPluginBooruCredentialsHost), 'https://e621.net');
+
+      await saveBooruCredential(prefs, optionPluginBooruApiKey, 'fox-key');
+      expect(prefs.get<String>(optionPluginBooruLogin), 'fox', reason: 'same host: the pair is kept');
+      expect(prefs.get<String>(optionPluginBooruApiKey), 'fox-key');
+    });
+
+    test('credentials saved before this belong to the site in use', () async {
+      final saved = PrefServiceCache(
+        cache: {optionPluginBooruHost: 'yande.re', optionPluginBooruLogin: 'reader', optionPluginBooruApiKey: 'hash'},
+      );
+      await migrateBooruCredentialsHost(saved);
+      expect(saved.get<String>(optionPluginBooruCredentialsHost), 'https://yande.re');
+
+      final none = PrefServiceCache(cache: {optionPluginBooruHost: 'yande.re'});
+      await migrateBooruCredentialsHost(none);
+      expect(none.get<String>(optionPluginBooruCredentialsHost), isNull);
+
+      final bound = PrefServiceCache(
+        cache: {
+          optionPluginBooruHost: 'yande.re',
+          optionPluginBooruLogin: 'reader',
+          optionPluginBooruCredentialsHost: 'https://danbooru.donmai.us',
+        },
+      );
+      await migrateBooruCredentialsHost(bound);
+      expect(bound.get<String>(optionPluginBooruCredentialsHost), 'https://danbooru.donmai.us');
     });
   });
 }

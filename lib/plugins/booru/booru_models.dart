@@ -92,6 +92,10 @@ class BooruPost {
   final String? source;
   final DateTime? createdAt;
 
+  /// When the post last changed, where the host says so (Gelbooru's
+  /// `change`); Gelbooru 0.2 forks send no upload time besides.
+  final DateTime? updatedAt;
+
   /// Kind of each tag, when the post itself says (Danbooru, e621). Other
   /// engines need a lookup; see `BooruClient.tagCategories`.
   final Map<String, BooruTagCategory> tagCategories;
@@ -121,6 +125,7 @@ class BooruPost {
     required this.fileExt,
     required this.source,
     required this.createdAt,
+    this.updatedAt,
     this.tagCategories = const {},
     this.fileSize,
     this.md5,
@@ -131,6 +136,10 @@ class BooruPost {
     this.hasChildren = false,
     this.uploader,
   });
+
+  /// What feeds order the post by: when it went up, else when it last
+  /// changed.
+  DateTime? get feedDate => createdAt ?? updatedAt;
 
   String get thumbnailUrl => (previewUrl != null && previewUrl!.isNotEmpty)
       ? previewUrl!
@@ -188,6 +197,11 @@ class BooruPost {
   String get originalUrl =>
       (fileUrl != null && fileUrl!.isNotEmpty) ? fileUrl! : displayUrl;
 
+  /// What Download saves: the file the post plays, when that is not the
+  /// original (a Danbooru animation's original is a zip of its frames), else
+  /// the original.
+  String get downloadUrl => videoUrl ?? originalUrl;
+
   /// Whether the post belongs to a parent/child set on the host.
   bool get hasFamily => parentId != null || hasChildren;
 
@@ -227,10 +241,14 @@ class BooruPostPage {
   final int page;
   final bool hasMore;
 
+  /// Of the queries merged into this page (Following), how many failed.
+  final int failedQueries;
+
   const BooruPostPage({
     required this.posts,
     required this.page,
     required this.hasMore,
+    this.failedQueries = 0,
   });
 }
 

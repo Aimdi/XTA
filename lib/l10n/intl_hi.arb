@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "सभी टैग कॉपी करें",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "आपकी साइन-इन जानकारी {site} के लिए सहेजी गई है और केवल उसी साइट पर भेजी जाती है। यहाँ नई जानकारी डालने पर पुरानी जानकारी बदल दी जाएगी।",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "टेक्स्ट के रूप में संपादित करें",
@@ -1422,6 +1430,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "No posts matched those tags",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "और कोई पोस्ट नहीं",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "API engine",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1432,6 +1442,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "साइट ने एक्सेस देने से मना कर दिया — शायद लॉग इन या ब्राउज़र में जाँच ज़रूरी है",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1444,6 +1456,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "साइट व्यस्त है या अनुरोध सीमित कर रही है — बाद में फिर से कोशिश करें",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "मौजूदा खोज से बाहर रखें",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "बाहर रखें",
@@ -1462,6 +1476,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "फ़ॉलो किए गए कुछ टैग लोड नहीं हो सके",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "फ़ुल स्क्रीन में खोलें",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "ग्रिड कॉलम",
@@ -1480,6 +1496,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "और पोस्ट लोड नहीं हो सकीं",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "Optional account login or numeric user id, depending on the host.",
@@ -1684,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "सहेजी गई खोजों से हटाएँ",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "{date} को अपडेट किया गया",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "{name} द्वारा अपलोड किया गया",
   "@plugin_booru_uploaded_by": {
     "placeholders": {

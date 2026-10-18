@@ -4,6 +4,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
@@ -22,7 +23,6 @@ class BooruPostGrid extends StatelessWidget {
   final ScrollController? scrollController;
   final Future<void> Function()? onRefresh;
   final VoidCallback? onNearEnd;
-  final bool loadingMore;
   final EdgeInsetsGeometry padding;
 
   /// Where [posts] come from, so the viewer can keep loading past them.
@@ -34,7 +34,6 @@ class BooruPostGrid extends StatelessWidget {
     this.scrollController,
     this.onRefresh,
     this.onNearEnd,
-    this.loadingMore = false,
     this.padding = const EdgeInsets.all(8),
     this.feed,
   });
@@ -73,13 +72,7 @@ class BooruPostGrid extends StatelessWidget {
                   ),
                 ),
               ),
-              if (loadingMore)
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                ),
+              if (feed case final feed?) SliverToBoxAdapter(child: _PagingFooter(feed: feed)),
             ],
           ),
         );
@@ -88,6 +81,45 @@ class BooruPostGrid extends StatelessWidget {
         return RefreshIndicator(onRefresh: onRefresh!, child: grid);
       },
     );
+  }
+}
+
+/// Under the grid: a spinner while the next page loads, a retry button when
+/// it failed, and a note once the feed has nothing more.
+class _PagingFooter extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  const _PagingFooter({required this.feed});
+
+  @override
+  Widget build(BuildContext context) => ScopedBuilder<BooruPagingStore, BooruPaging>(
+    store: feed.paging,
+    onState: (context, paging) => switch (_content(context, paging)) {
+      final content? => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Center(child: content),
+      ),
+      null => const SizedBox.shrink(),
+    },
+  );
+
+  Widget? _content(BuildContext context, BooruPaging paging) {
+    final l10n = L10n.of(context);
+    return switch (paging) {
+      BooruPaging.idle => null,
+      BooruPaging.loading => const CircularProgressIndicator(),
+      BooruPaging.failed => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(l10n.plugin_booru_load_more_failed, textAlign: TextAlign.center),
+          TextButton.icon(onPressed: feed.retryMore, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+        ],
+      ),
+      BooruPaging.end => Text(
+        l10n.plugin_booru_end_of_results,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+      ),
+    };
   }
 }
 

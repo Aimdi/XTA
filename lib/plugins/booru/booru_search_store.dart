@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
@@ -59,14 +60,13 @@ class BooruSearchState {
 
 /// The tag field, its suggestions and the search it runs. Every search that
 /// runs is remembered in [history], whichever way it was started.
-class BooruSearchStore extends Store<BooruSearchState> {
+class BooruSearchStore extends Store<BooruSearchState> with BooruClosableStore<BooruSearchState> {
   final BooruClient client;
   final PluginSearchHistoryStore history;
   final Duration debounce;
 
   Timer? _suggestTimer;
   BooruFeedStore? _results;
-  var _closed = false;
 
   /// With an [initialQuery] the field opens on its tags, ready for [search].
   BooruSearchStore(
@@ -173,13 +173,15 @@ class BooruSearchStore extends Store<BooruSearchState> {
     if (tags.isEmpty) return;
     final query = booruQueryText(tags);
     _suggestTimer?.cancel();
-    // The previous results may still be loading; destroying them now would
-    // let that load land in a disposed store, so they are left to the GC.
+    // The previous results may still be loading: closed, they ask for no
+    // more pages, and their grid, still on screen until the next frame, keeps
+    // what it listens to.
+    _results?.close();
     final results = BooruFeedStore(client, ({required page}) => client.search(query, page: page));
     _results = results;
     update(state.copyWith(tags: tags, input: '', suggestions: const [], query: query, editing: false));
     await history.remember(query);
-    if (!_closed) await results.refresh();
+    if (!closed) await results.refresh();
   }
 
   void _suggest(String input) {
@@ -194,13 +196,13 @@ class BooruSearchStore extends Store<BooruSearchState> {
 
   Future<void> _fetchSuggestions(String input, String prefix) async {
     final suggestions = await client.suggestTags(prefix);
-    if (_closed || state.input != input) return;
+    if (closed || state.input != input) return;
     update(state.copyWith(suggestions: suggestions));
   }
 
   @override
   Future<void> destroy() async {
-    _closed = true;
+    close();
     _suggestTimer?.cancel();
     await _results?.destroy();
     await super.destroy();

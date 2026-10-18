@@ -1404,6 +1404,14 @@
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "すべてのタグをコピー",
   "@plugin_booru_copy_tags": {},
+  "plugin_booru_credentials_other_site": "認証情報は {site} 用に保存されており、そのサイトにのみ送信されます。ここで新しく入力すると置き換えられます。",
+  "@plugin_booru_credentials_other_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_description": "Danbooru系・Gelbooru系を閲覧し、タグをグループに追加",
   "@plugin_booru_description": {},
   "plugin_booru_edit_as_text": "テキストとして編集",
@@ -1422,6 +1430,8 @@
   "@plugin_booru_empty_popular": {},
   "plugin_booru_empty_search": "該当するタグの投稿がありません",
   "@plugin_booru_empty_search": {},
+  "plugin_booru_end_of_results": "これ以上の投稿はありません",
+  "@plugin_booru_end_of_results": {},
   "plugin_booru_engine": "APIエンジン",
   "@plugin_booru_engine": {},
   "plugin_booru_engine_danbooru": "Danbooru",
@@ -1432,6 +1442,8 @@
   "@plugin_booru_engine_gelbooru": {},
   "plugin_booru_engine_moebooru": "Moebooru",
   "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_error_forbidden": "アクセスが拒否されました。ログインまたはブラウザでの確認が必要かもしれません",
+  "@plugin_booru_error_forbidden": {},
   "plugin_booru_error_network": "Booruホストに接続できません",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "先に設定でBooruホストを選んでください",
@@ -1444,6 +1456,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "拒否されました。ログインとAPIキーを確認してください",
   "@plugin_booru_error_unauthorized": {},
+  "plugin_booru_error_unavailable": "ホストが混雑しているか、リクエストを制限しています。しばらくしてから再試行してください",
+  "@plugin_booru_error_unavailable": {},
   "plugin_booru_exclude_from_search": "現在の検索から除外",
   "@plugin_booru_exclude_from_search": {},
   "plugin_booru_exclude_tag": "除外",
@@ -1462,6 +1476,8 @@
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booruタグ",
   "@plugin_booru_followed_tags": {},
+  "plugin_booru_following_partial": "フォロー中のタグの一部を読み込めませんでした",
+  "@plugin_booru_following_partial": {},
   "plugin_booru_full_screen": "全画面で開く",
   "@plugin_booru_full_screen": {},
   "plugin_booru_grid_columns": "グリッドの列数",
@@ -1480,6 +1496,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Booruの投稿を読み込めませんでした",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more_failed": "追加の投稿を読み込めませんでした",
+  "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "ログイン / ユーザーID",
   "@plugin_booru_login": {},
   "plugin_booru_login_help": "任意。ホストによってはログイン名または数値IDが必要です。",
@@ -1684,6 +1702,14 @@
   "@plugin_booru_unhide_tag": {},
   "plugin_booru_unsave_search": "保存した検索から削除",
   "@plugin_booru_unsave_search": {},
+  "plugin_booru_updated_on": "更新日時: {date}",
+  "@plugin_booru_updated_on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_uploaded_by": "投稿者: {name}",
   "@plugin_booru_uploaded_by": {
     "placeholders": {
