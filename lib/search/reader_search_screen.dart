@@ -23,6 +23,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/utils/local_json_store.dart';
 import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/floating_notice.dart';
 
 class ReaderSearchScreen extends StatefulWidget {
   final String initialQuery;
@@ -243,28 +244,35 @@ class _ReaderSearchScreenState extends State<ReaderSearchScreen> {
                       ],
                     ),
                   ),
-                if (state.error != null) TextButton(onPressed: _load, child: Text(l10n.retry)),
                 Expanded(
-                  child: LoadingHairline(
-                    loading: state.loading,
-                    child: results.isEmpty
-                        ? Center(child: Text(l10n.no_results))
-                        : ListView.builder(
-                            itemCount: results.length,
-                            itemBuilder: (context, index) {
-                              final result = results[index];
-                              return ListTile(
-                                key: ValueKey(result.id),
-                                title: Text(result.title, maxLines: 2, overflow: TextOverflow.ellipsis),
-                                subtitle: Text(
-                                  '${_label(l10n, result.kind)} · ${result.text}',
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                onTap: () => _open(result),
-                              );
-                            },
+                  // A failed search floats its Retry over the results.
+                  child: FloatingNotice(
+                    notice: state.error == null
+                        ? null
+                        : NoticePill(
+                            child: TextButton(onPressed: _load, child: Text(l10n.retry)),
                           ),
+                    child: LoadingHairline(
+                      loading: state.loading,
+                      child: results.isEmpty
+                          ? Center(child: Text(l10n.no_results))
+                          : ListView.builder(
+                              itemCount: results.length,
+                              itemBuilder: (context, index) {
+                                final result = results[index];
+                                return ListTile(
+                                  key: ValueKey(result.id),
+                                  title: Text(result.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+                                  subtitle: Text(
+                                    '${_label(l10n, result.kind)} · ${result.text}',
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  onTap: () => _open(result),
+                                );
+                              },
+                            ),
+                    ),
                   ),
                 ),
               ],

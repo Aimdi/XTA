@@ -9,9 +9,12 @@ import 'package:xta/ui/reader_failure.dart';
 ///
 /// Pass [loading] and [error] only while there is content to keep showing;
 /// with nothing to show, the surface's own spinner or failure row says it.
+/// [failed] shows a failure with no single error to describe (some of
+/// several sources failed); it defaults to whether there is an [error].
 class ReloadStatus extends StatelessWidget {
   final bool loading;
   final Object? error;
+  final bool failed;
   final VoidCallback onRetry;
 
   /// The plugin that failed, as [ReaderFailureNotice.source] takes it.
@@ -29,13 +32,13 @@ class ReloadStatus extends StatelessWidget {
     required this.source,
     required this.child,
     this.contextMessage,
-  });
+    bool? failed,
+  }) : failed = failed ?? error != null;
 
   @override
   Widget build(BuildContext context) {
-    final error = this.error;
     return FloatingNotice(
-      notice: error == null || loading
+      notice: !failed || loading
           ? null
           : NoticePill(
               child: ReaderFailureNotice(

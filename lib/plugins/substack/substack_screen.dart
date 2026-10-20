@@ -551,7 +551,12 @@ class _InboxPane extends StatelessWidget {
                         controller: pluginInnerScrollController(context, scrollController),
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: [
-                          SubstackReadingToolbar(slot: 'inbox', feed: feed, publications: publications, readIds: readIds),
+                          SubstackReadingToolbar(
+                            slot: 'inbox',
+                            feed: feed,
+                            publications: publications,
+                            readIds: readIds,
+                          ),
                           const SizedBox(height: 48),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -1003,7 +1008,10 @@ class _LoadMoreStatus extends StatelessWidget {
     final l10n = L10n.of(context);
     final error = this.error;
     if (loadingMore) {
-      return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()));
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
     if (error != null) {
       return ReaderFailureNotice(

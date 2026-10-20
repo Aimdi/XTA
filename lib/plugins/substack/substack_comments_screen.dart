@@ -9,6 +9,9 @@ import 'package:xta/plugins/substack/substack_discussion_text.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class SubstackCommentsScreen extends StatefulWidget {
   final SubstackPost post;
@@ -78,21 +81,26 @@ class _SubstackCommentsScreenState extends State<SubstackCommentsScreen> {
   Widget _discussion(BuildContext context, SubstackCommentsState state) {
     final l10n = L10n.of(context);
     final rows = state.rows;
+    final hasComments = state.comments.isNotEmpty;
     final leading = <Widget>[
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
         child: Text(widget.post.title, style: Theme.of(context).textTheme.titleMedium),
       ),
       if (state.comments.isNotEmpty) _controls(context, state),
-      if (state.loading)
+      // Comments on screen keep their place: the line and a floating notice
+      // over them say a reload is under way or failed.
+      if (state.loading && !hasComments)
         const Padding(
           padding: EdgeInsets.all(16),
           child: Center(child: CircularProgressIndicator()),
         ),
-      if (state.error != null)
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: SubstackErrorView(error: state.error, onRetry: _store.refresh),
+      if (state.error != null && !hasComments)
+        ReaderFailureNotice(
+          source: pluginIdSubstack,
+          error: state.error,
+          contextMessage: substackFailureLabel(l10n, state.error),
+          onRetry: _store.refresh,
         ),
       if (!state.loading && state.error == null && rows.isEmpty)
         Padding(
@@ -103,18 +111,25 @@ class _SubstackCommentsScreenState extends State<SubstackCommentsScreen> {
           ),
         ),
     ];
-    return ListView.builder(
-      controller: _scroll,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 32),
-      itemCount: leading.length + rows.length,
-      itemBuilder: (context, index) => index < leading.length
-          ? leading[index]
-          : _CommentRow(
-              key: ValueKey('substack-comment-${rows[index - leading.length].comment.id}'),
-              row: rows[index - leading.length],
-              onToggle: () => _store.toggle(rows[index - leading.length].comment.id),
-            ),
+    return ReloadStatus(
+      loading: state.loading && hasComments,
+      error: hasComments ? state.error : null,
+      source: pluginIdSubstack,
+      contextMessage: substackFailureLabel(l10n, state.error),
+      onRetry: _store.refresh,
+      child: ListView.builder(
+        controller: _scroll,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 32),
+        itemCount: leading.length + rows.length,
+        itemBuilder: (context, index) => index < leading.length
+            ? leading[index]
+            : _CommentRow(
+                key: ValueKey('substack-comment-${rows[index - leading.length].comment.id}'),
+                row: rows[index - leading.length],
+                onToggle: () => _store.toggle(rows[index - leading.length].comment.id),
+              ),
+      ),
     );
   }
 

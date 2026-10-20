@@ -387,7 +387,13 @@ void main() {
     // Before, the countdown sentence sat beside Retry and the row wrapped to 88 px.
     await _show(
       tester,
-      _app(Theme(data: ThemeData(fontFamily: 'Inter'), child: surface.recovery(child: notice)), observeRoutes: false),
+      _app(
+        Theme(
+          data: ThemeData(fontFamily: 'Inter'),
+          child: surface.recovery(child: notice),
+        ),
+        observeRoutes: false,
+      ),
     );
     expect(find.byType(ReadRetryCountdown), findsOneWidget);
     expect(tester.getSize(find.byType(ReaderFailureNotice)).height, 48);

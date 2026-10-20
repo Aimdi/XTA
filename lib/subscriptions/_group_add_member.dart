@@ -138,7 +138,9 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
             onSubmitted: _search,
           ),
           const SizedBox(height: 8),
-          Expanded(child: LoadingHairline(loading: _busy, child: _results(context))),
+          Expanded(
+            child: LoadingHairline(loading: _busy, child: _results(context)),
+          ),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(onPressed: _busy ? null : () => Navigator.pop(context, _added), child: Text(l10n.ok)),

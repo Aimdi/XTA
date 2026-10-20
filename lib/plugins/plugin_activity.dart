@@ -220,7 +220,10 @@ class _ActivityScreenState<T> extends State<_ActivityScreen<T>> {
   /// The end of the list: nothing at all once everything has loaded.
   Widget _footer(BuildContext context, PluginActivityState<T> state, L10n l10n) {
     final error = state.error;
-    Widget padded(Widget child) => Padding(padding: const EdgeInsets.all(24), child: Center(child: child));
+    Widget padded(Widget child) => Padding(
+      padding: const EdgeInsets.all(24),
+      child: Center(child: child),
+    );
     if (state.loading) return padded(const CircularProgressIndicator());
     // With the items still shown, a failure is one row where more would be.
     if (error != null && state.items.isNotEmpty) {
@@ -242,7 +245,9 @@ class _ActivityScreenState<T> extends State<_ActivityScreen<T>> {
     }
     if (state.items.isEmpty) return padded(Text(l10n.no_results));
     if (state.cursor != null) {
-      return padded(OutlinedButton(onPressed: () => _store.load(more: true), child: Text(l10n.plugin_reddit_load_more)));
+      return padded(
+        OutlinedButton(onPressed: () => _store.load(more: true), child: Text(l10n.plugin_reddit_load_more)),
+      );
     }
     return const SizedBox.shrink();
   }

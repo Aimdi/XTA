@@ -19,7 +19,9 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/reader_swipe_navigation.dart';
-import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// Compatible entry point; the route now leaves room for articles and large text.
 Future<bool?> showSubstackSearchSheet(BuildContext context, {String? initialQuery}) async {
@@ -187,11 +189,17 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
 
   Widget _results(BuildContext context, SubstackSearchState state) {
     final l10n = L10n.of(context);
+    final hasResults = state.posts.isNotEmpty || state.publications.isNotEmpty;
+    final refreshFailed = state.error != null && !state.retryMore;
+    final refreshMessage = state.direct && state.publications.isNotEmpty
+        ? l10n.substack_preview_post_failed
+        : l10n.plugin_substack_load_error;
     final items = <Widget>[
       if (state.query.isEmpty) _recent(context),
       if (state.tab == SubstackSearchTab.publications && state.query.isEmpty) ...[
         Padding(padding: const EdgeInsets.all(16), child: Text(l10n.plugin_substack_discover_intro)),
-        if (state.categoriesError != null) _failure(l10n.plugin_substack_load_error, _store.loadCategories),
+        if (state.categoriesError != null)
+          _failure(state.categoriesError, l10n.plugin_substack_load_error, _store.loadCategories),
         if (state.categories.isNotEmpty)
           PluginFilterRow(
             children: [
@@ -209,14 +217,10 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
       ],
       if (state.tab == SubstackSearchTab.posts && !state.direct)
         Padding(padding: const EdgeInsets.all(16), child: Text(l10n.substack_search_followed_posts)),
-      if (state.error != null && !state.retryMore)
-        _failure(
-          state.direct && state.publications.isNotEmpty
-              ? l10n.substack_preview_post_failed
-              : l10n.plugin_substack_load_error,
-          _store.refresh,
-        ),
-      if (state.failedCount > 0) _failure(l10n.substack_search_partial, _store.retryFailedPosts),
+      // With results shown, these float over them instead (below).
+      if (refreshFailed && !hasResults) _failure(state.error, refreshMessage, _store.refresh),
+      if (state.failedCount > 0 && !hasResults)
+        _failure(null, l10n.substack_search_partial, _store.retryFailedPosts),
       if (state.direct || state.tab == SubstackSearchTab.publications)
         for (final publication in state.publications) _publication(publication),
       if (state.tab == SubstackSearchTab.posts)
@@ -241,7 +245,7 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
           child: Center(child: CircularProgressIndicator()),
         ),
       if (state.error != null && state.retryMore)
-        _failure(l10n.plugin_substack_load_error, _store.loadMore)
+        _failure(state.error, l10n.plugin_substack_load_error, _store.loadMore)
       else if (state.hasMore && !state.loadingMore)
         Padding(
           padding: const EdgeInsets.all(16),
@@ -251,10 +255,16 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
           ),
         ),
     ];
+    final partial = state.failedCount > 0 && !refreshFailed;
     return RefreshIndicator(
       onRefresh: _store.refresh,
-      child: LoadingHairline(
+      child: ReloadStatus(
         loading: state.loading || state.categoriesLoading,
+        error: refreshFailed ? state.error : null,
+        failed: hasResults && (refreshFailed || partial),
+        source: pluginIdSubstack,
+        contextMessage: partial ? l10n.substack_search_partial : refreshMessage,
+        onRetry: partial ? _store.retryFailedPosts : _store.refresh,
         child: ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: items.length,
@@ -316,15 +326,9 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
     ),
   );
 
-  Widget _failure(String message, VoidCallback retry) => Padding(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      children: [
-        Text(message, textAlign: TextAlign.center),
-        TextButton.icon(onPressed: retry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry)),
-      ],
-    ),
-  );
+  /// One row where what failed would have been; [message] is in its details.
+  Widget _failure(Object? error, String message, VoidCallback retry) =>
+      ReaderFailureNotice(source: pluginIdSubstack, error: error, contextMessage: message, onRetry: retry);
 }
 
 class SubstackDiscoveryPublicationTile extends StatelessWidget {
