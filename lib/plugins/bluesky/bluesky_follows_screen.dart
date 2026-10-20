@@ -11,6 +11,7 @@ import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 /// Which public graph edge to show for a Bluesky profile.
 enum BlueskyFollowsKind { following, followers }
@@ -252,14 +253,15 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
       );
     }
     if (_error != null) {
-      return FullPageErrorWidget(
+      return ReaderFailureNotice(
+        source: 'bluesky',
         error: _error,
-        stackTrace: null,
-        prefix: l10n.unable_to_load_the_next_page_of_follows,
+        contextMessage: l10n.unable_to_load_the_next_page_of_follows,
         onRetry: () => _loadMore(retry: true),
       );
     }
-    return const SizedBox(height: 24);
+    // Room for nothing while the next page waits to be scrolled to.
+    return const SizedBox.shrink();
   }
 
   Widget _avatar(BuildContext context, BlueskyProfile profile) {

@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 class PluginActivityPage<T> {
   final List<T> items;
@@ -211,26 +212,38 @@ class _ActivityScreenState<T> extends State<_ActivityScreen<T>> {
       itemBuilder: (context, index) {
         if (index < leading) return Align(alignment: AlignmentDirectional.centerStart, child: control);
         if (index - leading < sorted.items.length) return widget.itemBuilder(context, sorted.items[index - leading]);
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              if (state.loading)
-                const CircularProgressIndicator()
-              else if (state.error case final error?) ...[
-                Text(widget.errorLabel(l10n, error), textAlign: TextAlign.center),
-                TextButton(
-                  onPressed: () => _store.load(more: state.items.isNotEmpty && state.cursor != null),
-                  child: Text(l10n.retry),
-                ),
-              ] else if (state.items.isEmpty)
-                Text(l10n.no_results)
-              else if (state.cursor != null)
-                OutlinedButton(onPressed: () => _store.load(more: true), child: Text(l10n.plugin_reddit_load_more)),
-            ],
-          ),
-        );
+        return _footer(context, state, l10n);
       },
     );
+  }
+
+  /// The end of the list: nothing at all once everything has loaded.
+  Widget _footer(BuildContext context, PluginActivityState<T> state, L10n l10n) {
+    final error = state.error;
+    Widget padded(Widget child) => Padding(padding: const EdgeInsets.all(24), child: Center(child: child));
+    if (state.loading) return padded(const CircularProgressIndicator());
+    // With the items still shown, a failure is one row where more would be.
+    if (error != null && state.items.isNotEmpty) {
+      return ReaderFailureNotice(
+        error: error,
+        contextMessage: widget.errorLabel(l10n, error),
+        onRetry: () => _store.load(more: state.cursor != null),
+      );
+    }
+    if (error != null) {
+      return padded(
+        Column(
+          children: [
+            Text(widget.errorLabel(l10n, error), textAlign: TextAlign.center),
+            TextButton(onPressed: () => _store.load(), child: Text(l10n.retry)),
+          ],
+        ),
+      );
+    }
+    if (state.items.isEmpty) return padded(Text(l10n.no_results));
+    if (state.cursor != null) {
+      return padded(OutlinedButton(onPressed: () => _store.load(more: true), child: Text(l10n.plugin_reddit_load_more)));
+    }
+    return const SizedBox.shrink();
   }
 }

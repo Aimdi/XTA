@@ -30,6 +30,9 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/ui/floating_notice.dart';
 
 /// Substack Home / Inbox / Notes / Library — account features as local stand-ins.
 class SubstackScreen extends StatefulWidget {
@@ -428,12 +431,15 @@ class _PostsPane extends StatelessWidget {
                         ),
                       ),
                     ]);
-                    children.add(_FeedStatus(feed: feed));
-                    return ListView(
-                      controller: pluginInnerScrollController(context, scrollController),
-                      padding: pluginFeedPadding(context),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: children,
+                    children.add(_LoadMoreStatus.feed(feed));
+                    return LoadingHairline(
+                      loading: feed.refreshing,
+                      child: ListView(
+                        controller: pluginInnerScrollController(context, scrollController),
+                        padding: pluginFeedPadding(context),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: children,
+                      ),
                     );
                   }
 
@@ -463,13 +469,16 @@ class _PostsPane extends StatelessWidget {
                                 child: card,
                               );
                       }
-                      return _FeedStatus(feed: feed);
+                      return _LoadMoreStatus.feed(feed);
                     },
                   );
                   final tracker = scrolledPast;
-                  return tracker == null
-                      ? list
-                      : NotificationListener<ScrollNotification>(onNotification: tracker.onScroll, child: list);
+                  return LoadingHairline(
+                    loading: feed.refreshing,
+                    child: tracker == null
+                        ? list
+                        : NotificationListener<ScrollNotification>(onNotification: tracker.onScroll, child: list),
+                  );
                 },
               );
             },
@@ -536,57 +545,63 @@ class _InboxPane extends StatelessWidget {
                     options,
                   );
                   if (unread.isEmpty) {
-                    return ListView(
-                      controller: pluginInnerScrollController(context, scrollController),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: [
-                        SubstackReadingToolbar(slot: 'inbox', feed: feed, publications: publications, readIds: readIds),
-                        const SizedBox(height: 48),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            options.query.trim().isEmpty
-                                ? l10n.plugin_substack_inbox_empty
-                                : l10n.plugin_reader_empty_filter,
-                            textAlign: TextAlign.center,
+                    return LoadingHairline(
+                      loading: feed.refreshing,
+                      child: ListView(
+                        controller: pluginInnerScrollController(context, scrollController),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SubstackReadingToolbar(slot: 'inbox', feed: feed, publications: publications, readIds: readIds),
+                          const SizedBox(height: 48),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              options.query.trim().isEmpty
+                                  ? l10n.plugin_substack_inbox_empty
+                                  : l10n.plugin_reader_empty_filter,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
-                        if (options.query.trim().isNotEmpty)
-                          TextButton(
-                            onPressed: () => controls.configure('inbox', const SubstackLoadedOptions()),
-                            child: Text(l10n.plugin_reader_reset_filters),
+                          if (options.query.trim().isNotEmpty)
+                            TextButton(
+                              onPressed: () => controls.configure('inbox', const SubstackLoadedOptions()),
+                              child: Text(l10n.plugin_reader_reset_filters),
+                            ),
+                          _LoadMoreStatus.feed(feed),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(l10n.plugin_substack_inbox_intro, textAlign: TextAlign.center),
                           ),
-                        _FeedStatus(feed: feed),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(l10n.plugin_substack_inbox_intro, textAlign: TextAlign.center),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   }
 
-                  return FeedListView(
-                    controller: pluginInnerScrollController(context, scrollController),
-                    padding: const EdgeInsets.only(bottom: 24, top: 8),
-                    itemCount: unread.length + 2,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return SubstackReadingToolbar(
-                          slot: 'inbox',
-                          feed: feed,
-                          publications: publications,
-                          readIds: readIds,
+                  return LoadingHairline(
+                    loading: feed.refreshing,
+                    child: FeedListView(
+                      controller: pluginInnerScrollController(context, scrollController),
+                      padding: const EdgeInsets.only(bottom: 24, top: 8),
+                      itemCount: unread.length + 2,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return SubstackReadingToolbar(
+                            slot: 'inbox',
+                            feed: feed,
+                            publications: publications,
+                            readIds: readIds,
+                          );
+                        }
+                        if (index > unread.length) return _LoadMoreStatus.feed(feed);
+                        final post = unread[index - 1];
+                        return SubstackPostCard(
+                          post: post,
+                          showSourceBadge: false,
+                          logoUrl: _logoForPub(publications, post),
                         );
-                      }
-                      if (index > unread.length) return _FeedStatus(feed: feed);
-                      final post = unread[index - 1];
-                      return SubstackPostCard(
-                        post: post,
-                        showSourceBadge: false,
-                        logoUrl: _logoForPub(publications, post),
-                      );
-                    },
+                      },
+                    ),
                   );
                 },
               );
@@ -924,7 +939,7 @@ class _NotesPane extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
+          final list = ListView.builder(
             controller: pluginInnerScrollController(context, scrollController),
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 24, top: 8),
@@ -940,29 +955,24 @@ class _NotesPane extends StatelessWidget {
               if (noteIndex < page.notes.length) {
                 return SubstackNoteCard(note: page.notes[noteIndex]);
               }
-              return Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    if (notes.refreshError != null || notes.loadMoreError != null) ...[
-                      Text(l10n.plugin_substack_load_error),
-                      TextButton(
-                        onPressed: notes.refreshing || notes.loadingMore
-                            ? null
-                            : notes.loadMoreError != null
-                            ? notes.retryLoadMore
-                            : () => notes.refresh(force: true),
-                        child: Text(l10n.retry),
-                      ),
-                    ],
-                    if (notes.loadingMore)
-                      const CircularProgressIndicator()
-                    else if (page.nextCursor?.isNotEmpty == true)
-                      OutlinedButton(onPressed: notes.loadMore, child: Text(l10n.plugin_substack_load_more)),
-                  ],
-                ),
-              );
+              return _LoadMoreStatus.notes(notes, canLoadMore: page.nextCursor?.isNotEmpty == true);
             },
+          );
+          final refreshError = notes.refreshError;
+          // A failed refresh leaves the notes readable: it floats over them.
+          return FloatingNotice(
+            notice: refreshError == null || notes.refreshing
+                ? null
+                : NoticePill(
+                    child: ReaderFailureNotice(
+                      source: 'substack',
+                      error: refreshError,
+                      compact: true,
+                      contextMessage: substackFailureLabel(l10n, refreshError),
+                      onRetry: () => notes.refresh(force: true),
+                    ),
+                  ),
+            child: LoadingHairline(loading: notes.refreshing, child: list),
           );
         },
       ),
@@ -970,33 +980,55 @@ class _NotesPane extends StatelessWidget {
   }
 }
 
-class _FeedStatus extends StatelessWidget {
-  final SubstackFeedStore feed;
-  const _FeedStatus({required this.feed});
+/// The end of a feed or of the notes: its "load more" button, the spinner
+/// while more load, or the failure to load more — and nothing at all otherwise.
+/// A refresh shows on the line over the list; a failed one on the toolbar's
+/// warning (Home, Inbox) or floating over the notes.
+class _LoadMoreStatus extends StatelessWidget {
+  final bool loadingMore;
+  final Object? error;
+  final bool canLoadMore;
+  final VoidCallback onLoadMore;
+  final VoidCallback onRetry;
+
+  _LoadMoreStatus.feed(SubstackFeedStore feed)
+    : loadingMore = feed.loadingMore,
+      error = feed.loadMoreError,
+      canLoadMore = feed.state.canLoadMore,
+      onLoadMore = feed.loadMore,
+      onRetry = feed.retryLoadMore,
+      super(key: const ValueKey('substack-feed-end'));
+
+  _LoadMoreStatus.notes(SubstackNotesStore notes, {required this.canLoadMore})
+    : loadingMore = notes.loadingMore,
+      error = notes.loadMoreError,
+      onLoadMore = notes.loadMore,
+      onRetry = notes.retryLoadMore,
+      super(key: const ValueKey('substack-notes-end'));
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          if (feed.refreshError != null || feed.loadMoreError != null) ...[
-            Text(substackFailureLabel(l10n, feed.loadMoreError ?? feed.refreshError)),
-            TextButton(
-              onPressed: feed.refreshing || feed.loadingMore
-                  ? null
-                  : feed.loadMoreError != null
-                  ? feed.retryLoadMore
-                  : () => feed.refresh(force: true),
-              child: Text(l10n.retry),
-            ),
-          ],
-          if (feed.loadingMore || feed.refreshing)
-            const CircularProgressIndicator()
-          else if (feed.state.canLoadMore)
-            OutlinedButton(onPressed: feed.loadMore, child: Text(l10n.plugin_substack_load_more)),
-        ],
-      ),
-    );
+    final error = this.error;
+    if (loadingMore) {
+      return const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator()));
+    }
+    if (error != null) {
+      return ReaderFailureNotice(
+        source: 'substack',
+        error: error,
+        contextMessage: substackFailureLabel(l10n, error),
+        onRetry: onRetry,
+      );
+    }
+    if (canLoadMore) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: OutlinedButton(onPressed: onLoadMore, child: Text(l10n.plugin_substack_load_more)),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }

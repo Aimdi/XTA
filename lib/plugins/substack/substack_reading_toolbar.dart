@@ -9,6 +9,7 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_home_controls.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_error_view.dart';
 
 /// One row above the articles; less frequent reading controls open on demand.
 class SubstackReadingToolbar extends StatelessWidget {
@@ -70,12 +71,20 @@ class SubstackReadingToolbar extends StatelessWidget {
     );
   }
 
+  /// Some publications failed, or the whole refresh did, while posts stay on
+  /// screen: the warning says so in the toolbar rather than in a row of its own.
+  bool get _failed => feed.state.failedCount > 0 || feed.refreshError != null;
+
+  String _failureLabel(L10n l10n) => feed.state.failedCount > 0
+      ? l10n.plugin_substack_partial_error(feed.state.failedCount)
+      : substackFailureLabel(l10n, feed.refreshError);
+
   Future<void> _showLoadFailure(BuildContext context) async {
     final l10n = L10n.of(context);
     final retry = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.plugin_substack_partial_error(feed.state.failedCount)),
+        title: Text(_failureLabel(l10n)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.close)),
           FilledButton(onPressed: feed.refreshing ? null : () => Navigator.pop(context, true), child: Text(l10n.retry)),
@@ -110,10 +119,10 @@ class SubstackReadingToolbar extends StatelessWidget {
               ),
             ),
           ),
-          if (feed.state.failedCount > 0)
+          if (_failed)
             IconButton(
               style: pluginActionButtonStyle,
-              tooltip: l10n.plugin_substack_partial_error(feed.state.failedCount),
+              tooltip: _failureLabel(l10n),
               onPressed: () => _showLoadFailure(context),
               icon: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
             ),
@@ -143,7 +152,7 @@ class SubstackReadingToolbar extends StatelessWidget {
     return PluginDockContribution(
       slot: 'reading',
       content: PluginDockContent(
-        attention: filtered || options.query.trim().isNotEmpty || feed.state.failedCount > 0,
+        attention: filtered || options.query.trim().isNotEmpty || _failed,
         leading: TextButton.icon(
           style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
           onPressed: () => _openPublications(context),
@@ -157,10 +166,10 @@ class SubstackReadingToolbar extends StatelessWidget {
           icon: Badge(isLabelVisible: options.query.trim().isNotEmpty, child: const Icon(Icons.search)),
         ),
         trailing: [
-          if (feed.state.failedCount > 0)
+          if (_failed)
             IconButton(
               style: pluginActionButtonStyle,
-              tooltip: l10n.plugin_substack_partial_error(feed.state.failedCount),
+              tooltip: _failureLabel(l10n),
               onPressed: () => _showLoadFailure(context),
               icon: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
             ),
