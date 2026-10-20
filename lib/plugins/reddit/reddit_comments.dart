@@ -142,13 +142,13 @@ RedditComment? _commentFrom(Element thing) {
     orElse: () => Element.tag('div'),
   );
 
-  final markdown = entry.querySelector('.usertext-body .md');
-  final media = _mediaIn(markdown);
-  final body = _bodyOf(markdown, media);
+  final content = redditCommentContent(
+    entry.querySelector('.usertext-body .md'),
+  );
 
   // A comment that is nothing but a picture is still a comment; only one with
   // neither text nor media is a row worth skipping.
-  if (body.isEmpty && media.urls.isEmpty) {
+  if (content.body.isEmpty && content.mediaUrls.isEmpty) {
     return null;
   }
 
@@ -157,11 +157,11 @@ RedditComment? _commentFrom(Element thing) {
     author:
         thing.attributes['data-author'] ??
         entry.querySelector('a.author')?.text.trim(),
-    body: body,
+    body: content.body,
     score: _score(entry),
     createdAt: _createdAt(entry),
     isSubmitter: entry.querySelector('.author.submitter') != null,
-    mediaUrls: media.urls,
+    mediaUrls: content.mediaUrls,
     replies: _repliesOf(thing),
     permalink: thing.attributes['data-permalink'],
   );
@@ -202,6 +202,15 @@ RedditComment? _stubFrom(Element thing, {String? parentPermalink}) {
     );
   }
   return null;
+}
+
+/// The words and pictures of a comment's rendered markdown — the `.md` block
+/// old.reddit.com and www.reddit.com both render a comment into.
+({String body, List<String> mediaUrls}) redditCommentContent(
+  Element? markdown,
+) {
+  final media = _mediaIn(markdown);
+  return (body: _bodyOf(markdown, media), mediaUrls: media.urls);
 }
 
 /// The pictures a comment body carries, and the text that only announced them.

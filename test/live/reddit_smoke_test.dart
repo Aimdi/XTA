@@ -2,110 +2,102 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:xta/plugins/reddit/reddit_client.dart';
 
-/// Live checks of Reddit's account-free routes: what each host serves a reader
-/// with no account and no client id, and whether the client still reads a
-/// listing, a thread and a search through them. Opt in with:
+/// Live checks of the account-free Reddit client: a listing, its next page, a
+/// thread, a comment's own page, a search, a profile and a community's about.
+/// Opt in with:
 ///   fvm flutter test test/live/reddit_smoke_test.dart --dart-define=RUN_LIVE=true
+///
+/// Reddit blocks datacenter addresses — GitHub's runners among them — with
+/// "You've been blocked by network security", whatever the request. Add
+/// `--dart-define=REDDIT_VIA=translate` there: www.reddit.com is then asked
+/// through Google's translation proxy, which Reddit serves, so the markup the
+/// parser reads is today's. Only the transport changes; the client is the
+/// app's own.
 void main() {
   const enabled = bool.fromEnvironment('RUN_LIVE', defaultValue: false);
   const skip = enabled ? false : 'Set RUN_LIVE=true to hit live Reddit hosts';
+  const via = String.fromEnvironment('REDDIT_VIA');
 
-  test('each account-free route says what it serves', () async {
-    final client = http.Client();
-    addTearDown(client.close);
-    for (final url in _routes) {
-      // ignore: avoid_print
-      print(await _describe(client, Uri.parse(url)));
-    }
+  RedditClient client() => RedditClient(httpClient: via == 'translate' ? _TranslateProxy() : null);
+
+  test('a community lists posts, and pages on', () async {
+    final reddit = client();
+    final first = await reddit.fetchSubreddit('FlutterDev', clientId: '');
+    expect(first.posts, isNotEmpty);
+    expect(first.posts.first.title, isNotEmpty);
+    expect(first.after, isNotNull);
+
+    final next = await reddit.fetchSubreddit('FlutterDev', clientId: '', after: first.after);
+    expect(next.posts, isNotEmpty);
+    expect(next.posts.first.id, isNot(first.posts.first.id));
   }, skip: skip);
 
-  test('a subreddit lists posts without an account', () async {
-    final listing = await RedditClient().fetchSubreddit('flutterdev', clientId: '');
+  test('a top listing keeps to its window', () async {
+    final listing = await client().fetchSubreddit(
+      'pics',
+      clientId: '',
+      sort: RedditSort.top,
+      timeFilter: RedditTimeFilter.week,
+    );
+    final oldest = DateTime.now().subtract(const Duration(days: 8));
     expect(listing.posts, isNotEmpty);
-    expect(listing.posts.first.title, isNotEmpty);
+    expect(listing.posts.every((p) => p.createdAt?.isAfter(oldest) ?? false), isTrue);
   }, skip: skip);
 
-  test('a thread reads its comments without an account', () async {
-    final client = RedditClient();
-    final listing = await client.fetchSubreddit('flutterdev', clientId: '');
-    final thread = await client.fetchComments(listing.posts.first.permalink, clientId: '');
-    expect(thread.comments.isNotEmpty || thread.selfText != null || thread.postUrl != null, isTrue);
+  test('a thread reads its comments, and a comment its replies', () async {
+    final reddit = client();
+    final listing = await reddit.fetchSubreddit('AskReddit', clientId: '');
+    final post = listing.posts.firstWhere((p) => p.commentCount > 20);
+
+    final thread = await reddit.fetchComments(post.permalink, clientId: '');
+    expect(thread.comments, isNotEmpty);
+    final answered = thread.comments.firstWhere((c) => c.permalink != null && !c.isStub);
+
+    final own = await reddit.fetchComments(answered.permalink!, clientId: '');
+    expect(own.comments.single.id, answered.id);
   }, skip: skip);
 
-  test('a search finds posts without an account', () async {
-    final posts = await RedditClient().searchPosts('flutter');
-    expect(posts, isNotEmpty);
+  test('a search finds posts, communities and people', () async {
+    final reddit = client();
+    expect(await reddit.searchPosts('flutter'), isNotEmpty);
+    expect((await reddit.searchSubreddits('flutter')).map((c) => c.name), contains('FlutterDev'));
+    expect((await reddit.searchUsers('spez')).map((u) => u.name), contains('spez'));
+  }, skip: skip);
+
+  test('a profile lists its posts', () async {
+    final listing = await client().fetchUserPosts('spez');
+    expect(listing.posts, isNotEmpty);
+  }, skip: skip);
+
+  test('a community says what it is about', () async {
+    final about = await client().fetchSubredditAbout('FlutterDev', clientId: '');
+    expect(about.description, isNotEmpty);
+    expect(about.iconUrl, isNotNull);
   }, skip: skip);
 }
 
-const _routes = [
-  'https://old.reddit.com/r/flutterdev/hot',
-  'https://www.reddit.com/r/flutterdev/hot.json?limit=5&raw_json=1',
-  'https://old.reddit.com/r/flutterdev/hot.json?limit=5&raw_json=1',
-  'https://www.reddit.com/r/flutterdev/',
-  'https://www.reddit.com/r/flutterdev/hot/',
-  'https://www.reddit.com/svc/shreddit/community-more-posts/hot/?name=flutterdev',
-  'https://www.reddit.com/r/flutterdev/.rss',
-  'https://old.reddit.com/r/flutterdev/.rss',
-  'https://www.reddit.com/r/popular/',
-  'https://www.reddit.com/search/?q=flutter&type=link',
-  'https://www.reddit.com/r/flutterdev/about.json',
-  'https://api.reddit.com/r/flutterdev/hot?limit=5',
-];
+/// Sends www.reddit.com requests through Google's translation proxy; every
+/// other host is asked directly.
+class _TranslateProxy extends http.BaseClient {
+  final _inner = http.Client();
 
-const _markers = {
-  'shreddit-post': '<shreddit-post',
-  'shreddit-comment': '<shreddit-comment',
-  'faceplate-partial': '<faceplate-partial',
-  'thing': 'class=" thing',
-  'json-listing': '"kind": "Listing"',
-  'json-listing-compact': '"kind":"Listing"',
-  'atom-entry': '<entry>',
-  'login': '/login',
-  'blocked': 'blocked by network security',
-  'whoa': 'whoa there',
-  'challenge': 'challenge',
-  'captcha': 'captcha',
-};
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    final url = request.url;
+    if (url.host != 'www.reddit.com') {
+      return _inner.send(request);
+    }
 
-/// Status, redirect chain, type, size and what the body contains, without
-/// the body itself.
-Future<String> _describe(http.Client client, Uri start) async {
-  final hops = <String>[];
-  var uri = start;
-  http.Response? response;
-  for (var hop = 0; hop < 5; hop++) {
-    final request = http.Request('GET', uri)
-      ..followRedirects = false
-      ..headers.addAll({
-        'User-Agent': RedditClient.publicUserAgent,
-        'Accept': 'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-      });
-    try {
-      response = await http.Response.fromStream(await client.send(request)).timeout(const Duration(seconds: 20));
-    } catch (e) {
-      return '$start -> error: $e';
-    }
-    final location = response.headers['location'];
-    if (response.statusCode >= 300 && response.statusCode < 400 && location != null) {
-      hops.add('${response.statusCode} -> $location');
-      uri = uri.resolve(location);
-      continue;
-    }
-    break;
+    final proxied = http.Request(
+      request.method,
+      url.replace(
+        host: 'www-reddit-com.translate.goog',
+        queryParameters: {...url.queryParameters, '_x_tr_sl': 'auto', '_x_tr_tl': 'en', '_x_tr_hl': 'en'},
+      ),
+    )..headers.addAll(request.headers);
+    return _inner.send(proxied);
   }
-  final body = response!.body;
-  final title = RegExp(r'<title[^>]*>([^<]*)</title>', caseSensitive: false).firstMatch(body)?.group(1)?.trim();
-  final found = [
-    for (final entry in _markers.entries)
-      if (body.toLowerCase().contains(entry.value.toLowerCase())) '${entry.key}x${entry.value.allMatches(body).length}',
-  ];
-  return [
-    '$start',
-    '  status ${response.statusCode}${hops.isEmpty ? '' : ' after ${hops.join(', ')}'}',
-    '  type ${response.headers['content-type']}, ${body.length} chars, server ${response.headers['server']}',
-    '  title ${title ?? '-'}',
-    '  markers ${found.isEmpty ? '-' : found.join(' ')}',
-  ].join('\n');
+
+  @override
+  void close() => _inner.close();
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -110,6 +111,44 @@ const _loginPage = '''
 /// Markup this parser cannot read — a page shape that changed, which is the one
 /// case where another route is still worth asking.
 const _unreadablePage = '<html><body>nothing familiar</body></html>';
+
+/// A community feed piece shaped like www.reddit.com's, which is what the
+/// anonymous path reads first. Only the attributes the parser uses are here;
+/// test/fixtures/Reddit has whole ones.
+const _wwwListing = '''
+<!doctype html><html><body><shreddit-app><shreddit-feed>
+  <shreddit-post id="t3_abc123" permalink="/r/dartlang/comments/abc123/dart_4_is_out/"
+      content-href="https://dart.dev/blog" post-title="Dart 4 is out" author="someone"
+      score="412" comment-count="37" created-timestamp="2026-01-21T12:53:20.000000+0000"
+      domain="dart.dev" post-type="link" subreddit-name="dartlang">
+  </shreddit-post>
+  <faceplate-partial slot="load-after" loading="programmatic"
+      src="/svc/shreddit/community-more-posts/hot/?name=dartlang&amp;after=dDNfYWJjMTIz&amp;t=DAY"></faceplate-partial>
+</shreddit-feed></shreddit-app></body></html>
+''';
+
+/// What www.reddit.com's feed piece answers for a community with nothing in
+/// it — and for one that does not exist.
+const _wwwEmpty =
+    '<!doctype html><html><body><shreddit-app></shreddit-app></body></html>';
+
+/// A page as Reddit serves it: UTF-8, which it says, so emoji survive.
+http.Response _html(String body) => http.Response.bytes(
+  utf8.encode(body),
+  200,
+  headers: {'content-type': 'text/html; charset=utf-8'},
+);
+
+bool _isWww(http.Request request) =>
+    request.url.path.startsWith('/svc/shreddit/');
+
+/// [handler] behind a www.reddit.com that refuses, which is how the routes
+/// after it are reached.
+MockClient _wwwRefused(Future<http.Response> Function(http.Request) handler) =>
+    MockClient(
+      (request) async =>
+          _isWww(request) ? http.Response('', 403) : handler(request),
+    );
 
 void main() {
   group('normaliseSubreddit', () {
@@ -234,11 +273,54 @@ void main() {
     // the public web, which takes no credentials, so switching the plugin on is
     // enough to see posts.
     test(
-      'no client id scrapes old.reddit first, with no token and no auth header',
+      'no client id reads www.reddit.com first, with no token and no auth header',
       () async {
         final requested = <http.Request>[];
         final client = RedditClient(
           httpClient: MockClient((request) async {
+            requested.add(request);
+            return http.Response(
+              _wwwListing,
+              200,
+              headers: {'content-type': 'text/html'},
+            );
+          }),
+        );
+
+        final listing = await client.fetchSubreddit('dartlang', clientId: '  ');
+
+        expect(
+          requested,
+          hasLength(1),
+          reason: 'no token request, and the site answered',
+        );
+        expect(requested.single.url.host, 'www.reddit.com');
+        expect(
+          requested.single.url.path,
+          '/svc/shreddit/community-more-posts/hot/',
+        );
+        expect(requested.single.url.queryParameters['name'], 'dartlang');
+        expect(requested.single.headers.containsKey('Authorization'), isFalse);
+        expect(
+          requested.single.headers['User-Agent'],
+          RedditClient.publicUserAgent,
+        );
+        expect(listing.posts.single.id, 'abc123');
+        expect(
+          listing.after,
+          't3_abc123',
+          reason:
+              'the cursor is the fullname, whichever route reads the next page',
+        );
+      },
+    );
+
+    test(
+      'when www refuses, old.reddit is scraped, with no token and no auth header',
+      () async {
+        final requested = <http.Request>[];
+        final client = RedditClient(
+          httpClient: _wwwRefused((request) async {
             requested.add(request);
             return http.Response(
               _listingHtml,
@@ -288,7 +370,10 @@ void main() {
 
         final listing = await client.fetchSubreddit('dartlang', clientId: '');
 
-        expect(urls.first.host, 'old.reddit.com');
+        expect(urls.take(2).map((u) => u.host), [
+          'www.reddit.com',
+          'old.reddit.com',
+        ]);
         expect(urls.any((u) => u.path == '/r/dartlang/hot.json'), isTrue);
         expect(listing.posts, isNotEmpty);
       },
@@ -298,7 +383,7 @@ void main() {
       final cookies = <String?>[];
       var served = 0;
       final client = RedditClient(
-        httpClient: MockClient((request) async {
+        httpClient: _wwwRefused((request) async {
           cookies.add(request.headers['Cookie']);
           served++;
           if (served == 1) {
@@ -364,19 +449,24 @@ void main() {
       final listing = await client.fetchSubreddit('dartlang', clientId: '');
 
       expect(urls.map((u) => u.host), [
+        'www.reddit.com',
         'old.reddit.com',
         'www.reddit.com',
         'old.reddit.com',
       ]);
+      expect(urls.last.path, '/r/dartlang/hot.json');
       expect(listing.posts, isNotEmpty);
     });
 
-    test('a page that scrapes is not asked for twice', () async {
+    test('a page that reads is not asked for twice', () async {
       final urls = <Uri>[];
       final client = RedditClient(
         httpClient: MockClient((request) async {
           urls.add(request.url);
-          return http.Response(_listingHtml, 200);
+          return http.Response(
+            _isWww(request) ? _wwwListing : _listingHtml,
+            200,
+          );
         }),
       );
 
@@ -385,7 +475,7 @@ void main() {
       expect(
         urls,
         hasLength(1),
-        reason: 'the JSON fallback is only paid on failure',
+        reason: 'the other routes are only paid on failure',
       );
     });
 
@@ -491,9 +581,10 @@ void main() {
           ),
         ),
       );
-      // A missing subreddit is missing on every host, so the first route to say
-      // so is the last one asked.
-      expect(hosts, ['old.reddit.com']);
+      // www's feed piece answers an unknown community with an empty page, so
+      // its 404 says the piece moved. old.reddit's is about the subreddit: a
+      // missing one is missing on every host, so no route after it is asked.
+      expect(hosts, ['www.reddit.com', 'old.reddit.com']);
     });
 
     test('a client id still uses the authenticated host', () async {
@@ -560,6 +651,24 @@ void main() {
       final client = RedditClient(
         httpClient: MockClient((request) async {
           hosts.add(request.url.host);
+          return http.Response(_wwwEmpty, 200);
+        }),
+      );
+
+      final listing = await client.fetchSubreddit('dartlang', clientId: '');
+
+      expect(listing.posts, isEmpty);
+      expect(listing.after, isNull);
+      // Emptiness is an answer. Asking the other hosts for a different one is
+      // three requests spent to be told the same thing.
+      expect(hosts, ['www.reddit.com']);
+    });
+
+    test('an empty community on old.reddit is empty too', () async {
+      final hosts = <String>[];
+      final client = RedditClient(
+        httpClient: _wwwRefused((request) async {
+          hosts.add(request.url.host);
           return http.Response(_emptyListing, 200);
         }),
       );
@@ -602,14 +711,13 @@ void main() {
         _privatePage: (RedditErrorKind.notFound, 'private'),
         _bannedPage: (RedditErrorKind.notFound, 'banned'),
         _quarantinedPage: (RedditErrorKind.blocked, 'quarantined'),
-        _loginPage: (RedditErrorKind.blocked, 'login page'),
       };
 
       for (final entry in refusals.entries) {
         final (kind, detail) = entry.value;
         final hosts = <String>[];
         final client = RedditClient(
-          httpClient: MockClient((request) async {
+          httpClient: _wwwRefused((request) async {
             hosts.add(request.url.host);
             return http.Response(entry.key, 200);
           }),
@@ -628,6 +736,29 @@ void main() {
         expect(hosts, ['old.reddit.com'], reason: detail);
       }
     });
+
+    // old.reddit has sent every logged-out reader to its login page since 2026,
+    // while www still serves them: the page answers for its host alone.
+    test(
+      'a login page refuses only its host, and the next route is asked',
+      () async {
+        final urls = <Uri>[];
+        final client = RedditClient(
+          httpClient: _wwwRefused((request) async {
+            urls.add(request.url);
+            return request.url.path.endsWith('.json')
+                ? _json(_listingBody(), 200)
+                : http.Response(_loginPage, 200);
+          }),
+        );
+
+        final listing = await client.fetchSubreddit('dartlang', clientId: '');
+
+        expect(listing.posts, isNotEmpty);
+        expect(urls.first.host, 'old.reddit.com');
+        expect(urls.any((u) => u.path == '/r/dartlang/hot.json'), isTrue);
+      },
+    );
 
     test(
       'a private community is refused with a 403 and still names the reason',
@@ -744,7 +875,7 @@ void main() {
       },
     );
 
-    test('adds t= to public HTML and JSON listing routes', () async {
+    test('adds t= to the public site, HTML and JSON listing routes', () async {
       final urls = <Uri>[];
       final client = RedditClient(
         httpClient: MockClient((request) async {
@@ -762,9 +893,11 @@ void main() {
         timeFilter: RedditTimeFilter.month,
       );
 
-      expect(urls.first.path, '/r/dartlang/top');
-      expect(urls.first.queryParameters['t'], 'month');
-      expect(urls.first.queryParameters.containsKey('raw_json'), isFalse);
+      expect(urls.first.path, '/svc/shreddit/community-more-posts/top/');
+      expect(urls.first.queryParameters['t'], 'MONTH');
+      expect(urls[1].path, '/r/dartlang/top');
+      expect(urls[1].queryParameters['t'], 'month');
+      expect(urls[1].queryParameters.containsKey('raw_json'), isFalse);
       expect(
         urls.any(
           (url) =>
@@ -1582,7 +1715,8 @@ void main() {
         clientId: 'app',
         userToken: 'user_tok',
       );
-      expect(hosts, ['oauth.reddit.com', 'old.reddit.com']);
+      // www could not read old.reddit's markup, so its page was next.
+      expect(hosts, ['oauth.reddit.com', 'www.reddit.com', 'old.reddit.com']);
       expect(result.comments.single.body, 'Hello');
     });
 
@@ -1648,8 +1782,7 @@ void main() {
       );
 
       final result = await client.fetchComments(permalink, clientId: '');
-      expect(hosts.first, 'old.reddit.com');
-      expect(hosts, contains('www.reddit.com'));
+      expect(hosts, ['www.reddit.com', 'old.reddit.com', 'www.reddit.com']);
       expect(result.comments.single.body, 'From JSON');
     });
 
@@ -1673,8 +1806,220 @@ void main() {
         userToken: 'user_tok',
         preferPublic: true,
       );
-      expect(hosts, ['old.reddit.com']);
+      expect(hosts, ['www.reddit.com', 'old.reddit.com']);
       expect(result.comments, hasLength(1));
     });
+  });
+
+  group('www.reddit.com without an account', () {
+    String fixture(String name) =>
+        File('test/fixtures/Reddit/$name').readAsStringSync();
+    const thread =
+        '/r/FlutterDev/comments/1xa75i8/why_flutter_text_looks_lighter_than_swiftui_on_ios/';
+
+    test('a thread is read from the piece that loads its comments', () async {
+      final asked = <Uri>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked.add(request.url);
+          return _html(fixture('comments.html'));
+        }),
+      );
+
+      final result = await client.fetchComments(thread, clientId: '');
+
+      expect(
+        asked.single.path,
+        '/svc/shreddit/comments/r/FlutterDev/t3_1xa75i8',
+      );
+      expect(asked.single.hasQuery, isFalse, reason: 'best is the default');
+      expect(result.comments.first.author, 'TJGhinder');
+      // Reddit held more back at the top: the stub opens the post on Reddit.
+      expect(result.comments.last.isStub, isTrue);
+      expect(result.comments.last.permalink, thread);
+    });
+
+    test('the chosen order rides the comments piece in its spelling', () async {
+      Uri? asked;
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked = request.url;
+          return _html(fixture('comments.html'));
+        }),
+      );
+
+      await client.fetchComments(thread, clientId: '', sort: 'top');
+
+      expect(asked!.queryParameters['sort'], 'TOP');
+    });
+
+    test("a comment's page asks for that comment, in either spelling", () {
+      for (final permalink in [
+        '/r/FlutterDev/comments/1xa75i8/comment/phuyrt3/',
+        '/r/FlutterDev/comments/1xa75i8/why_flutter/phuyrt3/',
+      ]) {
+        expect(
+          RedditClient.wwwCommentsUri(permalink)!.path,
+          '/svc/shreddit/comments/r/FlutterDev/t3_1xa75i8/t1_phuyrt3',
+          reason: permalink,
+        );
+      }
+    });
+
+    test("a profile post's comments live in the account's community", () {
+      expect(
+        RedditClient.wwwCommentsUri('/user/spez/comments/1vgbkge/x/')!.path,
+        '/svc/shreddit/comments/r/u_spez/t3_1vgbkge',
+      );
+      expect(RedditClient.wwwCommentsUri('/r/x/about/'), isNull);
+    });
+
+    test('the browser check falls through to old.reddit', () async {
+      final hosts = <String>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          hosts.add(request.url.host);
+          return _html(
+            _isWww(request) ? fixture('browser_check.html') : _listingHtml,
+          );
+        }),
+      );
+
+      final listing = await client.fetchSubreddit('dartlang', clientId: '');
+
+      expect(hosts, ['www.reddit.com', 'old.reddit.com']);
+      expect(listing.posts.single.id, 'abc123');
+    });
+
+    test(
+      'when nothing else serves a thread, the failure is www\'s own',
+      () async {
+        final client = RedditClient(
+          httpClient: MockClient(
+            (request) async => _isWww(request)
+                ? _html(fixture('browser_check.html'))
+                : http.Response(_loginPage, 200),
+          ),
+        );
+
+        await expectLater(
+          client.fetchComments(thread, clientId: ''),
+          throwsA(
+            isA<RedditException>()
+                .having((e) => e.kind, 'kind', RedditErrorKind.blocked)
+                .having((e) => e.detail, 'detail', contains('browser check')),
+          ),
+          reason: "old.reddit's login page holds no comments",
+        );
+      },
+    );
+
+    test('the next page asks for the cursor as the site writes it', () async {
+      Uri? asked;
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked = request.url;
+          return http.Response(_wwwListing, 200);
+        }),
+      );
+
+      await client.fetchSubreddit('dartlang', clientId: '', after: 't3_abc123');
+
+      expect(asked!.queryParameters['after'], 'dDNfYWJjMTIz');
+    });
+
+    test('a search reads www.reddit.com\'s results, in its terms', () async {
+      final asked = <Uri>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked.add(request.url);
+          return _html(fixture('search_posts.html'));
+        }),
+      );
+
+      final posts = await client.searchPosts('flutter', searchSort: 'new');
+
+      expect(asked.single.path, '/svc/shreddit/search/');
+      expect(asked.single.queryParameters, {
+        'q': 'flutter',
+        'type': 'posts',
+        'sort': 'new',
+        't': 'all',
+      });
+      expect(posts, hasLength(3));
+      expect(posts.first.id, '1xb5vks');
+    });
+
+    test('communities and people are searched by their own types', () async {
+      final types = <String?>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          final type = request.url.queryParameters['type'];
+          types.add(type);
+          return _html(
+            fixture(
+              type == 'people'
+                  ? 'search_people.html'
+                  : 'search_communities.html',
+            ),
+          );
+        }),
+      );
+
+      final communities = await client.searchSubreddits('flutter');
+      final people = await client.searchUsers('spez');
+
+      expect(types, ['communities', 'people']);
+      expect(communities.first.name, 'FlutterDev');
+      expect(people.first.karma, 941063);
+    });
+
+    test('a profile is read from its piece, and pages on', () async {
+      final asked = <Uri>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked.add(request.url);
+          return _html(fixture('profile_posts.html'));
+        }),
+      );
+
+      final first = await client.fetchUserPosts('u/spez');
+      await client.fetchUserPosts('spez', after: first.after);
+
+      expect(
+        asked.first.path,
+        '/svc/shreddit/profiles/profile_posts-more-posts/new/',
+      );
+      expect(asked.first.queryParameters, {'name': 'spez'});
+      expect(first.posts, hasLength(3));
+      expect(first.after, 't3_3cxedn');
+      expect(asked.last.queryParameters['after'], 'dDNfM2N4ZWRu');
+    });
+
+    test(
+      'what a community says about itself comes from the community search',
+      () async {
+        final asked = <Uri>[];
+        final client = RedditClient(
+          httpClient: MockClient((request) async {
+            asked.add(request.url);
+            return _html(fixture('search_communities.html'));
+          }),
+        );
+
+        final about = await client.fetchSubredditAbout(
+          'flutterdev',
+          clientId: '',
+        );
+        final icon = await client.fetchSubredditIcon('FlutterDev');
+
+        expect(asked.first.queryParameters['type'], 'communities');
+        expect(about.name, 'FlutterDev', reason: 'as Reddit spells it');
+        expect(about.description, startsWith('A community for the publishing'));
+        expect(about.subscribers, isNull);
+        expect(icon, about.iconUrl);
+        expect(asked, hasLength(1), reason: 'the icon was noticed on the way');
+      },
+    );
   });
 }
