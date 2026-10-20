@@ -27,6 +27,7 @@ import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/tweet/stale_feed_preview.dart';
 import 'package:xta/ui/caught_up_end_card.dart';
 import 'package:xta/ui/stale_feed_banner.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 typedef TweetPageResult = ({List<TweetChain> chains, String? nextCursor});
 typedef TweetPageLoader = Future<TweetPageResult> Function(String? cursor);
@@ -725,7 +726,9 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         if (state.items == null && state.error == null) {
           _maybeStartFirstLoad();
           if (widget.interleaved.isNotEmpty) {
-            return _interleavedOnlyList(context, _linkGrouping!.plugins, const LinearProgressIndicator());
+            // X's posts are on their way: a line over the plugin posts says so,
+            // where a bar closing the list took room only a scroll down found.
+            return LoadingHairline(loading: true, child: _interleavedOnlyList(context, _linkGrouping!.plugins, null));
           }
           return const TweetFeedSkeleton();
         }

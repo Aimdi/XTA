@@ -12,6 +12,7 @@ import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/plugins/substack/substack_similar_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/plugins/substack/substack_publication_store.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 SubstackPublication publicationForPost(SubstackPost post, {String? logoUrl}) {
   final pub = post.publication;
@@ -100,7 +101,9 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(child: _hero(context, state)),
-              SliverToBoxAdapter(child: _controls(context, state)),
+              SliverToBoxAdapter(
+                child: LoadingHairline(loading: state.page.loading, atBottom: true, child: _controls(context, state)),
+              ),
               ..._posts(context, state, read),
             ],
           ),
@@ -170,7 +173,6 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
     final page = state.page;
     final posts = visiblePublicationPosts(state, read);
     return [
-      if (page.loading) const SliverToBoxAdapter(child: LinearProgressIndicator()),
       if (page.error != null && page.posts.isEmpty)
         SliverFillRemaining(
           hasScrollBody: false,

@@ -12,6 +12,7 @@ import 'package:xta/plugins/bluesky/bluesky_source_reader.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 class BlueskyAlgoPane extends StatefulWidget {
   final ScrollController scrollController;
@@ -173,14 +174,17 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
           header: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _ChipStrip(
-                chips: [
-                  for (final list in lists.values)
-                    _FeedChip(uri: list.uri, label: list.name, selected: state.selectedUri == list.uri),
-                ],
-                onTap: (uri) => store.open(uri),
+              LoadingHairline(
+                loading: state.listsLoading,
+                atBottom: true,
+                child: _ChipStrip(
+                  chips: [
+                    for (final list in lists.values)
+                      _FeedChip(uri: list.uri, label: list.name, selected: state.selectedUri == list.uri),
+                  ],
+                  onTap: (uri) => store.open(uri),
+                ),
               ),
-              if (state.listsLoading) const LinearProgressIndicator(),
               if (state.listsError != null)
                 _FeedFailure(error: state.listsError!, onRetry: () => store.lookupActor(state.actor)),
               if (state.listsLoaded && state.actorLists.isEmpty)
@@ -257,29 +261,31 @@ class _SourceTimeline extends StatelessWidget {
     },
     child: RefreshIndicator(
       onRefresh: onRefresh,
-      child: FeedListView(
-        controller: pluginInnerScrollController(context, scrollController),
-        padding: pluginFeedPadding(context),
-        itemCount: page.posts.length + 3,
-        itemBuilder: (context, index) {
-          if (index == 0) return header;
-          if (index == 1) {
-            return Column(
-              children: [
-                if (page.loading) const LinearProgressIndicator(),
-                if (page.error != null) _FeedFailure(error: page.error!, onRetry: onRetry),
-                if (!page.loading && page.error == null && page.posts.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Text(emptyMessage, textAlign: TextAlign.center),
-                  ),
-              ],
-            );
-          }
-          if (index == page.posts.length + 2) return _SourceFooter(page: page, onMore: onMore);
-          final post = page.posts[index - 2];
-          return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
-        },
+      child: LoadingHairline(
+        loading: page.loading,
+        child: FeedListView(
+          controller: pluginInnerScrollController(context, scrollController),
+          padding: pluginFeedPadding(context),
+          itemCount: page.posts.length + 3,
+          itemBuilder: (context, index) {
+            if (index == 0) return header;
+            if (index == 1) {
+              return Column(
+                children: [
+                  if (page.error != null) _FeedFailure(error: page.error!, onRetry: onRetry),
+                  if (!page.loading && page.error == null && page.posts.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text(emptyMessage, textAlign: TextAlign.center),
+                    ),
+                ],
+              );
+            }
+            if (index == page.posts.length + 2) return _SourceFooter(page: page, onMore: onMore);
+            final post = page.posts[index - 2];
+            return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
+          },
+        ),
       ),
     ),
   );

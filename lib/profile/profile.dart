@@ -37,6 +37,7 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 typedef TabTitleBuilder = String Function(BuildContext context);
 
@@ -137,7 +138,6 @@ class _ProfileScreen extends StatelessWidget {
                   )
                 : Column(
                     children: [
-                      if (triple.state.refreshing) const LinearProgressIndicator(),
                       if (triple.state.refreshError != null)
                         SafeArea(
                           bottom: false,
@@ -149,7 +149,10 @@ class _ProfileScreen extends StatelessWidget {
                           ),
                         ),
                       Expanded(
-                        child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
+                        child: LoadingHairline(
+                          loading: triple.state.refreshing,
+                          child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
+                        ),
                       ),
                     ],
                   ),

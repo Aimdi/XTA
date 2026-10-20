@@ -41,6 +41,7 @@ import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 class SubstackReaderScreen extends StatefulWidget {
   final SubstackPost post;
@@ -582,7 +583,6 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       ),
       body: Column(
         children: [
-          if (_content.state.refreshing) const LinearProgressIndicator(),
           if (_content.state.refreshError != null)
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 8, 4),
@@ -611,7 +611,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
               if (!_liveSite) _controller.runJavaScript('window.xtaArticle?.startOver();');
             },
           ),
-          Expanded(child: _articleBody(context)),
+          Expanded(
+            child: LoadingHairline(loading: _content.state.refreshing, child: _articleBody(context)),
+          ),
         ],
       ),
     );

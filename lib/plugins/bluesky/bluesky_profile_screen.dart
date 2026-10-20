@@ -25,6 +25,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// What a failed Bluesky read should say.
 String blueskyErrorMessage(L10n l10n, Object error) {
@@ -312,100 +313,101 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with Ticker
     final feed = state.feed;
     final visible = posts ?? state.visiblePosts;
     final error = feed.error ?? state.error;
-    return CustomScrollView(
-      key: PageStorageKey('bluesky-profile-${widget.actor}-${state.selected.name}'),
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        if (state.selected == PluginProfileFeedTab.posts && state.loadingPin)
-          const SliverToBoxAdapter(child: LinearProgressIndicator()),
-        if (state.selected == PluginProfileFeedTab.posts && state.pinError != null)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 12,
+    return LoadingHairline(
+      loading: state.selected == PluginProfileFeedTab.posts && state.loadingPin,
+      child: CustomScrollView(
+        key: PageStorageKey('bluesky-profile-${widget.actor}-${state.selected.name}'),
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          if (state.selected == PluginProfileFeedTab.posts && state.pinError != null)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 12,
+                  children: [
+                    Text('${l10n.pinned_tweet}: ${blueskyErrorMessage(l10n, state.pinError!)}'),
+                    TextButton(onPressed: _store.retryPin, child: Text(l10n.retry)),
+                  ],
+                ),
+              ),
+            ),
+          if (state.selected == PluginProfileFeedTab.saved)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Text(l10n.likes_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
+              ),
+            ),
+          if (state.selected == PluginProfileFeedTab.media)
+            BlueskyMediaGrid(posts: visible)
+          else
+            SliverList.builder(
+              itemCount: visible.length,
+              itemBuilder: (context, index) => Column(
+                key: ValueKey(visible[index].uri),
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${l10n.pinned_tweet}: ${blueskyErrorMessage(l10n, state.pinError!)}'),
-                  TextButton(onPressed: _store.retryPin, child: Text(l10n.retry)),
+                  if (state.selected == PluginProfileFeedTab.posts && visible[index].uri == state.pinnedPost?.uri)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.push_pin_outlined, size: 16),
+                          const SizedBox(width: 6),
+                          Expanded(child: Text(l10n.pinned_tweet, style: Theme.of(context).textTheme.labelMedium)),
+                        ],
+                      ),
+                    ),
+                  BlueskyPostCard(post: visible[index], showSourceBadge: false),
                 ],
               ),
             ),
-          ),
-        if (state.selected == PluginProfileFeedTab.saved)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Text(l10n.likes_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
-            ),
-          ),
-        if (state.selected == PluginProfileFeedTab.media)
-          BlueskyMediaGrid(posts: visible)
-        else
-          SliverList.builder(
-            itemCount: visible.length,
-            itemBuilder: (context, index) => Column(
-              key: ValueKey(visible[index].uri),
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (state.selected == PluginProfileFeedTab.posts && visible[index].uri == state.pinnedPost?.uri)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.push_pin_outlined, size: 16),
-                        const SizedBox(width: 6),
-                        Expanded(child: Text(l10n.pinned_tweet, style: Theme.of(context).textTheme.labelMedium)),
-                      ],
-                    ),
-                  ),
-                BlueskyPostCard(post: visible[index], showSourceBadge: false),
-              ],
-            ),
-          ),
-        if (visible.isEmpty &&
-            feed.loaded &&
-            !feed.loading &&
-            !(state.selected == PluginProfileFeedTab.posts && state.loadingPin))
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                state.selected == PluginProfileFeedTab.saved
-                    ? l10n.plugin_bluesky_liked_empty
-                    : l10n.plugin_bluesky_no_posts,
-                textAlign: TextAlign.center,
+          if (visible.isEmpty &&
+              feed.loaded &&
+              !feed.loading &&
+              !(state.selected == PluginProfileFeedTab.posts && state.loadingPin))
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  state.selected == PluginProfileFeedTab.saved
+                      ? l10n.plugin_bluesky_liked_empty
+                      : l10n.plugin_bluesky_no_posts,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-          ),
-        if (feed.loading || state.loading)
-          const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
-        if (error != null)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: FullPageErrorWidget(
-                error: error,
-                stackTrace: null,
-                prefix: blueskyErrorMessage(l10n, error),
-                onRetry: _store.retry,
+          if (feed.loading || state.loading)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
               ),
             ),
-          ),
-        if (feed.cursor != null && !feed.loading && feed.error == null)
-          SliverToBoxAdapter(
-            child: Center(
-              child: TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_reddit_load_more)),
+          if (error != null)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: FullPageErrorWidget(
+                  error: error,
+                  stackTrace: null,
+                  prefix: blueskyErrorMessage(l10n, error),
+                  onRetry: _store.retry,
+                ),
+              ),
             ),
-          ),
-        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
-      ],
+          if (feed.cursor != null && !feed.loading && feed.error == null)
+            SliverToBoxAdapter(
+              child: Center(
+                child: TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_reddit_load_more)),
+              ),
+            ),
+          const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+        ],
+      ),
     );
   }
 }

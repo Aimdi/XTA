@@ -8,6 +8,7 @@ import 'package:xta/plugins/rss/rss_reader_screen.dart';
 import 'package:xta/plugins/substack/substack_reader_screen.dart';
 import 'package:xta/utils/browsers.dart';
 import 'package:xta/links/link_opening.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 class OfflineLibraryScreen extends StatelessWidget {
   final OfflineStore? store;
@@ -125,22 +126,24 @@ class OfflineLibraryScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(l10n.offline_storage_error, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                 ),
-              if (state.busy.isNotEmpty) const LinearProgressIndicator(),
               Expanded(
-                child: state.loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : state.entries.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(l10n.offline_empty, textAlign: TextAlign.center),
+                child: LoadingHairline(
+                  loading: state.busy.isNotEmpty,
+                  child: state.loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : state.entries.isEmpty
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Text(l10n.offline_empty, textAlign: TextAlign.center),
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: state.entries.length,
+                          separatorBuilder: (_, _) => const Divider(height: 1),
+                          itemBuilder: (context, index) => _entry(context, model, state.entries[index]),
                         ),
-                      )
-                    : ListView.separated(
-                        itemCount: state.entries.length,
-                        separatorBuilder: (_, _) => const Divider(height: 1),
-                        itemBuilder: (context, index) => _entry(context, model, state.entries[index]),
-                      ),
+                ),
               ),
             ],
           ),

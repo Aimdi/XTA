@@ -19,6 +19,7 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/reader_swipe_navigation.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// Compatible entry point; the route now leaves room for articles and large text.
 Future<bool?> showSubstackSearchSheet(BuildContext context, {String? initialQuery}) async {
@@ -190,7 +191,6 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
       if (state.query.isEmpty) _recent(context),
       if (state.tab == SubstackSearchTab.publications && state.query.isEmpty) ...[
         Padding(padding: const EdgeInsets.all(16), child: Text(l10n.plugin_substack_discover_intro)),
-        if (state.categoriesLoading) const LinearProgressIndicator(),
         if (state.categoriesError != null) _failure(l10n.plugin_substack_load_error, _store.loadCategories),
         if (state.categories.isNotEmpty)
           PluginFilterRow(
@@ -209,7 +209,6 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
       ],
       if (state.tab == SubstackSearchTab.posts && !state.direct)
         Padding(padding: const EdgeInsets.all(16), child: Text(l10n.substack_search_followed_posts)),
-      if (state.loading) const LinearProgressIndicator(),
       if (state.error != null && !state.retryMore)
         _failure(
           state.direct && state.publications.isNotEmpty
@@ -254,10 +253,13 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
     ];
     return RefreshIndicator(
       onRefresh: _store.refresh,
-      child: ListView.builder(
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: items.length,
-        itemBuilder: (_, index) => items[index],
+      child: LoadingHairline(
+        loading: state.loading || state.categoriesLoading,
+        child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: items.length,
+          itemBuilder: (_, index) => items[index],
+        ),
       ),
     );
   }

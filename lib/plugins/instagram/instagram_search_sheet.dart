@@ -10,6 +10,7 @@ import 'package:xta/plugins/instagram/instagram_parse.dart';
 import 'package:xta/plugins/instagram/instagram_post_card.dart';
 import 'package:xta/plugins/instagram/instagram_profile_screen.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 Future<void> showInstagramSearchSheet(
   BuildContext context, {
@@ -127,22 +128,26 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             children: [
-              TextField(
-                controller: _controller,
-                autofocus: (widget.initialQuery ?? '').trim().isEmpty,
-                textInputAction: TextInputAction.search,
-                onChanged: (_) => setState(() {}),
-                onSubmitted: (_) => _runSearch(),
-                decoration: InputDecoration(
-                  hintText: l10n.plugin_instagram_search_hint,
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: _runSearch,
+              // The search runs under the field's own underline, moving nothing.
+              LoadingHairline(
+                loading: _searching,
+                atBottom: true,
+                child: TextField(
+                  controller: _controller,
+                  autofocus: (widget.initialQuery ?? '').trim().isEmpty,
+                  textInputAction: TextInputAction.search,
+                  onChanged: (_) => setState(() {}),
+                  onSubmitted: (_) => _runSearch(),
+                  decoration: InputDecoration(
+                    hintText: l10n.plugin_instagram_search_hint,
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: _runSearch,
+                    ),
                   ),
                 ),
               ),
-              if (_searching) const LinearProgressIndicator(),
               if (guest)
                 Padding(
                   padding: const EdgeInsets.only(top: 12),

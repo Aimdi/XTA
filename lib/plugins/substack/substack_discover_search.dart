@@ -6,6 +6,7 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_search_store.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// The Discover hub shares the guarded publication and pasted-article search.
 class SubstackDiscoverSearch extends StatefulWidget {
@@ -43,36 +44,38 @@ class _SubstackDiscoverSearchState extends State<SubstackDiscoverSearch> {
       final l10n = L10n.of(context);
       return RefreshIndicator(
         onRefresh: _store.refresh,
-        child: ListView(
-          children: [
-            if (state.loading) const LinearProgressIndicator(),
-            if (state.error != null)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Text(l10n.plugin_substack_load_error),
-                    TextButton(onPressed: state.retryMore ? _store.loadMore : _store.refresh, child: Text(l10n.retry)),
-                  ],
+        child: LoadingHairline(
+          loading: state.loading,
+          child: ListView(
+            children: [
+              if (state.error != null)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      Text(l10n.plugin_substack_load_error),
+                      TextButton(onPressed: state.retryMore ? _store.loadMore : _store.refresh, child: Text(l10n.retry)),
+                    ],
+                  ),
                 ),
-              ),
-            for (final publication in state.publications)
-              ListTile(
-                title: Text(publication.displayName),
-                subtitle: Text(publication.baseUrl),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: publication)),
+              for (final publication in state.publications)
+                ListTile(
+                  title: Text(publication.displayName),
+                  subtitle: Text(publication.baseUrl),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: publication)),
+                  ),
                 ),
-              ),
-            for (final post in state.posts) SubstackPostCard(post: post),
-            if (!state.loading && state.error == null && state.publications.isEmpty && state.posts.isEmpty)
-              Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
-            if (state.loadingMore)
-              const Center(child: CircularProgressIndicator())
-            else if (state.hasMore)
-              TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_substack_load_more)),
-          ],
+              for (final post in state.posts) SubstackPostCard(post: post),
+              if (!state.loading && state.error == null && state.publications.isEmpty && state.posts.isEmpty)
+                Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
+              if (state.loadingMore)
+                const Center(child: CircularProgressIndicator())
+              else if (state.hasMore)
+                TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_substack_load_more)),
+            ],
+          ),
         ),
       );
     },

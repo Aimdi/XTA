@@ -12,6 +12,7 @@ import 'package:xta/subscriptions/group_add_member_store.dart';
 import 'package:xta/subscriptions/group_add_sources.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/user.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// Adds something new to a group without leaving the group.
 ///
@@ -136,9 +137,8 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
             onChanged: _store.changeQuery,
             onSubmitted: _search,
           ),
-          if (_busy) const LinearProgressIndicator(),
           const SizedBox(height: 8),
-          Expanded(child: _results(context)),
+          Expanded(child: LoadingHairline(loading: _busy, child: _results(context))),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(onPressed: _busy ? null : () => Navigator.pop(context, _added), child: Text(l10n.ok)),

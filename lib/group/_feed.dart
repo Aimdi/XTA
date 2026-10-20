@@ -2,6 +2,7 @@ import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/ui/loading_hairline.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/group/batch_read_store.dart';
 import 'package:xta/utils/read_request_scope.dart';
@@ -1123,20 +1124,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                 onState: (_, batches) => Column(
                   children: [
                     if (widget.chunks.isNotEmpty)
-                      SizedBox(
-                        height: 2,
-                        child: batches.loading
-                            ? LinearProgressIndicator(
-                                minHeight: 2,
-                                value: batches.total == 0 ? null : batches.results.length / batches.total,
-                                semanticsLabel: L10n.of(context).reader_batch_progress(
-                                  batches.results.length,
-                                  batches.total,
-                                ),
-                              )
-                            : null,
-                      ),
-                    if (widget.chunks.isNotEmpty)
                       ReadRecovery(
                         isLoading: () => _batches.state.loading || _retryingBatches,
                         recoverableFailure: () => batches.loading
@@ -1146,45 +1133,50 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                                   .whereType<Object>()
                                   .firstOrNull,
                         retry: _retryBatches,
-                        // The bar above already shows progress; the count only
-                        // earns a row when some batches failed and can be retried.
+                        // The line over the posts already shows progress; the count
+                        // only earns a row when some batches failed and can be retried.
                         child: _batchRetryRow(context, batches),
                       ),
                     Expanded(
-                      child: PaginatedTweetList(
-                        feed: _feedController,
-                        loadPage: _listTweetsShared,
-                        username: null,
-                        firstPagePreview: _progressivePreview.isNotEmpty ? _progressivePreview : _cachedPreview,
-                        firstPagePreviewCachedAt: _cachedPreviewAt,
-                        foldReasons: _foldReasons,
-                        onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
-                        catchUpMayBeIncomplete: () => _gapCapped,
-                        onRefresh: () async {
-                          // Not awaited: the reader is waiting on X's first page, and
-                          // the plugins are beside it rather than in front of it.
-                          unawaited(_loadPluginPosts());
-                          // Only this group's rows. The wipe used to take the whole table
-                          // with it, so pulling to refresh one feed made every other feed
-                          // refetch its first page from the network next time it opened.
-                          final hashes = widget.chunks.map((e) => e.hash).toList();
-                          if (hashes.isEmpty) {
-                            return;
-                          }
+                      child: LoadingHairline(
+                        loading: widget.chunks.isNotEmpty && batches.loading,
+                        value: batches.total == 0 ? null : batches.results.length / batches.total,
+                        semanticsLabel: L10n.of(context).reader_batch_progress(batches.results.length, batches.total),
+                        child: PaginatedTweetList(
+                          feed: _feedController,
+                          loadPage: _listTweetsShared,
+                          username: null,
+                          firstPagePreview: _progressivePreview.isNotEmpty ? _progressivePreview : _cachedPreview,
+                          firstPagePreviewCachedAt: _cachedPreviewAt,
+                          foldReasons: _foldReasons,
+                          onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
+                          catchUpMayBeIncomplete: () => _gapCapped,
+                          onRefresh: () async {
+                            // Not awaited: the reader is waiting on X's first page, and
+                            // the plugins are beside it rather than in front of it.
+                            unawaited(_loadPluginPosts());
+                            // Only this group's rows. The wipe used to take the whole table
+                            // with it, so pulling to refresh one feed made every other feed
+                            // refetch its first page from the network next time it opened.
+                            final hashes = widget.chunks.map((e) => e.hash).toList();
+                            if (hashes.isEmpty) {
+                              return;
+                            }
 
-                          var repository = await Repository.writable();
-                          await repository.delete(
-                            tableFeedGroupChunk,
-                            where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
-                            whereArgs: hashes,
-                          );
-                        },
-                        firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
-                        newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-                        emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
-                        isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
-                        caughtUpDividerKey: _caughtUpKey,
-                        interleaved: items,
+                            var repository = await Repository.writable();
+                            await repository.delete(
+                              tableFeedGroupChunk,
+                              where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
+                              whereArgs: hashes,
+                            );
+                          },
+                          firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+                          newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+                          emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
+                          isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
+                          caughtUpDividerKey: _caughtUpKey,
+                          interleaved: items,
+                        ),
                       ),
                     ),
                   ],

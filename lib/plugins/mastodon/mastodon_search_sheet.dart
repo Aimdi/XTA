@@ -14,6 +14,7 @@ import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_results.dart';
 import 'package:xta/search/recent_searches_store.dart';
 import 'package:xta/search/recent_searches_bar.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// Kept as an entry-point alias for plugin search; discovery now has a full route.
 Future<void> showMastodonSearchSheet(BuildContext context, {String? initialQuery}) =>
@@ -220,32 +221,34 @@ class _MastodonTagScreenState extends State<MastodonTagScreen> {
     }
     return Column(
       children: [
-        if (state.loading) const LinearProgressIndicator(),
         if (state.error != null) _notice(l10n.plugin_mastodon_refresh_failed, _store.refresh),
         Expanded(
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification.depth == 0 &&
-                  notification is ScrollUpdateNotification &&
-                  notification.metrics.extentAfter < 800 &&
-                  state.moreError == null) {
-                _store.loadMore();
-              }
-              return false;
-            },
-            child: RefreshIndicator(
-              onRefresh: _store.refresh,
-              child: FeedListView(
-                controller: _scroll,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: state.posts.length + 1,
-                itemBuilder: (context, index) => index == state.posts.length
-                    ? _footer(state)
-                    : MastodonPostCard(
-                        key: ValueKey(canonicalMastodonPostKey(state.posts[index])),
-                        post: state.posts[index],
-                        showSourceBadge: false,
-                      ),
+          child: LoadingHairline(
+            loading: state.loading,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification.depth == 0 &&
+                    notification is ScrollUpdateNotification &&
+                    notification.metrics.extentAfter < 800 &&
+                    state.moreError == null) {
+                  _store.loadMore();
+                }
+                return false;
+              },
+              child: RefreshIndicator(
+                onRefresh: _store.refresh,
+                child: FeedListView(
+                  controller: _scroll,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: state.posts.length + 1,
+                  itemBuilder: (context, index) => index == state.posts.length
+                      ? _footer(state)
+                      : MastodonPostCard(
+                          key: ValueKey(canonicalMastodonPostKey(state.posts[index])),
+                          post: state.posts[index],
+                          showSourceBadge: false,
+                        ),
+                ),
               ),
             ),
           ),

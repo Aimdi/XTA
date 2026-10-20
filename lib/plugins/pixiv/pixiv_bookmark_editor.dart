@@ -10,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// Opens the bookmark editor for [illust]: visibility, tags and removal.
 Future<void> showPixivBookmarkEditor(BuildContext context, PixivIllust illust) async {
@@ -140,25 +141,27 @@ class _PixivBookmarkEditorState extends State<PixivBookmarkEditor> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (writing) const LinearProgressIndicator(),
           Flexible(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                _title(context, draft, writing: writing),
-                SwitchListTile(
-                  key: const ValueKey('pixiv-bookmark-editor-private'),
-                  secondary: const Icon(Icons.lock_outline),
-                  title: Text(l10n.plugin_pixiv_bookmark_private),
-                  subtitle: Text(l10n.plugin_pixiv_bookmark_private_hint),
-                  value: draft.isPrivate,
-                  onChanged: draft.saving ? null : _store.setPrivate,
-                ),
-                _tagsHeader(context, draft),
-                _tagField(l10n, draft),
-                for (final tag in draft.suggestions) _suggestion(tag),
-                ..._checklist(context, draft),
-              ],
+            child: LoadingHairline(
+              loading: writing,
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  _title(context, draft, writing: writing),
+                  SwitchListTile(
+                    key: const ValueKey('pixiv-bookmark-editor-private'),
+                    secondary: const Icon(Icons.lock_outline),
+                    title: Text(l10n.plugin_pixiv_bookmark_private),
+                    subtitle: Text(l10n.plugin_pixiv_bookmark_private_hint),
+                    value: draft.isPrivate,
+                    onChanged: draft.saving ? null : _store.setPrivate,
+                  ),
+                  _tagsHeader(context, draft),
+                  _tagField(l10n, draft),
+                  for (final tag in draft.suggestions) _suggestion(tag),
+                  ..._checklist(context, draft),
+                ],
+              ),
             ),
           ),
           ConstrainedBox(

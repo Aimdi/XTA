@@ -28,12 +28,14 @@ Future<ProgressiveFeedStore> _pump(WidgetTester tester, Map<String, FeedSourceSt
 }
 
 void main() {
-  testWidgets('a loading source takes a hairline, not a chip row', (tester) async {
+  testWidgets('a loading source takes a hairline over the posts, not a row', (tester) async {
     final store = await _pump(tester, {'substack': const FeedSourceState(loading: true)});
     expect(find.byType(ActionChip), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.getSize(find.byType(LinearProgressIndicator)).height, 2);
-    expect(tester.getTopLeft(find.text('posts')).dy, lessThanOrEqualTo(2));
+    expect(tester.getTopLeft(find.byType(LinearProgressIndicator)).dy, 0);
+    // The posts start where they would with nothing loading.
+    expect(tester.getTopLeft(find.text('posts')).dy, 0);
     await tester.pumpWidget(const SizedBox());
     await store.destroy();
   });

@@ -4,6 +4,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/tweet/progressive_feed_store.dart';
+import 'package:xta/ui/loading_hairline.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/read_recovery.dart';
 
@@ -22,10 +23,6 @@ class ProgressiveFeedView extends StatelessWidget {
             icon: const Icon(Icons.arrow_upward),
             label: Text(L10n.of(context).reader_new_posts),
           ),
-        // Loading needs no room of its own: a hairline says it, and a chip appears
-        // only for something the reader can act on — a failure or cached posts.
-        if (state.sources.values.any((source) => source.loading))
-          LinearProgressIndicator(minHeight: 2, semanticsLabel: L10n.of(context).reader_source_loading),
         if (state.sources.values.any(_worthAChip))
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -72,7 +69,16 @@ class ProgressiveFeedView extends StatelessWidget {
               ],
             ),
           ),
-        Expanded(child: builder(state.items)),
+        // Loading needs no room of its own: a hairline over the posts says it,
+        // and a chip appears only for something the reader can act on — a
+        // failure or cached posts.
+        Expanded(
+          child: LoadingHairline(
+            loading: state.sources.values.any((source) => source.loading),
+            semanticsLabel: L10n.of(context).reader_source_loading,
+            child: builder(state.items),
+          ),
+        ),
       ],
     ),
   );
