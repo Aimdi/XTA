@@ -5,6 +5,8 @@ that."
 
 ## The problem, as the code had it
 
+An inventory of `lib/` (2026-10-20) found these kinds:
+
 - About 25 screens showed loading with `if (loading) LinearProgressIndicator()` inside a `Column` or a list. While
   something loaded, a 4 px bar (2 px in some places) was laid out above the content, so everything below moved down,
   and moved back up when loading stopped.
@@ -34,3 +36,38 @@ and nothing above it moves.
 
 A button that starts a load shows it inside itself, as the note editor's Save does: the Substack add screen's Preview
 button carries the spinner instead of a 28 px gap opening under it.
+
+## Rule 2: nothing is kept for a status that is not showing
+
+A footer that shows "loading more", a failure or a "load more" button collapses to nothing while it has none of
+them. Found: the plugin activity list kept 48 px, Substack's Home, Inbox and Notes feeds 32 px, Bluesky's follows
+24 px.
+
+## Rule 3: a failure that leaves the content readable floats over it
+
+A refresh failure, a partial failure (some sources or batches failed) or a stale-cache notice, shown while the
+content stays on screen, floats over the content's top edge on the frosted pill Home's navigation bar uses
+(`FloatingNotice` with `NoticePill`, `lib/ui/floating_notice.dart`), instead of being laid out above it. Nothing
+moves when it comes or goes; it is announced as a live region, since nothing moving draws the eye. Notices nested
+inside one another (the home feed's plugin chips over its X batch notice over its cached posts) float one below
+the other rather than on top of each other.
+
+A failure that replaces the content (a first page that never loaded) keeps its full-screen layout: there is
+nothing to push.
+
+## Rule 4: a failure where the next items would be is one compact row
+
+At the end of a list, where a page failed to load, the failure is `ReaderFailureNotice`: one 48 px row with Retry,
+details and, where it applies, dismiss. A full-page error layout (`FullPageErrorWidget`, about 250 px, with the
+stack trace when one is passed) is never a list row.
+
+## Rule 5: a counting-down notice is no taller than an idle one
+
+While a surface retries on its own, the Retry button carries the countdown (its icon turns, the sentence is its
+tooltip and spoken label) instead of a sentence beside it. Measured with Inter on a 360 px phone in German, the
+notice was 88 px during the countdown and 48 px otherwise; it is now 48 px throughout.
+
+## Rule 6: refreshing what is shown uses the line, not a spinner row
+
+Content already on screen that is reloading (a thread's replies, comments, a profile) shows the loading line over
+it. A spinner row between a header and its content pushed the content down by 68 to 84 px on every refresh.
