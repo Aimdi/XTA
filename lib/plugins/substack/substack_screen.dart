@@ -32,7 +32,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/loading_hairline.dart';
 import 'package:xta/ui/reader_failure.dart';
-import 'package:xta/ui/floating_notice.dart';
+import 'package:xta/ui/reload_status.dart';
 
 /// Substack Home / Inbox / Notes / Library — account features as local stand-ins.
 class SubstackScreen extends StatefulWidget {
@@ -149,7 +149,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
     if (PluginHomeDockScope.maybeOf(context) != null) return _buildContent(context);
     return PluginHomeDockScope(
       store: _dock,
-      source: 'substack',
+      source: pluginIdSubstack,
       enabled: true,
       compact: true,
       openClientLabel: '',
@@ -958,21 +958,13 @@ class _NotesPane extends StatelessWidget {
               return _LoadMoreStatus.notes(notes, canLoadMore: page.nextCursor?.isNotEmpty == true);
             },
           );
-          final refreshError = notes.refreshError;
-          // A failed refresh leaves the notes readable: it floats over them.
-          return FloatingNotice(
-            notice: refreshError == null || notes.refreshing
-                ? null
-                : NoticePill(
-                    child: ReaderFailureNotice(
-                      source: 'substack',
-                      error: refreshError,
-                      compact: true,
-                      contextMessage: substackFailureLabel(l10n, refreshError),
-                      onRetry: () => notes.refresh(force: true),
-                    ),
-                  ),
-            child: LoadingHairline(loading: notes.refreshing, child: list),
+          return ReloadStatus(
+            loading: notes.refreshing,
+            error: notes.refreshError,
+            source: pluginIdSubstack,
+            contextMessage: substackFailureLabel(l10n, notes.refreshError),
+            onRetry: () => notes.refresh(force: true),
+            child: list,
           );
         },
       ),
@@ -1015,7 +1007,7 @@ class _LoadMoreStatus extends StatelessWidget {
     }
     if (error != null) {
       return ReaderFailureNotice(
-        source: 'substack',
+        source: pluginIdSubstack,
         error: error,
         contextMessage: substackFailureLabel(l10n, error),
         onRetry: onRetry,

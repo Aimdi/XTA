@@ -10,10 +10,12 @@ import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_store.dart';
 import 'package:xta/ui/conversation_sort.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class MastodonThreadScreen extends StatefulWidget {
   final MastodonPost post;
@@ -99,6 +101,7 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
     final thread = state.thread;
     final replies = mastodonReplyRows(thread, state.collapsed, authorOnly: state.authorOnly, order: state.order);
     final ancestors = mastodonThreadAncestors(thread);
+    final hasReplies = thread.descendants.isNotEmpty;
     final leading = <Widget>[
       if (ancestors.isNotEmpty)
         ListTile(
@@ -120,20 +123,19 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
           child: _post(thread.status, selected: true),
         ),
       ),
-      if (state.loading)
+      // Replies on screen keep their place: the line and a floating notice
+      // over them say a reload is under way or failed.
+      if (state.loading && !hasReplies)
         const Padding(
           padding: EdgeInsets.all(16),
           child: Center(child: CircularProgressIndicator()),
         ),
-      if (state.error != null)
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: FullPageErrorWidget(
-            error: state.error,
-            stackTrace: null,
-            prefix: mastodonErrorMessage(l10n, state.error!),
-            onRetry: _store.refresh,
-          ),
+      if (state.error != null && !hasReplies)
+        ReaderFailureNotice(
+          source: pluginIdMastodon,
+          error: state.error,
+          contextMessage: mastodonErrorMessage(l10n, state.error!),
+          onRetry: _store.refresh,
         ),
       if (thread.descendants.isNotEmpty) _filters(context, state),
       if (replies.isNotEmpty)
@@ -152,49 +154,57 @@ class _MastodonThreadScreenState extends State<MastodonThreadScreen> {
           ),
         ),
     ];
-    return FeedListView(
-      controller: _scroll,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 32),
-      itemCount: leading.length + replies.length,
-      itemBuilder: (context, index) {
-        if (index < leading.length) return leading[index];
-        final row = replies[index - leading.length];
-        return Padding(
-          padding: EdgeInsetsDirectional.only(start: 12.0 * row.depth.clamp(0, 2)),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: row.depth == 0
-                  ? null
-                  : BorderDirectional(start: BorderSide(color: colors.outlineVariant, width: 2)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (row.contextOnly)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
-                    child: Text(
-                      l10n.mastodon_thread_context,
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
+    final error = state.error;
+    return ReloadStatus(
+      loading: state.loading && hasReplies,
+      error: hasReplies ? error : null,
+      source: pluginIdMastodon,
+      contextMessage: error == null ? null : mastodonErrorMessage(l10n, error),
+      onRetry: _store.refresh,
+      child: FeedListView(
+        controller: _scroll,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 32),
+        itemCount: leading.length + replies.length,
+        itemBuilder: (context, index) {
+          if (index < leading.length) return leading[index];
+          final row = replies[index - leading.length];
+          return Padding(
+            padding: EdgeInsetsDirectional.only(start: 12.0 * row.depth.clamp(0, 2)),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: row.depth == 0
+                    ? null
+                    : BorderDirectional(start: BorderSide(color: colors.outlineVariant, width: 2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (row.contextOnly)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
+                      child: Text(
+                        l10n.mastodon_thread_context,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
+                      ),
                     ),
-                  ),
-                _post(row.post),
-                if (row.descendants > 0)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton.icon(
-                      key: ValueKey('mastodon-collapse-${row.post.id}'),
-                      onPressed: () => _store.toggle(row.post.id),
-                      icon: Icon(row.collapsed ? Icons.expand_more : Icons.expand_less),
-                      label: Text('${row.collapsed ? l10n.show : l10n.hide} · ${row.descendants}'),
+                  _post(row.post),
+                  if (row.descendants > 0)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton.icon(
+                        key: ValueKey('mastodon-collapse-${row.post.id}'),
+                        onPressed: () => _store.toggle(row.post.id),
+                        icon: Icon(row.collapsed ? Icons.expand_more : Icons.expand_less),
+                        label: Text('${row.collapsed ? l10n.show : l10n.hide} · ${row.descendants}'),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

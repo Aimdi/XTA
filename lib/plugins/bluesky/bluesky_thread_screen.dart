@@ -8,10 +8,12 @@ import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_store.dart';
 import 'package:xta/ui/conversation_sort.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class BlueskyThreadScreen extends StatefulWidget {
   final BlueskyPost post;
@@ -89,24 +91,24 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
     final l10n = L10n.of(context);
     final thread = state.thread;
     final rows = blueskyVisibleReplies(state.branches, state.collapsed);
+    final hasReplies = thread.replies.isNotEmpty;
     final beforeReplies = <Widget>[
       if (thread.ancestors.isNotEmpty) _contextToggle(context, state),
       if (state.contextOpen) ...thread.ancestors.map(_post),
       _selected(context, thread.post),
-      if (state.loading)
+      // Replies on screen keep their place: the line and a floating notice
+      // over them say a reload is under way or failed.
+      if (state.loading && !hasReplies)
         const Padding(
           padding: EdgeInsets.all(24),
           child: Center(child: CircularProgressIndicator()),
         ),
-      if (state.error != null)
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: FullPageErrorWidget(
-            error: state.error,
-            stackTrace: null,
-            prefix: blueskyErrorMessage(l10n, state.error!),
-            onRetry: _store.refresh,
-          ),
+      if (state.error != null && !hasReplies)
+        ReaderFailureNotice(
+          source: pluginIdBluesky,
+          error: state.error,
+          contextMessage: blueskyErrorMessage(l10n, state.error!),
+          onRetry: _store.refresh,
         ),
       if (thread.replies.isNotEmpty) _controls(context, state),
       if (!state.loading && state.error == null && rows.isEmpty)
@@ -119,13 +121,21 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
           ),
         ),
     ];
-    return FeedListView(
-      controller: _scroll,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 24),
-      itemCount: beforeReplies.length + rows.length,
-      itemBuilder: (context, index) =>
-          index < beforeReplies.length ? beforeReplies[index] : _reply(context, rows[index - beforeReplies.length]),
+    final error = state.error;
+    return ReloadStatus(
+      loading: state.loading && hasReplies,
+      error: hasReplies ? error : null,
+      source: pluginIdBluesky,
+      contextMessage: error == null ? null : blueskyErrorMessage(l10n, error),
+      onRetry: _store.refresh,
+      child: FeedListView(
+        controller: _scroll,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: beforeReplies.length + rows.length,
+        itemBuilder: (context, index) =>
+            index < beforeReplies.length ? beforeReplies[index] : _reply(context, rows[index - beforeReplies.length]),
+      ),
     );
   }
 
