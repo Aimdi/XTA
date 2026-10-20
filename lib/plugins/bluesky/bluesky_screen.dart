@@ -361,37 +361,37 @@ class _HomePane extends StatelessWidget {
             contextMessage: l10n.plugin_mastodon_refresh_failed,
             onRetry: () => feed.refresh(),
             child: BlueskyReaderView(
-            key: ValueKey(context.read<BlueskyClient>().baseUrl),
-            slot: 'following',
-            posts: posts,
-            controller: scrollController,
-            heading: people.isEmpty
-                ? null
-                : PluginFeedPeopleStrip(
-                    title: l10n.plugin_bluesky_from_feed,
-                    followLabel: l10n.plugin_bluesky_follow,
-                    people: people,
-                    avatar: (person) => _feedPersonAvatar(context, person),
-                    onOpen: (person) => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: person.handle)),
-                    ),
-                    onFollow: (person) => context.read<BlueskyAccountsStore>().add(
-                      BlueskyAccount(handle: person.handle, name: person.name, avatarUrl: person.avatarUrl),
-                    ),
-                  ),
-            footer: pending == 0
-                ? null
-                : Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: TextButton.icon(
-                        onPressed: () => feed.refresh(),
-                        icon: const Icon(Icons.download_outlined),
-                        label: Text(l10n.plugin_bluesky_load_more_accounts),
+              key: ValueKey(context.read<BlueskyClient>().baseUrl),
+              slot: 'following',
+              posts: posts,
+              controller: scrollController,
+              heading: people.isEmpty
+                  ? null
+                  : PluginFeedPeopleStrip(
+                      title: l10n.plugin_bluesky_from_feed,
+                      followLabel: l10n.plugin_bluesky_follow,
+                      people: people,
+                      avatar: (person) => _feedPersonAvatar(context, person),
+                      onOpen: (person) => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: person.handle)),
+                      ),
+                      onFollow: (person) => context.read<BlueskyAccountsStore>().add(
+                        BlueskyAccount(handle: person.handle, name: person.name, avatarUrl: person.avatarUrl),
                       ),
                     ),
-                  ),
+              footer: pending == 0
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: TextButton.icon(
+                          onPressed: () => feed.refresh(),
+                          icon: const Icon(Icons.download_outlined),
+                          label: Text(l10n.plugin_bluesky_load_more_accounts),
+                        ),
+                      ),
+                    ),
             ),
           ),
         );

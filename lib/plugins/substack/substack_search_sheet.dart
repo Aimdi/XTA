@@ -219,8 +219,7 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
         Padding(padding: const EdgeInsets.all(16), child: Text(l10n.substack_search_followed_posts)),
       // With results shown, these float over them instead (below).
       if (refreshFailed && !hasResults) _failure(state.error, refreshMessage, _store.refresh),
-      if (state.failedCount > 0 && !hasResults)
-        _failure(null, l10n.substack_search_partial, _store.retryFailedPosts),
+      if (state.failedCount > 0 && !hasResults) _failure(null, l10n.substack_search_partial, _store.retryFailedPosts),
       if (state.direct || state.tab == SubstackSearchTab.publications)
         for (final publication in state.publications) _publication(publication),
       if (state.tab == SubstackSearchTab.posts)
