@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_comment_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_comment_tile.dart';
@@ -16,6 +17,7 @@ import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 /// Opens [target]'s comments, or the replies under [parent]. [revealed] are
 /// the comments the reader already showed past their outside-link note.
@@ -186,7 +188,12 @@ class _PixivCommentsScreenState extends State<PixivCommentsScreen> {
 
   /// The row under the last comment while more pages remain.
   Widget _tail(BuildContext context) => switch (_comments.moreError) {
-    final error? => _PageFailed(message: pixivErrorMessage(L10n.of(context), error), onRetry: _loadMore),
+    final error? => ReaderFailureNotice(
+      source: pluginIdPixiv,
+      error: error,
+      contextMessage: pixivErrorMessage(L10n.of(context), error),
+      onRetry: _loadMore,
+    ),
     null when _comments.loadingMore => const _PageSpinner(),
     null => _PageTail(onShown: _loadMore),
   };
@@ -233,34 +240,4 @@ class _PageSpinner extends StatelessWidget {
     padding: EdgeInsets.all(16),
     child: Center(child: CircularProgressIndicator()),
   );
-}
-
-/// A later page that failed: what went wrong and Retry, under the comments
-/// that did load.
-class _PageFailed extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _PageFailed({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        children: [
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry)),
-        ],
-      ),
-    );
-  }
 }

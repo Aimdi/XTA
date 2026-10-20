@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
 import 'package:xta/plugins/instagram/instagram_discovery.dart';
@@ -11,6 +12,8 @@ import 'package:xta/plugins/instagram/instagram_post_card.dart';
 import 'package:xta/plugins/instagram/instagram_profile_screen.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/ui/reload_status.dart';
 
 Future<void> showInstagramSearchSheet(
   BuildContext context, {
@@ -50,7 +53,7 @@ class InstagramSearchSheet extends StatefulWidget {
 class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
   late final TextEditingController _controller;
   var _searching = false;
-  String? _error;
+  Object? _failure;
   List<InstagramSearchUser> _results = const [];
 
   @override
@@ -92,7 +95,7 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
     }
     setState(() {
       _searching = true;
-      _error = null;
+      _failure = null;
     });
     try {
       final results = await client.searchUsers(query);
@@ -110,7 +113,7 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
       }
       setState(() {
         _searching = false;
-        _error = instagramErrorMessage(L10n.of(context), error);
+        _failure = error;
       });
     }
   }
@@ -165,12 +168,18 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
                   subtitle: Text(l10n.plugin_instagram_open_handle),
                   onTap: () => widget.onOpenProfile(handle),
                 ),
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(_error!),
+              Expanded(
+                // A failed search floats over the results it leaves, so they
+                // stay where they were.
+                child: ReloadStatus(
+                  loading: false,
+                  error: _results.isEmpty ? null : _failure,
+                  source: pluginIdInstagram,
+                  contextMessage: instagramErrorMessage(l10n, _failure),
+                  onRetry: _runSearch,
+                  child: _searchBody(context, l10n),
                 ),
-              Expanded(child: _searchBody(context, l10n)),
+              ),
             ],
           ),
         ),
@@ -211,7 +220,15 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
         ],
       );
     }
-    if (_searching || _error != null) return const SizedBox.shrink();
+    if (_failure case final failure?) {
+      return ReaderFailureNotice(
+        source: pluginIdInstagram,
+        error: failure,
+        contextMessage: instagramErrorMessage(l10n, failure),
+        onRetry: _runSearch,
+      );
+    }
+    if (_searching) return const SizedBox.shrink();
     return ScopedBuilder<InstagramSearchHistoryStore, List<String>>(
       store: context.read<InstagramSearchHistoryStore>(),
       onState: (_, history) {

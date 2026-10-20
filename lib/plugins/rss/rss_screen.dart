@@ -22,6 +22,8 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class RssScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -226,21 +228,13 @@ class _HomePane extends StatelessWidget {
                     tags: context.read<RssTagsStore>().allTags,
                     onFilter: onFilter,
                     onTag: timeline.setTag,
+                    failedCount: snapshot.failedCount,
+                    onRetry: () => timeline.refresh(force: true),
                   );
                   final filtered = timeline.filter != RssFeedFilter.all || timeline.tag != null;
                   return Column(
                     children: [
                       filterBar,
-                      if (snapshot.failedCount > 0)
-                        ListTile(
-                          leading: const Icon(Icons.error_outline),
-                          title: Text(l10n.plugin_reader_partial_error(snapshot.failedCount)),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.refresh),
-                            tooltip: l10n.retry,
-                            onPressed: () => timeline.refresh(force: true),
-                          ),
-                        ),
                       Expanded(
                         child: snapshot.items.isEmpty
                             ? EmptyPane(
@@ -285,12 +279,18 @@ class _FilterBar extends StatelessWidget {
   final void Function(RssFeedFilter) onFilter;
   final void Function(String?) onTag;
 
+  /// Feeds whose last refresh failed while the rest loaded.
+  final int failedCount;
+  final VoidCallback onRetry;
+
   const _FilterBar({
     required this.selected,
     required this.selectedTag,
     required this.tags,
     required this.onFilter,
     required this.onTag,
+    required this.failedCount,
+    required this.onRetry,
   });
 
   @override
@@ -298,6 +298,12 @@ class _FilterBar extends StatelessWidget {
     final l10n = L10n.of(context);
     return PluginFilterRow(
       children: [
+        if (failedCount > 0)
+          PartialFailureButton(
+            source: pluginIdRss,
+            message: l10n.plugin_reader_partial_error(failedCount),
+            onRetry: onRetry,
+          ),
         _chip(
           context,
           label: l10n.plugin_rss_all,

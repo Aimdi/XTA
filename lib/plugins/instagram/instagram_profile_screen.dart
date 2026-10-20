@@ -4,6 +4,7 @@ import 'package:xta/group/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
 import 'package:xta/plugins/instagram/instagram_errors.dart';
@@ -11,6 +12,7 @@ import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_post_card.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
@@ -146,14 +148,12 @@ class _ProfileBody extends StatelessWidget {
                   padding: EdgeInsets.all(32),
                   child: Center(child: CircularProgressIndicator()),
                 ),
-                onError: (_, error) => Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: FullPageErrorWidget(
-                    error: error,
-                    stackTrace: null,
-                    prefix: instagramErrorMessage(L10n.of(context), error),
-                    onRetry: onRefresh,
-                  ),
+                // One row under the header, where the posts would be.
+                onError: (_, error) => ReaderFailureNotice(
+                  source: pluginIdInstagram,
+                  error: error,
+                  contextMessage: instagramErrorMessage(L10n.of(context), error),
+                  onRetry: onRefresh,
                 ),
                 onState: (context, posts) {
                   if (posts.isEmpty) {

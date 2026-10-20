@@ -110,15 +110,21 @@ class PixivPagedFeed<T> extends StatelessWidget {
           ...leadingSlivers,
           SliverPadding(
             padding: pluginFeedPadding(context, extra: padding),
-            sliver: sliver(context, items),
-          ),
-          if (store.loadingMore)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+            // The next page's spinner comes before the bottom clearance, where
+            // the works will appear, not under Home's navigation bar.
+            sliver: SliverMainAxisGroup(
+              slivers: [
+                sliver(context, items),
+                if (store.loadingMore)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     ),

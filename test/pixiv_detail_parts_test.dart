@@ -11,6 +11,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
@@ -130,13 +131,22 @@ void main() {
       client: _FlakyPixivClient.new,
     );
     expect(find.text('Seed'), findsWidgets);
-    expect(find.byType(FullPageErrorWidget), findsOneWidget);
+    // One row under the work, not a full-page error layout; why is in its details.
+    final failure = find.byType(ReaderFailureNotice);
+    expect(failure, findsOneWidget);
+    expect(find.byType(FullPageErrorWidget), findsNothing);
+    expect(tester.getSize(failure).height, 48);
+    await tester.ensureVisible(failure);
+    await tester.tap(find.descendant(of: failure, matching: find.byTooltip('More info')));
+    await settlePixiv(tester);
+    expect(find.text('Could not reach Pixiv'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close').last);
+    await settlePixiv(tester);
 
     (harness.client as _FlakyPixivClient).failing = false;
-    await tester.ensureVisible(find.text('Retry'));
-    await tester.tap(find.text('Retry'));
+    await tester.tap(find.descendant(of: failure, matching: find.text('Retry')));
     await settlePixiv(tester);
-    expect(find.byType(FullPageErrorWidget), findsNothing);
+    expect(find.byType(ReaderFailureNotice), findsNothing);
     expect(find.text('Related works'), findsOneWidget);
     await disposePixiv(tester);
   });

@@ -701,7 +701,9 @@ void main() {
       expect(feed.state.map((p) => p.id), ['a', 'b']);
     });
 
-    testWidgets('Following says when some followed tags did not load, and offers a retry', (tester) async {
+    testWidgets('Following says when some followed tags did not load, in the tag row, and offers a retry', (
+      tester,
+    ) async {
       const notice = 'Some followed tags could not be loaded';
       final failed = BooruFailedQueriesStore();
       addTearDown(failed.destroy);
@@ -709,20 +711,37 @@ void main() {
       await _pump(
         tester,
         Scaffold(
-          body: BooruFollowingNotice(failed: failed, onRetry: () => retries++),
+          body: Column(
+            children: [
+              BooruFollowingRow(
+                failed: failed,
+                onRetry: () => retries++,
+                tags: const [Chip(label: Text('cat'))],
+              ),
+              const Expanded(
+                child: Align(alignment: Alignment.topLeft, child: Text('first post')),
+              ),
+            ],
+          ),
         ),
       );
-      expect(find.text(notice), findsNothing);
+      final idle = tester.getTopLeft(find.text('first post'));
+      expect(find.byTooltip(notice), findsNothing);
 
       failed.update(2);
       await tester.pumpAndSettle();
+      expect(tester.getTopLeft(find.text('first post')), idle, reason: 'the warning takes no row of its own');
+      await tester.tap(find.byTooltip(notice));
+      await tester.pumpAndSettle();
       expect(find.text(notice), findsOneWidget);
-      await tester.tap(find.byTooltip('Retry'));
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
       expect(retries, 1);
 
       failed.update(0);
       await tester.pumpAndSettle();
-      expect(find.text(notice), findsNothing);
+      expect(find.byTooltip(notice), findsNothing);
+      expect(find.text('cat'), findsOneWidget);
     });
 
     testWidgets('a video waits for a tap when media loads only on tap', (tester) async {

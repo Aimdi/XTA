@@ -275,8 +275,9 @@ class _MastodonTagScreenState extends State<MastodonTagScreen> {
         child: Center(child: CircularProgressIndicator()),
       );
     }
-    if (state.moreError != null)
-      return _notice(state.moreError, l10n.plugin_mastodon_load_more_failed, _store.loadMore);
+    if (state.moreError case final error?) {
+      return _notice(error, l10n.plugin_mastodon_load_more_failed, _store.loadMore);
+    }
     if (!state.hasMore) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.all(16),

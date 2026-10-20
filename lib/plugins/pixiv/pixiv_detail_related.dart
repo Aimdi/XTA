@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid_columns.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 /// "Similar works" at the foot of a work, as slivers. The work above stays
 /// readable whatever happens here; a failure shows only while nothing loaded.
@@ -41,14 +42,11 @@ class PixivDetailRelated extends StatelessWidget {
   );
 
   Widget _error(BuildContext context, Object? error) => SliverToBoxAdapter(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: FullPageErrorWidget(
-        error: error,
-        stackTrace: null,
-        prefix: pixivErrorMessage(L10n.of(context), error ?? Exception()),
-        onRetry: onRetry,
-      ),
+    child: ReaderFailureNotice(
+      source: pluginIdPixiv,
+      error: error,
+      contextMessage: pixivErrorMessage(L10n.of(context), error ?? Exception()),
+      onRetry: onRetry,
     ),
   );
 

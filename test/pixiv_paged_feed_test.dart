@@ -9,7 +9,9 @@ import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_paged_feed.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -151,6 +153,40 @@ void main() {
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
     await settlePixiv(tester);
     expect(pages.asked.take(2), [null, 'page1'], reason: 'the works scrolling near their end ask for more');
+    await disposePixiv(tester);
+  });
+
+  testWidgets('the next page\'s spinner comes right after the works, above Home\'s navigation bar', (tester) async {
+    unawaited(store.refresh());
+    late StateSetter rebuild;
+    await pumpPixiv(
+      tester,
+      PluginEmbedded(
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            rebuild = setState;
+            return _feed(store);
+          },
+        ),
+      ),
+    );
+    pages.gate = Completer<void>();
+    final position = tester.state<ScrollableState>(find.byType(Scrollable).first).position;
+    position.jumpTo(position.maxScrollExtent);
+    await tester.pump();
+    expect(store.loadingMore, isTrue);
+    // The store does not announce a next page starting; the feed shows it on its next build.
+    rebuild(() {});
+    await tester.pump();
+    position.jumpTo(position.maxScrollExtent);
+    await tester.pump();
+
+    // The clearance under the works stays the last thing in the list, so the spinner is not drawn under the bar.
+    final spinner = tester.getRect(find.byType(CircularProgressIndicator));
+    final view = tester.getRect(find.byType(CustomScrollView));
+    expect(view.bottom - spinner.bottom, greaterThanOrEqualTo(kPluginHomeNavClearance));
+    pages.gate!.complete();
+    await settlePixiv(tester);
     await disposePixiv(tester);
   });
 

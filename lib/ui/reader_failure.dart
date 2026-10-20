@@ -105,6 +105,24 @@ Future<void> showReaderFailureDetails(
   ),
 );
 
+/// Some of a surface's sources failed while the rest loaded: a warning in a
+/// row the surface already has (its filter chips, its toolbar) that opens what
+/// failed and Retry, so the content below keeps its place.
+class PartialFailureButton extends StatelessWidget {
+  final String source;
+  final String message;
+  final VoidCallback onRetry;
+  const PartialFailureButton({super.key, required this.source, required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: message,
+    icon: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
+    onPressed: () =>
+        showReaderFailureDetails(context, source: source, error: null, contextMessage: message, onRetry: onRetry),
+  );
+}
+
 class _ReadRetry extends StatelessWidget {
   final Object? error;
   final VoidCallback onRetry;
