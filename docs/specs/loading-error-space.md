@@ -1,7 +1,7 @@
 # Loading and errors take no room of their own
 
-Status: **done** (2026-10-20). The owner: "Errors or loading sometimes take a bit of extra space. I don't like
-that."
+Status: **done** (2026-10-20) and **shipped in aimdi180** (#374). The owner: "Errors or loading sometimes take a bit
+of extra space. I don't like that."
 
 ## The problem, as the code had it
 
