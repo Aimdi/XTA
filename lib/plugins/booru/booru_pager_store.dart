@@ -48,6 +48,13 @@ class BooruPagerStore extends Store<BooruPagerState> {
   }
 }
 
+/// The pictures worth loading ahead of the post at [index]: the next one's,
+/// then the previous one's. A video is never loaded ahead.
+List<String> booruPreloadUrls(List<BooruPost> posts, int index) => [
+  for (final i in [index + 1, index - 1])
+    if (i >= 0 && i < posts.length && !posts[i].isVideo) posts[i].displayUrl,
+];
+
 /// Whether [next] is [current] with more posts after it.
 bool booruPostsExtend(List<BooruPost> current, List<BooruPost> next) {
   if (next.length <= current.length || current.isEmpty) return false;

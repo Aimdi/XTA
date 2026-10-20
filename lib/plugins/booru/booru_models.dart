@@ -76,6 +76,19 @@ enum BooruRating {
   bool exceeds(BooruRating max) => index > max.index;
 }
 
+/// One size the host keeps of a post's picture: Danbooru's
+/// `media_asset.variants`.
+class BooruImageVariant {
+  final String url;
+  final int width;
+
+  const BooruImageVariant({required this.url, required this.width});
+}
+
+/// Whether [url] names a file the player opens rather than a picture.
+bool booruIsVideoUrl(String url) =>
+    BooruPost._videoExtensions.contains(BooruPost._extensionOf(url));
+
 class BooruPost {
   final String id;
   final String host;
@@ -110,6 +123,10 @@ class BooruPost {
   final bool hasChildren;
   final String? uploader;
 
+  /// Still sizes the host keeps of the picture, smallest first; empty where
+  /// it names none (all but Danbooru).
+  final List<BooruImageVariant> variants;
+
   const BooruPost({
     required this.id,
     required this.host,
@@ -135,19 +152,33 @@ class BooruPost {
     this.parentId,
     this.hasChildren = false,
     this.uploader,
+    this.variants = const [],
   });
 
   /// What feeds order the post by: when it went up, else when it last
   /// changed.
   DateTime? get feedDate => createdAt ?? updatedAt;
 
-  String get thumbnailUrl => (previewUrl != null && previewUrl!.isNotEmpty)
-      ? previewUrl!
-      : (sampleUrl ?? fileUrl ?? '');
+  /// The preview, else a still sample or original. A video file is never a
+  /// thumbnail: nothing is shown rather than a picture that cannot decode.
+  String get thumbnailUrl {
+    if (previewUrl != null && previewUrl!.isNotEmpty) return previewUrl!;
+    final fallback = sampleUrl ?? fileUrl ?? '';
+    return booruIsVideoUrl(fallback) ? '' : fallback;
+  }
 
-  String get displayUrl => (sampleUrl != null && sampleUrl!.isNotEmpty)
-      ? sampleUrl!
-      : (fileUrl ?? previewUrl ?? '');
+  /// The sample, else the original. A GIF's sample is a still JPEG, so a
+  /// GIF is shown from its original.
+  String get displayUrl {
+    if (_isGif && fileUrl != null && fileUrl!.isNotEmpty) return fileUrl!;
+    return (sampleUrl != null && sampleUrl!.isNotEmpty)
+        ? sampleUrl!
+        : (fileUrl ?? previewUrl ?? '');
+  }
+
+  bool get _isGif =>
+      (fileExt ?? '').toLowerCase() == 'gif' ||
+      _extensionOf(fileUrl ?? '') == 'gif';
 
   /// Sample/large for catalog tiles. Preview (~150px) looks like 240p when
   /// stretched across a two-column phone tile. Video posters stay on preview
@@ -164,6 +195,26 @@ class BooruPost {
     }
     return thumbnailUrl;
   }
+
+  /// Whether the host gave a file to show. It withholds the file of a deleted
+  /// post, or one banned or restricted for guests, and a Flash file is nothing
+  /// the viewer can open.
+  bool get hasFile =>
+      !_isFlash &&
+      [sampleUrl, fileUrl].any((url) => url != null && url.isNotEmpty);
+
+  bool get _isFlash =>
+      (fileExt ?? '').toLowerCase() == 'swf' ||
+      _extensionOf(fileUrl ?? '') == 'swf';
+
+  /// The smallest still variant at least [pixelWidth] wide, else the
+  /// catalogue picture.
+  String tileUrlFor(int pixelWidth) =>
+      variants
+          .where((variant) => variant.width >= pixelWidth)
+          .firstOrNull
+          ?.url ??
+      catalogUrl;
 
   double get aspectRatio {
     if (width <= 0 || height <= 0) return 1;
@@ -238,6 +289,10 @@ class BooruPost {
 
 class BooruPostPage {
   final List<BooruPost> posts;
+
+  /// Every post the rating cap let through, in the host's order: [posts]
+  /// and those the blacklist hid. A page built without it hid nothing.
+  final List<BooruPost> allowed;
   final int page;
   final bool hasMore;
 
@@ -249,7 +304,8 @@ class BooruPostPage {
     required this.page,
     required this.hasMore,
     this.failedQueries = 0,
-  });
+    List<BooruPost>? allowed,
+  }) : allowed = allowed ?? posts;
 }
 
 /// Tag kinds the hosts colour differently. Each engine numbers them its own
@@ -304,6 +360,48 @@ class BooruTagSuggestion {
   final BooruTagCategory? category;
 
   const BooruTagSuggestion({required this.name, this.postCount, this.category});
+}
+
+/// A translation note: a box on the picture, in the picture's own pixels,
+/// and what it says.
+class BooruNote {
+  final int x;
+  final int y;
+  final int width;
+  final int height;
+  final String text;
+
+  const BooruNote({
+    required this.x,
+    required this.y,
+    required this.width,
+    required this.height,
+    required this.text,
+  });
+}
+
+/// A pool a post belongs to: a series or collection read in its own order.
+class BooruPool {
+  final String id;
+  final String name;
+  final int? postCount;
+
+  const BooruPool({required this.id, required this.name, this.postCount});
+}
+
+/// What a host keeps about the artist behind an artist tag.
+class BooruArtist {
+  final String name;
+  final List<String> otherNames;
+
+  /// The artist's pages elsewhere that the host still lists as active.
+  final List<String> urls;
+
+  const BooruArtist({
+    required this.name,
+    this.otherNames = const [],
+    this.urls = const [],
+  });
 }
 
 class BooruComment {

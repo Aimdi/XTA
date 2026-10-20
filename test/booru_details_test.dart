@@ -18,6 +18,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
+import 'package:xta/plugins/booru/booru_request_gate.dart';
 import 'package:xta/plugins/booru/booru_text.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 
@@ -29,22 +30,34 @@ BooruPost _post({
   BooruRating? rating = BooruRating.general,
   Map<String, BooruTagCategory> categories = const {},
   String? fileUrl,
+  int score = 0,
+  int width = 1,
+  int height = 1,
+  int? favCount,
+  String? uploader,
+  String? md5,
+  String? parentId,
+  String? source,
 }) => BooruPost(
   id: id,
   host: host,
   engine: engine,
   tags: tags,
   rating: rating,
-  score: 0,
-  width: 1,
-  height: 1,
+  score: score,
+  width: width,
+  height: height,
   previewUrl: null,
   sampleUrl: null,
   fileUrl: fileUrl,
   fileExt: 'jpg',
-  source: null,
+  source: source,
   createdAt: null,
   tagCategories: categories,
+  favCount: favCount,
+  uploader: uploader,
+  md5: md5,
+  parentId: parentId,
 );
 
 BooruClient _client(String engine, String host, http.Client http, {Map<String, Object> prefs = const {}}) =>
@@ -229,8 +242,38 @@ void main() {
     });
 
     test('an entry with a metatag the app cannot check never hides', () {
-      expect(booruPostMuted(_post(), {'solo score:<0'}), isFalse);
-      expect(booruPostMuted(_post(), {'solo -score:<0'}), isFalse);
+      expect(booruPostMuted(_post(), {'solo status:deleted'}), isFalse);
+      expect(booruPostMuted(_post(), {'solo -status:deleted'}), isFalse);
+      expect(booruPostMuted(_post(), {'solo score:lots'}), isFalse, reason: 'not a number');
+      expect(booruPostMuted(_post(), {'user:someone'}), isFalse, reason: 'the host did not say who uploaded it');
+    });
+
+    test('score, id, sizes and counts compare like the hosts compare them', () {
+      final post = _post(id: '1500', score: -3, width: 1920, height: 1080, favCount: 7);
+      expect(booruPostMuted(post, {'score:<0'}), isTrue);
+      expect(booruPostMuted(post, {'score:>=0'}), isFalse);
+      expect(booruPostMuted(post, {'solo -score:<0'}), isFalse);
+      expect(booruPostMuted(post, {'score:-5..-1'}), isTrue);
+      expect(booruPostMuted(post, {'score:..-4'}), isFalse);
+      expect(booruPostMuted(post, {'id:>1000'}), isTrue);
+      expect(booruPostMuted(post, {'id:1500'}), isTrue);
+      expect(booruPostMuted(post, {'width:>=1920 height:<1200'}), isTrue);
+      expect(booruPostMuted(post, {'favcount:10..'}), isFalse);
+      expect(booruPostMuted(post, {'tagcount:<3'}), isTrue, reason: 'it has two tags');
+    });
+
+    test('uploader, file type, md5, parent and source match what the post says', () {
+      final post = _post(uploader: 'SomeOne', md5: 'abc123', parentId: '9', source: 'https://www.pixiv.net/artworks/1');
+      expect(booruPostMuted(post, {'user:someone'}), isTrue);
+      expect(booruPostMuted(post, {'filetype:jpg'}), isTrue);
+      expect(booruPostMuted(post, {'filetype:gif'}), isFalse);
+      expect(booruPostMuted(post, {'md5:abc123'}), isTrue);
+      expect(booruPostMuted(post, {'parent:9'}), isTrue);
+      expect(booruPostMuted(post, {'parent:none'}), isFalse);
+      expect(booruPostMuted(_post(), {'parent:none'}), isTrue);
+      expect(booruPostMuted(post, {'source:https://www.pixiv.net'}), isTrue, reason: 'a source matches by its start');
+      expect(booruPostMuted(post, {'source:*artworks*'}), isTrue);
+      expect(booruPostMuted(post, {'source:none'}), isFalse);
     });
 
     test('stored entries keep their spaces and old single tags still load', () {
@@ -240,6 +283,128 @@ void main() {
   });
 
   group('endpoints', () {
+    test('translation notes come from Danbooru and e621, active ones only, as plain text', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const gelbooru = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://gelbooru.com');
+
+      expect(booruNotesUri(danbooru, '42')!.queryParameters, {'search[post_id]': '42', 'limit': '200'});
+      expect(booruNotesUri(gelbooru, '42'), isNull);
+
+      final notes = parseBooruNotes([
+        {'x': 10, 'y': 20, 'width': 30, 'height': 40, 'body': '<b>Hello</b> &amp; bye', 'is_active': true},
+        {'x': 1, 'y': 1, 'width': 1, 'height': 1, 'body': 'old', 'is_active': false},
+        {'x': 1, 'y': 1, 'width': 1, 'height': 1, 'body': '  '},
+        {'x': 1, 'body': 'no size'},
+      ]);
+      expect(
+        [for (final note in notes) (note.x, note.y, note.width, note.height, note.text)],
+        [(10, 20, 30, 40, 'Hello & bye')],
+      );
+    });
+
+    test("a post's pools come from Danbooru, and read in order through ordpool", () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+
+      expect(booruPostPoolsUri(danbooru, '42')!.queryParameters, {'search[post_ids_include_all]': '42', 'limit': '20'});
+      expect(booruPostPoolsUri(e621, '42'), isNull);
+      expect(booruPoolQuery('7'), 'ordpool:7');
+
+      final pools = parseBooruPools([
+        {'id': 7, 'name': 'my_series', 'post_count': 12, 'is_deleted': false},
+        {'id': 8, 'name': 'gone', 'is_deleted': true},
+        {'name': 'no_id'},
+      ]);
+      expect([for (final pool in pools) (pool.id, pool.name, pool.postCount)], [('7', 'my_series', 12)]);
+      expect(parseBooruPools('not json'), isEmpty);
+    });
+
+    test('artist entries come from Danbooru and e621', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+      const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
+
+      expect(booruArtistUri(danbooru, 'kantoku')!.queryParameters, {
+        'search[any_name_matches]': 'kantoku',
+        'only': 'name,is_deleted,other_names,urls',
+        'limit': '10',
+      });
+      expect(booruArtistUri(e621, 'wolfy')!.queryParameters, {'search[name]': 'wolfy', 'limit': '1'});
+      expect(booruArtistUri(moebooru, 'kantoku'), isNull);
+    });
+
+    test('the artist the tag names is picked, without deleted entries or dead links', () {
+      final raw = [
+        {'name': 'kantoku_(old)', 'is_deleted': false, 'other_names': <String>[], 'urls': <Object>[]},
+        {
+          'name': 'kantoku',
+          'is_deleted': false,
+          'other_names': ['カントク', 'kantoku_art'],
+          'urls': [
+            {'url': 'https://www.pixiv.net/users/1', 'is_active': true},
+            {'url': 'https://old.example.com', 'is_active': false},
+            {'url': 'https://x.com/kantoku'},
+          ],
+        },
+      ];
+
+      final artist = parseBooruArtist(raw, 'kantoku')!;
+      expect(artist.otherNames, ['カントク', 'kantoku_art']);
+      expect(artist.urls, ['https://www.pixiv.net/users/1', 'https://x.com/kantoku']);
+      expect(
+        parseBooruArtist([
+          {'name': 'kantoku', 'is_deleted': true},
+        ], 'kantoku'),
+        isNull,
+      );
+      expect(parseBooruArtist('not json', 'kantoku'), isNull);
+    });
+
+    test('related tags come from Danbooru for any search and from e621 for one tag', () {
+      const danbooru = BooruSite(engine: BooruEngine.danbooru, host: 'https://danbooru.donmai.us');
+      const e621 = BooruSite(engine: BooruEngine.e621, host: 'https://e621.net');
+      const gelbooru = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://gelbooru.com');
+      const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
+
+      final uri = booruRelatedTagsUri(danbooru, const ['cat_ears', 'blue_eyes'])!;
+      expect(uri.path, '/related_tag.json');
+      expect(uri.queryParameters, {'search[query]': 'cat_ears blue_eyes', 'limit': '25'});
+      expect(booruRelatedTagsUri(e621, const ['wolf'])!.queryParameters, {'search[name]': 'wolf', 'limit': '1'});
+      expect(booruRelatedTagsUri(e621, const ['wolf', 'solo']), isNull, reason: 'e621 relates one tag at a time');
+      expect(booruRelatedTagsUri(gelbooru, const ['cat']), isNull);
+      expect(booruRelatedTagsUri(moebooru, const ['cat']), isNull);
+      expect(booruRelatedTagsUri(danbooru, const []), isNull);
+    });
+
+    test("related tags read in the host's order", () {
+      final danbooru = {
+        'query': 'cat_ears',
+        'related_tags': [
+          {
+            'tag': {'name': 'cat_ears', 'category': 0},
+            'frequency': 1.0,
+          },
+          {
+            'tag': {'name': 'animal_ears', 'category': 0},
+            'frequency': 0.9,
+          },
+          {'tag': null},
+        ],
+      };
+      expect(parseBooruRelatedTags(danbooru, BooruEngine.danbooru), ['cat_ears', 'animal_ears']);
+      final e621 = [
+        {'name': 'wolf', 'related_tags': 'wolf 300 canine 120.5 mammal 90'},
+      ];
+      expect(parseBooruRelatedTags(e621, BooruEngine.e621), ['wolf', 'canine', 'mammal']);
+      expect(
+        parseBooruRelatedTags([
+          {'name': 'wolf', 'related_tags': '[]'},
+        ], BooruEngine.e621),
+        isEmpty,
+      );
+      expect(parseBooruRelatedTags('not json', BooruEngine.danbooru), isEmpty);
+    });
+
     final day = BooruPopularQuery(scale: BooruPopularScale.week, date: DateTime(2026, 3, 4));
 
     test('popular lists per engine', () {
@@ -322,6 +487,11 @@ void main() {
       });
       expect(booruCommentsUri(danbooru, '9')!.queryParameters['search[post_id]'], '9');
       const moebooru = BooruSite(engine: BooruEngine.moebooru, host: 'https://yande.re');
+      expect(
+        booruWikiUri(moebooru, 'dress')!.queryParameters,
+        {'query': 'dress', 'limit': '100'},
+        reason: "Moebooru's wiki answers a title search; ten titles holding `dress` can all come before `dress`",
+      );
       expect(booruCommentsUri(moebooru, '9').toString(), 'https://yande.re/comment.json?post_id=9');
       const gelbooru = BooruSite(engine: BooruEngine.gelbooruV2, host: 'https://gelbooru.com');
       expect(booruWikiUri(gelbooru, 'a'), isNull);
@@ -481,6 +651,127 @@ void main() {
       expect(await messageFor(500), l10n.plugin_booru_error_response);
     });
 
+    // Bodies built from the checks the audit read in Boorusama (an answer starting "missing authentication",
+    // gelbooru.com's "Too deep" and Danbooru's 410), not recorded from the live hosts.
+    test('a host that asks a guest for credentials in plain text says so', () async {
+      final l10n = await L10n.load(const Locale('en'));
+      const missing = 'Missing authentication. Go to api.rule34.xxx for more information';
+      Future<String> messageFor(Map<String, Object> prefs) async {
+        final client = _client(
+          'gelbooru_v2',
+          'https://rule34.xxx',
+          MockClient((_) async => http.Response(missing, 200)),
+          prefs: prefs,
+        );
+        final error = await client.latest().then<Object?>((_) => null, onError: (Object error) => error);
+        return booruErrorMessage(l10n, error);
+      }
+
+      expect(await messageFor(const {}), l10n.plugin_booru_error_needs_key);
+      expect(
+        await messageFor(const {
+          optionPluginBooruLogin: '123',
+          optionPluginBooruApiKey: 'secret',
+          optionPluginBooruCredentialsHost: 'https://rule34.xxx',
+        }),
+        l10n.plugin_booru_error_unauthorized,
+      );
+    });
+
+    // A 422 is how Boorusama reads Danbooru's tag limit (two tags for guests and Members); the body is built,
+    // not recorded from the live host.
+    test("Danbooru's tag limit has its own message", () async {
+      final l10n = await L10n.load(const Locale('en'));
+      final client = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient(
+          (_) async =>
+              http.Response('{"success":false,"message":"You cannot search for more than 2 tags at a time."}', 422),
+        ),
+      );
+      final error = await client.search('1girl solo order:score').then<Object?>((_) => null, onError: (Object e) => e);
+      expect(booruErrorMessage(l10n, error), l10n.plugin_booru_error_tag_limit);
+    });
+
+    test('a host that will not page that deep ends the feed instead of failing', () async {
+      final deep = _client(
+        'gelbooru_v2',
+        'https://gelbooru.com',
+        MockClient((_) async => http.Response('Too deep! Pull it back some.', 200)),
+      );
+      final limited = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient((_) async => http.Response('{"success":false}', 410)),
+      );
+
+      for (final client in [deep, limited]) {
+        final page = await client.latest(page: 1001);
+        expect(page.posts, isEmpty);
+        expect(page.hasMore, isFalse);
+      }
+    });
+
+    // Gelbooru 0.2 forks answer the tag dapi in XML whatever json=1 asks, as the audit read in Boorusama's
+    // Gelbooru tag parser. The body is built, not recorded from a live host.
+    test('a Gelbooru 0.2 tag reply in XML gives suggestions, kinds and counts', () async {
+      const xml =
+          '<?xml version="1.0" encoding="UTF-8"?><tags type="array">'
+          '<tag type="0" count="81234" name="blue_eyes" ambiguous="false" id="12"/>'
+          '<tag type="4" count="900" name="girls&#039;_frontline" ambiguous="false" id="13"/>'
+          '</tags>';
+      final client = _client('gelbooru_v2', 'https://safebooru.org', MockClient((_) async => http.Response(xml, 200)));
+
+      final suggestions = await client.suggestTags('b');
+      final info = await client.tagInfo(
+        _post(engine: 'gelbooru_v2', host: 'https://safebooru.org', tags: const ['blue_eyes', "girls'_frontline"]),
+      );
+
+      expect(suggestions.map((tag) => tag.name), ['blue_eyes', "girls'_frontline"]);
+      expect(suggestions.first.postCount, 81234);
+      expect(suggestions.last.category, BooruTagCategory.character);
+      expect(info['blue_eyes']?.category, BooruTagCategory.general);
+      expect(info['blue_eyes']?.postCount, 81234);
+      expect(info["girls'_frontline"]?.category, BooruTagCategory.character);
+    });
+
+    test('after a 429 the next request to that host waits, and another host does not', () async {
+      final waits = <Duration>[];
+      var now = DateTime.utc(2026, 10, 13);
+      var calls = 0;
+      final client = BooruClient(
+        PrefServiceCache(
+          cache: {
+            optionPluginBooruEngine: 'danbooru',
+            optionPluginBooruHost: 'https://danbooru.donmai.us',
+            optionPluginBooruMaxRating: 'e',
+          },
+        ),
+        httpClient: MockClient((request) async {
+          calls++;
+          return calls == 1 ? http.Response('', 429, headers: {'retry-after': '3'}) : http.Response('[]', 200);
+        }),
+        requestGate: () => BooruRequestGate(
+          now: () => now,
+          wait: (duration) async {
+            waits.add(duration);
+            now = now.add(duration);
+          },
+        ),
+      );
+
+      await client.latest().then<void>((_) {}, onError: (Object _) {});
+      await client.latest();
+      await client.search(
+        'solo',
+        site: const BooruSite(engine: BooruEngine.danbooru, host: 'https://safebooru.donmai.us'),
+      );
+
+      expect(waits, [const Duration(seconds: 3)], reason: 'the other host has a gate of its own');
+      expect(calls, 3);
+    });
+
     test('Gelbooru popular shows its highest-scored posts', () async {
       final asked = <Uri>[];
       final client = _client(
@@ -493,6 +784,33 @@ void main() {
       );
       await client.popular(BooruPopularQuery.today());
       expect(asked.single.queryParameters['tags'], 'sort:score');
+    });
+
+    // The forms Boorusama's Gelbooru and Gelbooru 0.2 query composers send, as the audit read them; not checked
+    // against the live hosts.
+    test('Gelbooru-family hosts get the rating limit in their own words', () async {
+      Future<String?> tagsFor(String host, String cap, {String query = 'solo'}) async {
+        String? sent;
+        final client = _client(
+          'gelbooru_v2',
+          host,
+          MockClient((request) async {
+            sent = request.url.queryParameters['tags'];
+            return http.Response('[]', 200);
+          }),
+          prefs: {optionPluginBooruMaxRating: cap},
+        );
+        await client.search(query);
+        return sent;
+      }
+
+      expect(await tagsFor('https://gelbooru.com', 'g'), 'solo rating:general');
+      expect(await tagsFor('https://safebooru.org', 'g'), 'solo rating:safe');
+      expect(await tagsFor('https://gelbooru.com', 's'), 'solo -rating:explicit');
+      expect(await tagsFor('https://safebooru.org', 's'), 'solo -rating:explicit');
+      expect(await tagsFor('https://rule34.xxx', 'q'), 'solo -rating:explicit');
+      expect(await tagsFor('https://gelbooru.com', 'e'), 'solo');
+      expect(await tagsFor('https://gelbooru.com', 'g', query: 'solo rating:sensitive'), 'solo rating:sensitive');
     });
 
     test('engines with one popular page stop after it', () async {
@@ -519,9 +837,9 @@ void main() {
         MockClient(
           (request) async => http.Response(
             jsonEncode([
-              {'id': 1, 'rating': 'e', 'tag_string': 'a'},
-              {'id': 2, 'rating': 'g', 'tag_string': 'muted'},
-              {'id': 3, 'rating': 'g', 'tag_string': 'kept'},
+              {'id': 1, 'rating': 'e', 'tag_string': 'a', 'file_url': 'https://cdn.example/1.png'},
+              {'id': 2, 'rating': 'g', 'tag_string': 'muted', 'file_url': 'https://cdn.example/2.png'},
+              {'id': 3, 'rating': 'g', 'tag_string': 'kept', 'file_url': 'https://cdn.example/3.png'},
             ]),
             200,
           ),
@@ -533,6 +851,70 @@ void main() {
       );
       final page = await client.popular(BooruPopularQuery.today());
       expect(page.posts.map((p) => p.id), ['3']);
+    });
+
+    // Shapes the audit read in Boorusama's parsers, not recorded from a live host: Danbooru withholds the
+    // file URLs of a post banned or restricted for guests, and a Flash post's file is a .swf.
+    test('posts with no file to show are left out, and the page still continues', () async {
+      final client = _client(
+        'danbooru',
+        'https://danbooru.donmai.us',
+        MockClient(
+          (request) async => http.Response(
+            jsonEncode([
+              {'id': 1, 'rating': 'g', 'tag_string': 'banned_artist', 'is_banned': true, 'file_ext': 'jpg'},
+              {
+                'id': 2,
+                'rating': 'g',
+                'tag_string': 'flash',
+                'file_ext': 'swf',
+                'file_url': 'https://cdn.donmai.us/original/a.swf',
+                'preview_file_url': 'https://cdn.donmai.us/preview/a.jpg',
+              },
+              {'id': 3, 'rating': 'g', 'tag_string': 'kept', 'preview_file_url': 'https://cdn.donmai.us/preview/b.jpg'},
+              {'id': 4, 'rating': 'g', 'tag_string': 'kept', 'file_url': 'https://cdn.donmai.us/original/c.png'},
+            ]),
+            200,
+          ),
+        ),
+      );
+
+      final page = await client.latest(limit: 4);
+
+      expect(page.posts.map((post) => post.id), ['4']);
+      expect(page.hasMore, isTrue, reason: 'the host sent a full page');
+    });
+
+    test('an e621 post whose file the host withholds is left out', () async {
+      final client = _client(
+        'e621',
+        'https://e621.net',
+        MockClient(
+          (request) async => http.Response(
+            jsonEncode({
+              'posts': [
+                {
+                  'id': 10,
+                  'rating': 's',
+                  'file': {'ext': 'png', 'url': null},
+                  'sample': {'url': null},
+                  'preview': {'url': null},
+                },
+                {
+                  'id': 11,
+                  'rating': 's',
+                  'file': {'ext': 'png', 'url': 'https://static1.e621.net/data/b.png'},
+                  'sample': {'url': null},
+                  'preview': {'url': null},
+                },
+              ],
+            }),
+            200,
+          ),
+        ),
+      );
+
+      expect((await client.latest()).posts.map((post) => post.id), ['11']);
     });
 
     test('a missing wiki page is no page, not an error', () async {

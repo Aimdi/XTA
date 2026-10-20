@@ -5,6 +5,7 @@ library;
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
+import 'package:xta/plugins/booru/booru_text.dart';
 import 'package:xta/utils/json.dart';
 
 /// Moebooru answers `include_tags` with a name → kind map; the others with
@@ -71,3 +72,69 @@ int _byDate(BooruComment a, BooruComment b) {
   if (ad != null && bd != null) return ad.compareTo(bd);
   return (int.tryParse(a.id) ?? 0).compareTo(int.tryParse(b.id) ?? 0);
 }
+
+/// Related tag names in the host's order: Danbooru's `related_tags`
+/// entries, or e621's tag record, whose `related_tags` alternates names and
+/// weights in one string.
+List<String> parseBooruRelatedTags(Object? raw, BooruEngine engine) => switch (engine) {
+  BooruEngine.danbooru => [for (final related in Json(raw)['related_tags'].list) ?related['tag']['name'].string],
+  BooruEngine.e621 => _e621RelatedTags(Json(raw).list.firstOrNull?['related_tags'].string),
+  _ => const [],
+};
+
+List<String> _e621RelatedTags(String? pairs) {
+  final words = (pairs ?? '').split(' ').where((word) => word.isNotEmpty).toList();
+  return [
+    for (var i = 0; i + 1 < words.length; i += 2)
+      if (double.tryParse(words[i + 1]) != null) words[i],
+  ];
+}
+
+/// The artist entry for [name] from the host's list: the one with that
+/// name, else the first. Deleted entries are skipped, and links the host
+/// marks inactive are left out.
+BooruArtist? parseBooruArtist(Object? raw, String name) {
+  final entries = [
+    for (final entry in Json(raw).list)
+      if (entry['is_deleted'].boolean != true && entry['name'].string != null) entry,
+  ];
+  final entry =
+      entries.where((entry) => entry['name'].string!.toLowerCase() == name.toLowerCase()).firstOrNull ??
+      entries.firstOrNull;
+  if (entry == null) return null;
+  return BooruArtist(
+    name: entry['name'].string!,
+    otherNames: [for (final other in entry['other_names'].list) ?other.string],
+    urls: [
+      for (final url in entry['urls'].list)
+        if (url['is_active'].boolean != false) ?url['url'].string,
+    ],
+  );
+}
+
+/// The pools in a `/pools.json` answer, deleted ones left out.
+List<BooruPool> parseBooruPools(Object? raw) => [
+  for (final pool in Json(raw).list)
+    if (pool['is_deleted'].boolean != true)
+      if ((pool['id'].integer?.toString() ?? pool['id'].string, pool['name'].string) case (
+        final String id,
+        final String name,
+      ))
+        BooruPool(id: id, name: name, postCount: pool['post_count'].integer),
+];
+
+/// The active notes in a `/notes.json` answer, their HTML read as plain
+/// text; notes without a box or text are left out.
+List<BooruNote> parseBooruNotes(Object? raw) => [
+  for (final note in Json(raw).list)
+    if (note['is_active'].boolean != false)
+      if ((
+            note['x'].integer,
+            note['y'].integer,
+            note['width'].integer,
+            note['height'].integer,
+            booruPlainText(note['body'].string ?? ''),
+          )
+          case (final int x, final int y, final int width, final int height, final String text) when text.isNotEmpty)
+        BooruNote(x: x, y: y, width: width, height: height, text: text),
+];

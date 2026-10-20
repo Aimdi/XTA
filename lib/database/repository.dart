@@ -51,7 +51,7 @@ const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 const String tableLocalPost = 'local_post';
 
-const int databaseVersion = 61;
+const int databaseVersion = 62;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -848,6 +848,11 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // Replies between reader notes. Local only — this is not an X reply path.
     Migration(Operation(_addLocalPostReplyColumn)),
   ],
+  62: [
+    // Booru tags join groups as `booru:<tag>`, as TikTok and Instagram
+    // accounts already do. Data only: no table or column changes.
+    Migration(Operation(prefixBooruMemberships)),
+  ],
 });
 
 /// Indexes added in migration 39, applied so that a failure cannot block the
@@ -976,6 +981,51 @@ Future<void> _ensureLocalPostTable(Database db) async {
     );
   } catch (e) {
     Repository.log.warning('Could not ensure $tableLocalPost: $e');
+  }
+}
+
+/// Sources whose subscriptions join groups under their bare id, as Booru tags
+/// did before 62.
+const _bareMemberTables = [
+  tableSubscription,
+  tableSearchSubscription,
+  tableSubstackSubscription,
+  tableRssSubscription,
+  tableThreadsSubscription,
+  tableBlueskySubscription,
+  tableMastodonSubscription,
+  tableRedditSubscription,
+  tableStockSubscription,
+];
+
+/// Moves the group memberships of followed Booru tags to `booru:<tag>`.
+///
+/// Under the bare tag, unfollowing `art` also took a subreddit or saved search
+/// called `art` out of every group. A bare row another source still follows is
+/// kept beside the new one: nothing records which of the two the reader
+/// grouped, and both were shown. Runs again after a restore, because an older
+/// backup brings bare rows back.
+Future<void> prefixBooruMemberships(DatabaseExecutor db) async {
+  try {
+    final tables = await db.query(
+      'sqlite_master',
+      columns: ['name'],
+      where: "type = 'table' AND name IN (${List.filled(_bareMemberTables.length, '?').join(', ')})",
+      whereArgs: _bareMemberTables,
+    );
+    final claimed = tables.map((row) => 'SELECT id FROM ${row['name']} WHERE id IS NOT NULL').join(' UNION ');
+    const bare = 'profile_id IN (SELECT id FROM $tableBooruSubscription)';
+    await db.execute(
+      'INSERT OR IGNORE INTO $tableSubscriptionGroupMember (group_id, profile_id) '
+      'SELECT group_id, ? || profile_id FROM $tableSubscriptionGroupMember WHERE $bare',
+      ['$pluginIdBooru:'],
+    );
+    await db.execute(
+      'DELETE FROM $tableSubscriptionGroupMember WHERE $bare'
+      '${claimed.isEmpty ? '' : ' AND profile_id NOT IN ($claimed)'}',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not prefix Booru group memberships: $e');
   }
 }
 

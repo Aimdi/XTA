@@ -78,9 +78,18 @@ String? booruArtistTag(List<String> tags, Map<String, BooruTagInfo> info) =>
 class BooruTagSection extends StatelessWidget {
   final List<String> tags;
   final Map<String, BooruTagInfo> info;
-  final void Function(String tag, BooruTagCategory? category) onTap;
 
-  const BooruTagSection({super.key, required this.tags, required this.info, required this.onTap});
+  /// A tap searches the tag; a long press offers everything else.
+  final void Function(String tag, BooruTagCategory? category) onTap;
+  final void Function(String tag, BooruTagCategory? category) onLongPress;
+
+  const BooruTagSection({
+    super.key,
+    required this.tags,
+    required this.info,
+    required this.onTap,
+    required this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +114,7 @@ class BooruTagSection extends StatelessWidget {
                 followed: followed.toSet(),
                 muted: muted,
                 onTap: onTap,
+                onLongPress: onLongPress,
               ),
           ],
         ),
@@ -146,6 +156,7 @@ class _BooruTagGroupView extends StatelessWidget {
   final Set<String> followed;
   final Set<String> muted;
   final void Function(String tag, BooruTagCategory? category) onTap;
+  final void Function(String tag, BooruTagCategory? category) onLongPress;
 
   const _BooruTagGroupView({
     required this.group,
@@ -154,6 +165,7 @@ class _BooruTagGroupView extends StatelessWidget {
     required this.followed,
     required this.muted,
     required this.onTap,
+    required this.onLongPress,
   });
 
   @override
@@ -194,6 +206,8 @@ class _BooruTagGroupView extends StatelessWidget {
           : null,
       semanticsLabel: count == null ? name : '$name, ${L10n.of(context).plugin_booru_tag_count(count)}',
       onPressed: () => onTap(tag, group.category),
+      onLongPress: () => onLongPress(tag, group.category),
+      longPressHint: L10n.of(context).plugin_booru_tag_long_press_hint,
     );
   }
 }

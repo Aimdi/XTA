@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -12,14 +14,21 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
+import 'package:xta/plugins/booru/booru_links.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_pager_store.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
+import 'package:xta/plugins/booru/booru_pools.dart';
 import 'package:xta/plugins/booru/booru_popular_tab.dart';
+import 'package:xta/plugins/booru/booru_query_page.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_feed_cache.dart';
 import 'package:xta/plugins/booru/booru_post_actions.dart';
 import 'package:xta/plugins/booru/booru_post_facts.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
+import 'package:xta/plugins/booru/booru_notes.dart';
 import 'package:xta/plugins/booru/booru_post_media.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/booru/booru_related.dart';
@@ -27,8 +36,10 @@ import 'package:xta/plugins/booru/booru_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_list.dart';
+import 'package:xta/plugins/booru/booru_tag_page.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
 import 'package:xta/tweet/_video.dart';
 
@@ -69,11 +80,33 @@ class _Client extends BooruClient {
 
   /// Latest's next page, answered when the test completes it.
   final latestPage = Completer<BooruPostPage>();
+
+  /// What Latest answers once [latestPage] has; the same page when null.
+  Future<BooruPostPage> Function()? latestAgain;
+  var latestCalls = 0;
   final searches = <String>[];
   final searchSites = <String?>[];
   final popularQueries = <BooruPopularQuery>[];
   var commentCalls = 0;
   var wikiCalls = 0;
+
+  /// What the host keeps about an artist; nothing by default.
+  BooruArtist? artistAnswer;
+
+  /// The pools a post is in; none by default.
+  List<BooruPool> poolsAnswer = const [];
+  var poolsCalls = 0;
+
+  /// The translation notes on a post; none by default.
+  List<BooruNote> notesAnswer = const [];
+  var notesCalls = 0;
+
+  /// The post a link names; none by default.
+  BooruPost? postAtAnswer;
+
+  /// What the followed tags answer on Following; nothing by default.
+  List<BooruPost> followedAnswer = const [];
+  final postsAsked = <BooruPostRef>[];
   final wikiSites = <String?>[];
 
   @override
@@ -89,7 +122,36 @@ class _Client extends BooruClient {
   }
 
   @override
-  Future<BooruPostPage> latest({int page = 1, int limit = BooruClient.defaultPageSize}) => latestPage.future;
+  Future<BooruPostPage> latest({int page = 1, int limit = BooruClient.defaultPageSize}) {
+    latestCalls++;
+    final again = latestAgain;
+    return again != null && latestPage.isCompleted ? again() : latestPage.future;
+  }
+
+  @override
+  Future<BooruArtist?> artist(String tag, {BooruSite? site}) async => artistAnswer;
+
+  @override
+  Future<List<BooruPool>> pools(BooruPost post) async {
+    poolsCalls++;
+    return poolsAnswer;
+  }
+
+  @override
+  Future<List<BooruNote>> notes(BooruPost post) async {
+    notesCalls++;
+    return notesAnswer;
+  }
+
+  @override
+  Future<BooruFollowedPosts> followedPosts(Iterable<String> tags, {int limitPerTag = 10}) async =>
+      (posts: followedAnswer, asked: tags.length, failed: 0, error: null);
+
+  @override
+  Future<BooruPost?> postAt(BooruPostRef ref) async {
+    postsAsked.add(ref);
+    return postAtAnswer;
+  }
 
   @override
   Future<List<BooruComment>> comments(BooruPost post) async {
@@ -131,10 +193,30 @@ class _GatedPrefs extends PrefServiceCache {
   }
 }
 
+/// Feed pages kept in memory instead of on the device.
+class _MemoryFeedCache extends BooruFeedCache {
+  final pages = <String, BooruPostPage>{};
+
+  @override
+  Future<BooruPostPage?> read(String key) async => pages[key];
+
+  @override
+  Future<void> write(String key, BooruPostPage page) async => pages[key] = page;
+}
+
 /// Followed tags in memory, so the Booru home needs no database.
 class _Tags extends BooruTagsStore {
   @override
   Future<void> load() async {}
+
+  @override
+  Future<void> add(String tag) async => update([...state, tag]);
+
+  @override
+  Future<void> remove(String tag) async => update([
+    for (final followed in state)
+      if (followed != tag) followed,
+  ]);
 }
 
 Future<_Client> _pump(
@@ -143,6 +225,8 @@ Future<_Client> _pump(
   Map<String, Object> prefs = const {},
   PrefServiceCache? service,
   BooruTagsStore? tags,
+  BooruFeedCache? feedCache,
+  _Client Function(PrefServiceCache service)? client,
   bool settle = true,
 }) async {
   // Tall enough for a post's picture, facts and tags without scrolling.
@@ -150,15 +234,16 @@ Future<_Client> _pump(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   service ??= PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru', ...prefs});
-  final client = _Client(service);
+  final fake = (client ?? _Client.new)(service);
   await tester.pumpWidget(
     PrefService(
       service: service,
       child: MultiProvider(
         providers: [
-          Provider<BooruClient>.value(value: client),
+          Provider<BooruClient>.value(value: fake),
           Provider<BooruTagsStore>.value(value: tags ?? BooruTagsStore()),
           Provider<BooruMuteStore>.value(value: BooruMuteStore(service)),
+          if (feedCache != null) Provider<BooruFeedCache>.value(value: feedCache),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -175,7 +260,7 @@ Future<_Client> _pump(
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
   }
-  return client;
+  return fake;
 }
 
 void main() {
@@ -321,6 +406,148 @@ void main() {
       await feed.destroy();
     });
 
+    test('a failed refresh keeps the posts from before, and says why until a refresh lands', () async {
+      Object? failure;
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        if (failure case final error?) throw error;
+        return BooruPostPage(posts: [_post('$page')], page: page, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+      await feed.refresh();
+      await feed.loadMore();
+
+      failure = BooruException(BooruErrorKind.network, 'offline');
+      await feed.refresh();
+
+      expect(feed.state.map((p) => p.id), ['1', '2']);
+      expect(feed.error, isNull, reason: 'no error page over the posts');
+      expect(feed.refreshFailure.state.error, same(failure));
+      failure = null;
+      await feed.loadMore();
+      expect(feed.state.map((p) => p.id), ['1', '2', '3'], reason: 'paging goes on from where it stood');
+
+      await feed.refresh();
+      expect(feed.state.map((p) => p.id), ['1']);
+      expect(feed.refreshFailure.state.error, isNull);
+    });
+
+    test('a failed first load, another site or a changed query gets the error page, not posts from before', () async {
+      final prefs = PrefServiceCache(
+        cache: {optionPluginBooruEngine: 'danbooru', optionPluginBooruHost: 'https://danbooru.donmai.us'},
+      );
+      var fail = true;
+      final feed = BooruFeedStore(_Client(prefs), ({required page}) async {
+        if (fail) throw BooruException(BooruErrorKind.network, 'offline');
+        return BooruPostPage(posts: [_post('$page')], page: page, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+      expect(feed.error, isA<BooruException>());
+      expect(feed.refreshFailure.state.error, isNull);
+
+      fail = false;
+      await feed.refresh();
+      fail = true;
+      await feed.refresh(changed: true);
+      expect(feed.refreshFailure.state.error, isNull, reason: "another day's or other tags' posts do not answer it");
+
+      fail = false;
+      await feed.refresh();
+      await prefs.set(optionPluginBooruHost, 'https://safebooru.donmai.us');
+      fail = true;
+      await feed.refresh();
+      expect(feed.refreshFailure.state.error, isNull, reason: "the old site's posts are not this site's");
+    });
+
+    test('a refresh that fails while the next page loads leaves the footer able to load it again', () async {
+      final next = Completer<BooruPostPage>();
+      var fail = false;
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        if (page > 1) return next.future;
+        if (fail) throw BooruException(BooruErrorKind.network, 'offline');
+        return BooruPostPage(posts: [_post('1')], page: 1, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+      await feed.refresh();
+      unawaited(feed.loadMore());
+      expect(feed.paging.state, BooruPaging.loading);
+
+      fail = true;
+      await feed.refresh();
+      next.complete(BooruPostPage(posts: [_post('2')], page: 2, hasMore: true));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(feed.paging.state, BooruPaging.idle);
+      expect(feed.state.map((p) => p.id), ['1'], reason: 'the page asked before the refresh is dropped');
+    });
+
+    test('a feed keeps its first page on the device, and shows it when a launch cannot load', () async {
+      final cache = _MemoryFeedCache();
+      var fail = false;
+      Future<BooruPostPage> load({required int page}) async {
+        if (fail) throw BooruException(BooruErrorKind.network, 'offline');
+        return BooruPostPage(posts: [_post('$page')], page: page, hasMore: true);
+      }
+
+      BooruFeedStore feed(String key) {
+        final store = BooruFeedStore(_Client(PrefServiceCache()), load, cache: cache, cacheKey: () => key);
+        addTearDown(store.destroy);
+        return store;
+      }
+
+      await feed('latest').refresh();
+      expect(cache.pages, hasLength(1));
+
+      fail = true;
+      final relaunched = feed('latest');
+      await relaunched.refresh();
+      expect(relaunched.state.map((p) => p.id), ['1']);
+      expect(relaunched.error, isNull);
+      expect(relaunched.refreshFailure.state.error, isA<BooruException>());
+
+      final other = feed('following\nsolo');
+      await other.refresh();
+      expect(other.error, isA<BooruException>(), reason: 'nothing was kept for that feed');
+    });
+
+    test('posts the muted tags hid are counted, and shown in their places on request', () async {
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        final all = [_post('${page}a'), _post('${page}b'), _post('${page}c')];
+        return BooruPostPage(posts: [all[0], all[2]], allowed: all, page: page, hasMore: page < 2);
+      });
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+      expect(feed.state.map((p) => p.id), ['1a', '1c']);
+      expect(feed.hidden.state, (count: 1, shown: false));
+      await feed.loadMore();
+      expect(feed.hidden.state.count, 2);
+
+      feed.showHidden();
+      expect(feed.state.map((p) => p.id), ['1a', '1b', '1c', '2a', '2b', '2c']);
+      feed.hideHidden();
+      expect(feed.state.map((p) => p.id), ['1a', '1c', '2a', '2c']);
+
+      feed.showHidden();
+      await feed.refresh();
+      expect(feed.state.map((p) => p.id), ['1a', '1c'], reason: 'a refresh hides them again');
+      expect(feed.hidden.state, (count: 1, shown: false));
+    });
+
+    test('pages the muted tags emptied are skipped, and what they hid still counts', () async {
+      final feed = BooruFeedStore(_Client(PrefServiceCache()), ({required page}) async {
+        final post = _post('$page');
+        return BooruPostPage(posts: page < 3 ? const [] : [post], allowed: [post], page: page, hasMore: true);
+      });
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+
+      expect(feed.state.map((p) => p.id), ['3']);
+      expect(feed.hidden.state.count, 2);
+    });
+
     test('no next page is asked for while a refresh is on its way', () async {
       final asked = <int>[];
       final first = Completer<BooruPostPage>();
@@ -399,11 +626,113 @@ void main() {
       await feed.destroy();
     });
 
+    test('the next and the previous picture are loaded ahead, never a video', () {
+      BooruPost post(String id, String ext) => BooruPost(
+        id: id,
+        host: 'https://danbooru.donmai.us',
+        engine: 'danbooru',
+        tags: const [],
+        rating: BooruRating.general,
+        score: 0,
+        width: 1,
+        height: 1,
+        previewUrl: null,
+        sampleUrl: null,
+        fileUrl: 'https://cdn.example/$id.$ext',
+        fileExt: ext,
+        source: null,
+        createdAt: null,
+      );
+      final posts = [post('1', 'png'), post('2', 'mp4'), post('3', 'jpg'), post('4', 'png')];
+
+      expect(booruPreloadUrls(posts, 0), isEmpty, reason: 'the next is a video and there is no previous');
+      expect(booruPreloadUrls(posts, 1), ['https://cdn.example/3.jpg', 'https://cdn.example/1.png']);
+      expect(booruPreloadUrls(posts, 2), ['https://cdn.example/4.png']);
+      expect(booruPreloadUrls(posts, 3), ['https://cdn.example/3.jpg']);
+    });
+
     test('a list only counts as extended when it starts the same', () {
       final a = [_post('1'), _post('2')];
       expect(booruPostsExtend(a, [...a, _post('3')]), isTrue);
       expect(booruPostsExtend(a, [_post('9'), _post('2'), _post('3')]), isFalse);
       expect(booruPostsExtend(a, a), isFalse);
+    });
+  });
+
+  group('copy as prompt', () {
+    testWidgets('the post menu copies the tags as a prompt, in the order chosen in settings', (tester) async {
+      final copied = <String>[];
+      final messenger = tester.binding.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.setData') copied.add((call.arguments as Map)['text'] as String);
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+      final post = _post(
+        '1',
+        tags: const ['highres', 'solo', 'kantoku', 'cat_(animal)'],
+        categories: const {'kantoku': BooruTagCategory.artist, 'highres': BooruTagCategory.meta},
+      );
+      await _pump(
+        tester,
+        Scaffold(
+          appBar: AppBar(actions: [BooruPostActions(post: post)]),
+        ),
+        prefs: {optionPluginBooruPromptKinds: 'general,artist'},
+      );
+
+      await tester.tap(find.byKey(const ValueKey('booru-post-menu')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Copy tags as prompt'));
+      await tester.pumpAndSettle();
+
+      expect(copied, [r'solo, cat \(animal\), kantoku']);
+    });
+  });
+
+  group('thumbnail labels', () {
+    test('name the artist, characters and series first, and leave meta tags out', () {
+      final post = _post(
+        '1',
+        tags: const ['highres', 'solo', 'kantoku', 'hatsune_miku', 'vocaloid', 'smile', 'blue_eyes'],
+        categories: const {
+          'highres': BooruTagCategory.meta,
+          'kantoku': BooruTagCategory.artist,
+          'hatsune_miku': BooruTagCategory.character,
+          'vocaloid': BooruTagCategory.copyright,
+          'solo': BooruTagCategory.general,
+        },
+      );
+
+      expect(booruLabelTags(post), ['kantoku', 'hatsune_miku', 'vocaloid', 'solo', 'smile']);
+    });
+
+    testWidgets('a grid tile is read as a post with its first tags', (tester) async {
+      final semantics = tester.ensureSemantics();
+
+      await _pump(
+        tester,
+        Scaffold(
+          body: BooruPostGrid(
+            posts: [
+              _post('1', tags: const ['kantoku', 'solo_focus']),
+            ],
+          ),
+        ),
+      );
+
+      expect(find.bySemanticsLabel(RegExp(r'^Post: kantoku, solo focus')), findsOneWidget);
+      semantics.dispose();
+    });
+
+    testWidgets('a related thumbnail is read the same way', (tester) async {
+      final semantics = tester.ensureSemantics();
+
+      await _pump(tester, BooruPostScreen(post: _post('1', categories: const {'kantoku': BooruTagCategory.artist})));
+
+      expect(find.text('More from kantoku'), findsOneWidget);
+      expect(find.bySemanticsLabel('Post: kantoku, solo, highres'), findsWidgets);
+      semantics.dispose();
     });
   });
 
@@ -506,6 +835,98 @@ void main() {
       expect(prefs.get<String>(optionPluginBooruTagSort), 'count');
     });
 
+    testWidgets("an artist tag opens the artist's page: posts, other names, links and follow", (tester) async {
+      final tags = _Tags();
+      final client = await _pump(
+        tester,
+        BooruPostScreen(post: _post('1', categories: const {'kantoku': BooruTagCategory.artist})),
+        tags: tags,
+      );
+      client.artistAnswer = const BooruArtist(
+        name: 'kantoku',
+        otherNames: ['カントク'],
+        urls: ['https://www.pixiv.net/users/1'],
+      );
+
+      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruTagPage), findsOneWidget);
+      expect(find.text('Also known as カントク'), findsOneWidget);
+      expect(find.widgetWithText(ActionChip, 'pixiv.net'), findsOneWidget);
+      expect(find.byType(BooruPostTile), findsNWidgets(3));
+
+      await tester.tap(find.byTooltip('Follow tag'));
+      await tester.pumpAndSettle();
+      expect(tags.state, ['kantoku']);
+      expect(find.byTooltip('Unfollow tag'), findsOneWidget);
+    });
+
+    testWidgets("a post's pools are listed, and one opens to read in order", (tester) async {
+      final client = await _pump(
+        tester,
+        BooruPostScreen(post: _post('1')),
+        client: (service) =>
+            _Client(service)..poolsAnswer = const [BooruPool(id: '7', name: 'my_series', postCount: 12)],
+      );
+
+      final pool = find.text('my series');
+      await tester.scrollUntilVisible(pool, 300, scrollable: find.byType(Scrollable).at(1));
+      expect(find.text('Pools'), findsOneWidget);
+      expect(find.text('Posts: 12'), findsOneWidget);
+      await tester.tap(pool);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruQueryPage), findsOneWidget);
+      expect(client.searches.last, 'ordpool:7');
+    });
+
+    testWidgets('a post seen again in the same viewer asks for its pools and notes once', (tester) async {
+      final lookups = BooruPostLookups();
+      _Client? fake;
+      for (var visit = 0; visit < 2; visit++) {
+        await _pump(
+          tester,
+          Provider<BooruPostLookups>.value(
+            value: lookups,
+            child: Scaffold(
+              body: ListView(
+                children: [
+                  BooruPostMedia(post: _post('1')),
+                  BooruPoolsSection(post: _post('1')),
+                ],
+              ),
+            ),
+          ),
+          client: (service) => fake ??= _Client(service),
+        );
+        await tester.pumpWidget(const SizedBox());
+      }
+      expect(fake!.poolsCalls, 1);
+      expect(fake!.notesCalls, 1);
+    });
+
+    testWidgets('translation notes show over the picture once switched on', (tester) async {
+      await _pump(
+        tester,
+        BooruPostScreen(post: _post('1')),
+        client: (service) =>
+            _Client(service)
+              ..notesAnswer = const [BooruNote(x: 100, y: 100, width: 200, height: 100, text: 'Good morning')],
+      );
+      expect(find.byTooltip('Good morning'), findsNothing);
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Notes: 1'));
+      await tester.pumpAndSettle();
+      final box = tester.getRect(find.byTooltip('Good morning'));
+      final picture = tester.getRect(find.byType(BooruNotesOverlay));
+      expect(box.width, closeTo(200 * picture.width / 800, 0.5), reason: 'notes scale with the picture');
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Notes: 1'));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Good morning'), findsNothing);
+    });
+
     testWidgets('comments load when opened', (tester) async {
       final client = await _pump(tester, BooruPostScreen(post: _post('1')));
       final comments = find.byKey(const ValueKey('booru-comments'));
@@ -526,7 +947,7 @@ void main() {
         ),
       );
       expect(client.searchSites, contains('https://e621.net'), reason: '"More from" searches the post\'s site');
-      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.longPress(find.byKey(const ValueKey('booru-post-tag-kantoku')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-wiki')));
       await tester.pumpAndSettle();
@@ -538,7 +959,7 @@ void main() {
         tester,
         BooruPostScreen(post: _post('1', categories: {'kantoku': BooruTagCategory.artist})),
       );
-      await tester.tap(find.byKey(const ValueKey('booru-post-tag-kantoku')));
+      await tester.longPress(find.byKey(const ValueKey('booru-post-tag-kantoku')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-wiki')));
       await tester.pump(const Duration(milliseconds: 300));
@@ -806,6 +1227,91 @@ void main() {
       expect(find.byType(BooruPostGrid), findsOneWidget);
     });
 
+    testWidgets('Latest keeps its posts when a refresh fails, under a notice with Retry', (tester) async {
+      const notice = 'Showing the posts from before';
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+      client.latestPage.complete(BooruPostPage(posts: [_post('1'), _post('2')], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      client.latestAgain = () async => throw BooruException(BooruErrorKind.network, 'offline');
+
+      unawaited(tester.state<RefreshIndicatorState>(find.byType(RefreshIndicator)).show());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
+      expect(find.text(notice), findsOneWidget);
+      expect(find.text('Could not reach the booru host'), findsOneWidget);
+
+      client.latestAgain = () async => BooruPostPage(posts: [_post('3')], page: 1, hasMore: false);
+      await tester.tap(find.byTooltip('Retry'));
+      await tester.pumpAndSettle();
+      expect(find.text(notice), findsNothing);
+      expect(find.byType(BooruPostTile), findsOneWidget);
+    });
+
+    testWidgets('Latest opened without a network shows the page kept from last time', (tester) async {
+      final cache = _MemoryFeedCache();
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      var client = await _pump(
+        tester,
+        BooruScreen(scrollController: scroll),
+        tags: _Tags(),
+        feedCache: cache,
+        settle: false,
+      );
+      client.latestPage.complete(BooruPostPage(posts: [_post('1'), _post('2')], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      expect(cache.pages, hasLength(1));
+
+      await tester.pumpWidget(const SizedBox());
+      client = await _pump(
+        tester,
+        BooruScreen(scrollController: scroll),
+        tags: _Tags(),
+        feedCache: cache,
+        settle: false,
+      );
+      await tester.pump(Duration.zero);
+      expect(client.latestCalls, 1);
+      client.latestPage.completeError(BooruException(BooruErrorKind.network, 'offline'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
+      expect(find.text('Showing the posts from before'), findsOneWidget);
+    });
+
+    testWidgets('Latest says how many posts the muted tags hid, and shows them on request', (tester) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+      final all = [_post('1'), _post('2'), _post('3')];
+      client.latestPage.complete(BooruPostPage(posts: [all.first], allowed: all, page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BooruPostTile), findsOneWidget);
+      expect(find.text('Hidden by your muted tags: 2'), findsOneWidget);
+      await tester.tap(find.widgetWithText(TextButton, 'Show'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BooruPostTile), findsNWidgets(3));
+      await tester.tap(find.widgetWithText(TextButton, 'Hide'));
+      await tester.pumpAndSettle();
+      expect(find.byType(BooruPostTile), findsOneWidget);
+    });
+
+    testWidgets('Latest asks for its first page in its first frame', (tester) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
+
+      await tester.pump(Duration.zero);
+
+      expect(client.latestCalls, 1, reason: 'neither the stores reloading nor a 50 ms debounce stands in front of it');
+      client.latestPage.complete(const BooruPostPage(posts: [], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('leaving settings while a site or a mute is being saved throws nothing', (tester) async {
       Future<_GatedPrefs> open() async {
         final prefs = _GatedPrefs({optionPluginBooruEngine: 'danbooru'});
@@ -832,6 +1338,60 @@ void main() {
       expect(prefs.get<String>(optionPluginBooruMutedTags), '["solo"]', reason: 'the write itself still lands');
     });
 
+    testWidgets('the rating cap goes past Sensitive only once the reader confirms they are an adult', (tester) async {
+      await _pump(tester, const BooruSettingsScreen());
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+      Future<void> pick(String rating) async {
+        await tester.tap(find.text('Maximum rating'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(rating).last);
+        await tester.pumpAndSettle();
+      }
+
+      await pick('Explicit');
+      expect(find.text('Show adult posts?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), isNot('e'));
+
+      await pick('Explicit');
+      await tester.tap(find.text("I'm 18 or older"));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'e');
+
+      await pick('Questionable');
+      expect(find.text('Show adult posts?'), findsNothing, reason: 'the reader already said yes');
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'q');
+    });
+
+    testWidgets('a mostly explicit site asks before it allows explicit posts', (tester) async {
+      await _pump(tester, const BooruSettingsScreen());
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Rule34'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Most posts on Rule34 are explicit.'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruHost), 'https://rule34.xxx');
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'g', reason: 'declining keeps the general cap');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Rule34'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text("I'm 18 or older"));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'e');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      expect(find.text('Show adult posts?'), findsNothing, reason: 'the reader already said yes');
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'e');
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Danbooru'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<String>(optionPluginBooruMaxRating), 'g');
+    });
+
     testWidgets('settings keep the login and key with the site they belong to', (tester) async {
       await _pump(
         tester,
@@ -850,6 +1410,8 @@ void main() {
 
       await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
       expect(shown(), isEmpty, reason: "another site's login is not shown as this one's");
       expect(find.textContaining('danbooru.donmai.us'), findsOneWidget);
 
@@ -859,11 +1421,56 @@ void main() {
 
       await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
       await tester.pumpAndSettle();
+      expect(find.text('Show adult posts?'), findsNothing, reason: 'e621 kept its General cap');
       await tester.enterText(login, 'fox');
       await tester.pumpAndSettle();
       expect(prefs.get<String>(optionPluginBooruCredentialsHost), 'https://e621.net');
       expect(prefs.get<String>(optionPluginBooruApiKey), isEmpty);
       expect(find.textContaining('danbooru.donmai.us'), findsNothing);
+
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Danbooru'));
+      await tester.pumpAndSettle();
+      expect(shown(), 'reader', reason: "each site keeps its own login");
+      expect(prefs.get<String>(optionPluginBooruApiKey), 'secret-key');
+      await tester.tap(find.widgetWithText(ChoiceChip, 'e621'));
+      await tester.pumpAndSettle();
+      expect(shown(), 'fox');
+    });
+
+    testWidgets("each site's muted tags come back with it", (tester) async {
+      await _pump(tester, const BooruSettingsScreen(), prefs: {optionPluginBooruHost: 'https://danbooru.donmai.us'});
+      final prefs = PrefService.of(tester.element(find.byType(BooruSettingsScreen)), listen: false);
+      Future<void> mute(String tag) async {
+        final field = find.widgetWithText(TextField, 'Mute a tag');
+        await tester.scrollUntilVisible(field, 300, scrollable: find.byType(Scrollable).first);
+        await tester.enterText(field, tag);
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+      }
+
+      Future<void> site(String name) async {
+        await tester.scrollUntilVisible(
+          find.widgetWithText(ChoiceChip, name),
+          -300,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.widgetWithText(ChoiceChip, name));
+        await tester.pumpAndSettle();
+      }
+
+      await mute('gore');
+      await site('Safebooru');
+      await mute('scat');
+      expect(prefs.get<String>(optionPluginBooruMutedTags), '["gore","scat"]');
+
+      await site('Danbooru');
+      expect(prefs.get<String>(optionPluginBooruMutedTags), '["gore"]');
+      await tester.scrollUntilVisible(
+        find.text('Muted tags on danbooru.donmai.us'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.widgetWithText(InputChip, 'scat'), findsNothing);
     });
 
     test('thumbnails and full screen use the chosen file size', () {
@@ -917,5 +1524,108 @@ void main() {
       reason: 'Download saves the animation that plays, not the zip of its frames',
     );
     expect(booruDownloadItem(_post('2')).resolvedDownloadUrl, _post('2').originalUrl);
+  });
+  group('links', () {
+    Widget opener(String url, void Function(bool handled) done) => Scaffold(
+      body: Builder(
+        builder: (context) =>
+            TextButton(onPressed: () async => done(await openWithPlugins(context, url)), child: const Text('open')),
+      ),
+    );
+
+    testWidgets('a booru post link opens in the viewer', (tester) async {
+      bool? handled;
+      final client = await _pump(
+        tester,
+        opener('https://danbooru.donmai.us/posts/7', (value) => handled = value),
+        prefs: {optionPluginBooruEnabled: true},
+        client: (service) => _Client(service)..postAtAnswer = _post('7'),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(client.postsAsked, [(host: 'https://danbooru.donmai.us', engine: BooruEngine.danbooru, id: '7')]);
+      expect(find.byType(BooruPostScreen), findsOneWidget);
+      expect(find.byType(BooruPostMedia), findsOneWidget);
+      Navigator.of(tester.element(find.byType(BooruPostScreen))).pop();
+      await tester.pumpAndSettle();
+      expect(handled, isTrue);
+    });
+
+    testWidgets('a post the viewer cannot show is left to the browser', (tester) async {
+      bool? handled;
+      final client = await _pump(
+        tester,
+        opener('https://yande.re/post/show/3', (value) => handled = value),
+        prefs: {optionPluginBooruEnabled: true},
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(client.postsAsked.single.engine, BooruEngine.moebooru);
+      expect(find.byType(BooruPostScreen), findsNothing);
+      expect(handled, isFalse);
+    });
+
+    testWidgets('booru links stay with the browser while the plugin is off', (tester) async {
+      bool? handled;
+      final client = await _pump(
+        tester,
+        opener('https://danbooru.donmai.us/posts/7', (value) => handled = value),
+        client: (service) => _Client(service)..postAtAnswer = _post('7'),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(client.postsAsked, isEmpty);
+      expect(handled, isFalse);
+    });
+  });
+  group('following', () {
+    Future<_Client> openFollowing(WidgetTester tester, PrefServiceCache service, List<BooruPost> posts) async {
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final client = await _pump(
+        tester,
+        BooruScreen(scrollController: scroll),
+        service: service,
+        tags: _Tags()..update(['kantoku']),
+        client: (service) => _Client(service)..followedAnswer = posts,
+        settle: false,
+      );
+      client.latestPage.complete(const BooruPostPage(posts: [], page: 1, hasMore: false));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Following'));
+      await tester.pumpAndSettle();
+      return client;
+    }
+
+    testWidgets('marks the posts that came in since the last visit, once', (tester) async {
+      final service = PrefServiceCache(
+        cache: {
+          optionPluginBooruEngine: 'danbooru',
+          optionPluginBooruFollowingSeen: jsonEncode({'https://danbooru.donmai.us': 10}),
+        },
+      );
+      final posts = [_post('12'), _post('9'), _post('11'), _post('10')];
+      await openFollowing(tester, service, posts);
+
+      expect(find.byType(BooruPostTile), findsNWidgets(4));
+      expect(find.text('New since your last visit: 2'), findsOneWidget);
+      expect(find.text('New'), findsNWidgets(2));
+      final marked = find.ancestor(of: find.text('New'), matching: find.byType(BooruPostTile));
+      expect(tester.widgetList<BooruPostTile>(marked).map((tile) => tile.post.id), unorderedEquals(['12', '11']));
+
+      await tester.pumpWidget(const SizedBox());
+      await openFollowing(tester, service, posts);
+      expect(find.byType(BooruPostTile), findsNWidgets(4));
+      expect(find.text('New'), findsNothing, reason: 'the last visit saw them');
+      expect(find.textContaining('New since your last visit'), findsNothing);
+    });
+
+    testWidgets('a first visit marks nothing new', (tester) async {
+      final service = PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru'});
+      await openFollowing(tester, service, [_post('12'), _post('11')]);
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
+      expect(find.text('New'), findsNothing);
+      expect(jsonDecode(service.get<String>(optionPluginBooruFollowingSeen)!), {'https://danbooru.donmai.us': 12});
+    });
   });
 }

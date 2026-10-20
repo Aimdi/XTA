@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "हालिया",
   "@home_networks_recent": {},
+  "image_cache_clear": "साफ़ करें",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "अगली बार देखने पर तस्वीरें फिर से डाउनलोड होंगी।",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "इमेज कैश साफ़ करें?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "इस डिवाइस पर {size}। {days} दिन से पुरानी तस्वीरें अपने-आप हट जाती हैं।",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "इमेज कैश",
+  "@image_cache_title": {},
   "image_quality": "छवि गुणवत्ता",
   "@image_quality": {},
   "import": "आयात",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "मौजूदा खोज में जोड़ें",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Questionable और Explicit पोस्ट केवल वयस्कों के लिए हैं। पुष्टि करें कि आपकी उम्र 18 वर्ष या उससे अधिक है और आप उन्हें देखना चाहते हैं।",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "मेरी उम्र 18 वर्ष या उससे अधिक है",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} पर ज़्यादातर पोस्ट स्पष्ट वयस्क सामग्री वाली हैं।",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "वयस्कों के लिए पोस्ट दिखाएँ?",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "{names} के नाम से भी जाने जाते हैं",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "लिंक कॉपी करें",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "टैग को प्रॉम्प्ट के रूप में कॉपी करें",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "टैग कॉपी करें",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "सभी टैग कॉपी करें",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "सभी डाउनलोड करें",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "अब तक लोड की गई पोस्ट: {count}। जो फ़ाइलें पहले से डाउनलोड में हैं, वे छोड़ दी जाती हैं।",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "कतार में: {queued}। पहले से डाउनलोड: {skipped}।",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "टेक्स्ट के रूप में संपादित करें",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "संपादित करने के लिए टैप करें",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "साइट ने एक्सेस देने से मना कर दिया — शायद लॉग इन या ब्राउज़र में जाँच ज़रूरी है",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "इस साइट के लिए लॉगिन और API कुंजी ज़रूरी है — उन्हें सेटिंग में जोड़ें",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "इस साइट पर एक खोज के लिए बहुत ज़्यादा टैग हैं — कुछ हटाएँ",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "साइट व्यस्त है या अनुरोध सीमित कर रही है — बाद में फिर से कोशिश करें",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "डाउनलोड फ़ाइल का नाम",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "साइट का अपना फ़ाइल नाम रखने के लिए खाली छोड़ें। आप {tokens} का उपयोग कर सकते हैं।",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "टैग फ़ॉलो करें",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "स्क्रीन के हिसाब से",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "आपके म्यूट किए गए टैग से छिपी: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "अब तक की सभी पोस्ट आपकी अधिकतम रेटिंग या म्यूट किए गए टैग के कारण छिपी हैं",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "इस टैग वाली पोस्ट छिपाएँ",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "और लोड करें",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "और पोस्ट लोड नहीं हो सकीं",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "मेटाटैग",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name} की और पोस्ट",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "एक प्रविष्टि में कई टैग हों, तो सिर्फ़ वे पोस्ट छिपती हैं जिनमें सभी टैग हों। -tag और rating:e भी काम करते हैं",
+  "plugin_booru_mute_help": "एक प्रविष्टि में कई टैग हों, तो सिर्फ़ वे पोस्ट छिपती हैं जिनमें सभी टैग हों। -tag, ~tag, rating:e, score:<0, user:name और filetype:gif भी काम करते हैं",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site} पर म्यूट किए गए टैग",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "नया",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "आपकी पिछली विज़िट के बाद से नई: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "अभी कोई टिप्पणी नहीं",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "नोट: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "हर साइट अपनी अधिकतम रेटिंग, म्यूट किए गए टैग, लॉगिन और कुंजी अलग रखती है। फ़ॉलो किए गए टैग सभी साइटों में साझा होते हैं।",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "तारीख चुनें",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "पोस्ट: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "पूल",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "दिन",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "पिछला",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«टैग को प्रॉम्प्ट के रूप में कॉपी करें» इन प्रकारों को इसी क्रम में लिखता है, अंडरस्कोर की जगह स्पेस और एस्केप किए गए कोष्ठकों के साथ। क्रम बदलने के लिए खींचें; किसी प्रकार को छोड़ने के लिए उसे बंद करें।",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "प्रॉम्प्ट के रूप में टैग",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "पहले की पोस्ट दिखाई जा रही हैं",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "मान्य होस्ट URL दर्ज करें",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "प्रदर्शित नाम",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "किसी टैग को खोजने, फ़ॉलो करने, छिपाने या उसकी विकी पढ़ने के लिए उस पर टैप करें",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "कलाकार",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "किरदार",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "टैग की कार्रवाइयाँ दिखाएँ",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "मेटा",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "टैग का क्रम बदलें",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "किसी टैग को खोजने के लिए उस पर टैप करें। उसे फ़ॉलो करने, छिपाने या उसकी विकि पढ़ने के लिए उसे दबाकर रखें।",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "टैग",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "ग्रिड में हर पोस्ट के नीचे होस्ट, पहले टैग और स्कोर",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "पोस्ट: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "वीडियो: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "टैग अनफ़ॉलो करें",

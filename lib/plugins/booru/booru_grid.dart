@@ -1,3 +1,4 @@
+import 'dart:math' show max;
 import 'dart:ui' show ImageFilter;
 
 import 'package:extended_image/extended_image.dart';
@@ -8,13 +9,16 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
+import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_pager.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/ui/empty_pane.dart';
 
 String booruPostHeroTag(BooruPost post) => 'booru-${post.host}-${post.id}';
 
@@ -28,6 +32,9 @@ class BooruPostGrid extends StatelessWidget {
   /// Where [posts] come from, so the viewer can keep loading past them.
   final BooruFeedStore? feed;
 
+  /// Which posts came in since the reader's last visit; none without it.
+  final bool Function(BooruPost post)? isNew;
+
   const BooruPostGrid({
     super.key,
     required this.posts,
@@ -36,6 +43,7 @@ class BooruPostGrid extends StatelessWidget {
     this.onNearEnd,
     this.padding = const EdgeInsets.all(8),
     this.feed,
+    this.isNew,
   });
 
   @override
@@ -68,6 +76,7 @@ class BooruPostGrid extends StatelessWidget {
                   itemBuilder: (context, index) => BooruPostTile(
                     post: posts[index],
                     display: display,
+                    isNew: isNew?.call(posts[index]) ?? false,
                     onOpen: () => openBooruPost(context, posts, index, feed: feed),
                   ),
                 ),
@@ -123,6 +132,121 @@ class _PagingFooter extends StatelessWidget {
   }
 }
 
+/// What an empty feed shows. While the host has more pages, the posts so far
+/// were all hidden by the rating limit, the blacklist or a missing file, so
+/// the reader can go on to the next pages instead of being stuck on the first.
+class BooruEmptyFeed extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  /// Shown once the host has nothing more.
+  final Widget empty;
+  final ScrollController? scrollController;
+
+  const BooruEmptyFeed({super.key, required this.feed, required this.empty, this.scrollController});
+
+  @override
+  Widget build(BuildContext context) => ScopedBuilder<BooruPagingStore, BooruPaging>(
+    store: feed.paging,
+    onState: (context, paging) => paging == BooruPaging.end ? empty : _hiddenSoFar(context, paging),
+  );
+
+  Widget _hiddenSoFar(BuildContext context, BooruPaging paging) {
+    final l10n = L10n.of(context);
+    final failed = paging == BooruPaging.failed;
+    return EmptyPane(
+      icon: Icons.visibility_off_outlined,
+      message: failed ? l10n.plugin_booru_load_more_failed : l10n.plugin_booru_hidden_so_far,
+      scrollController: scrollController,
+      onRefresh: feed.refresh,
+      action: paging == BooruPaging.loading
+          ? const CircularProgressIndicator()
+          : FilledButton.icon(
+              key: const ValueKey('booru-load-more'),
+              onPressed: failed ? feed.retryMore : feed.loadMore,
+              icon: Icon(failed ? Icons.refresh : Icons.expand_more),
+              label: Text(failed ? l10n.retry : l10n.plugin_booru_load_more),
+            ),
+    );
+  }
+}
+
+/// Above a feed whose refresh failed: why, that the posts from before are
+/// still shown, and Retry.
+class BooruRefreshNotice extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  const BooruRefreshNotice({super.key, required this.feed});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruRefreshFailureStore, ({Object? error})>(
+      store: feed.refreshFailure,
+      onState: (context, failure) => switch (failure.error) {
+        null => const SizedBox.shrink(),
+        final error => ListTile(
+          leading: const Icon(Icons.cloud_off_outlined),
+          title: Text(booruErrorMessage(l10n, error)),
+          subtitle: Text(l10n.plugin_booru_showing_earlier),
+          trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry, onPressed: feed.refresh),
+        ),
+      },
+    );
+  }
+}
+
+/// Above a feed whose posts the blacklist partly hid: how many, and a
+/// button to show them in their places, or hide them again. Posts over the
+/// rating cap are never among them.
+class BooruHiddenNotice extends StatelessWidget {
+  final BooruFeedStore feed;
+
+  const BooruHiddenNotice({super.key, required this.feed});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruHiddenStore, ({int count, bool shown})>(
+      store: feed.hidden,
+      onState: (context, hidden) => hidden.count == 0
+          ? const SizedBox.shrink()
+          : ListTile(
+              dense: true,
+              leading: Icon(hidden.shown ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+              title: Text(l10n.plugin_booru_hidden_count(hidden.count)),
+              trailing: TextButton(
+                onPressed: hidden.shown ? feed.hideHidden : feed.showHidden,
+                child: Text(hidden.shown ? l10n.hide : l10n.show),
+              ),
+            ),
+    );
+  }
+}
+
+/// Above a feed: how many of its posts came in since the reader's last visit.
+class BooruNewPostsNotice extends StatelessWidget {
+  final BooruFeedStore feed;
+  final bool Function(BooruPost post) isNew;
+
+  const BooruNewPostsNotice({super.key, required this.feed, required this.isNew});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<BooruFeedStore, List<BooruPost>>(
+      store: feed,
+      onState: (context, posts) => switch (posts.where(isNew).length) {
+        0 => const SizedBox.shrink(),
+        final count => ListTile(
+          dense: true,
+          leading: const Icon(Icons.new_releases_outlined),
+          title: Text(l10n.plugin_booru_new_since_visit(count)),
+        ),
+      },
+    );
+  }
+}
+
 /// Opens [posts] at [index] in the post viewer, which swipes through the rest
 /// and, given the [feed] they came from, on into what it loads next.
 void openBooruPost(BuildContext context, List<BooruPost> posts, int index, {BooruFeedStore? feed}) {
@@ -140,7 +264,16 @@ class BooruPostTile extends StatelessWidget {
   final BooruDisplay display;
   final VoidCallback onOpen;
 
-  const BooruPostTile({super.key, required this.post, required this.onOpen, this.display = const BooruDisplay()});
+  /// Whether the post came in since the reader's last visit.
+  final bool isNew;
+
+  const BooruPostTile({
+    super.key,
+    required this.post,
+    required this.onOpen,
+    this.display = const BooruDisplay(),
+    this.isNew = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -162,9 +295,13 @@ class BooruPostTile extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Hero(
-                    tag: booruPostHeroTag(post),
-                    child: RepaintBoundary(child: _image(theme)),
+                  Semantics(
+                    image: true,
+                    label: booruTileLabel(l10n, post),
+                    child: Hero(
+                      tag: booruPostHeroTag(post),
+                      child: RepaintBoundary(child: _image(theme, ratio)),
+                    ),
                   ),
                   if (display.blurs(post))
                     Center(child: Icon(Icons.visibility_off_outlined, color: theme.colorScheme.onSurface)),
@@ -179,6 +316,12 @@ class BooruPostTile extends StatelessWidget {
                       top: 6,
                       right: 6,
                       child: _chip(context, Icons.warning_amber_outlined, post.rating!.code.toUpperCase()),
+                    ),
+                  if (isNew)
+                    Positioned(
+                      bottom: 6,
+                      left: 6,
+                      child: _chip(context, Icons.new_releases_outlined, l10n.plugin_booru_new_post),
                     ),
                 ],
               ),
@@ -220,23 +363,32 @@ class BooruPostTile extends StatelessWidget {
     );
   }
 
-  Widget _image(ThemeData theme) {
-    final image = BooruNetworkImage(
-      url: display.tileUrl(post),
-      fit: BoxFit.cover,
-      loadStateChanged: (state) {
-        if (state.extendedImageLoadState == LoadState.failed) {
-          return ColoredBox(
-            color: theme.colorScheme.surfaceContainerHighest,
-            child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
-          );
-        }
-        return null;
-      },
-    );
-    if (!display.blurs(post)) return image;
-    return ImageFiltered(imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), child: image);
-  }
+  /// The picture at the size the tile shows it: as wide as the tile, or
+  /// wider where the tile crops a picture wider than [ratio].
+  Widget _image(ThemeData theme, double ratio) => LayoutBuilder(
+    builder: (context, constraints) {
+      final width = constraints.maxWidth;
+      final pixels = width.isFinite && width > 0
+          ? (width * MediaQuery.devicePixelRatioOf(context) * max(1.0, post.aspectRatio / ratio)).ceil()
+          : null;
+      final image = BooruNetworkImage(
+        url: display.tileUrl(post, pixelWidth: pixels),
+        fit: BoxFit.cover,
+        cacheWidth: pixels,
+        loadStateChanged: (state) {
+          if (state.extendedImageLoadState == LoadState.failed) {
+            return ColoredBox(
+              color: theme.colorScheme.surfaceContainerHighest,
+              child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
+            );
+          }
+          return null;
+        },
+      );
+      if (!display.blurs(post)) return image;
+      return ImageFiltered(imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), child: image);
+    },
+  );
 
   Widget _chip(BuildContext context, IconData icon, String label) {
     final theme = Theme.of(context);

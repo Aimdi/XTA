@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "الأخيرة",
   "@home_networks_recent": {},
+  "image_cache_clear": "مسح",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "تُنزَّل الصور مرة أخرى عندما تراها في المرة القادمة.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "مسح ذاكرة الصور المؤقتة؟",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} على هذا الجهاز. تُحذف الصور الأقدم من {days} يومًا تلقائيًا.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "ذاكرة الصور المؤقتة",
+  "@image_cache_title": {},
   "image_quality": "جودة الصور",
   "@image_quality": {},
   "import": "استيراد",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "إضافة إلى البحث الحالي",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "منشورات Questionable وExplicit للبالغين فقط. أكِّد أن عمرك 18 عامًا أو أكثر وأنك تريد رؤيتها.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "عمري 18 عامًا أو أكثر",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "معظم المنشورات على {site} صريحة.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "إظهار منشورات البالغين؟",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "يُعرف أيضًا باسم {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "نسخ الرابط",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "نسخ الوسوم كموجّه",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "نسخ الوسم",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "نسخ الوسوم",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "تنزيل الكل",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "المنشورات المحمّلة حتى الآن: {count}. تُتخطّى الملفات الموجودة في تنزيلاتك.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "في قائمة الانتظار: {queued}. مُنزَّلة مسبقًا: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "تعديل كنص",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "انقر للتعديل",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "رفض الموقع الوصول — قد يتطلب تسجيل الدخول أو تحققًا عبر المتصفح",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "يتطلب هذا الموقع اسم مستخدم ومفتاح API — أضفهما في الإعدادات",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "عدد الوسوم كبير جدًا لبحث واحد على هذا الموقع — احذف بعضها",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "الموقع مشغول أو يحدّ من الطلبات — حاول مرة أخرى لاحقًا",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "اسم ملف التنزيل",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "اتركه فارغًا للإبقاء على اسم الملف من الموقع. يمكنك استخدام {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "متابعة الوسم",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "ملاءمة الشاشة",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "مخفية بسبب وسومك المكتومة: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "كل المنشورات حتى الآن مخفية بسبب الحد الأقصى للتصنيف أو الوسوم المكتومة",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "إخفاء المنشورات التي تحمل هذا الوسم",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "تحميل المزيد",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "تعذّر تحميل المزيد من المنشورات",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "الوسوم الوصفية",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "المزيد من {name}",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "الإدخال الذي يضم عدة وسوم يُخفي فقط المنشورات التي تحملها جميعًا. ويعمل أيضًا ‎-tag و rating:e",
+  "plugin_booru_mute_help": "الإدخال الذي يضم عدة وسوم يُخفي فقط المنشورات التي تحملها جميعًا. ويعمل أيضًا ‎-tag، ‎~tag، rating:e، score:<0، user:name و filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "الوسوم المكتومة على {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "جديد",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "جديدة منذ زيارتك الأخيرة: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "لا تعليقات بعد",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "الملاحظات: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "يحتفظ كل موقع بأقصى تصنيف خاص به وبالوسوم المكتومة وبيانات الدخول والمفتاح. أما الوسوم المتابَعة فمشتركة بين جميع المواقع.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "اختر تاريخًا",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "المنشورات: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "المجموعات",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "يوم",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "السابق",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "يكتب «نسخ الوسوم كموجّه» هذه الأنواع بهذا الترتيب، بمسافات بدل الشرطات السفلية وأقواس مُهرَّبة. اسحب لإعادة الترتيب، وأوقف نوعًا لاستبعاده.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "الوسوم كموجّه",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "تُعرض المنشورات السابقة",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "أدخل عنوان مضيف صالحًا",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "اسم العرض",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "انقر على وسم للبحث عنه أو متابعته أو إخفائه أو قراءة صفحته في الويكي",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "الفنان",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "الشخصية",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "إظهار إجراءات الوسم",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "ميتا",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "ترتيب الوسوم",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "انقر على وسم للبحث عنه. المس مطولًا لمتابعته أو إخفائه أو قراءة الويكي الخاص به.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "الوسوم",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "الموقع وأول الوسوم والنقاط أسفل كل منشور في الشبكة",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "منشور: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "فيديو: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "إلغاء متابعة الوسم",

@@ -352,14 +352,66 @@ lists each) change error text, credentials, feed resets, paging, the first
 frame of a feed, the Following tab, download names, tap-to-load for videos,
 the engine guessed for a custom host, settings after leaving them, the date
 label on Gelbooru 0.2 posts, what an animation downloads, Popular's default
-date and what a closed store does with a late answer. The scripted run uses Danbooru with no
-credentials on a working network, so four of them are on a timed path: B3
-checks whether a feed is stale (site, rating cap, blacklist) before each page
-request; B5 adds a footer under every grid that observes the paging state and
-shows a spinner while the next page loads; B7 shows the skeleton until a
-feed's first page arrives, where an empty state used to flash; and B8 checks
-that a returning page still belongs to the latest refresh. S1 and S2 cover
-them. Requests after a failed page are not a scenario here; a unit test checks
-them (five near-end scroll notifications after a failure make one request).
+date and what a closed store does with a late answer. The scripted run uses
+Danbooru with no credentials on a working network, so four of them are on a
+timed path: B3 checks whether a feed is stale (site, rating cap, blacklist)
+before each page request; B5 adds a footer under every grid that observes the
+paging state and shows a spinner while the next page loads; B7 shows the
+skeleton until a feed's first page arrives, where an empty state used to
+flash; and B8 checks that a returning page still belongs to the latest
+refresh. S1 and S2 cover them. Requests after a failed page are not a
+scenario here; a unit test checks them (five near-end scroll notifications
+after a failure make one request).
 Since B18 the run also turns "load media only on tap" off, and puts the
 reader's value back, so S5 starts each video with the player's own button.
+
+B10–B17, and B21 and B23 in part (`d259a6a4` to `e39aa081`), add three
+things to the Danbooru run: every page is checked for posts without a file
+(one check per post), an empty feed observes the paging state for its Load
+more button, and a GIF now opens from its original, so S3 and S7 load more
+bytes for a GIF post. The rest (Gelbooru-family rating tags, XML tags and
+entities, text refusals, page and tag limits, Rule34 paths, the Moebooru
+wiki, group member ids) is off the scripted path. None of this has been
+measured: the baseline itself has not yet run on a phone.
+
+### Tier 2 changes, not yet measured
+
+`f8d57c09` to `d732c7cc` (docs/booru/plan.md, tier 2) change what the scripted
+Danbooru run does. Requests to one site start at most ten a second, the rate
+Boorusama uses, and pause after a 429 or 5xx, so S2 and S3 can take longer
+on a busy site and should show no 429. Tiles fetch Danbooru's smallest
+variant that fills them, which should lower S7's bytes per screenful and S2's
+raster work. Latest asks for its first page in the first frame (S1). A swipe
+in the viewer rebuilds the app bar alone, posts seen again make no new
+request, and the next and previous pictures load while the reader looks
+(S3; S7 per viewer post rises by the preloads). Launches delete pictures
+cached more than 30 days ago. Every one of these is a prediction until the
+scenarios run on the same phone before and after.
+
+### Tier 3 changes with a performance side
+
+`322c1b31` keeps Latest's and Following's first page on the device so that
+a launch without a network can show it. Writing it costs JSON encoding: 100
+Danbooru-shaped posts with 40 tags each took a median of 6.2 ms (max 14 ms,
+30 runs after 20 warm-ups) on this environment's 2.8 GHz Xeon, in a
+throwaway test that was not committed. That is too much for the frame in
+which the first page lands, so the encoding and decoding run on a background
+isolate with `compute`, as `lib/group/feed_cache.dart` does. What remains on
+the UI isolate is copying the page to that isolate, which is not measured.
+On a phone, S1 and S2 should not change; that is UNVERIFIED.
+
+### Tiers 4 and 5 changes with a performance side
+
+Tier 4 adds requests to the viewer: a Danbooru post asks for its pools, and
+a Danbooru or e621 post for its translation notes. Until `1331f013` both
+skipped the viewer's per-post lookups, and the notes overlay sat inside the
+picture's hero, which builds its child again for each flight. A widget test
+that opens a post from search results, swipes to the next and back counted
+five notes requests for the two posts; after the fix it counts two. On a
+phone, S3 should show one or two more requests per post viewed (notes,
+pools) and no repeats; UNVERIFIED.
+
+Following now writes one preference per load, each site's newest post id
+(`ba615dbd`); the write is not awaited by the feed. A booru link opened from
+a post makes one `id:` search before the viewer opens (`e1f56f6e`), the way
+TikTok links already wait for their video.

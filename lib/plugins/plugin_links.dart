@@ -3,6 +3,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/booru/booru_link_open.dart';
+import 'package:xta/plugins/booru/booru_links.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_story_screen.dart';
 import 'package:xta/plugins/hackernews/hn_user_screen.dart';
@@ -129,7 +131,11 @@ Future<bool> _openParsed(BuildContext context, String url) async {
   if (prefs == null) {
     return false;
   }
-  final link = parsePluginLink(url, mastodonHosts: _mastodonHosts(prefs));
+  final link = parsePluginLink(
+    url,
+    mastodonHosts: _mastodonHosts(prefs),
+    booruSites: booruKnownSites(prefs),
+  );
   if (link == null || !_enabledFor(prefs, link)) {
     return false;
   }
@@ -188,6 +194,7 @@ Future<bool> _pushLink(BuildContext context, PluginLink link) {
       ),
     ),
     HnUserLink() => _push(context, HnUserScreen(userId: link.id)),
+    BooruPostLink() => openBooruPostRef(context, link.ref),
   };
 }
 
@@ -322,6 +329,7 @@ bool _enabledFor(BasePrefService prefs, PluginLink link) {
     MastodonStatusLink() => optionPluginMastodonEnabled,
     PixivWebLink() => optionPluginPixivEnabled,
     HnStoryLink() || HnUserLink() => optionPluginHnEnabled,
+    BooruPostLink() => optionPluginBooruEnabled,
   };
   return prefs.get(key) == true;
 }

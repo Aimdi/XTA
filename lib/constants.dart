@@ -472,6 +472,11 @@ const optionPluginBooruApiKey = 'plugin.booru.api_key';
 /// The host the Booru login and key were entered for; no other host is sent them.
 const optionPluginBooruCredentialsHost = 'plugin.booru.credentials_host';
 const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
+// Each site's own rating cap and blacklist while another is in use, as JSON by host.
+const optionPluginBooruSiteSettings = 'plugin.booru.site_settings';
+// Each site's own login and key while another is in use, as JSON by host. The
+// suffix keeps it out of exports and crash reports (see isSecretPrefKey).
+const optionPluginBooruSiteCredentials = 'plugin.booru.site_credentials_api_key';
 const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
 const optionPluginBooruSearchHistory = 'plugin.booru.search_history';
 const optionPluginBooruMutedTags = 'plugin.booru.muted_tags';
@@ -482,6 +487,12 @@ const optionPluginBooruOriginalInViewer = 'plugin.booru.original_in_viewer';
 const optionPluginBooruTileDetails = 'plugin.booru.tile_details';
 const optionPluginBooruBlurExplicit = 'plugin.booru.blur_explicit';
 const optionPluginBooruTagSort = 'plugin.booru.tag_sort';
+// How downloaded Booru files are named, with {id}, {md5}, {site}…; empty keeps the file's own name.
+const optionPluginBooruFileNameTemplate = 'plugin.booru.file_name_template';
+// The kinds of tag "Copy tags as prompt" writes, in order; empty means the default.
+const optionPluginBooruPromptKinds = 'plugin.booru.prompt_kinds';
+// Each site's newest post id seen on Following, as JSON by host, for what is new since.
+const optionPluginBooruFollowingSeen = 'plugin.booru.following_seen';
 const pluginIdEhViewer = 'ehviewer';
 const optionPluginEhEnabled = 'plugin.ehviewer.enabled';
 const optionPluginEhShowTab = 'plugin.ehviewer.show_tab';
