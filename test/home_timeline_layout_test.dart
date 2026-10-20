@@ -419,6 +419,22 @@ void main() {
     expect(tester.takeException(), isNull);
   }, skip: _before);
 
+  testWidgets('Home keeps nothing for the status bar under its header', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(top: 40);
+    addTearDown(tester.view.reset);
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+    // The strip and the header above the posts keep the status bar clear, so
+    // a notice floating over the posts sits right under them, not 40 px lower.
+    expect(MediaQuery.paddingOf(tester.element(find.byType(SubscriptionGroupScreenContent))).top, 0);
+    expect(tester.takeException(), isNull);
+  }, skip: _before);
+
   testWidgets('A short scrollable Home keeps controls stable', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;

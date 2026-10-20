@@ -276,9 +276,15 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
         ),
         widget.headerFrame?.call(context, header) ?? header,
         Expanded(
-          child: PrimaryScrollController(
-            controller: widget.scrollController,
-            child: KeyedSubtree(key: ValueKey(_refreshCounter), child: widget.bodyBuilder(context)),
+          // The strip above keeps the status bar clear, as an app bar would for
+          // a Scaffold's body, so what floats over the feed sits right under it.
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: PrimaryScrollController(
+              controller: widget.scrollController,
+              child: KeyedSubtree(key: ValueKey(_refreshCounter), child: widget.bodyBuilder(context)),
+            ),
           ),
         ),
       ],
