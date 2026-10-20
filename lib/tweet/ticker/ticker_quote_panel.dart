@@ -10,6 +10,7 @@ import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_range.dart';
 import 'package:xta/tweet/ticker/ticker_stats.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// Everything above a ticker's posts: which instrument, the price and its
 /// move, the session, the range-selectable chart, and today's statistics —
@@ -46,14 +47,16 @@ class TickerQuotePanel extends StatelessWidget {
       return [
         _QuoteHeader(state: state, quote: quote, symbol: store.symbol),
         const SizedBox(height: 8),
-        TickerChart(quote: quote, onScrub: store.scrub),
+        LoadingHairline(
+          loading: state.loading,
+          child: TickerChart(quote: quote, onScrub: store.scrub),
+        ),
       ];
     }
     if (state.failed) {
       return [_Unavailable(onRetry: store.load)];
     }
-    // The picker stays below, so the row does not vanish under the finger
-    // that just tapped a range.
+    // The first chart's place is held while it loads.
     return const [SizedBox(height: 200, child: Center(child: CircularProgressIndicator()))];
   }
 }

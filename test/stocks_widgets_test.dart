@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -25,6 +26,7 @@ import 'package:xta/tweet/ticker/ticker_detail_store.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_quote_panel.dart';
+import 'package:xta/tweet/ticker/ticker_range.dart';
 
 const _pepe = '0x6982508145454ce325ddbe47a25d4ec3d2311933';
 const _asset = CryptoAsset(chain: 'ethereum', address: _pepe, symbol: 'PEPE', name: 'Pepe');
@@ -268,6 +270,98 @@ void main() {
       expect(asked.last, 'ETH');
       expect(store.state.instrument.name, 'stock');
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a new range loads under the line over the chart before, so nothing below it moves', (tester) async {
+      Completer<http.Response>? next;
+      final store = TickerDetailStore(
+        symbol: 'AAPL',
+        client: TickerClient(
+          httpClient: MockClient((request) async => next?.future ?? http.Response(jsonEncode(_chart('AAPL')), 200)),
+        ),
+      );
+      addTearDown(store.destroy);
+      await store.load();
+      await _pump(
+        tester,
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              TickerQuotePanel(store: store),
+              const Text('first post'),
+            ],
+          ),
+        ),
+      );
+      final idle = tester.getTopLeft(find.text('first post'));
+
+      next = Completer<http.Response>();
+      await tester.tap(find.text('1W'));
+      await tester.pump();
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+      expect(find.text('200.00'), findsWidgets, reason: 'the price stays while the new range loads');
+      expect(tester.getTopLeft(find.text('first post')), idle);
+
+      next.complete(http.Response(jsonEncode(_chart('AAPL')), 200));
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+      await tester.pumpAndSettle();
+      expect(find.byType(LinearProgressIndicator), findsNothing);
+      expect(tester.getTopLeft(find.text('first post')), idle);
+    });
+
+    test('a silent refresh never overtakes a new range the reader is waiting on', () async {
+      final requests = <String>[];
+      Completer<http.Response>? next;
+      final store = TickerDetailStore(
+        symbol: 'AAPL',
+        client: TickerClient(
+          httpClient: MockClient((request) async {
+            requests.add(request.url.queryParameters['range'] ?? '');
+            return next?.future ?? http.Response(jsonEncode(_chart('AAPL')), 200);
+          }),
+        ),
+      );
+      addTearDown(store.destroy);
+      await store.load();
+
+      next = Completer<http.Response>();
+      final switching = store.selectRange(TickerRange.week);
+      await Future<void>.delayed(Duration.zero);
+      await store.load(silent: true);
+      expect(requests, ['1d', '5d'], reason: 'the live refresh waits for the range being loaded');
+
+      next.complete(http.Response('busy', 503));
+      await switching;
+      expect((store.state.failed, store.state.quote), (true, null));
+    });
+
+    testWidgets('a range that fails to load says so rather than keeping the chart before', (tester) async {
+      var busy = false;
+      final store = TickerDetailStore(
+        symbol: 'AAPL',
+        client: TickerClient(
+          httpClient: MockClient(
+            (request) async => busy ? http.Response('busy', 503) : http.Response(jsonEncode(_chart('AAPL')), 200),
+          ),
+        ),
+      );
+      addTearDown(store.destroy);
+      await store.load();
+      await _pump(tester, SingleChildScrollView(child: TickerQuotePanel(store: store)));
+
+      busy = true;
+      await tester.tap(find.text('1W'));
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+      await tester.pumpAndSettle();
+      expect(find.text('Market data could not be loaded'), findsOneWidget);
+      expect(find.text('200.00'), findsNothing);
+
+      busy = false;
+      await tester.tap(find.text('Retry'));
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+      await tester.pumpAndSettle();
+      expect(find.text('Market data could not be loaded'), findsNothing);
+      expect(store.state.range.name, 'week');
     });
 
     testWidgets('a failed price load offers a retry instead of a blank', (tester) async {
