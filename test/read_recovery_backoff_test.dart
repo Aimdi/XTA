@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show SocketException;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -344,12 +345,13 @@ void main() {
     addTearDown(surface.dispose);
     final notice = ReaderFailureNotice(error: surface.failure, onRetry: surface.retry);
     await _show(tester, _app(surface.recovery(child: notice), observeRoutes: false));
-    expect(find.text('Versuche es in 2 s erneut …'), findsOneWidget);
+    // One Retry button carries the countdown, its sentence in the tooltip.
+    expect(find.byTooltip('Versuche es in 2 s erneut …'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     expect(find.text('Erneut versuchen'), findsOneWidget);
     expect(find.byTooltip(L10n.current.more_info), findsOneWidget);
     await tester.pump(const Duration(seconds: 1));
-    expect(find.text('Versuche es in 1 s erneut …'), findsOneWidget);
+    expect(find.byTooltip('Versuche es in 1 s erneut …'), findsOneWidget);
     await tester.pump(const Duration(seconds: 1 + 5 + 15 + 30 + 60));
     await tester.pump();
     expect(surface.retries, readRetryDelays.length);
@@ -370,6 +372,25 @@ void main() {
     expect(find.byType(ReadRetryCountdown), findsOneWidget);
     expect(find.textContaining(RegExp(r'Versuche es in [23]:\d\d erneut')), findsOneWidget);
     expect(find.byType(RateLimitRetryButton), findsNothing);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('a notice counting down keeps one row on a small phone', (tester) async {
+    // Real glyph widths: the test font's square glyphs would make German twice as wide.
+    await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final surface = _Surface(const SocketException('down'));
+    addTearDown(surface.dispose);
+    final notice = ReaderFailureNotice(error: surface.failure, onRetry: surface.retry, onDismiss: () {});
+    // Before, the countdown sentence sat beside Retry and the row wrapped to 88 px.
+    await _show(
+      tester,
+      _app(Theme(data: ThemeData(fontFamily: 'Inter'), child: surface.recovery(child: notice)), observeRoutes: false),
+    );
+    expect(find.byType(ReadRetryCountdown), findsOneWidget);
+    expect(tester.getSize(find.byType(ReaderFailureNotice)).height, 48);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
