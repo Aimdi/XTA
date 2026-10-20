@@ -25,6 +25,30 @@ class _Client extends BooruClient {
 
   final prefixes = <String>[];
   final queries = <String>[];
+  final tagLookups = <String>[];
+  final noteLookups = <String>[];
+
+  /// What the host relates to a search; none by default.
+  List<String> related = const [];
+  final relatedAsked = <List<String>>[];
+
+  @override
+  Future<List<String>> relatedTags(List<String> tags) async {
+    relatedAsked.add(tags);
+    return related;
+  }
+
+  @override
+  Future<Map<String, BooruTagInfo>> tagInfo(BooruPost post) async {
+    tagLookups.add(post.id);
+    return const {};
+  }
+
+  @override
+  Future<List<BooruNote>> notes(BooruPost post) async {
+    noteLookups.add(post.id);
+    return const [];
+  }
 
   @override
   Future<List<BooruTagSuggestion>> suggestTags(String prefix, {int limit = 12}) async {
@@ -45,6 +69,45 @@ class _Client extends BooruClient {
     queries.add(query);
     return BooruPostPage(posts: [_post('1'), _post('2')], page: page, hasMore: false);
   }
+}
+
+/// A host whose first pages the rating limit or blacklist emptied: only page 6 has a post left to show.
+class _HiddenClient extends _Client {
+  _HiddenClient(super.prefs);
+
+  final pages = <int>[];
+
+  @override
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async {
+    pages.add(page);
+    return BooruPostPage(posts: page < 6 ? const [] : [_post('6')], page: page, hasMore: true);
+  }
+}
+
+/// A host whose results the blacklist partly hid: [shown] of [all].
+class _MutedClient extends _Client {
+  _MutedClient(super.prefs, {required this.shown, required this.all});
+
+  final List<String> shown;
+  final List<String> all;
+
+  @override
+  Future<BooruPostPage> search(
+    String query, {
+    int page = 1,
+    int limit = BooruClient.defaultPageSize,
+    BooruSite? site,
+  }) async => BooruPostPage(
+    posts: [for (final id in shown) _post(id)],
+    allowed: [for (final id in all) _post(id)],
+    page: page,
+    hasMore: false,
+  );
 }
 
 BooruPost _post(String id) => BooruPost(
@@ -104,9 +167,10 @@ Future<_Harness> _open(
   PrefServiceCache? prefs,
   String? initialQuery,
   List<String> saved = const [],
+  _Client Function(PrefServiceCache prefs) client = _Client.new,
 }) async {
   final service = prefs ?? PrefServiceCache();
-  final harness = _Harness(service, _Client(service), _SavedSearches(saved));
+  final harness = _Harness(service, client(service), _SavedSearches(saved));
   await tester.pumpWidget(
     PrefService(
       service: service,
@@ -213,6 +277,20 @@ void main() {
     expect(find.byType(BooruPostGrid), findsOneWidget);
   });
 
+  testWidgets('results the filters hid on the first pages still lead on to later pages', (tester) async {
+    final harness = await _open(tester, initialQuery: 'solo', client: _HiddenClient.new);
+    final client = harness.client as _HiddenClient;
+    expect(client.pages, [1, 2, 3, 4]);
+    expect(find.text('No posts matched those tags'), findsNothing, reason: 'the host has more pages');
+    expect(find.text('Every post so far is hidden by your maximum rating or muted tags'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('booru-load-more')));
+    await _settle(tester);
+
+    expect(client.pages, [1, 2, 3, 4, 5, 6]);
+    expect(find.byType(BooruPostTile), findsOneWidget);
+  });
+
   group('tags as chips', () {
     testWidgets('space finishes a tag, ✕ removes it and backspace in an empty field drops the last', (tester) async {
       await _open(tester);
@@ -277,6 +355,20 @@ void main() {
       await tester.tap(find.widgetWithText(FilterChip, 'rating:g'));
       await _settle(tester);
       expect(_chip('rating:g'), findsNothing);
+    });
+
+    testWidgets("the site's metatags are listed, and one tapped is started in the field", (tester) async {
+      await _open(tester);
+      expect(find.text('Metatags'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(ActionChip, 'order:'));
+      await _settle(tester);
+      expect(tester.widget<TextField>(_field).controller!.text, 'order:');
+
+      await tester.tap(find.text('order:score'));
+      await _settle(tester);
+      expect(_chip('order:score'), findsOneWidget);
+      expect(tester.widget<TextField>(_field).controller!.text, isEmpty);
     });
 
     testWidgets('tapping a chip moves it back into the field', (tester) async {
@@ -418,6 +510,23 @@ void main() {
       expect(harness.client.queries.last, 'cat solo -smile');
     });
 
+    testWidgets("the host's related tags take the place of the ones the results share", (tester) async {
+      final harness = await _open(
+        tester,
+        initialQuery: 'cat -dog order:score',
+        client: (prefs) => _Client(prefs)..related = const ['cat', 'animal_ears', 'dog', 'whiskers'],
+      );
+
+      expect(harness.client.relatedAsked, [
+        ['cat'],
+      ], reason: 'asked once, for the tags searched for');
+      expect(find.widgetWithText(ActionChip, 'animal_ears'), findsOneWidget);
+      expect(find.widgetWithText(ActionChip, 'whiskers'), findsOneWidget);
+      expect(find.widgetWithText(ActionChip, 'cat'), findsNothing, reason: 'already searched for');
+      expect(find.widgetWithText(ActionChip, 'dog'), findsNothing, reason: 'already excluded');
+      expect(find.widgetWithText(ActionChip, 'solo'), findsNothing);
+    });
+
     testWidgets('a tag on a post can be added to the search it came from', (tester) async {
       final harness = await _open(tester, initialQuery: 'cat');
       await _openTagActions(tester, 'hat_red');
@@ -436,6 +545,24 @@ void main() {
       expect(harness.client.queries.last, 'cat -hat_red');
     });
 
+    testWidgets("one tap on a post's tag searches it", (tester) async {
+      final harness = await _open(tester, initialQuery: 'cat');
+      await tester.tap(find.byType(BooruPostTile).first);
+      await _settle(tester);
+      final chip = find.byKey(const ValueKey('booru-post-tag-smile'));
+      await tester.scrollUntilVisible(
+        chip,
+        300,
+        scrollable: find.descendant(of: find.byType(BooruPostDetails), matching: find.byType(Scrollable)).first,
+      );
+
+      await tester.tap(chip);
+      await _settle(tester);
+
+      expect(find.byKey(const ValueKey('booru-tag-action-add')), findsNothing, reason: 'no sheet in between');
+      expect(harness.client.queries.last, 'smile');
+    });
+
     testWidgets('a tag can be followed and hidden from its sheet', (tester) async {
       final harness = await _open(tester, initialQuery: 'cat');
       await _openTagActions(tester, 'smile');
@@ -443,12 +570,60 @@ void main() {
       await _settle(tester);
       expect(harness.saved.state, contains('smile'));
 
-      await tester.tap(find.byKey(const ValueKey('booru-post-tag-smile')));
+      await tester.longPress(find.byKey(const ValueKey('booru-post-tag-smile')));
       await _settle(tester);
       expect(find.text('Unfollow tag'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('booru-tag-action-hide')));
       await _settle(tester);
       expect(readMuted(harness.prefs), contains('smile'));
+    });
+
+    testWidgets("swiping back to a post asks for its tags and notes once, and a page change keeps the pages", (
+      tester,
+    ) async {
+      final harness = await _open(tester, initialQuery: 'cat');
+      await tester.tap(find.byType(BooruPostTile).first);
+      await _settle(tester);
+      final pages = tester.widget<PageView>(find.byType(PageView));
+
+      await tester.fling(find.byType(PageView), const Offset(-600, 0), 1000);
+      await _settle(tester);
+      expect(find.text('#2'), findsOneWidget);
+      expect(tester.widget<PageView>(find.byType(PageView)), same(pages), reason: 'only the app bar is rebuilt');
+      await tester.fling(find.byType(PageView), const Offset(600, 0), 1000);
+      await _settle(tester);
+
+      expect(find.text('#1'), findsOneWidget);
+      expect(harness.client.tagLookups, ['1', '2']);
+      expect(harness.client.noteLookups, ['1', '2'], reason: 'nor are the notes asked again for the hero flight');
+    });
+
+    testWidgets('results say how many posts the muted tags hid, and show them on request', (tester) async {
+      await _open(
+        tester,
+        initialQuery: 'cat',
+        client: (prefs) => _MutedClient(prefs, shown: ['1'], all: ['1', '2', '3']),
+      );
+      expect(find.byType(BooruPostTile), findsOneWidget);
+      expect(find.text('Hidden by your muted tags: 2'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Show'));
+      await _settle(tester);
+      expect(find.byType(BooruPostTile), findsNWidgets(3));
+    });
+
+    testWidgets('a search the muted tags emptied still offers what they hid', (tester) async {
+      await _open(
+        tester,
+        initialQuery: 'cat',
+        client: (prefs) => _MutedClient(prefs, shown: [], all: ['1']),
+      );
+      expect(find.byType(BooruPostTile), findsNothing);
+      expect(find.text('Hidden by your muted tags: 1'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Show'));
+      await _settle(tester);
+      expect(find.byType(BooruPostTile), findsOneWidget);
     });
 
     testWidgets('the viewer swipes on to the next post', (tester) async {
@@ -463,7 +638,7 @@ void main() {
   });
 }
 
-/// Opens the first result and the actions of its [tag].
+/// Opens the first result and, with a long press, the actions of its [tag].
 Future<void> _openTagActions(WidgetTester tester, String tag) async {
   await tester.tap(find.byType(BooruPostTile).first);
   await _settle(tester);
@@ -474,7 +649,7 @@ Future<void> _openTagActions(WidgetTester tester, String tag) async {
     300,
     scrollable: find.descendant(of: find.byType(BooruPostDetails), matching: find.byType(Scrollable)).first,
   );
-  await tester.tap(chip);
+  await tester.longPress(chip);
   await _settle(tester);
 }
 

@@ -129,12 +129,7 @@ class PixivDownloader {
 
   /// The configured destination, else a folder asked for once for the whole
   /// work; null when the user backs out of choosing one.
-  Future<DownloadDestination?> batchDestination(BasePrefService prefs) async {
-    final configured = DownloadDestination.fromPrefs(prefs);
-    if (!configured.asks) return configured;
-    final treeUri = await DownloadDirectory.pick();
-    return treeUri == null ? null : DownloadDestination.folder(treeUri);
-  }
+  Future<DownloadDestination?> batchDestination(BasePrefService prefs) => batchDownloadDestination(prefs);
 
   /// The configured download folder, else one asked for once for the whole
   /// work. Files made on the device (an ugoira export) can only go to a folder.

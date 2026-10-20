@@ -7,7 +7,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
+import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_post_lookups.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 
@@ -37,7 +39,13 @@ class _BooruRelatedStripState extends State<BooruRelatedStrip> {
     super.initState();
     final client = context.read<BooruClient>();
     final site = client.siteOf(widget.exclude);
-    _feed = BooruFeedStore(client, ({required page}) => client.search(widget.query, page: page, limit: 20, site: site));
+    final lookups = context.read<BooruPostLookups?>();
+    Future<BooruPostPage> search(int page) => client.search(widget.query, page: page, limit: 20, site: site);
+    _feed = BooruFeedStore(
+      client,
+      ({required page}) =>
+          lookups?.remember('related:${site.host}:${widget.query}:$page', () => search(page)) ?? search(page),
+    );
     unawaited(_feed.refresh());
   }
 
@@ -107,7 +115,11 @@ class _BooruRelatedStripState extends State<BooruRelatedStrip> {
           onTap: () => openBooruPost(context, posts, index),
           child: SizedBox(
             width: width,
-            child: BooruNetworkImage(url: post.thumbnailUrl, fit: BoxFit.cover),
+            child: Semantics(
+              image: true,
+              label: booruTileLabel(L10n.of(context), post),
+              child: BooruNetworkImage(url: post.thumbnailUrl, fit: BoxFit.cover),
+            ),
           ),
         ),
       ),

@@ -119,6 +119,33 @@ void main() {
       expect(posts.single.tags, ['solo', 'smile']);
     });
 
+    // Gelbooru sends tag names HTML-escaped; Boorusama decodes them. Shapes
+    // as the audit read them, not recorded from the live host.
+    test('Gelbooru tags and tag names read without HTML entities', () {
+      final post = parseBooruPosts(
+        {
+          'post': [
+            {
+              'id': 8,
+              'tags': 'girls&#039;_frontline tom_&amp;_jerry &quot;quote&quot;',
+              'rating': 'general',
+              'file_url': 'https://img3.gelbooru.com/images/a.jpg',
+            },
+          ],
+        },
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://gelbooru.com',
+      ).single;
+      final suggestion = parseBooruTagSuggestions({
+        'tag': [
+          {'name': 'girls&#039;_frontline', 'count': 1200, 'type': 3},
+        ],
+      }, engine: BooruEngine.gelbooruV2).single;
+
+      expect(post.tags, ["girls'_frontline", 'tom_&_jerry', '"quote"']);
+      expect(suggestion.name, "girls'_frontline");
+    });
+
     test('Rule34 guest posts compose file URLs from directory and image', () {
       final posts = parseBooruPosts(
         {
@@ -143,6 +170,38 @@ void main() {
       expect(posts.single.fileUrl, 'https://rule34.xxx/images/1234/abc.png');
       expect(posts.single.previewUrl, 'https://rule34.xxx/thumb.jpg');
       expect(posts.single.rating, BooruRating.explicit);
+    });
+
+    // Shapes as the audit read them in Boorusama's Gelbooru 0.2 post parser,
+    // not recorded from the live hosts.
+    test('a numeric directory still builds the file URL', () {
+      final post = parseBooruPosts(
+        [
+          {'id': 12, 'directory': 1234, 'image': 'abc.png'},
+        ],
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://rule34.xxx',
+      ).single;
+
+      expect(post.fileUrl, 'https://rule34.xxx/images/1234/abc.png');
+    });
+
+    test('a video with no preview never uses the video as its thumbnail', () {
+      final posts = parseBooruPosts(
+        [
+          {'id': 13, 'directory': '1234', 'image': 'abc.mp4', 'hash': 'abc'},
+          {'id': 14, 'file_url': 'https://rule34.xxx/images/1/def.mp4'},
+        ],
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://rule34.xxx',
+      );
+
+      expect(
+        posts.first.thumbnailUrl,
+        'https://rule34.xxx/thumbnails/1234/thumbnail_abc.jpg',
+      );
+      expect(posts.last.thumbnailUrl, isEmpty);
+      expect(posts.last.catalogUrl, isEmpty);
     });
 
     test('Rule34 API host opens the public site', () {
@@ -209,6 +268,46 @@ void main() {
       expect(posts.single.previewUrl, contains('preview'));
       expect(posts.single.catalogUrl, contains('sample'));
       expect(posts.single.hostPageUrl, 'https://e621.net/posts/6617540');
+    });
+
+    // An e621 GIF's sample is a still JPEG; Boorusama shows the original
+    // instead. Shape as the audit read it, not recorded from the live host.
+    test('a GIF is shown from its original, not its still sample', () {
+      final gif = parseBooruPosts(
+        {
+          'posts': [
+            {
+              'id': 1,
+              'rating': 's',
+              'file': {
+                'ext': 'gif',
+                'url': 'https://static1.e621.net/data/a.gif',
+              },
+              'sample': {'url': 'https://static1.e621.net/data/sample/a.jpg'},
+              'preview': {'url': 'https://static1.e621.net/data/preview/a.jpg'},
+            },
+          ],
+        },
+        engine: BooruEngine.e621,
+        host: 'https://e621.net',
+      ).single;
+      final still = parseBooruPosts(
+        [
+          {
+            'id': 2,
+            'rating': 'g',
+            'file_ext': 'png',
+            'file_url': 'https://cdn.donmai.us/original/b.png',
+            'large_file_url': 'https://cdn.donmai.us/sample/b.jpg',
+          },
+        ],
+        engine: BooruEngine.danbooru,
+        host: 'https://danbooru.donmai.us',
+      ).single;
+
+      expect(gif.displayUrl, 'https://static1.e621.net/data/a.gif');
+      expect(gif.catalogUrl, 'https://static1.e621.net/data/sample/a.jpg');
+      expect(still.displayUrl, 'https://cdn.donmai.us/sample/b.jpg');
     });
 
     test('filters by max rating and muted tags', () {

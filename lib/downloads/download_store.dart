@@ -17,6 +17,9 @@ class DownloadCenterState {
 const downloadConcurrencyDefault = 2;
 const downloadConcurrencyChoices = [1, 2, 3, 4];
 
+/// How many downloads may wait or run at once; the queue refuses more.
+const maxActiveDownloads = 100;
+
 class DownloadStore extends Store<DownloadCenterState> {
   static final shared = DownloadStore();
   final DownloadHistory history;
@@ -102,7 +105,9 @@ class DownloadStore extends Store<DownloadCenterState> {
     if (!['http', 'https'].contains(uri.scheme) || uri.host.isEmpty || uri.toString().length > 16000) {
       throw ArgumentError.value(uri, 'uri', 'Expected a web media URL');
     }
-    if (state.entries.where((entry) => entry.active).length >= 100) throw StateError('Download queue is full');
+    if (state.entries.where((entry) => entry.active).length >= maxActiveDownloads) {
+      throw StateError('Download queue is full');
+    }
     final folder = treeUri == null || treeUri.isEmpty ? null : treeUri;
     final entry = DownloadEntry(
       id: const Uuid().v4(),

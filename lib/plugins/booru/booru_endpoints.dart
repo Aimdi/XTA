@@ -105,6 +105,46 @@ Uri? booruTagInfoUri(BooruSite site, {required String postId, required List<Stri
   }
 }
 
+/// Tags the host finds alongside [tags]: Danbooru for a whole search, e621
+/// for one tag. Null where the host keeps no such list.
+Uri? booruRelatedTagsUri(BooruSite site, List<String> tags) => switch (site.engine) {
+  _ when tags.isEmpty => null,
+  BooruEngine.danbooru => site.endpoint('/related_tag.json', {'search[query]': tags.join(' '), 'limit': '25'}),
+  BooruEngine.e621 when tags.length == 1 => site.endpoint('/tags.json', {'search[name]': tags.single, 'limit': '1'}),
+  _ => null,
+};
+
+/// The artist entries matching [name]: Danbooru and e621 keep them. Null
+/// elsewhere.
+Uri? booruArtistUri(BooruSite site, String name) => switch (site.engine) {
+  BooruEngine.danbooru => site.endpoint('/artists.json', {
+    'search[any_name_matches]': name,
+    'only': 'name,is_deleted,other_names,urls',
+    'limit': '10',
+  }),
+  BooruEngine.e621 => site.endpoint('/artists.json', {'search[name]': name, 'limit': '1'}),
+  _ => null,
+};
+
+/// The pools post [postId] is in; Danbooru keeps them. Null elsewhere.
+Uri? booruPostPoolsUri(BooruSite site, String postId) => switch (site.engine) {
+  BooruEngine.danbooru => site.endpoint('/pools.json', {'search[post_ids_include_all]': postId, 'limit': '20'}),
+  _ => null,
+};
+
+/// The translation notes on post [postId]; Danbooru and e621 keep them the
+/// same way. Null elsewhere.
+Uri? booruNotesUri(BooruSite site, String postId) => switch (site.engine) {
+  BooruEngine.danbooru || BooruEngine.e621 => site.endpoint('/notes.json', {'search[post_id]': postId, 'limit': '200'}),
+  _ => null,
+};
+
+/// Only Danbooru's pools are read so far.
+bool booruSupportsPools(BooruEngine engine) => engine == BooruEngine.danbooru;
+
+/// The search that reads pool [poolId] in its own order.
+String booruPoolQuery(String poolId) => 'ordpool:$poolId';
+
 bool booruSupportsWiki(BooruEngine engine) => engine != BooruEngine.gelbooruV2;
 
 /// Gelbooru only answers comments in XML.
@@ -115,8 +155,10 @@ Uri? booruWikiUri(BooruSite site, String tag) {
     case BooruEngine.danbooru:
     case BooruEngine.e621:
       return site.endpoint('/wiki_pages.json', {'search[title]': tag, 'limit': '1'});
+    // A title search, not a lookup: many titles holding the tag can sort
+    // before it, so ask for as many as one page holds and pick the exact one.
     case BooruEngine.moebooru:
-      return site.endpoint('/wiki.json', {'query': tag, 'limit': '10'});
+      return site.endpoint('/wiki.json', {'query': tag, 'limit': '100'});
     case BooruEngine.gelbooruV2:
       return null;
   }

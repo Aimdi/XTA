@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_metatags.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_search_store.dart';
@@ -21,6 +22,9 @@ class BooruSearchLanding extends StatelessWidget {
   final BooruRating maxRating;
   final ValueChanged<String> onRun;
   final ValueChanged<BooruTagSuggestion> onPick;
+
+  /// A metatag's name with its colon, to be started in the field.
+  final ValueChanged<String> onMetatag;
   final ValueChanged<String> onOperator;
   final VoidCallback onEditAsText;
   final VoidCallback onClear;
@@ -35,6 +39,7 @@ class BooruSearchLanding extends StatelessWidget {
     required this.maxRating,
     required this.onRun,
     required this.onPick,
+    required this.onMetatag,
     required this.onOperator,
     required this.onEditAsText,
     required this.onClear,
@@ -59,6 +64,7 @@ class BooruSearchLanding extends StatelessWidget {
           onEditAsText: onEditAsText,
           onClear: onClear,
         ),
+        _Metatags(engine: engine, onTap: onMetatag),
         _SavedSearches(saved: saved, onRun: onRun),
         _RecentSearches(history: store.history, onRun: onRun),
       ],
@@ -212,6 +218,45 @@ class _QueryTools extends StatelessWidget {
         selected: selected,
         materialTapTargetSize: MaterialTapTargetSize.padded,
         onSelected: (_) => onPressed(),
+      ),
+    );
+  }
+}
+
+/// The metatags the site's engine understands; a tap starts one in the
+/// field, where its known values are then offered.
+class _Metatags extends StatelessWidget {
+  final BooruEngine engine;
+  final ValueChanged<String> onTap;
+
+  const _Metatags({required this.engine, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(L10n.of(context).plugin_booru_metatags, style: theme.textTheme.titleSmall),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              for (final name in booruEngineMetatags(engine))
+                ActionChip(
+                  label: Text('$name:'),
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  onPressed: () => onTap('$name:'),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

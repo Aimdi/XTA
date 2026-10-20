@@ -1,3 +1,5 @@
+import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_links.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_links.dart';
 
@@ -115,6 +117,12 @@ class HnUserLink extends PluginLink {
   const HnUserLink(this.id);
 }
 
+class BooruPostLink extends PluginLink {
+  final BooruPostRef ref;
+
+  const BooruPostLink(this.ref);
+}
+
 /// Hosts XTA will treat as Mastodon when opening a `/@user` link.
 Set<String> mastodonLinkHosts(Iterable<String> instances) => {
   for (final instance in instances)
@@ -122,9 +130,11 @@ Set<String> mastodonLinkHosts(Iterable<String> instances) => {
 };
 
 /// Tries each plugin parser. [mastodonHosts] must be hostnames, not URLs.
+/// [booruSites] are the boorus whose post pages open in the app.
 PluginLink? parsePluginLink(
   String url, {
   Set<String> mastodonHosts = const {},
+  Iterable<BooruPreset> booruSites = booruPresets,
 }) {
   return parseBlueskyLink(url) ??
       parseThreadsLink(url) ??
@@ -133,6 +143,7 @@ PluginLink? parsePluginLink(
       parseRedditLink(url) ??
       parseHackerNewsLink(url) ??
       parsePixivWebLink(url) ??
+      parseBooruLink(url, sites: booruSites) ??
       parseMastodonLink(url, knownHosts: mastodonHosts);
 }
 
@@ -294,6 +305,13 @@ bool _isPixivAppLink(String url) =>
 
 bool _isPixivFamilyHost(String host) =>
     isPixivWebHost(host) || isPixivImageHost(host) || isPixivisionHost(host);
+
+/// A post page on one of [sites].
+PluginLink? parseBooruLink(String url, {Iterable<BooruPreset> sites = booruPresets}) {
+  final uri = httpUri(url);
+  final ref = uri == null ? null : booruPostRefOf(uri, sites);
+  return ref == null ? null : BooruPostLink(ref);
+}
 
 PluginLink? parseMastodonLink(String url, {required Set<String> knownHosts}) {
   final uri = httpUri(url);

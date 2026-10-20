@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "最近",
   "@home_networks_recent": {},
+  "image_cache_clear": "消去",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "画像は次に表示するときに再ダウンロードされます。",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "画像キャッシュを消去しますか？",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "この端末で {size}。{days} 日より古い画像は自動的に削除されます。",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "画像キャッシュ",
+  "@image_cache_title": {},
   "image_quality": "画像の画質",
   "@image_quality": {},
   "import": "インポート",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "現在の検索に追加",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "「やや過激」と「過激」の投稿は成人向けです。18 歳以上で、表示を希望することを確認してください。",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "18 歳以上です",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "{site} の投稿の大半は過激な内容です。",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "成人向けの投稿を表示しますか？",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "別名: {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "APIキー",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "任意。一部ホスト（Gelbooru、Danbooru）では安定したアクセスにキーが必要です。",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "リンクをコピー",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "タグをプロンプトとしてコピー",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "タグをコピー",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "すべてのタグをコピー",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Danbooru系・Gelbooru系を閲覧し、タグをグループに追加",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "すべてダウンロード",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "読み込み済みの投稿: {count} 件。ダウンロード済みのファイルはスキップされます。",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "キューに追加: {queued} 件。ダウンロード済み: {skipped} 件。",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "テキストとして編集",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "タップして編集",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "アクセスが拒否されました。ログインまたはブラウザでの確認が必要かもしれません",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "このサイトにはログインと API キーが必要です。設定で追加してください",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Booruホストに接続できません",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "先に設定でBooruホストを選んでください",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "ホストから予期しない応答がありました",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "このサイトでは 1 回の検索に使えるタグ数を超えています。いくつか外してください",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "拒否されました。ログインとAPIキーを確認してください",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "ホストが混雑しているか、リクエストを制限しています。しばらくしてから再試行してください",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "ダウンロードのファイル名",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "空欄のままにするとサイトのファイル名を使います。使えるもの: {tokens}",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "タグをフォロー",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booruタグ",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "画面に合わせる",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "ミュートタグで非表示: {count} 件",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "これまでの投稿はすべて、最大レーティングまたはミュートしたタグによって非表示になっています",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "このタグの投稿をミュート",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "ホストURL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Booruの投稿を読み込めませんでした",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "さらに読み込む",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "追加の投稿を読み込めませんでした",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "ログイン / ユーザーID",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "最大レーティング",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "メタタグ",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "{name}の他の作品",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "ミュート中のタグはまだありません",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "1つの項目に複数のタグを入れると、そのすべてを含む投稿だけをミュートします。-tag や rating:e も使えます",
+  "plugin_booru_mute_help": "1つの項目に複数のタグを入れると、そのすべてを含む投稿だけをミュートします。-tag、~tag、rating:e、score:<0、user:name、filetype:gif なども使えます",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "ミュートタグ",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "{site} のミュートタグ",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "タグをミュート",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "新着",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "前回の訪問以降の新着: {count} 件",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "コメントはまだありません",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "注釈: {count} 件",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "原寸ファイルを開く",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "ホストで開く",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooruは平文パスワードではなく、サイトのSHA1ハッシュを要求します。",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "最大レーティング、ミュートタグ、ログイン、キーはサイトごとに保存されます。フォロー中のタグはすべてのサイトで共通です。",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "日付を選択",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "投稿: {count} 件",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "プール",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "日間",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "前の期間",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "「タグをプロンプトとしてコピー」は、これらの種類をこの順に、アンダースコアを空白に、括弧をエスケープして書き出します。ドラッグで並べ替え、オフにした種類は除外されます。",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "プロンプトとしてのタグ",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "過激",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "全年齢",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "プラグイン有効時、下部ナビにBooruを追加します",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "前回の投稿を表示しています",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "有効なホストURLを入力してください",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "表示名",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "最新",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "タグをタップすると検索、フォロー、ミュート、Wikiの閲覧ができます",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "アーティスト",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "キャラクター",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "タグの操作を表示",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "メタ",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "タグを並べ替え",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "タグをタップすると検索します。長押しでフォロー、非表示、Wiki の表示ができます。",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "タグ",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "接続をテスト",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "グリッドの各投稿の下にホスト、先頭のタグ、スコアを表示します",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "投稿: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "動画: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "タグのフォローを解除",

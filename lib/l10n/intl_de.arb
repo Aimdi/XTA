@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Zuletzt",
   "@home_networks_recent": {},
+  "image_cache_clear": "Leeren",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Bilder werden erneut geladen, wenn du sie das nächste Mal siehst.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Bild-Cache leeren?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} auf diesem Gerät. Bilder, die älter als {days} Tage sind, werden automatisch entfernt.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Bild-Cache",
+  "@image_cache_title": {},
   "image_quality": "Bildqualität",
   "@image_quality": {},
   "import": "Importieren",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Zur aktuellen Suche hinzufügen",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Beiträge mit „Fragwürdig“ und „Explizit“ sind nur für Erwachsene. Bestätige, dass du mindestens 18 Jahre alt bist und sie sehen möchtest.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Ich bin mindestens 18",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Die meisten Beiträge auf {site} sind explizit.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Beiträge für Erwachsene anzeigen?",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "Auch bekannt als {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API-Schlüssel",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — manche Hosts (Gelbooru, Danbooru) brauchen einen Schlüssel für zuverlässigen Zugriff.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Link kopieren",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Tags als Prompt kopieren",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Tag kopieren",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Tags kopieren",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Danbooru- und Gelbooru-Hosts durchsuchen — Tags in Gruppen folgen",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Alle herunterladen",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Bisher geladene Beiträge: {count}. Dateien, die schon in deinen Downloads sind, werden übersprungen.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "In der Warteschlange: {queued}. Bereits heruntergeladen: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Als Text bearbeiten",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Tippen zum Bearbeiten",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "Zugriff verweigert — evtl. sind Login oder Browser-Prüfung nötig",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Dieser Host braucht Login und API-Schlüssel — in den Einstellungen hinzufügen",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Booru-Host nicht erreichbar",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Zuerst einen Booru-Host in den Einstellungen wählen",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "Unerwartete Antwort vom Host",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "Zu viele Tags für eine Suche auf diesem Host — einige entfernen",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "Anfrage abgelehnt — Login und API-Schlüssel prüfen",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Host ausgelastet oder begrenzt Anfragen — später erneut versuchen",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "Dateiname für Downloads",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Leer lassen, um den Dateinamen der Seite zu behalten. Du kannst {tokens} verwenden.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "Tag folgen",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru-Tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "An Bildschirm anpassen",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Durch stumme Tags ausgeblendet: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "Alle bisherigen Beiträge sind durch deine maximale Bewertung oder stummgeschaltete Tags ausgeblendet",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Beiträge mit diesem Tag ausblenden",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host-URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Booru-Beiträge konnten nicht geladen werden",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "Mehr laden",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "Weitere Beiträge konnten nicht geladen werden",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / Benutzer-ID",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximale Bewertung",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "Metatags",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "Mehr von {name}",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "Noch keine stummgeschalteten Tags",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Mehrere Tags in einem Eintrag blenden nur Beiträge aus, die alle davon enthalten. Auch -tag und rating:e funktionieren",
+  "plugin_booru_mute_help": "Mehrere Tags in einem Eintrag blenden nur Beiträge aus, die alle davon enthalten. Auch -tag, ~tag, rating:e, score:<0, user:name und filetype:gif funktionieren",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Stumme Tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Stumme Tags auf {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Tag stummschalten",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Neu",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Neu seit deinem letzten Besuch: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Noch keine Kommentare",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "Notizen: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Volldatei öffnen",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Auf dem Host öffnen",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru erwartet den SHA1-Hash der Seite, nicht das Klartextpasswort.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Jede Seite behält ihre eigene maximale Bewertung, stummen Tags, Anmeldung und Schlüssel. Gefolgte Tags gelten für alle Seiten.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Datum wählen",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Beiträge: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Pools",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Tag",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Früher",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "„Tags als Prompt kopieren“ schreibt diese Arten in dieser Reihenfolge, mit Leerzeichen statt Unterstrichen und maskierten Klammern. Zum Umsortieren ziehen; eine Art ausschalten, um sie wegzulassen.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Tags als Prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explizit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "Allgemein",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Fügt Booru der unteren Navigation hinzu, wenn das Plugin aktiv ist",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Es werden die bisherigen Beiträge angezeigt",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Gib eine gültige Host-URL ein",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Anzeigename",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Neueste",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Tag antippen, um zu suchen, zu folgen, auszublenden oder das Wiki zu lesen",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Künstler",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Figur",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "Tag-Aktionen anzeigen",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Tags sortieren",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Tippe auf einen Tag, um danach zu suchen. Halte ihn gedrückt, um ihm zu folgen, ihn auszublenden oder sein Wiki zu lesen.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Tags",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Verbindung testen",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Host, erste Tags und Score unter jedem Beitrag im Raster",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Beitrag: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Video: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Tag entfolgen",

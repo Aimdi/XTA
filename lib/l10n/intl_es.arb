@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recientes",
   "@home_networks_recent": {},
+  "image_cache_clear": "Vaciar",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Las imágenes se volverán a descargar la próxima vez que las veas.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "¿Vaciar la caché de imágenes?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} en este dispositivo. Las imágenes de hace más de {days} días se eliminan solas.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Caché de imágenes",
+  "@image_cache_title": {},
   "image_quality": "Calidad de las imágenes",
   "@image_quality": {},
   "import": "Importar",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Añadir a la búsqueda actual",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Las publicaciones Cuestionable y Explícito son solo para adultos. Confirma que tienes 18 años o más y que quieres verlas.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Tengo 18 años o más",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "La mayoría de las publicaciones de {site} son explícitas.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "¿Mostrar publicaciones para adultos?",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "También conocido como {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "Clave API",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Opcional: algunos servidores (Gelbooru, Danbooru) requieren una clave para un acceso fiable.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Copiar enlace",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Copiar etiquetas como prompt",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Copiar etiqueta",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Copiar etiquetas",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Explora sitios tipo Danbooru y Gelbooru: sigue etiquetas en grupos",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Descargar todo",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Publicaciones cargadas hasta ahora: {count}. Se omiten los archivos que ya están en tus descargas.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "En cola: {queued}. Ya descargados: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Editar como texto",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Toca para editar",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "El servidor ha denegado el acceso — puede que haga falta iniciar sesión o una comprobación en el navegador",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Este sitio necesita un usuario y una clave API — añádelos en los ajustes",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "Demasiadas etiquetas para una búsqueda en este sitio — quita algunas",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "El servidor está saturado o limita las solicitudes — inténtalo más tarde",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "Nombre del archivo descargado",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Déjalo vacío para conservar el nombre de archivo del sitio. Puedes usar {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "Seguir etiqueta",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Etiquetas Booru",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "Ajustar a la pantalla",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Ocultas por tus etiquetas silenciadas: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "Todas las publicaciones hasta ahora están ocultas por tu clasificación máxima o tus etiquetas silenciadas",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Ocultar publicaciones con esta etiqueta",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "URL del servidor",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "No se pudieron cargar las publicaciones de Booru",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "Cargar más",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "No se han podido cargar más publicaciones",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Usuario / id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Clasificación máxima",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "Metaetiquetas",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "Más de {name}",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Varias etiquetas en una misma entrada solo ocultan las publicaciones que las tengan todas. También funcionan -tag y rating:e",
+  "plugin_booru_mute_help": "Varias etiquetas en una misma entrada solo ocultan las publicaciones que las tengan todas. También funcionan -tag, ~tag, rating:e, score:<0, user:name y filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Etiquetas silenciadas en {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Nuevo",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Nuevas desde tu última visita: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Todavía no hay comentarios",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "Notas: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Abrir archivo completo",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Cada sitio guarda su propia clasificación máxima, etiquetas silenciadas, usuario y clave. Las etiquetas seguidas son comunes a todos los sitios.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Elegir una fecha",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Publicaciones: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Colecciones",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "Día",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Anterior",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Copiar etiquetas como prompt» escribe estos tipos en este orden, con espacios en lugar de guiones bajos y paréntesis escapados. Arrastra para reordenar; desactiva un tipo para omitirlo.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Etiquetas como prompt",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explícito",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Añade Booru a la navegación inferior cuando el complemento está activo",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Se muestran las publicaciones de antes",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Introduce una URL de host válida",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Nombre visible",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Recientes",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Toca una etiqueta para buscarla, seguirla, ocultarla o leer su wiki",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Artista",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Personaje",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "mostrar acciones de la etiqueta",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Meta",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Ordenar etiquetas",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Toca una etiqueta para buscarla. Mantenla pulsada para seguirla, ocultarla o leer su wiki.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Etiquetas",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Probar conexión",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Servidor, primeras etiquetas y puntuación bajo cada publicación de la cuadrícula",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Publicación: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Vídeo: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Dejar de seguir etiqueta",

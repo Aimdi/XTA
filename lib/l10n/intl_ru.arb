@@ -767,6 +767,25 @@
   "@home_networks_more": {},
   "home_networks_recent": "Недавние",
   "@home_networks_recent": {},
+  "image_cache_clear": "Очистить",
+  "@image_cache_clear": {},
+  "image_cache_clear_description": "Изображения загрузятся заново, когда вы увидите их в следующий раз.",
+  "@image_cache_clear_description": {},
+  "image_cache_clear_question": "Очистить кэш изображений?",
+  "@image_cache_clear_question": {},
+  "image_cache_size": "{size} на этом устройстве. Изображения старше {days} дней удаляются сами.",
+  "@image_cache_size": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "image_cache_title": "Кэш изображений",
+  "@image_cache_title": {},
   "image_quality": "Качество изображений",
   "@image_quality": {},
   "import": "Импортировать",
@@ -1372,6 +1391,28 @@
   "@plugin_booru_add_tag_hint": {},
   "plugin_booru_add_to_search": "Добавить в текущий поиск",
   "@plugin_booru_add_to_search": {},
+  "plugin_booru_adult_body": "Посты Questionable и Explicit только для взрослых. Подтвердите, что вам 18 лет или больше и вы хотите их видеть.",
+  "@plugin_booru_adult_body": {},
+  "plugin_booru_adult_confirm": "Мне 18 лет или больше",
+  "@plugin_booru_adult_confirm": {},
+  "plugin_booru_adult_site": "Большинство постов на {site} откровенные.",
+  "@plugin_booru_adult_site": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_adult_title": "Показывать посты для взрослых?",
+  "@plugin_booru_adult_title": {},
+  "plugin_booru_also_known_as": "Также известен как {names}",
+  "@plugin_booru_also_known_as": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1400,6 +1441,8 @@
   "@plugin_booru_copied": {},
   "plugin_booru_copy_link": "Копировать ссылку",
   "@plugin_booru_copy_link": {},
+  "plugin_booru_copy_prompt": "Скопировать теги как промпт",
+  "@plugin_booru_copy_prompt": {},
   "plugin_booru_copy_tag": "Копировать тег",
   "@plugin_booru_copy_tag": {},
   "plugin_booru_copy_tags": "Копировать теги",
@@ -1414,6 +1457,27 @@
   },
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_download_all": "Скачать все",
+  "@plugin_booru_download_all": {},
+  "plugin_booru_download_all_body": "Загружено постов: {count}. Файлы, которые уже есть в загрузках, пропускаются.",
+  "@plugin_booru_download_all_body": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_download_all_result": "В очереди: {queued}. Уже скачано: {skipped}.",
+  "@plugin_booru_download_all_result": {
+    "placeholders": {
+      "queued": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_edit_as_text": "Изменить как текст",
   "@plugin_booru_edit_as_text": {},
   "plugin_booru_edit_tag": "Нажмите, чтобы изменить",
@@ -1444,6 +1508,8 @@
   "@plugin_booru_engine_moebooru": {},
   "plugin_booru_error_forbidden": "Сайт отказал в доступе — возможно, нужен вход или проверка в браузере",
   "@plugin_booru_error_forbidden": {},
+  "plugin_booru_error_needs_key": "Этому сайту нужны логин и ключ API — добавьте их в настройках",
+  "@plugin_booru_error_needs_key": {},
   "plugin_booru_error_network": "Could not reach the booru host",
   "@plugin_booru_error_network": {},
   "plugin_booru_error_not_configured": "Choose a booru host in settings first",
@@ -1454,6 +1520,8 @@
   "@plugin_booru_error_rate_limited": {},
   "plugin_booru_error_response": "The host returned something unexpected",
   "@plugin_booru_error_response": {},
+  "plugin_booru_error_tag_limit": "Слишком много тегов для одного поиска на этом сайте — уберите некоторые",
+  "@plugin_booru_error_tag_limit": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Сайт перегружен или ограничивает запросы — попробуйте позже",
@@ -1472,6 +1540,16 @@
       }
     }
   },
+  "plugin_booru_file_name_template": "Имя скачанного файла",
+  "@plugin_booru_file_name_template": {},
+  "plugin_booru_file_name_template_help": "Оставьте пустым, чтобы сохранить имя файла с сайта. Можно использовать {tokens}.",
+  "@plugin_booru_file_name_template_help": {
+    "placeholders": {
+      "tokens": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_follow_tag": "Подписаться на тег",
   "@plugin_booru_follow_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
@@ -1484,6 +1562,16 @@
   "@plugin_booru_grid_columns": {},
   "plugin_booru_grid_columns_auto": "По ширине экрана",
   "@plugin_booru_grid_columns_auto": {},
+  "plugin_booru_hidden_count": "Скрыто вашими тегами: {count}",
+  "@plugin_booru_hidden_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_hidden_so_far": "Все посты до сих пор скрыты вашим максимальным рейтингом или заглушёнными тегами",
+  "@plugin_booru_hidden_so_far": {},
   "plugin_booru_hide_tag": "Скрыть посты с этим тегом",
   "@plugin_booru_hide_tag": {},
   "plugin_booru_host": "Host URL",
@@ -1496,6 +1584,8 @@
   "@plugin_booru_in_home_feed_description": {},
   "plugin_booru_load_error": "Unable to load Booru posts",
   "@plugin_booru_load_error": {},
+  "plugin_booru_load_more": "Загрузить ещё",
+  "@plugin_booru_load_more": {},
   "plugin_booru_load_more_failed": "Не удалось загрузить больше публикаций",
   "@plugin_booru_load_more_failed": {},
   "plugin_booru_login": "Login / user id",
@@ -1508,6 +1598,8 @@
   "@plugin_booru_login_help_moebooru": {},
   "plugin_booru_max_rating": "Maximum rating",
   "@plugin_booru_max_rating": {},
+  "plugin_booru_metatags": "Метатеги",
+  "@plugin_booru_metatags": {},
   "plugin_booru_more_from": "Ещё от {name}",
   "@plugin_booru_more_from": {
     "placeholders": {
@@ -1518,14 +1610,38 @@
   },
   "plugin_booru_mute_empty": "No muted tags yet",
   "@plugin_booru_mute_empty": {},
-  "plugin_booru_mute_help": "Несколько тегов в одной записи скрывают только посты, где есть все они. Также поддерживаются -tag и rating:e",
+  "plugin_booru_mute_help": "Несколько тегов в одной записи скрывают только посты, где есть все они. Также поддерживаются -tag, ~tag, rating:e, score:<0, user:name и filetype:gif",
   "@plugin_booru_mute_help": {},
-  "plugin_booru_mute_section": "Muted tags",
-  "@plugin_booru_mute_section": {},
+  "plugin_booru_mute_section_on": "Скрытые теги на {site}",
+  "@plugin_booru_mute_section_on": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_mute_tag": "Mute a tag",
   "@plugin_booru_mute_tag": {},
+  "plugin_booru_new_post": "Новое",
+  "@plugin_booru_new_post": {},
+  "plugin_booru_new_since_visit": "Новые с прошлого визита: {count}",
+  "@plugin_booru_new_since_visit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_no_comments": "Комментариев пока нет",
   "@plugin_booru_no_comments": {},
+  "plugin_booru_notes": "Заметки: {count}",
+  "@plugin_booru_notes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_booru_open_file": "Open full file",
   "@plugin_booru_open_file": {},
   "plugin_booru_open_on_host": "Open on host",
@@ -1542,8 +1658,20 @@
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
   "@plugin_booru_password_hash_help": {},
+  "plugin_booru_per_site_note": "Каждый сайт хранит свой максимальный рейтинг, скрытые теги, логин и ключ. Отслеживаемые теги общие для всех сайтов.",
+  "@plugin_booru_per_site_note": {},
   "plugin_booru_pick_date": "Выберите дату",
   "@plugin_booru_pick_date": {},
+  "plugin_booru_pool_size": "Постов: {count}",
+  "@plugin_booru_pool_size": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_pools": "Пулы",
+  "@plugin_booru_pools": {},
   "plugin_booru_popular_day": "День",
   "@plugin_booru_popular_day": {},
   "plugin_booru_popular_earlier": "Раньше",
@@ -1564,6 +1692,10 @@
       }
     }
   },
+  "plugin_booru_prompt_help": "«Скопировать теги как промпт» записывает эти виды в этом порядке, с пробелами вместо подчёркиваний и экранированными скобками. Перетаскивайте, чтобы изменить порядок; выключите вид, чтобы пропустить его.",
+  "@plugin_booru_prompt_help": {},
+  "plugin_booru_prompt_section": "Теги как промпт",
+  "@plugin_booru_prompt_section": {},
   "plugin_booru_rating_explicit": "Explicit",
   "@plugin_booru_rating_explicit": {},
   "plugin_booru_rating_general": "General",
@@ -1622,6 +1754,8 @@
   "@plugin_booru_show_tab": {},
   "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
   "@plugin_booru_show_tab_description": {},
+  "plugin_booru_showing_earlier": "Показаны прежние посты",
+  "@plugin_booru_showing_earlier": {},
   "plugin_booru_site_invalid": "Введите действительный URL хоста",
   "@plugin_booru_site_invalid": {},
   "plugin_booru_site_name": "Отображаемое имя",
@@ -1636,8 +1770,6 @@
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
   "@plugin_booru_tab_latest": {},
-  "plugin_booru_tag_actions_hint": "Нажмите на тег, чтобы найти его, подписаться, скрыть или открыть вики",
-  "@plugin_booru_tag_actions_hint": {},
   "plugin_booru_tag_artist": "Художник",
   "@plugin_booru_tag_artist": {},
   "plugin_booru_tag_character": "Персонаж",
@@ -1652,6 +1784,8 @@
       }
     }
   },
+  "plugin_booru_tag_long_press_hint": "показать действия с тегом",
+  "@plugin_booru_tag_long_press_hint": {},
   "plugin_booru_tag_meta": "Мета",
   "@plugin_booru_tag_meta": {},
   "plugin_booru_tag_sort": "Сортировать теги",
@@ -1670,6 +1804,8 @@
       }
     }
   },
+  "plugin_booru_tag_tap_hint": "Нажмите на тег, чтобы найти его. Удерживайте, чтобы подписаться, скрыть или прочитать вики.",
+  "@plugin_booru_tag_tap_hint": {},
   "plugin_booru_tags": "Теги",
   "@plugin_booru_tags": {},
   "plugin_booru_test_connection": "Test connection",
@@ -1694,6 +1830,22 @@
   "@plugin_booru_tile_details": {},
   "plugin_booru_tile_details_description": "Сайт, первые теги и оценка под каждым постом в сетке",
   "@plugin_booru_tile_details_description": {},
+  "plugin_booru_tile_label": "Пост: {tags}",
+  "@plugin_booru_tile_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_tile_video_label": "Видео: {tags}",
+  "@plugin_booru_tile_video_label": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
   "plugin_booru_unfollow_tag": "Отписаться от тега",

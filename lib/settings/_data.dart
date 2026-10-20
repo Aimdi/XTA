@@ -27,6 +27,7 @@ import 'package:xta/settings/backup_data.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/settings/import_preview.dart';
 import 'package:xta/utils/file_dialogs.dart';
+import 'package:xta/settings/image_cache_setting.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -227,6 +228,7 @@ class SettingsDataFragment extends StatelessWidget {
           title: Text(L10n.of(context).offline_library_title),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OfflineLibraryScreen())),
         ),
+        const ImageCacheSetting(),
         PrefLabel(
           leading: const Icon(Icons.import_export),
           title: Text(L10n.of(context).import),

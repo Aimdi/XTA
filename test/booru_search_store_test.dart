@@ -11,6 +11,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_endpoints.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_metatags.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
@@ -301,6 +302,69 @@ void main() {
     });
   });
 
+  group('hidden posts', () {
+    test('a page keeps the posts the muted tags hid, but never one over the rating cap', () async {
+      final client = BooruClient(
+        PrefServiceCache(
+          cache: {
+            optionPluginBooruEngine: 'danbooru',
+            optionPluginBooruMaxRating: 'g',
+            optionPluginBooruMutedTags: '["solo"]',
+          },
+        ),
+        httpClient: MockClient(
+          (request) async => http.Response(
+            jsonEncode([
+              {'id': 1, 'tag_string': 'solo', 'rating': 'g', 'file_url': 'https://cdn.example/1.png'},
+              {'id': 2, 'tag_string': 'smile', 'rating': 'g', 'file_url': 'https://cdn.example/2.png'},
+              {'id': 3, 'tag_string': 'solo', 'rating': 'e', 'file_url': 'https://cdn.example/3.png'},
+            ]),
+            200,
+          ),
+        ),
+      );
+
+      final page = await client.latest();
+
+      expect(page.posts.map((post) => post.id), ['2']);
+      expect(page.allowed.map((post) => post.id), ['1', '2']);
+    });
+  });
+
+  group('metatags', () {
+    test("two letters of a metatag offer it on its site's engine only, and its known values after the colon", () {
+      List<String> names(BooruEngine engine, String input, {BooruRating cap = BooruRating.general}) => [
+        for (final suggestion in booruMetatagSuggestions(engine, input, host: 'https://example.com', maxRating: cap))
+          suggestion.name,
+      ];
+      expect(names(BooruEngine.danbooru, 'sc'), ['score:']);
+      expect(names(BooruEngine.danbooru, 'or'), ['order:', 'ordfav:']);
+      expect(names(BooruEngine.gelbooruV2, 'or'), isEmpty, reason: 'Gelbooru sorts with sort:');
+      expect(names(BooruEngine.gelbooruV2, 'so'), ['sort:']);
+      expect(names(BooruEngine.danbooru, 's'), isEmpty, reason: 'one letter is too little to go on');
+      expect(names(BooruEngine.danbooru, 'order:f'), ['order:favcount', 'order:filesize']);
+      expect(names(BooruEngine.danbooru, 'order:score'), isEmpty, reason: 'already complete');
+      expect(names(BooruEngine.danbooru, '-rating:'), ['rating:g'], reason: 'only up to the rating cap');
+      expect(names(BooruEngine.e621, 'rating:', cap: BooruRating.explicit), ['rating:s', 'rating:q', 'rating:e']);
+      expect(names(BooruEngine.danbooru, 'score:'), isEmpty, reason: 'any number goes');
+    });
+
+    test('a picked metatag stays in the field for its value, and a picked value becomes a chip', () async {
+      final prefs = PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru'});
+      final store = BooruSearchStore(_Client(prefs), _history(prefs), debounce: Duration.zero);
+      store.type('cat_ears ord');
+      expect(store.state.suggestions.map((s) => s.name), ['order:', 'ordfav:'], reason: 'before the host answers');
+      await _settle();
+
+      expect(store.pick(store.state.suggestions.first), 'order:');
+      expect(store.state.tags, ['cat_ears']);
+      expect(store.state.suggestions.map((s) => s.name), contains('order:score'));
+
+      expect(store.pick(const BooruTagSuggestion(name: 'order:score')), isEmpty);
+      expect(store.state.tags, ['cat_ears', 'order:score']);
+    });
+  });
+
   group('saved searches', () {
     setUpAll(() async {
       sqfliteFfiInit();
@@ -351,7 +415,7 @@ void main() {
           if (failing.contains(tags)) return http.Response('', 503);
           return http.Response(
             jsonEncode([
-              {'id': tags.length, 'tag_string': tags, 'rating': 'g'},
+              {'id': tags.length, 'tag_string': tags, 'rating': 'g', 'file_url': 'https://cdn.example/$tags.png'},
             ]),
             200,
           );
@@ -370,13 +434,32 @@ void main() {
 
       failing.add('blue_eyes');
       await feed.refresh();
-      expect(feed.error, isA<BooruException>(), reason: 'an empty tab would say there are no recent posts');
-      expect(feed.failedQueries.state, 0, reason: 'the error page says it; no notice on top');
+      expect(feed.state.map((post) => post.tags.join(' ')), ['blue_eyes'], reason: 'the posts from before stay');
+      expect(feed.refreshFailure.state.error, isA<BooruException>());
+      expect(feed.failedQueries.state, 1, reason: 'it still describes the posts shown');
 
       failing.clear();
       await feed.refresh();
       expect(feed.state, hasLength(2));
       expect(feed.failedQueries.state, 0);
+      expect(feed.refreshFailure.state.error, isNull);
+    });
+
+    test('Following fails with the error page when every followed tag fails on the first load', () async {
+      final client = BooruClient(
+        PrefServiceCache(cache: {optionPluginBooruEngine: 'danbooru'}),
+        httpClient: MockClient((request) async => http.Response('', 503)),
+      );
+      final feed = BooruFeedStore(
+        client,
+        ({required page}) => loadBooruFollowing(client, ['blue_eyes', 'night'], page: page),
+      );
+      addTearDown(feed.destroy);
+
+      await feed.refresh();
+
+      expect(feed.error, isA<BooruException>(), reason: 'an empty tab would say there are no recent posts');
+      expect(feed.failedQueries.state, 0, reason: 'the error page says it; no notice on top');
     });
   });
 }

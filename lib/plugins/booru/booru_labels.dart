@@ -2,6 +2,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
+import 'package:xta/plugins/booru/booru_tag_style.dart';
 
 String booruEngineLabel(L10n l10n, BooruEngine engine) => switch (engine) {
   BooruEngine.danbooru => l10n.plugin_booru_engine_danbooru,
@@ -33,3 +34,27 @@ String booruPopularScaleLabel(L10n l10n, BooruPopularScale scale) => switch (sca
   BooruPopularScale.week => l10n.plugin_booru_popular_week,
   BooruPopularScale.month => l10n.plugin_booru_popular_month,
 };
+
+/// How a thumbnail is read aloud: a post or a video, and its first tags.
+String booruTileLabel(L10n l10n, BooruPost post) {
+  final tags = booruLabelTags(post).map(booruTagDisplayName).join(', ');
+  return post.isVideo ? l10n.plugin_booru_tile_video_label(tags) : l10n.plugin_booru_tile_label(tags);
+}
+
+const _namedKinds = [
+  BooruTagCategory.artist,
+  BooruTagCategory.character,
+  BooruTagCategory.copyright,
+  BooruTagCategory.species,
+];
+
+/// Up to [count] of [post]'s tags for its label: the artist, characters and
+/// series first, then the rest in the host's order. Meta tags say nothing
+/// about the picture.
+List<String> booruLabelTags(BooruPost post, {int count = 5}) {
+  BooruTagCategory kind(String tag) => post.tagCategories[tag] ?? BooruTagCategory.general;
+  return [
+    for (final category in _namedKinds) ...post.tags.where((tag) => kind(tag) == category),
+    ...post.tags.where((tag) => !_namedKinds.contains(kind(tag)) && kind(tag) != BooruTagCategory.meta),
+  ].take(count).toList();
+}
