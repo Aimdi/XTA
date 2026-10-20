@@ -62,7 +62,9 @@ release carries `xta-<tag>-debug-symbols.zip`; unzip it and run
 fvm flutter symbolize -d app.android-arm64.symbols -i trace.txt
 ```
 
-with the file for the trace's `arch`. The trace's `build_id` must match the
+with the file for the trace's `arch`. The Linux release is built the same way
+(its snapshot goes from 33.78 MB to 28.90 MB) and carries
+`xta-<tag>-linux-debug-symbols.zip`. The trace's `build_id` must match the
 symbols, so use the zip from the same release. Anyone rebuilding for
 comparison must pass the same flag, as `verify_reproducible.sh` does.
 
