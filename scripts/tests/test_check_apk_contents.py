@@ -12,10 +12,10 @@ contents = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(contents)
 
 
-def write_apk(directory, name, entries):
+def write_apk(directory, name, entries, compressed=()):
     with zipfile.ZipFile(Path(directory) / name, "w") as archive:
         for entry in entries:
-            archive.writestr(entry, b"")
+            archive.writestr(entry, b"", zipfile.ZIP_DEFLATED if entry in compressed else zipfile.ZIP_STORED)
 
 
 class CheckApkContentsTest(unittest.TestCase):
@@ -38,6 +38,16 @@ class CheckApkContentsTest(unittest.TestCase):
             write_apk(directory, "xta.apk", ["assets/flutter_assets/libsqlite3.so"])
             self.assertEqual(contents.check(directory), [])
 
+    def test_a_compressed_native_library_is_reported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            write_apk(
+                directory,
+                "xta.apk",
+                ["lib/arm64-v8a/libapp.so", "lib/arm64-v8a/libflutter.so", "classes.dex"],
+                compressed={"lib/arm64-v8a/libflutter.so", "classes.dex"},
+            )
+            self.assertEqual(contents.check(directory), ["xta.apk stores lib/arm64-v8a/libflutter.so compressed"])
+
     def test_empty_directory_fails(self):
         with tempfile.TemporaryDirectory() as directory:
             self.assertEqual(contents.check(directory), ["No APKs found"])
@@ -47,6 +57,7 @@ class CheckApkContentsTest(unittest.TestCase):
         if not reference:
             self.skipTest("Set XTA_REFERENCE_APK to a published release APK")
         self.assertEqual(contents.unloaded_libraries(Path(reference)), ["libsherpa-onnx-cxx-api.so", "libsqlite3.so"])
+        self.assertEqual(contents.compressed_libraries(Path(reference)), [])
 
 
 if __name__ == "__main__":
