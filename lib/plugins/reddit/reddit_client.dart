@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -739,6 +741,9 @@ class RedditClient {
   _PublicRoute? _lastGoodRoute;
   final Map<_PublicRoute, DateTime> _refusedUntil = {};
 
+  /// Where www.reddit.com's pages are parsed, a couple at a time.
+  final _parses = _BackgroundParses();
+
   /// Subreddit pictures noticed on pages fetched for another reason. A listing
   /// page carries the community's header image, so the feed usually pays for
   /// the icons it shows without asking for them.
@@ -1002,7 +1007,7 @@ class RedditClient {
       return _miss(_errorFor(response, uri));
     }
 
-    final page = await parseInBackground(readWwwListing, response.body);
+    final page = await _parses.run(readWwwListing, response.body);
     return page.kind == RedditWwwPageKind.read
         ? _hit(RedditListing(posts: page.posts, after: page.after))
         : _miss(_wwwRefusal(page.kind, uri));
@@ -1037,8 +1042,9 @@ class RedditClient {
         ),
       };
 
-  /// Reads a listing off old.reddit's HTML — the route that still works without
-  /// an account, and the one Stealth takes for the same reason.
+  /// Reads a listing off old.reddit's HTML — the route that worked without an
+  /// account until Reddit put old.reddit behind its login page in 2026, and
+  /// still does wherever that has not reached.
   ///
   /// The over-18 gate is answered with a cookie rather than a login: Reddit
   /// wants consent recorded, not an account, and `over18=1` is what its own
@@ -1281,6 +1287,8 @@ class RedditClient {
     );
   }
 
+  /// Posts matching [query], across Reddit or within one subreddit.
+  ///
   /// [searchSort] is Reddit's search order — `relevance`, `new`, `top` or
   /// `comments` — its own axis, not the listing sort.
   ///
@@ -1488,7 +1496,7 @@ class RedditClient {
     if (kind != RedditWwwPageKind.read) {
       throw _wwwRefusal(kind, www.uri);
     }
-    return parseInBackground(www.parse, response.body);
+    return _parses.run(www.parse, response.body);
   }
 
   /// One account's posts: www.reddit.com's profile, and old.reddit's where that
@@ -1533,7 +1541,7 @@ class RedditClient {
     if (response.statusCode != 200) {
       throw _errorFor(response, uri);
     }
-    final page = await parseInBackground(readWwwListing, response.body);
+    final page = await _parses.run(readWwwListing, response.body);
     if (page.kind != RedditWwwPageKind.read) {
       throw _wwwRefusal(page.kind, uri);
     }
@@ -1778,7 +1786,7 @@ class RedditClient {
       throw _errorFor(response, uri);
     }
 
-    final thread = await parseInBackground(readWwwThread, response.body);
+    final thread = await _parses.run(readWwwThread, response.body);
     if (thread.kind != RedditWwwPageKind.read) {
       throw _wwwRefusal(thread.kind, uri);
     }
@@ -2133,6 +2141,47 @@ class RedditClient {
       429 => RedditException(RedditErrorKind.rateLimited, detail),
       _ => RedditException(RedditErrorKind.badResponse, detail),
     };
+  }
+}
+
+/// Hands pages to background isolates a couple at a time.
+///
+/// A refresh asks for every followed community at once, and each page parses
+/// into a document of its own; two at a time keeps that from holding a dozen
+/// such documents in memory together. Each page is cut to what a reader needs
+/// before it is handed over, which halves what is copied.
+class _BackgroundParses {
+  static const _slots = 2;
+
+  int _running = 0;
+  final _waiting = Queue<Completer<void>>();
+
+  Future<R> run<R>(R Function(String body) parse, String body) async {
+    await _take();
+    try {
+      return await parseInBackground(parse, wwwStrip(body));
+    } finally {
+      _give();
+    }
+  }
+
+  Future<void> _take() async {
+    if (_running < _slots) {
+      _running++;
+      return;
+    }
+    final turn = Completer<void>();
+    _waiting.add(turn);
+    await turn.future;
+  }
+
+  /// A finished parse hands its slot straight to the next one waiting.
+  void _give() {
+    if (_waiting.isNotEmpty) {
+      _waiting.removeFirst().complete();
+    } else {
+      _running--;
+    }
   }
 }
 

@@ -18,17 +18,55 @@ is therefore written against Reddit's own API / HTML. Stealth was consulted only
 to learn *which* routes a modern account-free client uses — not for its
 implementation.
 
-## 2. Account-free reading is scrape-first, OAuth optional
+## 2. Account-free reading reads the website, OAuth optional
 
-Unauthenticated `.json` is often refused (datacenter IPs especially). The
-shipped default path scrapes `old.reddit.com` HTML (browser UA + cookies +
-over-18 cookie), with public JSON as a secondary try.
+Through 2026 Reddit closed every account-free door the plugin used to read:
+
+| Route | 2026 state |
+|---|---|
+| Public `.json` (www and old) | 403 for logged-out readers since late May |
+| old.reddit.com HTML | Login page for logged-out readers (`/login/?reason=lor2`) since July |
+| RSS (`.rss`) | One request per calendar minute per address since June; retired on 2026-11-13 |
+| www.reddit.com full pages | Open with a script that checks for a browser (`name="solution"` form) |
+| www.reddit.com pieces (`/svc/shreddit/…`) | Served, no check: feeds, comments, search, profiles |
+| OAuth API | No new access requests after 2026-10-31; unregistered apps cut off from 2027-01-12, all by March 2027 |
+
+So the default path reads www.reddit.com's pieces — the parts of its pages the
+site loads as it scrolls (`reddit_www*.dart`):
+
+| What | Piece |
+|---|---|
+| A community's feed | `community-more-posts/<sort>/?name=&t=&after=` |
+| A thread, a comment's own page | `comments/r/<community>/t3_<post>[/t1_<comment>]?sort=` |
+| Search | `search/?q=&type=posts\|communities\|people`, `r/<community>/search/?…&restrict_sr=1` |
+| A profile | `profiles/profile_posts-more-posts/new/?name=&after=` |
+| A community's picture and description | its own entry in the community search |
+
+Cursors are the fullname (`t3_…`) in base64, which is how the pieces write
+them; the client keeps the plain fullname so any route can read the next page.
+Each piece is a whole document of about a megabyte (gzipped on the wire), so it
+is cut to its body and parsed off the UI thread.
+
+old.reddit HTML and the `.json` endpoints stay behind it as later routes — no
+shutdown has been total — and old.reddit's login page refuses only its own
+host instead of ending the search.
+
+Not available on this route: pinned posts (the feed piece leaves them out),
+subscriber counts (the search shows weekly visitors), a post's own body when it
+came from search (the comments piece carries no post), and a per-post NSFW mark
+in feeds (search results have one).
+
+Reddit blocks datacenter addresses (GitHub's runners among them) with "blocked
+by network security" on every route. `test/live/reddit_smoke_test.dart` with
+`--dart-define=REDDIT_VIA=translate` asks www.reddit.com through Google's
+translation proxy, which Reddit serves, to check the client against today's
+markup; the fixtures in `test/fixtures/Reddit/` came the same way.
 
 Optional credentials, in priority order when source is `auto`:
 
 1. **User OAuth** (`read,identity` only) — reader's own rate limits
 2. **App-only** `installed_client` — when a client id is set
-3. **Public scrape / JSON** — needs nothing
+3. **The website** — needs nothing
 
 `source=public` forces the account-free route even when credentials exist.
 No write scopes; local follow + local upvote stay on-device.
@@ -39,7 +77,7 @@ No write scopes; local follow + local upvote stay on-device.
 |---|---|
 | Followed feed (merged first pages, newest first) | Yes — parallel fetch, per-subreddit errors isolated |
 | Subreddit / user listing screens | Yes |
-| Comments / thread screen | Yes (HTML scrape; `more` stubs still skipped) |
+| Comments / thread screen | Yes (www comments piece; held-back replies open their comment's page) |
 | Search (posts / subreddits / users) | Yes |
 | Discovery feeds | Yes — Following / Popular / All |
 | Sort UI (hot / new / top / rising / controversial) | Yes, including `t=` windows for top / controversial |
@@ -61,15 +99,15 @@ user token (home/group interleave, subreddit listing) now go through it, so
 signing in helps every subreddit listing — not only the Reddit tab.
 
 Comment threads use `RedditReadSession` (OAuth JSON when signed in,
-old.reddit scrape when anonymous). Search and user posts still scrape
-publicly. Community icons read `about.json` (`community_icon` / `icon_img`)
-from oauth, then www, then old.reddit, and fall back to HTML. Signed
+www.reddit.com's comments piece when anonymous). Search and user posts read
+the website. Community icons read `about.json` (`community_icon` / `icon_img`)
+over OAuth, else the community search, then the public routes. Signed
 `?width=&s=` query strings are stripped so the CDN serves the original file.
 
 ## Known gaps (not P0)
 
 - Comment `more` expansion / collapse / markdown
-- Search / user posts still scrape publicly (OAuth wiring follow-up)
+- Search / user posts read the website even when signed in (OAuth wiring follow-up)
 - Scrape/OAuth media parity; gallery pager (same-file preview/i.redd.it width
   variants are collapsed — no more low+high double display)
 - User profile beyond submitted posts

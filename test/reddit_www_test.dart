@@ -10,6 +10,8 @@ import 'package:xta/plugins/reddit/reddit_www_search.dart';
 /// test/fixtures/README.md says where each one came from.
 String _fixture(String name) => File('test/fixtures/Reddit/$name').readAsStringSync();
 
+typedef RedditPostFlags = ({bool over18, bool stickied});
+
 void main() {
   group('a feed page', () {
     test('reads a picture post out of its attributes', () {
@@ -30,6 +32,26 @@ void main() {
       expect(post.imageUrl, 'https://i.redd.it/bm3fgrkkdnwh1.jpeg');
       expect(post.flair, 'Politics');
       expect(post.previewImage, startsWith('https://preview.redd.it/'));
+    });
+
+    test('a post its media marks NSFW or pinned is read as such, as is one in an NSFW community', () {
+      RedditPostFlags read(String telemetry) {
+        final post = readWwwListing('''
+<html><body><shreddit-app>
+  <shreddit-post id="t3_a" permalink="/r/x/comments/a/t/" post-title="T" subreddit-name="x">
+    <shreddit-media-lightbox-listener telemetry="$telemetry"></shreddit-media-lightbox-listener>
+  </shreddit-post>
+</shreddit-app></body></html>''').posts.single;
+        return (over18: post.over18, stickied: post.stickied);
+      }
+
+      expect(read('{&quot;post&quot;:{&quot;nsfw&quot;:true}}'), (over18: true, stickied: false));
+      expect(read('{&quot;post&quot;:{&quot;pinned&quot;:true}}'), (over18: false, stickied: true));
+      expect(read('{&quot;subreddit&quot;:{&quot;nsfw&quot;:true}}'), (over18: true, stickied: false));
+      expect(read('not json'), (over18: false, stickied: false));
+
+      final pictures = readWwwListing(_fixture('listing_pics.html')).posts.first;
+      expect((over18: pictures.over18, stickied: pictures.stickied), (over18: false, stickied: false));
     });
 
     test('a gallery carries every picture, in order, at the size its feed shows', () {

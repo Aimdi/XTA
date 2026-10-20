@@ -19,6 +19,15 @@ responses over hand-written stubs.
 | `UserByScreenName/modern.json` | `UserByScreenName` (`KybxDj9RrADIITXlGG8kpw`) for the QuaX test account `@quax_tests`, recorded by QuaX — no `legacy` left | `UserWithExtra.fromNonLegacyJson` / `pinnedTweetIdsOf` |
 | `UserOriginalsTimeline/page.json` | `UserOriginalsTimeline` (`qtvmQffnepvr0oPe4A8MqQ`) for `@quax_tests_2`, recorded by QuaX, slimmed to two posts + cursors | `TimelineParser.createUnconversationedChains` |
 | `Pixivision/article_en.html`, `Pixivision/article_zh.html` | Hand-shaped pixivision.net article pages in the English and Chinese layouts | `parsePixivisionArticle` |
+| `Reddit/listing_pics.html`, `listing_aww.html`, `listing_flutterdev_top.html`, `listing_android.html` | www.reddit.com's community feed piece (`/svc/shreddit/community-more-posts/…`) for r/pics, r/aww, r/FlutterDev (top, week) and r/Android on 2026-10-20, trimmed to a picture, a gallery, crossposts, a video, self, text and link posts | `readWwwListing` (`reddit_www_test.dart`) |
+| `Reddit/profile_posts.html` | The profile feed piece for u/spez, trimmed to three posts | `readWwwListing` |
+| `Reddit/comments.html` | The comments piece of an r/FlutterDev thread, trimmed to two top-level comments with a reply, a held-back reply and the top-level "more" | `readWwwThread` |
+| `Reddit/search_posts.html`, `search_communities.html`, `search_people.html` | www.reddit.com's search piece for posts, communities and people, three results each | `readWwwSearch*` |
+| `Reddit/browser_check.html` | The script page www.reddit.com puts in front of a full page | `redditWwwPageKind` |
+
+The Reddit pages were fetched through Google's translation proxy, since Reddit
+blocks datacenter addresses; the proxy's link rewriting was undone, so they
+read as www.reddit.com serves them.
 
 Guest `TweetDetail` returned 404; tweet shapes were taken from `UserTweets`
 instead. No auth tokens are stored in these files.

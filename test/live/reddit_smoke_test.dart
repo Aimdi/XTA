@@ -70,8 +70,6 @@ void main() {
   }, skip: skip);
 
   test('a community says what it is about', () async {
-    // ignore: avoid_print
-    print((await client().searchSubreddits('FlutterDev')).map((c) => c.name).toList());
     final about = await client().fetchSubredditAbout('FlutterDev', clientId: '');
     expect(about.description, isNotEmpty);
     expect(about.iconUrl, isNotNull);

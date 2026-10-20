@@ -21,6 +21,7 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html;
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
+import 'package:xta/utils/json.dart';
 
 /// What www.reddit.com answered with.
 enum RedditWwwPageKind {
@@ -102,6 +103,7 @@ RedditPost? wwwPostFrom(Element post) {
 
   final href = wwwAbsoluteUrl(a['content-href']);
   final self = _isSelf(a['domain'], href, permalink);
+  final telemetry = _telemetryOf(post);
   return RedditPost(
     id: id,
     title: title,
@@ -114,8 +116,12 @@ RedditPost? wwwPostFrom(Element post) {
     url: self ? null : _linkOf(post, href),
     isSelf: self,
     selfText: wwwText(post.querySelector('shreddit-post-text-body .md')),
-    over18: a.containsKey('nsfw'),
+    over18:
+        a.containsKey('nsfw') ||
+        telemetry['post']['nsfw'].boolean == true ||
+        telemetry['subreddit']['nsfw'].boolean == true,
     spoiler: a.containsKey('spoiler'),
+    stickied: telemetry['post']['pinned'].boolean ?? false,
     thumbnail: post.querySelector('[data-testid="post-thumbnail"] img')?.attributes['src'],
     flair: _flairOf(post),
     domain: a['domain'],
@@ -123,6 +129,21 @@ RedditPost? wwwPostFrom(Element post) {
     previewImage: _previewOf(post),
     videoDashUrl: post.querySelector('shreddit-player')?.attributes['src'],
   );
+}
+
+/// What a post's media tells Reddit's analytics about it — whether it is NSFW
+/// or pinned, and its community's NSFW mark — which a post with pictures
+/// carries and its attributes may not.
+Json _telemetryOf(Element post) {
+  final raw = post.querySelector('[telemetry]')?.attributes['telemetry'];
+  if (raw == null) {
+    return const Json(null);
+  }
+  try {
+    return Json(jsonDecode(raw));
+  } on FormatException {
+    return const Json(null);
+  }
 }
 
 /// A self post's domain reads `self.<subreddit>`, and its link is its own page.
@@ -205,14 +226,16 @@ String? wwwCursorName(String? cursor) {
 String wwwCursorParam(String after) => base64.encode(utf8.encode(after));
 
 /// [body] parsed, without what a reader never needs.
+Document parseWwwBody(String body) => html.parse(wwwStrip(body));
+
+/// [body] without its head and its inline styles, scripts and icons.
 ///
-/// A piece of the site arrives as a whole document whose head and inline
-/// styles, scripts and icons are most of its weight; they are cut before the
-/// parse rather than walked by it.
-Document parseWwwBody(String body) {
+/// A piece of the site arrives as a whole document of which those are most of
+/// the weight; they are cut before a parse rather than walked by it. Cutting
+/// twice cuts nothing more.
+String wwwStrip(String body) {
   final start = body.indexOf('<body');
-  final content = (start < 0 ? body : body.substring(start)).replaceAll(_noise, '');
-  return html.parse(content);
+  return (start < 0 ? body : body.substring(start)).replaceAll(_noise, '');
 }
 
 final _noise = RegExp(
