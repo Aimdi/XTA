@@ -53,6 +53,13 @@ moves when it comes or goes; it is announced as a live region, since nothing mov
 inside one another (the home feed's plugin chips over its X batch notice over its cached posts) float one below
 the other rather than on top of each other.
 
+Booru's failed refresh, added in #370 as a two-line row above the posts and the search results, floats too, with a
+close button, as Home's notice over cached posts has: it can last while the device is offline.
+
+A notice floats below the status bar when the content runs under it. Home's body never does: the status-bar strip
+and the header sit above it, so the body reports no top inset, as a Scaffold's body does under an app bar, and its
+notices sit right under the header. Before, they sat one status bar lower.
+
 A failure that replaces the content (a first page that never loaded) keeps its full-screen layout: there is
 nothing to push.
 
@@ -64,7 +71,7 @@ as Substack's toolbar already did. RSS and Booru had a row of 56 px or more betw
 ## Rule 4: a failure where the next items would be is one compact row
 
 At the end of a list, where a page failed to load, the failure is `ReaderFailureNotice`: one 48 px row with Retry,
-details and, where it applies, dismiss. A full-page error layout (`FullPageErrorWidget`, about 250 px, with the
+details and, where it applies, dismiss. Booru's grid footer was the last sentence stacked over a button. A full-page error layout (`FullPageErrorWidget`, about 250 px, with the
 stack trace when one is passed) is never a list row.
 
 ## Rule 5: a counting-down notice is no taller than an idle one
