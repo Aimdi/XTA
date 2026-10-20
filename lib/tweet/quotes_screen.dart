@@ -15,6 +15,7 @@ import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 class QuotesScreenArguments {
   final String id;
@@ -341,10 +342,9 @@ class _RetweetersListState extends State<RetweetersList>
           user: UserSubscription.fromUser(user),
           verification: user.badges,
         ),
-        newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-          error: pagingErrorOf(state)?.error,
-          stackTrace: pagingErrorOf(state)?.stackTrace,
-          prefix: l10n.unable_to_load_the_next_page_of_retweets,
+        newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+          error: pagingErrorOf(state)?.error ?? state.error,
+          contextMessage: l10n.unable_to_load_the_next_page_of_retweets,
           onRetry: fetchNextPage,
         ),
       ),

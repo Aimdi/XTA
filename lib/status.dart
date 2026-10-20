@@ -22,6 +22,7 @@ import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/translation.dart';
 import 'package:logging/logging.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 /// Zen mode hides the replies under an opened post until the reader
 /// deliberately reveals them by holding the comment button.
@@ -613,10 +614,9 @@ class _StatusScreenState extends State<_StatusScreen> {
       addAutomaticKeepAlives: false,
       builderDelegate: PagedChildBuilderDelegate(
         itemBuilder: (context, chain, index) => _withReplySort(chain, _conversationTile(context, chain, index)),
-        newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-          error: pagingErrorOf(state)?.error,
-          stackTrace: pagingErrorOf(state)?.stackTrace,
-          prefix: L10n.of(context).unable_to_load_the_next_page_of_replies,
+        newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+          error: pagingErrorOf(state)?.error ?? state.error,
+          contextMessage: L10n.of(context).unable_to_load_the_next_page_of_replies,
           onRetry: fetchNextPage,
         ),
         noMoreItemsIndicatorBuilder: (_) => _threadEndIndicator(context),
@@ -691,10 +691,9 @@ class _StatusScreenState extends State<_StatusScreen> {
   Widget _buildThreadFooter(BuildContext context, PagingState<int, TweetChain> state, NextPageCallback fetchNextPage) {
     final error = pagingErrorOf(state);
     if (error != null && state.status == PagingStatus.subsequentPageError) {
-      return FullPageErrorWidget(
+      return ReaderFailureNotice(
         error: error.error,
-        stackTrace: error.stackTrace,
-        prefix: L10n.of(context).unable_to_load_the_next_page_of_replies,
+        contextMessage: L10n.of(context).unable_to_load_the_next_page_of_replies,
         onRetry: fetchNextPage,
       );
     }
