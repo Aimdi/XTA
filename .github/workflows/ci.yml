@@ -86,12 +86,16 @@ jobs:
           mkdir -pv build/app/outputs/release
 
           # Build our big boy APK, and move it into the release APKs folder
-          flutter build apk --release --no-tree-shake-icons --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG"
+          flutter build apk --release --no-tree-shake-icons --split-debug-info=build/app/outputs/symbols --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG"
           mv build/app/outputs/apk/release/*.apk build/app/outputs/release
 
           # Build our ABI-specific APKs and move them into the release APKs folder
-          flutter build apk --release --no-tree-shake-icons --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG" --split-per-abi --target-platform=android-x64,android-arm,android-arm64
+          flutter build apk --release --no-tree-shake-icons --split-debug-info=build/app/outputs/symbols --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG" --split-per-abi --target-platform=android-x64,android-arm,android-arm64
           mv build/app/outputs/apk/release/*.apk build/app/outputs/release
+          # Release traces carry addresses, not names; these files turn them
+          # back (flutter symbolize -d app.android-arm64.symbols -i trace.txt).
+          # An untagged commit names them after itself.
+          (cd build/app/outputs/symbols && zip -qr "../release/xta-${RELEASE_TAG:-$(git rev-parse --short=12 HEAD)}-debug-symbols.zip" .)
         env:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -114,6 +118,7 @@ jobs:
             build/app/outputs/release/*.apk
             build/app/outputs/release/release-build.json
             build/app/outputs/release/SHA256SUMS
+            build/app/outputs/release/xta-*-debug-symbols.zip
           if-no-files-found: error
           # The publish workflow downloads this within minutes; keeping
           # artifacts around any longer just eats the account storage quota.

@@ -37,7 +37,7 @@ build_once() {
     $DART run intl_utils:generate >/dev/null
     $DART run flutter_iconpicker:generate_packs --packs material >/dev/null
     # No --split-per-abi: one artefact keeps the comparison unambiguous.
-    $FLUTTER build apk --release --no-tree-shake-icons
+    $FLUTTER build apk --release --no-tree-shake-icons --split-debug-info=build/app/outputs/symbols
   )
 
   mkdir -p "$out"

@@ -70,4 +70,5 @@ jobs:
             build/app/outputs/release/*.apk
             build/app/outputs/release/release-build.json
             build/app/outputs/release/SHA256SUMS
+            build/app/outputs/release/xta-*-debug-symbols.zip
           fail_on_unmatched_files: true
