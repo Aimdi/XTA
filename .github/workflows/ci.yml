@@ -98,6 +98,9 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           RELEASE_TAG: ${{ steps.stamp.outputs.tag }}
 
+      - name: Check APK contents
+        run: python3 scripts/check_apk_contents.py build/app/outputs/release
+
       - name: Record APK provenance
         env:
           RELEASE_TAG: ${{ steps.stamp.outputs.tag }}

@@ -108,6 +108,13 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
 
+      - name: Check APK contents
+        # A tag cut before this check existed is built as it was.
+        run: |
+          if [ -f scripts/check_apk_contents.py ]; then
+            python3 scripts/check_apk_contents.py build/app/outputs/release
+          fi
+
       - name: Verify release APKs and record provenance
         env:
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
