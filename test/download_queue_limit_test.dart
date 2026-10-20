@@ -17,6 +17,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/_media.dart';
 import 'package:xta/settings/settings_search_index.dart';
 
+import 'support/wait_until.dart';
+
 class _MemoryHistory implements DownloadHistory {
   List<DownloadEntry> entries = const [];
 
@@ -54,13 +56,6 @@ Future<List<Future<DownloadEntry>>> _enqueue(DownloadStore store, List<String> n
   return pending;
 }
 
-/// Waits on real I/O (staging files) until [done], or gives up after a second.
-Future<void> _until(bool Function() done) async {
-  for (var i = 0; i < 200 && !done(); i++) {
-    await Future<void>.delayed(const Duration(milliseconds: 5));
-  }
-}
-
 /// Real transfers whose save step stands in for the system save dialog, which
 /// takes one request at a time; [overlaps] counts any second one opened.
 class _AskMode {
@@ -90,9 +85,9 @@ class _AskMode {
 
   /// The download that reached the dialog first, and the one left waiting.
   Future<(String, String)> firstOpen() async {
-    await _until(() => dialogs.isNotEmpty);
+    await waitUntil(() => dialogs.isNotEmpty);
     // Give the other download time to finish fetching and reach the dialog too.
-    await _until(() => store.state.entries.every((entry) => entry.received == 3));
+    await waitUntil(() => store.state.entries.every((entry) => entry.received == 3));
     await Future<void>.delayed(const Duration(milliseconds: 50));
     final first = dialogs.keys.single;
     return (first, first == 'a.jpg' ? 'b.jpg' : 'a.jpg');
@@ -163,7 +158,7 @@ void main() {
       expect(ask.entry(waiting).canCancel, isTrue);
 
       ask.dialogs[first]!.complete('content://provider/document/$first');
-      await _until(() => ask.dialogs.length == 2);
+      await waitUntil(() => ask.dialogs.length == 2);
       ask.dialogs[waiting]!.complete('content://provider/document/$waiting');
 
       expect([for (final entry in pending) (await entry).status], [DownloadStatus.completed, DownloadStatus.completed]);

@@ -17,6 +17,8 @@ import 'package:xta/plugins/ehviewer/eh_search_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_search_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
 
+import 'support/wait_until.dart';
+
 const _list =
     '<table><tr><td class="gl1c glcat"><div class="cn ct2">Manga</div></td>'
     '<td><a href="https://e-hentai.org/g/1/abc/"><div class="glink">Summer</div></a></td></tr></table>';
@@ -103,7 +105,7 @@ void main() {
     test('the longest term the site knows wins, and only that span is replaced', () async {
       site.known = {'big b'};
       store.type('summer big b');
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      await waitUntil(() => store.state.suggestions.isNotEmpty);
       expect(site.suggested, ['summer big b', 'big b']);
       expect(store.state.suggestions, hasLength(2));
       expect(store.pick(store.state.suggestions.first), 'summer female:"big breasts\$" ');
@@ -114,8 +116,9 @@ void main() {
       await store.search('summer');
       expect(readPluginSearchHistory(prefs, optionPluginEhSearchHistory), ['summer']);
       expect(store.results!.state.single.title, 'Summer');
+      // The changed filter runs the search again without being awaited.
       store.setMinRating(4);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await waitUntil(() => site.searches.length == 2);
       expect(site.searches.last.queryParameters['f_srdd'], '4');
       store.setMinRating(4);
       expect(store.state.minRating, 0);
