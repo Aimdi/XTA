@@ -42,6 +42,8 @@ import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/ui/floating_notice.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 BooruPost _post(
   String id, {
@@ -1113,11 +1115,18 @@ void main() {
 
       unawaited(feed.loadMore());
       await tester.pumpAndSettle();
-      expect(find.text('Could not load more posts'), findsOneWidget);
-
-      await tester.tap(find.text('Retry'));
+      // One row where the next page would have been; what failed is in its details.
+      final failure = find.byType(ReaderFailureNotice);
+      expect(tester.getSize(failure).height, 48);
+      await tester.tap(find.descendant(of: failure, matching: find.byTooltip('More info')));
       await tester.pumpAndSettle();
-      expect(find.text('Could not load more posts'), findsNothing);
+      expect(find.text('Could not load more posts'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.descendant(of: failure, matching: find.text('Retry')));
+      await tester.pumpAndSettle();
+      expect(find.byType(ReaderFailureNotice), findsNothing);
       expect(find.text('No more posts'), findsOneWidget);
       expect(feed.state.map((p) => p.id), ['a', 'b']);
     });
@@ -1227,26 +1236,37 @@ void main() {
       expect(find.byType(BooruPostGrid), findsOneWidget);
     });
 
-    testWidgets('Latest keeps its posts when a refresh fails, under a notice with Retry', (tester) async {
+    testWidgets('Latest keeps its posts in place when a refresh fails, under a floating notice with Retry', (
+      tester,
+    ) async {
       const notice = 'Showing the posts from before';
       final scroll = ScrollController();
       addTearDown(scroll.dispose);
       final client = await _pump(tester, BooruScreen(scrollController: scroll), tags: _Tags(), settle: false);
       client.latestPage.complete(BooruPostPage(posts: [_post('1'), _post('2')], page: 1, hasMore: false));
       await tester.pumpAndSettle();
+      final first = tester.getTopLeft(find.byType(BooruPostTile).first);
       client.latestAgain = () async => throw BooruException(BooruErrorKind.network, 'offline');
 
       unawaited(tester.state<RefreshIndicatorState>(find.byType(RefreshIndicator)).show());
       await tester.pumpAndSettle();
 
       expect(find.byType(BooruPostTile), findsNWidgets(2));
-      expect(find.text(notice), findsOneWidget);
-      expect(find.text('Could not reach the booru host'), findsOneWidget);
+      // It floats over the posts instead of pushing them down; why is in its details.
+      expect(tester.getTopLeft(find.byType(BooruPostTile).first), first);
+      final failure = find.byType(ReaderFailureNotice);
+      expect(find.ancestor(of: failure, matching: find.byType(NoticePill)), findsOneWidget);
+      await tester.tap(find.descendant(of: failure, matching: find.byTooltip('More info')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining(notice), findsOneWidget);
+      expect(find.textContaining('Could not reach the booru host'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
 
       client.latestAgain = () async => BooruPostPage(posts: [_post('3')], page: 1, hasMore: false);
-      await tester.tap(find.byTooltip('Retry'));
+      await tester.tap(find.descendant(of: failure, matching: find.text('Retry')));
       await tester.pumpAndSettle();
-      expect(find.text(notice), findsNothing);
+      expect(find.byType(ReaderFailureNotice), findsNothing);
       expect(find.byType(BooruPostTile), findsOneWidget);
     });
 
@@ -1279,7 +1299,18 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(BooruPostTile), findsNWidgets(2));
-      expect(find.text('Showing the posts from before'), findsOneWidget);
+      final failure = find.byType(ReaderFailureNotice);
+      await tester.tap(find.descendant(of: failure, matching: find.byTooltip('More info')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Showing the posts from before'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
+
+      // Closing the notice puts it away and keeps the posts.
+      await tester.tap(find.descendant(of: failure, matching: find.byTooltip('Close')));
+      await tester.pumpAndSettle();
+      expect(find.byType(ReaderFailureNotice), findsNothing);
+      expect(find.byType(BooruPostTile), findsNWidgets(2));
     });
 
     testWidgets('Latest says how many posts the muted tags hid, and shows them on request', (tester) async {

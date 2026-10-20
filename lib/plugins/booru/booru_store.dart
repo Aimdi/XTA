@@ -375,6 +375,11 @@ class BooruFeedStore extends Store<List<BooruPost>>
     await loadMore();
   }
 
+  /// Puts away the notice of a failed refresh; the posts from before stay.
+  void dismissRefreshFailure() {
+    if (!closed) refreshFailure.update((error: null));
+  }
+
   /// Appends the next page with posts not shown yet, skipping pages the
   /// filters emptied while the host still has more. Dropped if a refresh
   /// started meanwhile.

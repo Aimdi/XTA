@@ -46,14 +46,16 @@ class BooruSearchResults extends StatelessWidget {
         }
         return Column(
           children: [
-            BooruRefreshNotice(feed: results),
             _RelatedTagsRow(store: store, posts: posts),
             Expanded(
-              child: BooruPostGrid(
-                posts: posts,
+              child: BooruRefreshNotice(
                 feed: results,
-                onRefresh: results.refresh,
-                onNearEnd: results.loadMore,
+                child: BooruPostGrid(
+                  posts: posts,
+                  feed: results,
+                  onRefresh: results.refresh,
+                  onNearEnd: results.loadMore,
+                ),
               ),
             ),
           ],

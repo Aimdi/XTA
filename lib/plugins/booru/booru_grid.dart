@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
@@ -19,6 +20,8 @@ import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/ui/empty_pane.dart';
+import 'package:xta/ui/floating_notice.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 String booruPostHeroTag(BooruPost post) => 'booru-${post.host}-${post.id}';
 
@@ -93,8 +96,8 @@ class BooruPostGrid extends StatelessWidget {
   }
 }
 
-/// Under the grid: a spinner while the next page loads, a retry button when
-/// it failed, and a note once the feed has nothing more.
+/// Under the grid: a spinner while the next page loads, one row with Retry
+/// when it failed, and a note once the feed has nothing more.
 class _PagingFooter extends StatelessWidget {
   final BooruFeedStore feed;
 
@@ -103,33 +106,32 @@ class _PagingFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ScopedBuilder<BooruPagingStore, BooruPaging>(
     store: feed.paging,
-    onState: (context, paging) => switch (_content(context, paging)) {
-      final content? => Padding(
-        padding: const EdgeInsets.all(16),
-        child: Center(child: content),
+    onState: (context, paging) => switch (paging) {
+      // What failed is in the row's details, not stacked over its button.
+      BooruPaging.failed => ReaderFailureNotice(
+        source: pluginIdBooru,
+        error: null,
+        contextMessage: L10n.of(context).plugin_booru_load_more_failed,
+        onRetry: feed.retryMore,
       ),
-      null => const SizedBox.shrink(),
+      _ => switch (_content(context, paging)) {
+        final content? => Padding(
+          padding: const EdgeInsets.all(16),
+          child: Center(child: content),
+        ),
+        null => const SizedBox.shrink(),
+      },
     },
   );
 
-  Widget? _content(BuildContext context, BooruPaging paging) {
-    final l10n = L10n.of(context);
-    return switch (paging) {
-      BooruPaging.idle => null,
-      BooruPaging.loading => const CircularProgressIndicator(),
-      BooruPaging.failed => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(l10n.plugin_booru_load_more_failed, textAlign: TextAlign.center),
-          TextButton.icon(onPressed: feed.retryMore, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-        ],
-      ),
-      BooruPaging.end => Text(
-        l10n.plugin_booru_end_of_results,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
-      ),
-    };
-  }
+  Widget? _content(BuildContext context, BooruPaging paging) => switch (paging) {
+    BooruPaging.loading => const CircularProgressIndicator(),
+    BooruPaging.end => Text(
+      L10n.of(context).plugin_booru_end_of_results,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
+    ),
+    BooruPaging.idle || BooruPaging.failed => null,
+  };
 }
 
 /// What an empty feed shows. While the host has more pages, the posts so far
@@ -170,27 +172,36 @@ class BooruEmptyFeed extends StatelessWidget {
   }
 }
 
-/// Above a feed whose refresh failed: why, that the posts from before are
-/// still shown, and Retry.
+/// Over a feed whose refresh failed, [child]: Retry, why and that the posts
+/// from before are still shown in its details, and a close button. It floats
+/// over the posts, so they keep their place.
 class BooruRefreshNotice extends StatelessWidget {
   final BooruFeedStore feed;
+  final Widget child;
 
-  const BooruRefreshNotice({super.key, required this.feed});
+  const BooruRefreshNotice({super.key, required this.feed, required this.child});
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return ScopedBuilder<BooruRefreshFailureStore, ({Object? error})>(
       store: feed.refreshFailure,
-      onState: (context, failure) => switch (failure.error) {
-        null => const SizedBox.shrink(),
-        final error => ListTile(
-          leading: const Icon(Icons.cloud_off_outlined),
-          title: Text(booruErrorMessage(l10n, error)),
-          subtitle: Text(l10n.plugin_booru_showing_earlier),
-          trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry, onPressed: feed.refresh),
-        ),
-      },
+      onState: (context, failure) => FloatingNotice(
+        notice: switch (failure.error) {
+          null => null,
+          final error => NoticePill(
+            child: ReaderFailureNotice(
+              source: pluginIdBooru,
+              error: error,
+              compact: true,
+              contextMessage: '${booruErrorMessage(l10n, error)}\n${l10n.plugin_booru_showing_earlier}',
+              onRetry: feed.refresh,
+              onDismiss: feed.dismissRefreshFailure,
+            ),
+          ),
+        },
+        child: child,
+      ),
     );
   }
 }
