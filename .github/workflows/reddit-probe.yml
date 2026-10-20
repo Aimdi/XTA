@@ -5,6 +5,7 @@ on:
     branches: [claude/admiring-mayer-bdfg95]
     paths:
       - test/live/reddit_smoke_test.dart
+      - test/live/reddit_rss_dump_test.dart
       - .github/workflows/reddit-probe.yml
 permissions:
   contents: read
@@ -24,5 +25,5 @@ jobs:
         run: |
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
-      - name: Probe Reddit
-        run: flutter test test/live/reddit_smoke_test.dart --dart-define=RUN_LIVE=true --reporter expanded
+      - name: Dump Reddit feeds
+        run: flutter test test/live/reddit_rss_dump_test.dart --dart-define=RUN_LIVE=true --reporter expanded
