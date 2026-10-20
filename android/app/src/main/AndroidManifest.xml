@@ -29,13 +29,16 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
     <!-- Backups are disabled so the database holding X session tokens can
-         never leave the device via adb or cloud backups -->
+         never leave the device via adb or cloud backups. From Android 12
+         allowBackup no longer covers device-to-device transfer; the data
+         extraction rules exclude everything from both. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:name="com.aimdi.xta.XtaApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:allowBackup="false">
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
