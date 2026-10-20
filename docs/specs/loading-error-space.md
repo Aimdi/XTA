@@ -1,6 +1,6 @@
 # Loading and errors take no room of their own
 
-Status: **in progress** (2026-10-20). The owner: "Errors or loading sometimes take a bit of extra space. I don't like
+Status: **done** (2026-10-20). The owner: "Errors or loading sometimes take a bit of extra space. I don't like
 that."
 
 ## The problem, as the code had it
@@ -32,7 +32,8 @@ the accounts list's placeholder (the bar is the whole list until it loads), TikT
 its web view, and the link browser's line, which takes the place of the divider under its toolbar.
 
 A spinner where the next items will appear (the end of a list loading more) stays: it fills room the new items take,
-and nothing above it moves.
+and nothing above it moves. It comes before a list's bottom clearance, not after it: Pixiv's paged feeds put it after,
+so on Home it sat under the navigation bar with an empty gap above it.
 
 A button that starts a load shows it inside itself, as the note editor's Save does: the Substack add screen's Preview
 button carries the spinner instead of a 28 px gap opening under it.
@@ -55,6 +56,11 @@ the other rather than on top of each other.
 A failure that replaces the content (a first page that never loaded) keeps its full-screen layout: there is
 nothing to push.
 
+A partial failure that can last (an RSS feed that is gone, a followed Booru tag that no longer loads) does not float,
+since it would cover the top post for as long as it lasts. Where the surface already has a row of controls, it is a
+warning button in that row (`PartialFailureButton`, `lib/ui/reader_failure.dart`) that opens what failed with Retry,
+as Substack's toolbar already did. RSS and Booru had a row of 56 px or more between their filter chips and the posts.
+
 ## Rule 4: a failure where the next items would be is one compact row
 
 At the end of a list, where a page failed to load, the failure is `ReaderFailureNotice`: one 48 px row with Retry,
@@ -71,3 +77,14 @@ notice was 88 px during the countdown and 48 px otherwise; it is now 48 px throu
 
 Content already on screen that is reloading (a thread's replies, comments, a profile) shows the loading line over
 it. A spinner row between a header and its content pushed the content down by 68 to 84 px on every refresh.
+
+A ticker page switching its chart range keeps the chart before under the line until the new range lands. It used to
+drop the price and chart for a 200 px spinner, so the range row and the posts jumped up and back down. A range that
+fails still says so rather than leaving the old range's chart under the new range's chip.
+
+## Kept as rows
+
+Notices about a lasting state rather than a load or a failure of what is shown keep their row, since floating would
+cover the content for as long as the state lasts: Threads' parked session, the downloads screen's storage banner and
+the plugin store's offline catalogue line. Group discovery's failed sources stay one compact row each in
+the list's header, which scrolls away with it.
