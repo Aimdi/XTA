@@ -11,7 +11,8 @@ import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// Posts / communities / accounts for a query — used by the dedicated screen
 /// and by Discover when the Reddit chip owns the hub.
@@ -261,17 +262,14 @@ class _RedditSearchTabState<T> extends State<RedditSearchTab<T>>
       children: [
         ?leading,
         if (_error != null)
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: FullPageErrorWidget(
-              error: _error,
-              stackTrace: null,
-              prefix: redditErrorMessage(l10n, _error!),
-              onRetry: () {
-                _loaded = null;
-                _run();
-              },
-            ),
+          ReaderFailureNotice(
+            source: pluginIdReddit,
+            error: _error,
+            contextMessage: redditErrorMessage(l10n, _error!),
+            onRetry: () {
+              _loaded = null;
+              _run();
+            },
           )
         else if (results == null)
           const Padding(

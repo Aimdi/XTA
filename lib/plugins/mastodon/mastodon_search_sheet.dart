@@ -14,6 +14,9 @@ import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_results.dart';
 import 'package:xta/search/recent_searches_store.dart';
 import 'package:xta/search/recent_searches_bar.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// Kept as an entry-point alias for plugin search; discovery now has a full route.
 Future<void> showMastodonSearchSheet(BuildContext context, {String? initialQuery}) =>
@@ -220,32 +223,38 @@ class _MastodonTagScreenState extends State<MastodonTagScreen> {
     }
     return Column(
       children: [
-        if (state.loading) const LinearProgressIndicator(),
-        if (state.error != null) _notice(l10n.plugin_mastodon_refresh_failed, _store.refresh),
+        // A failed refresh floats over the posts it kept.
         Expanded(
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification.depth == 0 &&
-                  notification is ScrollUpdateNotification &&
-                  notification.metrics.extentAfter < 800 &&
-                  state.moreError == null) {
-                _store.loadMore();
-              }
-              return false;
-            },
-            child: RefreshIndicator(
-              onRefresh: _store.refresh,
-              child: FeedListView(
-                controller: _scroll,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: state.posts.length + 1,
-                itemBuilder: (context, index) => index == state.posts.length
-                    ? _footer(state)
-                    : MastodonPostCard(
-                        key: ValueKey(canonicalMastodonPostKey(state.posts[index])),
-                        post: state.posts[index],
-                        showSourceBadge: false,
-                      ),
+          child: ReloadStatus(
+            loading: state.loading,
+            error: state.error,
+            source: pluginIdMastodon,
+            contextMessage: l10n.plugin_mastodon_refresh_failed,
+            onRetry: _store.refresh,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification.depth == 0 &&
+                    notification is ScrollUpdateNotification &&
+                    notification.metrics.extentAfter < 800 &&
+                    state.moreError == null) {
+                  _store.loadMore();
+                }
+                return false;
+              },
+              child: RefreshIndicator(
+                onRefresh: _store.refresh,
+                child: FeedListView(
+                  controller: _scroll,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: state.posts.length + 1,
+                  itemBuilder: (context, index) => index == state.posts.length
+                      ? _footer(state)
+                      : MastodonPostCard(
+                          key: ValueKey(canonicalMastodonPostKey(state.posts[index])),
+                          post: state.posts[index],
+                          showSourceBadge: false,
+                        ),
+                ),
               ),
             ),
           ),
@@ -254,15 +263,9 @@ class _MastodonTagScreenState extends State<MastodonTagScreen> {
     );
   }
 
-  Widget _notice(String message, VoidCallback retry) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-    child: Column(
-      children: [
-        Text(message, textAlign: TextAlign.center),
-        TextButton.icon(onPressed: retry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry)),
-      ],
-    ),
-  );
+  /// One row where what failed would have been; [message] is in its details.
+  Widget _notice(Object? error, String message, VoidCallback retry) =>
+      ReaderFailureNotice(source: pluginIdMastodon, error: error, contextMessage: message, onRetry: retry);
 
   Widget _footer(MastodonTagState state) {
     final l10n = L10n.of(context);
@@ -272,8 +275,10 @@ class _MastodonTagScreenState extends State<MastodonTagScreen> {
         child: Center(child: CircularProgressIndicator()),
       );
     }
-    if (state.moreError != null) return _notice(l10n.plugin_mastodon_load_more_failed, _store.loadMore);
-    if (!state.hasMore) return const SizedBox(height: 24);
+    if (state.moreError case final error?) {
+      return _notice(error, l10n.plugin_mastodon_load_more_failed, _store.loadMore);
+    }
+    if (!state.hasMore) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Center(

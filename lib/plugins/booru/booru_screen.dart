@@ -24,6 +24,8 @@ import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_visits.dart';
 import 'package:xta/ui/empty_pane.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 const _latestTab = 0;
 const _popularTab = 1;
@@ -269,8 +271,10 @@ class _FollowingTab extends StatelessWidget {
         }
         return Column(
           children: [
-            PluginFilterRow(
-              children: [
+            BooruFollowingRow(
+              failed: store.failedQueries,
+              onRetry: store.refresh,
+              tags: [
                 for (final tag in tags)
                   InputChip(
                     label: Text(tag),
@@ -284,7 +288,6 @@ class _FollowingTab extends StatelessWidget {
                   ),
               ],
             ),
-            BooruFollowingNotice(failed: store.failedQueries, onRetry: store.refresh),
             Expanded(
               child: BooruFeedView(store: store, emptyLabel: l10n.plugin_booru_empty_following_posts, isNew: isNew),
             ),
@@ -295,25 +298,30 @@ class _FollowingTab extends StatelessWidget {
   }
 }
 
-/// Says that some followed tags did not load, above the posts of the rest.
-class BooruFollowingNotice extends StatelessWidget {
+/// The followed tags, led by a warning while some of them did not load: in
+/// their row, not a row of its own above the posts of the rest.
+class BooruFollowingRow extends StatelessWidget {
   final BooruFailedQueriesStore failed;
   final VoidCallback onRetry;
+  final List<Widget> tags;
 
-  const BooruFollowingNotice({super.key, required this.failed, required this.onRetry});
+  const BooruFollowingRow({super.key, required this.failed, required this.onRetry, required this.tags});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     return ScopedBuilder<BooruFailedQueriesStore, int>(
       store: failed,
-      onState: (context, count) => count == 0
-          ? const SizedBox.shrink()
-          : ListTile(
-              leading: const Icon(Icons.error_outline),
-              title: Text(l10n.plugin_booru_following_partial),
-              trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry, onPressed: onRetry),
+      onState: (context, count) => PluginFilterRow(
+        children: [
+          if (count > 0)
+            PartialFailureButton(
+              source: pluginIdBooru,
+              message: L10n.of(context).plugin_booru_following_partial,
+              onRetry: onRetry,
             ),
+          ...tags,
+        ],
+      ),
     );
   }
 }

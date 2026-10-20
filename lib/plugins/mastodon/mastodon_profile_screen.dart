@@ -17,6 +17,8 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 String mastodonErrorMessage(L10n l10n, Object error) {
   if (error is! MastodonException) {
@@ -193,14 +195,11 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
               ),
             if (state.error != null)
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: FullPageErrorWidget(
-                    error: state.error,
-                    stackTrace: null,
-                    prefix: mastodonErrorMessage(l10n, state.error!),
-                    onRetry: _store.retry,
-                  ),
+                child: ReaderFailureNotice(
+                  source: pluginIdMastodon,
+                  error: state.error,
+                  contextMessage: mastodonErrorMessage(l10n, state.error!),
+                  onRetry: _store.retry,
                 ),
               ),
             if (!state.loading && !state.loadingMore && state.error == null && state.current.more)

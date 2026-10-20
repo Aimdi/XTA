@@ -12,6 +12,10 @@ import 'package:xta/plugins/bluesky/bluesky_source_reader.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class BlueskyAlgoPane extends StatefulWidget {
   final ScrollController scrollController;
@@ -173,14 +177,17 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
           header: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _ChipStrip(
-                chips: [
-                  for (final list in lists.values)
-                    _FeedChip(uri: list.uri, label: list.name, selected: state.selectedUri == list.uri),
-                ],
-                onTap: (uri) => store.open(uri),
+              LoadingHairline(
+                loading: state.listsLoading,
+                atBottom: true,
+                child: _ChipStrip(
+                  chips: [
+                    for (final list in lists.values)
+                      _FeedChip(uri: list.uri, label: list.name, selected: state.selectedUri == list.uri),
+                  ],
+                  onTap: (uri) => store.open(uri),
+                ),
               ),
-              if (state.listsLoading) const LinearProgressIndicator(),
               if (state.listsError != null)
                 _FeedFailure(error: state.listsError!, onRetry: () => store.lookupActor(state.actor)),
               if (state.listsLoaded && state.actorLists.isEmpty)
@@ -257,29 +264,37 @@ class _SourceTimeline extends StatelessWidget {
     },
     child: RefreshIndicator(
       onRefresh: onRefresh,
-      child: FeedListView(
-        controller: pluginInnerScrollController(context, scrollController),
-        padding: pluginFeedPadding(context),
-        itemCount: page.posts.length + 3,
-        itemBuilder: (context, index) {
-          if (index == 0) return header;
-          if (index == 1) {
-            return Column(
-              children: [
-                if (page.loading) const LinearProgressIndicator(),
-                if (page.error != null) _FeedFailure(error: page.error!, onRetry: onRetry),
-                if (!page.loading && page.error == null && page.posts.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Text(emptyMessage, textAlign: TextAlign.center),
-                  ),
-              ],
-            );
-          }
-          if (index == page.posts.length + 2) return _SourceFooter(page: page, onMore: onMore);
-          final post = page.posts[index - 2];
-          return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
-        },
+      // A failed refresh floats over the posts it kept; with none, it is the
+      // first row.
+      child: ReloadStatus(
+        loading: page.loading,
+        error: page.posts.isEmpty ? null : page.error,
+        source: pluginIdBluesky,
+        contextMessage: page.error == null ? null : blueskyErrorMessage(L10n.of(context), page.error!),
+        onRetry: onRetry,
+        child: FeedListView(
+          controller: pluginInnerScrollController(context, scrollController),
+          padding: pluginFeedPadding(context),
+          itemCount: page.posts.length + 3,
+          itemBuilder: (context, index) {
+            if (index == 0) return header;
+            if (index == 1) {
+              return Column(
+                children: [
+                  if (page.error != null && page.posts.isEmpty) _FeedFailure(error: page.error!, onRetry: onRetry),
+                  if (!page.loading && page.error == null && page.posts.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Text(emptyMessage, textAlign: TextAlign.center),
+                    ),
+                ],
+              );
+            }
+            if (index == page.posts.length + 2) return _SourceFooter(page: page, onMore: onMore);
+            final post = page.posts[index - 2];
+            return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
+          },
+        ),
       ),
     ),
   );
@@ -312,23 +327,18 @@ class _SourceFooter extends StatelessWidget {
   }
 }
 
+/// One row where what failed would have been; the reason is in its details.
 class _FeedFailure extends StatelessWidget {
   final Object error;
   final Future<void> Function() onRetry;
   const _FeedFailure({required this.error, required this.onRetry});
   @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Text(blueskyErrorMessage(l10n, error), textAlign: TextAlign.center),
-          TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ReaderFailureNotice(
+    source: pluginIdBluesky,
+    error: error,
+    contextMessage: blueskyErrorMessage(L10n.of(context), error),
+    onRetry: onRetry,
+  );
 }
 
 class BlueskyFeedCatalogScreen extends StatefulWidget {

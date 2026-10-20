@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/home/home_navigation_visibility.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -10,6 +9,7 @@ import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/ui/height_probe.dart';
 
 const double kHomeNavigationHeight = 54;
 
@@ -399,7 +399,7 @@ class HomeNavigationBar extends StatelessWidget {
           kHomeNavigationFloatInset,
           0,
         ),
-        child: _FrostedPill(
+        child: FrostedPill(
           palette: palette,
           height: homeNavigationHeight(showLabels: showLabels),
           child: Stack(
@@ -574,14 +574,16 @@ class HomeNavigationBar extends StatelessWidget {
 }
 
 /// The bar's surface: page content blurred and tinted through a rounded pill,
-/// edged by a hairline and lifted by a shadow drawn only outside it.
-class _FrostedPill extends StatelessWidget {
+/// edged by a hairline and lifted by a shadow drawn only outside it. Anything
+/// else that floats over the pages wears it too, so it reads as the same layer.
+class FrostedPill extends StatelessWidget {
   final HomeNavigationPalette palette;
   final Widget child;
 
   final double height;
 
-  const _FrostedPill({
+  const FrostedPill({
+    super.key,
     required this.palette,
     required this.height,
     required this.child,
@@ -766,7 +768,7 @@ class _HomeNavigationSlideState extends State<HomeNavigationSlide>
 
   @override
   Widget build(BuildContext context) {
-    return _HeightProbe(
+    return HeightProbe(
       onHeight: _measured,
       child: SlideTransition(
         position: _offset,
@@ -777,34 +779,5 @@ class _HomeNavigationSlideState extends State<HomeNavigationSlide>
         ),
       ),
     );
-  }
-}
-
-/// Reports its child's height after every layout, without a rebuild.
-class _HeightProbe extends SingleChildRenderObjectWidget {
-  final ValueSetter<double> onHeight;
-
-  const _HeightProbe({required this.onHeight, super.child});
-
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-      _RenderHeightProbe(onHeight);
-
-  @override
-  void updateRenderObject(
-    BuildContext context,
-    _RenderHeightProbe renderObject,
-  ) => renderObject.onHeight = onHeight;
-}
-
-class _RenderHeightProbe extends RenderProxyBox {
-  ValueSetter<double> onHeight;
-
-  _RenderHeightProbe(this.onHeight);
-
-  @override
-  void performLayout() {
-    super.performLayout();
-    onHeight(size.height);
   }
 }

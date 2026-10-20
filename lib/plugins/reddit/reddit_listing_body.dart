@@ -16,6 +16,8 @@ import 'package:xta/plugins/reddit/reddit_states.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class RedditListingState {
   final List<RedditPost>? posts;
@@ -303,37 +305,25 @@ class _LoadMoreButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final error = this.error;
+    // A failed page is one row, its reason in the details, rather than the
+    // reason's lines stacked over the button.
+    if (error != null && !loading) {
+      return ReaderFailureNotice(source: pluginIdReddit, error: null, contextMessage: error, onRetry: onPressed);
+    }
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          if (error != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                error!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall!.copyWith(
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            ),
-          OutlinedButton(
-            onPressed: loading ? null : onPressed,
-            child: loading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(
-                    error == null
-                        ? L10n.of(context).plugin_reddit_load_more
-                        : L10n.of(context).retry,
-                  ),
-          ),
-        ],
+      child: Center(
+        child: OutlinedButton(
+          onPressed: loading ? null : onPressed,
+          child: loading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(L10n.of(context).plugin_reddit_load_more),
+        ),
       ),
     );
   }

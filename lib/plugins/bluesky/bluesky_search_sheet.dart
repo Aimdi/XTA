@@ -19,6 +19,9 @@ import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/reader_swipe_navigation.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 export 'bluesky_search_store.dart' show BlueskySearchTab;
 
@@ -221,49 +224,57 @@ class _BlueskySearchScreenState extends State<BlueskySearchScreen> {
 
   Widget _results<T>(BuildContext context, BlueskySearchPage<T> page, Widget Function(T) item) {
     final l10n = L10n.of(context);
+    final error = page.error;
+    final refreshFailed = error != null && !page.retryMore;
+    // A failed refresh floats over the results; with none, it is the first row.
     return RefreshIndicator(
       onRefresh: _store.refresh,
-      child: ListView.builder(
-        key: PageStorageKey('bluesky-search-${_store.state.tab.name}'),
-        physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: page.items.length + 2,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Column(
-              children: [
-                if (page.loading) const LinearProgressIndicator(),
-                if (page.error != null && !page.retryMore)
-                  _error(context, page.error!, page.retryMore ? _store.loadMore : _store.refresh),
-                if (!page.loading && page.error == null && page.items.isEmpty)
-                  Padding(padding: const EdgeInsets.all(32), child: Text(l10n.plugin_bluesky_no_results)),
-              ],
-            );
-          }
-          if (index <= page.items.length) return item(page.items[index - 1]);
-          if (page.loadingMore) {
-            return const Padding(
-              padding: EdgeInsets.all(20),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-          if (page.error != null && page.retryMore) return _error(context, page.error!, _store.loadMore);
-          if (page.cursor != null) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: OutlinedButton(
-                onPressed: page.loading ? null : _store.loadMore,
-                child: Text(l10n.bluesky_search_more),
-              ),
-            );
-          }
-          if (!page.loading && page.items.isNotEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(24),
-              child: Center(child: Text(l10n.bluesky_search_end)),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+      child: ReloadStatus(
+        loading: page.loading,
+        error: refreshFailed && page.items.isNotEmpty ? error : null,
+        source: pluginIdBluesky,
+        contextMessage: error == null ? null : blueskyErrorMessage(l10n, error),
+        onRetry: _store.refresh,
+        child: ListView.builder(
+          key: PageStorageKey('bluesky-search-${_store.state.tab.name}'),
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: page.items.length + 2,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Column(
+                children: [
+                  if (refreshFailed && page.items.isEmpty) _error(context, error, _store.refresh),
+                  if (!page.loading && page.error == null && page.items.isEmpty)
+                    Padding(padding: const EdgeInsets.all(32), child: Text(l10n.plugin_bluesky_no_results)),
+                ],
+              );
+            }
+            if (index <= page.items.length) return item(page.items[index - 1]);
+            if (page.loadingMore) {
+              return const Padding(
+                padding: EdgeInsets.all(20),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            if (page.error != null && page.retryMore) return _error(context, page.error!, _store.loadMore);
+            if (page.cursor != null) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: OutlinedButton(
+                  onPressed: page.loading ? null : _store.loadMore,
+                  child: Text(l10n.bluesky_search_more),
+                ),
+              );
+            }
+            if (!page.loading && page.items.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(child: Text(l10n.bluesky_search_end)),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -322,11 +333,14 @@ class _BlueskySearchScreenState extends State<BlueskySearchScreen> {
             title: Text(l10n.plugin_bluesky_import_starter),
             onTap: () => _open(const BlueskyImportStarterPackScreen()),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Text(l10n.plugin_bluesky_suggested, style: Theme.of(context).textTheme.titleSmall),
+          LoadingHairline(
+            loading: state.suggestions.loading,
+            atBottom: true,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: Text(l10n.plugin_bluesky_suggested, style: Theme.of(context).textTheme.titleSmall),
+            ),
           ),
-          if (state.suggestions.loading) const LinearProgressIndicator(),
           if (state.suggestions.error != null) _error(context, state.suggestions.error!, _store.loadSuggestions),
           for (final person in state.suggestions.items) _personTile(context, person),
         ],
@@ -334,14 +348,12 @@ class _BlueskySearchScreenState extends State<BlueskySearchScreen> {
     );
   }
 
-  Widget _error(BuildContext context, Object error, VoidCallback retry) => Padding(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      children: [
-        Text(blueskyErrorMessage(L10n.of(context), error), textAlign: TextAlign.center),
-        TextButton.icon(onPressed: retry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry)),
-      ],
-    ),
+  /// One row where what failed would have been; the reason is in its details.
+  Widget _error(BuildContext context, Object error, VoidCallback retry) => ReaderFailureNotice(
+    source: pluginIdBluesky,
+    error: error,
+    contextMessage: blueskyErrorMessage(L10n.of(context), error),
+    onRetry: retry,
   );
 
   Widget _personTile(BuildContext context, BlueskyProfile profile) =>

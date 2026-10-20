@@ -73,8 +73,10 @@ class TickerDetailStore extends Store<TickerDetailState> {
   bool _stale(int generation) => _closed || generation != _generation;
 
   /// [silent] refreshes keep what is on screen and never show an error over
-  /// a chart that is merely a minute old.
+  /// a chart that is merely a minute old, nor overtake a load the reader is
+  /// waiting on, which may be for another range than the chart shown.
   Future<void> load({bool silent = false}) async {
+    if (silent && state.loading) return;
     final generation = ++_generation;
     final range = state.range;
     final instrument = state.instrument;
@@ -89,7 +91,9 @@ class TickerDetailStore extends Store<TickerDetailState> {
       }
     } on TickerException {
       if (_stale(generation)) return;
-      update(state.copyWith(loading: false, failed: state.quote == null));
+      // Only a silent refresh keeps the chart: any other load was for a chart
+      // not yet shown (a new range), so what is shown is not its answer.
+      update(state.copyWith(loading: false, quote: silent ? _keep : null, failed: !silent || state.quote == null));
     }
   }
 
@@ -111,9 +115,11 @@ class TickerDetailStore extends Store<TickerDetailState> {
     }
   }
 
+  /// The chart before stays up under the loading line until the new range's
+  /// lands, so the price and everything below it keep their place.
   Future<void> selectRange(TickerRange range) async {
     if (range == state.range) return;
-    update(state.copyWith(range: range, quote: null, scrubbed: null));
+    update(state.copyWith(range: range, scrubbed: null));
     await load();
   }
 

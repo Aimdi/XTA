@@ -15,6 +15,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 class ProfileFollows extends StatefulWidget {
   final UserWithExtra user;
@@ -151,10 +152,9 @@ class _ProfileFollowsState extends State<ProfileFollows>
                     verification: user.badges,
                   ),
                   newPageErrorIndicatorBuilder: (context) =>
-                      FullPageErrorWidget(
-                        error: pagingErrorOf(state)?.error,
-                        stackTrace: pagingErrorOf(state)?.stackTrace,
-                        prefix: l10n.unable_to_load_the_next_page_of_follows,
+                      ReaderFailureNotice(
+                        error: pagingErrorOf(state)?.error ?? state.error,
+                        contextMessage: l10n.unable_to_load_the_next_page_of_follows,
                         onRetry: fetchNextPage,
                       ),
                 ),

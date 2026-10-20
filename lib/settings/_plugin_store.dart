@@ -15,6 +15,7 @@ import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/settings/_plugin_row.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// What the reader has installed, then what is on offer grouped by purpose.
 ///
@@ -175,7 +176,6 @@ class _SettingsPluginStoreFragmentState
         sections.installed.isEmpty &&
         sections.availableByCategory.isEmpty;
     final entries = <Widget>[
-      if (_loading) const LinearProgressIndicator(minHeight: 2),
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
         child: SearchBar(
@@ -240,9 +240,12 @@ class _SettingsPluginStoreFragmentState
           onPressed: _loading ? null : _refresh,
         ),
       ],
-      body: PluginStoreBody(
-        onRefresh: _refresh,
-        entries: entries,
+      body: LoadingHairline(
+        loading: _loading,
+        child: PluginStoreBody(
+          onRefresh: _refresh,
+          entries: entries,
+        ),
       ),
     );
   }

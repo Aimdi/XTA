@@ -23,8 +23,9 @@ import 'package:xta/plugins/reddit/reddit_text.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// A post and its comments.
 class RedditThreadScreen extends StatefulWidget {
@@ -239,14 +240,12 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
   Widget _pending(BuildContext context, L10n l10n) {
     final error = _error;
     if (error != null) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: redditErrorMessage(l10n, error),
-          onRetry: _load,
-        ),
+      // One row where the comments would have been.
+      return ReaderFailureNotice(
+        source: pluginIdReddit,
+        error: error,
+        contextMessage: redditErrorMessage(l10n, error),
+        onRetry: _load,
       );
     }
 

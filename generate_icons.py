@@ -32,6 +32,11 @@ ADAPTIVE_SIZE = 432
 # The legacy icon, and the one the README shows.
 FULL_SIZE = 2000
 
+# The icon the app shows itself (About, the Linux window): 48 dp on Android,
+# 192 px at 4x, and 512 px like the Linux package's icon. The 2000 px one
+# would ship 385 KB for it.
+APP_ICON_SIZE = 512
+
 # How round the README icon is. The launcher icons are not rounded here on
 # purpose: Android masks them itself, to whatever shape the launcher uses, and
 # a corner rounded twice is a corner cut twice.
@@ -99,6 +104,7 @@ def main():
 
     save(full_icon(FULL_SIZE), ASSETS / "icon.png")
     save(rounded(full_icon(FULL_SIZE), README_RADIUS), ASSETS / "readme" / "icon.png")
+    save(full_icon(APP_ICON_SIZE), ASSETS / "app-icon.png")
 
     # Adaptive layers are separate so the launcher can move them against each
     # other; the foreground therefore carries the mark alone.

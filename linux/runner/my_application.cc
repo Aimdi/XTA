@@ -30,7 +30,7 @@ static void set_window_icon(GtkWindow* window) {
   if (exe == nullptr) return;
   g_autofree gchar* dir = g_path_get_dirname(exe);
   g_autofree gchar* icon = g_build_filename(
-      dir, "data", "flutter_assets", "assets", "icon.png", nullptr);
+      dir, "data", "flutter_assets", "assets", "app-icon.png", nullptr);
   gtk_window_set_icon_from_file(window, icon, nullptr);
 }
 

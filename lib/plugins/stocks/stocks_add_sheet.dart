@@ -7,6 +7,7 @@ import 'package:xta/plugins/stocks/stocks_quote_row.dart';
 import 'package:xta/plugins/stocks/stocks_search_store.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// Pops with a ticker (`AAPL`) or an encoded token (`crypto:v1:…`).
 Future<String?> showStocksAddSheet(BuildContext context, {TickerClient? client, CryptoClient? cryptoClient}) =>
@@ -61,8 +62,9 @@ class _StocksAddSheetState extends State<StocksAddSheet> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
-                if (state.loading) const LinearProgressIndicator(),
-                Expanded(child: _results(state, L10n.of(context))),
+                Expanded(
+                  child: LoadingHairline(loading: state.loading, child: _results(state, L10n.of(context))),
+                ),
               ],
             ),
           ),

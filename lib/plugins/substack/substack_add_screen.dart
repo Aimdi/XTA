@@ -98,12 +98,20 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
                   onSubmitted: (_) => _submit(),
                 ),
                 const SizedBox(height: 12),
+                // The button says it is loading, as the note editor's Save does,
+                // so the form below never moves for it.
                 FilledButton(
-                  onPressed: state.following ? null : _submit,
-                  child: Text(l10n.substack_preview_publication),
+                  onPressed: state.following || state.loading ? null : _submit,
+                  child: state.loading
+                      ? SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            semanticsLabel: l10n.substack_preview_publication,
+                          ),
+                        )
+                      : Text(l10n.substack_preview_publication),
                 ),
-                if (state.loading)
-                  const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: LinearProgressIndicator()),
                 if (state.error != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),

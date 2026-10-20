@@ -105,6 +105,24 @@ Future<void> showReaderFailureDetails(
   ),
 );
 
+/// Some of a surface's sources failed while the rest loaded: a warning in a
+/// row the surface already has (its filter chips, its toolbar) that opens what
+/// failed and Retry, so the content below keeps its place.
+class PartialFailureButton extends StatelessWidget {
+  final String source;
+  final String message;
+  final VoidCallback onRetry;
+  const PartialFailureButton({super.key, required this.source, required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    tooltip: message,
+    icon: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
+    onPressed: () =>
+        showReaderFailureDetails(context, source: source, error: null, contextMessage: message, onRetry: onRetry),
+  );
+}
+
 class _ReadRetry extends StatelessWidget {
   final Object? error;
   final VoidCallback onRetry;
@@ -122,13 +140,10 @@ class _ReadRetry extends StatelessWidget {
       ? RateLimitRetryButton(error: error, onRetry: onRetry)
       : TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry));
 
-  // Before a rate limit resets, a manual retry is disabled anyway.
-  Widget _automatic(BuildContext context, int seconds) => _rateLimited
-      ? ReadRetryCountdown(seconds: seconds)
-      : Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [ReadRetryCountdown(seconds: seconds), _manual(context)],
-        );
+  // Before a rate limit resets, a manual retry is disabled anyway. Otherwise
+  // the Retry button carries the countdown, so the notice keeps one row.
+  Widget _automatic(BuildContext context, int seconds) =>
+      _rateLimited ? ReadRetryCountdown(seconds: seconds) : ReadRetryCountdown(seconds: seconds, onRetry: onRetry);
 }
 
 /// The enclosing [ReadRecovery]'s countdown while it has one, else [idle].
@@ -151,39 +166,53 @@ class ScheduledReadRetry extends StatelessWidget {
 }
 
 /// The calm "trying again in 5 s …" line shown while a surface retries on its own.
+///
+/// With [onRetry] it is a Retry button instead, its icon turning while it
+/// waits and the sentence in its tooltip: retrying now stays one tap, and a
+/// notice counting down is no wider, and so no taller, than one that is not.
 class ReadRetryCountdown extends StatelessWidget {
   final int seconds;
-  const ReadRetryCountdown({super.key, required this.seconds});
+  final VoidCallback? onRetry;
+  const ReadRetryCountdown({super.key, required this.seconds, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
     final color = theme.hintColor;
-    // A long rate-limit wait or reduced motion gets a still icon, not a spinner.
-    final still = seconds > 60 || MediaQuery.disableAnimationsOf(context);
+    final sentence = seconds < 60
+        ? l10n.reader_auto_retry_seconds(seconds)
+        : l10n.reader_auto_retry_in(formatRetryCountdown(seconds));
+    final onRetry = this.onRetry;
+    if (onRetry != null) {
+      return Tooltip(
+        message: sentence,
+        child: TextButton.icon(onPressed: onRetry, icon: _mark(context, null), label: Text(l10n.retry)),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox.square(
-            dimension: 14,
-            child: still
-                ? Icon(Icons.schedule, size: 14, color: color)
-                : CircularProgressIndicator(strokeWidth: 2, color: color),
-          ),
+          _mark(context, color),
           const SizedBox(width: 8),
           Flexible(
-            child: Text(
-              seconds < 60
-                  ? l10n.reader_auto_retry_seconds(seconds)
-                  : l10n.reader_auto_retry_in(formatRetryCountdown(seconds)),
-              style: theme.textTheme.bodySmall?.copyWith(color: color),
-            ),
+            child: Text(sentence, style: theme.textTheme.bodySmall?.copyWith(color: color)),
           ),
         ],
       ),
+    );
+  }
+
+  // A long rate-limit wait or reduced motion gets a still icon, not a spinner.
+  Widget _mark(BuildContext context, Color? color) {
+    final still = seconds > 60 || MediaQuery.disableAnimationsOf(context);
+    return SizedBox.square(
+      dimension: 14,
+      child: still
+          ? Icon(Icons.schedule, size: 14, color: color)
+          : CircularProgressIndicator(strokeWidth: 2, color: color),
     );
   }
 }

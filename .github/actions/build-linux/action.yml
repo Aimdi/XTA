@@ -1,7 +1,8 @@
 name: Build the Linux desktop bundle
 description: >-
   Builds the Linux release bundle and packages it as the release tarball plus
-  its Arch PKGBUILD, in build/linux-release. Shared by the PR check in
+  its Arch PKGBUILD, in build/linux-release; the Dart symbols go to
+  build/linux-symbols. Shared by the PR check in
   verify.yml and the release upload in linux-desktop.yml.
 
 inputs:
@@ -42,7 +43,7 @@ runs:
         flutter pub get
         dart run intl_utils:generate
         dart run flutter_iconpicker:generate_packs --packs material
-        flutter build linux --release --no-tree-shake-icons --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG"
+        flutter build linux --release --no-tree-shake-icons --split-debug-info=build/linux-symbols --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG"
         PATH="$PWD/.venv/bin:$PATH" scripts/package_linux.sh build/linux/x64/release/bundle "$RELEASE_TAG" build/linux-release
 
     # makepkg refuses to run as root, and takes the tarball beside the

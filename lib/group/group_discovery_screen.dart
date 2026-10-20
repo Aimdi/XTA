@@ -32,6 +32,7 @@ import 'package:xta/user.dart';
 import 'package:xta/utils/ai_client.dart';
 import 'package:xta/utils/reader_value_store.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 Future<void> openGroupDiscovery(BuildContext context, {required String id, required String name, bool useAi = false}) =>
     Navigator.push(
@@ -274,14 +275,17 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
         action: TextButton(onPressed: _model.scanMore, child: Text(l10n.group_discovery_scan_more)),
       );
     }
-    return ListView.builder(
-      key: PageStorageKey('discovery-${widget.group.id}'),
-      primary: false,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: kTweetSpace6),
-      itemCount: state.accounts.length + 1,
-      itemBuilder: (context, index) =>
-          index == 0 ? _header(context, state) : _row(state.accounts[index - 1], added, expanded),
+    return LoadingHairline(
+      loading: state.loadingMore,
+      child: ListView.builder(
+        key: PageStorageKey('discovery-${widget.group.id}'),
+        primary: false,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: kTweetSpace6),
+        itemCount: state.accounts.length + 1,
+        itemBuilder: (context, index) =>
+            index == 0 ? _header(context, state) : _row(state.accounts[index - 1], added, expanded),
+      ),
     );
   }
 
@@ -333,7 +337,6 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
         ),
         if (chip || state.usedAi || state.aiFailed) _aiLine(context, state, chip),
         for (final failure in state.failures.entries) _failure(context, failure.key, failure.value),
-        if (state.loadingMore) const LinearProgressIndicator(minHeight: 2) else const SizedBox(height: 2),
         tweetHairlineDivider(context),
       ],
     );

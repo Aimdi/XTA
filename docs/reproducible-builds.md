@@ -50,6 +50,24 @@ contents with the downloaded one the same way. `apksigcopier` is the usual tool
 for transplanting the official signature onto a local build so the whole file
 can be compared, which is what F-Droid itself does.
 
+## Debug symbols
+
+Release APKs are built with `--split-debug-info=build/app/outputs/symbols`,
+which leaves the names and line tables out of `libapp.so`: 3.5 MB less per ABI
+(30.08 MB to 26.54 MB for arm64, measured with gen_snapshot from the pinned
+SDK). A stack trace from a release therefore shows addresses, not names. Each
+release carries `xta-<tag>-debug-symbols.zip`; unzip it and run
+
+```bash
+fvm flutter symbolize -d app.android-arm64.symbols -i trace.txt
+```
+
+with the file for the trace's `arch`. The Linux release is built the same way
+(its snapshot goes from 33.78 MB to 28.90 MB) and carries
+`xta-<tag>-linux-debug-symbols.zip`. The trace's `build_id` must match the
+symbols, so use the zip from the same release. Anyone rebuilding for
+comparison must pass the same flag, as `verify_reproducible.sh` does.
+
 ## Known risks not yet ruled out
 
 None of these are confirmed problems — they are the things to look at first if
@@ -60,7 +78,9 @@ which the environment this was written in could not provide.
 - **Build path in the AOT snapshot.** Dart can embed absolute paths in the
   release snapshot. If it does, builds only match when run from the same
   directory; F-Droid's builder uses a fixed path, so record the path used for
-  releases and build there. `--split-debug-info` is worth testing as a fix.
+  releases and build there. Releases are built with `--split-debug-info` (see
+  below), which keeps source paths out of the snapshot except the generated
+  plugin registrant's.
 - **Timestamps.** AGP normalises zip entry times, but any file generated during
   the build (`lib/generated`, `lib/oss_licenses.dart`, the icon assets) must not
   embed a date. Set `SOURCE_DATE_EPOCH` if one turns up.

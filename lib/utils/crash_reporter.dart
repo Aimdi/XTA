@@ -178,10 +178,15 @@ bool shouldReport(Object error) {
   return true;
 }
 
+/// A release trace has no symbols: it opens with lines naming the process,
+/// and each frame gives its address in memory beside its place in the app.
+/// Only the frames count, by their place in the app.
 String fingerprintOf(Object error, StackTrace? stack) {
   final firstFrames = (stack?.toString() ?? '')
       .split('\n')
-      .where((line) => line.trim().isNotEmpty)
+      .map((line) => line.trim())
+      .where((line) => line.startsWith('#'))
+      .map((line) => line.replaceFirst(RegExp(r'abs [0-9a-f]+ '), ''))
       .take(4)
       .join('|');
   return '${error.runtimeType}|${error.toString()}|$firstFrames';

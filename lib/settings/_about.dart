@@ -114,7 +114,7 @@ class SettingsAboutFragment extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(48.0),
                 child: Image.asset(
-                  'assets/icon.png',
+                  'assets/app-icon.png',
                   height: 48.0,
                   width: 48.0,
                   cacheWidth: iconCachePx,

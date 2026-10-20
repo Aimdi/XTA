@@ -71,6 +71,69 @@ void main() {
     expect(stripped.keys, ['plugin.notyetwritten.server_url']);
   });
 
+  group('fingerprintOf', () {
+    String releaseTrace({
+      required int pid,
+      required String abs,
+      required List<String> virt,
+    }) => [
+      '*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***',
+      'pid: $pid, tid: 139787957171904, name io.flutter.ui',
+      'os: android arch: arm64 comp: yes sim: no',
+      "build_id: 'b185154532fbd848dd4abba69d3a1faa'",
+      'isolate_dso_base: 7f22ebd58000, vm_dso_base: 7f22ebd58000',
+      'isolate_instructions: 7f22ebd92ec0, vm_instructions: 7f22ebd8c000',
+      for (final (i, at) in virt.indexed)
+        '    #0$i abs $abs$i virt $at _kDartIsolateSnapshotInstructions+0x41385',
+    ].join('\n');
+
+    final error = StateError('boom');
+
+    test('tells apart release traces that differ only below their header', () {
+      final here = releaseTrace(
+        pid: 1,
+        abs: '00007f22ebdd424',
+        virt: ['000000000007c245', '0000000000070712'],
+      );
+      final there = releaseTrace(
+        pid: 1,
+        abs: '00007f22ebdd424',
+        virt: ['00000000000a1000', '0000000000070712'],
+      );
+      expect(
+        fingerprintOf(error, StackTrace.fromString(here)),
+        isNot(fingerprintOf(error, StackTrace.fromString(there))),
+      );
+    });
+
+    test('matches one crash however the process was laid out', () {
+      final first = releaseTrace(
+        pid: 1,
+        abs: '00007f22ebdd424',
+        virt: ['000000000007c245'],
+      );
+      final second = releaseTrace(
+        pid: 2,
+        abs: '00005d10aa01f24',
+        virt: ['000000000007c245'],
+      );
+      expect(
+        fingerprintOf(error, StackTrace.fromString(first)),
+        fingerprintOf(error, StackTrace.fromString(second)),
+      );
+    });
+
+    test('keeps the first frames of a trace with symbols', () {
+      final trace = StackTrace.fromString(
+        '#0      main (package:xta/main.dart:1:1)\n<asynchronous suspension>\n#1      run (package:xta/run.dart:2:2)',
+      );
+      expect(
+        fingerprintOf(error, trace),
+        'StateError|Bad state: boom|#0      main (package:xta/main.dart:1:1)|#1      run (package:xta/run.dart:2:2)',
+      );
+    });
+  });
+
   test('buildIssueTitle stays compact', () {
     final title = buildIssueTitle(Exception('x' * 200));
     expect(title.startsWith('[crash]'), isTrue);

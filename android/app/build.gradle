@@ -57,6 +57,20 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    // Native libraries nothing on Android loads, about 2 MB per ABI:
+    // sqlite3's build hook bundles SQLite for the Linux desktop's FFI database,
+    // while sqflite here uses the system's; sherpa_onnx's Dart bindings open
+    // the C API, and nothing links its C++ one.
+    // scripts/check_apk_contents.py fails a release APK that carries either.
+    // The rest stay stored uncompressed (no useLegacyPackaging): compressed,
+    // the arm64 download would be about 50 MB smaller, but Android would
+    // unpack them at install and the installed app would grow by about 34 MB.
+    packaging {
+        jniLibs {
+            excludes += ['**/libsqlite3.so', '**/libsherpa-onnx-cxx-api.so']
+        }
+    }
+
     lintOptions {
         disable 'InvalidPackage'
     }

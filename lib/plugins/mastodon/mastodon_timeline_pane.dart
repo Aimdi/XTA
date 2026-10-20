@@ -5,6 +5,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_reading_list.dart';
 import 'package:xta/plugins/mastodon/mastodon_timeline_controls.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class MastodonTimelinePane extends StatelessWidget {
   final String slot;
@@ -48,50 +51,44 @@ class MastodonTimelinePane extends StatelessWidget {
           children: [
             MastodonTimelineToolbar(store: controls, slot: slot, options: options),
             Expanded(
-              child: MastodonReadingList(
-                slot: slot,
-                posts: visible,
-                snapshotPosts: posts,
-                tags: tags,
-                instance: instance,
-                controller: controller,
-                loadingMore: loadingMore,
-                heading: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (refreshError != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          children: [
-                            Text(l10n.plugin_mastodon_refresh_failed),
-                            TextButton.icon(
-                              onPressed: onRefresh,
-                              icon: const Icon(Icons.refresh),
-                              label: Text(l10n.retry),
-                            ),
-                          ],
+              // A failed refresh floats over the posts it kept.
+              child: ReloadStatus(
+                loading: false,
+                error: refreshError,
+                source: pluginIdMastodon,
+                contextMessage: l10n.plugin_mastodon_refresh_failed,
+                onRetry: () => onRefresh?.call(),
+                child: MastodonReadingList(
+                  slot: slot,
+                  posts: visible,
+                  snapshotPosts: posts,
+                  tags: tags,
+                  instance: instance,
+                  controller: controller,
+                  loadingMore: loadingMore,
+                  heading: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ?heading,
+                      if (visible.isEmpty && posts.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.filter_alt_off_outlined, size: 36),
+                              const SizedBox(height: 12),
+                              Text(l10n.plugin_reader_empty_filter, textAlign: TextAlign.center),
+                              TextButton(
+                                onPressed: () => controls.reset(slot),
+                                child: Text(l10n.plugin_reader_reset_filters),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ?heading,
-                    if (visible.isEmpty && posts.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          children: [
-                            const Icon(Icons.filter_alt_off_outlined, size: 36),
-                            const SizedBox(height: 12),
-                            Text(l10n.plugin_reader_empty_filter, textAlign: TextAlign.center),
-                            TextButton(
-                              onPressed: () => controls.reset(slot),
-                              child: Text(l10n.plugin_reader_reset_filters),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
+                  footer: _footer(l10n),
                 ),
-                footer: _footer(l10n),
               ),
             ),
           ],
@@ -108,14 +105,11 @@ class MastodonTimelinePane extends StatelessWidget {
       );
     }
     if (loadMoreError != null) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text(l10n.plugin_mastodon_load_more_failed, textAlign: TextAlign.center),
-            TextButton.icon(onPressed: onRetryMore, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-          ],
-        ),
+      return ReaderFailureNotice(
+        source: pluginIdMastodon,
+        error: loadMoreError,
+        contextMessage: l10n.plugin_mastodon_load_more_failed,
+        onRetry: () => onRetryMore?.call(),
       );
     }
     if (onLoadMore == null) return null;

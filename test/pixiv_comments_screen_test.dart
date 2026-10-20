@@ -13,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/plugin_comment_bubble.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 import 'support/pixiv_comments_fake.dart';
 import 'support/pixiv_reader_harness.dart';
@@ -302,18 +303,25 @@ void main() {
     expect(api.calls, ['illust:120@first', 'illust:120@next-1']);
     expect(_comment(1), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
+    // The failed page is one row where it would have been; what failed is in its details.
+    final failure = find.byType(ReaderFailureNotice);
+    expect(tester.getSize(failure).height, 48);
+    await tester.tap(find.descendant(of: failure, matching: find.byTooltip('More info')));
+    await settlePixiv(tester);
     expect(find.text('Could not reach Pixiv'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close').last);
+    await settlePixiv(tester);
 
     await tester.drag(find.byType(FeedListView), const Offset(0, -200));
     await settlePixiv(tester);
     expect(api.calls, hasLength(2), reason: 'scrolling does not retry by itself');
 
-    await tester.tap(find.text('Retry'));
+    await tester.tap(find.descendant(of: failure, matching: find.text('Retry')));
     await settlePixiv(tester);
     expect(api.calls.last, 'illust:120@next-1');
     expect(_comment(1), findsOneWidget);
     expect(_comment(2), findsOneWidget);
-    expect(find.text('Retry'), findsNothing);
+    expect(find.byType(ReaderFailureNotice), findsNothing);
     await disposePixiv(tester);
   });
 

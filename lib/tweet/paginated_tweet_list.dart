@@ -27,6 +27,8 @@ import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/tweet/stale_feed_preview.dart';
 import 'package:xta/ui/caught_up_end_card.dart';
 import 'package:xta/ui/stale_feed_banner.dart';
+import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/floating_notice.dart';
 
 typedef TweetPageResult = ({List<TweetChain> chains, String? nextCursor});
 typedef TweetPageLoader = Future<TweetPageResult> Function(String? cursor);
@@ -526,10 +528,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return list;
     }
 
-    return Column(
-      children: [
-        ReaderFailureNotice(
+    return FloatingNotice(
+      notice: NoticePill(
+        child: ReaderFailureNotice(
           error: pagingErrorOf(state)?.error ?? state.error,
+          compact: true,
           recoverAutomatically: false,
           contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
           onRetry: _retryFirstPage,
@@ -538,8 +541,8 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             _view.update(_view.state + 1);
           },
         ),
-        Expanded(child: list),
-      ],
+      ),
+      child: list,
     );
   }
 
@@ -607,7 +610,8 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     );
   }
 
-  /// Plugin cards plus a compact explanation of why the X side is empty.
+  /// Plugin cards plus a compact explanation, floating over them, of why the
+  /// X side is empty.
   ///
   /// Must not ride in [PagedListView]'s error slot: that slot is a
   /// [SliverFillRemaining] one viewport tall, which is how a plugin-only
@@ -618,21 +622,23 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     required Object? error,
     required VoidCallback onRetry,
   }) {
-    return Column(
-      children: [
-        if (!_staleBannerDismissed)
-          ReaderFailureNotice(
-            error: error,
-            recoverAutomatically: false,
-            contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
-            onRetry: onRetry,
-            onDismiss: () {
-              _staleBannerDismissed = true;
-              _view.update(_view.state + 1);
-            },
-          ),
-        Expanded(child: _interleavedOnlyList(context, items, null)),
-      ],
+    return FloatingNotice(
+      notice: _staleBannerDismissed
+          ? null
+          : NoticePill(
+              child: ReaderFailureNotice(
+                error: error,
+                compact: true,
+                recoverAutomatically: false,
+                contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
+                onRetry: onRetry,
+                onDismiss: () {
+                  _staleBannerDismissed = true;
+                  _view.update(_view.state + 1);
+                },
+              ),
+            ),
+      child: _interleavedOnlyList(context, items, null),
     );
   }
 
@@ -725,7 +731,9 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         if (state.items == null && state.error == null) {
           _maybeStartFirstLoad();
           if (widget.interleaved.isNotEmpty) {
-            return _interleavedOnlyList(context, _linkGrouping!.plugins, const LinearProgressIndicator());
+            // X's posts are on their way: a line over the plugin posts says so,
+            // where a bar closing the list took room only a scroll down found.
+            return LoadingHairline(loading: true, child: _interleavedOnlyList(context, _linkGrouping!.plugins, null));
           }
           return const TweetFeedSkeleton();
         }

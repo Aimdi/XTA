@@ -47,8 +47,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
         run: |
+          # flutter symbolize -d app.linux-x64.symbols turns a desktop trace back into names.
+          (cd build/linux-symbols && zip -qr "../linux-release/xta-$RELEASE_TAG-linux-debug-symbols.zip" .)
           cd build/linux-release
           sha256sum xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD > SHA256SUMS-linux
           cat SHA256SUMS-linux
           gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
-            xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD SHA256SUMS-linux
+            xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD SHA256SUMS-linux \
+            "xta-$RELEASE_TAG-linux-debug-symbols.zip"

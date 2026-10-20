@@ -12,6 +12,10 @@ import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/plugins/substack/substack_similar_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/plugins/substack/substack_publication_store.dart';
+import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 SubstackPublication publicationForPost(SubstackPost post, {String? logoUrl}) {
   final pub = post.publication;
@@ -95,14 +99,25 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
         store: context.read<SubstackReadStore>(),
         onState: (context, read) => RefreshIndicator(
           onRefresh: _store.refresh,
-          child: CustomScrollView(
-            key: PageStorageKey('substack-publication-${widget.publication.baseUrl}'),
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(child: _hero(context, state)),
-              SliverToBoxAdapter(child: _controls(context, state)),
-              ..._posts(context, state, read),
-            ],
+          // The loading line rides the controls; a failed refresh with posts
+          // still shown floats over them.
+          child: ReloadStatus(
+            loading: false,
+            error: state.page.failedMore || state.page.posts.isEmpty ? null : state.page.error,
+            source: pluginIdSubstack,
+            contextMessage: L10n.of(context).plugin_mastodon_refresh_failed,
+            onRetry: _store.retry,
+            child: CustomScrollView(
+              key: PageStorageKey('substack-publication-${widget.publication.baseUrl}'),
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(child: _hero(context, state)),
+                SliverToBoxAdapter(
+                  child: LoadingHairline(loading: state.page.loading, atBottom: true, child: _controls(context, state)),
+                ),
+                ..._posts(context, state, read),
+              ],
+            ),
           ),
         ),
       ),
@@ -170,7 +185,6 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
     final page = state.page;
     final posts = visiblePublicationPosts(state, read);
     return [
-      if (page.loading) const SliverToBoxAdapter(child: LinearProgressIndicator()),
       if (page.error != null && page.posts.isEmpty)
         SliverFillRemaining(
           hasScrollBody: false,
@@ -207,22 +221,18 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
             logoUrl: state.publication.logoUrl,
           ),
         ),
-        if (page.error != null)
+        // A failed refresh floats over the posts; a failed page is one row
+        // where it would have been.
+        if (page.error != null && page.failedMore)
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    page.failedMore ? l10n.plugin_mastodon_load_more_failed : l10n.plugin_mastodon_refresh_failed,
-                    textAlign: TextAlign.center,
-                  ),
-                  TextButton.icon(onPressed: _store.retry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-                ],
-              ),
+            child: ReaderFailureNotice(
+              source: pluginIdSubstack,
+              error: page.error,
+              contextMessage: l10n.plugin_mastodon_load_more_failed,
+              onRetry: _store.retry,
             ),
           )
-        else if (page.canLoadMore)
+        else if (page.error == null && page.canLoadMore)
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16),

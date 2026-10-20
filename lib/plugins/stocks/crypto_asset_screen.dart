@@ -11,6 +11,7 @@ import 'package:xta/plugins/stocks/stocks_quote_row.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/tweet/ticker/ticker_stats.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 /// A token followed by its contract: price and pool figures from DEX
 /// Screener, then the posts on X that mention the contract address.
@@ -116,22 +117,25 @@ class CryptoAssetHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(asset.name, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w900)),
-          _ContractLine(asset: asset),
-          if (state.loading) const LinearProgressIndicator(),
-          if (state.failed && state.market == null) _unavailable(context),
-          _CryptoPrice(market: state.market),
-          const SizedBox(height: 8),
-          _CryptoStats(market: state.market),
-          const SizedBox(height: 8),
-          _links(context, state.market),
-          _postsChoice(context),
-        ],
+    // The line rides the header's top padding, so it covers no text.
+    return LoadingHairline(
+      loading: state.loading,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(asset.name, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w900)),
+            _ContractLine(asset: asset),
+            if (state.failed && state.market == null) _unavailable(context),
+            _CryptoPrice(market: state.market),
+            const SizedBox(height: 8),
+            _CryptoStats(market: state.market),
+            const SizedBox(height: 8),
+            _links(context, state.market),
+            _postsChoice(context),
+          ],
+        ),
       ),
     );
   }

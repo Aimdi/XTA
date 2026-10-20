@@ -7,6 +7,7 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_tag_store.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 import 'support/mastodon_harness.dart';
 
@@ -248,13 +249,21 @@ void main() {
     client.readTag = (_) async => throw _failure;
     await tester.tap(find.byKey(const ValueKey('mastodon-tag-load-more')));
     await tester.pumpAndSettle();
+    // The failed page is one row where it would have been; what failed is in its details.
+    final failure = find.byType(ReaderFailureNotice);
+    expect(failure, findsOneWidget);
+    expect(tester.getSize(failure).height, 48);
+    await tester.tap(find.descendant(of: failure, matching: find.byTooltip('More info')));
+    await tester.pumpAndSettle();
     expect(find.text('Could not load more posts'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close').last);
+    await tester.pumpAndSettle();
     expect(find.text('Post 123'), findsOneWidget);
     client.readTag = (_) async => [_post('456')];
-    await tester.tap(find.text('Retry'));
+    await tester.tap(find.descendant(of: failure, matching: find.text('Retry')));
     await tester.pumpAndSettle();
     expect(find.text('Post 456'), findsOneWidget);
-    expect(find.text('Could not load more posts'), findsNothing);
+    expect(find.byType(ReaderFailureNotice), findsNothing);
     expect(tester.takeException(), isNull);
     await harness.close(tester);
   });

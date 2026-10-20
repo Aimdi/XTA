@@ -6,6 +6,9 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_search_store.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// The Discover hub shares the guarded publication and pasted-article search.
 class SubstackDiscoverSearch extends StatefulWidget {
@@ -41,38 +44,56 @@ class _SubstackDiscoverSearchState extends State<SubstackDiscoverSearch> {
     store: _store,
     onState: (context, state) {
       final l10n = L10n.of(context);
+      final hasResults = state.publications.isNotEmpty || state.posts.isNotEmpty;
+      final error = state.error;
+      // A failed page is one row where it would have been, and a failed
+      // refresh floats over the results; only with nothing to show is the
+      // failure the page.
       return RefreshIndicator(
         onRefresh: _store.refresh,
-        child: ListView(
-          children: [
-            if (state.loading) const LinearProgressIndicator(),
-            if (state.error != null)
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Text(l10n.plugin_substack_load_error),
-                    TextButton(onPressed: state.retryMore ? _store.loadMore : _store.refresh, child: Text(l10n.retry)),
-                  ],
+        child: ReloadStatus(
+          loading: state.loading,
+          error: hasResults && !state.retryMore ? error : null,
+          source: pluginIdSubstack,
+          contextMessage: l10n.plugin_substack_load_error,
+          onRetry: _store.refresh,
+          child: ListView(
+            children: [
+              if (error != null && !hasResults)
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      Text(l10n.plugin_substack_load_error),
+                      TextButton(onPressed: _store.refresh, child: Text(l10n.retry)),
+                    ],
+                  ),
                 ),
-              ),
-            for (final publication in state.publications)
-              ListTile(
-                title: Text(publication.displayName),
-                subtitle: Text(publication.baseUrl),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: publication)),
+              for (final publication in state.publications)
+                ListTile(
+                  title: Text(publication.displayName),
+                  subtitle: Text(publication.baseUrl),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: publication)),
+                  ),
                 ),
-              ),
-            for (final post in state.posts) SubstackPostCard(post: post),
-            if (!state.loading && state.error == null && state.publications.isEmpty && state.posts.isEmpty)
-              Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
-            if (state.loadingMore)
-              const Center(child: CircularProgressIndicator())
-            else if (state.hasMore)
-              TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_substack_load_more)),
-          ],
+              for (final post in state.posts) SubstackPostCard(post: post),
+              if (!state.loading && state.error == null && state.publications.isEmpty && state.posts.isEmpty)
+                Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
+              if (state.loadingMore)
+                const Center(child: CircularProgressIndicator())
+              else if (error != null && hasResults && state.retryMore)
+                ReaderFailureNotice(
+                  source: pluginIdSubstack,
+                  error: error,
+                  contextMessage: l10n.plugin_substack_load_error,
+                  onRetry: _store.loadMore,
+                )
+              else if (state.hasMore)
+                TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_substack_load_more)),
+            ],
+          ),
         ),
       );
     },

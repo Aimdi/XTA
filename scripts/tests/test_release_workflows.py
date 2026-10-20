@@ -57,6 +57,21 @@ class ReleaseWorkflowTest(unittest.TestCase):
                 self.assertIn("RELEASE_TAG", build["env"])
                 self.assertNotIn("dart_pubspec_licenses:generate", script)
 
+    def test_builders_split_debug_info_and_ship_the_symbols(self):
+        for name in (*PUBLISHERS[:3], "ci.yml"):
+            with self.subTest(workflow=name):
+                steps = workflow_steps(name)
+                script = next(step for step in steps if "flutter build apk" in step.get("run", ""))["run"]
+                for command in script.splitlines():
+                    if "flutter build apk" in command:
+                        self.assertIn("--split-debug-info=build/app/outputs/symbols", command)
+                self.assertIn("-debug-symbols.zip", script)
+        for name in (*PUBLISHERS, "ci.yml"):
+            with self.subTest(workflow=name):
+                upload = next(step for step in workflow_steps(name)
+                              if any(term in step.get("uses", "") for term in ("action-gh-release@", "upload-artifact@")))
+                self.assertIn("build/app/outputs/release/xta-*-debug-symbols.zip", upload["with"].get("files", upload["with"].get("path")))
+
     def test_publisher_checks_downloaded_run_identity(self):
         steps = workflow_steps("publish-apks.yml")
         verification = next(step["run"] for step in steps if 'release-integrity.py" verify ' in step.get("run", ""))

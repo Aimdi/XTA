@@ -5,6 +5,7 @@ import 'package:xta/saved/note_post_chrome.dart';
 import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/loading_hairline.dart';
 
 Future<T?> showNoteEditor<T>(BuildContext context, Widget child) {
   return Navigator.of(context).push<T>(
@@ -122,25 +123,27 @@ class NoteEditorFrame extends StatelessWidget {
                       ),
                     ),
                     const Divider(height: 1),
-                    if (state.restoring) const LinearProgressIndicator(),
                     if (state.recovered)
                       Padding(padding: const EdgeInsets.all(8), child: Text(l10n.reader_draft_restored)),
                     Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const NoteAvatar(),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [const NoteLocalIdentity(), const SizedBox(height: 12), body],
+                      child: LoadingHairline(
+                        loading: state.restoring,
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const NoteAvatar(),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [const NoteLocalIdentity(), const SizedBox(height: 12), body],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -12,6 +12,7 @@ import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/ui/reader_failure.dart';
 
 class ProfileSaved extends StatefulWidget {
   final UserWithExtra user;
@@ -143,10 +144,9 @@ class _ProfileSavedState extends State<ProfileSaved>
             builderDelegate: PagedChildBuilderDelegate(
               itemBuilder: (context, item, index) =>
                   SavedTweetTile(id: item.id, content: item.content),
-              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+              newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+                error: pagingErrorOf(state)?.error ?? state.error,
+                contextMessage: L10n.of(context).unable_to_load_the_next_page_of_tweets,
                 onRetry: fetchNextPage,
               ),
             ),

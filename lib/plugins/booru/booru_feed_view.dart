@@ -10,8 +10,8 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
 /// A feed's posts: the skeleton until its first page, then the grid, which
-/// pages on as it scrolls; the error page, or a notice over the posts when a
-/// refresh failed; [emptyLabel] when the feed has nothing to show. Given
+/// pages on as it scrolls; the error page, or a notice floating over the posts
+/// when a refresh failed; [emptyLabel] when the feed has nothing to show. Given
 /// [isNew], the posts that came in since the last visit are counted and
 /// marked.
 class BooruFeedView extends StatelessWidget {
@@ -25,10 +25,11 @@ class BooruFeedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      BooruRefreshNotice(feed: store),
       BooruHiddenNotice(feed: store),
       if (isNew case final isNew?) BooruNewPostsNotice(feed: store, isNew: isNew),
-      Expanded(child: _posts(context)),
+      Expanded(
+        child: BooruRefreshNotice(feed: store, child: _posts(context)),
+      ),
     ],
   );
 

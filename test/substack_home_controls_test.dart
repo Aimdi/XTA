@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_reading_toolbar.dart';
 import 'package:xta/plugins/substack/substack_screen.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const _pub = SubstackPublication(
@@ -56,15 +58,20 @@ class _Client extends SubstackClient {
   var notesRequests = 0;
   var noteCount = 20;
   var failOtherPublication = false;
+  var failMore = false;
+  int? onlyPosts;
+  Completer<void>? hold;
   _Client() : super(httpClient: MockClient((_) async => http.Response('[]', 200)));
   @override
   Future<List<SubstackPost>> fetchPosts(SubstackPublication publication, {int limit = 12, int offset = 0}) async {
     offsets.add(offset);
+    await hold?.future;
     if (publication.id != _pub.id) {
       if (failOtherPublication) throw StateError('Publication unavailable');
       return [];
     }
-    return offset == 0 ? [for (var i = 0; i < limit; i++) _post(i)] : [_post(offset)];
+    if (offset > 0 && failMore) throw const SocketException('offline');
+    return offset == 0 ? [for (var i = 0; i < (onlyPosts ?? limit); i++) _post(i)] : [_post(offset)];
   }
 
   @override
@@ -493,6 +500,44 @@ void main() {
     expect(find.byTooltip(message), findsNothing);
     expect(find.byType(SubstackPostCard), findsWidgets);
     expect(tester.takeException(), isNull);
+    await h.close(tester);
+  });
+  testWidgets('a loaded feed ends at its last post, and a refresh shows on the line over it', (tester) async {
+    _viewport(tester);
+    final h = _Harness()..client.onlyPosts = 2;
+    await tester.pumpWidget(h.app());
+    await tester.pumpAndSettle();
+    expect(find.byType(SubstackPostCard), findsNWidgets(2));
+    // Before, an idle footer kept 32 px after the last post.
+    expect(tester.getSize(find.byKey(const ValueKey('substack-feed-end'))).height, 0);
+
+    final hold = h.client.hold = Completer<void>();
+    final refresh = h.feed.refresh(force: true);
+    await tester.pump();
+    // Before, the refresh spinner sat after the last post, 68 px tall.
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(tester.getSize(find.byKey(const ValueKey('substack-feed-end'))).height, 0);
+    hold.complete();
+    await refresh;
+    await tester.pumpAndSettle();
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    await h.close(tester);
+  });
+  testWidgets('a page that failed to load more is one compact row at the end', (tester) async {
+    _viewport(tester);
+    final h = _Harness()..client.failMore = true;
+    await tester.pumpWidget(h.app());
+    await tester.pumpAndSettle();
+    await h.feed.loadMore();
+    await tester.pumpAndSettle();
+    final end = find.byKey(const ValueKey('substack-feed-end'));
+    await tester.scrollUntilVisible(end, 400, scrollable: find.byType(Scrollable).first);
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: end, matching: find.byType(ReaderFailureNotice)), findsOneWidget);
+    // Before, the label, the button and their padding took about 100 px.
+    expect(tester.getSize(end).height, 48);
+    expect(find.descendant(of: end, matching: find.text('Retry')), findsOneWidget);
     await h.close(tester);
   });
   testWidgets('pulling Home refreshes a freshly cached feed', (tester) async {

@@ -41,6 +41,7 @@ import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:xta/ui/reload_status.dart';
 
 class SubstackReaderScreen extends StatefulWidget {
   final SubstackPost post;
@@ -582,17 +583,6 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
       ),
       body: Column(
         children: [
-          if (_content.state.refreshing) const LinearProgressIndicator(),
-          if (_content.state.refreshError != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 8, 4),
-              child: Row(
-                children: [
-                  Expanded(child: Text(L10n.of(context).article_reader_refresh_failed)),
-                  TextButton(onPressed: () => _load(force: true), child: Text(L10n.of(context).retry)),
-                ],
-              ),
-            ),
           if (_partial)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -611,7 +601,17 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
               if (!_liveSite) _controller.runJavaScript('window.xtaArticle?.startOver();');
             },
           ),
-          Expanded(child: _articleBody(context)),
+          // The article stays readable: a refresh, and a failed one, show over it.
+          Expanded(
+            child: ReloadStatus(
+              loading: _content.state.refreshing,
+              error: _content.state.refreshError,
+              source: pluginIdSubstack,
+              contextMessage: L10n.of(context).article_reader_refresh_failed,
+              onRetry: () => _load(force: true),
+              child: _articleBody(context),
+            ),
+          ),
         ],
       ),
     );

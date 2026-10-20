@@ -11,9 +11,11 @@ import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_thread_store.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// One Threads post in its conversation — what it answers, the rest of its
 /// author's thread, and each reply thread — read from the public page.
@@ -140,11 +142,19 @@ class _ThreadsConversationList extends StatelessWidget {
       ..._statusRows(context),
       ..._replyRows(context),
     ];
-    return FeedListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 24),
-      itemCount: rows.length,
-      itemBuilder: (context, index) => rows[index],
+    final error = this.error;
+    return ReloadStatus(
+      loading: loading && _hasReplies,
+      error: _hasReplies ? error : null,
+      source: pluginIdThreads,
+      contextMessage: error == null ? null : threadsApiErrorMessage(L10n.of(context), error),
+      onRetry: onRetry,
+      child: FeedListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: rows.length,
+        itemBuilder: (context, index) => rows[index],
+      ),
     );
   }
 
@@ -177,8 +187,13 @@ class _ThreadsConversationList extends StatelessWidget {
     ];
   }
 
+  bool get _hasReplies => conversation.replies.isNotEmpty;
+
   List<Widget> _statusRows(BuildContext context) {
     final l10n = L10n.of(context);
+    // Replies on screen keep their place: the line and a floating notice over
+    // them say a reload is under way or failed.
+    if (_hasReplies) return const [];
     if (loading) {
       return const [
         Padding(
@@ -190,14 +205,11 @@ class _ThreadsConversationList extends StatelessWidget {
     final error = this.error;
     if (error != null) {
       return [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: threadsApiErrorMessage(l10n, error),
-            onRetry: onRetry,
-          ),
+        ReaderFailureNotice(
+          source: pluginIdThreads,
+          error: error,
+          contextMessage: threadsApiErrorMessage(l10n, error),
+          onRetry: onRetry,
         ),
       ];
     }

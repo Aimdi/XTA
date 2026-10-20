@@ -218,6 +218,31 @@ void main() {
     await h.close(tester);
   });
 
+  testWidgets('a reload keeps the replies in place under the loading line', (tester) async {
+    final client = ThreadClient(delayed: true);
+    final h = MastodonHarness(client: client);
+    await tester.pumpWidget(h.app(child: MastodonThreadScreen(post: conversation.status)));
+    await tester.pump();
+    client.requests.removeAt(0).complete(conversation);
+    await tester.pumpAndSettle();
+    final reply = find.byKey(const ValueKey('thread-post-bridge'));
+    final before = tester.getTopLeft(reply);
+
+    await tester.drag(find.byType(ListView), const Offset(0, 300));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(client.requests, isNotEmpty);
+    // Before, a 68 px spinner row opened between the post and its replies.
+    expect(tester.getTopLeft(reply), before);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+
+    client.requests.removeAt(0).complete(conversation);
+    await tester.pumpAndSettle();
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(tester.takeException(), isNull);
+    await h.close(tester);
+  });
+
   testWidgets('empty public context has a clear finished state', (tester) async {
     final h = MastodonHarness(
       client: ThreadClient(thread: MastodonThread(status: post('root'))),

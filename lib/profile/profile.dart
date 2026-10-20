@@ -37,6 +37,8 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/plugins/x/x_plugin.dart';
 
 typedef TabTitleBuilder = String Function(BuildContext context);
 
@@ -135,23 +137,14 @@ class _ProfileScreen extends StatelessWidget {
                       onRetry: () => _retry(context),
                     ),
                   )
-                : Column(
-                    children: [
-                      if (triple.state.refreshing) const LinearProgressIndicator(),
-                      if (triple.state.refreshError != null)
-                        SafeArea(
-                          bottom: false,
-                          child: ReaderFailureNotice(
-                            compact: true,
-                            recoverAutomatically: false,
-                            error: triple.state.refreshError,
-                            onRetry: () => _retry(context),
-                          ),
-                        ),
-                      Expanded(
-                        child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
-                      ),
-                    ],
+                // A failed refresh floats over the profile instead of pushing it
+                // down, below the status bar the header runs under.
+                : ReloadStatus(
+                    loading: triple.state.refreshing,
+                    error: triple.state.refreshError,
+                    source: pluginIdX,
+                    onRetry: () => _retry(context),
+                    child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
                   ),
           ),
         ),
