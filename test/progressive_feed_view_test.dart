@@ -47,6 +47,9 @@ void main() {
     });
     expect(find.byType(ActionChip), findsNWidgets(2));
     expect(find.byType(LinearProgressIndicator), findsNothing);
+    // The chips float over the posts rather than pushing them down.
+    expect(tester.getTopLeft(find.text('posts')).dy, 0);
+    expect(tester.getTopLeft(find.byType(ActionChip).first).dy, greaterThan(0));
     await tester.pumpWidget(const SizedBox());
     await store.destroy();
   });
