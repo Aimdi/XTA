@@ -25,7 +25,9 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 /// What a failed Bluesky read should say.
 String blueskyErrorMessage(L10n l10n, Object error) {
@@ -313,27 +315,18 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with Ticker
     final feed = state.feed;
     final visible = posts ?? state.visiblePosts;
     final error = feed.error ?? state.error;
-    return LoadingHairline(
+    final pinError = state.selected == PluginProfileFeedTab.posts ? state.pinError : null;
+    // The pinned post loads, and fails, over the posts rather than above them.
+    return ReloadStatus(
       loading: state.selected == PluginProfileFeedTab.posts && state.loadingPin,
+      error: pinError,
+      source: pluginIdBluesky,
+      contextMessage: pinError == null ? null : '${l10n.pinned_tweet}: ${blueskyErrorMessage(l10n, pinError)}',
+      onRetry: _store.retryPin,
       child: CustomScrollView(
         key: PageStorageKey('bluesky-profile-${widget.actor}-${state.selected.name}'),
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          if (state.selected == PluginProfileFeedTab.posts && state.pinError != null)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 12,
-                  children: [
-                    Text('${l10n.pinned_tweet}: ${blueskyErrorMessage(l10n, state.pinError!)}'),
-                    TextButton(onPressed: _store.retryPin, child: Text(l10n.retry)),
-                  ],
-                ),
-              ),
-            ),
           if (state.selected == PluginProfileFeedTab.saved)
             SliverToBoxAdapter(
               child: Padding(
@@ -389,14 +382,11 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with Ticker
             ),
           if (error != null)
             SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: FullPageErrorWidget(
-                  error: error,
-                  stackTrace: null,
-                  prefix: blueskyErrorMessage(l10n, error),
-                  onRetry: _store.retry,
-                ),
+              child: ReaderFailureNotice(
+                source: pluginIdBluesky,
+                error: error,
+                contextMessage: blueskyErrorMessage(l10n, error),
+                onRetry: _store.retry,
               ),
             ),
           if (feed.cursor != null && !feed.loading && feed.error == null)

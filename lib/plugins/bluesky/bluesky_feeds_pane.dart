@@ -13,6 +13,9 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/constants.dart';
 
 class BlueskyAlgoPane extends StatefulWidget {
   final ScrollController scrollController;
@@ -261,8 +264,14 @@ class _SourceTimeline extends StatelessWidget {
     },
     child: RefreshIndicator(
       onRefresh: onRefresh,
-      child: LoadingHairline(
+      // A failed refresh floats over the posts it kept; with none, it is the
+      // first row.
+      child: ReloadStatus(
         loading: page.loading,
+        error: page.posts.isEmpty ? null : page.error,
+        source: pluginIdBluesky,
+        contextMessage: page.error == null ? null : blueskyErrorMessage(L10n.of(context), page.error!),
+        onRetry: onRetry,
         child: FeedListView(
           controller: pluginInnerScrollController(context, scrollController),
           padding: pluginFeedPadding(context),
@@ -272,7 +281,7 @@ class _SourceTimeline extends StatelessWidget {
             if (index == 1) {
               return Column(
                 children: [
-                  if (page.error != null) _FeedFailure(error: page.error!, onRetry: onRetry),
+                  if (page.error != null && page.posts.isEmpty) _FeedFailure(error: page.error!, onRetry: onRetry),
                   if (!page.loading && page.error == null && page.posts.isEmpty)
                     Padding(
                       padding: const EdgeInsets.all(32),
@@ -318,23 +327,18 @@ class _SourceFooter extends StatelessWidget {
   }
 }
 
+/// One row where what failed would have been; the reason is in its details.
 class _FeedFailure extends StatelessWidget {
   final Object error;
   final Future<void> Function() onRetry;
   const _FeedFailure({required this.error, required this.onRetry});
   @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Text(blueskyErrorMessage(l10n, error), textAlign: TextAlign.center),
-          TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ReaderFailureNotice(
+    source: pluginIdBluesky,
+    error: error,
+    contextMessage: blueskyErrorMessage(L10n.of(context), error),
+    onRetry: onRetry,
+  );
 }
 
 class BlueskyFeedCatalogScreen extends StatefulWidget {

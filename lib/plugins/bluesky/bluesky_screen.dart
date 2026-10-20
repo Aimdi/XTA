@@ -36,6 +36,8 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/ui/reload_status.dart';
+import 'package:xta/constants.dart';
 
 /// Home remounts used to poll the AppView whenever the ten-minute TTL expired.
 /// Only a pull-to-refresh, or the first empty paint, should hit the network.
@@ -349,9 +351,16 @@ class _HomePane extends StatelessWidget {
         final pending = feed.pending(
           context.read<BlueskyAccountsStore>().state.map((account) => account.actor).toList(),
         );
+        // A failed refresh floats over the posts it kept, not after the last one.
         return RefreshIndicator(
           onRefresh: onRefresh,
-          child: BlueskyReaderView(
+          child: ReloadStatus(
+            loading: false,
+            error: feed.refreshError,
+            source: pluginIdBluesky,
+            contextMessage: l10n.plugin_mastodon_refresh_failed,
+            onRetry: () => feed.refresh(),
+            child: BlueskyReaderView(
             key: ValueKey(context.read<BlueskyClient>().baseUrl),
             slot: 'following',
             posts: posts,
@@ -371,29 +380,19 @@ class _HomePane extends StatelessWidget {
                       BlueskyAccount(handle: person.handle, name: person.name, avatarUrl: person.avatarUrl),
                     ),
                   ),
-            footer: feed.refreshError == null && pending == 0
+            footer: pending == 0
                 ? null
                 : Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        if (feed.refreshError != null) ...[
-                          Text(l10n.plugin_mastodon_refresh_failed),
-                          TextButton.icon(
-                            onPressed: () => feed.refresh(),
-                            icon: const Icon(Icons.refresh),
-                            label: Text(l10n.retry),
-                          ),
-                        ],
-                        if (pending > 0)
-                          TextButton.icon(
-                            onPressed: () => feed.refresh(),
-                            icon: const Icon(Icons.download_outlined),
-                            label: Text(l10n.plugin_bluesky_load_more_accounts),
-                          ),
-                      ],
+                    child: Center(
+                      child: TextButton.icon(
+                        onPressed: () => feed.refresh(),
+                        icon: const Icon(Icons.download_outlined),
+                        label: Text(l10n.plugin_bluesky_load_more_accounts),
+                      ),
                     ),
                   ),
+            ),
           ),
         );
       },
