@@ -91,7 +91,20 @@ HnComment _hnChain(int depth, int max) => HnComment(
 
 class _Reddit extends RedditClient {
   final List<RedditComment> comments;
-  _Reddit(this.comments);
+  final RedditPost? filled;
+  final List<RedditComment> more;
+  _Reddit(this.comments, {this.filled, this.more = const []});
+
+  @override
+  Future<RedditPost?> fetchPost(
+    String permalink, {
+    required String clientId,
+    String? userToken,
+    bool preferPublic = false,
+  }) async => filled;
+
+  @override
+  Future<List<RedditComment>> fetchMoreComments(RedditComment stub) async => more;
 
   @override
   Future<({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages})> fetchComments(
@@ -126,13 +139,15 @@ class _Hn extends HackerNewsClient {
 Widget _app(
   Widget home, {
   List<RedditComment> reddit = _reddit,
+  RedditPost? filled,
+  List<RedditComment> more = const [],
   List<HnComment> hn = _hn,
   ThemeData? theme,
   double scale = 1,
   TextDirection direction = TextDirection.ltr,
 }) {
   final prefs = PrefServiceCache();
-  final client = _Reddit(reddit);
+  final client = _Reddit(reddit, filled: filled, more: more);
   return PrefService(
     service: prefs,
     child: MultiProvider(
@@ -263,6 +278,47 @@ void main() {
       await tester.tap(stub);
       await tester.pumpAndSettle();
       expect(find.byType(RedditThreadScreen, skipOffstage: false), findsNWidgets(2));
+    });
+
+    testWidgets('a post that arrived bare shows the words Reddit serves for it', (tester) async {
+      const filled = RedditPost(
+        id: 'abc123',
+        title: 'Which app do you use for long threads?',
+        subreddit: 'androidapps',
+        permalink: '/r/androidapps/comments/abc123/thread/',
+        author: 'op_writer',
+        isSelf: true,
+        selfText: 'The words search left out',
+        score: 77,
+      );
+      await _pump(tester, _app(const RedditThreadScreen(post: _post), filled: filled));
+
+      expect(find.text('The words search left out'), findsOneWidget);
+    });
+
+    testWidgets('comments held back at the top load into the thread', (tester) async {
+      final app = _app(
+        const RedditThreadScreen(post: _post),
+        reddit: const [
+          RedditComment(id: 'c1', author: 'first_reader', body: 'Top level body', score: 3),
+          RedditComment(
+            id: 'more-root',
+            body: '',
+            permalink: '/r/androidapps/comments/abc123/thread/',
+            moreCount: -1,
+            nextPage: (path: '/svc/shreddit/more-comments/androidapps/t3_abc123?top-level=1', cursor: 'c'),
+          ),
+        ],
+        more: const [RedditComment(id: 'c11', author: 'eleventh', body: 'The eleventh comment', score: 1)],
+      );
+      await _pump(tester, app);
+
+      await tester.tap(find.textContaining('More replies'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('The eleventh comment'), findsOneWidget);
+      expect(find.textContaining('More replies'), findsNothing, reason: 'Reddit held nothing more back');
+      expect(find.byType(RedditThreadScreen), findsOneWidget, reason: 'it stays in this thread');
     });
   });
 

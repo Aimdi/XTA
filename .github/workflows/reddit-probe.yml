@@ -1,24 +1,30 @@
 name: reddit-probe
-# Temporary: Reddit's gaps and X's new app, fetched from a runner.
+# Temporary: the account-free Reddit client against live Reddit, through
+# Google's translation proxy (Reddit blocks runner addresses).
 on:
   push:
     branches: [claude/admiring-mayer-bdfg95]
     paths:
-      - scripts/probe_tmp/**
+      - test/live/reddit_smoke_test.dart
+      - lib/plugins/reddit/**
       - .github/workflows/reddit-probe.yml
 permissions:
   contents: read
 jobs:
-  reddit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - run: bash scripts/probe_tmp/reddit.sh
-  research:
+  live:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get install -y -qq ffmpeg imagemagick >/dev/null || true
-      - run: python3 scripts/probe_tmp/research.py "$RUNNER_TEMP/research"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Generate sources
+        run: |
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: Live Reddit smoke test
+        run: flutter test test/live/reddit_smoke_test.dart --dart-define=RUN_LIVE=true --dart-define=REDDIT_VIA=translate --reporter expanded

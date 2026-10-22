@@ -16,6 +16,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html;
@@ -118,18 +119,25 @@ RedditPost? wwwPostFrom(Element post) {
     selfText: wwwText(post.querySelector('shreddit-post-text-body .md')),
     over18:
         a.containsKey('nsfw') ||
+        a.containsKey('subreddit-nsfw') ||
+        _blurredFor(post, 'nsfw') ||
         telemetry['post']['nsfw'].boolean == true ||
         telemetry['subreddit']['nsfw'].boolean == true,
-    spoiler: a.containsKey('spoiler'),
+    spoiler: a.containsKey('spoiler') || _blurredFor(post, 'spoiler'),
     stickied: telemetry['post']['pinned'].boolean ?? false,
     thumbnail: post.querySelector('[data-testid="post-thumbnail"] img')?.attributes['src'],
     flair: _flairOf(post),
     domain: a['domain'],
-    galleryImages: _galleryOf(post),
+    galleryImages: wwwGalleryOf(post),
     previewImage: _previewOf(post),
     videoDashUrl: post.querySelector('shreddit-player')?.attributes['src'],
   );
 }
+
+/// Whether Reddit hides the post's media behind a blur, and for [reason]:
+/// `nsfw` or `spoiler`.
+bool _blurredFor(Element post, String reason) =>
+    post.querySelector('shreddit-blurred-container[reason="$reason"]') != null;
 
 /// What a post's media tells Reddit's analytics about it — whether it is NSFW
 /// or pinned, and its community's NSFW mark — which a post with pictures
@@ -179,8 +187,8 @@ String? _flairOf(Element post) {
 
 /// A gallery's pictures in the author's order: Reddit's 640px copy of each,
 /// which is what its own feed shows, rather than files uploaded at 4000px.
-List<String> _galleryOf(Element post) {
-  final pages = post.querySelectorAll('gallery-carousel li[slot^="page-"]');
+List<String> wwwGalleryOf(Element? scope) {
+  final pages = scope?.querySelectorAll('gallery-carousel li[slot^="page-"]') ?? const <Element>[];
   return [
     for (final page in pages)
       if (page.querySelector('img') case final img?) ?(img.attributes['src'] ?? img.attributes['data-lazy-src']),
@@ -235,12 +243,65 @@ Document parseWwwBody(String body) => html.parse(wwwStrip(body));
 /// twice cuts nothing more.
 String wwwStrip(String body) {
   final start = body.indexOf('<body');
-  return (start < 0 ? body : body.substring(start)).replaceAll(_noise, '');
+  return _withoutTemplates((start < 0 ? body : body.substring(start)).replaceAll(_noise, ''));
 }
 
-final _noise = RegExp(
-  r'<script\b[\s\S]*?</script>|<style\b[\s\S]*?</style>|<svg\b[\s\S]*?</svg>|<template\b[\s\S]*?</template>',
-);
+final _noise = RegExp(r'<script\b[\s\S]*?</script>|<style\b[\s\S]*?</style>|<svg\b[\s\S]*?</svg>');
+
+/// [html] without the templates a reader never needs — the action row and
+/// menus each comment carries — but with the content of those holding
+/// Reddit's own: a big thread renders its comments after the fourth inside a
+/// template the site fills in as the reader scrolls, along with the partial
+/// that loads the rest. Templates nest, so each is cut whole.
+String _withoutTemplates(String html) {
+  final out = StringBuffer();
+  var at = 0;
+  for (var open = _templateAt(html, 0); open >= 0; open = _templateAt(html, at)) {
+    out.write(html.substring(at, open));
+    final close = _closingOf(html, open);
+    final tagEnd = html.indexOf('>', open);
+    final inner = html.substring(tagEnd < 0 ? close : min(tagEnd + 1, close), close);
+    if (_holdsContent(inner)) {
+      out.write(_withoutTemplates(inner));
+    }
+    at = min(close + _templateClose.length, html.length);
+  }
+  out.write(html.substring(at));
+  return out.toString();
+}
+
+const _templateClose = '</template>';
+final _templateOpen = RegExp(r'<template[\s>]');
+
+int _templateAt(String html, int from) => from >= html.length ? -1 : html.indexOf(_templateOpen, from);
+
+/// Where the `</template>` closing the template opened at [open] starts, past
+/// any nested inside it; the end of [html] when it is never closed.
+int _closingOf(String html, int open) {
+  var depth = 0;
+  var at = open + 1;
+  while (true) {
+    final close = html.indexOf(_templateClose, at);
+    if (close < 0) {
+      return html.length;
+    }
+    final nested = _templateAt(html, at);
+    if (nested >= 0 && nested < close) {
+      depth++;
+      at = nested + 1;
+    } else if (depth == 0) {
+      return close;
+    } else {
+      depth--;
+      at = close + 1;
+    }
+  }
+}
+
+bool _holdsContent(String html) =>
+    html.contains(_comment) || html.contains('<shreddit-post') || html.contains('<faceplate-partial');
+
+final _comment = RegExp(r'<shreddit-comment[\s>]');
 
 /// A post's or comment's words: its rendered markdown as text, links kept as
 /// `[label](url)`, without the indentation the markup carries between
@@ -257,6 +318,23 @@ String? wwwText(Element? markdown) {
 /// one.
 String wwwTidy(String text) =>
     text.split('\n').map((line) => line.trimRight()).join('\n').replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
+
+/// The community a post's page belongs to: `FlutterDev` for
+/// `/r/FlutterDev/comments/…`, and the account's own `u_spez` for
+/// `/user/spez/comments/…`.
+String? wwwCommunityOf(String permalink) {
+  final segments = (Uri.tryParse(permalink)?.pathSegments ?? const <String>[]).where((s) => s.isNotEmpty).toList();
+  final at = segments.indexOf('comments');
+  if (at < 2) {
+    return null;
+  }
+  final owner = segments[at - 1];
+  return switch (segments[at - 2]) {
+    'r' => owner,
+    'u' || 'user' => 'u_$owner',
+    _ => null,
+  };
+}
 
 /// The id in a fullname: `abc123` from `t3_abc123`.
 String? wwwBareId(String? fullname, String prefix) {

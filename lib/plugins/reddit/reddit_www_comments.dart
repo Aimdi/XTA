@@ -12,9 +12,15 @@ import 'package:html/dom.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_www.dart';
 
-/// A thread as www.reddit.com served it: what the page was, its comments, and
-/// whether Reddit held back top-level comments the page does not carry.
-typedef RedditWwwThread = ({RedditWwwPageKind kind, List<RedditComment> comments, bool moreAtRoot});
+/// A thread as www.reddit.com served it: what the page was, its comments,
+/// whether Reddit held back top-level comments the page does not carry, and
+/// where the next of them are served.
+typedef RedditWwwThread = ({
+  RedditWwwPageKind kind,
+  List<RedditComment> comments,
+  bool moreAtRoot,
+  RedditCommentsCursor? next,
+});
 
 /// The comments of a thread page.
 ///
@@ -25,18 +31,53 @@ RedditWwwThread readWwwThread(String body) {
   final kind = redditWwwPageKind(body);
   final tree = kind == RedditWwwPageKind.read ? parseWwwBody(body).querySelector('shreddit-comment-tree') : null;
   if (tree == null) {
-    return (kind: kind, comments: const [], moreAtRoot: false);
+    return (kind: kind, comments: const [], moreAtRoot: false, next: null);
   }
 
   final focus = tree.attributes['thingid'];
   final roots = focus == null
       ? _childComments(tree, null)
       : [?tree.querySelector('shreddit-comment[thingid="$focus"]')];
+  final more = focus == null ? tree.querySelector(_topLevelMore) : null;
   return (
     kind: kind,
     comments: [for (final root in roots) ?_commentFrom(root)],
-    moreAtRoot: focus == null && tree.querySelector('#top-level-more-comments-partial') != null,
+    moreAtRoot: more != null,
+    next: _cursorOf(more),
   );
+}
+
+/// The next comments at the top of a thread, as the piece that serves them
+/// answers: those comments, and where the ones after them are.
+RedditWwwThread readWwwMoreComments(String body) {
+  final kind = redditWwwPageKind(body);
+  if (kind != RedditWwwPageKind.read) {
+    return (kind: kind, comments: const [], moreAtRoot: false, next: null);
+  }
+
+  final page = parseWwwBody(body);
+  final more = page.querySelector(_topLevelMore);
+  return (
+    kind: kind,
+    comments: [
+      for (final element in page.querySelectorAll('shreddit-comment'))
+        if (_ownerOf(element) == null) ?_commentFrom(element),
+    ],
+    moreAtRoot: more != null,
+    next: _cursorOf(more),
+  );
+}
+
+const _topLevelMore = '#top-level-more-comments-partial';
+
+/// Where a "more comments" partial loads from, and the cursor it sends.
+RedditCommentsCursor? _cursorOf(Element? partial) {
+  final path = partial?.attributes['src'];
+  final cursor = partial?.querySelector('input[name="cursor"]')?.attributes['value'];
+  if (path == null || !path.startsWith('/svc/shreddit/') || cursor == null || cursor.isEmpty) {
+    return null;
+  }
+  return (path: path, cursor: cursor);
 }
 
 RedditComment? _commentFrom(Element element) {

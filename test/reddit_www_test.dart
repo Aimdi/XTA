@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_www.dart';
 import 'package:xta/plugins/reddit/reddit_www_comments.dart';
+import 'package:xta/plugins/reddit/reddit_www_embed.dart';
 import 'package:xta/plugins/reddit/reddit_www_search.dart';
 
 /// Pages www.reddit.com served on 2026-10-20, trimmed to a few posts each;
@@ -52,6 +54,27 @@ void main() {
 
       final pictures = readWwwListing(_fixture('listing_pics.html')).posts.first;
       expect((over18: pictures.over18, stickied: pictures.stickied), (over18: false, stickied: false));
+    });
+
+    test('a post in an NSFW community, or behind a blur, is marked as Reddit marks it', () {
+      ({bool over18, bool spoiler}) read(String attributes, [String inside = '']) {
+        final post = readWwwListing('''
+<html><body><shreddit-app>
+  <shreddit-post id="t3_a" permalink="/r/x/comments/a/t/" post-title="T" subreddit-name="x" $attributes>$inside</shreddit-post>
+</shreddit-app></body></html>''').posts.single;
+        return (over18: post.over18, spoiler: post.spoiler);
+      }
+
+      expect(read('subreddit-nsfw'), (over18: true, spoiler: false));
+      expect(read('', '<shreddit-blurred-container reason="nsfw" mode="slot"></shreddit-blurred-container>'), (
+        over18: true,
+        spoiler: false,
+      ));
+      expect(read('', '<shreddit-blurred-container reason="spoiler" mode="wrap"></shreddit-blurred-container>'), (
+        over18: false,
+        spoiler: true,
+      ));
+      expect(read(''), (over18: false, spoiler: false));
     });
 
     test('a gallery carries every picture, in order, at the size its feed shows', () {
@@ -262,11 +285,82 @@ void main() {
       expect(gone.replies.single.body, 'Still here');
     });
 
+    test("a big thread keeps the comments Reddit renders as the reader scrolls, and where the rest are", () {
+      final thread = readWwwThread(_fixture('comments_big.html'));
+
+      expect(thread.comments.map((c) => c.author), ['zizban', 'No_Bandicoot2306', 'dokelyok', 'DrooMighty']);
+      expect(thread.comments.every((c) => c.body.isNotEmpty), isTrue);
+      expect(thread.comments.first.replies.single.isStub, isTrue, reason: 'its replies are held back');
+      expect(thread.moreAtRoot, isTrue);
+      expect(
+        thread.next?.path,
+        '/svc/shreddit/more-comments/AskReddit/t3_1xbzqmk?top-level=1&comments-remaining=90&commentPositionOffset=10',
+      );
+      expect(thread.next?.cursor, startsWith('Y29tbWVudHRyZWU6'));
+    });
+
     test('the browser check holds no thread', () {
       final thread = readWwwThread(_fixture('browser_check.html'));
 
       expect(thread.kind, RedditWwwPageKind.browserCheck);
       expect(thread.comments, isEmpty);
+    });
+  });
+
+  group('cutting a page down', () {
+    test("templates go whole, nested ones too, unless they hold the page's own content", () {
+      const page =
+          '<head>x</head><body><p>kept</p>'
+          '<template><shreddit-comment-action-row></shreddit-comment-action-row></template>'
+          '<ac-render-template><template>'
+          '<shreddit-comment thingid="t1_a"><template><b>row</b></template><p>lazy</p></shreddit-comment>'
+          '</template></ac-render-template>'
+          '<script>var x = "<template>";</script></body>';
+
+      final cut = wwwStrip(page);
+      expect(
+        cut,
+        '<body><p>kept</p><ac-render-template><shreddit-comment thingid="t1_a"><p>lazy</p></shreddit-comment>'
+        '</ac-render-template></body>',
+      );
+      expect(wwwStrip(cut), cut, reason: 'cutting twice cuts nothing more');
+      expect(wwwStrip('<body><template><p>never closed'), '<body>');
+    });
+  });
+
+  group('more comments', () {
+    test('the next comments come with where the ones after them are', () {
+      const more = '''
+<shreddit-comment thingid="t1_x" author="a" depth="0" permalink="/r/q/comments/p/comment/x/">
+  <div slot="comment"><div class="md"><p>Eleventh</p></div></div>
+  <shreddit-comment thingid="t1_y" author="b" depth="1" parentid="t1_x">
+    <div slot="comment"><div class="md"><p>Its reply</p></div></div>
+  </shreddit-comment>
+</shreddit-comment>
+<faceplate-partial id="top-level-more-comments-partial" method="post"
+    src="/svc/shreddit/more-comments/q/t3_p?top-level=1&amp;commentPositionOffset=20">
+  <input type="hidden" name="cursor" value="next-cursor">
+</faceplate-partial>''';
+
+      for (final body in [more, '<html><body><shreddit-comment-tree>$more</shreddit-comment-tree></body></html>']) {
+        final page = readWwwMoreComments(body);
+        expect(page.comments.single.body, 'Eleventh');
+        expect(page.comments.single.replies.single.body, 'Its reply');
+        expect(page.next, (
+          path: '/svc/shreddit/more-comments/q/t3_p?top-level=1&commentPositionOffset=20',
+          cursor: 'next-cursor',
+        ));
+      }
+    });
+
+    test('the last of them, or a page that is not them, names nothing further', () {
+      final last = readWwwMoreComments(
+        '<shreddit-comment thingid="t1_z" depth="0"><div slot="comment"><p>End</p></div></shreddit-comment>',
+      );
+      expect(last.comments.single.body, 'End');
+      expect((last.moreAtRoot, last.next), (false, null));
+
+      expect(readWwwMoreComments(_fixture('browser_check.html')).kind, RedditWwwPageKind.browserCheck);
     });
   });
 
@@ -308,6 +402,114 @@ void main() {
     test('a page that is not a search yields nothing rather than throwing', () {
       expect(readWwwSearchPosts(_fixture('browser_check.html')), isEmpty);
       expect(readWwwSearchCommunities('<html><body>nothing</body></html>'), isEmpty);
+    });
+  });
+
+  group('an embed card', () {
+    RedditPost? read(String name, String permalink) => readWwwEmbed(_fixture(name), permalink: permalink);
+    const thread = '/r/FlutterDev/comments/1xa75i8/why_flutter_text_looks_lighter_than_swiftui_on_ios/';
+
+    test('a self post brings its words, author, counts and age', () {
+      final post = read('embed_self.html', thread)!;
+
+      expect(post.id, '1xa75i8');
+      expect(post.title, 'Why Flutter Text Looks Lighter Than SwiftUI on iOS');
+      expect(post.subreddit, 'FlutterDev');
+      expect(post.permalink, thread);
+      expect(post.author, 'birjuvachhani');
+      expect(post.score, 68);
+      expect(post.commentCount, 15);
+      expect(post.createdAt, DateTime.utc(2026, 10, 19, 19, 53, 26, 523).toLocal());
+      expect(post.isSelf, isTrue);
+      expect(post.url, isNull);
+      expect(post.domain, 'self.FlutterDev');
+      expect(post.over18, isFalse);
+      expect(post.selfText, startsWith('Spent a while figuring out why #Flutter text looks lighter'));
+      expect(post.selfText, contains('on #iOS.\n\nWrote up the whole thing'), reason: 'paragraphs stay paragraphs');
+      expect(post.selfText, endsWith('https://birju.dev/posts/looking-into-flutter-vs-swiftui-font-rendering/'));
+    });
+
+    test('a long post arrives whole, not cut where the card fades it out', () {
+      final post = read('embed_long.html', '/user/spez/comments/1vgbkge/modernizing_reddits_infrastructure_with_you/')!;
+
+      expect(post.selfText!.length, greaterThan(5000));
+      expect(post.selfText, endsWith('edit: added links'));
+      expect(post.subreddit, 'u_spez', reason: "a profile post lives in the account's own community");
+      expect(post.permalink, '/user/spez/comments/1vgbkge/modernizing_reddits_infrastructure_with_you/');
+    });
+
+    test('a picture post links its picture, under the scaled copy', () {
+      final post = read('embed_image.html', '/r/pics/comments/1xawic7/early_voting_today_in_north_dallas_oc/')!;
+
+      expect(post.isSelf, isFalse);
+      expect(post.url, 'https://i.redd.it/bm3fgrkkdnwh1.jpeg');
+      expect(post.imageUrl, 'https://i.redd.it/bm3fgrkkdnwh1.jpeg');
+      expect(post.previewImage, contains('preview.redd.it/early-voting-today-in-north-dallas-v0-bm3fgrkkdnwh1.jpeg'));
+      expect(post.domain, 'i.redd.it');
+    });
+
+    test('a gallery brings every picture in order', () {
+      final post = read(
+        'embed_gallery.html',
+        '/r/pics/comments/1xb4rqw/i_painted_an_ocean_front_tennis_court_scene_set/',
+      )!;
+
+      expect(post.url, 'https://www.reddit.com/gallery/1xb4rqw');
+      expect(post.galleryImages, hasLength(9));
+      expect(post.galleryImages.first, contains('28bh0dy5xowh1.jpeg?width=640'));
+      expect(post.galleryImages[1], contains('jdl2e1y5xowh1.jpeg?width=640'));
+    });
+
+    test('a video brings its stream and poster frame', () {
+      final post = read(
+        'embed_video.html',
+        '/r/aww/comments/1xb1imj/update_odin_the_im_not_a_morning_person_chihuahua/',
+      )!;
+
+      expect(post.url, 'https://v.redd.it/0570b89w9owh1');
+      expect(post.videoDashUrl, startsWith('https://v.redd.it/0570b89w9owh1/HLSPlaylist.m3u8?'));
+      expect(post.previewImage, startsWith('https://external-preview.redd.it/'));
+      expect(post.hasPlayableVideo, isTrue);
+      expect(post.score, 4888);
+      expect(post.commentCount, 356);
+    });
+
+    test('a link post links its article', () {
+      final post = read(
+        'embed_link.html',
+        '/r/Android/comments/1xaxenh/galaxy_s27_ultra_could_switch_to_exynos_2700_over/',
+      )!;
+
+      expect(post.url, 'https://sammyguru.com/galaxy-s27-ultra-snapdragon-overheating/');
+      expect(post.domain, 'sammyguru.com');
+      expect(post.isSelf, isFalse);
+      expect(post.selfText, isNull);
+      expect(post.author, 'rdh2dmd');
+    });
+
+    test("a crosspost's title is read from its own element, and it links the original's pictures", () {
+      final post = read('embed_crosspost.html', '/r/pics/comments/1xapc2a/protests_in_porto_portugal_171026/')!;
+
+      expect(post.title, 'Protests in Porto, Portugal. 17.10.26');
+      expect(post.url, 'https://www.reddit.com/gallery/1x9anef');
+      expect(post.score, 1074);
+      expect(post.commentCount, 50);
+    });
+
+    test('a post that is gone, and a page that is not a card, yield nothing', () {
+      expect(read('embed_gone.html', '/r/FlutterDev/comments/zzzzzzz/no_such_post/'), isNull);
+      expect(read('browser_check.html', thread), isNull);
+      expect(readWwwEmbed('<html><body>nothing</body></html>', permalink: thread), isNull);
+    });
+  });
+
+  group('a page names its community', () {
+    test('a community post, a profile post in either spelling, and anything else', () {
+      expect(wwwCommunityOf('/r/FlutterDev/comments/1xa75i8/why/'), 'FlutterDev');
+      expect(wwwCommunityOf('/user/spez/comments/1vgbkge/x/'), 'u_spez');
+      expect(wwwCommunityOf('/u/spez/comments/1vgbkge/x/'), 'u_spez');
+      expect(wwwCommunityOf('/r/FlutterDev/about/'), isNull);
+      expect(wwwCommunityOf('/comments/1xa75i8/'), isNull);
     });
   });
 }

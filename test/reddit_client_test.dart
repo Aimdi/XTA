@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_html.dart';
 
 http.Response _json(Object body, int status) => http.Response(
@@ -1862,6 +1863,208 @@ void main() {
           RedditClient.wwwCommentsUri(permalink)!.path,
           '/svc/shreddit/comments/r/FlutterDev/t3_1xa75i8/t1_phuyrt3',
           reason: permalink,
+        );
+      }
+    });
+
+    test('a post that arrived bare is read from its embed card', () async {
+      final asked = <Uri>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked.add(request.url);
+          return _html(fixture('embed_self.html'));
+        }),
+      );
+
+      final post = await client.fetchPost(thread, clientId: '');
+
+      expect(
+        asked.single.toString(),
+        'https://embed.reddit.com/r/FlutterDev/comments/1xa75i8/?embed=true',
+      );
+      expect(post!.selfText, startsWith('Spent a while'));
+      expect(post.permalink, thread, reason: 'the page it was asked for');
+      expect(post.author, 'birjuvachhani');
+    });
+
+    test("a comment's page is filled in from its post's card", () async {
+      Uri? asked;
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          asked = request.url;
+          return _html(fixture('embed_self.html'));
+        }),
+      );
+
+      await client.fetchPost(
+        '/r/FlutterDev/comments/1xa75i8/comment/phuyrt3/',
+        clientId: '',
+      );
+
+      expect(asked!.path, '/r/FlutterDev/comments/1xa75i8/');
+      expect(
+        RedditClient.wwwEmbedUri('/user/spez/comments/1vgbkge/x/')!.path,
+        '/user/spez/comments/1vgbkge/',
+      );
+      expect(RedditClient.wwwEmbedUri('/r/x/about/'), isNull);
+    });
+
+    test('a card Reddit refuses, or no answer at all, leaves the post as it '
+        'was', () async {
+      final refused = RedditClient(
+        httpClient: MockClient((_) async => http.Response('', 400)),
+      );
+      final offline = RedditClient(
+        httpClient: MockClient(
+          (_) async => throw const SocketException('offline'),
+        ),
+      );
+
+      expect(await refused.fetchPost(thread, clientId: ''), isNull);
+      expect(await offline.fetchPost(thread, clientId: ''), isNull);
+    });
+
+    test('with an account the API names the post, and the card stands in '
+        'when it refuses', () async {
+      Future<RedditPost?> fetch(http.Response byId) {
+        final client = RedditClient(
+          httpClient: MockClient((request) async {
+            if (request.url.path.contains('access_token')) {
+              return _json(_tokenBody(), 200);
+            }
+            if (request.url.host == 'oauth.reddit.com') {
+              expect(request.url.path, '/by_id/t3_1xa75i8');
+              return byId;
+            }
+            return _html(fixture('embed_self.html'));
+          }),
+        );
+        return client.fetchPost(thread, clientId: 'app');
+      }
+
+      final named = await fetch(_json(_listingBody(), 200));
+      expect(named!.id, 'abc123', reason: "the API's own answer");
+
+      final stoodIn = await fetch(_json({'error': 403}, 403));
+      expect(stoodIn!.author, 'birjuvachhani', reason: 'from the card');
+    });
+
+    test("a post's own copy fills a bare one, without replacing what a "
+        'feed post came with', () {
+      const bare = RedditPost(
+        id: '1xa75i8',
+        title: '1xa75i8',
+        subreddit: 'FlutterDev',
+        permalink: thread,
+        isSelf: true,
+      );
+      const fetched = RedditPost(
+        id: '1xa75i8',
+        title: 'Why Flutter Text Looks Lighter',
+        subreddit: 'FlutterDev',
+        permalink: thread,
+        author: 'birjuvachhani',
+        score: 68,
+        commentCount: 15,
+        url: 'https://www.reddit.com/gallery/1xa75i8',
+        galleryImages: ['https://preview.redd.it/a.jpeg'],
+        flair: 'Article',
+      );
+      expect(bare.arrivedBare, isTrue);
+
+      final filled = bare.filledFrom(fetched);
+      expect(filled.title, 'Why Flutter Text Looks Lighter');
+      expect(filled.author, 'birjuvachhani');
+      expect((filled.score, filled.commentCount), (68, 15));
+      expect(filled.url, 'https://www.reddit.com/gallery/1xa75i8');
+      expect(filled.isSelf, isFalse, reason: 'it links somewhere after all');
+      expect(filled.galleryImages, ['https://preview.redd.it/a.jpeg']);
+      expect(filled.arrivedBare, isFalse);
+
+      const fromFeed = RedditPost(
+        id: '1xa75i8',
+        title: 'Why Flutter Text Looks Lighter',
+        subreddit: 'FlutterDev',
+        permalink: thread,
+        flair: 'Discussion',
+        videoDashUrl: 'https://v.redd.it/x/HLSPlaylist.m3u8',
+      );
+      final kept = fromFeed.filledFrom(fetched);
+      expect(kept.flair, 'Discussion');
+      expect(kept.videoDashUrl, 'https://v.redd.it/x/HLSPlaylist.m3u8');
+      expect(fromFeed.arrivedBare, isFalse);
+    });
+
+    test("a big thread's held-back comments are asked for as the site asks: "
+        'by POST, with the cursor and the CSRF token it set', () async {
+      final requests = <http.Request>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'GET') {
+            return http.Response.bytes(
+              utf8.encode(fixture('comments_big.html')),
+              200,
+              headers: {
+                'content-type': 'text/html; charset=utf-8',
+                'set-cookie': 'csrf_token=tok123; Path=/; Secure',
+              },
+            );
+          }
+          return _html('''
+<shreddit-comment thingid="t1_x" author="eleventh" depth="0">
+  <div slot="comment"><div class="md"><p>Eleventh</p></div></div>
+</shreddit-comment>
+<faceplate-partial id="top-level-more-comments-partial" method="post"
+    src="/svc/shreddit/more-comments/AskReddit/t3_1xbzqmk?top-level=1&amp;commentPositionOffset=20">
+  <input type="hidden" name="cursor" value="after-twenty">
+</faceplate-partial>''');
+        }),
+      );
+      const big =
+          '/r/AskReddit/comments/1xbzqmk/whats_your_proudest_i_saw_that_movie_in_theaters/';
+
+      final thread = await client.fetchComments(big, clientId: '');
+      final stub = thread.comments.last;
+      expect(stub.nextPage, isNotNull);
+
+      final more = await client.fetchMoreComments(stub);
+      final post = requests.last;
+      expect(post.method, 'POST');
+      expect(
+        post.url.toString(),
+        'https://www.reddit.com/svc/shreddit/more-comments/AskReddit/t3_1xbzqmk'
+        '?top-level=1&comments-remaining=90&commentPositionOffset=10',
+      );
+      expect(post.bodyFields['cursor'], stub.nextPage!.cursor);
+      expect(post.bodyFields['csrf_token'], 'tok123');
+      expect(post.headers['Cookie'], contains('csrf_token=tok123'));
+      expect(post.headers['Origin'], 'https://www.reddit.com');
+
+      expect(more.first.body, 'Eleventh');
+      expect(more.last.nextPage?.cursor, 'after-twenty');
+      expect(more.last.permalink, big, reason: 'the rest is still this thread');
+    });
+
+    test('held-back comments Reddit will not hand over are an error the '
+        'thread can send the reader on from', () async {
+      const stub = RedditComment(
+        id: 'more',
+        body: '',
+        permalink: thread,
+        moreCount: -1,
+        nextPage: (path: '/svc/shreddit/more-comments/x/t3_y', cursor: 'c'),
+      );
+      for (final answer in [
+        http.Response('', 403),
+        _html(fixture('browser_check.html')),
+      ]) {
+        final client = RedditClient(
+          httpClient: MockClient((_) async => answer),
+        );
+        await expectLater(
+          client.fetchMoreComments(stub),
+          throwsA(isA<RedditException>()),
         );
       }
     });

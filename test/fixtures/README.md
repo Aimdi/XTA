@@ -24,6 +24,8 @@ responses over hand-written stubs.
 | `Reddit/comments.html` | The comments piece of an r/FlutterDev thread, trimmed to two top-level comments with a reply, a held-back reply and the top-level "more" | `readWwwThread` |
 | `Reddit/search_posts.html`, `search_communities.html`, `search_people.html` | www.reddit.com's search piece for posts, communities and people, three results each | `readWwwSearch*` |
 | `Reddit/browser_check.html` | The script page www.reddit.com puts in front of a full page | `redditWwwPageKind` |
+| `Reddit/comments_big.html` | The comments piece of an r/AskReddit thread with 5,277 comments on 2026-10-22, trimmed to two top-level comments, two of those Reddit renders inside its lazy `<template>`, and the top-level "more comments" partial with its cursor | `readWwwThread`, `fetchMoreComments` |
+| `Reddit/embed_self.html`, `embed_long.html`, `embed_image.html`, `embed_gallery.html`, `embed_video.html`, `embed_link.html`, `embed_crosspost.html`, `embed_gone.html` | embed.reddit.com's card for a self post, u/spez's long profile post, a picture, a 9-picture gallery, a video, a link and a crosspost on 2026-10-21/22, and for a post that does not exist | `readWwwEmbed`, `fetchPost` |
 
 The Reddit pages were fetched through Google's translation proxy, since Reddit
 blocks datacenter addresses; the proxy's link rewriting was undone, so they

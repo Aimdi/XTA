@@ -11,6 +11,7 @@ import 'package:xta/plugins/reddit/reddit_search_html.dart';
 import 'package:xta/plugins/reddit/reddit_search_json.dart';
 import 'package:xta/plugins/reddit/reddit_www.dart';
 import 'package:xta/plugins/reddit/reddit_www_comments.dart';
+import 'package:xta/plugins/reddit/reddit_www_embed.dart';
 import 'package:xta/plugins/reddit/reddit_www_search.dart';
 import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/json.dart';
@@ -215,6 +216,50 @@ class RedditPost {
       videoAspectRatio: videoAspectRatio,
     );
   }
+
+  /// This post with what [fetched] — the same post, as Reddit serves it on its
+  /// own — knows and this one does not: the words, pictures and link a post
+  /// from search or a link arrived without.
+  ///
+  /// Reddit's title and counts replace a stub's; everything else only fills a
+  /// gap, so a feed post keeps the flair and video it came with.
+  RedditPost filledFrom(RedditPost fetched) => RedditPost(
+    id: id,
+    title: fetched.title.isEmpty ? title : fetched.title,
+    subreddit: subreddit.isEmpty ? fetched.subreddit : subreddit,
+    permalink: permalink,
+    author: author ?? fetched.author,
+    score: fetched.score != 0 ? fetched.score : score,
+    commentCount: fetched.commentCount != 0
+        ? fetched.commentCount
+        : commentCount,
+    createdAt: createdAt ?? fetched.createdAt,
+    url: url ?? fetched.url,
+    isSelf: url == null ? fetched.isSelf : isSelf,
+    selfText: selfText ?? fetched.selfText,
+    over18: over18 || fetched.over18,
+    spoiler: spoiler || fetched.spoiler,
+    stickied: stickied,
+    thumbnail: thumbnail ?? fetched.thumbnail,
+    flair: flair ?? fetched.flair,
+    domain: domain ?? fetched.domain,
+    galleryImages: galleryImages.isEmpty
+        ? fetched.galleryImages
+        : galleryImages,
+    previewImage: previewImage ?? fetched.previewImage,
+    videoDashUrl: videoDashUrl ?? fetched.videoDashUrl,
+    videoFallbackUrl: videoFallbackUrl ?? fetched.videoFallbackUrl,
+    videoAspectRatio: videoAspectRatio ?? fetched.videoAspectRatio,
+  );
+
+  /// Nothing to show but a title: how a post arrives from search, whose
+  /// results carry no body or media, and from a link, which names only an id.
+  bool get arrivedBare =>
+      selfText == null &&
+      url == null &&
+      galleryImages.isEmpty &&
+      previewImage == null &&
+      !hasPlayableVideo;
 
   bool get hasPlayableVideo => videoDashUrl != null || videoFallbackUrl != null;
 
@@ -706,6 +751,10 @@ class RedditClient {
   /// The pieces of [_publicBase]'s pages the site loads as it scrolls, which
   /// are what a reader without an account can still be served.
   static const _wwwPieces = '$_publicBase/svc/shreddit';
+
+  /// Serves the cards other sites embed posts with: the one page of a single
+  /// post a reader without an account is still served whole.
+  static const _embedBase = 'https://embed.reddit.com';
 
   /// Served and throttled separately from [_publicBase], so it is worth a
   /// second try when that one refuses.
@@ -1738,6 +1787,62 @@ class RedditClient {
     }
   }
 
+  /// A post on its own, for one that arrived without its words or pictures:
+  /// from search, whose results list none, or from a link, which names only
+  /// an id.
+  ///
+  /// The API's `by_id` with an account, and the post's embed card without one
+  /// or when the API refuses. Null when neither has it, which leaves the post
+  /// as it was: this fills in a post already open, so it never throws.
+  Future<RedditPost?> fetchPost(
+    String permalink, {
+    required String clientId,
+    String? userToken,
+    bool preferPublic = false,
+  }) async {
+    final anonymous =
+        preferPublic || (userToken == null && clientId.trim().isEmpty);
+    if (!anonymous) {
+      try {
+        final token = userToken ?? await _authorize(clientId);
+        final post = await _postFromOauth(permalink, token);
+        if (post != null) {
+          return post;
+        }
+      } on RedditException {
+        // Through to the embed card.
+      }
+    }
+    return _postFromEmbed(permalink);
+  }
+
+  Future<RedditPost?> _postFromOauth(String permalink, String token) async {
+    final id = _postPageOf(permalink)?.post;
+    if (id == null) {
+      return null;
+    }
+    final uri = Uri.parse(
+      '$_apiBase/by_id/t3_$id',
+    ).replace(queryParameters: {'raw_json': '1'});
+    return _listingFrom(_decode(await _read(uri, token))).posts.firstOrNull;
+  }
+
+  Future<RedditPost?> _postFromEmbed(String permalink) async {
+    final uri = wwwEmbedUri(permalink);
+    if (uri == null) {
+      return null;
+    }
+    try {
+      final response = await _read(uri);
+      if (response.statusCode != 200) {
+        return null;
+      }
+      return await _parses.run(wwwEmbedReader(permalink), response.body);
+    } on RedditException {
+      return null;
+    }
+  }
+
   /// A thread with no account: www.reddit.com's comments, and old.reddit's
   /// page where that is still served.
   ///
@@ -1794,19 +1899,62 @@ class RedditClient {
     return (
       comments: [
         ...thread.comments,
-        // Held back at the top: the rest is on the post's page on Reddit.
-        if (thread.moreAtRoot)
-          RedditComment(
-            id: 'more-$permalink',
-            body: '',
-            permalink: permalink,
-            moreCount: -1,
-          ),
+        if (thread.moreAtRoot) _moreStub(permalink, thread.next),
       ],
       selfText: null,
       postUrl: null,
       postImages: const <String>[],
     );
+  }
+
+  /// The row for comments held back at a thread's top: it loads them where
+  /// Reddit said they are served, or opens the post on Reddit when it did not.
+  static RedditComment _moreStub(
+    String permalink,
+    RedditCommentsCursor? next,
+  ) => RedditComment(
+    id: 'more-$permalink-${next?.cursor ?? ''}',
+    body: '',
+    permalink: permalink,
+    moreCount: -1,
+    nextPage: next,
+  );
+
+  /// The next comments at the top of a thread, from where www.reddit.com's
+  /// own page asks for them as the reader scrolls: by POST, with the cursor
+  /// the page carried and the CSRF token the site set as a cookie, as the
+  /// page sends them. They come with a stub for the rest when Reddit holds
+  /// back more still.
+  ///
+  /// Throws when Reddit will not serve them; the thread then sends the reader
+  /// to the post on Reddit, as it did before.
+  Future<List<RedditComment>> fetchMoreComments(RedditComment stub) async {
+    final next = stub.nextPage;
+    final permalink = stub.permalink;
+    if (next == null || permalink == null) {
+      throw const RedditException(
+        RedditErrorKind.notFound,
+        'Reddit named no further comments',
+      );
+    }
+
+    final uri = Uri.parse('$_publicBase${next.path}');
+    final response = await _submit(uri, {
+      'cursor': next.cursor,
+      'csrf_token': ?_cookies['csrf_token'],
+    });
+    if (response.statusCode != 200) {
+      throw _errorFor(response, uri);
+    }
+
+    final page = await _parses.run(readWwwMoreComments, response.body);
+    if (page.comments.isEmpty) {
+      throw _wwwRefusal(page.kind, uri);
+    }
+    return [
+      ...page.comments,
+      if (page.moreAtRoot) _moreStub(permalink, page.next),
+    ];
   }
 
   /// Where www.reddit.com serves [permalink]'s comments, or null when it is not
@@ -1817,6 +1965,41 @@ class RedditClient {
   /// `…/comments/<post>/comment/<comment>/`. A profile post lives in the
   /// account's own community, `u_<name>`.
   static Uri? wwwCommentsUri(String permalink, {String? sort}) {
+    final page = _postPageOf(permalink);
+    if (page == null) {
+      return null;
+    }
+
+    final path = [
+      'comments/r/${page.community}/t3_${page.post}',
+      if (page.comment != null) 't1_${page.comment}',
+    ].join('/');
+    return Uri.parse('$_wwwPieces/$path').replace(
+      queryParameters: sort == null || sort.isEmpty
+          ? null
+          : {'sort': sort.toUpperCase()},
+    );
+  }
+
+  /// Where Reddit serves the embed card of [permalink]'s post, or null when it
+  /// is not a post's or a comment's page. A comment's page embeds the comment,
+  /// so its post's page is asked for instead.
+  static Uri? wwwEmbedUri(String permalink) {
+    final page = _postPageOf(permalink);
+    if (page == null) {
+      return null;
+    }
+    return Uri.parse(
+      '$_embedBase/${page.owner}/comments/${page.post}/',
+    ).replace(queryParameters: {'embed': 'true'});
+  }
+
+  /// The parts of a post's or comment's page: `r/FlutterDev` or `user/spez`,
+  /// the community www files it under (`u_spez` for a profile post), and the
+  /// post's and comment's ids. Null for anything else, or for a part that is
+  /// not what Reddit's own would look like.
+  static ({String owner, String community, String post, String? comment})?
+  _postPageOf(String permalink) {
     final segments = (Uri.tryParse(permalink)?.pathSegments ?? const [])
         .where((s) => s.isNotEmpty)
         .toList(growable: false);
@@ -1825,23 +2008,21 @@ class RedditClient {
       return null;
     }
 
-    final owner = segments[at - 1];
-    final community = segments[at - 2] == 'r' ? owner : 'u_$owner';
+    final kind = segments[at - 2] == 'r' ? 'r' : 'user';
+    final name = segments[at - 1];
+    final community = kind == 'r' ? name : 'u_$name';
     final rest = segments.sublist(at + 2);
     final comment = rest.length >= 2 ? rest[1] : null;
-    final ids = [segments[at + 1], ?comment];
-    if (!_wwwName.hasMatch(community) || !ids.every(_wwwId.hasMatch)) {
+    final post = segments[at + 1];
+    if (!_wwwName.hasMatch(community) ||
+        ![post, ?comment].every(_wwwId.hasMatch)) {
       return null;
     }
-
-    final path = [
-      'comments/r/$community/t3_${ids.first}',
-      if (comment != null) 't1_$comment',
-    ].join('/');
-    return Uri.parse('$_wwwPieces/$path').replace(
-      queryParameters: sort == null || sort.isEmpty
-          ? null
-          : {'sort': sort.toUpperCase()},
+    return (
+      owner: '$kind/$name',
+      community: community,
+      post: post,
+      comment: comment,
     );
   }
 
@@ -2049,6 +2230,29 @@ class RedditClient {
       throw _errorFor(response, uri);
     }
 
+    return response;
+  }
+
+  /// One form POST to a public host, the way the website's own page sends one:
+  /// from its origin, with the cookies the site has set.
+  Future<http.Response> _submit(Uri uri, Map<String, String> form) async {
+    final response = await _send(
+      () => httpClient.post(
+        uri,
+        headers: {
+          'User-Agent': publicUserAgent,
+          'Accept': 'text/html,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Origin': _publicBase,
+          if (_cookies.isNotEmpty)
+            'Cookie': _cookies.entries
+                .map((e) => '${e.key}=${e.value}')
+                .join('; '),
+        },
+        body: form,
+      ),
+    );
+    _rememberCookies(response, null);
     return response;
   }
 

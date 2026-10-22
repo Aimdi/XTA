@@ -41,20 +41,37 @@ site loads as it scrolls (`reddit_www*.dart`):
 | Search | `search/?q=&type=posts\|communities\|people`, `r/<community>/search/?…&restrict_sr=1` |
 | A profile | `profiles/profile_posts-more-posts/new/?name=&after=` |
 | A community's picture and description | its own entry in the community search |
+| A big thread's next comments | `more-comments/<community>/t3_<post>?top-level=1&…`, by POST with the page's `cursor` and the site's `csrf_token` cookie |
+| A post on its own (one from search or a link) | `embed.reddit.com/<r\|user>/<name>/comments/<post>/?embed=true`, the card other sites embed |
 
 Cursors are the fullname (`t3_…`) in base64, which is how the pieces write
 them; the client keeps the plain fullname so any route can read the next page.
 Each piece is a whole document of about a megabyte (gzipped on the wire), so it
-is cut to its body and parsed off the UI thread.
+is cut to its body and parsed off the UI thread. A big thread renders its
+comments after the fourth inside a `<template>` the site fills in as the reader
+scrolls, with the "more comments" partial at its end; templates are cut whole,
+except those holding comments, posts or partials, whose content stays.
+
+A thread's first page holds ten top-level comments. The rest are fetched the
+way the site fetches them, by POST. That POST could not be checked from here
+(no proxy that reaches Reddit passes one), so when Reddit refuses it the row
+opens the post on Reddit, as it did before.
+
+A post that arrives with nothing but a title — a search result, a link from
+another post — is filled in from its embed card: its text in full, pictures,
+video, link, score and comment count. An NSFW post's card is refused (400), and
+the post stays as it arrived.
 
 old.reddit HTML and the `.json` endpoints stay behind it as later routes — no
 shutdown has been total — and old.reddit's login page refuses only its own
 host instead of ending the search.
 
 Not available on this route: pinned posts (the feed piece leaves them out),
-subscriber counts (the search shows weekly visitors), a post's own body when it
-came from search (the comments piece carries no post), and a per-post NSFW mark
-in feeds (search results have one).
+subscriber counts (the search shows weekly visitors), and video downloads (the
+feed carries a signed HLS stream and no single file with sound). NSFW posts
+carry an `nsfw` attribute, posts in NSFW communities `subreddit-nsfw`, and
+blurred media a `<shreddit-blurred-container reason="nsfw|spoiler">`; all
+three count.
 
 Reddit blocks datacenter addresses (GitHub's runners among them) with "blocked
 by network security" on every route. `test/live/reddit_smoke_test.dart` with
@@ -106,7 +123,8 @@ over OAuth, else the community search, then the public routes. Signed
 
 ## Known gaps (not P0)
 
-- Comment `more` expansion / collapse / markdown
+- Comment markdown beyond paragraphs, lists, line breaks and code (quotes,
+  tables and headings read as plain paragraphs)
 - Search / user posts read the website even when signed in (OAuth wiring follow-up)
 - Scrape/OAuth media parity; gallery pager (same-file preview/i.redd.it width
   variants are collapsed — no more low+high double display)

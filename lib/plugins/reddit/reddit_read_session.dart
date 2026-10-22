@@ -97,6 +97,14 @@ class RedditReadSession {
     preferPublic: preferPublic,
   );
 
+  Future<RedditPost?> fetchPost(RedditClient client, String permalink) =>
+      client.fetchPost(
+        permalink,
+        clientId: clientId,
+        userToken: userToken,
+        preferPublic: preferPublic,
+      );
+
   Future<List<RedditPost>> searchPosts(
     RedditClient client,
     String query, {
