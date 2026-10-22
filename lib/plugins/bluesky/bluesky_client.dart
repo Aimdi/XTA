@@ -55,8 +55,10 @@ class BlueskyClient {
   /// Effective AppView root for the next request.
   String get baseUrl => blueskyAppViewFromPrefs(resolveBaseUrl());
 
-  Uri _uri(String path, [Map<String, dynamic>? query]) {
-    final base = baseUrl.replaceAll(RegExp(r'/+$'), '');
+  Uri _uri(String path, [Map<String, dynamic>? query]) => _uriOn(baseUrl, path, query);
+
+  Uri _uriOn(String root, String path, [Map<String, dynamic>? query]) {
+    final base = root.replaceAll(RegExp(r'/+$'), '');
     return Uri.parse('$base$path').replace(queryParameters: query);
   }
 
@@ -205,7 +207,11 @@ class BlueskyClient {
     return [for (final suggestion in json['suggestions'].list) BlueskyProfile.fromJson(suggestion.raw)];
   }
 
-  /// Posts matching [q] via the public AppView search index.
+  /// Posts matching [q] via the AppView search index.
+  ///
+  /// The default AppView refuses post search to readers without an account,
+  /// so search goes to [kBlueskySearchAppView]; it refuses cursors there, so
+  /// later pages ask for posts older than the page before ([blueskySearchCursor]).
   Future<BlueskyFeedPage> searchPosts(
     String q, {
     int limit = 20,
@@ -227,11 +233,19 @@ class BlueskyClient {
             .take(10)
             .toList(),
     };
-    if (cursor != null && cursor.isNotEmpty) {
+    final until = blueskySearchUntil(cursor);
+    if (until != null) {
+      query['until'] = until;
+    } else if (cursor != null && cursor.isNotEmpty) {
       query['cursor'] = cursor;
     }
-    final json = await _get(_uri('/xrpc/app.bsky.feed.searchPosts', query));
-    return BlueskyFeedPage(posts: parseBlueskySearchPosts(json.raw), cursor: json['cursor'].string);
+    final byTime = const [kBlueskyDefaultAppView, kBlueskySearchAppView].contains(baseUrl);
+    final root = byTime ? kBlueskySearchAppView : baseUrl;
+    final json = await _get(_uriOn(root, '/xrpc/app.bsky.feed.searchPosts', query));
+    return BlueskyFeedPage(
+      posts: parseBlueskySearchPosts(json.raw),
+      cursor: byTime ? blueskySearchCursor(json) : json['cursor'].string,
+    );
   }
 
   /// One post and its surrounding conversation via the public AppView.
