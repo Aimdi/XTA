@@ -26,6 +26,20 @@ jobs:
       - name: What x.com answers this runner
         timeout-minutes: 4
         run: python3 .github/workflows/x-live-probe.py
+      - name: Try the sign-in page as a third bootstrap page (CI only, not committed)
+        run: |
+          python3 - <<'PATCH'
+          p = 'lib/client/x_client_transaction_id/client_transaction.dart'
+          s = open(p).read()
+          old = "      Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}),\n"
+          assert old in s
+          s = s.replace(old, old + "      Uri.https('x.com', '/i/flow/login'),\n")
+          old_skip = "if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;"
+          assert old_skip in s
+          s = s.replace(old_skip, "if (uri != pages.last && const [403, 404].contains(response.statusCode)) continue;")
+          open(p, 'w').write(s)
+          PATCH
+          git diff --stat
       - name: Bootstrap smoke
         continue-on-error: true
         run: flutter test test/live/x_bootstrap_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
