@@ -1,0 +1,27 @@
+name: Sources live probe (temporary)
+
+on:
+  push:
+    branches: [claude/admiring-mayer-bdfg95]
+    paths: ['.github/workflows/sources-live-probe.yml', 'test/live/sources_smoke_test.dart']
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: Every source without an account
+        run: flutter test test/live/sources_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
