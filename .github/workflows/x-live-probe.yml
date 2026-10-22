@@ -26,6 +26,9 @@ jobs:
       - name: What x.com answers this runner
         timeout-minutes: 4
         run: python3 .github/workflows/x-live-probe.py
+      - name: What the sign-in page loads
+        timeout-minutes: 3
+        run: python3 .github/workflows/x-login-probe.py
       - name: Try the sign-in page as a third bootstrap page (CI only, not committed)
         run: |
           python3 - <<'PATCH'
