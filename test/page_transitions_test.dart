@@ -36,7 +36,10 @@ void main() {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute<void>(
-                builder: (_) => const ColoredBox(key: page, color: Colors.white, child: Text('opened')),
+                builder: (_) => const Material(
+                  key: page,
+                  child: Column(children: [Text('opened'), TextField()]),
+                ),
               ),
             ),
             child: const Text('open'),
@@ -104,6 +107,21 @@ void main() {
       await send(tester, 'cancelBackGesture');
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byKey(page)), whole);
+    });
+
+    testWidgets('the page keeps what it holds through a gesture and its cancel', (tester) async {
+      await open(tester);
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'kept');
+
+      await send(tester, 'startBackGesture', event(0));
+      await send(tester, 'updateBackGestureProgress', event(0.4));
+      await tester.pump();
+      expect(find.text('kept'), findsOneWidget, reason: 'the page moved into the gesture, it was not rebuilt');
+
+      await send(tester, 'cancelBackGesture');
+      await tester.pumpAndSettle();
+      expect(find.text('kept'), findsOneWidget);
     });
 
     testWidgets('committed, it leaves the page behind', (tester) async {
