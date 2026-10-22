@@ -114,14 +114,18 @@ class ClientTransaction {
     String? cookie,
   ) async {
     // X's logged-out homepage can omit the signer; its public search shell
-    // still includes it: iSarabjitDhiman/XClientTransaction#45.
+    // still includes it: iSarabjitDhiman/XClientTransaction#45. Since October
+    // 2026 both answer some addresses (datacenters, VPNs) with Cloudflare's
+    // browser check, which the sign-in page is spared. That page is for
+    // visitors, so it is asked for without the session.
     final pages = [
-      Uri.https('x.com', '/home'),
-      Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}),
+      (uri: Uri.https('x.com', '/home'), cookie: cookie),
+      (uri: Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}), cookie: cookie),
+      (uri: Uri.https('x.com', '/i/flow/login'), cookie: null),
     ];
-    for (final uri in pages) {
+    for (final (:uri, :cookie) in pages) {
       final response = await _fetchPage(uri, budget, cookie);
-      if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;
+      if (uri != pages.last.uri && const [403, 404].contains(response.statusCode)) continue;
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw HttpException('X transaction bootstrap returned HTTP ${response.statusCode}', uri: uri);
       }

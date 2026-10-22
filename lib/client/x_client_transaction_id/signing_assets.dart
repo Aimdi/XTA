@@ -12,6 +12,7 @@ class SigningAssets {
   static const maxAssets = 16;
   static const concurrency = 4;
   static const maxImportDepth = 3;
+  static final _page = Uri.https('x.com', '/');
   final RequestBudget budget;
   final _visited = <Uri>{};
   int _requests = 0;
@@ -53,6 +54,10 @@ class SigningAssets {
     for (final element in elements) {
       final uri = Uri.tryParse(element.attributes['src'] ?? element.attributes['href'] ?? '');
       if (uri != null && trusted(uri)) linked.add(uri);
+    }
+    // The sign-in page starts its entry script from inline code instead of a tag.
+    for (final script in page.querySelectorAll('script:not([src])')) {
+      linked.addAll(_SigningAssetSearch._references(_page, script.text, _SigningAssetSearch._literal));
     }
     for (final uri in linked) {
       if (signer(uri)) return uri;
