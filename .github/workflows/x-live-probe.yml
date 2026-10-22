@@ -1,5 +1,5 @@
 name: X live probe (temporary)
-# run 8
+# run 9: the committed fix, no patches
 
 on:
   push:
@@ -24,42 +24,6 @@ jobs:
           flutter pub get
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
-      - name: What x.com answers this runner
-        timeout-minutes: 4
-        run: python3 .github/workflows/x-live-probe.py
-      - name: What the sign-in page loads
-        timeout-minutes: 3
-        run: python3 .github/workflows/x-login-probe.py
-      - name: Try the sign-in page as a third bootstrap page (CI only, not committed)
-        run: |
-          python3 - <<'PATCH'
-          p = 'lib/client/x_client_transaction_id/client_transaction.dart'
-          s = open(p).read()
-          old = "      Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}),\n"
-          assert old in s
-          s = s.replace(old, old + "      Uri.https('x.com', '/i/flow/login'),\n")
-          old_skip = "if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;"
-          assert old_skip in s
-          s = s.replace(old_skip, "if (uri != pages.last && const [403, 404].contains(response.statusCode)) continue;")
-          open(p, 'w').write(s)
-          p = 'lib/client/x_client_transaction_id/signing_assets.dart'
-          s = open(p).read()
-          anchor = "    for (final uri in linked) {\n      if (signer(uri)) return uri;\n    }\n"
-          assert anchor in s
-          inline = (
-              "    for (final script in page.querySelectorAll('script:not([src])')) {\n"
-              "      linked.addAll(_SigningAssetSearch._references(Uri.https('x.com', '/'), script.text, _SigningAssetSearch._literal));\n"
-              "    }\n"
-          )
-          s = s.replace(anchor, inline + anchor)
-          open(p, 'w').write(s)
-          PATCH
-          git diff
-      - name: Signed against unsigned guest requests (CI only)
-        continue-on-error: true
-        run: |
-          cp .github/workflows/x_signed_probe_test.dart.txt test/live/x_signed_probe_test.dart
-          flutter test test/live/x_signed_probe_test.dart --no-pub --reporter expanded
       - name: Bootstrap smoke
         continue-on-error: true
         run: flutter test test/live/x_bootstrap_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
