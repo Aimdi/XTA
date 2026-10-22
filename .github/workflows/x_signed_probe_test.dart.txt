@@ -9,91 +9,39 @@ import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/constants.dart';
 
-// Temporary probe, copied into test/live by the workflow: does X accept the
-// signature derived from the sign-in page on guest requests?
+// Temporary probe, copied into test/live by the workflow: does every live
+// query id fail validation (not 404) when its variables are empty?
 void main() {
-  test('signed against unsigned', () async {
+  test('empty variables against every endpoint', () async {
     final token = await getToken(Logger('probe'));
     final client = http.Client();
-    const vars = {
-      'userId': '783214',
-      'screen_name': 'X',
-      'screenName': 'X',
-      'count': 20,
-      'focalTweetId': '20',
-      'tweetId': '20',
-      'listId': '1',
-      'id': '1',
-      'rawQuery': 'nasa',
-      'querySource': 'typed_query',
-      'product': 'Latest',
-      'includePromotedContent': false,
-      'withVoice': true,
-      'includePromoted': false,
-    };
     Future<void> probe(String label, Uri uri) async {
-      for (final signed in [false, true]) {
-        final signedHeaders = signed ? await TwitterHeaders.getHeaders(uri, null) : <String, String>{};
-        final response = await client.get(
-          uri,
-          headers: {
-            ...signedHeaders,
-            'authorization': guestBearerToken,
-            'x-guest-token': token,
-            'content-type': 'application/json',
-            'user-agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-          },
-        );
-        final body = response.body.replaceAll(RegExp(r'\s+'), ' ');
-        // ignore: avoid_print
-        print(
-          '${label.padRight(24)} ${signed ? 'signed  ' : 'unsigned'} ${response.statusCode} '
-          '${body.substring(0, min(110, body.length))}',
-        );
-        await Future.delayed(const Duration(milliseconds: 700));
-      }
-    }
-
-    for (final endpoint in XEndpoints.all) {
-      await probe(
-        endpoint.name,
-        XEndpoints.uri(endpoint.name, {
-          'variables': jsonEncode(vars),
-          'features': jsonEncode(const <String, bool>{}),
-        }),
-      );
-    }
-    await probe(
-      'BOGUS TweetDetail',
-      Uri.https('x.com', '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/TweetDetail', {'variables': jsonEncode(vars)}),
-    );
-
-    // The canary's own way: TwitterHeaders' bearer with the guest token.
-    Future<void> canaryWay(String label, Uri uri) async {
       final headers = await TwitterHeaders.getHeaders(uri, null);
-      final response = await client.get(uri, headers: {...headers, 'x-guest-token': token});
+      final response = await client.get(
+        uri,
+        headers: {...headers, 'authorization': guestBearerToken, 'x-guest-token': token},
+      );
       final body = response.body.replaceAll(RegExp(r'\s+'), ' ');
       // ignore: avoid_print
-      print('${label.padRight(24)} canary   ${response.statusCode} ${body.substring(0, min(140, body.length))}');
-      await Future.delayed(const Duration(milliseconds: 700));
+      print('${label.padRight(24)} ${response.statusCode} ${body.substring(0, min(120, body.length))}');
+      await Future.delayed(const Duration(milliseconds: 1500));
     }
 
-    const canaryVars = {'userId': '783214', 'screenName': 'X', 'count': 1};
-    for (final name in [XEndpoints.tweetDetail, XEndpoints.userByScreenName, XEndpoints.following]) {
-      await canaryWay(
-        name,
-        XEndpoints.uri(name, {'variables': jsonEncode(canaryVars), 'features': jsonEncode(const <String, bool>{})}),
-      );
-    }
-    for (final host in ['x.com', 'twitter.com']) {
-      await canaryWay(
-        'BOGUS on $host',
-        Uri.https(host, '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/TweetDetail', {
-          'variables': jsonEncode(canaryVars),
-          'features': jsonEncode(const <String, bool>{}),
-        }),
-      );
+    for (final variables in ['{}', '']) {
+      // ignore: avoid_print
+      print('--- variables: "$variables"');
+      for (final endpoint in XEndpoints.all) {
+        await probe(
+          endpoint.name,
+          XEndpoints.uri(endpoint.name, {'variables': variables, 'features': '{}'}),
+        );
+      }
+      for (final host in ['x.com', 'twitter.com']) {
+        await probe(
+          'MADE-UP on $host',
+          Uri.https(host, '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/TweetDetail', {'variables': variables, 'features': '{}'}),
+        );
+      }
     }
   }, timeout: const Timeout(Duration(minutes: 4)));
 }

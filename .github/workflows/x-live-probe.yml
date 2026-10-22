@@ -1,5 +1,5 @@
 name: X live probe (temporary)
-# run 9: the committed fix, no patches
+# run 10: empty variables against every endpoint
 
 on:
   push:
@@ -24,6 +24,11 @@ jobs:
           flutter pub get
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
+      - name: Empty variables against every endpoint (CI only)
+        continue-on-error: true
+        run: |
+          cp .github/workflows/x_signed_probe_test.dart.txt test/live/x_signed_probe_test.dart
+          flutter test test/live/x_signed_probe_test.dart --no-pub --reporter expanded
       - name: Bootstrap smoke
         continue-on-error: true
         run: flutter test test/live/x_bootstrap_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
