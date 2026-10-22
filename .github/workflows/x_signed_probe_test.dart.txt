@@ -68,5 +68,32 @@ void main() {
       'BOGUS TweetDetail',
       Uri.https('x.com', '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/TweetDetail', {'variables': jsonEncode(vars)}),
     );
+
+    // The canary's own way: TwitterHeaders' bearer with the guest token.
+    Future<void> canaryWay(String label, Uri uri) async {
+      final headers = await TwitterHeaders.getHeaders(uri, null);
+      final response = await client.get(uri, headers: {...headers, 'x-guest-token': token});
+      final body = response.body.replaceAll(RegExp(r'\s+'), ' ');
+      // ignore: avoid_print
+      print('${label.padRight(24)} canary   ${response.statusCode} ${body.substring(0, min(140, body.length))}');
+      await Future.delayed(const Duration(milliseconds: 700));
+    }
+
+    const canaryVars = {'userId': '783214', 'screenName': 'X', 'count': 1};
+    for (final name in [XEndpoints.tweetDetail, XEndpoints.userByScreenName, XEndpoints.following]) {
+      await canaryWay(
+        name,
+        XEndpoints.uri(name, {'variables': jsonEncode(canaryVars), 'features': jsonEncode(const <String, bool>{})}),
+      );
+    }
+    for (final host in ['x.com', 'twitter.com']) {
+      await canaryWay(
+        'BOGUS on $host',
+        Uri.https(host, '/i/api/graphql/AAAAAAAAAAAAAAAAAAAAAA/TweetDetail', {
+          'variables': jsonEncode(canaryVars),
+          'features': jsonEncode(const <String, bool>{}),
+        }),
+      );
+    }
   }, timeout: const Timeout(Duration(minutes: 4)));
 }
