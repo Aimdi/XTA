@@ -76,11 +76,13 @@ def tweet(status_id, label, detail=None):
             v = OUT / f'{label}.mp4'
             v.write_bytes(get(video['url'], binary=True, timeout=120))
             print('video bytes', v.stat().st_size)
-            n = sheets(f'{label}-overview', v, fps=2, width=180, cols=8, rows=4)
-            print('overview sheets', n)
+            if not detail:
+                n = sheets(f'{label}-overview', v, fps=2, width=180, cols=8, rows=4)
+                print('overview sheets', n)
             if detail:
-                for j, (start, length) in enumerate(detail):
-                    sheets(f'{label}-detail{j}', v, fps=12, width=240, cols=6, rows=4, start=start, length=length)
+                for j, (start, length, *rest) in enumerate(detail):
+                    width, cols = rest if rest else (240, 6)
+                    sheets(f"{label}-detail{j}", v, fps=12, width=width, cols=cols, rows=4, start=start, length=length)
         except Exception as e:
             print('video failed', e)
 
@@ -100,15 +102,5 @@ def article(url, label):
     print('images', images[:12])
 
 
-for url, label in [
-    ('https://techcrunch.com/2026/07/20/x-relaunches-a-rebuilt-android-app-after-year-long-effort/', 'techcrunch'),
-    ('https://roboin.io/article/en/2026/07/21/x-officially-launches-new-android-app/', 'roboin'),
-    ('https://easternherald.com/2026/07/21/x-android-app-rebuilt-kotlin-jetpack-compose/', 'easternherald'),
-    ('https://www.neowin.net/news/x-launches-new-android-app-built-from-scratch-some-features-still-pending/', 'neowin'),
-    ('https://betanews.com/article/x-launches-a-completely-rebuilt-version-of-its-android-app/', 'betanews'),
-]:
-    article(url, label)
-
-tweet('2079273272274026718', 'bier')
-tweet('2064719054846427390', 'ice')
-tweet('2066984244854050990', 'techie')
+tweet('2064719054846427390', 'ice', detail=[(0.4, 1.6), (8.4, 1.6), (10.2, 1.6), (11.8, 1.6), (21.6, 1.6), (23.8, 1.6)])
+tweet('2079273272274026718', 'bier', detail=[(10.0, 2.0, 480, 3), (14.0, 2.0, 480, 3), (16.5, 2.0, 480, 3), (18.5, 2.0, 480, 3)])
