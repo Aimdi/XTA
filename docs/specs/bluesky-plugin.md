@@ -51,6 +51,14 @@ translated. This plugin talks to Bluesky's documented public AppView at
 - Settings with a working default AppView (`kBlueskyDefaultAppView` /
   `https://public.api.bsky.app`). Empty or invalid values fall back to that
   default; readers can point at another AppView and test it.
+- Post search from the default AppView goes to `kBlueskySearchAppView`
+  (`https://api.bsky.app`): since 2026 `public.api.bsky.app` answers
+  `searchPosts` with 403 to readers without an account. api.bsky.app refuses
+  a search cursor ("forbidden by administrative rules"), so a next page asks
+  for posts older than the last page's oldest (`until`); the store drops the
+  one post the two pages can share. A custom AppView keeps its own host and
+  cursors. Everything else, people search included, still pages by cursor on
+  the default AppView (measured 2026-10-22).
 
 ## Not implemented
 

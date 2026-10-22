@@ -12,6 +12,7 @@ work.
 | Lint | `fvm flutter analyze` |
 | Unit / characterization tests | `fvm flutter test` |
 | Live guest API smoke | `fvm flutter test test/live/guest_api_smoke_test.dart --dart-define=RUN_LIVE=true` |
+| Live reads of every account-free source | `fvm flutter test test/live/sources_smoke_test.dart --dart-define=RUN_LIVE=true` (needs a network that reaches them; the daily `api-canary` runs it on GitHub) |
 | Debug APK | `fvm flutter build apk --debug` |
 | One-shot verify | `bash scripts/cloud_verify.sh` |
 
