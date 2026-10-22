@@ -3,7 +3,7 @@ name: Sources live probe (temporary)
 on:
   push:
     branches: [claude/admiring-mayer-bdfg95]
-    paths: ['.github/workflows/sources-live-probe.yml', 'test/live/sources_smoke_test.dart']
+    paths: ['.github/workflows/sources-live-probe.yml', '.github/workflows/sources-probe.py', 'test/live/sources_smoke_test.dart']
 
 permissions:
   contents: read
@@ -23,5 +23,8 @@ jobs:
           flutter pub get
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
+      - name: Raw answers behind the failures
+        timeout-minutes: 4
+        run: python3 .github/workflows/sources-probe.py
       - name: Every source without an account
         run: flutter test test/live/sources_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
