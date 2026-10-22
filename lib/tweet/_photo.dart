@@ -2,9 +2,13 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_photo_flight.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/double_tap_zoom.dart';
 import 'package:xta/ui/motion.dart';
+
+/// A tweet photo's address at [size] (`small`, `medium`, …), or as posted.
+String tweetPhotoUrl(String uri, String? size) => size != null ? '$uri:$size' : uri;
 
 class TweetPhoto extends StatefulWidget {
   final String uri;
@@ -13,6 +17,13 @@ class TweetPhoto extends StatefulWidget {
   final bool pullToClose;
   final bool inPageView;
 
+  /// Shared by a tile and the viewer page it opens, so the photo flies
+  /// between them.
+  final String? heroTag;
+
+  /// The photo's width over its height, for the crop of its flight.
+  final double? aspectRatio;
+
   const TweetPhoto({
     super.key,
     required this.uri,
@@ -20,6 +31,8 @@ class TweetPhoto extends StatefulWidget {
     required this.size,
     required this.pullToClose,
     required this.inPageView,
+    this.heroTag,
+    this.aspectRatio,
   });
 
   @override
@@ -30,7 +43,7 @@ class _TweetPhotoState extends State<TweetPhoto>
     with SingleTickerProviderStateMixin, DoubleTapZoom {
   @override
   Widget build(BuildContext context) {
-    final url = widget.size != null ? '${widget.uri}:${widget.size}' : widget.uri;
+    final url = tweetPhotoUrl(widget.uri, widget.size);
 
     // Fullscreen viewer: full resolution, so pinch-zoom stays sharp.
     if (widget.inPageView) {
@@ -48,13 +61,25 @@ class _TweetPhotoState extends State<TweetPhoto>
           ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
           : null;
 
-      return ExtendedImage.network(
-        url,
-        cache: true,
-        fit: widget.fit,
+      final image = ExtendedResizeImage.resizeIfNeeded(
+        provider: ExtendedNetworkImageProvider(url, cache: true),
         cacheWidth: cacheWidth,
+      );
+      final tile = ExtendedImage(
+        image: image,
+        fit: widget.fit,
+        enableLoadState: true,
         loadStateChanged: (state) => _feedLoadState(context, state),
       );
+      final tag = widget.heroTag;
+      return tag == null
+          ? tile
+          : Hero(
+              tag: tag,
+              flightShuttleBuilder: (_, animation, _, _, _) =>
+                  TweetPhotoFlight(animation: animation, image: image, aspectRatio: widget.aspectRatio, from: widget.fit),
+              child: tile,
+            );
     });
   }
 
@@ -133,6 +158,10 @@ class _TweetPhotoState extends State<TweetPhoto>
           );
         },
         onDoubleTap: zoomOnDoubleTap,
+        heroBuilderForSlidingPage: switch (widget.heroTag) {
+          final tag? => (Widget result) => Hero(tag: tag, child: result),
+          null => null,
+        },
       ),
     );
   }

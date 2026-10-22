@@ -603,11 +603,11 @@ ThemeData xLookThemeData(
         pageTransitions ??
         const PageTransitionsTheme(
           builders: {
-            TargetPlatform.android: XtaQuickFadePageTransitionsBuilder(),
+            TargetPlatform.android: XtaPageTransitionsBuilder(),
             TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
-            TargetPlatform.linux: XtaQuickFadePageTransitionsBuilder(),
+            TargetPlatform.linux: XtaPageTransitionsBuilder(),
             TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
-            TargetPlatform.windows: XtaQuickFadePageTransitionsBuilder(),
+            TargetPlatform.windows: XtaPageTransitionsBuilder(),
           },
         ),
     extensions: [tokens],

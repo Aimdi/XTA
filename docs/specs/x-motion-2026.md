@@ -41,9 +41,15 @@ second) and X's launch video:
 - A tweet's photo flies from its tile into the fullscreen viewer and back
   (`Hero`). The tags are unique to the tile that opened the viewer, so the
   same post shown twice on a screen does not confuse them.
-- The viewer's route is no longer an opaque black page: its black background
-  fades in under the flying photo, which is X's darkening. Its app bar fades
-  in after.
+- The viewer still darkens to black as it opens, now under the flying photo,
+  which is X's darkening. Once open it is an opaque page again, so the feed
+  behind it stops drawing, and closing takes as long as opening (180 ms) so the
+  flight back can be seen.
+- The flight shows the picture the tile has already decoded
+  (`TweetPhotoFlight`), its crop opening from the tile's to the whole photo,
+  so nothing flashes black while the viewer's copy loads. Tapping a photo
+  waits up to 180 ms for that copy, which is long enough for one on disk, so
+  the flight lands on the photo rather than its loading box.
 - Pulling a photo down to close lets it fly back from where it was let go.
 - Swiping to another photo of the same post and closing flies that photo back
   to its own tile. A photo with no tile on screen (it scrolled away, or came

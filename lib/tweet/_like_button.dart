@@ -3,14 +3,19 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/ui/heart_burst.dart';
 import 'package:xta/ui/motion.dart';
 
-/// The local-like heart uses one short confirmation pulse. It stays quiet in a
-/// repeated timeline and never resembles a server-side X write celebration.
+/// The local-like heart. Liking plays X's burst ([HeartBurst]) in the colour
+/// of a device like; the tooltip and label still say the like stays here.
 class LikeButton extends StatefulWidget {
   final bool isLiked;
   final String label;
   final Color? color;
+
+  /// The heart's colour once liked, which the burst plays in. The theme accent
+  /// when not given.
+  final Color? activeColor;
   final VoidCallback? onPressed;
   final String? tooltip;
 
@@ -20,6 +25,7 @@ class LikeButton extends StatefulWidget {
     required this.label,
     required this.color,
     required this.onPressed,
+    this.activeColor,
     this.tooltip,
   });
 
@@ -28,12 +34,7 @@ class LikeButton extends StatefulWidget {
 }
 
 class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(vsync: this, duration: kXtaMotionStandard);
-
-  late final Animation<double> _scale = TweenSequence<double>([
-    TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.16).chain(CurveTween(curve: Curves.easeOutCubic)), weight: 45),
-    TweenSequenceItem(tween: Tween(begin: 1.16, end: 1.0).chain(CurveTween(curve: Curves.easeInOutCubic)), weight: 55),
-  ]).animate(_controller);
+  late final AnimationController _controller = AnimationController(vsync: this, duration: kHeartBurstDuration);
 
   @override
   void dispose() {
@@ -42,7 +43,9 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
   }
 
   void _handleTap() {
-    if (!widget.isLiked && !_quietMotion) {
+    if (widget.isLiked || _quietMotion) {
+      _controller.value = 0;
+    } else {
       _controller.forward(from: 0);
     }
     widget.onPressed?.call();
@@ -60,20 +63,18 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final active = widget.activeColor ?? Theme.of(context).colorScheme.primary;
     final button = TextButton(
       onPressed: widget.onPressed == null ? null : _handleTap,
       style: footerButtonStyle,
       child: footerCountContent(
-        SizedBox.square(
-          dimension: kTweetActionGlyphSize,
-          child: ScaleTransition(
-            scale: _scale,
-            child: Icon(
-              widget.isLiked ? Icons.favorite : Icons.favorite_border,
-              size: kTweetActionGlyphSize,
-              color: widget.color,
-            ),
-          ),
+        HeartBurst(
+          progress: _controller,
+          color: active,
+          size: kTweetActionGlyphSize,
+          filledAtRest: widget.isLiked,
+          outline: Icon(Icons.favorite_border, size: kTweetActionGlyphSize, color: widget.color),
+          filled: Icon(Icons.favorite, size: kTweetActionGlyphSize, color: widget.isLiked ? widget.color : active),
         ),
         widget.label,
         widget.color,
