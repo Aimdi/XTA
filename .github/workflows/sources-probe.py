@@ -122,3 +122,21 @@ for sort in ("latest", "top"):
         probe.update({"sort": sort, "extra": extra})
         probe.pop("snippet", None) if probe.get("status") == 200 else None
         print(json.dumps(probe))
+
+
+for host in ("https://public.api.bsky.app", "https://api.bsky.app"):
+    for name, path, key in (
+        ("authorFeed", "/xrpc/app.bsky.feed.getAuthorFeed?" + urlencode({"actor": "bsky.app", "limit": 30}), "feed"),
+        ("discover", "/xrpc/app.bsky.feed.getFeed?" + urlencode({"feed": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot", "limit": 30}), "feed"),
+        ("searchActors", "/xrpc/app.bsky.actor.searchActors?" + urlencode({"q": "news", "limit": 25}), "actors"),
+        ("followers", "/xrpc/app.bsky.graph.getFollowers?" + urlencode({"actor": "bsky.app", "limit": 50}), "followers"),
+    ):
+        first, body = get(host + path, BSKY)
+        parsed = json.loads(body or "{}") if first.get("status") == 200 else {}
+        cursor = parsed.get("cursor")
+        row = {"host": host, "call": name, "page1": first.get("status"), "items": len(parsed.get(key, [])), "cursor": bool(cursor)}
+        if cursor:
+            second, body2 = get(host + path + "&" + urlencode({"cursor": cursor}), BSKY)
+            row["page2"] = second.get("status")
+            row["page2_items"] = len(json.loads(body2 or "{}").get(key, [])) if second.get("status") == 200 else second.get("snippet", "")[:80]
+        print(json.dumps(row))
