@@ -9,24 +9,38 @@ import 'package:xta/client/client_unauthenticated.dart';
 import 'package:xta/client/endpoint_overrides.dart';
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
+import 'package:xta/constants.dart';
 
 /// Live canary over every GraphQL endpoint the app calls. Opt in with:
 ///   flutter test test/live/endpoint_canary_test.dart --dart-define=RUN_LIVE=true
 ///
 /// This does not need an X account, because it does not check that a request
 /// *succeeds* — it checks that the query id still *exists*. X answers an unknown
-/// query id with 404 and a known one with 400/401/403 when the variables or
-/// credentials are wrong, so a 404 here is the rotation signal we want to catch
-/// before users do. Anything else means the id is still live.
+/// query id with 404, so a 404 is the rotation signal we want to catch before
+/// users do; a made-up id is asked for first, to prove X still answers that way.
 ///
-/// The one confound is `x-client-transaction-id`: X 404s every request that
-/// lacks it, so the canary computes a real one, exactly as the app does.
+/// A guest can only tell for the operations X lets guests read. The others
+/// answer a guest 404 whether their id is live or not (measured 2026-10-22),
+/// so they are listed but not judged.
+///
+/// Requests are signed (`x-client-transaction-id`) as the app signs them, and
+/// carry the bearer the guest token was issued for: X refuses a guest token
+/// with any other bearer ("Bad guest token", 239), whatever the query id.
 void main() {
   const enabled = bool.fromEnvironment('RUN_LIVE', defaultValue: false);
 
   // Enough shape to get past request validation; wrong values are fine and
   // expected, since a rejected value still proves the operation resolved.
   const probeVariables = {'userId': '783214', 'screenName': 'X', 'count': 1};
+
+  // What X answers a guest without the 404 a closed operation gets.
+  const guestReadable = {
+    XEndpoints.userByRestId,
+    XEndpoints.userByScreenName,
+    XEndpoints.userTweetsAndReplies,
+    XEndpoints.audioSpaceById,
+  };
+  const madeUpId = 'AAAAAAAAAAAAAAAAAAAAAA';
 
   test(
     'no X endpoint has had its query id rotated',
@@ -49,37 +63,57 @@ void main() {
         fail('Could not reach X for a guest token, so this run proves nothing about the query ids: $e');
       }
 
+      Future<int> statusOf(Uri uri) async {
+        final headers = await TwitterHeaders.getHeaders(uri, null);
+        final response = await client.get(
+          uri,
+          headers: {...headers, 'authorization': guestBearerToken, 'x-guest-token': guestToken},
+        );
+        return response.statusCode;
+      }
+
+      final params = {'variables': jsonEncode(probeVariables), 'features': jsonEncode(const <String, bool>{})};
+      String unreachableFor(Object e) => 'unreachable (${e is TransactionIdUnavailableException ? e.cause : e})';
+
+      final controls = <String, String>{};
+      for (final host in XEndpoints.all.map((endpoint) => endpoint.host).toSet()) {
+        final uri = Uri.https(host, XEndpoints.endpoint(XEndpoints.tweetDetail).pathFor(madeUpId), params);
+        try {
+          controls[host] = '${await statusOf(uri)}';
+        } catch (e) {
+          controls[host] = unreachableFor(e);
+        }
+        await Future.delayed(const Duration(seconds: 2));
+      }
+
       final rotated = <String>[];
       final unreachable = <String>[];
-      final report = <String>[];
+      final report = [for (final MapEntry(:key, :value) in controls.entries) 'made-up id on $key: $value'];
 
       for (final endpoint in XEndpoints.all) {
-        final uri = XEndpoints.uri(endpoint.name, {
-          'variables': jsonEncode(probeVariables),
-          'features': jsonEncode(const <String, bool>{}),
-        });
+        final uri = XEndpoints.uri(endpoint.name, params);
+        final judged = guestReadable.contains(endpoint.name);
 
         String verdict;
         String status;
         try {
-          final headers = await TwitterHeaders.getHeaders(uri, null);
-          final response = await client.get(uri, headers: {...headers, 'x-guest-token': guestToken});
-          status = '${response.statusCode}';
-          verdict = switch (response.statusCode) {
-            404 => 'ROTATED',
+          final code = await statusOf(uri);
+          status = '$code';
+          verdict = switch (code) {
+            404 when judged => 'ROTATED, or closed to guests',
+            404 => 'closed to guests (not judged)',
             429 => 'rate limited (inconclusive)',
             200 => 'ok',
             _ => 'alive',
           };
-          if (response.statusCode == 404) {
+          if (code == 404 && judged) {
             rotated.add(endpoint.name);
           }
         } catch (e) {
           // A blocked or flaky runner must not be reported as X breaking its
           // API, so transport failures are inconclusive rather than fatal.
           status = '---';
-          final cause = e is TransactionIdUnavailableException ? e.cause : e;
-          verdict = 'unreachable ($cause)';
+          verdict = unreachableFor(e);
           unreachable.add(endpoint.name);
         }
 
@@ -99,11 +133,19 @@ void main() {
       print('\n${report.join('\n')}\n');
 
       expect(
+        controls.values.where((status) => status != '404'),
+        isEmpty,
+        reason:
+            'X did not answer a made-up query id with 404 ($controls), so this run proves nothing about the '
+            "query ids. Check the runner's network and the canary's request before reading anything into it.",
+      );
+
+      expect(
         rotated,
         isEmpty,
         reason:
-            'X no longer knows these query ids. Re-capture them from the web client and publish the '
-            'corrected ids in endpoints.json — see lib/client/endpoint_overrides.dart.',
+            'X no longer knows these query ids, or no longer lets guests read them. Re-capture them from the '
+            'web client and publish the corrected ids in endpoints.json — see lib/client/endpoint_overrides.dart.',
       );
 
       expect(

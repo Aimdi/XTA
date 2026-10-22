@@ -255,6 +255,58 @@ void main() {
     ]);
   });
 
+  test(
+    "Cloudflare's check on both public routes falls back to the sign-in page, asked for without the session",
+    () async {
+      // Observed on 2026-10-22: /home and /search answer GitHub's runners with
+      // Cloudflare's check, while /i/flow/login is served and starts its entry
+      // script from inline code.
+      respond((request) {
+        if (request.url.host != 'x.com') {
+          expect(request.headers, isNot(contains('cookie')));
+          return http.Response(request.url.toString() == _signer ? _indices : 'import("./sign.o-a1b2c3.js")', 200);
+        }
+        if (request.url.path != '/i/flow/login') {
+          expect(request.headers['cookie'], _cookie);
+          return http.Response('<title>Just a moment...</title>', 403, headers: {'cf-mitigated': 'challenge'});
+        }
+        expect(request.headers, isNot(contains('cookie')));
+        return http.Response(
+          _shell('<script nonce="n">!function(){var entryHref="$_root/entry-client-logged-out-a.js";}()</script>'),
+          200,
+        );
+      });
+
+      _valid(await ClientTransaction.initialize(cookie: _cookie));
+      expect(requests.map((request) => request.url.path), [
+        '/home',
+        '/search',
+        '/i/flow/login',
+        '/x-web/client-web/entry-client-logged-out-a.js',
+        '/x-web/client-web/sign.o-a1b2c3.js',
+      ]);
+    },
+  );
+
+  test('inline scripts name assets only by constant strings on the static host', () async {
+    respond((request) {
+      if (request.url.host == 'x.com') {
+        return http.Response(
+          _shell(
+            '<script>var a="https://attacker.invalid/x-web/client-web/sign.o-a1b2c3.js";'
+            r'var b=`https://abs.twimg.com/x-web/client-web/${name}.js`;'
+            'var c="$_root/entry.js";</script>',
+          ),
+          200,
+        );
+      }
+      return http.Response(request.url.toString() == _signer ? _indices : 'import("./sign.o-a1b2c3.js")', 200);
+    });
+
+    _valid(await ClientTransaction.initialize());
+    expect(requests.map((request) => request.url.toString()), ['https://x.com/home', '$_root/entry.js', _signer]);
+  });
+
   test('untrusted links and imports never become asset requests', () async {
     respond((request) {
       if (request.url.host == 'x.com') {
@@ -283,6 +335,7 @@ void main() {
       '$_root/app-a.js',
       '$_root/design.o-bad.js', // A trusted module, but never mistaken for a signer.
       'https://x.com/search?q=AI&f=live',
+      'https://x.com/i/flow/login',
     ]);
   });
 
@@ -302,6 +355,7 @@ void main() {
       '$_root/entry.js',
       '$_root/child.js',
       'https://x.com/search?q=AI&f=live',
+      'https://x.com/i/flow/login',
     ]);
   });
 

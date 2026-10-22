@@ -261,10 +261,16 @@ bool isRedditMediaPlaceholderTitle(String title) {
 
 /// Drops leftover `>image>` / `<gif>` tokens from a comment or selftext once
 /// the picture is already on the card.
+///
+/// The spaces a removed token leaves are folded; the author's line breaks and
+/// paragraphs are not. Folding every kind of whitespace used to run a reply's
+/// paragraphs and lists together into one block.
 String stripRedditMediaPlaceholderTokens(String text) {
   return _decodeRedditPlaceholderEntities(text)
       .replaceAll(_redditMediaPlaceholderToken, ' ')
-      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll(RegExp(r'[ \t]+'), ' ')
+      .replaceAll(RegExp(r' ?\n ?'), '\n')
+      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
       .trim();
 }
 

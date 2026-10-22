@@ -23,7 +23,7 @@ fvm flutter test
 
 if [[ "$RUN_LIVE" == "1" ]]; then
   echo "==> live guest API smoke (x.com)"
-  fvm flutter test test/live/guest_api_smoke_test.dart --name .
+  fvm flutter test test/live/guest_api_smoke_test.dart --dart-define=RUN_LIVE=true
 fi
 
 if [[ "$RUN_APK" == "1" ]]; then

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -7,6 +9,11 @@ import 'package:xta/plugins/reddit/reddit_comments_json.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
 import 'package:xta/plugins/reddit/reddit_search_json.dart';
+import 'package:xta/plugins/reddit/reddit_www.dart';
+import 'package:xta/plugins/reddit/reddit_www_comments.dart';
+import 'package:xta/plugins/reddit/reddit_www_embed.dart';
+import 'package:xta/plugins/reddit/reddit_www_search.dart';
+import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/json.dart';
 
 /// How many posts one subreddit listing page asks Reddit for.
@@ -142,8 +149,9 @@ class RedditPost {
   /// none.
   final String? previewImage;
 
-  /// A v.redd.it post's streams: the DASH manifest libmpv can play whole, and
-  /// the progressive fallback (video-only) kept as the download target.
+  /// A v.redd.it post's streams: the manifest libmpv can play whole — DASH
+  /// from the API, HLS from the website — and the progressive fallback
+  /// (video-only) kept as the download target.
   final String? videoDashUrl;
   final String? videoFallbackUrl;
 
@@ -208,6 +216,50 @@ class RedditPost {
       videoAspectRatio: videoAspectRatio,
     );
   }
+
+  /// This post with what [fetched] — the same post, as Reddit serves it on its
+  /// own — knows and this one does not: the words, pictures and link a post
+  /// from search or a link arrived without.
+  ///
+  /// Reddit's title and counts replace a stub's; everything else only fills a
+  /// gap, so a feed post keeps the flair and video it came with.
+  RedditPost filledFrom(RedditPost fetched) => RedditPost(
+    id: id,
+    title: fetched.title.isEmpty ? title : fetched.title,
+    subreddit: subreddit.isEmpty ? fetched.subreddit : subreddit,
+    permalink: permalink,
+    author: author ?? fetched.author,
+    score: fetched.score != 0 ? fetched.score : score,
+    commentCount: fetched.commentCount != 0
+        ? fetched.commentCount
+        : commentCount,
+    createdAt: createdAt ?? fetched.createdAt,
+    url: url ?? fetched.url,
+    isSelf: url == null ? fetched.isSelf : isSelf,
+    selfText: selfText ?? fetched.selfText,
+    over18: over18 || fetched.over18,
+    spoiler: spoiler || fetched.spoiler,
+    stickied: stickied,
+    thumbnail: thumbnail ?? fetched.thumbnail,
+    flair: flair ?? fetched.flair,
+    domain: domain ?? fetched.domain,
+    galleryImages: galleryImages.isEmpty
+        ? fetched.galleryImages
+        : galleryImages,
+    previewImage: previewImage ?? fetched.previewImage,
+    videoDashUrl: videoDashUrl ?? fetched.videoDashUrl,
+    videoFallbackUrl: videoFallbackUrl ?? fetched.videoFallbackUrl,
+    videoAspectRatio: videoAspectRatio ?? fetched.videoAspectRatio,
+  );
+
+  /// Nothing to show but a title: how a post arrives from search, whose
+  /// results carry no body or media, and from a link, which names only an id.
+  bool get arrivedBare =>
+      selfText == null &&
+      url == null &&
+      galleryImages.isEmpty &&
+      previewImage == null &&
+      !hasPlayableVideo;
 
   bool get hasPlayableVideo => videoDashUrl != null || videoFallbackUrl != null;
 
@@ -544,13 +596,23 @@ class RedditListing {
   const RedditListing({required this.posts, this.after});
 }
 
+/// A post's comments, with what its page says about the post itself.
+typedef RedditThreadPage = ({
+  List<RedditComment> comments,
+  String? selfText,
+  String? postUrl,
+  List<String> postImages,
+});
+
 /// The ways to a listing that need no credentials, in the order they are tried
 /// before anything is known about them.
 ///
-/// old.reddit's HTML leads because it is the one Reddit still serves to
-/// everybody; the `.json` endpoints follow because the deprecation has never
-/// been total, and www and old are throttled separately.
-enum _PublicRoute { html, wwwJson, oldJson }
+/// www.reddit.com leads because it is what Reddit still serves a reader
+/// without an account (reddit_www.dart has the history). old.reddit's HTML and
+/// the `.json` endpoints follow: in 2026 Reddit put the first behind a login
+/// and refused the second, but neither shutdown has been total, and a route
+/// that answers is remembered.
+enum _PublicRoute { www, html, wwwJson, oldJson }
 
 /// What one route made of the request: a listing, a verdict no other route will
 /// contradict ([terminal]), or a failure worth trying the next route after.
@@ -559,6 +621,9 @@ typedef _RouteAttempt = ({
   RedditException? failure,
   bool terminal,
 });
+
+/// A search as www.reddit.com answers it: where, and how to read the answer.
+typedef _WwwSearch<T> = ({Uri uri, List<T> Function(String body) parse});
 
 _RouteAttempt _hit(RedditListing listing) =>
     (listing: listing, failure: null, terminal: false);
@@ -658,12 +723,12 @@ class RedditSubredditAbout {
 /// Read-only Reddit client. Nobody has to log in, and by default nobody has to
 /// configure anything either.
 ///
-/// Without a client id it reads the public `.json` endpoints, which take no
-/// credentials at all. Reddit throttles those harder and sometimes refuses them
-/// outright, so a client id is still worth setting: it switches the reader to
-/// the `installed_client` grant, which authenticates the *app* — not a user —
-/// with a device id that deliberately says "do not track", and gets the higher,
-/// documented rate limits.
+/// Without a client id it reads what Reddit serves a reader with no account,
+/// which since 2026 is www.reddit.com itself (reddit_www.dart); old.reddit and
+/// the public `.json` endpoints are still tried after it. A client id switches
+/// the reader to the `installed_client` grant, which authenticates the *app* —
+/// not a user — with a device id that deliberately says "do not track", and
+/// gets the higher, documented rate limits.
 ///
 /// Requiring the client id up front was the wrong default: an unconfigured
 /// reader failed every request rather than trying the endpoint that needs
@@ -682,6 +747,14 @@ class RedditClient {
 
   /// Serves the same listings as [_apiBase] without any credentials.
   static const _publicBase = 'https://www.reddit.com';
+
+  /// The pieces of [_publicBase]'s pages the site loads as it scrolls, which
+  /// are what a reader without an account can still be served.
+  static const _wwwPieces = '$_publicBase/svc/shreddit';
+
+  /// Serves the cards other sites embed posts with: the one page of a single
+  /// post a reader without an account is still served whole.
+  static const _embedBase = 'https://embed.reddit.com';
 
   /// Served and throttled separately from [_publicBase], so it is worth a
   /// second try when that one refuses.
@@ -716,6 +789,9 @@ class RedditClient {
   /// would outlive the throttle that produced it.
   _PublicRoute? _lastGoodRoute;
   final Map<_PublicRoute, DateTime> _refusedUntil = {};
+
+  /// Where www.reddit.com's pages are parsed, a couple at a time.
+  final _parses = _BackgroundParses();
 
   /// Subreddit pictures noticed on pages fetched for another reason. A listing
   /// page carries the community's header image, so the feed usually pays for
@@ -879,9 +955,10 @@ class RedditClient {
   ///
   /// Routes are tried in the order [_publicRoutes] puts them and the first one
   /// that answers ends the search, so the common case costs one request. A
-  /// verdict — private, banned, quarantined, missing, behind a login — ends it
-  /// too: no second host is going to disagree, and asking anyway was most of
-  /// what the anonymous path used to spend.
+  /// verdict — private, banned, quarantined, missing — ends it too: no second
+  /// host is going to disagree, and asking anyway was most of what the
+  /// anonymous path used to spend. A login page is not one: it answers for its
+  /// host alone.
   Future<RedditListing> _fetchPublicListing(
     String name,
     RedditSort sort,
@@ -951,16 +1028,72 @@ class RedditClient {
     Map<String, String> query,
   ) async {
     try {
-      return route == _PublicRoute.html
-          ? await _scrapeListing(name, sort, query)
-          : await _readPublicJson(route, name, sort, query);
+      return switch (route) {
+        _PublicRoute.www => await _readWwwListing(name, sort, query),
+        _PublicRoute.html => await _scrapeListing(name, sort, query),
+        _ => await _readPublicJson(route, name, sort, query),
+      };
     } on RedditException catch (e) {
       return _miss(e);
     }
   }
 
-  /// Reads a listing off old.reddit's HTML — the route that still works without
-  /// an account, and the one Stealth takes for the same reason.
+  /// A community's posts from the piece of www.reddit.com that loads them.
+  ///
+  /// Each page is a whole document of about a megabyte, most of it styles,
+  /// so it is read off the UI thread.
+  Future<_RouteAttempt> _readWwwListing(
+    String name,
+    RedditSort sort,
+    Map<String, String> query,
+  ) async {
+    final uri = Uri.parse(
+      '$_wwwPieces/community-more-posts/${redditSortPath(sort)}/',
+    ).replace(queryParameters: _wwwFeedQuery(name, query));
+
+    final response = await _read(uri);
+    if (response.statusCode != 200) {
+      return _miss(_errorFor(response, uri));
+    }
+
+    final page = await _parses.run(readWwwListing, response.body);
+    return page.kind == RedditWwwPageKind.read
+        ? _hit(RedditListing(posts: page.posts, after: page.after))
+        : _miss(_wwwRefusal(page.kind, uri));
+  }
+
+  /// A feed piece's query: who, which window, and after which post — the
+  /// cursor in the form the site's own paging URLs carry it.
+  static Map<String, String> _wwwFeedQuery(
+    String name,
+    Map<String, String> query,
+  ) => {
+    'name': name,
+    if (query['t'] case final window?) 't': window.toUpperCase(),
+    if (query['after'] case final after? when after.isNotEmpty)
+      'after': wwwCursorParam(after),
+  };
+
+  /// What a www.reddit.com page that was not the answer amounts to.
+  static RedditException _wwwRefusal(RedditWwwPageKind kind, Uri uri) =>
+      switch (kind) {
+        RedditWwwPageKind.blocked => RedditException(
+          RedditErrorKind.blocked,
+          '${uri.host} blocked the request by network security',
+        ),
+        RedditWwwPageKind.browserCheck => RedditException(
+          RedditErrorKind.blocked,
+          '${uri.host} answered with its browser check',
+        ),
+        _ => RedditException(
+          RedditErrorKind.badResponse,
+          '${uri.host} answered with a page this app cannot read',
+        ),
+      };
+
+  /// Reads a listing off old.reddit's HTML — the route that worked without an
+  /// account until Reddit put old.reddit behind its login page in 2026, and
+  /// still does wherever that has not reached.
   ///
   /// The over-18 gate is answered with a cookie rather than a login: Reddit
   /// wants consent recorded, not an account, and `over18=1` is what its own
@@ -1037,7 +1170,9 @@ class RedditClient {
   ///
   /// A redirect to the login page is Reddit refusing an anonymous reader rather
   /// than an answer about the subreddit, and it is reported as the refusal it
-  /// is instead of as an empty feed.
+  /// is instead of as an empty feed. It refuses this host only — old.reddit
+  /// sends every logged-out reader there since 2026, while www still serves
+  /// them — so the next route is still asked.
   _RouteAttempt? _statusVerdict(http.Response response, String name, Uri uri) {
     if (response.statusCode == 404) {
       return _terminal(
@@ -1048,9 +1183,11 @@ class RedditClient {
 
     final location = _loginRedirectOf(response);
     if (location != null) {
-      return _terminal(
-        RedditErrorKind.blocked,
-        'HTTP ${response.statusCode} to a login page ($location)',
+      return _miss(
+        RedditException(
+          RedditErrorKind.blocked,
+          'HTTP ${response.statusCode} to a login page ($location)',
+        ),
       );
     }
 
@@ -1076,9 +1213,11 @@ class RedditClient {
           RedditErrorKind.blocked,
           'r/$name is quarantined',
         ),
-        RedditPageKind.loginWall => _terminal(
-          RedditErrorKind.blocked,
-          'Reddit answered with a login page',
+        RedditPageKind.loginWall => _miss(
+          const RedditException(
+            RedditErrorKind.blocked,
+            'Reddit answered with a login page',
+          ),
         ),
         RedditPageKind.listing ||
         RedditPageKind.over18Gate ||
@@ -1139,9 +1278,10 @@ class RedditClient {
         : worst;
   }
 
-  /// Posts matching [query], across Reddit or within one subreddit.
   /// What a community says about itself — the sidebar, by whichever route the
-  /// session can read: `about.json` over OAuth, else the old.reddit sidebar.
+  /// session can read: `about.json` over OAuth; without an account,
+  /// www.reddit.com's community search, then the public `about.json` and the
+  /// old.reddit sidebar.
   Future<RedditSubredditAbout> fetchSubredditAbout(
     String subreddit, {
     required String clientId,
@@ -1166,7 +1306,8 @@ class RedditClient {
       return _aboutFromJson(Json(_decode(await _read(uri, token)))['data'], name);
     }
 
-    final fromPublic = await _aboutFromPublicJson(name);
+    final fromPublic =
+        await _aboutFromWww(name) ?? await _aboutFromPublicJson(name);
     if (fromPublic != null) {
       return fromPublic;
     }
@@ -1195,12 +1336,14 @@ class RedditClient {
     );
   }
 
+  /// Posts matching [query], across Reddit or within one subreddit.
+  ///
   /// [searchSort] is Reddit's search order — `relevance`, `new`, `top` or
   /// `comments` — its own axis, not the listing sort.
   ///
   /// Same credential choice as listings: OAuth JSON when a token or client id
-  /// is available, then public `.json`, then old-site HTML. Guest HTML search
-  /// is often refused; JSON is the path that still answers.
+  /// is available; without one, www.reddit.com's search, then public `.json`,
+  /// then old-site HTML.
   Future<List<RedditPost>> searchPosts(
     String query, {
     String? subreddit,
@@ -1227,6 +1370,15 @@ class RedditClient {
       preferPublic: preferPublic,
       fromJson: parseSearchPostsJson,
       fromHtml: parseSearchPosts,
+      www: (
+        uri: _wwwSearchUri(
+          query,
+          type: 'posts',
+          subreddit: name,
+          sort: searchSort,
+        ),
+        parse: readWwwSearchPosts,
+      ),
     );
   }
 
@@ -1244,6 +1396,10 @@ class RedditClient {
       preferPublic: preferPublic,
       fromJson: parseSubredditResultsJson,
       fromHtml: parseSubredditResults,
+      www: (
+        uri: _wwwSearchUri(query, type: 'communities'),
+        parse: readWwwSearchCommunities,
+      ),
     );
   }
 
@@ -1263,8 +1419,32 @@ class RedditClient {
       fromHtml: parseUserResults,
       htmlPath: '/search',
       htmlParams: {'q': query, 'type': 'user'},
+      www: (
+        uri: _wwwSearchUri(query, type: 'people'),
+        parse: readWwwSearchPeople,
+      ),
     );
   }
+
+  /// www.reddit.com's search for [type] — `posts`, `communities`, `people` —
+  /// across Reddit or within [subreddit].
+  static Uri _wwwSearchUri(
+    String query, {
+    required String type,
+    String? subreddit,
+    String? sort,
+  }) => Uri.parse(
+    subreddit == null
+        ? '$_wwwPieces/search/'
+        : '$_wwwPieces/r/$subreddit/search/',
+  ).replace(
+    queryParameters: {
+      'q': query,
+      'type': type,
+      if (sort != null) ...{'sort': sort, 't': 'all'},
+      if (subreddit != null) 'restrict_sr': '1',
+    },
+  );
 
   Future<List<T>> _searchJsonThenHtml<T>({
     required String path,
@@ -1274,6 +1454,7 @@ class RedditClient {
     required bool preferPublic,
     required List<T> Function(Object? raw) fromJson,
     required List<T> Function(String body) fromHtml,
+    required _WwwSearch<T> www,
     String? htmlPath,
     Map<String, String>? htmlParams,
   }) async {
@@ -1304,6 +1485,7 @@ class RedditClient {
       htmlParams: html,
       fromJson: fromJson,
       fromHtml: fromHtml,
+      www: www,
     );
   }
 
@@ -1314,8 +1496,15 @@ class RedditClient {
     required Map<String, String> htmlParams,
     required List<T> Function(Object? raw) fromJson,
     required List<T> Function(String body) fromHtml,
+    required _WwwSearch<T> www,
   }) async {
-    RedditException? last;
+    final RedditException wwwFailure;
+    try {
+      return await _readWwwSearch(www);
+    } on RedditException catch (e) {
+      wwwFailure = e;
+    }
+
     for (final base in [_publicBase, _publicFallbackBase]) {
       try {
         final response = await _read(
@@ -1324,9 +1513,8 @@ class RedditClient {
         if (response.statusCode == 200) {
           return fromJson(_decode(response));
         }
-        last = _errorFor(response);
-      } on RedditException catch (e) {
-        last = e;
+      } on RedditException {
+        // The next way in, and www's failure if none answers.
       }
     }
 
@@ -1336,14 +1524,32 @@ class RedditClient {
           '$_publicFallbackBase$htmlPath',
         ).replace(queryParameters: htmlParams),
       );
-      return body == null ? const [] : fromHtml(body);
-    } on RedditException catch (e) {
-      throw last ?? e;
+      final found = body == null ? <T>[] : fromHtml(body);
+      // old.reddit's login page has no results on it either.
+      if (found.isNotEmpty) {
+        return found;
+      }
+    } on RedditException {
+      // www's failure says more than old.reddit's.
     }
+    throw wwwFailure;
   }
 
-  /// One account's posts. Comments on the same page have no title and are
-  /// skipped by the listing parser, which is the behaviour we want here.
+  /// One page of www.reddit.com's search, read off the UI thread.
+  Future<List<T>> _readWwwSearch<T>(_WwwSearch<T> www) async {
+    final response = await _read(www.uri);
+    if (response.statusCode != 200) {
+      throw _errorFor(response, www.uri);
+    }
+    final kind = redditWwwPageKind(response.body);
+    if (kind != RedditWwwPageKind.read) {
+      throw _wwwRefusal(kind, www.uri);
+    }
+    return _parses.run(www.parse, response.body);
+  }
+
+  /// One account's posts: www.reddit.com's profile, and old.reddit's where that
+  /// is still served.
   Future<RedditListing> fetchUserPosts(
     String user, {
     String? after,
@@ -1356,6 +1562,48 @@ class RedditClient {
       throw RedditException(RedditErrorKind.notFound, 'Not a username: $user');
     }
 
+    try {
+      return await _userPostsFromWww(name, after: after);
+    } on RedditException {
+      try {
+        final old = await _userPostsFromScrape(
+          name,
+          after: after,
+          limit: limit,
+        );
+        if (old.posts.isNotEmpty) {
+          return old;
+        }
+      } on RedditException {
+        // Through to www's failure.
+      }
+      rethrow;
+    }
+  }
+
+  Future<RedditListing> _userPostsFromWww(String name, {String? after}) async {
+    final uri = Uri.parse(
+      '$_wwwPieces/profiles/profile_posts-more-posts/new/',
+    ).replace(queryParameters: _wwwFeedQuery(name, {'after': ?after}));
+
+    final response = await _read(uri);
+    if (response.statusCode != 200) {
+      throw _errorFor(response, uri);
+    }
+    final page = await _parses.run(readWwwListing, response.body);
+    if (page.kind != RedditWwwPageKind.read) {
+      throw _wwwRefusal(page.kind, uri);
+    }
+    return RedditListing(posts: page.posts, after: page.after);
+  }
+
+  /// Comments on the same page have no title and are skipped by the listing
+  /// parser, which is the behaviour wanted here.
+  Future<RedditListing> _userPostsFromScrape(
+    String name, {
+    String? after,
+    required int limit,
+  }) async {
     final body = await _scrape(
       Uri.parse('$_publicFallbackBase/user/$name/submitted').replace(
         queryParameters: {
@@ -1445,6 +1693,33 @@ class RedditClient {
     );
   }
 
+  /// What www.reddit.com's community search says about [name]: its picture
+  /// and description. The sidebar itself is behind the browser check, and
+  /// the search shows weekly visitors rather than subscribers, so those stay
+  /// unknown. Null when the search did not find the community.
+  Future<RedditSubredditAbout?> _aboutFromWww(String name) async {
+    try {
+      final found = await _readWwwSearch((
+        uri: _wwwSearchUri(name, type: 'communities'),
+        parse: readWwwSearchCommunities,
+      ));
+      final match = found
+          .where((c) => c.name.toLowerCase() == name.toLowerCase())
+          .firstOrNull;
+      if (match == null) {
+        return null;
+      }
+      _rememberIcon(name, match.iconUrl);
+      return RedditSubredditAbout(
+        name: match.name,
+        description: match.description,
+        iconUrl: match.iconUrl,
+      );
+    } on RedditException {
+      return null;
+    }
+  }
+
   /// Guest `about.json`. www is often refused; old.reddit is a second door
   /// onto the same JSON (`community_icon` included).
   Future<RedditSubredditAbout?> _aboutFromPublicJson(String name) async {
@@ -1487,18 +1762,10 @@ class RedditClient {
   /// The comment thread of a post.
   ///
   /// Same credential choice as [fetchSubreddit]: OAuth JSON when a user token
-  /// or client id is available, old-site HTML scrape when the reader is
-  /// anonymous. Returns the post's own text and media alongside, because a self
-  /// post's body is not always in the listing that led here.
-  Future<
-    ({
-      List<RedditComment> comments,
-      String? selfText,
-      String? postUrl,
-      List<String> postImages,
-    })
-  >
-  fetchComments(
+  /// or client id is available, the website when the reader is anonymous.
+  /// Returns the post's own text and media alongside when the page has them,
+  /// because a self post's body is not always in the listing that led here.
+  Future<RedditThreadPage> fetchComments(
     String permalink, {
     String? sort,
     required String clientId,
@@ -1508,17 +1775,259 @@ class RedditClient {
     final anonymous =
         preferPublic || (userToken == null && clientId.trim().isEmpty);
     if (anonymous) {
-      return _commentsFromScrape(permalink, sort: sort);
+      return _commentsWithoutAccount(permalink, sort: sort);
     }
 
-    // Thread UX should still work when OAuth is flaky — scrape already does.
+    // Thread UX should still work when OAuth is flaky — the website does.
     try {
       final token = userToken ?? await _authorize(clientId);
       return await _commentsFromOauth(permalink, sort: sort, token: token);
     } on RedditException {
-      return _commentsFromScrape(permalink, sort: sort);
+      return _commentsWithoutAccount(permalink, sort: sort);
     }
   }
+
+  /// A post on its own, for one that arrived without its words or pictures:
+  /// from search, whose results list none, or from a link, which names only
+  /// an id.
+  ///
+  /// The API's `by_id` with an account, and the post's embed card without one
+  /// or when the API refuses. Null when neither has it, which leaves the post
+  /// as it was: this fills in a post already open, so it never throws.
+  Future<RedditPost?> fetchPost(
+    String permalink, {
+    required String clientId,
+    String? userToken,
+    bool preferPublic = false,
+  }) async {
+    final anonymous =
+        preferPublic || (userToken == null && clientId.trim().isEmpty);
+    if (!anonymous) {
+      try {
+        final token = userToken ?? await _authorize(clientId);
+        final post = await _postFromOauth(permalink, token);
+        if (post != null) {
+          return post;
+        }
+      } on RedditException {
+        // Through to the embed card.
+      }
+    }
+    return _postFromEmbed(permalink);
+  }
+
+  Future<RedditPost?> _postFromOauth(String permalink, String token) async {
+    final id = _postPageOf(permalink)?.post;
+    if (id == null) {
+      return null;
+    }
+    final uri = Uri.parse(
+      '$_apiBase/by_id/t3_$id',
+    ).replace(queryParameters: {'raw_json': '1'});
+    return _listingFrom(_decode(await _read(uri, token))).posts.firstOrNull;
+  }
+
+  Future<RedditPost?> _postFromEmbed(String permalink) async {
+    final uri = wwwEmbedUri(permalink);
+    if (uri == null) {
+      return null;
+    }
+    try {
+      final response = await _read(uri);
+      if (response.statusCode != 200) {
+        return null;
+      }
+      return await _parses.run(wwwEmbedReader(permalink), response.body);
+    } on RedditException {
+      return null;
+    }
+  }
+
+  /// A thread with no account: www.reddit.com's comments, and old.reddit's
+  /// page where that is still served.
+  ///
+  /// old.reddit answers a reader it will not serve with its login page, which
+  /// holds no comments, so when it has nothing either, www's failure is the
+  /// one to report.
+  Future<RedditThreadPage> _commentsWithoutAccount(
+    String permalink, {
+    String? sort,
+  }) async {
+    try {
+      return await _commentsFromWww(permalink, sort: sort);
+    } on RedditException catch (www) {
+      if (www.kind == RedditErrorKind.notFound) {
+        rethrow;
+      }
+      try {
+        final old = await _commentsFromScrape(permalink, sort: sort);
+        if (old.comments.isNotEmpty || old.selfText != null) {
+          return old;
+        }
+      } on RedditException {
+        // Through to www's failure.
+      }
+      rethrow;
+    }
+  }
+
+  /// A thread's comments from the piece of www.reddit.com that loads them.
+  ///
+  /// It names the post rather than the page, so the community and ids come
+  /// out of [permalink]; a comment's own permalink gets that comment and its
+  /// replies. It carries no post, so the post's text and media are whatever
+  /// the listing that led here had.
+  Future<RedditThreadPage> _commentsFromWww(
+    String permalink, {
+    String? sort,
+  }) async {
+    final uri = wwwCommentsUri(permalink, sort: sort);
+    if (uri == null) {
+      throw RedditException(RedditErrorKind.notFound, 'Not a post: $permalink');
+    }
+
+    final response = await _read(uri);
+    if (response.statusCode != 200) {
+      throw _errorFor(response, uri);
+    }
+
+    final thread = await _parses.run(readWwwThread, response.body);
+    if (thread.kind != RedditWwwPageKind.read) {
+      throw _wwwRefusal(thread.kind, uri);
+    }
+
+    return (
+      comments: [
+        ...thread.comments,
+        if (thread.moreAtRoot) _moreStub(permalink, thread.next),
+      ],
+      selfText: null,
+      postUrl: null,
+      postImages: const <String>[],
+    );
+  }
+
+  /// The row for comments held back at a thread's top: it loads them where
+  /// Reddit said they are served, or opens the post on Reddit when it did not.
+  static RedditComment _moreStub(
+    String permalink,
+    RedditCommentsCursor? next,
+  ) => RedditComment(
+    id: 'more-$permalink-${next?.cursor ?? ''}',
+    body: '',
+    permalink: permalink,
+    moreCount: -1,
+    nextPage: next,
+  );
+
+  /// The next comments at the top of a thread, from where www.reddit.com's
+  /// own page asks for them as the reader scrolls: by POST, with the cursor
+  /// the page carried and the CSRF token the site set as a cookie, as the
+  /// page sends them. They come with a stub for the rest when Reddit holds
+  /// back more still.
+  ///
+  /// Throws when Reddit will not serve them; the thread then sends the reader
+  /// to the post on Reddit, as it did before.
+  Future<List<RedditComment>> fetchMoreComments(RedditComment stub) async {
+    final next = stub.nextPage;
+    final permalink = stub.permalink;
+    if (next == null || permalink == null) {
+      throw const RedditException(
+        RedditErrorKind.notFound,
+        'Reddit named no further comments',
+      );
+    }
+
+    final uri = Uri.parse('$_publicBase${next.path}');
+    final response = await _submit(uri, {
+      'cursor': next.cursor,
+      'csrf_token': ?_cookies['csrf_token'],
+    });
+    if (response.statusCode != 200) {
+      throw _errorFor(response, uri);
+    }
+
+    final page = await _parses.run(readWwwMoreComments, response.body);
+    if (page.comments.isEmpty) {
+      throw _wwwRefusal(page.kind, uri);
+    }
+    return [
+      ...page.comments,
+      if (page.moreAtRoot) _moreStub(permalink, page.next),
+    ];
+  }
+
+  /// Where www.reddit.com serves [permalink]'s comments, or null when it is not
+  /// a post's or a comment's page.
+  ///
+  /// Both spellings of a comment's page are read: old.reddit's
+  /// `…/comments/<post>/<slug>/<comment>/` and www's
+  /// `…/comments/<post>/comment/<comment>/`. A profile post lives in the
+  /// account's own community, `u_<name>`.
+  static Uri? wwwCommentsUri(String permalink, {String? sort}) {
+    final page = _postPageOf(permalink);
+    if (page == null) {
+      return null;
+    }
+
+    final path = [
+      'comments/r/${page.community}/t3_${page.post}',
+      if (page.comment != null) 't1_${page.comment}',
+    ].join('/');
+    return Uri.parse('$_wwwPieces/$path').replace(
+      queryParameters: sort == null || sort.isEmpty
+          ? null
+          : {'sort': sort.toUpperCase()},
+    );
+  }
+
+  /// Where Reddit serves the embed card of [permalink]'s post, or null when it
+  /// is not a post's or a comment's page. A comment's page embeds the comment,
+  /// so its post's page is asked for instead.
+  static Uri? wwwEmbedUri(String permalink) {
+    final page = _postPageOf(permalink);
+    if (page == null) {
+      return null;
+    }
+    return Uri.parse(
+      '$_embedBase/${page.owner}/comments/${page.post}/',
+    ).replace(queryParameters: {'embed': 'true'});
+  }
+
+  /// The parts of a post's or comment's page: `r/FlutterDev` or `user/spez`,
+  /// the community www files it under (`u_spez` for a profile post), and the
+  /// post's and comment's ids. Null for anything else, or for a part that is
+  /// not what Reddit's own would look like.
+  static ({String owner, String community, String post, String? comment})?
+  _postPageOf(String permalink) {
+    final segments = (Uri.tryParse(permalink)?.pathSegments ?? const [])
+        .where((s) => s.isNotEmpty)
+        .toList(growable: false);
+    final at = segments.indexOf('comments');
+    if (at < 2 || at + 1 >= segments.length) {
+      return null;
+    }
+
+    final kind = segments[at - 2] == 'r' ? 'r' : 'user';
+    final name = segments[at - 1];
+    final community = kind == 'r' ? name : 'u_$name';
+    final rest = segments.sublist(at + 2);
+    final comment = rest.length >= 2 ? rest[1] : null;
+    final post = segments[at + 1];
+    if (!_wwwName.hasMatch(community) ||
+        ![post, ?comment].every(_wwwId.hasMatch)) {
+      return null;
+    }
+    return (
+      owner: '$kind/$name',
+      community: community,
+      post: post,
+      comment: comment,
+    );
+  }
+
+  static final _wwwName = RegExp(r'^[A-Za-z0-9_]{2,24}$');
+  static final _wwwId = RegExp(r'^[a-z0-9]{1,16}$');
 
   /// The pictures of a gallery post, read from the post's own public JSON.
   ///
@@ -1547,14 +2056,7 @@ class RedditClient {
     }
   }
 
-  Future<
-    ({
-      List<RedditComment> comments,
-      String? selfText,
-      String? postUrl,
-      List<String> postImages,
-    })
-  >
+  Future<RedditThreadPage>
   _commentsFromOauth(
     String permalink, {
     String? sort,
@@ -1574,14 +2076,7 @@ class RedditClient {
     return _threadFromJson(decoded, postPermalink: permalink);
   }
 
-  Future<
-    ({
-      List<RedditComment> comments,
-      String? selfText,
-      String? postUrl,
-      List<String> postImages,
-    })
-  >
+  Future<RedditThreadPage>
   _commentsFromScrape(String permalink, {String? sort}) async {
     final path = permalink.startsWith('/') ? permalink : '/$permalink';
     var uri = Uri.parse('$_publicFallbackBase$path').replace(
@@ -1632,14 +2127,7 @@ class RedditClient {
     }
   }
 
-  Future<
-    ({
-      List<RedditComment> comments,
-      String? selfText,
-      String? postUrl,
-      List<String> postImages,
-    })
-  >
+  Future<RedditThreadPage>
   _commentsFromPublicJson(String permalink, {String? sort}) async {
     final query = {
       'raw_json': '1',
@@ -1667,13 +2155,10 @@ class RedditClient {
   }
 
   /// Reddit's comments endpoint is `[postListing, commentsListing]`.
-  ({
-    List<RedditComment> comments,
-    String? selfText,
-    String? postUrl,
-    List<String> postImages,
-  })
-  _threadFromJson(List<dynamic> decoded, {String? postPermalink}) {
+  RedditThreadPage _threadFromJson(
+    List<dynamic> decoded, {
+    String? postPermalink,
+  }) {
     final root = Json(decoded);
     final postRaw = root[0]['data']['children'][0].raw;
     final post = postRaw is Map
@@ -1745,6 +2230,29 @@ class RedditClient {
       throw _errorFor(response, uri);
     }
 
+    return response;
+  }
+
+  /// One form POST to a public host, the way the website's own page sends one:
+  /// from its origin, with the cookies the site has set.
+  Future<http.Response> _submit(Uri uri, Map<String, String> form) async {
+    final response = await _send(
+      () => httpClient.post(
+        uri,
+        headers: {
+          'User-Agent': publicUserAgent,
+          'Accept': 'text/html,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Origin': _publicBase,
+          if (_cookies.isNotEmpty)
+            'Cookie': _cookies.entries
+                .map((e) => '${e.key}=${e.value}')
+                .join('; '),
+        },
+        body: form,
+      ),
+    );
+    _rememberCookies(response, null);
     return response;
   }
 
@@ -1837,6 +2345,47 @@ class RedditClient {
       429 => RedditException(RedditErrorKind.rateLimited, detail),
       _ => RedditException(RedditErrorKind.badResponse, detail),
     };
+  }
+}
+
+/// Hands pages to background isolates a couple at a time.
+///
+/// A refresh asks for every followed community at once, and each page parses
+/// into a document of its own; two at a time keeps that from holding a dozen
+/// such documents in memory together. Each page is cut to what a reader needs
+/// before it is handed over, which halves what is copied.
+class _BackgroundParses {
+  static const _slots = 2;
+
+  int _running = 0;
+  final _waiting = Queue<Completer<void>>();
+
+  Future<R> run<R>(R Function(String body) parse, String body) async {
+    await _take();
+    try {
+      return await parseInBackground(parse, wwwStrip(body));
+    } finally {
+      _give();
+    }
+  }
+
+  Future<void> _take() async {
+    if (_running < _slots) {
+      _running++;
+      return;
+    }
+    final turn = Completer<void>();
+    _waiting.add(turn);
+    await turn.future;
+  }
+
+  /// A finished parse hands its slot straight to the next one waiting.
+  void _give() {
+    if (_waiting.isNotEmpty) {
+      _waiting.removeFirst().complete();
+    } else {
+      _running--;
+    }
   }
 }
 

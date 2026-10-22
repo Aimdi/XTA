@@ -144,9 +144,15 @@ void main() {
         searchSort: 'comments',
       );
 
-      expect(asked.first.path, '/r/dartlang/search.json');
+      // www.reddit.com's search first, in its own spelling of the scope; it
+      // could not read the JSON this fake answers with, so the JSON was next.
+      expect(asked.first.path, '/svc/shreddit/r/dartlang/search/');
       expect(asked.first.queryParameters['sort'], 'comments');
-      expect(asked.first.queryParameters['restrict_sr'], 'on');
+      expect(asked.first.queryParameters['type'], 'posts');
+      expect(asked.first.queryParameters['restrict_sr'], '1');
+      expect(asked[1].path, '/r/dartlang/search.json');
+      expect(asked[1].queryParameters['sort'], 'comments');
+      expect(asked[1].queryParameters['restrict_sr'], 'on');
       expect(posts.single.title, 'Flutter');
     });
 

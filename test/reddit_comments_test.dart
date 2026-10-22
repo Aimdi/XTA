@@ -64,6 +64,14 @@ Map<String, dynamic> _listing(List<Map<String, dynamic>> children) => {
 
 void main() {
   group('JSON comment tree', () {
+    test("an author's paragraphs survive", () {
+      final comment = commentsFromListing(
+        Json(_listing([_t1(id: 'a', body: 'One.\n\nTwo,\nthree.')])),
+      ).single;
+
+      expect(comment.body, 'One.\n\nTwo,\nthree.');
+    });
+
     test('parses a nested t1 tree', () {
       final listing = _listing([
         _t1(
@@ -283,6 +291,24 @@ void main() {
       expect(
         parseComments(_page(_comment('a', 'someone', link))),
         hasLength(1),
+      );
+    });
+
+    test('paragraphs, line breaks, lists and code keep their shape', () {
+      const body =
+          'First.</p>\n\n<p>Second,<br>\nwith a break.</p>\n'
+          '<ol>\n<li>one</li>\n<li>two</li>\n</ol>\n'
+          '<ul><li>a point</li></ul>\n'
+          '<pre><code>if (x) {\n  y();\n}\n</code></pre>\n<p>Last.';
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
+
+      expect(
+        comment.body,
+        'First.\n\nSecond,\nwith a break.\n\n1. one\n2. two\n\n• a point'
+        '\n\nif\u00a0(x)\u00a0{\n\u00a0\u00a0y();\n}\n\nLast.',
+        reason: "code keeps its spaces, as ones the text's folding leaves",
       );
     });
 

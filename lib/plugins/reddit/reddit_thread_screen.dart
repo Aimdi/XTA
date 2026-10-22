@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -47,6 +49,13 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
   String? _sort;
   final _collapsed = <String>{};
 
+  /// Stubs whose held-back comments are on their way.
+  final _loadingMore = <String>{};
+
+  /// Reddit refused to hand over held-back comments once; the rest of them
+  /// are read on Reddit itself.
+  bool _moreRefused = false;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +69,9 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       final client = context.read<RedditClient>();
       final prefs = PrefService.of(context, listen: false);
       final session = await RedditReadSession.resolve(prefs: prefs);
+      if (_post.arrivedBare) {
+        unawaited(_fillPost(session, client));
+      }
       final result = await session.fetchComments(
         client,
         _post.permalink,
@@ -77,6 +89,47 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       }
     }
   }
+
+  /// The post as Reddit serves it on its own, for one that arrived with
+  /// nothing but a title. The comments do not wait for it, and a post Reddit
+  /// will not serve that way stays as it arrived.
+  Future<void> _fillPost(RedditReadSession session, RedditClient client) async {
+    final fetched = await session.fetchPost(client, _post.permalink);
+    if (!mounted || fetched == null) {
+      return;
+    }
+    setState(() {
+      _post = _post.filledFrom(fetched);
+      _selfText ??= fetched.selfText;
+    });
+  }
+
+  /// The comments a root-level [stub] held back, in its place.
+  Future<void> _loadMore(RedditComment stub) async {
+    setState(() => _loadingMore.add(stub.id));
+    try {
+      final more = await context.read<RedditClient>().fetchMoreComments(stub);
+      if (!mounted) return;
+      setState(() => _comments = _replacing(stub, flattenComments(more)));
+    } on RedditException {
+      if (!mounted) return;
+      setState(() => _moreRefused = true);
+      await openUri(context, redditPostUrl(_post));
+    } finally {
+      if (mounted) {
+        setState(() => _loadingMore.remove(stub.id));
+      }
+    }
+  }
+
+  /// The thread with [stub]'s row swapped for [rows].
+  List<FlatComment>? _replacing(RedditComment stub, List<FlatComment> rows) =>
+      _comments == null
+      ? null
+      : [
+          for (final entry in _comments!)
+            if (entry.comment.id == stub.id) ...rows else entry,
+        ];
 
   /// Fills in what the listing never carried.
   ///
@@ -382,15 +435,30 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
         ? ' · ${comment.moreCount}'
         : '';
 
+    final loading = _loadingMore.contains(comment.id);
+
     return CommentBubble(
       depth: entry.depth,
       outlined: true,
       shrinkWrap: true,
-      onTap: _stubTap(context, comment.permalink),
+      onTap: loading ? null : _stubTap(context, comment),
       builder: (context, colors) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.subdirectory_arrow_right, size: 16, color: colors.accent),
+          if (loading)
+            SizedBox.square(
+              dimension: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: colors.accent,
+              ),
+            )
+          else
+            Icon(
+              Icons.subdirectory_arrow_right,
+              size: 16,
+              color: colors.accent,
+            ),
           const SizedBox(width: 6),
           Flexible(
             child: Text(
@@ -406,14 +474,18 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     );
   }
 
-  /// The subtree's page has the held-back replies; the post's own page is
-  /// this one, so a root-level stub can only continue on Reddit itself.
-  VoidCallback? _stubTap(BuildContext context, String? permalink) {
+  /// The subtree's page has the held-back replies. A root-level stub loads
+  /// the next comments into this thread when Reddit said where they are, and
+  /// otherwise — or once Reddit has refused — continues on Reddit itself.
+  VoidCallback? _stubTap(BuildContext context, RedditComment stub) {
+    final permalink = stub.permalink;
     if (permalink == null) {
       return null;
     }
     if (_trimSlash(permalink) == _trimSlash(_post.permalink)) {
-      return () => openUri(context, redditPostUrl(_post));
+      return stub.nextPage == null || _moreRefused
+          ? () => openUri(context, redditPostUrl(_post))
+          : () => _loadMore(stub);
     }
     return () => Navigator.push(
       context,

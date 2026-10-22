@@ -576,6 +576,7 @@ class TweetFooterBar extends StatelessWidget {
                   isLiked: isLiked,
                   label: label(likeLabel),
                   color: isLiked ? tweetReadableAccentColor(context) : tint,
+                  activeColor: tweetReadableAccentColor(context),
                   tooltip: isLiked ? L10n.of(context).unlike_on_this_device : L10n.of(context).like_on_this_device,
                   onPressed: tweetId == null
                       ? null

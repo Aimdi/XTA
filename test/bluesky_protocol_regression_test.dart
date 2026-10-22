@@ -201,6 +201,7 @@ void main() {
     test('post search carries encoded author, tags, order and cursor parameters', () async {
       final requests = <Uri>[];
       final client = BlueskyClient(
+        baseUrl: 'https://appview.example',
         httpClient: MockClient((request) async {
           requests.add(request.url);
           return _json({
@@ -218,6 +219,7 @@ void main() {
         tags: ['#art', '  design  ', '#art', '', '#'],
       );
       final query = requests.single.queryParametersAll;
+      expect(requests.single.host, 'appview.example');
       expect(requests.single.path, '/xrpc/app.bsky.feed.searchPosts');
       expect(query['q'], ['art & design']);
       expect(query['limit'], ['100']);
@@ -230,6 +232,46 @@ void main() {
       expect(requests.last.queryParameters['sort'], 'latest');
       expect(requests.last.queryParameters['limit'], '1');
       expect(requests.last.queryParameters.containsKey('author'), isFalse);
+    });
+
+    test("post search from Bluesky's AppView goes to its API and pages by time, not by cursor", () async {
+      final requests = <Uri>[];
+      final client = BlueskyClient(
+        httpClient: MockClient((request) async {
+          requests.add(request.url);
+          return _json({
+            'posts': [
+              {..._view('newer'), 'indexedAt': '2026-10-22T19:58:09.440Z'},
+              {..._view('older'), 'indexedAt': '2026-10-22T19:57:01.002Z'},
+              _view('unindexed'),
+            ],
+            'cursor': 'refused-by-the-api',
+          });
+        }),
+      );
+
+      final first = await client.searchPosts('bluesky', sort: 'top');
+      expect(requests.single.host, 'api.bsky.app', reason: 'public.api.bsky.app answers searchPosts with 403');
+      expect(requests.single.queryParameters.containsKey('cursor'), isFalse);
+      expect(first.cursor, 'until:2026-09-20T10:00:00.000Z', reason: 'the oldest post, by createdAt where unindexed');
+
+      await client.searchPosts('bluesky', sort: 'top', cursor: first.cursor);
+      expect(requests.last.host, 'api.bsky.app');
+      expect(requests.last.queryParameters['until'], '2026-09-20T10:00:00.000Z');
+      expect(requests.last.queryParameters.containsKey('cursor'), isFalse);
+      expect(requests.last.queryParameters['sort'], 'top');
+    });
+
+    test('post search stops where the API has no further page', () async {
+      final client = BlueskyClient(
+        baseUrl: 'api.bsky.app',
+        httpClient: MockClient(
+          (_) async => _json({
+            'posts': [_view('last')],
+          }),
+        ),
+      );
+      expect((await client.searchPosts('bluesky')).cursor, isNull);
     });
 
     test('actor search carries cursor and reads the next public page', () async {

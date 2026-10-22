@@ -2,7 +2,6 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
-import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
 
 /// Credentials every Reddit listing and thread read should share.
@@ -86,18 +85,21 @@ class RedditReadSession {
     preferPublic: preferPublic,
   );
 
-  Future<
-    ({
-      List<RedditComment> comments,
-      String? selfText,
-      String? postUrl,
-      List<String> postImages,
-    })
-  >
-  fetchComments(RedditClient client, String permalink, {String? sort}) =>
-      client.fetchComments(
+  Future<RedditThreadPage> fetchComments(
+    RedditClient client,
+    String permalink, {
+    String? sort,
+  }) => client.fetchComments(
+    permalink,
+    sort: sort,
+    clientId: clientId,
+    userToken: userToken,
+    preferPublic: preferPublic,
+  );
+
+  Future<RedditPost?> fetchPost(RedditClient client, String permalink) =>
+      client.fetchPost(
         permalink,
-        sort: sort,
         clientId: clientId,
         userToken: userToken,
         preferPublic: preferPublic,

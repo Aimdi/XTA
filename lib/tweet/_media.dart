@@ -45,6 +45,9 @@ class _TweetMediaItem extends StatefulWidget {
   /// rest of them are right there.
   final bool showCounter;
 
+  /// Shared with the viewer page this photo opens, so it flies between them.
+  final String? heroTag;
+
   const _TweetMediaItem({
     required this.index,
     required this.mediaIndex,
@@ -55,6 +58,7 @@ class _TweetMediaItem extends StatefulWidget {
     this.tweet,
     this.fit = BoxFit.contain,
     this.showCounter = true,
+    this.heroTag,
   });
 
   @override
@@ -122,6 +126,7 @@ class _TweetMediaItemState extends State<_TweetMediaItem> {
         tweetId: widget.tweetId,
         mediaIndex: widget.mediaIndex,
         fit: widget.fit,
+        heroTag: widget.heroTag,
       );
     } else {
       final label = L10n.of(
@@ -322,6 +327,10 @@ class TweetMedia extends StatefulWidget {
 class _TweetMediaState extends State<TweetMedia> {
   final ScrollController _controller = ScrollController();
 
+  /// What this grid's photos are called to the viewer they open: its own, so
+  /// the same post shown twice on a screen does not muddle their flights.
+  late final String _heroBase = 'tweet-photo-${_heroBases++}';
+
   /// The row is only moved to [TweetMedia.initialMediaIndex] once. Doing it on
   /// every layout would drag the row back under the reader's finger.
   bool _placed = false;
@@ -449,17 +458,7 @@ class _TweetMediaState extends State<TweetMedia> {
     final isVideo = item.type == 'video';
 
     return GestureDetector(
-      onTap: isVideo
-          ? null
-          : () => pushTweetMediaViewer(
-              context,
-              TweetMediaView(
-                initialIndex: index,
-                media: widget.media,
-                username: widget.username,
-                tweetId: widget.tweetId,
-              ),
-            ),
+      onTap: isVideo ? null : () => _openViewer(context, index),
       onLongPress: item.type == 'photo'
           ? () {
               final alt = widget.tweet?.altTextForMedia(item);
@@ -492,10 +491,53 @@ class _TweetMediaState extends State<TweetMedia> {
         tweet: widget.tweet,
         fit: fit,
         showCounter: showCounter,
+        heroTag: item.type == 'photo'
+            ? tweetPhotoHeroTag(_heroBase, index)
+            : null,
+      ),
+    );
+  }
+
+  /// The viewer at [index], once its photo is ready to land: one already on
+  /// disk decodes within the wait, so the flight ends on the picture rather
+  /// than on the loading box. One that is not opens anyway.
+  Future<void> _openViewer(BuildContext context, int index) async {
+    final uri = widget.media[index].mediaUrlHttps;
+    if (widget.media[index].type == 'photo' && uri != null && uri.isNotEmpty) {
+      final prefs = PrefService.of(context, listen: false);
+      final url = tweetPhotoUrl(uri, tweetViewerPhotoSize(prefs));
+      await precacheImage(
+        ExtendedNetworkImageProvider(url, cache: true),
+        context,
+        onError: (_, _) {},
+      ).timeout(kXtaMotionStandard, onTimeout: () {});
+    }
+    if (!context.mounted) {
+      return;
+    }
+    await pushTweetMediaViewer(
+      context,
+      TweetMediaView(
+        initialIndex: index,
+        media: widget.media,
+        username: widget.username,
+        tweetId: widget.tweetId,
+        heroBase: _heroBase,
       ),
     );
   }
 }
+
+int _heroBases = 0;
+
+/// The hero tag of photo [index] of the grid called [base].
+String tweetPhotoHeroTag(String base, int index) => '$base:$index';
+
+/// The size the fullscreen viewer asks a tweet photo at.
+String? tweetViewerPhotoSize(BasePrefService prefs) => MediaQuality.fromStored(
+  prefs.get<String>(optionImageQuality),
+  fallback: MediaQuality.medium,
+).stored;
 
 /// One page of the fullscreen viewer, carrying the tweet context its media
 /// belongs to — pages can span different tweets in the grid lightbox.
@@ -506,8 +548,9 @@ typedef MediaViewEntry = ({
   int mediaIndex,
 });
 
-/// Opens media on a quiet black fade rather than a generic page slide.
-/// Reduced-motion users get an immediate route swap.
+/// Opens media on a quiet black fade rather than a generic page slide, with a
+/// photo that has a tile flying out of it, as X opens one. Reduced-motion users
+/// get an immediate route swap.
 Future<T?> pushTweetMediaViewer<T>(
   BuildContext context,
   Widget viewer,
@@ -518,7 +561,9 @@ Future<T?> pushTweetMediaViewer<T>(
       opaque: true,
       barrierColor: Colors.black,
       transitionDuration: reduceMotion ? Duration.zero : kXtaMotionStandard,
-      reverseTransitionDuration: reduceMotion ? Duration.zero : kXtaMotionFast,
+      reverseTransitionDuration: reduceMotion
+          ? Duration.zero
+          : kXtaMotionStandard,
       pageBuilder: (_, _, _) => viewer,
       transitionsBuilder: (_, animation, _, child) => FadeTransition(
         opacity: CurvedAnimation(
@@ -542,6 +587,10 @@ class TweetMediaView extends StatefulWidget {
   // can fetch more items.
   final VoidCallback? onNearEnd;
 
+  /// The grid that opened this viewer, whose photo tiles each page's photo
+  /// flies back to.
+  final String? heroBase;
+
   /// Single-tweet viewer: all pages share one username/tweetId.
   TweetMediaView({
     super.key,
@@ -550,6 +599,7 @@ class TweetMediaView extends StatefulWidget {
     required String username,
     this.tweetMedia = true,
     String? tweetId,
+    this.heroBase,
   })
       : entries = [
           for (var i = 0; i < media.length; i++)
@@ -570,7 +620,7 @@ class TweetMediaView extends StatefulWidget {
     this.tweetMedia = true,
     this.onOpenPost,
     this.onNearEnd,
-  });
+  }) : heroBase = null;
 
   @override
   State<TweetMediaView> createState() => _TweetMediaViewState();
@@ -685,10 +735,7 @@ class _TweetMediaViewState extends State<TweetMediaView> {
     if (widget.tweetMedia) {
       // `var size` here used to declare a shadow, so the outer one stayed null
       // and the image-quality setting never reached the photo URL.
-      size = MediaQuality.fromStored(
-        prefs.get<String>(optionImageQuality),
-        fallback: MediaQuality.medium,
-      ).stored;
+      size = tweetViewerPhotoSize(prefs);
     }
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -808,6 +855,7 @@ class _TweetMediaViewState extends State<TweetMediaView> {
 
             // mediaIndex is the index *within the entry's tweet* (it keys the
             // pooled video controllers), not the page index.
+            final base = widget.heroBase;
             return _TweetMediaThing(
               item: entry.media,
               username: entry.username,
@@ -816,6 +864,9 @@ class _TweetMediaViewState extends State<TweetMediaView> {
               inPageView: true,
               tweetId: entry.tweetId,
               mediaIndex: entry.mediaIndex,
+              heroTag: base != null && entry.media.type == 'photo'
+                  ? tweetPhotoHeroTag(base, entry.mediaIndex)
+                  : null,
             );
           },
           controller: _pageController,
@@ -845,6 +896,7 @@ class _TweetMediaThing extends StatelessWidget {
   /// of its own to fill, so it covers; anywhere else the whole picture matters
   /// more than the shape of its box.
   final BoxFit fit;
+  final String? heroTag;
 
   const _TweetMediaThing({
     required this.item,
@@ -855,6 +907,7 @@ class _TweetMediaThing extends StatelessWidget {
     this.tweetId,
     this.mediaIndex = 0,
     this.fit = BoxFit.contain,
+    this.heroTag,
   });
 
   @override
@@ -888,6 +941,12 @@ class _TweetMediaThing extends StatelessWidget {
               fit: fit,
               pullToClose: pullToClose,
               inPageView: inPageView,
+              heroTag: heroTag,
+              aspectRatio: mediaItemAspect(
+                type: item.type,
+                thumbW: item.sizes?.large?.w,
+                thumbH: item.sizes?.large?.h,
+              ),
             );
     } else {
       media = Text(L10n.of(context).unknown);

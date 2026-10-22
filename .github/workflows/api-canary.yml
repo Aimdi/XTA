@@ -30,6 +30,9 @@ jobs:
           - service: Substack
             key: substack
             tests: test/live/substack_custom_domain_smoke_test.dart
+          - service: Other sources
+            key: sources
+            tests: test/live/sources_smoke_test.dart
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2

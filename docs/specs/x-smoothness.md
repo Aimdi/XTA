@@ -17,7 +17,8 @@ Check on a device: Developer options → "Show refresh rate", then scroll a feed
 
 - Pushed screens use a quick fade (200 ms in, 160 ms back) instead of the
   slide-up `FadeUpwardsPageTransitionsBuilder`. The reduce-motion setting still
-  turns transitions off.
+  turns transitions off. Since X's 2026 app they also settle from 1.04× and
+  follow Android's back gesture; see `x-motion-2026.md`.
 - A post opened from a timeline already shows at once from the tapped data.
   While its replies load, the post screen shows grey post placeholders
   (`TweetFeedSkeleton` / `TweetSkeletonTile`) instead of spinners, as

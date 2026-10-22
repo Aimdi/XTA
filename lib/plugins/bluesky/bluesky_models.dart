@@ -366,6 +366,30 @@ class BlueskyAccount {
 /// Official public AppView — read-only xrpc without a Bluesky login.
 const kBlueskyDefaultAppView = 'https://public.api.bsky.app';
 
+/// Where post search goes from the default AppView, which has refused
+/// `searchPosts` to readers without an account since 2026.
+const kBlueskySearchAppView = 'https://api.bsky.app';
+
+const _searchUntilPrefix = 'until:';
+
+/// The next-page cursor for a search answer from [kBlueskySearchAppView],
+/// which refuses its own cursors: the oldest post's time, so the next page
+/// asks for posts before it. Null on the last page.
+String? blueskySearchCursor(Json answer) {
+  if (answer['cursor'].string == null) return null;
+  final times = [
+    for (final post in answer['posts'].list)
+      ?DateTime.tryParse(post['indexedAt'].string ?? post['record']['createdAt'].string ?? ''),
+  ];
+  if (times.isEmpty) return null;
+  final oldest = times.reduce((a, b) => a.isBefore(b) ? a : b);
+  return '$_searchUntilPrefix${oldest.toUtc().toIso8601String()}';
+}
+
+/// The time a [blueskySearchCursor] asks for posts before; null for any other cursor.
+String? blueskySearchUntil(String? cursor) =>
+    cursor != null && cursor.startsWith(_searchUntilPrefix) ? cursor.substring(_searchUntilPrefix.length) : null;
+
 /// Strip trailing slash; require http(s) and a hostname. Null when unusable.
 String? normaliseBlueskyAppView(String input) {
   var value = input.trim();

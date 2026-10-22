@@ -47,6 +47,11 @@ class RedditComment {
   /// stub is empty.
   final int? moreCount;
 
+  /// On a stub for comments held back at a thread's top: where www.reddit.com
+  /// serves the next of them, which loads them into the thread rather than
+  /// sending the reader to Reddit.
+  final RedditCommentsCursor? nextPage;
+
   const RedditComment({
     required this.id,
     required this.body,
@@ -58,6 +63,7 @@ class RedditComment {
     this.replies = const [],
     this.permalink,
     this.moreCount,
+    this.nextPage,
   });
 
   bool get isStub =>
@@ -83,6 +89,10 @@ class RedditComment {
   int get totalCount =>
       1 + replies.fold<int>(0, (sum, reply) => sum + reply.totalCount);
 }
+
+/// The next comments at the top of a thread on www.reddit.com: the piece that
+/// serves them and the cursor it wants.
+typedef RedditCommentsCursor = ({String path, String cursor});
 
 /// What Reddit puts in a comment's place once its text is gone.
 const redditRemovedBodies = {
@@ -142,13 +152,13 @@ RedditComment? _commentFrom(Element thing) {
     orElse: () => Element.tag('div'),
   );
 
-  final markdown = entry.querySelector('.usertext-body .md');
-  final media = _mediaIn(markdown);
-  final body = _bodyOf(markdown, media);
+  final content = redditCommentContent(
+    entry.querySelector('.usertext-body .md'),
+  );
 
   // A comment that is nothing but a picture is still a comment; only one with
   // neither text nor media is a row worth skipping.
-  if (body.isEmpty && media.urls.isEmpty) {
+  if (content.body.isEmpty && content.mediaUrls.isEmpty) {
     return null;
   }
 
@@ -157,11 +167,11 @@ RedditComment? _commentFrom(Element thing) {
     author:
         thing.attributes['data-author'] ??
         entry.querySelector('a.author')?.text.trim(),
-    body: body,
+    body: content.body,
     score: _score(entry),
     createdAt: _createdAt(entry),
     isSubmitter: entry.querySelector('.author.submitter') != null,
-    mediaUrls: media.urls,
+    mediaUrls: content.mediaUrls,
     replies: _repliesOf(thing),
     permalink: thing.attributes['data-permalink'],
   );
@@ -202,6 +212,15 @@ RedditComment? _stubFrom(Element thing, {String? parentPermalink}) {
     );
   }
   return null;
+}
+
+/// The words and pictures of a comment's rendered markdown — the `.md` block
+/// old.reddit.com and www.reddit.com both render a comment into.
+({String body, List<String> mediaUrls}) redditCommentContent(
+  Element? markdown,
+) {
+  final media = _mediaIn(markdown);
+  return (body: _bodyOf(markdown, media), mediaUrls: media.urls);
 }
 
 /// The pictures a comment body carries, and the text that only announced them.
@@ -277,23 +296,96 @@ String _bodyOf(Element? markdown, _CommentMedia media) {
 
 /// Visible words of a comment's `.md` block, with ordinary links kept as
 /// markdown so a later pass can shorten and open them.
+///
+/// The markup's own line breaks are layout, as a browser reads them; the
+/// breaks in the text are the ones its paragraphs, lists and `<br>`s make.
 String _htmlAsMarkdown(Element? markdown) {
   if (markdown == null) {
     return '';
   }
   final out = StringBuffer();
-  _writeHtml(out, markdown);
+  for (final child in markdown.nodes) {
+    _writeHtml(out, child);
+  }
   return out.toString();
 }
 
-void _writeHtml(StringBuffer out, Node node) {
+/// Elements whose content starts a paragraph of its own.
+const _paragraphs = {
+  'p',
+  'blockquote',
+  'pre',
+  'ul',
+  'ol',
+  'table',
+  'hr',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+};
+
+void _writeHtml(StringBuffer out, Node node, {bool preformatted = false}) {
   if (node is Text) {
-    out.write(node.text);
+    // Code keeps its indentation as no-break spaces, which the later folding
+    // of spaces leaves alone.
+    out.write(
+      preformatted
+          ? node.text.replaceAll(' ', '\u00a0')
+          : node.text.replaceAll(_layout, ' '),
+    );
     return;
   }
   if (node is! Element) {
     return;
   }
+  final name = node.localName;
+  if (_paragraphs.contains(name)) {
+    if (out.isNotEmpty) {
+      out.write('\n\n');
+    }
+    _writeChildren(out, node, preformatted: preformatted || name == 'pre');
+    out.write('\n\n');
+    return;
+  }
+  if (name == 'li') {
+    out.write('\n${_bulletOf(node)} ');
+    _writeChildren(out, node, preformatted: preformatted);
+    return;
+  }
+  _writeInline(out, node, preformatted: preformatted);
+}
+
+final _layout = RegExp(r'\s+');
+
+/// `1.` in a numbered list, `•` in any other.
+String _bulletOf(Element item) {
+  final list = item.parent;
+  if (list?.localName != 'ol') {
+    return '•';
+  }
+  final start = int.tryParse(list!.attributes['start'] ?? '') ?? 1;
+  final items = list.children.where((e) => e.localName == 'li').toList();
+  return '${start + items.indexOf(item)}.';
+}
+
+void _writeChildren(
+  StringBuffer out,
+  Element element, {
+  required bool preformatted,
+}) {
+  for (final child in element.nodes) {
+    _writeHtml(out, child, preformatted: preformatted);
+  }
+}
+
+void _writeInline(
+  StringBuffer out,
+  Element node, {
+  required bool preformatted,
+}) {
   if (node.localName == 'a') {
     final href = node.attributes['href'] ?? '';
     final label = node.text.trim();
@@ -310,12 +402,7 @@ void _writeHtml(StringBuffer out, Node node) {
     out.write('\n');
     return;
   }
-  if (node.localName == 'p' && out.isNotEmpty) {
-    out.write('\n');
-  }
-  for (final child in node.nodes) {
-    _writeHtml(out, child);
-  }
+  _writeChildren(out, node, preformatted: preformatted);
 }
 
 /// The comments nested directly inside [thing].

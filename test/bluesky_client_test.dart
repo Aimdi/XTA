@@ -144,7 +144,7 @@ void main() {
         );
 
         final page = await client.searchPosts('bluesky');
-        expect(page.cursor, 'c1');
+        expect(page.cursor, 'until:2026-08-01T10:00:00.000Z');
         expect(page.posts, hasLength(1));
         expect(page.posts.first.text, 'Hello #bluesky');
         expect(page.posts.first.facets.single.kind.name, 'tag');
