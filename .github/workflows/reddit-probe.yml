@@ -1,0 +1,24 @@
+name: reddit-probe
+# Temporary: Reddit's gaps and X's new app, fetched from a runner.
+on:
+  push:
+    branches: [claude/admiring-mayer-bdfg95]
+    paths:
+      - scripts/probe_tmp/**
+      - .github/workflows/reddit-probe.yml
+permissions:
+  contents: read
+jobs:
+  reddit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/probe_tmp/reddit.sh
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y -qq ffmpeg imagemagick >/dev/null || true
+      - run: python3 scripts/probe_tmp/research.py "$RUNNER_TEMP/research"
