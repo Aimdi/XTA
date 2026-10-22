@@ -56,7 +56,13 @@ void main() {
         final people = await client.searchActors('bluesky');
         expect(people, isNotEmpty);
         final posts = await client.searchPosts('bluesky');
-        report('Bluesky: discover ${discover.posts.length}, people ${people.length}, posts ${posts.posts.length}');
+        expect(posts.posts, isNotEmpty);
+        final more = await client.searchPosts('bluesky', cursor: posts.cursor);
+        expect(more.posts, isNotEmpty);
+        report(
+          'Bluesky: discover ${discover.posts.length}, people ${people.length}, '
+          'posts ${posts.posts.length} then ${more.posts.length}',
+        );
       },
       timeout: timeout,
       skip: skip,
@@ -251,7 +257,9 @@ void main() {
     test(
       'a publication, its posts, a post and its comments',
       () async {
-        final publication = await client.resolvePublication('astralcodexten');
+        // Substack's own hosts send datacenter runners a Cloudflare check; a
+        // publication on its own domain is served to them.
+        final publication = await client.resolvePublication('https://www.astralcodexten.com');
         final posts = await client.fetchPosts(publication, limit: 5);
         expect(posts, isNotEmpty);
         final post = await client.fetchPost(publication, posts.first.slug);
@@ -266,6 +274,13 @@ void main() {
     test(
       'search, categories and notes',
       () async {
+        try {
+          await client.fetchCategories();
+        } on SubstackClientException catch (error) {
+          if (!'$error'.contains('HTTP 403')) rethrow;
+          report('Substack: substack.com sent this runner its browser check; search not read');
+          return;
+        }
         final found = await client.searchPublications('technology');
         expect(found, isNotEmpty);
         final categories = await client.fetchCategories();
