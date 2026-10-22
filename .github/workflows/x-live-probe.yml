@@ -1,5 +1,5 @@
 name: X live probe (temporary)
-# run 5
+# run 6
 
 on:
   push:
@@ -42,8 +42,19 @@ jobs:
           assert old_skip in s
           s = s.replace(old_skip, "if (uri != pages.last && const [403, 404].contains(response.statusCode)) continue;")
           open(p, 'w').write(s)
+          p = 'lib/client/x_client_transaction_id/signing_assets.dart'
+          s = open(p).read()
+          anchor = "    for (final uri in linked) {\n      if (signer(uri)) return uri;\n    }\n"
+          assert anchor in s
+          inline = (
+              "    for (final script in page.querySelectorAll('script:not([src])')) {\n"
+              "      linked.addAll(_SigningAssetSearch._references(Uri.https('x.com', '/'), script.text, _SigningAssetSearch._literal));\n"
+              "    }\n"
+          )
+          s = s.replace(anchor, inline + anchor)
+          open(p, 'w').write(s)
           PATCH
-          git diff --stat
+          git diff
       - name: Bootstrap smoke
         continue-on-error: true
         run: flutter test test/live/x_bootstrap_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded

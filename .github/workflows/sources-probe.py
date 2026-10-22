@@ -81,3 +81,44 @@ for date in (today, today - datetime.timedelta(days=1)):
     summary["date"] = date.isoformat()
     summary.pop("snippet", None)
     print(json.dumps(summary))
+
+
+XTA_BOORU = "XTA-Booru/0.1 (by Aimdi; read-only; +https://github.com/Aimdi/XTA)"
+for date in (today, today - datetime.timedelta(days=1)):
+    summary, body = get("https://danbooru.donmai.us/explore/posts/popular.json?" + urlencode({"date": date.isoformat(), "scale": "day", "page": 1, "limit": 40}), XTA_BOORU)
+    try:
+        posts = json.loads(body or "[]")
+        summary["count"] = len(posts)
+        summary["ratings"] = "".join(sorted(p.get("rating", "?") for p in posts))
+    except ValueError:
+        pass
+    summary["date"] = date.isoformat()
+    summary["ua"] = "xta"
+    summary.pop("snippet", None)
+    print(json.dumps(summary))
+
+BSKY = "XTA Bluesky plugin"
+for sort in ("latest", "top"):
+    first, body = get("https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?" + urlencode({"q": "bluesky", "limit": 25, "sort": sort}), BSKY)
+    posts = json.loads(body or "{}").get("posts", []) if first.get("status") == 200 else []
+    first.update({"sort": sort, "posts": len(posts)})
+    first.pop("snippet", None)
+    print(json.dumps(first))
+    if not posts:
+        continue
+    oldest = min(p.get("indexedAt", "") for p in posts)
+    oldest_created = min(p.get("record", {}).get("createdAt", "") for p in posts)
+    for label, until in (("indexedAt", oldest), ("createdAt", oldest_created)):
+        page2, body2 = get("https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?" + urlencode({"q": "bluesky", "limit": 25, "sort": sort, "until": until}), BSKY)
+        posts2 = json.loads(body2 or "{}").get("posts", []) if page2.get("status") == 200 else []
+        uris = {p["uri"] for p in posts}
+        page2.update({"sort": sort, "until_from": label, "until": until, "posts": len(posts2),
+                      "overlap": sum(1 for p in posts2 if p["uri"] in uris),
+                      "newest_page2": max((p.get("indexedAt", "") for p in posts2), default=None)})
+        page2.pop("snippet", None) if page2.get("status") == 200 else None
+        print(json.dumps(page2))
+    for extra in ({"author": "bsky.app"}, {"tag": "bluesky"}, {"lang": "en"}):
+        probe, body3 = get("https://api.bsky.app/xrpc/app.bsky.feed.searchPosts?" + urlencode({"q": "bluesky", "limit": 10, "sort": sort, **extra}), BSKY)
+        probe.update({"sort": sort, "extra": extra})
+        probe.pop("snippet", None) if probe.get("status") == 200 else None
+        print(json.dumps(probe))
