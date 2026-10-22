@@ -1,5 +1,5 @@
 name: X live probe (temporary)
-# run 6
+# run 7
 
 on:
   push:
@@ -55,6 +55,11 @@ jobs:
           open(p, 'w').write(s)
           PATCH
           git diff
+      - name: Signed against unsigned guest requests (CI only)
+        continue-on-error: true
+        run: |
+          cp .github/workflows/x_signed_probe_test.dart.txt test/live/x_signed_probe_test.dart
+          flutter test test/live/x_signed_probe_test.dart --no-pub --reporter expanded
       - name: Bootstrap smoke
         continue-on-error: true
         run: flutter test test/live/x_bootstrap_smoke_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
