@@ -88,7 +88,9 @@ second) and X's launch video:
 
 - `HeartBurst`: plays on liking, never on unliking or with reduced motion,
   calm or zen mode; takes no layout space.
-- Photos: a tile and its viewer page share a hero tag, two tiles of the same
-  post do not, and a video tile has none.
+- Photos: a tile and its viewer page share a hero tag, two grids of the same
+  post do not, and a tile that is not a photo has none; the flight's crop
+  opens from the tile's to the whole photo.
 - Pages: the builder fades and scales; with reduced motion it adds nothing;
-  a back gesture's progress shrinks the page and a cancel restores it.
+  a back gesture's progress shrinks the page, which keeps what it holds, a
+  cancel restores it and a commit pops it.
