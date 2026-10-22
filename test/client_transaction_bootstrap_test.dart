@@ -100,15 +100,15 @@ void main() {
     });
   }
 
-  test('both public routes returning HTTP 403 stops after the single fallback', () async {
+  test('every public route answering HTTP 403 stops at the sign-in page', () async {
     respond((request) => http.Response(_appShell(), 403));
 
     await expectLater(
       ClientTransaction.initialize(),
-      throwsA(isA<HttpException>().having((error) => error.uri?.path, 'failed route', '/search')),
+      throwsA(isA<HttpException>().having((error) => error.uri?.path, 'failed route', '/i/flow/login')),
     );
 
-    expect(requests.map((uri) => uri.path), ['/home', '/search']);
+    expect(requests.map((uri) => uri.path), ['/home', '/search', '/i/flow/login']);
   });
 
   test('an authenticated timeline fetch reaches X with its cookie and a real derived signer', () async {
@@ -190,7 +190,16 @@ void main() {
       );
       expect(result.body, 'account B timeline');
     }
-    expect(bootstrapCookies, [null, null, 'auth_token=account-a', 'auth_token=account-a', 'auth_token=account-b']);
+    // Each failed bootstrap ends on the sign-in page, which never gets a session.
+    expect(bootstrapCookies, [
+      null,
+      null,
+      null,
+      'auth_token=account-a',
+      'auth_token=account-a',
+      null,
+      'auth_token=account-b',
+    ]);
     expect(requests.where((uri) => uri == timeline), hasLength(2));
   });
 
@@ -373,12 +382,12 @@ void main() {
 
       await expectLater(ClientTransaction.initialize(), throwsA(isA<FormatException>()));
 
-      expect(requests.map((uri) => uri.path), ['/home', '/search']);
+      expect(requests.map((uri) => uri.path), ['/home', '/search', '/i/flow/login']);
       expect(requests.every((uri) => uri.host == 'x.com'), isTrue);
     });
   }
 
-  test('neither page containing the signer produces a compatibility error after one fallback', () async {
+  test('no page containing the signer produces a compatibility error after the fallbacks', () async {
     respond((request) => http.Response(_loggedOut, 200));
 
     await expectLater(
@@ -392,7 +401,7 @@ void main() {
       ),
     );
 
-    expect(requests.length, 2);
+    expect(requests.map((uri) => uri.path), ['/home', '/search', '/i/flow/login']);
   });
 
   test('an unsuccessful homepage is not parsed even if its body resembles the app', () async {
