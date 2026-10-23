@@ -13,6 +13,7 @@ import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/_group_list_item.dart';
 import 'package:xta/subscriptions/_groups_edit.dart';
+import 'package:xta/subscriptions/group_board_layout.dart';
 import 'package:xta/subscriptions/widgets/group_tile.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
@@ -115,28 +116,31 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     required Set<String> unreadIds,
   }) {
     final prefs = PrefService.of(context);
-    final columns = (prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2)
-        .clamp(2, 3);
+    final chosen = prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2;
 
     // Large text needs taller tiles, or the title and count would squeeze the
     // avatar mosaic out of the tile entirely.
-    final textScale = MediaQuery.textScalerOf(
-      context,
-    ).scale(1.0).clamp(1.0, 2.0);
-    final baseRatio = columns == 2 ? 168 / 132 : 1.0;
-    final aspectRatio = baseRatio / (1 + (textScale - 1) * 0.55);
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
     final parts = partitionNsfwGroups(groups, (g) => g.nsfw);
 
     SliverGrid gridFor(
       List<SubscriptionGroup> items, {
       required int staggerBase,
+      required double width,
     }) {
+      final columns = groupBoardColumns(chosen: chosen, width: width);
       return SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          childAspectRatio: aspectRatio,
+          childAspectRatio:
+              groupTileBaseRatio(columns) / groupTileTextGrowth(textScale),
+          mainAxisExtent: groupTileExtent(
+            chosen: chosen,
+            columns: columns,
+            textScale: textScale,
+          ),
         ),
         delegate: SliverChildBuilderDelegate((context, index) {
           final group = items[index];
@@ -187,7 +191,13 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
                   ? 24 + MediaQuery.paddingOf(context).bottom
                   : 8,
             ),
-            sliver: gridFor(parts.safe, staggerBase: 0),
+            sliver: SliverLayoutBuilder(
+              builder: (context, constraints) => gridFor(
+                parts.safe,
+                staggerBase: 0,
+                width: constraints.crossAxisExtent,
+              ),
+            ),
           ),
         if (parts.nsfw.isNotEmpty) ...[
           SliverToBoxAdapter(child: _CensoredSectionHeader()),
@@ -198,7 +208,13 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
               12,
               24 + MediaQuery.paddingOf(context).bottom,
             ),
-            sliver: gridFor(parts.nsfw, staggerBase: parts.safe.length),
+            sliver: SliverLayoutBuilder(
+              builder: (context, constraints) => gridFor(
+                parts.nsfw,
+                staggerBase: parts.safe.length,
+                width: constraints.crossAxisExtent,
+              ),
+            ),
           ),
         ],
       ],
