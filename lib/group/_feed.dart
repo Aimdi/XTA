@@ -2,6 +2,7 @@ import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/ui/stepped_scroll.dart';
 import 'package:xta/ui/loading_hairline.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/group/batch_read_store.dart';
@@ -474,7 +475,15 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         return;
       }
       final estimated = (position.maxScrollExtent * index / itemCount).clamp(0.0, position.maxScrollExtent);
-      position.jumpTo(estimated);
+      steppedJumpTo(
+        position,
+        estimated,
+        cancelled: () => !mounted || _userHasScrolled,
+        onArrived: () {
+          final divider = _caughtUpKey.currentContext;
+          if (divider != null) Scrollable.ensureVisible(divider, alignment: 0.02);
+        },
+      );
     });
   }
 
@@ -501,7 +510,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         }
         return;
       }
-      position.jumpTo(offset.clamp(0.0, position.maxScrollExtent));
+      steppedJumpTo(position, offset, cancelled: () => !mounted || _userHasScrolled);
     });
   }
 
