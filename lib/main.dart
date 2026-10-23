@@ -133,7 +133,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/utils/shared_links.dart';
-import 'package:secure_content/secure_content.dart';
+import 'package:xta/ui/android_secure_window.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:app_links/app_links.dart';
@@ -1401,10 +1401,9 @@ class _FritterAppState extends State<FritterApp> {
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
           return Portal(
-            child: SecureWidget(
-              // Android's FLAG_SECURE; a desktop window cannot refuse a screenshot.
-              isSecure: _isSecure && !isDesktop,
-              builder: (BuildContext context, a, b) => MaterialApp(
+            child: AndroidSecureWindow(
+              isSecure: _isSecure,
+              builder: (BuildContext context) => MaterialApp(
                 navigatorKey: _navigatorKey,
                 navigatorObservers: [readRouteObserver],
                 localizationsDelegates: xtaLocalizationsDelegates,
