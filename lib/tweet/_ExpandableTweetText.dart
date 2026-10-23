@@ -83,9 +83,12 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
       painter.setPlaceholderDimensions(
         List.filled(
           placeholders,
+          // The span's own alignment wins inside WidgetSpan.build, and the
+          // entity chips align to the baseline, which must then be named.
           PlaceholderDimensions(
             size: Size.square(side),
             alignment: PlaceholderAlignment.middle,
+            baseline: TextBaseline.alphabetic,
           ),
         ),
       );
