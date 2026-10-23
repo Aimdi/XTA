@@ -1,4 +1,5 @@
 import 'package:xta/profile/profile.dart';
+import 'package:xta/ui/stepped_scroll.dart';
 import 'package:xta/tweet/progressive_feed_store.dart';
 import 'package:xta/tweet/progressive_feed_view.dart';
 import 'package:xta/plugins/plugin.dart';
@@ -274,7 +275,15 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
         return;
       }
       final estimated = (position.maxScrollExtent * index / itemCount).clamp(0.0, position.maxScrollExtent);
-      position.jumpTo(estimated);
+      steppedJumpTo(
+        position,
+        estimated,
+        cancelled: () => !mounted || _userHasScrolled,
+        onArrived: () {
+          final divider = _caughtUpKey.currentContext;
+          if (divider != null) Scrollable.ensureVisible(divider, alignment: 0.02);
+        },
+      );
     });
   }
 
