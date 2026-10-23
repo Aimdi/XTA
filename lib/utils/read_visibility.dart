@@ -3,6 +3,13 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 final readRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 
+/// [AppLifecycleState.inactive] leaves the feed on screen: another window has
+/// the focus on the desktop, or a split-screen app, the notification shade or
+/// a system dialog does on Android. Pausing there cancelled every batch still
+/// loading, so only a hidden or paused app stops reading.
+bool isReaderOnScreen(AppLifecycleState? state) =>
+    state == null || state == AppLifecycleState.resumed || state == AppLifecycleState.inactive;
+
 /// A kept-alive tab can be mounted while another tab, route or app is visible.
 class ReadVisibility extends StatefulWidget {
   final Widget child;
@@ -24,9 +31,7 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _foreground =
-        WidgetsBinding.instance.lifecycleState == null ||
-        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+    _foreground = isReaderOnScreen(WidgetsBinding.instance.lifecycleState);
   }
 
   @override
@@ -68,7 +73,7 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _foreground = state == AppLifecycleState.resumed;
+    _foreground = isReaderOnScreen(state);
     // A paused app may never render the post-frame callback used by _notify.
     if (!_foreground && _visible != false) {
       _visible = false;

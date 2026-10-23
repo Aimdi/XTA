@@ -244,6 +244,33 @@ void main() {
     expect(events.last, 'visible');
     await tester.pumpWidget(const SizedBox.shrink());
   });
+  testWidgets('losing focus keeps group reads going, hiding the app pauses them', (tester) async {
+    final events = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ReadVisibility(
+            onHidden: () => events.add('hidden'),
+            onVisible: () => events.add('visible'),
+            child: const SizedBox.expand(child: Text('Group')),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(events.last, 'visible');
+    events.clear();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pumpAndSettle();
+    expect(events, isEmpty);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    await tester.pumpAndSettle();
+    expect(events, ['hidden']);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(events, ['hidden', 'visible']);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 }
 
 Future<void> _exhaustRetries(WidgetTester tester) async {

@@ -201,6 +201,34 @@ void main() {
       );
     });
 
+    test('a 401 from a signed-out account moves on to another account', () async {
+      await seedAccounts(2);
+      final attempted = <String>[];
+      xHttpClient = MockClient((request) async {
+        attempted.add(request.headers['x-test-account']!);
+        return attempted.length == 1
+            ? http.Response('{"errors":[{"message":"Could not authenticate you","code":32}]}', 401)
+            : http.Response('ok', 200);
+      });
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      final byId = {for (final row in rows) row['id'] as String: row};
+
+      expect(attempted.toSet(), hasLength(2));
+      expect(byId[attempted.first]!['consecutive_not_found'], 1);
+      expect(byId[attempted.last]!['consecutive_not_found'], 0);
+    });
+
+    test('all-account 401s surface the 401 without poisoning accounts', () async {
+      await seedAccounts(2);
+      xHttpClient = MockClient((_) async => http.Response('', 401));
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 401);
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      expect(rows.map((row) => row['consecutive_not_found']), everyElement(0));
+    });
+
     test('all-account 404s surface endpoint refusal without poisoning accounts', () async {
       await seedAccounts(2);
       xHttpClient = MockClient((_) async => http.Response('', 404));

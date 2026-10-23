@@ -83,10 +83,10 @@ class QuackerTwitterClient extends TwitterClient {
 
   /// Tries accounts (healthy ones first, then flagged ones as a fallback),
   /// retrying on another account when one returns a 429 (rate-limited for that
-  /// endpoint, tracked in memory) or a 404 (retried once, then surfaced). Rate
-  /// limits are per-endpoint, so a 429 on one endpoint never blocks another.
+  /// endpoint, tracked in memory) or a 404 / 401 (retried once, then surfaced).
+  /// Rate limits are per-endpoint, so a 429 on one endpoint never blocks another.
   ///
-  /// A 404 is only blamed on the account when another account served the same
+  /// A 404 or 401 is only blamed on the account when another account served the same
   /// endpoint: X also answers 404 for a rotated query id and for a stale
   /// `x-client-transaction-id`, neither of which is the account's fault. When
   /// every account is refused, nothing is flagged and
@@ -126,9 +126,9 @@ class QuackerTwitterClient extends TwitterClient {
       inFlight: (a) => AccountLoad.of(a.id, endpoint),
     );
     final tried = <String>{};
-    // Accounts that 404'd on this endpoint. Held rather than flagged straight
-    // away: whether they are actually broken only becomes clear if some other
-    // account succeeds here.
+    // Accounts that 404'd or 401'd on this endpoint. Held rather than flagged
+    // straight away: whether they are actually broken only becomes clear if
+    // some other account succeeds here.
     final refused = <String>[];
     http.Response? lastError;
 
@@ -172,10 +172,12 @@ class QuackerTwitterClient extends TwitterClient {
         RateLimitTracker.flag(account.id, endpoint, _resetFromHeaders(response));
         continue;
       }
-      if (code == 404) {
+      // A 401 is X's "Could not authenticate you": that account's session has
+      // ended, and surfacing it failed every request the account was picked for.
+      if (code == 404 || code == 401) {
         refused.add(account.id);
         if (refused.length >= 2) {
-          break; // tried enough accounts; surface the 404 outcome below
+          break; // tried enough accounts; surface the refusal below
         }
         continue;
       }
