@@ -172,4 +172,17 @@ void main() {
     );
     expect(ReadActivityLog.shared.snapshot().join(), isNot(contains('secret-token-and-content')));
   });
+
+  test('a failed read says why by category, and a cancelled or slow one says nothing more', () async {
+    final reads = ReadRequestScope();
+    await expectLater(
+      reads.start(() async => throw RateLimitedException(), timeout: const Duration(seconds: 1)),
+      throwsA(isA<RateLimitedException>()),
+    );
+    expect(ReadActivityLog.shared.snapshot().last, contains(' page failed (rateLimited) '));
+
+    final log = ReadActivityLog(capacity: 2);
+    log.begin(ReadOperation.groupSearch).finish(ReadOutcome.cancelled);
+    expect(log.snapshot().single, isNot(contains('(')));
+  });
 }

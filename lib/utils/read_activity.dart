@@ -7,15 +7,21 @@ class ReadActivity {
   final DateTime startedAt;
   final Stopwatch _watch = Stopwatch()..start();
   ReadOutcome outcome = ReadOutcome.pending;
+
+  /// Why a failed read failed, as a category: never a message, URL or body.
+  String? failure;
   ReadActivity(this.operation) : startedAt = DateTime.now();
   Duration get elapsed => _watch.elapsed;
-  void finish(ReadOutcome result) {
+  void finish(ReadOutcome result, {String? failure}) {
     if (outcome != ReadOutcome.pending) return;
     outcome = result;
+    this.failure = failure;
     _watch.stop();
   }
 
-  String describe() => '${startedAt.toIso8601String()} ${operation.name} ${outcome.name} ${elapsed.inMilliseconds}ms';
+  String describe() =>
+      '${startedAt.toIso8601String()} ${operation.name} ${outcome.name}'
+      '${failure == null ? '' : ' ($failure)'} ${elapsed.inMilliseconds}ms';
 }
 
 /// Process-local metadata only. No user content or exception text is retained.

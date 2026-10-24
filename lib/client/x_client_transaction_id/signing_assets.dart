@@ -32,6 +32,11 @@ class SigningAssets {
   static bool signer(Uri uri) =>
       trusted(uri) && RegExp(r'^(?:sign\.o|ondemand\.s)[.-][a-zA-Z0-9_-]+\.js$').hasMatch(uri.pathSegments.last);
 
+  /// The module that imports the signer, by the names X has given it since
+  /// September 2026. It sits beside large startup bundles that do not.
+  static bool importer(Uri uri) =>
+      RegExp(r'^(?:startup-dynamic|client-transaction-id-plugin)[.-]').hasMatch(uri.pathSegments.last);
+
   Future<String> read(Uri uri) async {
     if (!trusted(uri) || _requests >= maxAssets) {
       throw const FormatException('X transaction signing asset limit exceeded');
@@ -71,6 +76,7 @@ class _SigningAssetSearch {
   final _queue = <({Uri uri, int depth})>[];
   final _result = Completer<Uri?>();
   int _active = 0;
+  int _activeImporters = 0;
   int _loaded = 0;
   Object? _firstError;
 
@@ -84,7 +90,11 @@ class _SigningAssetSearch {
 
   void _enqueue(Iterable<Uri> uris, int depth) {
     if (depth > SigningAssets.maxImportDepth) return;
-    final next = uris.where(assets._visited.add).take(SigningAssets.maxAssets).toList();
+    final fresh = uris.where((uri) => !assets._visited.contains(uri)).toSet();
+    final next = [
+      ...fresh.where(SigningAssets.importer),
+      ...fresh.where((uri) => !SigningAssets.importer(uri)),
+    ].take(SigningAssets.maxAssets).where(assets._visited.add).toList();
     // Real module imports precede unrelated HTML preloads and Vite lookup tables.
     _queue.insertAll(0, next.map((uri) => (uri: uri, depth: depth)));
   }
@@ -94,11 +104,17 @@ class _SigningAssetSearch {
         _active < SigningAssets.concurrency &&
         assets._requests < SigningAssets.maxAssets - 1 &&
         _queue.isNotEmpty) {
+      final importer = SigningAssets.importer(_queue.first.uri);
+      // While an importer loads, the bundles around it wait: it usually names
+      // the signer, and they are the bulk of what the search downloads.
+      if (_activeImporters > 0 && !importer) break;
       final candidate = _queue.removeAt(0);
       _active++;
+      if (importer) _activeImporters++;
       unawaited(
         _visit(candidate).whenComplete(() {
           _active--;
+          if (importer) _activeImporters--;
           _pump();
         }),
       );

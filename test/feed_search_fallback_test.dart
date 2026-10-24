@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:io' show SocketException;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/feed_search_fallback.dart';
 import 'package:xta/group/future_pool.dart';
+import 'package:xta/utils/read_request_scope.dart';
 
 TweetChain _chain(String id, {TweetWithCard? tweet}) {
   return TweetChain(
@@ -48,10 +51,21 @@ void main() {
       );
     });
 
-    test('other failures keep cached chains instead of fanning out profiles', () {
-      expect(shouldFallbackToUserTimelines(Exception('parse')), isFalse);
+    test('any other failure of the search itself tries the profiles', () {
+      expect(shouldFallbackToUserTimelines(Exception('parse')), isTrue);
+      expect(shouldFallbackToUserTimelines(const FormatException('html')), isTrue);
+      expect(shouldFallbackToUserTimelines(HttpException(http.Response('', 403))), isTrue);
+      expect(shouldFallbackToUserTimelines(HttpException(http.Response('', 401))), isTrue);
+      expect(shouldFallbackToUserTimelines(TimeoutException('slow')), isTrue);
+      expect(shouldFallbackToUserTimelines(NoWorkingAccountException()), isTrue);
+    });
+
+    test('profiles are not asked for when they cannot get through either', () {
+      expect(shouldFallbackToUserTimelines(const SocketException('offline')), isFalse);
+      expect(shouldFallbackToUserTimelines(http.ClientException('reset')), isFalse);
+      expect(shouldFallbackToUserTimelines(TransactionIdUnavailableException(Exception('signer'))), isFalse);
       expect(shouldFallbackToUserTimelines(NoAccountAvailableException()), isFalse);
-      expect(shouldFallbackToUserTimelines(NoWorkingAccountException()), isFalse);
+      expect(shouldFallbackToUserTimelines(const ReadCancelled()), isFalse);
     });
   });
 
@@ -175,10 +189,21 @@ void main() {
       expect(result.error, isA<RateLimitedException>());
     });
 
-    test('does not fan out UserTweets for unrelated failures', () async {
+    test('loads UserTweets when X answers the search with an error', () async {
+      final result = await fetchChunkWithFallback(
+        search: () async => throw HttpException(http.Response('', 403)),
+        userTimelines: () async => [_chain('from-profile')],
+      );
+
+      expect(result.usedFallback, isTrue);
+      expect(result.fallbackChains.single.id, 'from-profile');
+      expect(result.error, isNull);
+    });
+
+    test('does not fan out UserTweets while offline', () async {
       var fallbackCalls = 0;
       final result = await fetchChunkWithFallback(
-        search: () async => throw Exception('json'),
+        search: () async => throw const SocketException('offline'),
         userTimelines: () async {
           fallbackCalls++;
           return [_chain('nope')];
@@ -188,7 +213,7 @@ void main() {
       expect(result.search, isNull);
       expect(result.usedFallback, isFalse);
       expect(result.fallbackChains, isEmpty);
-      expect(result.error, isA<Exception>());
+      expect(result.error, isA<SocketException>());
       expect(fallbackCalls, 0);
     });
   });

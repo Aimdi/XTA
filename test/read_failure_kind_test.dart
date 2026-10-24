@@ -10,6 +10,21 @@ import 'package:xta/ui/read_failure_kind.dart';
 HttpException _http(int status) => HttpException(http.Response('', status));
 
 void main() {
+  group('readFailureLabel', () {
+    test('names the category and the status X answered, never the body', () {
+      expect(readFailureLabel(HttpException(http.Response('secret-body', 403))), 'unavailable 403');
+      expect(readFailureLabel(_http(401)), 'session 401');
+      expect(readFailureLabel(RateLimitedException()), 'rateLimited');
+      expect(readFailureLabel(EndpointRefusedException('SearchTimeline')), 'endpointRefused');
+      expect(readFailureLabel(TransactionIdUnavailableException(Exception('shape'))), 'transactionUnavailable');
+    });
+
+    test('a failure outside the taxonomy names its type, not its message', () {
+      expect(readFailureLabel(const FormatException('<html>secret')), 'unknown FormatException');
+      expect(readFailureLabel(Exception('secret')), isNot(contains('secret')));
+    });
+  });
+
   group('readFailureKind', () {
     test('separates connectivity and timeout failures', () {
       expect(readFailureKind(const SocketException('offline')), ReadFailureKind.connection);

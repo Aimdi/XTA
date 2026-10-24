@@ -288,6 +288,48 @@ void main() {
     },
   );
 
+  group("x.com's entry imports the signer through startup-dynamic", () {
+    // As recorded from x.com/home on 2026-10-13, -19 and -21: the entry imports
+    // rolldown-runtime, startup, startup-vendor, startup-dynamic and icons, and
+    // only startup-dynamic imports sign.o.
+    const entry = '$_root/entry-client-logged-out-a.js';
+    const others = ['rolldown-runtime-a', 'startup-a', 'startup-vendor-a', 'icon-heart-a'];
+    String entrySource() => [
+      for (final name in [...others.take(3), 'startup-dynamic-a', ...others.skip(3)]) 'import "./assets/$name.js";',
+    ].join();
+
+    void serve(String Function(String name) bundle) => respond((request) {
+      if (request.url.host == 'x.com') {
+        return http.Response(_shell('<script>!function(){var entryHref="$entry";}()</script>'), 200);
+      }
+      final url = request.url.toString();
+      if (url == _signer) return http.Response(_indices, 200);
+      if (url == entry) return http.Response(entrySource(), 200);
+      return http.Response(bundle(request.url.pathSegments.last), 200);
+    });
+
+    test('the importer is fetched first and alone, and the startup bundles are never downloaded', () async {
+      serve((name) => name == 'startup-dynamic-a.js' ? 'import(`../sign.o-a1b2c3.js`)' : 'no signer');
+
+      _valid(await ClientTransaction.initialize());
+      expect(requests.map((request) => request.url.toString()), [
+        'https://x.com/home',
+        entry,
+        '$_root/assets/startup-dynamic-a.js',
+        _signer,
+      ]);
+    });
+
+    test('an importer that no longer names the signer lets the other bundles be searched', () async {
+      serve((name) => name == 'startup-a.js' ? 'import(`../sign.o-a1b2c3.js`)' : 'no signer');
+
+      _valid(await ClientTransaction.initialize());
+      final assets = requests.map((request) => request.url.pathSegments.last).toList();
+      expect(assets.sublist(1, 3), ['entry-client-logged-out-a.js', 'startup-dynamic-a.js']);
+      expect(assets, containsAllInOrder(['startup-a.js', 'sign.o-a1b2c3.js']));
+    });
+  });
+
   test('inline scripts name assets only by constant strings on the static host', () async {
     respond((request) {
       if (request.url.host == 'x.com') {
