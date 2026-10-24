@@ -695,8 +695,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return query;
   }
 
-  /// Profiles still load while SearchTimeline is exhausted. One page per
-  /// member, capped, so a 39-abo group does not open 39 UserTweets at once.
+  /// Profiles still load while SearchTimeline fails. One page per member,
+  /// capped, so a 39-abo group does not open 39 UserTweets at once.
   Future<List<TweetChain>> _fallbackUserTimelines(List<Subscription> users) {
     return fetchUserTimelines(
       users: users,

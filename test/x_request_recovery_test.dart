@@ -250,6 +250,48 @@ void main() {
       );
     });
 
+    test('a 403 from a locked account moves on to another account', () async {
+      await seedAccounts(2);
+      final attempted = <String>[];
+      xHttpClient = MockClient((request) async {
+        attempted.add(request.headers['x-test-account']!);
+        return attempted.length == 1 ? http.Response('', 403) : http.Response('ok', 200);
+      });
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+      expect(attempted.toSet(), hasLength(2));
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      final byId = {for (final row in rows) row['id'] as String: row};
+      expect(byId[attempted.first]!['consecutive_not_found'], 1);
+      expect(byId[attempted.last]!['consecutive_not_found'], 0);
+    });
+
+    test('a 403 from every account surfaces after one more try without flagging anyone', () async {
+      await seedAccounts(3);
+      var calls = 0;
+      xHttpClient = MockClient((_) async {
+        calls++;
+        return http.Response('', 403);
+      });
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 403);
+      expect(calls, 2, reason: 'a refusal is retried on one more account, as a 404 is');
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      expect(rows.map((row) => row['consecutive_not_found']), everyElement(0));
+    });
+
+    test('a 400 is surfaced without trying another account', () async {
+      await seedAccounts(2);
+      var calls = 0;
+      xHttpClient = MockClient((_) async {
+        calls++;
+        return http.Response('', 400);
+      });
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 400);
+      expect(calls, 1);
+    });
+
     test('all-account 429s surface a rate limit instead of an empty feed', () async {
       await seedAccounts(2);
       final reset =

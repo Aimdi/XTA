@@ -87,7 +87,7 @@ void main() {
 
       expect(accepted, 1);
       expect(XEndpoints.queryId(XEndpoints.userOriginalsTimeline), 'qtvmQffnepvr0oPe4A8MqQ');
-      expect(XEndpoints.queryId(XEndpoints.tweetDetail), 'blErEeZkos5TDrWmrCp7cw');
+      expect(XEndpoints.queryId(XEndpoints.tweetDetail), 'wjV7NuWEsHgTBFfW3zYKzQ');
       expect(XEndpoints.queryId(XEndpoints.userMedia), 'BBBBBBBBBBBBBBBBBBBBBB');
     });
 

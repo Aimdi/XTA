@@ -1,10 +1,10 @@
-/// SearchTimeline 429 / endpoint-refused must not blank a group feed.
+/// A failed SearchTimeline must not blank a group feed.
 ///
 /// Group feeds search `from:user1 OR from:user2`. That GraphQL operation is a
 /// separate rate-limit bucket from UserTweets — the endpoint profiles use —
-/// so a group can show the hourglass while opening a member still works.
-/// Falling back per [UserSubscription] keeps posts on screen. Search
-/// subscriptions have no user id, so they cannot use this path.
+/// and X refuses it more readily, so a group can show an error while opening
+/// a member still works. Falling back per [UserSubscription] keeps posts on
+/// screen. Search subscriptions have no user id, so they cannot use this path.
 library;
 
 import 'package:xta/utils/read_request_scope.dart';
@@ -13,15 +13,22 @@ import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/future_pool.dart';
+import 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/utils/request_budget.dart';
 
-/// Max in-flight UserTweets requests while recovering a rate-limited search.
+/// Max in-flight UserTweets requests while recovering a failed search.
 /// Lower than chunk search concurrency: two in-flight chunks of 16 users
 /// would otherwise open 32 profile requests at once.
 const int feedUserTimelineFallbackConcurrency = 2;
 
+/// Profiles are worth asking for whenever the search failed, unless they
+/// cannot get through either: the reader is offline, X's request signing
+/// could not be set up, there is no account (X shows guests no member
+/// timelines), or the read was abandoned.
 bool shouldFallbackToUserTimelines(Object error) =>
-    error is RateLimitedException || error is EndpointRefusedException;
+    error is! ReadCancelled &&
+    error is! NoAccountAvailableException &&
+    !const [ReadFailureKind.connection, ReadFailureKind.transactionUnavailable].contains(readFailureKind(error));
 
 bool shouldSkipGapFill({required bool usedFallback, required bool searchFailed}) => usedFallback || searchFailed;
 
@@ -71,7 +78,7 @@ Object? feedErrorToRethrow(Iterable<Object> errors) {
 }
 
 /// One chunk's SearchTimeline attempt, with UserTweets to stand in when
-/// that search is rate-limited or refused.
+/// that search fails.
 class ChunkNetworkResult {
   final TweetStatus? search;
   final List<TweetChain> fallbackChains;
@@ -86,9 +93,10 @@ class ChunkNetworkResult {
       (search?.chains.isNotEmpty ?? false) || fallbackChains.isNotEmpty;
 }
 
-/// Tries [search], then [userTimelines] when search is rate-limited or
-/// refused. Other failures keep [ChunkNetworkResult.error] so the caller can
-/// retain cached chains instead of taking the whole feed down.
+/// Tries [search], then [userTimelines] when [shouldFallbackToUserTimelines]
+/// allows it. Either way a failure keeps [ChunkNetworkResult.error] when no
+/// posts came back, so the caller can retain cached chains instead of taking
+/// the whole feed down.
 Future<ChunkNetworkResult> fetchChunkWithFallback({
   required Future<TweetStatus> Function() search,
   required Future<List<TweetChain>> Function() userTimelines,

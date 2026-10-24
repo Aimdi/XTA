@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:xta/ui/read_failure_kind.dart';
 import 'read_activity.dart';
 
 /// Cooperative cancellation carried across asynchronous application stages.
@@ -45,22 +46,22 @@ class ReadRequestScope {
     final result = Completer<T>();
     late Timer timer;
     late void Function() cancel;
-    void finish(ReadOutcome outcome) {
+    void finish(ReadOutcome outcome, {String? failure}) {
       timer.cancel();
       _cancel.remove(cancel);
-      activity.finish(outcome);
+      activity.finish(outcome, failure: failure);
     }
 
     void fail(Object error, [StackTrace? stack]) {
       if (result.isCompleted) return;
       work?.cancel();
-      finish(
-        error is ReadCancelled
-            ? ReadOutcome.cancelled
-            : error is TimeoutException
-            ? ReadOutcome.timedOut
-            : ReadOutcome.failed,
-      );
+      if (error is ReadCancelled) {
+        finish(ReadOutcome.cancelled);
+      } else if (error is TimeoutException) {
+        finish(ReadOutcome.timedOut);
+      } else {
+        finish(ReadOutcome.failed, failure: readFailureLabel(error));
+      }
       result.completeError(error, stack);
     }
 
