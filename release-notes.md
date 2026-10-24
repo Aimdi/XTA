@@ -2,10 +2,17 @@
 
 ### Groups load all their posts again
 
-Two things left groups with part of their posts, or none, and a Retry notice.
+Several things left groups and the Following feed with part of their posts, or none, and a Retry notice, while X profiles still loaded.
 
 - **A group keeps loading while you look at something else.** XTA paused a group's reading whenever the app lost focus: on the desktop that was every time another window was in front, and on Android the notification shade, a system dialog or a split-screen app did the same. A group opened beside another window never loaded, and one that was loading lost its batches. Now only a hidden or backgrounded app stops reading.
-- **One signed-out account no longer fails batches.** When an X account's session ends, X answers "Could not authenticate you". XTA showed that as an error for every batch it handed that account, instead of trying another one. It now moves on to another account, and after a few such answers that account goes to the back of the queue. Sign that account in again, or remove it, in Settings → Accounts.
+- **One signed-out or locked account no longer fails batches.** When an X account's session ends, X answers "Could not authenticate you", and it refuses a locked account outright. XTA showed that as an error for every batch it handed that account, instead of trying another one. It now moves on to another account, and after a few such answers that account goes to the back of the queue. Sign that account in again, or remove it, in Settings → Accounts.
+- **A group shows its members' latest posts when search fails.** Groups and the Following feed already fell back to your members' profiles when X rate-limited search. Now they do whenever X refuses or fails a search, so a group no longer goes blank. Offline, they keep what they already have.
+
+### X
+
+- **Signing is lighter.** Before it can sign a request, XTA reads a key from x.com's pages. It now goes straight to the script that loads the signer, as Chrome does: three downloads instead of nine, skipping X's large startup bundles. That matters on a slow connection, where the setup has 12 seconds.
+- **Request ids follow X's 21 October update** for search, threads, the For you timeline, profiles, replies and follows.
+- **Diagnostics say why a read failed.** Settings → Diagnostics → Copy report now lists each failed read with its reason and the code X answered, for example `unavailable 403`, never its content. If X still fails for you, that report shows what X said.
 
 ### Wide windows
 
