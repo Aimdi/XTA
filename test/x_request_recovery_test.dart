@@ -201,6 +201,34 @@ void main() {
       );
     });
 
+    test('a 401 from a signed-out account moves on to another account', () async {
+      await seedAccounts(2);
+      final attempted = <String>[];
+      xHttpClient = MockClient((request) async {
+        attempted.add(request.headers['x-test-account']!);
+        return attempted.length == 1
+            ? http.Response('{"errors":[{"message":"Could not authenticate you","code":32}]}', 401)
+            : http.Response('ok', 200);
+      });
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      final byId = {for (final row in rows) row['id'] as String: row};
+
+      expect(attempted.toSet(), hasLength(2));
+      expect(byId[attempted.first]!['consecutive_not_found'], 1);
+      expect(byId[attempted.last]!['consecutive_not_found'], 0);
+    });
+
+    test('all-account 401s surface the 401 without poisoning accounts', () async {
+      await seedAccounts(2);
+      xHttpClient = MockClient((_) async => http.Response('', 401));
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 401);
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      expect(rows.map((row) => row['consecutive_not_found']), everyElement(0));
+    });
+
     test('all-account 404s surface endpoint refusal without poisoning accounts', () async {
       await seedAccounts(2);
       xHttpClient = MockClient((_) async => http.Response('', 404));
@@ -222,37 +250,35 @@ void main() {
       );
     });
 
-    for (final status in [401, 403]) {
-      test('a $status rotates to another account and is blamed once that account succeeds', () async {
-        await seedAccounts(2);
-        final attempted = <String>[];
-        xHttpClient = MockClient((request) async {
-          attempted.add(request.headers['x-test-account']!);
-          return attempted.length == 1 ? http.Response('', status) : http.Response('ok', 200);
-        });
-
-        expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
-        expect(attempted.toSet(), hasLength(2));
-        final rows = await (await Repository.readOnly()).query(tableAccounts);
-        final byId = {for (final row in rows) row['id'] as String: row};
-        expect(byId[attempted.first]!['consecutive_not_found'], 1);
-        expect(byId[attempted.last]!['consecutive_not_found'], 0);
+    test('a 403 from a locked account moves on to another account', () async {
+      await seedAccounts(2);
+      final attempted = <String>[];
+      xHttpClient = MockClient((request) async {
+        attempted.add(request.headers['x-test-account']!);
+        return attempted.length == 1 ? http.Response('', 403) : http.Response('ok', 200);
       });
 
-      test('a $status from every account surfaces X\'s answer without flagging anyone', () async {
-        await seedAccounts(3);
-        var calls = 0;
-        xHttpClient = MockClient((_) async {
-          calls++;
-          return http.Response('', status);
-        });
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 200);
+      expect(attempted.toSet(), hasLength(2));
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      final byId = {for (final row in rows) row['id'] as String: row};
+      expect(byId[attempted.first]!['consecutive_not_found'], 1);
+      expect(byId[attempted.last]!['consecutive_not_found'], 0);
+    });
 
-        expect((await QuackerTwitterClient.fetch(uri)).statusCode, status);
-        expect(calls, 2, reason: 'a refusal is retried on one more account, as a 404 is');
-        final rows = await (await Repository.readOnly()).query(tableAccounts);
-        expect(rows.map((row) => row['consecutive_not_found']), everyElement(0));
+    test('a 403 from every account surfaces after one more try without flagging anyone', () async {
+      await seedAccounts(3);
+      var calls = 0;
+      xHttpClient = MockClient((_) async {
+        calls++;
+        return http.Response('', 403);
       });
-    }
+
+      expect((await QuackerTwitterClient.fetch(uri)).statusCode, 403);
+      expect(calls, 2, reason: 'a refusal is retried on one more account, as a 404 is');
+      final rows = await (await Repository.readOnly()).query(tableAccounts);
+      expect(rows.map((row) => row['consecutive_not_found']), everyElement(0));
+    });
 
     test('a 400 is surfaced without trying another account', () async {
       await seedAccounts(2);

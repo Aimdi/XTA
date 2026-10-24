@@ -13,6 +13,7 @@ import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/unavailable_post.dart';
 import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reading_column.dart';
 import 'package:xta/ui/sort_menu_button.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pref/pref.dart';
@@ -438,20 +439,23 @@ class _StatusScreenState extends State<_StatusScreen> {
   Widget _buildPreview(BuildContext context, {bool loading = true, bool showThreadEnd = false}) {
     _maybeStartFirstLoad();
     var tweet = widget.initialTweet!;
-    return ListView(
+    return ReadingColumn(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      children: [
-        TweetConversation(
-          id: tweet.idStr!,
-          tweets: [tweet],
-          username: null,
-          isPinned: false,
-          tweetOpened: widget.tweetOpened,
-          initialMediaIndex: widget.initialMediaIndex,
-        ),
-        if (loading) const TweetFeedSkeleton(count: 3, primary: false),
-        if (showThreadEnd) _threadEndIndicator(context),
-      ],
+      builder: (context, padding) => ListView(
+        padding: padding,
+        children: [
+          TweetConversation(
+            id: tweet.idStr!,
+            tweets: [tweet],
+            username: null,
+            isPinned: false,
+            tweetOpened: widget.tweetOpened,
+            initialMediaIndex: widget.initialMediaIndex,
+          ),
+          if (loading) const TweetFeedSkeleton(count: 3, primary: false),
+          if (showThreadEnd) _threadEndIndicator(context),
+        ],
+      ),
     );
   }
 
@@ -487,33 +491,36 @@ class _StatusScreenState extends State<_StatusScreen> {
     final focal = chains.indexWhere((c) => c.tweets.any((t) => t.idStr == widget.id));
     final visible = chains.take((focal < 0 ? 0 : focal) + 1).toList();
 
-    return ListView(
+    return ReadingColumn(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      children: [
-        for (final chain in visible)
-          _unavailableFocal(context, chain) ??
-              TweetConversation(
-                  key: ValueKey(chain.id),
-                  id: chain.id,
-                  tweets: chain.tweets,
-                  username: null,
-                  isPinned: chain.isPinned,
-                  tweetOpened: widget.tweetOpened,
-                  initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
-        InkWell(
-          onTap: () => context.read<ZenRepliesState>().reveal(),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Center(
-              child: Text(
-                L10n.of(context).long_press_to_show_replies,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).hintColor),
+      builder: (context, padding) => ListView(
+        padding: padding,
+        children: [
+          for (final chain in visible)
+            _unavailableFocal(context, chain) ??
+                TweetConversation(
+                    key: ValueKey(chain.id),
+                    id: chain.id,
+                    tweets: chain.tweets,
+                    username: null,
+                    isPinned: chain.isPinned,
+                    tweetOpened: widget.tweetOpened,
+                    initialMediaIndex: chain.id == widget.id ? widget.initialMediaIndex : 0),
+          InkWell(
+            onTap: () => context.read<ZenRepliesState>().reveal(),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Center(
+                child: Text(
+                  L10n.of(context).long_press_to_show_replies,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).hintColor),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -606,20 +613,23 @@ class _StatusScreenState extends State<_StatusScreen> {
     if (state.items!.isEmpty) {
       return _unavailableFocalPage(context);
     }
-    return PagedListView<int, TweetChain>(
+    return ReadingColumn(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      state: state,
-      fetchNextPage: fetchNextPage,
-      scrollController: _scrollController,
-      addAutomaticKeepAlives: false,
-      builderDelegate: PagedChildBuilderDelegate(
-        itemBuilder: (context, chain, index) => _withReplySort(chain, _conversationTile(context, chain, index)),
-        newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
-          error: pagingErrorOf(state)?.error ?? state.error,
-          contextMessage: L10n.of(context).unable_to_load_the_next_page_of_replies,
-          onRetry: fetchNextPage,
+      builder: (context, padding) => PagedListView<int, TweetChain>(
+        padding: padding,
+        state: state,
+        fetchNextPage: fetchNextPage,
+        scrollController: _scrollController,
+        addAutomaticKeepAlives: false,
+        builderDelegate: PagedChildBuilderDelegate(
+          itemBuilder: (context, chain, index) => _withReplySort(chain, _conversationTile(context, chain, index)),
+          newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+            error: pagingErrorOf(state)?.error ?? state.error,
+            contextMessage: L10n.of(context).unable_to_load_the_next_page_of_replies,
+            onRetry: fetchNextPage,
+          ),
+          noMoreItemsIndicatorBuilder: (_) => _threadEndIndicator(context),
         ),
-        noMoreItemsIndicatorBuilder: (_) => _threadEndIndicator(context),
       ),
     );
   }
@@ -646,32 +656,35 @@ class _StatusScreenState extends State<_StatusScreen> {
     }
 
     final display = buildCappedThreadList(buildThreadTree(items, widget.id));
-    return ListView.builder(
-      controller: _scrollController,
+    return ReadingColumn(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-      itemCount: display.length + 1,
-      itemBuilder: (context, index) {
-        if (index == display.length) {
-          return _buildThreadFooter(context, state, fetchNextPage);
-        }
-        final item = display[index];
-        if (item is ThreadContinueMarker) {
-          return ThreadContinueRow(
-            indentDepth: item.indentDepth,
-            onTap: () => _openContinueThread(context, item.target),
+      builder: (context, padding) => ListView.builder(
+        controller: _scrollController,
+        padding: padding,
+        itemCount: display.length + 1,
+        itemBuilder: (context, index) {
+          if (index == display.length) {
+            return _buildThreadFooter(context, state, fetchNextPage);
+          }
+          final item = display[index];
+          if (item is ThreadContinueMarker) {
+            return ThreadContinueRow(
+              indentDepth: item.indentDepth,
+              onTap: () => _openContinueThread(context, item.target),
+            );
+          }
+          final node = (item as ThreadDisplayNode).node;
+          return _withReplySort(
+            node.chain,
+            ThreadIndent(
+              depth: item.visualDepth,
+              connectTop: item.connectTop,
+              connectBottom: item.connectBottom,
+              child: _conversationTile(context, node.chain, index),
+            ),
           );
-        }
-        final node = (item as ThreadDisplayNode).node;
-        return _withReplySort(
-          node.chain,
-          ThreadIndent(
-            depth: item.visualDepth,
-            connectTop: item.connectTop,
-            connectBottom: item.connectBottom,
-            child: _conversationTile(context, node.chain, index),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 

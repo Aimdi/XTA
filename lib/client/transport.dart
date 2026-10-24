@@ -175,6 +175,9 @@ class QuackerTwitterClient extends TwitterClient {
         RateLimitTracker.flag(account.id, endpoint, _resetFromHeaders(response));
         continue;
       }
+      // A 401 is X's "Could not authenticate you": that account's session has
+      // ended. A 403 is an account X has locked. Surfacing either failed every
+      // request the account was picked for while the others still worked.
       if (const [401, 403, 404].contains(code)) {
         refused.add(account.id);
         if (refused.length >= 2) {

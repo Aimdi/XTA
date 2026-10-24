@@ -22,6 +22,7 @@ import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/caught_up_divider.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/reading_column.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/tweet/stale_feed_preview.dart';
@@ -751,55 +752,58 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         if (loaded.isEmpty) {
           return _buildEmpty(context, endCard);
         }
-        return PagedListView<int, TweetChain>(
+        return ReadingColumn(
           // paddingOf, not of(): the whole-list builder must not take a
           // dependency on every MediaQuery change (keyboard, text scale).
           padding: EdgeInsets.only(top: 4, bottom: MediaQuery.paddingOf(context).bottom),
-          state: state,
-          fetchNextPage: fetchNextPage,
-          addAutomaticKeepAlives: false,
-          // The creation gate in video_playback_policy makes off-screen tiles
-          // cheap (no player until visible), so a wider cache window only buys
-          // smoothness now.
-          cacheExtent: kFeedListCacheExtent,
-          builderDelegate: PagedChildBuilderDelegate(
-            itemBuilder: (context, chain, index) {
-              final conversation = _buildChainAt(context, loaded, index, collapseBoosts: collapseBoosts);
-              final above = index < buckets.length ? buckets[index] : const <InterleavedItem>[];
-              // Anything older than every chain loaded so far rides along with
-              // the last one, so it is on screen rather than waiting for a page
-              // that may never be asked for.
-              final below = index == loaded.length - 1 ? buckets.last : const <InterleavedItem>[];
-              final showsDivider = boundary != null && index == boundary;
+          builder: (context, padding) => PagedListView<int, TweetChain>(
+            padding: padding,
+            state: state,
+            fetchNextPage: fetchNextPage,
+            addAutomaticKeepAlives: false,
+            // The creation gate in video_playback_policy makes off-screen tiles
+            // cheap (no player until visible), so a wider cache window only buys
+            // smoothness now.
+            cacheExtent: kFeedListCacheExtent,
+            builderDelegate: PagedChildBuilderDelegate(
+              itemBuilder: (context, chain, index) {
+                final conversation = _buildChainAt(context, loaded, index, collapseBoosts: collapseBoosts);
+                final above = index < buckets.length ? buckets[index] : const <InterleavedItem>[];
+                // Anything older than every chain loaded so far rides along with
+                // the last one, so it is on screen rather than waiting for a page
+                // that may never be asked for.
+                final below = index == loaded.length - 1 ? buckets.last : const <InterleavedItem>[];
+                final showsDivider = boundary != null && index == boundary;
 
-              if (above.isEmpty && below.isEmpty && !showsDivider) {
-                return conversation;
-              }
+                if (above.isEmpty && below.isEmpty && !showsDivider) {
+                  return conversation;
+                }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (showsDivider) CaughtUpDivider(key: widget.caughtUpDividerKey),
-                  for (final item in above) item.build(context),
-                  conversation,
-                  for (final item in below) item.build(context),
-                ],
-              );
-            },
-            firstPageProgressIndicatorBuilder: (context) => const TweetFeedSkeleton(primary: false),
-            newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
-            firstPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
-              error: pagingErrorOf(state)?.error ?? state.error,
-              onRetry: widget.feed.retryFailedRead,
-              recoverAutomatically: false,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (showsDivider) CaughtUpDivider(key: widget.caughtUpDividerKey),
+                    for (final item in above) item.build(context),
+                    conversation,
+                    for (final item in below) item.build(context),
+                  ],
+                );
+              },
+              firstPageProgressIndicatorBuilder: (context) => const TweetFeedSkeleton(primary: false),
+              newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
+              firstPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+                error: pagingErrorOf(state)?.error ?? state.error,
+                onRetry: widget.feed.retryFailedRead,
+                recoverAutomatically: false,
+              ),
+              newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+                error: pagingErrorOf(state)?.error ?? state.error,
+                onRetry: widget.feed.retryFailedRead,
+                recoverAutomatically: false,
+              ),
+              noItemsFoundIndicatorBuilder: (context) => _buildEmpty(context, endCard),
+              noMoreItemsIndicatorBuilder: (context) => endCard ?? const SizedBox.shrink(),
             ),
-            newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
-              error: pagingErrorOf(state)?.error ?? state.error,
-              onRetry: widget.feed.retryFailedRead,
-              recoverAutomatically: false,
-            ),
-            noItemsFoundIndicatorBuilder: (context) => _buildEmpty(context, endCard),
-            noMoreItemsIndicatorBuilder: (context) => endCard ?? const SizedBox.shrink(),
           ),
         );
       },
