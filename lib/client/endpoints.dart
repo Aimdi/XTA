@@ -60,11 +60,11 @@ class XEndpoints {
     userByScreenName: XEndpoint(
       name: userByScreenName,
       operation: 'UserByScreenName',
-      queryId: 'KybxDj9RrADIITXlGG8kpw',
+      queryId: 'AMIBMjtxEEATh4z8V9GtRg',
       host: 'twitter.com',
     ),
-    following: XEndpoint(name: following, operation: 'Following', queryId: 'uwmIAx89XrXNuGY-Y7WFLg', host: 'x.com'),
-    followers: XEndpoint(name: followers, operation: 'Followers', queryId: 'mrqxgX8JzwlL6pvYiC5CPA', host: 'x.com'),
+    following: XEndpoint(name: following, operation: 'Following', queryId: '9l9tzqLGQU9eutAJffqqMw', host: 'x.com'),
+    followers: XEndpoint(name: followers, operation: 'Followers', queryId: 'sO2htFYgDpQopDNVjDcf1Q', host: 'x.com'),
     retweeters: XEndpoint(name: retweeters, operation: 'Retweeters', queryId: 'ROjiuYueotTnWoI8m2YaiQ', host: 'x.com'),
     listByRestId: XEndpoint(
       name: listByRestId,
@@ -82,14 +82,14 @@ class XEndpoints {
     tweetDetail: XEndpoint(
       name: tweetDetail,
       operation: 'TweetDetail',
-      queryId: 'blErEeZkos5TDrWmrCp7cw',
+      queryId: 'wjV7NuWEsHgTBFfW3zYKzQ',
       host: 'x.com',
     ),
     // Quotes (`quoted_tweet_id:`) and Following search chunks.
     searchTimeline: XEndpoint(
       name: searchTimeline,
       operation: 'SearchTimeline',
-      queryId: 'uGB-gNd5HE4TkpO70OcFNw',
+      queryId: 'BYppgupFFS2yqVmmRNjlsw',
       host: 'x.com',
     ),
     // People search hits the same operation; keep a separate registry key so an
@@ -97,20 +97,20 @@ class XEndpoints {
     searchTimelineUsers: XEndpoint(
       name: searchTimelineUsers,
       operation: 'SearchTimeline',
-      queryId: 'uGB-gNd5HE4TkpO70OcFNw',
+      queryId: 'BYppgupFFS2yqVmmRNjlsw',
       host: 'twitter.com',
     ),
     homeTimeline: XEndpoint(
       name: homeTimeline,
       operation: 'HomeTimeline',
-      queryId: 'whgGeEQDhEDkPQEJiJvYQw',
+      queryId: '-SBRQaLiRjWvTFD5SI403A',
       host: 'twitter.com',
     ),
     userMedia: XEndpoint(name: userMedia, operation: 'UserMedia', queryId: '9EovraBTXJYGSEQXZqlLmQ', host: 'x.com'),
     userTweetsAndReplies: XEndpoint(
       name: userTweetsAndReplies,
       operation: 'UserTweetsAndReplies',
-      queryId: 'Z1m9j8S1leAzQp6yZXuaSg',
+      queryId: 'M9Tz6NGTHeRzqHOPdj9I7g',
       host: 'x.com',
     ),
     // The web's Posts tab. Replaced UserTweets, so it is a new registry key: an

@@ -53,6 +53,16 @@ ReadFailureKind readFailureKind(Object? error) {
   return ReadFailureKind.unknown;
 }
 
+/// [error]'s category for a diagnostics report, with X's HTTP status when it
+/// answered one: `rateLimited 429`, `unavailable 403`. Never its message, URL
+/// or body. A failure outside the taxonomy names its type instead, which tells
+/// a page X sent as HTML (FormatException) from an error X wrote in JSON.
+String readFailureLabel(Object error) {
+  final kind = readFailureKind(error);
+  if (kind == ReadFailureKind.unknown) return 'unknown ${error.runtimeType}';
+  return error is HttpException ? '${kind.name} ${error.statusCode}' : kind.name;
+}
+
 /// How a reading surface may retry a failure without being asked.
 enum ReadRetry {
   /// Transient: retry on a growing, bounded backoff.

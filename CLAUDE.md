@@ -137,14 +137,14 @@ query id) or `timeline_parser.dart` / `tweet_models.dart` (a reshaped response)
 
 **Account selection strategy.** `QuackerTwitterClient.fetch()` in `transport.dart` does not pick a random account — it asks `AccountSelector` (`account_selector.dart`, a pure/testable policy) for a *healthy* account, then retries on another account on error. Two distinct health signals:
 - **Rate limit (`429`)** is **per-endpoint** (X rate-limits per endpoint, not per account). It is tracked **in memory** by `RateLimitTracker` (`rate_limit_tracker.dart`), keyed by `(accountId, uri.path)`, with the reset time from X's `x-rate-limit-reset` header (else `rateLimitFallback`). Not persisted — windows are short. The selector receives this via an injected `isRateLimited` predicate.
-- **Not-found (`404`)** is **per-account** and **persisted** (auth likely broken): flagged after `notFoundThreshold` consecutive 404s, for `notFoundCooldown`. Helpers `recordNotFound` / `recordAccountSuccess` live in `accounts.dart`; cooldown constants in `constants.dart`.
+- **Refusal (`401`, `403`, `404`)** is **per-account** and **persisted** (auth likely broken): the request moves on to one more account, and a refusing account is counted only when another account then serves the same endpoint, flagged after `notFoundThreshold` consecutive refusals, for `notFoundCooldown`. Helpers `recordNotFound` / `recordAccountSuccess` live in `accounts.dart`; cooldown constants in `constants.dart`.
 
 `AccountSelector.pick()` prefers healthy accounts but **falls back to flagged ones**, so a real request is always attempted while any account exists — the flags only influence ordering, they never short-circuit. Errors therefore surface only from actual responses, each with a dedicated widget in `ui/errors.dart` (all built on the shared `ActionableErrorWidget`, offering add-account + retry):
 - every tried account was rate-limited on the endpoint → `RateLimitedException` (⏳);
 - every tried account returned 404 (likely broken auth) → `NoWorkingAccountException` (🤷);
 - there is no account at all → an unauthenticated (guest) request is attempted first; `NoAccountAvailableException` (🔑) is thrown only if that guest request also fails.
 
-Any other error response is surfaced as-is via `HttpException`. Retry simply re-runs `fetch()`, which always attempts a real request before surfacing any error.
+A 401 or 403 from every tried account, and any other error response, is surfaced as-is via `HttpException`. Retry simply re-runs `fetch()`, which always attempts a real request before surfacing any error.
 
 ### Database (`lib/database/`)
 
