@@ -149,7 +149,7 @@ Widget _noticeAt(double t, Widget child) => Transform.translate(
 );
 
 /// Keeps a notice that went away on screen while it lifts away, where it can
-/// no longer be tapped or focused.
+/// no longer be tapped, focused or read out.
 ///
 /// Arriving is the [NoticePill]'s own: a notice may stay mounted while it shows
 /// nothing, and then comes when its pill does.
