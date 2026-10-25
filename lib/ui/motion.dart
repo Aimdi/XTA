@@ -36,7 +36,9 @@ class XtaFadeIn extends StatelessWidget {
       tween: Tween<double>(begin: 0, end: 1),
       duration: xtaMotionDuration(context, duration),
       curve: Curves.easeOutCubic,
-      builder: (_, opacity, child) => Opacity(opacity: opacity, child: child),
+      // Read out from the start: it is on screen, only not yet opaque.
+      builder: (_, opacity, child) =>
+          Opacity(opacity: opacity, alwaysIncludeSemantics: true, child: child),
       child: child,
     );
   }
@@ -87,7 +89,11 @@ class _XtaArrivalState extends State<XtaArrival>
     // place in the tree, and its state, for good.
     final opacity = _opacity;
     if (opacity == null) return widget.child;
-    return FadeTransition(opacity: opacity, child: widget.child);
+    return FadeTransition(
+      opacity: opacity,
+      alwaysIncludeSemantics: true,
+      child: widget.child,
+    );
   }
 }
 
@@ -172,7 +178,11 @@ class _XtaSwapState extends State<XtaSwap> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return XtaAnimatedSize(
-      child: FadeTransition(opacity: _opacity, child: widget.child),
+      child: FadeTransition(
+        opacity: _opacity,
+        alwaysIncludeSemantics: true,
+        child: widget.child,
+      ),
     );
   }
 }

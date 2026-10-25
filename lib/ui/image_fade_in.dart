@@ -38,7 +38,7 @@ class ImageFadeIn extends StatelessWidget {
         fit: StackFit.passthrough,
         children: [
           if (t < 1) placeholder,
-          Opacity(opacity: t, child: image),
+          Opacity(opacity: t, alwaysIncludeSemantics: true, child: image),
         ],
       ),
       child: image,

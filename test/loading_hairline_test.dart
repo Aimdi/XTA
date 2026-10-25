@@ -31,6 +31,58 @@ void main() {
 
     await tester.pumpWidget(_page(loading: false));
     expect(tester.getTopLeft(find.text('first post')), idle);
+    await tester.pumpAndSettle();
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+  });
+
+  /// How opaque the line is drawn, through its fade in and its fade out.
+  double opacity(WidgetTester tester) {
+    Iterable<T> around<T extends Widget>() =>
+        tester.widgetList<T>(find.ancestor(of: find.byType(LinearProgressIndicator), matching: find.byType(T)));
+    return [
+      for (final fade in around<Opacity>()) fade.opacity,
+      for (final fade in around<FadeTransition>()) fade.opacity.value,
+    ].fold(1.0, (opacity, fade) => opacity * fade);
+  }
+
+  testWidgets('the line fades in as loading starts and out once it ends, leaving nothing behind', (tester) async {
+    await tester.pumpWidget(_page(loading: false));
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+
+    await tester.pumpWidget(_page(loading: true));
+    await tester.pump(const Duration(milliseconds: 40));
+    expect(opacity(tester), inExclusiveRange(0, 1));
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(opacity(tester), 1);
+
+    await tester.pumpWidget(_page(loading: false));
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(opacity(tester), inExclusiveRange(0, 1));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(tester.hasRunningAnimations, isFalse, reason: 'no line animates unseen');
+  });
+
+  testWidgets('known progress glides, and fills to the end before the line goes', (tester) async {
+    Widget line(double value, {bool loading = true}) => MaterialApp(
+      home: LoadingHairline(loading: loading, value: value, child: const SizedBox.expand()),
+    );
+    double value() => tester.widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator)).value!;
+    await tester.pumpWidget(line(0.25));
+    await tester.pumpAndSettle();
+
+    await tester.pumpWidget(line(0.75));
+    await tester.pump(const Duration(milliseconds: 40));
+    expect(value(), inExclusiveRange(0.25, 0.75));
+    await tester.pumpAndSettle();
+    expect(value(), 0.75);
+
+    await tester.pumpWidget(line(0.75, loading: false));
+    await tester.pump(const Duration(milliseconds: 120));
+    expect(value(), 1, reason: 'full');
+    expect(opacity(tester), 1, reason: 'before it fades');
+    await tester.pumpAndSettle();
     expect(find.byType(LinearProgressIndicator), findsNothing);
   });
 
