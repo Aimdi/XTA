@@ -43,6 +43,7 @@ import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/reader_value_store.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:xta/utils/urls.dart';
@@ -627,9 +628,11 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             children: [
               Text(L10n.of(context).feed_contains_unrelated_tweets),
               SizedBox(height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 2),
-              PrefCheckbox(
-                title: Text(L10n.of(context).never_show_again, style: Theme.of(context).textTheme.bodyMedium),
-                pref: optionDisableWarningsForUnrelatedPostsInFeed,
+              LabeledPref(
+                child: PrefCheckbox(
+                  title: Text(L10n.of(context).never_show_again, style: Theme.of(context).textTheme.bodyMedium),
+                  pref: optionDisableWarningsForUnrelatedPostsInFeed,
+                ),
               ),
             ],
           ),

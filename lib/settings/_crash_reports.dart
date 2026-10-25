@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/utils/crash_reporter.dart';
@@ -101,10 +102,12 @@ class SettingsCrashReportsSection extends StatelessWidget {
     final prefs = PrefService.of(context);
     return Column(
       children: [
-        PrefSwitch(
-          title: Text(L10n.of(context).crash_reports_enabled),
-          subtitle: Text(L10n.of(context).crash_reports_enabled_description),
-          pref: optionCrashReportsEnabled,
+        LabeledPref(
+          child: PrefSwitch(
+            title: Text(L10n.of(context).crash_reports_enabled),
+            subtitle: Text(L10n.of(context).crash_reports_enabled_description),
+            pref: optionCrashReportsEnabled,
+          ),
         ),
         PrefDisabler(
           pref: optionCrashReportsEnabled,

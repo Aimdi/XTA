@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -81,11 +82,11 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
       body: ListView(
         children: [
           PrefTitle(title: Text(l10n.plugin_eh_section_account)),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_eh_use_exhentai),
             subtitle: Text(l10n.plugin_eh_use_exhentai_description),
             pref: optionPluginEhUseExhentai,
-          ),
+          )),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
@@ -136,11 +137,11 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
             ),
           ),
           PrefTitle(title: Text(l10n.plugin_eh_section_reading)),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_eh_prefer_japanese),
             subtitle: Text(l10n.plugin_eh_prefer_japanese_description),
             pref: optionPluginEhPreferJapanese,
-          ),
+          )),
           PrefDropdown<String>(
             title: Text(l10n.plugin_eh_reader_mode),
             pref: optionPluginEhReadingMode,
@@ -152,11 +153,11 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
                 ),
             ],
           ),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_eh_keep_screen_on),
             subtitle: Text(l10n.plugin_eh_keep_screen_on_description),
             pref: optionPluginEhKeepScreenOn,
-          ),
+          )),
           ListTile(
             title: Text(l10n.plugin_eh_clear_history),
             onTap: () async {
@@ -165,7 +166,7 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
               if (mounted) setState(() {});
             },
           ),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_eh_show_tab),
             subtitle: Text(l10n.plugin_eh_show_tab_description),
             pref: optionPluginEhShowTab,
@@ -174,7 +175,7 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
                 await pinPluginOnFeedStripIn(context, pluginIdEhViewer);
               }
             },
-          ),
+          )),
           ListTile(
             title: Text(l10n.plugin_eh_test_connection),
             trailing: _testing

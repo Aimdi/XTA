@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/plugin_connection_store.dart';
 import 'package:xta/settings/settings_chrome.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -139,15 +140,19 @@ class _ImmichSettingsScreenState extends State<ImmichSettingsScreen> {
             const Divider(height: 40),
             Semantics(header: true, child: Text(l10n.plugin_integration_options, style: theme.textTheme.titleMedium)),
             const SizedBox(height: 12),
-            PrefSwitch(
-              pref: optionPluginImmichAlbumPerFolder,
-              title: Text(l10n.plugin_immich_album_per_folder),
-              subtitle: Text(l10n.plugin_immich_album_per_folder_description),
+            LabeledPref(
+              child: PrefSwitch(
+                pref: optionPluginImmichAlbumPerFolder,
+                title: Text(l10n.plugin_immich_album_per_folder),
+                subtitle: Text(l10n.plugin_immich_album_per_folder_description),
+              ),
             ),
-            PrefSwitch(
-              pref: optionPluginImmichIncludeVideos,
-              title: Text(l10n.plugin_immich_include_videos),
-              subtitle: Text(l10n.plugin_immich_include_videos_description),
+            LabeledPref(
+              child: PrefSwitch(
+                pref: optionPluginImmichIncludeVideos,
+                title: Text(l10n.plugin_immich_include_videos),
+                subtitle: Text(l10n.plugin_immich_include_videos_description),
+              ),
             ),
             const SizedBox(height: 12),
             Text(l10n.plugin_immich_folder_hint, style: theme.textTheme.bodySmall),

@@ -8,10 +8,16 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/settings/_accessibility.dart';
+import 'package:xta/settings/_theme.dart';
 import 'package:xta/settings/settings_export_screen.dart';
 import 'package:xta/subscriptions/_import.dart';
 import 'package:xta/subscriptions/_import_list.dart';
+import 'package:xta/ui/labeled_pref.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 /// Buttons that show nothing but an icon, by the constructors that do so: TalkBack has nothing to read for them
 /// unless they carry a name.
@@ -19,6 +25,10 @@ const _iconOnlyButtons = {
   'IconButton': {'', 'filled', 'filledTonal', 'outlined'},
   'FloatingActionButton': {'', 'small', 'large'},
 };
+
+/// Toggles of the pref package, whose switch or box TalkBack reads apart from the title unless a LabeledPref
+/// merges them.
+const _prefToggles = {'PrefSwitch', 'PrefCheckbox'};
 
 /// Wrappers that name the widget they hold, by the argument that carries the name.
 const _namingWrappers = {'Semantics': 'label', 'Tooltip': 'message'};
@@ -86,13 +96,23 @@ bool _namedByWrapper(AstNode widget) {
   return (name != null && _hasArgument(arguments, name)) || _namedByWrapper(wrapper);
 }
 
+bool _isChildOfLabeledPref(AstNode widget) {
+  final argument = widget.parent;
+  return argument is NamedExpression &&
+      argument.name.label.name == 'child' &&
+      _widgetOf(argument.parent?.parent)?.$1 == 'LabeledPref';
+}
+
 class _SilentWidgetVisitor extends RecursiveAstVisitor<void> {
   final silent = <AstNode>[];
 
   void _check(AstNode node, ArgumentList arguments) {
     final widget = _widgetOf(node);
-    final iconOnly = widget != null && (_iconOnlyButtons[widget.$1]?.contains(widget.$2) ?? false);
-    if (iconOnly && !_namesItself(arguments) && !_namedByWrapper(node)) silent.add(node);
+    if (widget == null) return;
+    final iconOnly = _iconOnlyButtons[widget.$1]?.contains(widget.$2) ?? false;
+    final silentButton = iconOnly && !_namesItself(arguments) && !_namedByWrapper(node);
+    final silentToggle = _prefToggles.contains(widget.$1) && widget.$2.isEmpty && !_isChildOfLabeledPref(node);
+    if (silentButton || silentToggle) silent.add(node);
   }
 
   @override
@@ -116,20 +136,24 @@ List<String> _silentWidgets(String source, String path) {
   return [for (final node in visitor.silent) '$path:${unit.lineInfo.getLocation(node.offset).lineNumber}'];
 }
 
-Widget _app(Widget home) => MaterialApp(
-  localizationsDelegates: const [
-    L10n.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
-  supportedLocales: L10n.delegate.supportedLocales,
-  locale: const Locale('en'),
-  home: home,
+Widget _app(Widget home, {BasePrefService? prefs}) => PrefService(
+  service: prefs ?? PrefServiceCache(),
+  child: MaterialApp(
+    theme: xLookLightTheme(null),
+    localizationsDelegates: const [
+      L10n.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: L10n.delegate.supportedLocales,
+    locale: const Locale('en'),
+    home: home,
+  ),
 );
 
 void main() {
-  test('every icon-only button in lib/ has a name a screen reader can read', () {
+  test('every icon-only button and pref toggle in lib/ has a name a screen reader can read', () {
     final silent = Directory('lib')
         .listSync(recursive: true)
         .whereType<File>()
@@ -141,12 +165,13 @@ void main() {
       silent,
       isEmpty,
       reason:
-          'TalkBack announces these as an unnamed button: give them a translated tooltip, or a translated '
-          'semanticLabel on their icon where a tooltip would be wrong',
+          'TalkBack announces these without a name: give an icon-only button a translated tooltip, or a '
+          'translated semanticLabel on its icon where a tooltip would be wrong, and wrap a PrefSwitch or a '
+          'PrefCheckbox in a LabeledPref',
     );
   });
 
-  test('the guard reports a button without a name and accepts each way of naming one', () {
+  test('the guard reports a widget without a name and accepts each way of naming one', () {
     const source = '''
 Widget a() => IconButton(icon: Icon(Icons.add), onPressed: null);
 Widget b() => IconButton(tooltip: label, icon: Icon(Icons.add), onPressed: null);
@@ -158,6 +183,11 @@ Widget g() => Tooltip(message: label, child: IconButton(icon: Icon(Icons.add), o
 Widget h() => FloatingActionButton.extended(onPressed: null, label: Text(label));
 Widget i() => material.IconButton(icon: Icon(Icons.add), onPressed: null);
 Widget j() => Padding(padding: EdgeInsets.zero, child: Semantics(child: IconButton(icon: icon, onPressed: null)));
+Widget k() => PrefSwitch(pref: key, title: Text(label));
+Widget l() => LabeledPref(child: PrefSwitch(pref: key, title: Text(label)));
+Widget m() => const PrefCheckbox(pref: key);
+Widget n() => Target(child: LabeledPref(child: PrefCheckbox(pref: key)));
+Widget o() => PixivPrefSwitch(pref: key, title: Text(label));
 ''';
 
     expect(_silentWidgets(source, 'example.dart'), [
@@ -166,7 +196,62 @@ Widget j() => Padding(padding: EdgeInsets.zero, child: Semantics(child: IconButt
       'example.dart:6',
       'example.dart:9',
       'example.dart:10',
+      'example.dart:11',
+      'example.dart:13',
     ]);
+  });
+
+  testWidgets('a pref switch reads its title with its state only inside a LabeledPref', (tester) async {
+    final semantics = tester.ensureSemantics();
+    const toggle = PrefSwitch(pref: optionTickerChart, title: Text('Ticker chart'));
+    final prefs = PrefServiceCache(defaults: {optionTickerChart: true});
+    Future<Evaluation> evaluate(Widget body) async {
+      await tester.pumpWidget(_app(Scaffold(body: body), prefs: prefs));
+      return labeledTapTargetGuideline.evaluate(tester);
+    }
+
+    expect((await evaluate(toggle)).passed, isFalse);
+    expect((await evaluate(const LabeledPref(child: toggle))).passed, isTrue);
+    expect(
+      tester.getSemantics(find.byType(Switch)),
+      isSemantics(label: 'Ticker chart', hasToggledState: true, isToggled: true, hasTapAction: true),
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('the accessibility and theme settings name every switch', (tester) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final semantics = tester.ensureSemantics();
+    final prefs = PrefServiceCache(
+      defaults: {
+        optionTextScaleFactor: 1.0,
+        optionDisableAnimations: false,
+        optionTickerChart: true,
+        optionGestureDoubleTapLike: false,
+        optionXLookBackground: xLookBackgroundSystem,
+        optionXLookAccent: 'blue',
+        optionThemeTrueBlack: false,
+        optionThemeTrueBlackTweetCards: false,
+        optionShowNavigationLabels: true,
+        optionHideNavigationOnScroll: true,
+      },
+    );
+    for (final screen in [const SettingsAccessibilityFragment(), const SettingsThemeFragment()]) {
+      await tester.pumpWidget(_app(screen, prefs: prefs));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(LabeledPref), findsWidgets);
+      for (var i = 0; i < find.byType(Switch).evaluate().length; i++) {
+        final node = tester.getSemantics(find.byType(Switch).at(i));
+        expect(node.label, isNotEmpty, reason: '$screen');
+        expect(node, isSemantics(hasToggledState: true), reason: '$screen');
+      }
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+    }
+    semantics.dispose();
   });
 
   testWidgets('the import screens name the button that starts the import', (tester) async {

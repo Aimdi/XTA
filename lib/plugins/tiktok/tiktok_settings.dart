@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -74,7 +75,7 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
               ),
             ),
           ),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_tiktok_show_tab),
             subtitle: Text(l10n.plugin_tiktok_show_tab_description),
             pref: optionPluginTiktokShowTab,
@@ -83,13 +84,13 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
                 await pinPluginOnFeedStripIn(context, pluginIdTiktok);
               }
             },
-          ),
+          )),
           PrefTitle(title: Text(l10n.plugin_tiktok_section_playback)),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_tiktok_prefer_embed),
             subtitle: Text(l10n.plugin_tiktok_prefer_embed_description),
             pref: optionPluginTiktokPreferEmbed,
-          ),
+          )),
           PrefTitle(title: Text(l10n.plugin_tiktok_section_session)),
           ListTile(
             leading: const Icon(Icons.cookie_outlined),

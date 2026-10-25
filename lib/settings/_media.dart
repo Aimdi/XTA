@@ -6,6 +6,7 @@ import 'package:xta/downloads/download_destination.dart';
 import 'package:xta/downloads/download_store.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/settings/settings_view_store.dart';
 import 'package:xta/utils/download_directory.dart';
 import 'package:xta/utils/media_quality.dart';
@@ -44,13 +45,13 @@ class SettingsMediaFragment extends StatelessWidget {
           SettingsSection(
             title: L10n.of(context).image_quality,
             children: [
-              SettingsControlTarget(id: optionMediaDisableAutoload, child: PrefSwitch(
+              SettingsControlTarget(id: optionMediaDisableAutoload, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaDisableAutoload,
                 title: Text(L10n.of(context).load_media_manually),
                 subtitle: Text(
                   L10n.of(context).load_media_manually_description,
                 ),
-              )),
+              ))),
               SettingsControlTarget(id: optionImageQuality, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).image_quality),
@@ -110,21 +111,21 @@ class SettingsMediaFragment extends StatelessWidget {
                 pref: optionMediaVideoQuality,
                 items: qualityItems(),
               )),
-              SettingsControlTarget(id: optionMediaDefaultMute, child: PrefSwitch(
+              SettingsControlTarget(id: optionMediaDefaultMute, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaDefaultMute,
                 title: Text(L10n.of(context).mute_videos),
                 subtitle: Text(L10n.of(context).mute_video_description),
-              )),
-              SettingsControlTarget(id: optionMediaDefaultLoop, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionMediaDefaultLoop, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaDefaultLoop,
                 title: Text(L10n.of(context).loop_videos),
                 subtitle: Text(L10n.of(context).loop_videos_description),
-              )),
-              SettingsControlTarget(id: optionMediaDefaultAutoPlay, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionMediaDefaultAutoPlay, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaDefaultAutoPlay,
                 title: Text(L10n.of(context).autoplay_videos),
                 subtitle: Text(L10n.of(context).autoplay_videos_description),
-              )),
+              ))),
               SettingsControlTarget(id: optionMediaVideoPrefetchSeconds, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).video_prefetch),
@@ -144,21 +145,21 @@ class SettingsMediaFragment extends StatelessWidget {
                     ),
                 ],
               )),
-              SettingsControlTarget(id: optionMediaDirectHardwareDecoding, child: PrefSwitch(
+              SettingsControlTarget(id: optionMediaDirectHardwareDecoding, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaDirectHardwareDecoding,
                 title: Text(L10n.of(context).direct_hardware_decoding),
                 subtitle: Text(
                   L10n.of(context).direct_hardware_decoding_description,
                 ),
-              )),
-              SettingsControlTarget(id: optionMediaBackgroundPlayback, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionMediaBackgroundPlayback, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaBackgroundPlayback,
                 title: Text(L10n.of(context).allow_background_play),
                 subtitle: Text(
                   L10n.of(context).allow_background_play_description,
                 ),
-              )),
-              SettingsControlTarget(id: optionMediaAllowBackgroundPlayOtherApps, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionMediaAllowBackgroundPlayOtherApps, child: LabeledPref(child: PrefSwitch(
                 pref: optionMediaAllowBackgroundPlayOtherApps,
                 title: Text(
                   L10n.of(context).allow_background_play_other_apps,
@@ -168,7 +169,7 @@ class SettingsMediaFragment extends StatelessWidget {
                     context,
                   ).allow_background_play_other_apps_description,
                 ),
-              )),
+              ))),
             ],
           ),
           SettingsSection(
