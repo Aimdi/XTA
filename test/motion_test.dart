@@ -86,9 +86,34 @@ void main() {
       tester.widget<AnimatedSwitcher>(find.byType(AnimatedSwitcher)).duration,
       Duration.zero,
     );
+    // As short as an AnimatedSize can be: given no time at all, it would
+    // re-dirty itself in its own layout.
     expect(
       tester.widget<AnimatedSize>(find.byType(AnimatedSize)).duration,
-      Duration.zero,
+      lessThan(const Duration(milliseconds: 1)),
     );
+  });
+
+  testWidgets('compact switcher changes size at once with reduced motion', (
+    tester,
+  ) async {
+    Widget page(double height) => MaterialApp(
+      home: MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: XtaAnimatedSwitcher(
+            animateSize: true,
+            child: SizedBox(key: ValueKey(height), height: height),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpWidget(page(40));
+    await tester.pumpWidget(page(120));
+    await tester.pump(const Duration(milliseconds: 16));
+
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byType(XtaAnimatedSwitcher)).height, 120);
   });
 }

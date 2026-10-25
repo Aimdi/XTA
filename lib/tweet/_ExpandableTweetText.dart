@@ -236,13 +236,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
         // Most timeline posts are short. Avoid giving every tile an implicit
         // animation controller for a transition it can never perform.
         if (!expandable) return content;
-        return AnimatedSize(
-          duration: xtaMotionDuration(context, kXtaMotionFast),
-          curve: Curves.easeOutCubic,
-          alignment: AlignmentDirectional.topStart,
-          clipBehavior: Clip.hardEdge,
-          child: content,
-        );
+        return XtaAnimatedSize(duration: kXtaMotionFast, child: content);
       },
     );
   }

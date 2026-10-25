@@ -15,8 +15,11 @@ final _fade = find.descendant(of: find.byType(XtaArrival), matching: find.byType
 double? _opacity(WidgetTester tester) =>
     _fade.evaluate().isEmpty ? null : tester.widget<FadeTransition>(_fade.first).opacity.value;
 
+/// A child with state of its own, [height] tall.
 class _Counter extends StatefulWidget {
-  const _Counter({super.key});
+  final double height;
+
+  const _Counter({super.key, this.height = 40});
 
   @override
   State<_Counter> createState() => _CounterState();
@@ -24,7 +27,7 @@ class _Counter extends StatefulWidget {
 
 class _CounterState extends State<_Counter> {
   @override
-  Widget build(BuildContext context) => const Text('tile');
+  Widget build(BuildContext context) => SizedBox(height: widget.height, child: const Text('tile'));
 }
 
 void main() {
@@ -94,6 +97,62 @@ void main() {
       await show(tester, after, 'kept');
       await show(tester, after, 'content');
       expect(_fade, findsNothing);
+    });
+  });
+
+  group('a swap in place', () {
+    final swapFade = find.descendant(of: find.byType(XtaSwap), matching: find.byType(FadeTransition));
+    double swapOpacity(WidgetTester tester) => tester.widget<FadeTransition>(swapFade).opacity.value;
+    double height(WidgetTester tester) => tester.getSize(find.byType(XtaSwap)).height;
+    Widget swap(bool translated, {Key? key, bool reduceMotion = false}) => _app(
+      Align(
+        alignment: Alignment.topCenter,
+        child: XtaSwap(
+          swap: translated,
+          child: _Counter(key: key, height: translated ? 120 : 40),
+        ),
+      ),
+      reduceMotion: reduceMotion,
+    );
+
+    testWidgets('fades the new content in while it eases to its height', (tester) async {
+      await tester.pumpWidget(swap(false));
+      expect(height(tester), 40);
+      expect(swapOpacity(tester), 1);
+
+      await tester.pumpWidget(swap(true));
+      await tester.pump(const Duration(milliseconds: 90));
+      expect(height(tester), inExclusiveRange(40, 120));
+      expect(swapOpacity(tester), inExclusiveRange(0, 1));
+
+      await tester.pumpAndSettle();
+      expect(height(tester), 120);
+      expect(swapOpacity(tester), 1);
+    });
+
+    testWidgets('keeps what it holds through the swap', (tester) async {
+      final key = GlobalKey<_CounterState>();
+      await tester.pumpWidget(swap(false, key: key));
+      final state = key.currentState;
+      await tester.pumpWidget(swap(true, key: key));
+      await tester.pumpAndSettle();
+      expect(key.currentState, same(state));
+    });
+
+    testWidgets('runs nothing while nothing swaps', (tester) async {
+      await tester.pumpWidget(swap(false));
+      await tester.pumpWidget(swap(false));
+      expect(tester.hasRunningAnimations, isFalse);
+    });
+
+    testWidgets('with reduced motion swaps at once', (tester) async {
+      await tester.pumpWidget(swap(false, reduceMotion: true));
+      await tester.pumpWidget(swap(true, reduceMotion: true));
+      expect(swapOpacity(tester), 1);
+      // The new size lands on the next frame.
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(height(tester), 120);
+      expect(tester.takeException(), isNull);
     });
   });
 

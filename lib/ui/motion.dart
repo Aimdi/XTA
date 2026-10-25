@@ -129,6 +129,86 @@ class XtaAfterPlaceholders {
   void shownOther() => _shown = false;
 }
 
+/// [child] replaced in place whenever [swap] changes, as a post's text is by
+/// its translation: the new content fades in while the space it takes eases
+/// to its new height. It stays the same widget throughout, so whatever it
+/// holds, such as a post expanded with "Show more", survives the swap.
+class XtaSwap extends StatefulWidget {
+  final Object? swap;
+  final Widget child;
+
+  const XtaSwap({super.key, required this.swap, required this.child});
+
+  @override
+  State<XtaSwap> createState() => _XtaSwapState();
+}
+
+class _XtaSwapState extends State<XtaSwap> with SingleTickerProviderStateMixin {
+  /// Made on the first swap, so content that never changes runs no ticker.
+  AnimationController? _fade;
+  Animation<double> _opacity = kAlwaysCompleteAnimation;
+
+  @override
+  void didUpdateWidget(XtaSwap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.swap == oldWidget.swap || xtaReduceMotion(context)) return;
+    var fade = _fade;
+    if (fade == null) {
+      fade = _fade = AnimationController(
+        vsync: this,
+        duration: kXtaMotionStandard,
+      );
+      _opacity = fade.drive(CurveTween(curve: Curves.easeOutCubic));
+    }
+    fade.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _fade?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return XtaAnimatedSize(
+      child: FadeTransition(opacity: _opacity, child: widget.child),
+    );
+  }
+}
+
+/// An [AnimatedSize] for XTA's motion: [duration] long, or as short as an
+/// [AnimatedSize] can be with reduced motion. Given no time at all it would
+/// re-dirty itself in its own layout, so the new size lands a frame later
+/// instead.
+class XtaAnimatedSize extends StatelessWidget {
+  final Duration duration;
+  final AlignmentGeometry alignment;
+  final Clip clipBehavior;
+  final Widget child;
+
+  const XtaAnimatedSize({
+    super.key,
+    this.duration = kXtaMotionStandard,
+    this.alignment = AlignmentDirectional.topStart,
+    this.clipBehavior = Clip.hardEdge,
+    required this.child,
+  });
+
+  static const _instant = Duration(microseconds: 1);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: xtaReduceMotion(context) ? _instant : duration,
+      curve: Curves.easeOutCubic,
+      alignment: alignment,
+      clipBehavior: clipBehavior,
+      child: child,
+    );
+  }
+}
+
 /// Cross-fades compact state changes. Optional size animation is reserved for
 /// small chrome such as a filter strip, never whole feeds or paginated pages.
 class XtaAnimatedSwitcher extends StatelessWidget {
@@ -160,9 +240,8 @@ class XtaAnimatedSwitcher extends StatelessWidget {
       child: child,
     );
     if (!animateSize) return switcher;
-    return AnimatedSize(
-      duration: resolved,
-      curve: Curves.easeOutCubic,
+    return XtaAnimatedSize(
+      duration: duration,
       alignment: alignment,
       child: switcher,
     );
