@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'dart:ui' as ui;
 
 import 'package:dart_twitter_api/twitter_api.dart';
@@ -115,6 +116,30 @@ class TweetVideoMetadata {
       return TweetVideoUrls(url, null);
     });
   }
+}
+
+/// The libmpv audio output and hardware decoder for a player. Both are
+/// Android drivers, so off [android] (on the Linux desktop) nothing is set and
+/// libmpv picks its own; forced there, they left videos without sound and
+/// could turn hardware decoding off.
+Map<String, String> videoDriverProperties({
+  required bool android,
+  required bool directHwdec,
+}) {
+  if (!android) return const {};
+  return {
+    // AAudio sounds better than the default opensles and avoids the
+    // audiotrack JNI crash; falls back to opensles below Android 8.
+    'ao': 'aaudio,opensles',
+    // System MediaCodec decoders, with libmpv's software decoders as fallback.
+    //
+    // `mediacodec-copy` copies every decoded frame back into system memory
+    // before it is uploaded to a texture; `mediacodec` hands the decoder's own
+    // surface over and copies nothing. The direct path is much cheaper and is
+    // what makes a feed scroll while a video plays, but it renders black on
+    // some devices — hence a setting rather than a default.
+    'hwdec': directHwdec ? 'mediacodec' : 'mediacodec-copy',
+  };
 }
 
 class TweetVideo extends StatefulWidget {
@@ -242,20 +267,13 @@ class _TweetVideoState extends State<TweetVideo> {
     try {
       var platform = player.platform;
       if (platform is mk.NativePlayer) {
-        // AAudio sounds better than the default opensles and avoids the
-        // audiotrack JNI crash; falls back to opensles below Android 8.
-        await platform.setProperty('ao', 'aaudio,opensles');
-        // System MediaCodec decoders, with libmpv's software decoders as fallback.
-        //
-        // `mediacodec-copy` copies every decoded frame back into system memory
-        // before it is uploaded to a texture; `mediacodec` hands the decoder's own
-        // surface over and copies nothing. The direct path is much cheaper and is
-        // what makes a feed scroll while a video plays, but it renders black on
-        // some devices — hence a setting rather than a default.
-        await platform.setProperty(
-          'hwdec',
-          directHwdec ? 'mediacodec' : 'mediacodec-copy',
+        final drivers = videoDriverProperties(
+          android: Platform.isAndroid,
+          directHwdec: directHwdec,
         );
+        for (final MapEntry(:key, :value) in drivers.entries) {
+          await platform.setProperty(key, value);
+        }
 
         // How far ahead a feed video reads.
         //
