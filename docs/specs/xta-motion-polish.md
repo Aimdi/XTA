@@ -13,7 +13,7 @@ flat. It adds no posting surface and changes no data.
 | An avatar arrives from the network | It pops in at once, while a photo beside it fades in | It fades in like a photo |
 | A notice comes or goes (a retry, cached posts, posts from outside a group) | The pill appears and vanishes at once | It drops in and lifts away |
 | New posts are waiting in For you or a group | A "New posts" button appears above the feed and pushes every post down | A "New posts" pill drops in over the feed; nothing below moves |
-| An opened post has a finished poll | The bars are already full | They fill to their shares, one after another |
+| An opened post has a poll | The bars are already full | They fill to their shares, one after another |
 | Saving a post | The bookmark swaps outline for filled | It pops as it fills, with a light tap, as liking now taps too |
 | The profile's scroll-to-top button | It pops in and out | It grows in and shrinks away |
 
@@ -46,11 +46,14 @@ flat. It adds no posting surface and changes no data.
 
 ## 4. Poll results fill in on an opened post
 
-- On the opened post, a finished poll's bars grow from nothing to their shares
+- On the opened post, the poll's bars grow from nothing to their shares
   (600 ms, easeOutCubic), each starting 80 ms after the one above. The
   percentages are there from the start.
+- The fill starts once the conversation screen has slid in, so the reader sees
+  it. The screen keeps it: the copy shown while X answers and the post X sends
+  fill as one, and the poll stays full when scrolled back into view.
 - In feeds the bars stay full: tiles are rebuilt while scrolling, so a fill
-  would replay every time a poll came back into view.
+  would replay every time a poll came back into view. So do a quoted post's.
 
 ## 5. Saving pops, liking and saving tap
 
@@ -86,8 +89,10 @@ Android's own vibration settings.
   gone, and with reduced motion all of it is at once.
 - New posts: the pill floats over the feed without moving the posts, sits
   above source chips, and reveals on a tap.
-- Polls: an opened post's bars grow in order to their shares; a feed's are
-  full at once, and so is an opened post's with reduced motion.
+- Polls: an opened post's bars grow in order to their shares, once the screen
+  has slid in, and carry on when the post is rebuilt mid-fill; a feed's and
+  another post's are full at once, and so is an opened post's with reduced
+  motion.
 - Saving: the bookmark pops on save and not on unsave; liking and saving tap,
   unliking, unsaving and calm mode do not.
 - Scroll-to-top: the button grows in and shrinks away, and cannot be tapped

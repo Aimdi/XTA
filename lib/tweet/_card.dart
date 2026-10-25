@@ -7,8 +7,10 @@ import 'package:xta/constants.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/grok_share_card.dart';
 import 'package:xta/tweet/poll.dart';
+import 'package:xta/tweet/poll_fill.dart';
 import 'package:xta/tweet/poll_results.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/unified_card.dart';
@@ -332,6 +334,7 @@ class _TweetCardState extends State<TweetCard> {
       poll: poll,
       onOpenImage: imageSize == 'disabled' ? null : (choice) => _openPollImages(context, poll, choice),
       loadImages: !loadManually,
+      fill: FocalPostScope.idOf(context) == widget.tweet.idStr ? FocalPollFill.of(context) : null,
     );
   }
 

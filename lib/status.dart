@@ -8,6 +8,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/focal_post.dart';
+import 'package:xta/tweet/poll_fill.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/unavailable_post.dart';
@@ -63,15 +64,17 @@ class StatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as StatusScreenArguments;
 
-    // Marks the opened post so its tile shows X's time · date · views line.
+    // Marks the opened post so its tile shows X's time · date · views line,
+    // and its poll fills in.
     return FocalPostScope(
         id: args.id,
-        child: _StatusScreen(
-            username: args.username,
-            id: args.id,
-            tweetOpened: args.tweetOpened,
-            initialMediaIndex: args.initialMediaIndex,
-            initialTweet: args.initialTweet));
+        child: FocalPollFill(
+            child: _StatusScreen(
+                username: args.username,
+                id: args.id,
+                tweetOpened: args.tweetOpened,
+                initialMediaIndex: args.initialMediaIndex,
+                initialTweet: args.initialTweet)));
   }
 }
 
