@@ -7,9 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/_tweets.dart';
-import 'package:xta/profile/profile_chrome.dart';
+import 'package:xta/profile/protected_posts_gate.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/user.dart';
 
@@ -32,6 +33,9 @@ Map<String, dynamic> _protected(Map<String, dynamic> user, {required bool follow
   'privacy': {'protected': true},
   'relationship_perspectives': {...user['relationship_perspectives'] as Map, 'following': following},
 };
+
+/// One of the reader's signed-in X accounts, as the account table keeps it.
+Account _account(String? screenName) => Account(id: 'ct0 of $screenName', authHeader: '{}', screenName: screenName);
 
 void main() {
   group('whether X keeps the posts from the reader', () {
@@ -79,7 +83,12 @@ void main() {
     tearDown(() => VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500));
 
     /// The posts tab of [user] behind its gate, and every page it asked for.
-    Future<List<String?>> pumpTab(WidgetTester tester, UserWithExtra user) async {
+    /// The reader is signed in to [accounts], someone else's by default.
+    Future<List<String?>> pumpTab(
+      WidgetTester tester,
+      UserWithExtra user, {
+      Future<List<Account>> Function()? accounts,
+    }) async {
       final requests = <String?>[];
       await tester.pumpWidget(
         MaterialApp(
@@ -94,6 +103,8 @@ void main() {
             body: Builder(
               builder: (context) => ProtectedPostsGate(
                 hidden: user.postsHidden,
+                screenName: user.screenName,
+                accounts: accounts ?? () async => [_account('someone_else')],
                 message: L10n.of(context).protected_posts(user.screenName!),
                 child: ProfileTweets(
                   user: user,
@@ -132,11 +143,44 @@ void main() {
     });
 
     testWidgets('loads the posts for an account that follows it', (tester) async {
-      final requests = await pumpTab(tester, UserWithExtra.fromNonLegacyJson(_protected(_modern(), following: true)));
+      var reads = 0;
+      final requests = await pumpTab(
+        tester,
+        UserWithExtra.fromNonLegacyJson(_protected(_modern(), following: true)),
+        accounts: () async {
+          reads++;
+          return const [];
+        },
+      );
 
       expect(requests, [null], reason: 'the first page is asked for');
       expect(find.byType(TweetStateTile), findsNothing);
       expect(find.text(L10n.current.could_not_find_any_tweets_by_this_user), findsOneWidget);
+      expect(reads, 0, reason: 'only posts X keeps back send the gate to the account table');
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+
+    testWidgets('shows the posts of a protected account that is one of the reader\'s own', (tester) async {
+      // X reports the reader's own account as not following itself.
+      final own = UserWithExtra.fromNonLegacyJson(_protected(_modern(), following: false));
+      for (final stored in ['quax_tests', 'QuaX_Tests', '@quax_tests']) {
+        final requests = await pumpTab(tester, own, accounts: () async => [_account(null), _account(stored)]);
+
+        expect(requests, [null], reason: 'signed in as $stored, the reader is shown their own posts');
+        expect(find.byType(TweetStateTile), findsNothing, reason: stored);
+        await tester.pumpWidget(const SizedBox.shrink());
+      }
+    });
+
+    testWidgets('keeps the posts hidden when the reader\'s accounts cannot be read', (tester) async {
+      final requests = await pumpTab(
+        tester,
+        UserWithExtra.fromNonLegacyJson(_protected(_modern(), following: false)),
+        accounts: () async => throw StateError('no account table'),
+      );
+
+      expect(requests, isEmpty);
+      expect(find.text("Only approved followers on X can see @quax_tests's posts."), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
     });
   });

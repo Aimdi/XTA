@@ -25,6 +25,7 @@ import 'package:xta/profile/profile_followed_by_line.dart';
 import 'package:xta/profile/profile_model.dart';
 import 'package:xta/profile/profile_note.dart';
 import 'package:xta/profile/profile_view_store.dart';
+import 'package:xta/profile/protected_posts_gate.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/_media.dart';
@@ -598,6 +599,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   /// above [tab] goes with it: there would be nothing to narrow.
   Widget _postsTab(BuildContext context, UserWithExtra user, Widget tab) => ProtectedPostsGate(
     hidden: user.postsHidden,
+    screenName: user.screenName,
     message: L10n.of(context).protected_posts(user.screenName ?? L10n.of(context).unknown),
     child: tab,
   );
