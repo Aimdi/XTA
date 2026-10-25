@@ -21,21 +21,26 @@ One bar, 48 dp tall, with the divider under it:
 - **Start: Posts | Media.** Text only; the Media icon goes. The selected tab
   is bold in the primary colour with a 3 dp accent bar under its label,
   inset by the tab's padding and rounded; the other is medium weight in the
-  secondary colour. Each tab is a 48 dp target. When large text or a narrow
-  screen leaves them too little room, the two scroll sideways.
+  secondary colour. Each tab is a 48 dp target.
 - **End, in order:**
   - **Order and filters**, a 32 dp chip on a quiet surface with a hairline
     border: the sort icon, the active filter count when there is one, and a
     chevron. It opens the same menu as before: Recent, Popular, Custom and
     Filters. The order's name is no longer drawn: the tooltip and a screen
-    reader still say it. On a narrow screen or with large text the chevron
-    goes, as the label did before.
+    reader still say it.
   - **Feeds**, the source picker, with its unread dot.
   - **Search loaded posts.**
   - **Home feed accounts**, with its count of accounts left out.
 
   Each keeps Home's 48 dp target, Android's minimum, where the canvas drew
   44. What each does is unchanged.
+- **Narrow screens and large text.** The bar measures the tabs' names in
+  their bold, widest state. When they do not fit beside the controls, the
+  tabs move closer together and the chip drops its chevron; at 360 dp the
+  German "Tweets | Medien" fits this way. When even that is too wide, as
+  with large text on a small phone, the tabs move to a second row under the
+  controls, as the Subscriptions header falls back to two rows. Nothing is
+  cut off or scrolled out of sight.
 - **No avatar.** The side menu moves into the Feeds sheet: under "Add
   timeline" a row says "Open navigation menu" (Material's own words, in every
   language) and opens the menu; a long press on it opens the avatar sheet, as
@@ -63,7 +68,8 @@ Android's "remove animations", as it did.
   search and Home feed accounts at the end, in that order; no avatar.
 - The chip shows the filter count and a chevron, not the order's name, says
   the name to a screen reader, and opens Recent, Popular, Custom and Filters;
-  a narrow screen drops the chevron.
+  the closer fit drops the chevron, and too little room puts the tabs on a
+  second row under the controls.
 - The selected tab carries the marker; Media switches the feed to media.
 - The Feeds sheet's "Open navigation menu" opens the side menu, and a long
   press on it opens the avatar sheet.

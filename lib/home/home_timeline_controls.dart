@@ -2,11 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_chrome.dart';
+import 'package:xta/home/home_chrome.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/label_width.dart';
 import 'package:xta/ui/motion.dart';
 
-const double kHomeTimelineControlsHeight = 56;
+const double kHomeFollowingBarHeight = 48;
+const double kHomeTabMarkerHeight = 3;
+const double kHomeOrderChipHeight = 32;
+
+/// The order chip at its widest, with a two-digit count, with and without its
+/// chevron.
+const double kHomeOrderChipWidth = 80;
+const double kHomeOrderChipCompactWidth = 64;
+
+/// How Following's bar fits Posts | Media beside its controls.
+enum HomeFollowingBarLayout {
+  /// One row, as the canvas draws it.
+  oneRow,
+
+  /// One row with the tabs closer together and the chip without its chevron.
+  compact,
+
+  /// The tabs under the controls: even closer together they do not fit.
+  twoRows,
+}
+
+TextStyle _tabStyle({required bool selected}) =>
+    TextStyle(fontSize: 15, fontWeight: selected ? FontWeight.w700 : FontWeight.w500);
+
+/// The fit for a bar [width] wide with [actions] 48 dp buttons, measured with
+/// both tabs in the selected style so the widest state is the one that fits.
+HomeFollowingBarLayout homeFollowingBarLayout(BuildContext context, {required double width, required int actions}) {
+  final l10n = L10n.of(context);
+  final style = (Theme.of(context).textTheme.labelLarge ?? const TextStyle()).merge(_tabStyle(selected: true));
+  double tabs(double padding) => labelsWidth(context, [l10n.tweets, l10n.media], style, padding: 2 * padding);
+  double controls(double chip) => kTweetSpace1 + chip + actions * kTweetTouchTarget + kHomeAppBarEndInset;
+  return switch (width) {
+    _ when tabs(kTweetSpace3) + controls(kHomeOrderChipWidth) <= width => HomeFollowingBarLayout.oneRow,
+    _ when tabs(kTweetSpace2) + controls(kHomeOrderChipCompactWidth) <= width => HomeFollowingBarLayout.compact,
+    _ => HomeFollowingBarLayout.twoRows,
+  };
+}
+
+double homeFollowingBarHeight(HomeFollowingBarLayout layout) =>
+    layout == HomeFollowingBarLayout.twoRows ? 2 * kHomeFollowingBarHeight : kHomeFollowingBarHeight;
 
 /// Reclaims space while retaining the controls' selection and scroll state.
 class HomeCollapsingControls extends StatelessWidget {
@@ -67,61 +108,89 @@ class HomeTimelineTitle extends StatelessWidget {
   );
 }
 
-/// Presentation stays one tap away; ordering and filters share one menu.
-class HomeTimelineControls extends StatelessWidget {
-  final SubscriptionGroupGet group;
+/// Following's header in one bar: Posts | Media at the start, then ordering
+/// and filters, and the source picker and feed actions in [actions].
+class HomeFollowingBar extends StatelessWidget {
+  /// Null until Following's group has loaded; the order chip waits for it.
+  final SubscriptionGroupGet? group;
   final bool mediaOnly;
   final ValueChanged<int> onOrderSelected;
   final VoidCallback onMediaToggle;
   final VoidCallback onFilters;
+  final List<Widget> actions;
+  final HomeFollowingBarLayout layout;
 
-  const HomeTimelineControls({
+  const HomeFollowingBar({
     super.key,
     required this.group,
     required this.mediaOnly,
     required this.onOrderSelected,
     required this.onMediaToggle,
     required this.onFilters,
+    required this.actions,
+    this.layout = HomeFollowingBarLayout.oneRow,
   });
-
-  int get _order => group.custom ? 2 : (group.popular ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final labels = [l10n.recent, l10n.popular, l10n.custom];
+    final group = this.group;
+    final padding = layout == HomeFollowingBarLayout.compact ? kTweetSpace2 : kTweetSpace3;
+    final tabs = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [_modeTab(context, false, l10n.tweets, padding), _modeTab(context, true, l10n.media, padding)],
+      ),
+    );
+    final controls = [
+      if (group != null)
+        HomeOrderChip(
+          group: group,
+          onOrderSelected: onOrderSelected,
+          onFilters: onFilters,
+          compact: layout == HomeFollowingBarLayout.compact,
+        ),
+      // The canvas draws the bar's icons in the text colour, not the
+      // secondary grey X Look gives icon buttons elsewhere.
+      IconButtonTheme(
+        data: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: tweetPrimaryColor(context),
+          ).merge(IconButtonTheme.of(context).style),
+        ),
+        child: HomeAppBarActions(children: actions),
+      ),
+    ];
     return SizedBox(
-      height: kHomeTimelineControlsHeight,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: tweetDividerColor(context))),
-        ),
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(8, 0, 8, 4),
-          child: LayoutBuilder(
-            builder: (context, constraints) => Row(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(children: [_modeTab(context, false, l10n.tweets), _modeTab(context, true, l10n.media)]),
+      key: const ValueKey('home-following-bar'),
+      height: homeFollowingBarHeight(layout),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.only(start: kTweetSpace1),
+        child: layout == HomeFollowingBarLayout.twoRows
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    height: kHomeFollowingBarHeight,
+                    child: Row(mainAxisAlignment: MainAxisAlignment.end, children: controls),
                   ),
-                ),
-                const SizedBox(width: 8),
-                _orderButton(
-                  context,
-                  labels,
-                  compact: constraints.maxWidth < 350 || MediaQuery.textScalerOf(context).scale(14) > 18,
-                ),
-              ],
-            ),
-          ),
-        ),
+                  SizedBox(
+                    height: kHomeFollowingBarHeight,
+                    child: Align(alignment: AlignmentDirectional.centerStart, child: tabs),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: tabs),
+                  ...controls,
+                ],
+              ),
       ),
     );
   }
 
-  Widget _modeTab(BuildContext context, bool media, String label) {
+  Widget _modeTab(BuildContext context, bool media, String label, double padding) {
     final selected = mediaOnly == media;
     return Semantics(
       selected: selected,
@@ -131,38 +200,65 @@ class HomeTimelineControls extends StatelessWidget {
           if (!selected) onMediaToggle();
         },
         style: TextButton.styleFrom(
-          minimumSize: const Size(72, kTweetTouchTarget),
+          minimumSize: const Size(kTweetTouchTarget, kHomeFollowingBarHeight),
           foregroundColor: selected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(horizontal: padding),
           shape: const RoundedRectangleBorder(),
         ),
-        child: AnimatedContainer(
-          duration: xtaMotionDuration(context, kXtaMotionStandard),
-          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: selected ? tweetReadableAccentColor(context) : Colors.transparent, width: 3),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+        child: SizedBox(
+          height: kHomeFollowingBarHeight,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              if (media) ...[const Icon(Icons.photo_library_outlined, size: 20), const SizedBox(width: 6)],
-              Text(label, style: TextStyle(fontWeight: selected ? FontWeight.w700 : FontWeight.w500)),
+              Text(label, style: _tabStyle(selected: selected)),
+              PositionedDirectional(
+                start: 0,
+                end: 0,
+                bottom: 0,
+                child: AnimatedContainer(
+                  duration: xtaMotionDuration(context, kXtaMotionStandard),
+                  height: kHomeTabMarkerHeight,
+                  decoration: BoxDecoration(
+                    color: selected ? tweetReadableAccentColor(context) : Colors.transparent,
+                    borderRadius: BorderRadius.circular(kHomeTabMarkerHeight),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _orderButton(BuildContext context, List<String> labels, {required bool compact}) {
+/// Ordering and filters in one chip. The order's name is said, not drawn:
+/// the chip shows how many filters are on, and [compact] drops the chevron.
+class HomeOrderChip extends StatelessWidget {
+  final SubscriptionGroupGet group;
+  final ValueChanged<int> onOrderSelected;
+  final VoidCallback onFilters;
+  final bool compact;
+
+  const HomeOrderChip({
+    super.key,
+    required this.group,
+    required this.onOrderSelected,
+    required this.onFilters,
+    this.compact = false,
+  });
+
+  int get _order => group.custom ? 2 : (group.popular ? 1 : 0);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final labels = [l10n.recent, l10n.popular, l10n.custom];
     final filters = groupActiveFilterCount(group);
     return PopupMenuButton<int>(
       key: const ValueKey('home-order-menu'),
       initialValue: _order,
-      tooltip: '${labels[_order]} · ${L10n.of(context).filters}',
+      tooltip: '${labels[_order]} · ${l10n.filters}',
       position: PopupMenuPosition.under,
       onSelected: (value) => value == 3 ? onFilters() : onOrderSelected(value),
       itemBuilder: (_) => [
@@ -190,7 +286,7 @@ class HomeTimelineControls extends StatelessWidget {
             children: [
               const Icon(Icons.build_outlined, size: 24),
               const SizedBox(width: 12),
-              Expanded(child: Text(L10n.of(context).filters)),
+              Expanded(child: Text(l10n.filters)),
               if (filters > 0) Badge.count(count: filters),
             ],
           ),
@@ -198,21 +294,34 @@ class HomeTimelineControls extends StatelessWidget {
       ],
       child: Semantics(
         button: true,
-        child: Container(
-          constraints: const BoxConstraints(minHeight: kTweetTouchTarget, minWidth: kTweetTouchTarget),
-          padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 12),
-          decoration: BoxDecoration(
-            color: tweetSecondaryColor(context).withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.sort, size: 20),
-              if (!compact) ...[const SizedBox(width: 8), Text(labels[_order], style: tweetLabelStyle(context))],
-              if (filters > 0) ...[const SizedBox(width: 8), Badge.count(count: filters)],
-              if (!compact) ...[const SizedBox(width: 4), const Icon(Icons.expand_more, size: 18)],
-            ],
+        child: SizedBox(
+          height: kTweetTouchTarget,
+          child: Center(
+            child: Container(
+              height: kHomeOrderChipHeight,
+              constraints: const BoxConstraints(minWidth: kTweetTouchTarget),
+              alignment: Alignment.center,
+              padding: EdgeInsetsDirectional.only(start: 10, end: compact ? 10 : 6),
+              decoration: BoxDecoration(
+                color: Color.alphaBlend(
+                  tweetPrimaryColor(context).withValues(alpha: 0.08),
+                  Theme.of(context).scaffoldBackgroundColor,
+                ),
+                border: Border.all(color: tweetDividerColor(context)),
+                borderRadius: BorderRadius.circular(kHomeOrderChipHeight / 2),
+              ),
+              child: IconTheme.merge(
+                data: IconThemeData(color: tweetPrimaryColor(context)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.sort, size: 18),
+                    if (filters > 0) ...[const SizedBox(width: kTweetSpace1), Badge.count(count: filters)],
+                    if (!compact) ...[const SizedBox(width: 2), const Icon(Icons.expand_more, size: 18)],
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

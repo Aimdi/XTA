@@ -4,7 +4,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/_feed.dart';
-import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -85,7 +84,7 @@ void main() {
       expect(search.hitTestable(), findsOneWidget);
       _expectSameRow(tester, picker, search);
       _expectSameRow(tester, picker, find.byKey(_options));
-      expect(find.byType(DrawerAvatarButton), findsNothing);
+      expect(find.byKey(const ValueKey('home-following-bar')), findsNothing);
       expect(find.byKey(const ValueKey('home-source-picker')), findsNothing);
       expect(find.byKey(const ValueKey('x-reader-library-menu')), findsNothing, reason: 'No second row above For you.');
       expect(find.byTooltip(l10n.home_feed_accounts), findsNothing);
@@ -138,7 +137,7 @@ void main() {
       expect(search.hitTestable(), findsOneWidget);
       _expectSameRow(tester, picker, search);
       expect(find.byTooltip(l10n.plugin_reddit_sort), findsNothing);
-      expect(find.byType(DrawerAvatarButton), findsNothing);
+      expect(find.byKey(const ValueKey('home-following-bar')), findsNothing);
       expect(find.byKey(const ValueKey('reddit-community-flutter')), findsNothing, reason: 'Chips live in options.');
       expect(find.textContaining('r/flutter about reading'), findsWidgets);
       expect(_attention(tester), isFalse);
@@ -218,13 +217,14 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Following keeps its own title, picker and actions next to docked sources', (tester) async {
+  testWidgets('Following keeps its own bar, picker and actions next to docked sources', (tester) async {
     final h = await _pumpHome(tester, FeedTab.following, _variants.first);
     void expectFollowing() {
+      expect(find.byKey(const ValueKey('home-following-bar')).hitTestable(), findsOneWidget);
       expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
       expect(find.byTooltip(L10n.current.home_feed_accounts).hitTestable(), findsOneWidget);
       expect(find.byTooltip(L10n.current.reader_search_loaded).hitTestable(), findsOneWidget);
-      expect(find.byType(DrawerAvatarButton), findsOneWidget);
+      expect(find.byTooltip('Open navigation menu'), findsNothing, reason: 'the avatar went; the menu is in Feeds');
       expect(find.byKey(_options), findsNothing);
       expect(find.byTooltip('Refresh'), findsNothing);
     }

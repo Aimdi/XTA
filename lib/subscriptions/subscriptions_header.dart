@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/ui/label_width.dart';
 import 'package:xta/ui/x_controls.dart';
 
 /// How the subscriptions header fits the Gruppen | Abos switch beside its actions.
@@ -37,17 +38,12 @@ double subscriptionTabsWidth(BuildContext context, List<String> labels, {require
   final style = (Theme.of(context).textTheme.titleSmall ?? const TextStyle())
       .merge(TabBarTheme.of(context).labelStyle)
       .copyWith(fontWeight: FontWeight.w700);
-  return labels.fold(0.0, (width, label) {
-    final painter = TextPainter(
-      text: TextSpan(text: label, style: style),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
-      maxLines: 1,
-    )..layout();
-    final tab = painter.width + subscriptionsHeaderTabPadding.horizontal + (icons ? _tabIcon : 0);
-    painter.dispose();
-    return width + tab;
-  });
+  return labelsWidth(
+    context,
+    labels,
+    style,
+    padding: subscriptionsHeaderTabPadding.horizontal + (icons ? _tabIcon : 0),
+  );
 }
 
 /// The width beside the switch: the screen less Back, when the route has one,

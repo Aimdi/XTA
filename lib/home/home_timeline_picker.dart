@@ -26,13 +26,19 @@ class HomeTimelineOption {
   });
 }
 
+/// What Home's avatar opened before Following's header became one bar: the
+/// side menu on a tap, the sheet that sets the avatar on a long press.
+enum HomeTimelineMenu { drawer, avatar }
+
 class HomeTimelineSelection {
   final String? id;
   final String? groupId;
+  final HomeTimelineMenu? menu;
 
-  const HomeTimelineSelection.source(this.id) : groupId = null;
-  const HomeTimelineSelection.add() : id = null, groupId = null;
-  const HomeTimelineSelection.group(this.groupId) : id = null;
+  const HomeTimelineSelection.source(this.id) : groupId = null, menu = null;
+  const HomeTimelineSelection.add() : id = null, groupId = null, menu = null;
+  const HomeTimelineSelection.group(this.groupId) : id = null, menu = null;
+  const HomeTimelineSelection.menu(HomeTimelineMenu this.menu) : id = null, groupId = null;
 }
 
 /// Sources have room for full names without taking a second navigation row.
@@ -41,6 +47,9 @@ class HomeTimelinePicker extends StatefulWidget {
   final String selected;
   final List<HomeTimelineOption> groups;
   final bool showAdd;
+
+  /// Offers the side menu, which Following's bar has no avatar for.
+  final bool showMenu;
   final bool groupMicroblogs;
   final String? rememberedMicroblog;
 
@@ -50,6 +59,7 @@ class HomeTimelinePicker extends StatefulWidget {
     required this.selected,
     this.groups = const [],
     this.showAdd = true,
+    this.showMenu = false,
     this.groupMicroblogs = false,
     this.rememberedMicroblog,
   });
@@ -194,6 +204,19 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
                     onPressed: () => Navigator.pop(context, const HomeTimelineSelection.add()),
                     icon: const Icon(Icons.add),
                     label: Text(l10n.feed_strip_add),
+                  ),
+                ),
+              if (widget.showMenu)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: TextButton.icon(
+                    key: const ValueKey('home-open-menu'),
+                    style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+                    onPressed: () => Navigator.pop(context, const HomeTimelineSelection.menu(HomeTimelineMenu.drawer)),
+                    onLongPress: () =>
+                        Navigator.pop(context, const HomeTimelineSelection.menu(HomeTimelineMenu.avatar)),
+                    icon: const Icon(Icons.menu),
+                    label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
                   ),
                 ),
             ],

@@ -39,7 +39,8 @@ import 'package:xta/utils/read_visibility.dart';
 const _before = bool.fromEnvironment('HOME_LAYOUT_BEFORE');
 const _media = ValueKey('home-media-toggle');
 const _order = ValueKey('home-order-menu');
-const _readingControls = ValueKey('home-reading-controls');
+const _bar = ValueKey('home-following-bar');
+const _menu = ValueKey('home-open-menu');
 const _picker = ValueKey('home-source-picker');
 const _postsTab = ValueKey('home-posts-tab');
 
@@ -314,6 +315,7 @@ void main() {
         expect(find.byKey(const ValueKey('home-source-following')).hitTestable(), findsOneWidget);
         expect(find.byKey(const ValueKey('home-source-x')).hitTestable(), findsOneWidget);
         expect(find.byKey(const ValueKey('home-add-timeline')).hitTestable(), findsOneWidget);
+        expect(find.byKey(_menu).hitTestable(), findsOneWidget);
         expect(tester.takeException(), isNull);
         await expectLater(
           find.byType(Overlay).first,
@@ -325,74 +327,77 @@ void main() {
     });
   }
 
-  for (final reduceMotion in [false, true]) {
-    testWidgets('Home controls return only at the top (reduced motion $reduceMotion)', (tester) async {
-      tester.view.physicalSize = const Size(390, 844);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final semantics = tester.ensureSemantics();
-      try {
-        final h = _HomeHarness();
-        addTearDown(() => h.close(tester));
-        await tester.runAsync(() async {
-          await h.seed(postCount: 20);
-          await h.prefs.set(optionDisableAnimations, reduceMotion);
-        });
-        await tester.pumpWidget(h.app(xLookLightTheme(null)));
-        await _waitForFollowing(tester);
-        final feed = find.byType(SubscriptionGroupScreenContent);
-        final heightAtTop = tester.getSize(feed).height;
-        final position = h.scroll.position;
-        final items = h.cache.getOrCreateController('home--1').items!;
-        expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-        expect(find.byType(HomeFeedStrip), findsNothing);
-        expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
-        if (reduceMotion) {
-          await expectLater(
-            find.byKey(const ValueKey('home-render')),
-            matchesGoldenFile('../review-artifacts/renders/home-following-top.png'),
-          );
+  testWidgets('Following keeps its one bar while the feed is read', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final semantics = tester.ensureSemantics();
+    try {
+      final h = _HomeHarness();
+      addTearDown(() => h.close(tester));
+      await tester.runAsync(() => h.seed(postCount: 20));
+      await tester.pumpWidget(h.app(xLookLightTheme(null)));
+      await _waitForFollowing(tester);
+      final feed = find.byType(SubscriptionGroupScreenContent);
+      final heightAtTop = tester.getSize(feed).height;
+      final position = h.scroll.position;
+      final items = h.cache.getOrCreateController('home--1').items!;
+      void expectBar() {
+        expect(tester.getSize(find.byKey(_bar)).height, 48);
+        for (final control in [_postsTab, _media, _order, _picker]) {
+          expect(find.byKey(control).hitTestable(), findsOneWidget, reason: '$control');
         }
-        await tester.drag(feed, const Offset(0, -260));
-        await tester.pumpAndSettle();
-        expect(position.pixels, greaterThan(100));
-        expect(h.scroll.position, same(position));
-        expect(tester.getSize(find.byKey(_readingControls)).height, 0);
-        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
-        expect(tester.getSize(feed).height, closeTo(heightAtTop + 56, 1));
-        expect(find.byKey(_media).hitTestable(), findsNothing);
-        expect(_hasAccessibleLabel(tester, 'Media'), isFalse);
         expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
-        expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
-        if (reduceMotion) {
-          await expectLater(
-            find.byKey(const ValueKey('home-render')),
-            matchesGoldenFile('../review-artifacts/renders/home-following-reading.png'),
-          );
-        }
-        await tester.drag(feed, const Offset(0, 60));
-        await tester.pumpAndSettle();
-        expect(position.pixels, greaterThan(0));
-        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
-        position.jumpTo(1);
-        await tester.pumpAndSettle();
-        expect(tester.getSize(find.byKey(_readingControls)).height, 0);
-        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
-        position.jumpTo(0);
-        await tester.pumpAndSettle();
-        expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-        expect(find.byType(HomeFeedStrip), findsNothing);
-        expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
-        expect(find.byKey(_media).hitTestable(), findsOneWidget);
         expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
-        expect(h.cache.getOrCreateController('home--1').items, orderedEquals(items));
-        expect(tester.takeException(), isNull);
-      } finally {
-        semantics.dispose();
+        expect(find.byType(HomeFeedStrip), findsNothing);
       }
-    }, skip: _before);
-  }
+
+      expectBar();
+      await expectLater(
+        find.byKey(const ValueKey('home-render')),
+        matchesGoldenFile('../review-artifacts/renders/home-following-top.png'),
+      );
+      await tester.drag(feed, const Offset(0, -260));
+      await tester.pumpAndSettle();
+      expect(position.pixels, greaterThan(100));
+      expect(h.scroll.position, same(position));
+      expectBar();
+      expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
+      expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
+      await expectLater(
+        find.byKey(const ValueKey('home-render')),
+        matchesGoldenFile('../review-artifacts/renders/home-following-reading.png'),
+      );
+      position.jumpTo(0);
+      await tester.pumpAndSettle();
+      expectBar();
+      expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
+      expect(h.cache.getOrCreateController('home--1').items, orderedEquals(items));
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
+  }, skip: _before);
+
+  testWidgets('The Feeds sheet opens the side menu', (tester) async {
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+    expect(
+      find.byTooltip(MaterialLocalizations.of(tester.element(find.byKey(_bar))).openAppDrawerTooltip),
+      findsNothing,
+    );
+    await tester.tap(find.byKey(_picker));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(_menu));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('home-source-sheet')), findsNothing);
+    expect(find.text('Drawer fixture').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  }, skip: _before);
 
   testWidgets('The last Home post scrolls fully above the floating bar', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -435,7 +440,7 @@ void main() {
     expect(tester.takeException(), isNull);
   }, skip: _before);
 
-  testWidgets('A short scrollable Home keeps controls stable', (tester) async {
+  testWidgets('A short scrollable Home keeps its bar stable', (tester) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -453,7 +458,7 @@ void main() {
     position.jumpTo(30);
     await tester.pumpAndSettle();
     expect(position.pixels, closeTo(30, 1));
-    expect(tester.getSize(find.byKey(_readingControls)).height, 56);
+    expect(tester.getSize(find.byKey(_bar)).height, 48);
     expect(find.byType(HomeFeedStrip), findsNothing);
     expect(tester.takeException(), isNull);
   }, skip: _before);
@@ -475,7 +480,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('home-source-following')));
     await tester.pumpAndSettle();
     expect(h.scroll.offset, closeTo(offset, 1));
-    expect(tester.getSize(find.byKey(_readingControls)).height, 0);
+    expect(tester.getSize(find.byKey(_bar)).height, 48);
     expect(h.cache.getOrCreateController('home--1').items, orderedEquals(cached));
     await tester.tap(find.byKey(_picker));
     await tester.pumpAndSettle();

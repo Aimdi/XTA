@@ -9,6 +9,7 @@ import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/alt_microblogging.dart';
+import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_group_drawer.dart';
@@ -40,6 +41,7 @@ Future<HomeTimelineSelection?> showHomeSourcePicker(BuildContext context) async 
             builder: (context, unread) => AltMicrobloggingScope(
               builder: (context, grouped) => HomeTimelinePicker(
                 selected: tabs.state.id,
+                showMenu: true,
                 groupMicroblogs: grouped,
                 rememberedMicroblog: prefs.get<String>(optionAltMicrobloggingLastSource),
                 options: [
@@ -75,10 +77,21 @@ Future<HomeTimelineSelection?> showHomeSourcePicker(BuildContext context) async 
       ),
     ),
   );
-  if (!context.mounted || picked == null || picked.groupId != null || picked.id != null) return picked;
+  if (!context.mounted || picked == null) return null;
+  if (picked.menu case final menu?) {
+    await _openMenu(context, menu);
+    return null;
+  }
+  if (picked.groupId != null || picked.id != null) return picked;
   final added = await showFeedStripAddSheet(context);
   return context.mounted && added != null ? HomeTimelineSelection.source(added) : null;
 }
+
+/// What Home's avatar opened, from under the Scaffold that holds the menu.
+Future<void> _openMenu(BuildContext context, HomeTimelineMenu menu) async => switch (menu) {
+  HomeTimelineMenu.drawer => Scaffold.of(context).openDrawer(),
+  HomeTimelineMenu.avatar => await showChromeAvatarSheet(context),
+};
 
 class _PickerSources extends StatelessWidget {
   final GroupUnreadStore? unread;
