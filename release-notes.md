@@ -1,57 +1,34 @@
-## XTA — aimdi183
+## XTA — aimdi184
 
-### Abos and Gruppen take less room
+### Motion, as in X's new app
 
-- **One header row.** The Gruppen | Abos switch now stands where the title was, beside search, add and the options. The search field is a 🔍 in that row: it filters the list you are looking at, its hint says which one, and Back closes it. When a narrow screen, a long translation or large text leaves too little room, the switch first drops its icons, and only when even the names do not fit does the screen go back to two rows. The first group now starts 86 points from the top of the screen instead of about 212.
-- **Kompakt group tiles.** ⚙ → Spalten offers Kompakt beside 2 and 3: each group becomes a slim tile with its faces beside its name and count, 60 points tall instead of 148, so more than twice as many groups fit on the screen. The tile keeps the group's colour, the pin and NSFW marks, the NSFW blur, the unread dot and the ✨ discovery button, and it grows with large text.
-- **Dragging a subscription to reorder it works again.** The drag failed as soon as it began.
+- **Counts roll.** When X sends newer numbers, an opened post's views, replies, reposts and likes roll to them: the old number slides up and out as the new one comes in. A refreshed profile's Following and Followers roll too, and so does the media viewer's "1 / 4" as you swipe.
+- **The profile bar takes the banner.** Once a profile's header has scrolled away, the top bar shows its banner, blurred and darkened, behind the name. Scrolling back to the top clears it.
+- **A dragged row lifts.** Reordering subscriptions, groups, home tabs, saved folders, Pixiv tags or Booru prompts, the row you hold grows a little and floats on a shadow while the rows around it make room.
+- **A stock's price line draws itself in** from left to right when its chart opens or you pick another range.
 
-### X communities
+### Things arrive instead of popping in
 
-- **A community link opens the community** instead of "unable to open link": its banner, name, topic and members, a Popular tab with its posts, and an About tab with its rules and creation date. The member count opens the list of members.
-- **Search has a Communities tab**, and a post written in a community carries a chip that opens it.
-- Without an X account only the page itself loads; its posts, its members and the Communities search need one.
+- **Images fade in.** Avatars, card images, link previews, video posters, the media grid, poll options, the profile banner and the faces on group boards wait on a quiet surface and fade in once fetched, instead of a spinner. One already loaded shows at once.
+- **Opening a post** fades its replies and the reply order bar in where the placeholders were, and the post you opened stays still. An opened post's poll bars fill in to their shares.
+- **First pages fade in.** A feed's first page, a profile's posts and a profile itself fade in over their placeholders. Posts that replace cached ones already on screen do not blink.
+- **Notices drop in and lift away**, and "New posts" floats over the feed, above its source chips, without moving the posts.
+- **Translate eases.** The translation fades in while the post eases to its new height, so the media and footer below glide instead of jumping. Show original does the same, and a post opened with "Show more" stays open.
+- **What opens inside a feed eases to its new height:** price chips, "more posts with this link", folded posts, repost runs and a revealed sensitive post. "Followed by" on a profile grows in.
+- **Smaller touches.** Saving pops the bookmark. The profile's scroll-to-top button grows in and shrinks away. The video mute icon cross-fades. A tapped bottom-bar tab fades its page in. The line over a loading feed fades in and out, glides with a group's progress and fills before it goes.
 
-### Groups
+With reduced motion, XTA's own setting or Android's "remove animations", all of it happens at once.
 
-- **Saved searches in a group mean what they mean in search.** A saved search such as `from:nasa` or `list:123` was sent as a quoted phrase, so the group found nothing for it.
-- **Reply and repost filters cover every member.** The members now go to X as one bracketed list, so a group that hides reposts no longer shows some.
-- **About a third fewer searches per refresh.** Each search now holds as many members as X's 512-character limit allows, instead of 16, so a group runs into X's rate limit later. Each group loads its first page afresh the next time it opens.
-- **Posts from outside a group are flagged in a pill, not a dialog.** The check now compares accounts, not their names, so an account that renamed itself no longer sets it off, and saved searches are left out of it. Its info link works again.
+### Haptic feedback
 
-### X search
-
-- **More filters.** The filters screen can pick a language, show only replies or hide them, show only posts with links or hide them, and bring reposts into the results.
-- **Typed filters show up.** Operators typed into the search bar, such as `lang:de` or `-filter:replies`, now appear as chips and in the filters screen.
-
-### Posts and profiles
-
-- **Polls with images show.** Each option's image sits at the start of its bar and opens in the media viewer.
-- **Long Grok questions unfold** with "Show more" instead of stopping after three lines, and a post no longer leaves an empty line above its Grok card.
-- **Bold and italic Unicode letters keep their accents.** Posts written in 𝐛𝐨𝐥𝐝 or 𝑖𝑡𝑎𝑙𝑖𝑐 letters showed their accents as boxes.
-- **A protected profile says its posts are protected**, "Only approved followers on X can see @handle's posts", instead of loading empty tabs. Your own protected account still shows its posts.
-- **A profile X says does not exist says "User not found"**, and a suspended one says it is suspended, instead of "Oops! Something went wrong" and Retry.
+- **Liking and saving tap lightly.** Unliking and unsaving do not, and calm and zen mode keep it quiet.
+- **Settings → Accessibility → Haptic feedback** turns off every tap XTA gives: liking and saving, following from an avatar, the folder sheet, page swipes, the home filter and Pixiv's. It is on by default. Android's own buzz on a long press follows Android's touch feedback setting.
 
 ### Fixes
 
-- **Esperanto no longer breaks dates and numbers.** With XTA in Esperanto, an opened post, a profile, the trends list and absolute timestamps failed with "Invalid locale".
-- **Afternoon times are stored correctly.** A subscription, group or saved post added at 13:37 was stored as 01:37 and sorted as a morning one. Times stored before this release cannot be repaired: the AM or PM was never saved.
-- **Videos have sound on the Linux desktop.** XTA chose Android's audio output there too.
-- **A video no longer plays on unseen after full screen.** When its post was scrolled away or the screen rotated during full screen, the player kept running and held one of the three video slots until the app restarted; after three such videos, new ones stayed on their poster.
-- **A home tab you just turned on is highlighted when you tap it**, and Discover opened that way searches the network you came from.
-- **A group no longer starts a request in the last millisecond of its time budget**, only to have it time out at once.
+- **The Subscriptions list stays where you had it** when you unsubscribe someone or put them in or out of the main feed, instead of flashing to a spinner and jumping back to the top.
 
-### Accessibility
-
-- **Every icon-only button has a name** for TalkBack: scroll to top on profiles, export, import, add a location, the group icon picker, and the instance, secret and search buttons of the Mastodon, Threads, Bluesky and Instagram plugins.
-- **Each settings switch is read together with its title** and state, as one control, instead of "On, switch".
-
-### Behind the scenes
-
-- A pull request that touches XTA's profile, post or community screens now runs them on an Android emulator against a stand-in for X that answers from recorded responses: a profile, a post, an account that does not exist and a community.
-- When the daily live checks find that X changed its request signing, a workflow can ask Claude for a fix as a draft pull request for review. It stays off until a key for it is set.
-
-Everything else is as in aimdi182.
+Everything else is as in aimdi183.
 
 ### Licence note
 
@@ -59,10 +36,10 @@ The downloadable voices use sherpa-onnx, whose library includes espeak-ng under 
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi183_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001520**, above every aimdi182 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
+For most Android phones, use **`xta-aimdi184_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001530**, above every aimdi183 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
 
-For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.183-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
+For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.184-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
 
-The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs, and **`xta-aimdi183-debug-symbols.zip`** and **`xta-aimdi183-linux-debug-symbols.zip`** hold the debug symbols for reading crash traces.
+The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs, and **`xta-aimdi184-debug-symbols.zip`** and **`xta-aimdi184-linux-debug-symbols.zip`** hold the debug symbols for reading crash traces.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi182)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi183)
