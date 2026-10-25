@@ -112,6 +112,8 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
 
     return SliverReorderableList(
       itemCount: subLst.length,
+      // The dragged row is drawn in the overlay, away from the page's Material.
+      proxyDecorator: (child, _, _) => Material(type: MaterialType.transparency, child: child),
       itemBuilder: (context, i) => ReorderableDelayedDragStartListener(
         key: ValueKey(subLst[i].id),
         index: i,
