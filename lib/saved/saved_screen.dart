@@ -5,7 +5,6 @@ import 'package:xta/offline/offline_library_screen.dart';
 import 'package:xta/offline/offline_saved_action.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 
 import 'package:xta/client/client.dart';
@@ -47,6 +46,7 @@ import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/ui/action_feedback.dart';
 
 class SavedScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -412,10 +412,7 @@ class _SavedScreenState extends State<SavedScreen>
     }
     var folder = matches.first;
 
-    await HapticFeedback.lightImpact();
-    if (!mounted) {
-      return;
-    }
+    lightHaptic(context);
 
     await showModalBottomSheet(
       context: context,

@@ -1,10 +1,14 @@
-import 'dart:ui' show FontFeature;
+import 'dart:ui' show FontFeature, ImageFilter;
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
+import 'package:xta/ui/image_fade_in.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/rolling_count.dart';
 import 'package:xta/ui/verified_badges.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
@@ -46,11 +50,11 @@ class ProfileBanner extends StatelessWidget {
               width: double.infinity,
               height: height,
               fit: BoxFit.cover,
-              loadStateChanged: (state) =>
-                  switch (state.extendedImageLoadState) {
-                    LoadState.failed => ColoredBox(color: fallback),
-                    _ => null,
-                  },
+              loadStateChanged: (state) => fadeInImageLoadState(
+                state,
+                placeholder: ColoredBox(color: fallback),
+                failed: ColoredBox(color: fallback),
+              ),
             ),
     );
 
@@ -62,6 +66,153 @@ class ProfileBanner extends StatelessWidget {
         color: fallback,
         child: InkWell(onTap: uri == null ? null : onTap, child: image),
       ),
+    );
+  }
+}
+
+/// How dark the banner behind the top bar is made, so white text over any
+/// banner keeps at least 4.5:1 against it.
+const double kProfileBarBannerScrim = 0.55;
+
+/// The profile's banner behind the top bar once the header has scrolled away,
+/// blurred and darkened as X's is, with the name in white over it. The copy
+/// the header loaded is reused, so nothing new is downloaded.
+class ProfileBarBanner extends StatelessWidget {
+  final String uri;
+
+  const ProfileBarBanner({super.key, required this.uri});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: ClipRect(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ImageFiltered(
+              imageFilter: ImageFilter.blur(
+                sigmaX: 12,
+                sigmaY: 12,
+                tileMode: TileMode.clamp,
+              ),
+              child: ExtendedImage.network(
+                uri,
+                fit: BoxFit.cover,
+                // No spinner or retry button in the bar: until the picture
+                // is there, the darkened bar alone carries the name.
+                loadStateChanged: (state) =>
+                    state.extendedImageLoadState == LoadState.completed
+                    ? null
+                    : const SizedBox.shrink(),
+              ),
+            ),
+            ColoredBox(
+              color: Colors.black.withValues(alpha: kProfileBarBannerScrim),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The profile's top bar. Once the header has scrolled away ([scrolled]) the
+/// name rises into the bar over the profile's banner, blurred and darkened as
+/// X's is, and the bar's text, icons and status bar turn light over it.
+class ProfileTopBar extends StatelessWidget {
+  final String name;
+  final String username;
+  final String? bannerUrl;
+  final bool scrolled;
+  final List<Widget> actions;
+
+  const ProfileTopBar({
+    super.key,
+    required this.name,
+    required this.username,
+    required this.bannerUrl,
+    required this.scrolled,
+    required this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(end: scrolled ? 1 : 0),
+      duration: xtaMotionDuration(context, kXtaMotionStandard),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, _) => _barAt(context, t),
+    );
+  }
+
+  /// The bar at [t], from the header in view (0) to scrolled away (1).
+  SliverAppBar _barAt(BuildContext context, double t) {
+    final banner = bannerUrl;
+    final onBanner = banner == null ? 0.0 : t;
+    final theme = Theme.of(context);
+    final foreground = Color.lerp(
+      theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface,
+      Colors.white,
+      onBanner,
+    );
+    return SliverAppBar(
+      pinned: true,
+      floating: false,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      foregroundColor: foreground,
+      // Named outright: left to Material, the actions fall back to the
+      // theme's grey icon buttons as soon as the colour moves.
+      iconTheme: IconThemeData(color: foreground),
+      actionsIconTheme: IconThemeData(color: foreground),
+      systemOverlayStyle: onBanner > 0.5 ? SystemUiOverlayStyle.light : null,
+      flexibleSpace: onBanner == 0
+          ? null
+          : Opacity(
+              opacity: onBanner,
+              child: ProfileBarBanner(uri: banner!),
+            ),
+      titleSpacing: 0,
+      title: t == 0
+          ? null
+          : Opacity(
+              opacity: t,
+              child: Transform.translate(
+                offset: Offset(0, 8 * (1 - t)),
+                child: _title(context, onBanner),
+              ),
+            ),
+      actions: actions,
+    );
+  }
+
+  /// The name and handle, turning white over the banner by [onBanner].
+  Widget _title(BuildContext context, double onBanner) {
+    final nameStyle = tweetLabelStyle(context);
+    final handleStyle = tweetMetadataStyle(context).copyWith(fontSize: 11);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: nameStyle.copyWith(
+            color: Color.lerp(nameStyle.color, Colors.white, onBanner),
+          ),
+        ),
+        Text(
+          '@$username',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textDirection: TextDirection.ltr,
+          style: handleStyle.copyWith(
+            color: Color.lerp(handleStyle.color, Colors.white70, onBanner),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -172,22 +323,73 @@ class ProfileMetadataItem extends StatelessWidget {
   }
 }
 
-class ProfileCountButton extends StatelessWidget {
+/// Following or followers: [count] and its [label]. When X's copy of the
+/// profile replaces the cached one, the count rolls to its new number, as a
+/// post's counts do; until then it is plain text.
+class ProfileCountButton extends StatefulWidget {
   final String count;
+
+  /// The number [count] shows, which picks the way it rolls.
+  final int? value;
   final String label;
   final VoidCallback onTap;
 
   const ProfileCountButton({
     super.key,
     required this.count,
+    this.value,
     required this.label,
     required this.onTap,
   });
 
   @override
+  State<ProfileCountButton> createState() => _ProfileCountButtonState();
+}
+
+class _ProfileCountButtonState extends State<ProfileCountButton> {
+  /// What the count showed before it first changed.
+  ({String text, int? value})? _from;
+
+  @override
+  void didUpdateWidget(ProfileCountButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_from == null && oldWidget.count != widget.count) {
+      _from = (text: oldWidget.count, value: oldWidget.value);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final style = tweetLabelStyle(
+      context,
+    ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
+    final from = _from;
+    final text = Text.rich(
+      TextSpan(
+        children: [
+          if (from == null)
+            TextSpan(text: widget.count, style: style)
+          else
+            WidgetSpan(
+              alignment: PlaceholderAlignment.baseline,
+              baseline: TextBaseline.alphabetic,
+              child: RollingCount(
+                widget.count,
+                value: widget.value,
+                style: style,
+                from: from.text,
+                fromValue: from.value,
+              ),
+            ),
+          TextSpan(
+            text: ' ${widget.label}',
+            style: tweetMetadataStyle(context),
+          ),
+        ],
+      ),
+    );
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       borderRadius: BorderRadius.circular(kProfileControlRadius),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
@@ -197,19 +399,14 @@ class ProfileCountButton extends StatelessWidget {
             alignment: AlignmentDirectional.centerStart,
             widthFactor: 1,
             heightFactor: 1,
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: count,
-                    style: tweetLabelStyle(context).copyWith(
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
+            // A rolling count sits in the line as a widget, which a screen
+            // reader would read apart from its label.
+            child: from == null
+                ? text
+                : Semantics(
+                    label: '${widget.count} ${widget.label}',
+                    child: ExcludeSemantics(child: text),
                   ),
-                  TextSpan(text: ' $label', style: tweetMetadataStyle(context)),
-                ],
-              ),
-            ),
           ),
         ),
       ),

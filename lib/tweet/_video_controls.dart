@@ -740,7 +740,13 @@ class _MuteButtonState extends State<_MuteButton> {
         child: IconButton(
           iconSize: 24.0,
           color: Colors.white,
-          icon: Icon(_volume > 0 ? Icons.volume_up : Icons.volume_off),
+          icon: XtaAnimatedSwitcher(
+            duration: kXtaMotionFast,
+            child: Icon(
+              _volume > 0 ? Icons.volume_up : Icons.volume_off,
+              key: ValueKey(_volume > 0),
+            ),
+          ),
           onPressed: toggle,
         ),
       ),

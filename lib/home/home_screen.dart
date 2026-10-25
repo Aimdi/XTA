@@ -227,8 +227,14 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   State<ScaffoldWithBottomNavigation> createState() => _ScaffoldWithBottomNavigationState();
 }
 
-class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation> {
+class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation>
+    with SingleTickerProviderStateMixin {
   late PageController _pageController;
+
+  /// A page reached from the bar lands at once and fades in, where a swipe
+  /// slides it in.
+  late final AnimationController _pageFade;
+  late final Animation<double> _pageOpacity;
   late final ValueNotifier<int> _pageIndex;
   late final _visibility = HomeNavigationVisibilityStore(widget.prefs);
   final Map<int, ScrollController> _scrollControllers = {};
@@ -258,6 +264,8 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     final initial = widget.pages.isEmpty ? 0 : widget.initialPage.clamp(0, _barPages.length - 1);
     _pageIndex = ValueNotifier(initial);
     _pageController = PageController(initialPage: initial);
+    _pageFade = AnimationController(vsync: this, duration: kXtaMotionFast, value: 1);
+    _pageOpacity = _pageFade.drive(CurveTween(curve: Curves.easeOutCubic));
     for (int i = 0; i < pageCount; i++) {
       _scrollControllers[i] = ScrollController();
       _focusNodes[i] = FocusNode();
@@ -393,20 +401,23 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
             child: HomeNavigationClearance(
               child: HomePageSwiper(
                 movePage: _movePageBy,
-                child: PageView.builder(
-                  controller: _pageController,
-                  // Tabs change from the bar and nowhere else. A drag anywhere in a
-                  // page used to make media, nested tabs and sliders compete with the
-                  // pager. Edge-aware children explicitly hand off at their boundary.
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _barPages.length,
-                  onPageChanged: (page) => _showPage(from: _pageIndex.value, to: page),
-                  itemBuilder: (context, index) {
-                    return KeyedSubtree(
-                      key: PageStorageKey<String>(_barPages[index].id),
-                      child: widget.builder(index, _scrollControllers, _focusNodes),
-                    );
-                  },
+                child: FadeTransition(
+                  opacity: _pageOpacity,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    // Tabs change from the bar and nowhere else. A drag anywhere in a
+                    // page used to make media, nested tabs and sliders compete with the
+                    // pager. Edge-aware children explicitly hand off at their boundary.
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _barPages.length,
+                    onPageChanged: (page) => _showPage(from: _pageIndex.value, to: page),
+                    itemBuilder: (context, index) {
+                      return KeyedSubtree(
+                        key: PageStorageKey<String>(_barPages[index].id),
+                        child: widget.builder(index, _scrollControllers, _focusNodes),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -581,6 +592,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
       // A pager that has just gained pages still measures itself by the old
       // count: a jump past its old end reports the old last page, or nothing.
       if (_pageIndex.value != target) _showPage(from: from, to: target);
+      if (!reduceMotion) _pageFade.forward(from: 0);
     } else {
       _pendingPage = target;
       unawaited(
@@ -597,6 +609,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     _visibility.destroy();
     _pageIndex.dispose();
     _pageController.dispose();
+    _pageFade.dispose();
     for (final controller in _scrollControllers.values) {
       controller.dispose();
     }

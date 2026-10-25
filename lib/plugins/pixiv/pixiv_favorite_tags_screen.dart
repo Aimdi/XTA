@@ -14,6 +14,7 @@ import 'package:xta/plugins/pixiv/pixiv_search_results.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/reader_tab_view.dart';
+import 'package:xta/ui/reorder_lift.dart';
 import 'package:xta/utils/reader_value_store.dart';
 
 /// Favourite tags as saved searches: a tab per tag, each a full search under
@@ -108,6 +109,7 @@ class _PixivFavoriteTagsScreenState extends State<PixivFavoriteTagsScreen> {
     return Scaffold(
       appBar: _appBar(context, editing: true, canEdit: true),
       body: ReorderableListView.builder(
+        proxyDecorator: xtaReorderLift,
         buildDefaultDragHandles: false,
         padding: const EdgeInsets.only(bottom: 24),
         header: Padding(

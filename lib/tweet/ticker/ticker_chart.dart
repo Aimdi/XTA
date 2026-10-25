@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/formatting_locale.dart';
 
 /// Room reserved for the price labels down the right edge.
@@ -14,6 +15,9 @@ const double kTickerAxisHeight = 22;
 
 /// How many price gridlines the chart draws, the last one included.
 const int kTickerGridLines = 4;
+
+/// How long the price line takes to draw itself in, as X's stock cards do.
+const Duration kTickerChartDrawIn = Duration(milliseconds: 700);
 
 /// The price line for a symbol, with axes and a scrubber.
 ///
@@ -29,19 +33,64 @@ class TickerChart extends StatefulWidget {
   /// Called with the point being touched, and null when the finger lifts.
   final ValueChanged<TickerPoint?>? onScrub;
 
+  /// What the chart shows, such as its range: a new one draws the line in
+  /// again, while a refreshed quote for the same one keeps it drawn.
+  final Object? drawKey;
+
   const TickerChart({
     super.key,
     required this.quote,
     this.height = 200,
     this.onScrub,
+    this.drawKey,
   });
 
   @override
   State<TickerChart> createState() => _TickerChartState();
 }
 
-class _TickerChartState extends State<TickerChart> {
+class _TickerChartState extends State<TickerChart>
+    with SingleTickerProviderStateMixin {
   int? _active;
+  bool _drawnIn = false;
+
+  /// How much of the line is drawn, from its start (0) to all of it (1).
+  late final AnimationController _drawIn = AnimationController(
+    vsync: this,
+    duration: kTickerChartDrawIn,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_drawnIn) {
+      _drawnIn = true;
+      _drawLine();
+    }
+  }
+
+  @override
+  void didUpdateWidget(TickerChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.drawKey != widget.drawKey) {
+      _drawLine();
+    }
+  }
+
+  @override
+  void dispose() {
+    _drawIn.dispose();
+    super.dispose();
+  }
+
+  /// Draws the line in from its start, or at once with reduced motion.
+  void _drawLine() {
+    if (xtaReduceMotion(context)) {
+      _drawIn.value = 1;
+    } else {
+      _drawIn.forward(from: 0);
+    }
+  }
 
   void _updateFrom(double dx, double width) {
     final points = widget.quote.points;
@@ -126,6 +175,7 @@ class _TickerChartState extends State<TickerChart> {
                 dateLabels: _dateLabels(),
                 active: _active,
                 textScaler: MediaQuery.textScalerOf(context),
+                drawn: _drawIn,
               ),
             ),
           ),
@@ -147,6 +197,9 @@ class _TickerChartPainter extends CustomPainter {
   final int? active;
   final TextScaler textScaler;
 
+  /// How much of the line and its shading is drawn; repaints as it moves.
+  final Animation<double> drawn;
+
   _TickerChartPainter({
     required this.closes,
     required this.baseline,
@@ -158,7 +211,8 @@ class _TickerChartPainter extends CustomPainter {
     required this.dateLabels,
     required this.active,
     required this.textScaler,
-  });
+    required this.drawn,
+  }) : super(repaint: drawn);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -198,6 +252,18 @@ class _TickerChartPainter extends CustomPainter {
       _paintBaseline(canvas, plot, yFor(base));
     }
 
+    // The line and its shading draw themselves in from the left; the
+    // gridlines, labels and previous close are there from the start. The
+    // clip leaves room for the stroke's round ends.
+    canvas.save();
+    canvas.clipRect(
+      Rect.fromLTRB(
+        -4,
+        -4,
+        plot.width * Curves.easeOutCubic.transform(drawn.value) + 4,
+        plot.height + 4,
+      ),
+    );
     canvas.drawPath(
       Path.from(path)
         ..lineTo(plot.width, plot.height)
@@ -220,6 +286,7 @@ class _TickerChartPainter extends CustomPainter {
         ..strokeJoin = StrokeJoin.round
         ..strokeCap = StrokeCap.round,
     );
+    canvas.restore();
 
     final index = active;
     if (index != null && index >= 0 && index < closes.length) {
@@ -344,5 +411,6 @@ class _TickerChartPainter extends CustomPainter {
       old.baseline != baseline ||
       old.line != line ||
       old.active != active ||
-      old.dateLabels != dateLabels;
+      old.dateLabels != dateLabels ||
+      old.drawn != drawn;
 }

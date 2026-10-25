@@ -13,6 +13,7 @@ import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/reorder_lift.dart';
 
 class SavedFoldersScreen extends StatefulWidget {
   const SavedFoldersScreen({super.key});
@@ -158,6 +159,7 @@ class _SavedFoldersScreenState extends State<SavedFoldersScreen> {
               );
 
               return ReorderableListView.builder(
+                proxyDecorator: xtaReorderLift,
                 buildDefaultDragHandles: false,
                 itemCount: tokens.length,
                 onReorderItem: (oldIndex, newIndex) =>

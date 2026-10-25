@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/edge_swipe.dart';
 import 'package:xta/home/home_swipe_navigation.dart';
@@ -104,6 +105,22 @@ void main() {
     expect(h.changes, [2]);
     expect(haptics, ['HapticFeedbackType.selectionClick']);
     expect(find.byKey(_preview), findsNothing);
+  });
+
+  testWidgets('with haptic feedback off a committed swipe gives no tick', (tester) async {
+    final h = _Harness();
+    addTearDown(h.dispose);
+    await tester.pumpWidget(
+      PrefService(
+        service: PrefServiceCache(cache: {optionHapticFeedback: false}),
+        child: h.app(),
+      ),
+    );
+    final gesture = await _drag(tester);
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(h.changes, [2]);
+    expect(haptics, isEmpty);
   });
 
   testWidgets('short, reversed, cancelled, and boundary drags stay quiet', (tester) async {

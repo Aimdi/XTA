@@ -3,6 +3,7 @@ import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 /// A chain folded behind a one-line reason (Mastodon CW / local filter fold).
 class FoldedChain extends StatefulWidget {
@@ -25,54 +26,62 @@ class _FoldedChainState extends State<FoldedChain> {
   bool _expanded = false;
 
   @override
-  Widget build(BuildContext context) {
-    if (_expanded) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Semantics(
-            button: true,
-            child: InkWell(
-              onTap: () => setState(() => _expanded = false),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: kTweetTouchTarget,
+  Widget build(BuildContext context) => XtaAnimatedSwitcher(
+    animateSize: true,
+    child: KeyedSubtree(
+      key: ValueKey(_expanded),
+      child: _expanded ? _open(context) : _folded(context),
+    ),
+  );
+
+  Widget _open(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          button: true,
+          child: InkWell(
+            onTap: () => setState(() => _expanded = false),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: kTweetTouchTarget,
+              ),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: kTweetHorizontalPadding,
+                  vertical: kTweetSpace2,
                 ),
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.symmetric(
-                    horizontal: kTweetHorizontalPadding,
-                    vertical: kTweetSpace2,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.expand_less,
-                        size: kTweetActionIconSize,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.expand_less,
+                      size: kTweetActionIconSize,
+                      color: tweetReadableAccentColor(context),
+                    ),
+                    const SizedBox(width: kTweetSpace2),
+                    Text(
+                      L10n.of(context).filter_fold_hide_again,
+                      style: tweetLabelStyle(context).copyWith(
                         color: tweetReadableAccentColor(context),
                       ),
-                      const SizedBox(width: kTweetSpace2),
-                      Text(
-                        L10n.of(context).filter_fold_hide_again,
-                        style: tweetLabelStyle(context).copyWith(
-                          color: tweetReadableAccentColor(context),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-          TweetConversation(
-            id: widget.chain.id,
-            tweets: widget.chain.tweets,
-            username: widget.username,
-            isPinned: widget.chain.isPinned,
-          ),
-        ],
-      );
-    }
+        ),
+        TweetConversation(
+          id: widget.chain.id,
+          tweets: widget.chain.tweets,
+          username: widget.username,
+          isPinned: widget.chain.isPinned,
+        ),
+      ],
+    );
+  }
 
+  Widget _folded(BuildContext context) {
     return Semantics(
       button: true,
       child: InkWell(

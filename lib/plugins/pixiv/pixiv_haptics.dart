@@ -24,8 +24,9 @@ Future<void> _platformHaptic(PixivHaptic kind) => switch (kind) {
 
 final _shared = PixivHaptics();
 
-/// Touch feedback for Pixiv actions behind the plugin's own switch. Android
-/// still drops it when the system's touch feedback is off.
+/// Touch feedback for Pixiv actions behind the plugin's own switch and XTA's
+/// Haptic feedback one. Android still drops it when the system's touch
+/// feedback is off.
 class PixivHaptics {
   final DateTime Function() _clock;
   final Future<void> Function(PixivHaptic kind) _play;
@@ -39,10 +40,10 @@ class PixivHaptics {
   /// test provides its own.
   static PixivHaptics of(BuildContext context) => context.read<PixivHaptics?>() ?? _shared;
 
-  /// Buzzes [kind] when the reader left haptics on and the last buzz was
-  /// long enough ago.
+  /// Buzzes [kind] when the reader left both switches on and the last buzz
+  /// was long enough ago.
   void play(BasePrefService prefs, PixivHaptic kind) {
-    if (prefs.get<bool>(optionPluginPixivHaptics) != true) return;
+    if (prefs.get<bool>(optionPluginPixivHaptics) != true || prefs.get<bool>(optionHapticFeedback) == false) return;
     final now = _clock();
     if (!pixivHapticDue(_last, now)) return;
     _last = now;

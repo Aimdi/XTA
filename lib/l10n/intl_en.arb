@@ -801,6 +801,14 @@
   "@group_sort_local": {},
   "groups": "Groups",
   "@groups": {},
+  "haptic_feedback": "Haptic feedback",
+  "@haptic_feedback": {
+    "description": "Title of the Accessibility switch for the short vibrations XTA gives when you like, save or follow"
+  },
+  "haptic_feedback_description": "A short vibration when you like, save or follow.",
+  "@haptic_feedback_description": {
+    "description": "Subtitle of the Haptic feedback switch in Accessibility settings"
+  },
   "help_make_fritter_even_better": "Help make XTA even better",
   "@help_make_fritter_even_better": {},
   "hide": "Hide",

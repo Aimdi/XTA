@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pref/pref.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/heart_burst.dart';
 import 'package:xta/ui/motion.dart';
 
@@ -11,6 +10,12 @@ import 'package:xta/ui/motion.dart';
 class LikeButton extends StatefulWidget {
   final bool isLiked;
   final String label;
+
+  /// X's like count, which [label] shows; a like here never changes it.
+  final int? count;
+
+  /// What the count showed before this button was built, which it rolls from.
+  final FooterCountFrom? from;
   final Color? color;
 
   /// The heart's colour once liked, which the burst plays in. The theme accent
@@ -23,6 +28,8 @@ class LikeButton extends StatefulWidget {
     super.key,
     required this.isLiked,
     required this.label,
+    this.count,
+    this.from,
     required this.color,
     required this.onPressed,
     this.activeColor,
@@ -43,22 +50,13 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
   }
 
   void _handleTap() {
-    if (widget.isLiked || _quietMotion) {
+    if (widget.isLiked || xtaReduceMotion(context) || quietActions(context)) {
       _controller.value = 0;
     } else {
       _controller.forward(from: 0);
     }
+    if (!widget.isLiked) actionTap(context);
     widget.onPressed?.call();
-  }
-
-  bool get _quietMotion {
-    if (xtaReduceMotion(context)) return true;
-    try {
-      final prefs = PrefService.of(context, listen: false);
-      return prefs.get(optionCalmMode) == true || prefs.get(optionZenMode) == true;
-    } catch (_) {
-      return false;
-    }
   }
 
   @override
@@ -78,6 +76,8 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
         ),
         widget.label,
         widget.color,
+        count: widget.count,
+        from: widget.from,
       ),
     );
 

@@ -2,6 +2,7 @@ import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/motion.dart';
 
 class LinkStack extends StatefulWidget {
   final List<WidgetBuilder> posts;
@@ -37,8 +38,16 @@ class _LinkStackState extends State<LinkStack> {
             ),
           ),
         ),
-        if (expanded)
-          for (final post in widget.posts.skip(1)) post(context),
+        XtaAnimatedSwitcher(
+          animateSize: true,
+          child: expanded
+              ? Column(
+                  key: const ValueKey('stack-open'),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [for (final post in widget.posts.skip(1)) post(context)],
+                )
+              : const SizedBox(key: ValueKey('stack-closed'), width: double.infinity),
+        ),
       ],
     ),
   );

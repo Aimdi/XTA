@@ -1,5 +1,4 @@
 import 'package:xta/ui/reader_tab_view.dart';
-import 'dart:ui' as ui;
 
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +39,7 @@ import 'package:xta/user.dart';
 import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reload_status.dart';
 import 'package:xta/plugins/x/x_plugin.dart';
 
@@ -103,19 +103,27 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _ProfileScreen extends StatelessWidget {
+class _ProfileScreen extends StatefulWidget {
   final String? id;
   final String? screenName;
   final int? tabIndex;
 
   const _ProfileScreen({required this.id, required this.screenName, required this.tabIndex});
 
+  @override
+  State<_ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<_ProfileScreen> {
+  /// The profile fades in over its skeleton, not over a cached copy.
+  final _afterPlaceholders = XtaAfterPlaceholders();
+
   void _retry(BuildContext context) {
     final model = context.read<ProfileModel>();
-    if (id != null) {
-      model.loadProfileById(id!);
+    if (widget.id != null) {
+      model.loadProfileById(widget.id!);
     } else {
-      model.loadProfileByScreenName(screenName!);
+      model.loadProfileByScreenName(widget.screenName!);
     }
   }
 
@@ -131,19 +139,21 @@ class _ProfileScreen extends StatelessWidget {
             recoverableFailure: () => recoverableReadFailure(model.error ?? model.state.refreshError),
             retry: () => _retry(context),
             child: triple.isLoading
-                ? const ProfileLoadingSkeleton()
+                ? _afterPlaceholders.placeholders(const ProfileLoadingSkeleton())
                 : triple.error != null
                 ? SafeArea(
                     child: ProfileLoadFailure(error: triple.error, onRetry: () => _retry(context)),
                   )
                 // A failed refresh floats over the profile instead of pushing it
                 // down, below the status bar the header runs under.
-                : ReloadStatus(
-                    loading: triple.state.refreshing,
-                    error: triple.state.refreshError,
-                    source: pluginIdX,
-                    onRetry: () => _retry(context),
-                    child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
+                : _afterPlaceholders.content(
+                    ReloadStatus(
+                      loading: triple.state.refreshing,
+                      error: triple.state.refreshError,
+                      source: pluginIdX,
+                      onRetry: () => _retry(context),
+                      child: ProfileScreenBody(profile: triple.state, defaultTabIndex: widget.tabIndex),
+                    ),
                   ),
           ),
         ),
@@ -398,47 +408,25 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       ),
       floatingActionButton: ScopedBuilder<ProfileScrollStore, bool>(
         store: _scrollStore,
-        onState: (_, visible) => visible
-            ? FloatingActionButton(
-                tooltip: L10n.of(context).scroll_to_top,
-                onPressed: _scrollToTop,
-                child: const Icon(Icons.arrow_upward),
-              )
-            : const SizedBox.shrink(),
+        onState: (_, visible) => XtaGrowIn(
+          visible: visible,
+          child: FloatingActionButton(
+            tooltip: L10n.of(context).scroll_to_top,
+            onPressed: _scrollToTop,
+            child: const Icon(Icons.arrow_upward),
+          ),
+        ),
       ),
     );
   }
 
-  SliverAppBar _buildAppBar(BuildContext context, UserWithExtra user, ProfileViewState view, bool innerBoxIsScrolled) {
+  Widget _buildAppBar(BuildContext context, UserWithExtra user, ProfileViewState view, bool innerBoxIsScrolled) {
     final username = user.screenName ?? L10n.of(context).unknown;
-    return SliverAppBar(
-      pinned: true,
-      floating: false,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      surfaceTintColor: Colors.transparent,
-      titleSpacing: 0,
-      title: innerBoxIsScrolled
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  user.name ?? username,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: tweetLabelStyle(context),
-                ),
-                Text(
-                  '@$username',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textDirection: ui.TextDirection.ltr,
-                  style: tweetMetadataStyle(context).copyWith(fontSize: 11),
-                ),
-              ],
-            )
-          : null,
+    return ProfileTopBar(
+      name: user.name ?? username,
+      username: username,
+      bannerUrl: user.profileBannerUrl,
+      scrolled: innerBoxIsScrolled,
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -546,6 +534,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       result.add(
         ProfileCountButton(
           count: _numberFormat.format(user.friendsCount),
+          value: user.friendsCount,
           label: L10n.of(context).following,
           onTap: () => _openFollows(context, user, 'following'),
         ),
@@ -555,6 +544,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       result.add(
         ProfileCountButton(
           count: _numberFormat.format(user.followersCount),
+          value: user.followersCount,
           label: L10n.of(context).followers,
           onTap: () => _openFollows(context, user, 'followers'),
         ),

@@ -303,6 +303,12 @@ List<SettingsControlResult> settingsControls(L10n l10n) => [
   ),
   SettingsControlResult(
     SearchableSettingsSection.accessibility,
+    optionHapticFeedback,
+    l10n.haptic_feedback,
+    l10n.haptic_feedback_description,
+  ),
+  SettingsControlResult(
+    SearchableSettingsSection.accessibility,
     optionTickerChart,
     l10n.ticker_chart,
     l10n.ticker_chart_description,

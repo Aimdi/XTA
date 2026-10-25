@@ -1,11 +1,11 @@
 import 'package:extended_image/extended_image.dart';
+import 'package:xta/ui/image_fade_in.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_photo_flight.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/double_tap_zoom.dart';
-import 'package:xta/ui/motion.dart';
 
 /// A tweet photo's address at [size] (`small`, `medium`, …), or as posted.
 String tweetPhotoUrl(String uri, String? size) => size != null ? '$uri:$size' : uri;
@@ -86,13 +86,11 @@ class _TweetPhotoState extends State<TweetPhoto>
   /// A timeline tile waits on the quiet skeleton surface and fades its photo
   /// in, as X does: a spinner in every loading tile made a scrolling feed look
   /// busy. A photo already in memory appears at once.
-  Widget? _feedLoadState(BuildContext context, ExtendedImageState state) {
-    return switch (state.extendedImageLoadState) {
-      LoadState.loading => ColoredBox(color: skeletonBoneColor(context, 0)),
-      LoadState.completed when !state.wasSynchronouslyLoaded => XtaFadeIn(child: state.completedWidget),
-      _ => _loadState(context, state),
-    };
-  }
+  Widget? _feedLoadState(BuildContext context, ExtendedImageState state) => fadeInImageLoadState(
+    state,
+    placeholder: ColoredBox(color: skeletonBoneColor(context, 0)),
+    failed: _loadState(context, state),
+  );
 
   Widget? _loadState(BuildContext context, ExtendedImageState state) {
     return switch (state.extendedImageLoadState) {

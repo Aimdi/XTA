@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +9,7 @@ import 'package:xta/plugins/immich/immich_client.dart';
 import 'package:xta/plugins/immich/immich_uploader.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/downloads.dart';
 import 'package:xta/utils/iterables.dart';
@@ -154,9 +154,9 @@ Future<void> showSaveToFolderSheet(BuildContext context,
   var savedModel = context.read<SavedTweetModel>();
   var folderModel = context.read<SavedTweetFolderModel>();
   var messenger = ScaffoldMessenger.of(context);
+  lightHaptic(context);
 
   await folderModel.listFolders();
-  await HapticFeedback.lightImpact();
 
   if (!context.mounted) {
     return;

@@ -8,11 +8,13 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/focal_post.dart';
+import 'package:xta/tweet/poll_fill.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/unavailable_post.dart';
 import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reading_column.dart';
 import 'package:xta/ui/sort_menu_button.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -63,15 +65,17 @@ class StatusScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as StatusScreenArguments;
 
-    // Marks the opened post so its tile shows X's time · date · views line.
+    // Marks the opened post so its tile shows X's time · date · views line,
+    // and its poll fills in.
     return FocalPostScope(
         id: args.id,
-        child: _StatusScreen(
-            username: args.username,
-            id: args.id,
-            tweetOpened: args.tweetOpened,
-            initialMediaIndex: args.initialMediaIndex,
-            initialTweet: args.initialTweet));
+        child: FocalPollFill(
+            child: _StatusScreen(
+                username: args.username,
+                id: args.id,
+                tweetOpened: args.tweetOpened,
+                initialMediaIndex: args.initialMediaIndex,
+                initialTweet: args.initialTweet)));
   }
 }
 
@@ -117,6 +121,14 @@ class _StatusScreenState extends State<_StatusScreen> {
   /// Skip the thread cache on the next first-page fetch (after the reader taps
   /// retry for missing replies).
   bool _bypassThreadCache = false;
+
+  /// The copy the post was opened from, until the conversation's first build
+  /// has replaced it: the post's counts roll from its numbers to X's.
+  late TweetWithCard? _countsFrom = widget.initialTweet;
+
+  /// The conversation's first tiles fade in where its placeholders were; one
+  /// built later, as the reader scrolls, is drawn at once.
+  final _arrivals = XtaArrivalWindow();
 
   @override
   void initState() {
@@ -429,11 +441,21 @@ class _StatusScreenState extends State<_StatusScreen> {
               // footer already advertised replies.
               return _buildPreview(context, loading: false, showThreadEnd: true);
             }
-            return _buildConversation(context);
+            return _rollingCountsFrom(_buildConversation(context));
           },
         ),
       ),
     );
+  }
+
+  /// Hands the copy to the conversation's first build only, so the post does
+  /// not roll again when it is scrolled back into view. The origin stays in
+  /// the tree, empty, so the conversation is not rebuilt from scratch.
+  Widget _rollingCountsFrom(Widget conversation) {
+    if (_countsFrom != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _countsFrom = null);
+    }
+    return CountRollOrigin(tweet: _countsFrom, child: conversation);
   }
 
   Widget _buildPreview(BuildContext context, {bool loading = true, bool showThreadEnd = false}) {
@@ -582,11 +604,18 @@ class _StatusScreenState extends State<_StatusScreen> {
     );
   }
 
+  /// [tile] of [chain] fading in if it is one of the conversation's first. The
+  /// opened post stays still when its preview was on screen already.
+  Widget _arriving(TweetChain chain, Widget tile) => XtaArrival(
+      arriving: _arrivals.arriving && !(widget.initialTweet != null && chain.id == widget.id), child: tile);
+
   /// Puts the reply order under the opened post, outside its tile so a thread
   /// line never runs through it.
   Widget _withReplySort(TweetChain chain, Widget tile) {
     final focal = chain.tweets.firstWhereOrNull((t) => t.idStr == widget.id);
-    return (focal?.replyCount ?? 0) > 0 ? Column(children: [tile, _replySortBar()]) : tile;
+    return (focal?.replyCount ?? 0) > 0
+        ? Column(children: [tile, XtaArrival(arriving: _arrivals.arriving, child: _replySortBar())])
+        : tile;
   }
 
   Widget _replySortBar() {
@@ -622,7 +651,8 @@ class _StatusScreenState extends State<_StatusScreen> {
         scrollController: _scrollController,
         addAutomaticKeepAlives: false,
         builderDelegate: PagedChildBuilderDelegate(
-          itemBuilder: (context, chain, index) => _withReplySort(chain, _conversationTile(context, chain, index)),
+          itemBuilder: (context, chain, index) =>
+              _withReplySort(chain, _arriving(chain, _conversationTile(context, chain, index))),
           newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
             error: pagingErrorOf(state)?.error ?? state.error,
             contextMessage: L10n.of(context).unable_to_load_the_next_page_of_replies,
@@ -676,11 +706,14 @@ class _StatusScreenState extends State<_StatusScreen> {
           final node = (item as ThreadDisplayNode).node;
           return _withReplySort(
             node.chain,
-            ThreadIndent(
-              depth: item.visualDepth,
-              connectTop: item.connectTop,
-              connectBottom: item.connectBottom,
-              child: _conversationTile(context, node.chain, index),
+            _arriving(
+              node.chain,
+              ThreadIndent(
+                depth: item.visualDepth,
+                connectTop: item.connectTop,
+                connectBottom: item.connectBottom,
+                child: _conversationTile(context, node.chain, index),
+              ),
             ),
           );
         },

@@ -506,6 +506,7 @@ Future<void> main() async {
       ...introLaunchDefaults(firstLaunch: firstLaunch),
       optionConfirmClose: true,
       optionDisableAnimations: false,
+      optionHapticFeedback: true,
       optionGestureDoubleTapLike: false,
       optionTickerChart: true,
       optionTextScaleFactor: 1.0,

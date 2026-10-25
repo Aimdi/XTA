@@ -38,6 +38,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/translation.dart';
 import 'package:xta/utils/urls.dart' show parsePostLink;
 import 'package:logging/logging.dart';
@@ -336,6 +337,16 @@ class TweetTileState extends State<TweetTile> {
     showSnackBar(context, icon: '💥', message: message);
   }
 
+  /// [text], easing to the translation's height and fading it in, and back,
+  /// on a post that offers translation; as it is on every other post.
+  Widget _translatable(bool offersTranslation, Widget text) =>
+      offersTranslation
+          ? XtaSwap(
+              swap: _translationStatus == TranslationStatus.translated,
+              child: text,
+            )
+          : text;
+
   Future<void> onClickShowOriginal() async {
     setState(() {
       _showParts(_originalParts);
@@ -633,6 +644,9 @@ class TweetTileState extends State<TweetTile> {
             );
     }
 
+    final locale = _effectiveLocale();
+    final offersTranslation = tweet.article == null && _offerTranslation(locale);
+
     // Only create the tweet content if the tweet contains text. X often omits
     // display_text_range on reshaped payloads — treat null as "has text".
     Widget content = Container();
@@ -649,34 +663,35 @@ class TweetTileState extends State<TweetTile> {
             kTweetHorizontalPadding,
             kTweetSpace1,
           ),
-          child: AutoDirection(
-            text: tweetText,
-            child: ExpandableTweetText(
-              textSpans: _displaySpans,
-              // Quoted tiles open from the wrapping card GestureDetector so the
-              // expand control is never a rival for the same tap.
-              onTap: (!widget.tweetOpened && !isQuotedTweet)
-                  ? () => onClickOpenTweet(tweet)
-                  : null,
-              selectable: widget.tweetOpened,
-              // Feed tiles always cap: a long post at full height is the
-              // dominant layout cost on a fling. The pref still applies on
-              // the opened status screen.
-              maxLines:
-                  widget.tweetOpened &&
-                      PrefService.of(
-                        context,
-                        listen: false,
-                      ).get(alwaysShowFullTweetContents)
-                  ? null
-                  : kTweetTextMaxLines,
+          child: _translatable(
+            offersTranslation,
+            AutoDirection(
+              text: tweetText,
+              child: ExpandableTweetText(
+                textSpans: _displaySpans,
+                // Quoted tiles open from the wrapping card GestureDetector so
+                // the expand control is never a rival for the same tap.
+                onTap: (!widget.tweetOpened && !isQuotedTweet)
+                    ? () => onClickOpenTweet(tweet)
+                    : null,
+                selectable: widget.tweetOpened,
+                // Feed tiles always cap: a long post at full height is the
+                // dominant layout cost on a fling. The pref still applies on
+                // the opened status screen.
+                maxLines:
+                    widget.tweetOpened &&
+                        PrefService.of(
+                          context,
+                          listen: false,
+                        ).get(alwaysShowFullTweetContents)
+                    ? null
+                    : kTweetTextMaxLines,
+              ),
             ),
           ),
         ),
       );
     }
-
-    final locale = _effectiveLocale();
 
     // The post a conversation screen was opened on gets X's time · date ·
     // views line instead of a header timestamp and a views item in its footer.
@@ -686,7 +701,7 @@ class TweetTileState extends State<TweetTile> {
     // which is for engagement and was one control too wide on a phone. Only on
     // posts there is something to translate: X offers nothing on a post
     // already in your language, and a button on every card was chrome.
-    final translateButton = tweet.article != null || !_offerTranslation(locale)
+    final translateButton = !offersTranslation
         ? null
         : TweetTranslateButton(
             status: _translationStatus,
@@ -883,6 +898,7 @@ class TweetTileState extends State<TweetTile> {
         TweetFocalMetaLine(
           createdAt: createdAt,
           views: _hideCounts(prefs) ? null : tweet.viewCount,
+          fromViews: CountRollOrigin.of(context, tweet.idStr)?.viewCount,
         ),
       // A quoted tweet shows no action bar: its reply/repost/like counts belong
       // to the quoted post, not to the one being read, and a second footer row

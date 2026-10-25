@@ -49,6 +49,7 @@ class SensitiveMediaGate extends StatelessWidget {
     return Consumer<TweetContextState>(
       builder: (context, model, _) {
         return XtaAnimatedSwitcher(
+          animateSize: true,
           child: model.hideSensitive
               ? KeyedSubtree(
                   key: const ValueKey('sensitive-gate'),

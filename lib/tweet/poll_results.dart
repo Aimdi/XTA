@@ -3,8 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/poll.dart';
+import 'package:xta/tweet/poll_fill.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/formatting_locale.dart';
 
 /// Poll totals and shares are written in the reader's locale. Building a
@@ -36,26 +38,39 @@ class TweetPollResults extends StatelessWidget {
   /// like the post's media when the reader loads media manually.
   final bool loadImages;
 
-  const TweetPollResults({super.key, required this.poll, this.onOpenImage, this.loadImages = true});
+  /// The opened post's [FocalPollFill]. Without it the bars are full at once,
+  /// as in a feed, whose tiles are rebuilt as they scroll back into view.
+  final Animation<double>? fill;
+
+  const TweetPollResults({super.key, required this.poll, this.onOpenImage, this.loadImages = true, this.fill});
 
   @override
   Widget build(BuildContext context) {
     final locale = currentFormattingLocale();
     final percent = _percentFormat(locale);
+    final fill = xtaReduceMotion(context) ? null : this.fill;
+    // The shares are written out from the start; only the bars grow.
+    Widget bars(double t) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, choice) in poll.choices.indexed)
+          PollOptionBar(
+            label: choice.label,
+            share: choice.share,
+            percent: percent.format(choice.share),
+            leading: poll.leads(choice),
+            image: _imageOf(choice),
+            grown: pollBarGrowth(t, index),
+          ),
+      ],
+    );
 
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(kTweetHorizontalPadding, kTweetSpace2, kTweetHorizontalPadding, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final choice in poll.choices)
-            PollOptionBar(
-              label: choice.label,
-              share: choice.share,
-              percent: percent.format(choice.share),
-              leading: poll.leads(choice),
-              image: _imageOf(choice),
-            ),
+          if (fill == null) bars(1) else AnimatedBuilder(animation: fill, builder: (_, _) => bars(fill.value)),
           Padding(
             padding: const EdgeInsets.only(top: kTweetSpace1),
             child: Text(_summary(context, locale), style: tweetMetadataStyle(context)),
@@ -109,6 +124,9 @@ class PollOptionBar extends StatelessWidget {
   /// The option's image, set at the start of the bar.
   final Widget? image;
 
+  /// How far the bar has grown towards [share], 0..1.
+  final double grown;
+
   const PollOptionBar({
     super.key,
     required this.label,
@@ -116,6 +134,7 @@ class PollOptionBar extends StatelessWidget {
     required this.percent,
     required this.leading,
     this.image,
+    this.grown = 1,
   });
 
   @override
@@ -136,7 +155,7 @@ class PollOptionBar extends StatelessWidget {
             Positioned.fill(
               child: FractionallySizedBox(
                 alignment: AlignmentDirectional.centerStart,
-                widthFactor: share.clamp(0.0, 1.0),
+                widthFactor: (share * grown).clamp(0.0, 1.0),
                 child: DecoratedBox(
                   decoration: BoxDecoration(color: fill, borderRadius: BorderRadius.circular(radius)),
                 ),

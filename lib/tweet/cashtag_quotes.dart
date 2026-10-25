@@ -5,6 +5,7 @@ import 'package:xta/client/client.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
+import 'package:xta/ui/motion.dart';
 
 /// Cashtags X attached to a post, uppercased and de-duplicated.
 List<String> tweetCashtags(TweetWithCard tweet) {
@@ -47,22 +48,28 @@ class CashtagQuotesBar extends StatelessWidget {
       cache.ensure(symbols.take(3));
     });
 
-    return ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
-      store: cache,
-      onState: (_, quotes) {
-        final chips = [
-          for (final symbol in symbols.take(4))
-            if (quotes[symbol] != null)
-              _QuoteChip(symbol: symbol, quote: quotes[symbol]!),
-        ];
-        if (chips.isEmpty) {
-          return const SizedBox.shrink();
-        }
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Wrap(spacing: 8, runSpacing: 6, children: chips),
-        );
-      },
+    // The prices often land while the post is on screen: the row grows in
+    // rather than pushing the media and footer down at once.
+    return XtaAnimatedSize(
+      child: ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
+        store: cache,
+        onState: (_, quotes) {
+          final chips = [
+            for (final symbol in symbols.take(4))
+              if (quotes[symbol] != null)
+                _QuoteChip(symbol: symbol, quote: quotes[symbol]!),
+          ];
+          if (chips.isEmpty) {
+            return const SizedBox(width: double.infinity);
+          }
+          return XtaFadeIn(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Wrap(spacing: 8, runSpacing: 6, children: chips),
+            ),
+          );
+        },
+      ),
     );
   }
 }

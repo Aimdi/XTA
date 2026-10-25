@@ -50,7 +50,7 @@ class TickerQuotePanel extends StatelessWidget {
         const SizedBox(height: 8),
         LoadingHairline(
           loading: state.loading,
-          child: TickerChart(quote: quote, onScrub: store.scrub),
+          child: TickerChart(quote: quote, onScrub: store.scrub, drawKey: (state.range, state.instrument)),
         ),
       ];
     }

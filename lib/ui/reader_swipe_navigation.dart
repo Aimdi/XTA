@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:flutter/services.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/motion.dart';
 
 const double kReaderSwipeDistance = 72;
@@ -179,7 +179,7 @@ class _ReaderSwipeNavigationState extends State<ReaderSwipeNavigation> with Sing
     _settle();
     if (target != widget.index && widget.onChanged(target)) {
       _selectionPending = true;
-      HapticFeedback.selectionClick();
+      selectionHaptic(context);
     }
   }
 

@@ -1,8 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/avatar_follow_badge.dart';
 
@@ -70,5 +73,38 @@ void main() {
     await tester.tap(find.byKey(badge), warnIfMissed: false);
     expect(follows, 1);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('following taps lightly and a long press clicks, unless haptic feedback is off', (tester) async {
+    final taps = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      // Android's own long-press buzz carries no type and is not XTA's.
+      if (call.method == 'HapticFeedback.vibrate' && call.arguments != null) taps.add(call.arguments);
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    Widget build({required bool haptics}) => PrefService(
+      service: PrefServiceCache(cache: {optionHapticFeedback: haptics}),
+      child: _app(
+        AvatarFollowBadge(
+          avatar: const SizedBox.square(dimension: 40),
+          avatarSize: 40,
+          followed: false,
+          onFollow: () {},
+          onMore: () {},
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(build(haptics: true));
+    await tester.tap(find.byKey(badge));
+    await tester.longPress(find.byKey(badge));
+    expect(taps, ['HapticFeedbackType.lightImpact', 'HapticFeedbackType.selectionClick']);
+
+    taps.clear();
+    await tester.pumpWidget(build(haptics: false));
+    await tester.tap(find.byKey(badge));
+    await tester.longPress(find.byKey(badge));
+    expect(taps, isEmpty);
   });
 }

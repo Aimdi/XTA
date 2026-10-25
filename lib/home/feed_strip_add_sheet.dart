@@ -9,6 +9,7 @@ import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/_plugin_store.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/reorder_lift.dart';
 
 /// Pick which installed plugin timelines sit next to For you.
 ///
@@ -87,6 +88,7 @@ class _FeedStripAddSheet extends StatelessWidget {
                   }
 
                   return ReorderableListView.builder(
+                    proxyDecorator: xtaReorderLift,
                     buildDefaultDragHandles: false,
                     header: ListTile(
                       title: Text(

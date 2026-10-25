@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
+import 'package:xta/ui/image_fade_in.dart';
 import 'package:xta/user_verification.dart';
 import 'package:xta/utils/urls.dart';
 
@@ -99,10 +100,8 @@ class AffiliationBadge extends StatelessWidget {
       shape: BoxShape.rectangle,
       borderRadius: BorderRadius.circular(3),
       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      loadStateChanged: (state) => switch (state.extendedImageLoadState) {
-        LoadState.failed => const SizedBox.shrink(),
-        _ => null,
-      },
+      loadStateChanged: (state) =>
+          fadeInImageLoadState(state, placeholder: const SizedBox.shrink(), failed: const SizedBox.shrink()),
     );
   }
 

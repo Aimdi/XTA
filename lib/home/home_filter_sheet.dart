@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
@@ -8,6 +7,7 @@ import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_group_drawer.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/home_selection_store.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/reader_failure.dart';
 
 class HomeFilterDraft {
@@ -199,7 +199,7 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
       groups ? widget.groups.map((group) => group.id).toSet() : widget.accounts.map((account) => account.id).toSet();
 
   void _only(bool groups, String id) {
-    HapticFeedback.selectionClick();
+    selectionHaptic(context);
     _draft.select(groups: groups, disabled: _ids(groups)..remove(id));
   }
 
