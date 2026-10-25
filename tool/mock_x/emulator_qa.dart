@@ -1,8 +1,9 @@
 // ignore_for_file: avoid_print
 //
-// Installs an APK built with --dart-define=XTA_MOCK_X=http://localhost:<port>
-// on the running emulator, serves the stand-in for X on that port, then runs
-// each Maestro flow against it, recording one video per flow. Fails when a flow
+// Installs an APK built with --dart-define=XTA_MOCK_X=http://10.0.2.2:<port>
+// (an emulator) or http://localhost:<port> (a device, through adb reverse) on
+// the running Android, serves the stand-in for X on that port, then runs each
+// Maestro flow against it, recording one video per flow. Fails when a flow
 // fails or the stand-in answered nothing (docs/mock-x.md).
 //
 //   fvm dart run tool/mock_x/emulator_qa.dart <apk> <flows folder or .yaml file> <output dir> [--port 8787]
@@ -42,9 +43,12 @@ Future<void> main(List<String> args) async {
   await _prepareDevice(apk, package, port);
   // Maestro would otherwise pick whichever device adb lists first
   final device = (await _run('adb', ['get-serialno'])).trim();
+  // Installs and starts Maestro's driver, which a cold emulator can be too slow
+  // for within the first flow's launchApp
+  await Process.run('maestro', ['--device', device, 'hierarchy']);
   final failedFlows = [
     for (final flow in flows)
-      if (!await _runFlow(flow, device, package, out)) flow.path,
+      if (!await _runFlow(flow, device, package, port, out)) flow.path,
   ];
   await File('${out.path}/logcat.txt').writeAsString(await _run('adb', ['logcat', '-d'], quiet: true));
   await server.close(force: true);
@@ -119,9 +123,11 @@ Future<void> _writePreferences(String package) async {
 
 /// Runs [flow] while recording the screen, one video per flow in [out], and
 /// tells whether it passed.
-Future<bool> _runFlow(File flow, String device, String package, Directory out) async {
+Future<bool> _runFlow(File flow, String device, String package, int port, Directory out) async {
   final name = flow.uri.pathSegments.last.replaceAll(RegExp(r'\.yaml$'), '');
   final onDevice = '/sdcard/$name.mp4';
+  // A reconnected adb drops the mapping a device reaches the stand-in through
+  await _run('adb', ['reverse', 'tcp:$port', 'tcp:$port']);
   // Closes an "isn't responding" dialog shown before hide_error_dialogs took effect
   await _run('adb', ['shell', 'am', 'broadcast', '-a', 'android.intent.action.CLOSE_SYSTEM_DIALOGS']);
   final recorder = await Process.start('adb', ['shell', 'screenrecord', '--bit-rate', '8000000', onDevice]);
@@ -131,7 +137,7 @@ Future<bool> _runFlow(File flow, String device, String package, Directory out) a
     ...['--debug-output', '${out.path}/maestro/$name', flow.path],
   ], mode: ProcessStartMode.inheritStdio);
   final passed = await maestro.exitCode == 0;
-  if (!passed) await _printScreen(name, device);
+  if (!passed) await _printFailure(name, device, Directory('${out.path}/maestro/$name'));
   await Process.run('adb', ['shell', 'pkill', '-INT', 'screenrecord']);
   await recorder.exitCode;
   final video = '${out.path}/$name.mp4';
@@ -146,16 +152,28 @@ Future<bool> _runFlow(File flow, String device, String package, Directory out) a
 
 final _label = RegExp(r'"(?:text|accessibilityText|hintText)"\s*:\s*"((?:[^"\\]|\\.)*)"');
 
-/// Prints the text the app exposed on screen, which tells why a flow failed
-/// without opening its artifact.
-Future<void> _printScreen(String name, String device) async {
+/// Prints what tells why a flow failed without opening its artifact: the text
+/// on screen, the end of Maestro's log and any crash of the app.
+Future<void> _printFailure(String name, String device, Directory debugOutput) async {
   final hierarchy = await Process.run('maestro', ['--device', device, 'hierarchy']);
-  final labels = {
+  _printGroup('On screen when $name failed', {
     for (final match in _label.allMatches('${hierarchy.stdout}'))
       if (match.group(1)!.trim().isNotEmpty) match.group(1)!,
-  };
-  print('::group::On screen when $name failed');
-  labels.forEach(print);
+  });
+  final logs = debugOutput.existsSync()
+      ? debugOutput.listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('maestro.log')).toList()
+      : <File>[];
+  if (logs.isNotEmpty) _printGroup("End of Maestro's log for $name", _tail(logs.last.readAsLinesSync(), 40));
+  final crashes = await Process.run('adb', ['logcat', '-d', '-b', 'crash']);
+  final crashLines = '${crashes.stdout}'.split('\n').where((line) => line.trim().isNotEmpty).toList();
+  if (crashLines.isNotEmpty) _printGroup('Crashes logged before $name failed', _tail(crashLines, 60));
+}
+
+Iterable<String> _tail(List<String> lines, int count) => lines.skip(lines.length > count ? lines.length - count : 0);
+
+void _printGroup(String title, Iterable<String> lines) {
+  print('::group::$title');
+  lines.forEach(print);
   print('::endgroup::');
 }
 

@@ -41,10 +41,15 @@ fvm flutter run --debug --dart-define=XTA_MOCK_X=http://localhost:8787
 The whole emulator run, as CI does it:
 
 ```bash
-fvm flutter build apk --profile --no-tree-shake-icons --dart-define=XTA_MOCK_X=http://localhost:8787
+fvm flutter build apk --profile --no-tree-shake-icons --dart-define=XTA_MOCK_X=http://10.0.2.2:8787
 fvm dart run tool/mock_x/emulator_qa.dart \
   build/app/outputs/flutter-apk/app-profile.apk .maestro emulator-output
 ```
+
+An emulator reaches the computer it runs on at `10.0.2.2`, with nothing to set
+up. A phone reaches it through `adb reverse`, at `localhost`; the script maps
+the port before every flow, since adb drops the mapping whenever it
+reconnects.
 
 The second argument can also be one `.yaml` flow. With `--port`, build the APK
 with the same port. The run needs `adb`, `maestro` and `$ANDROID_HOME`; `ffmpeg`
