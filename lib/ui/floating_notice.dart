@@ -131,16 +131,13 @@ class _LeavingNotice extends StatelessWidget {
 
   const _LeavingNotice({required this.notice});
 
-  static Widget _transition(Widget child, Animation<double> animation) => AnimatedBuilder(
+  static Widget _transition(Widget child, Animation<double> animation) => XtaLeaving(
     animation: animation,
-    builder: (context, child) {
-      final leaving = animation.status == AnimationStatus.reverse;
-      return IgnorePointer(
-        ignoring: leaving,
-        child: ExcludeSemantics(excluding: leaving, child: _noticeAt(animation.value, child!)),
-      );
-    },
-    child: child,
+    child: AnimatedBuilder(
+      animation: animation,
+      builder: (_, child) => _noticeAt(animation.value, child!),
+      child: child,
+    ),
   );
 
   @override

@@ -81,3 +81,71 @@ class XtaAnimatedSwitcher extends StatelessWidget {
     );
   }
 }
+
+/// [child] in an [AnimatedSwitcher] transition, which can no longer be
+/// tapped, focused or read out once [animation] runs it out.
+class XtaLeaving extends StatelessWidget {
+  final Animation<double> animation;
+  final Widget child;
+
+  const XtaLeaving({super.key, required this.animation, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        final leaving = animation.status == AnimationStatus.reverse;
+        return IgnorePointer(
+          ignoring: leaving,
+          child: ExcludeFocus(
+            excluding: leaving,
+            child: ExcludeSemantics(excluding: leaving, child: child!),
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+/// How small a floating button starts as it grows in, and ends as it shrinks
+/// away.
+const double kXtaGrowFrom = 0.6;
+
+/// Shows [child], a floating button, while [visible]: it grows in from
+/// [kXtaGrowFrom] as it fades in, and shrinks away as it fades out, instead
+/// of popping. Hidden, it is not there at all, so nothing can tap or focus it
+/// and a snack bar does not rise above it.
+class XtaGrowIn extends StatelessWidget {
+  final bool visible;
+  final Widget child;
+
+  const XtaGrowIn({super.key, required this.visible, required this.child});
+
+  static final _grow = Tween<double>(begin: kXtaGrowFrom, end: 1);
+
+  static Widget _transition(Widget child, Animation<double> animation) {
+    return XtaLeaving(
+      animation: animation,
+      child: ScaleTransition(
+        scale: animation.drive(_grow),
+        child: FadeTransition(opacity: animation, child: child),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: xtaMotionDuration(context, kXtaMotionStandard),
+      reverseDuration: xtaMotionDuration(context, kXtaMotionFast),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: _transition,
+      child: visible
+          ? KeyedSubtree(key: const ValueKey('shown'), child: child)
+          : const SizedBox.shrink(key: ValueKey('hidden')),
+    );
+  }
+}

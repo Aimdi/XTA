@@ -69,8 +69,10 @@ flat. It adds no posting surface and changes no data.
 ## 6. Scroll-to-top grows in
 
 - The profile's scroll-to-top button grows from 60 % and fades in when it
-  appears (180 ms) and shrinks away when it goes, instead of popping. While
-  hidden it can be neither tapped nor focused.
+  appears (180 ms) and shrinks away when it goes (120 ms), instead of popping.
+  While it goes it can be neither tapped, focused nor read out, and once gone
+  it is not there at all: a hidden button kept in place would lift a floating
+  snack bar above nothing.
 
 ## Reduced motion
 
@@ -101,5 +103,6 @@ Android's own vibration settings.
   not on unsave or when it arrives saved; liking and saving tap, unliking,
   unsaving, calm and zen mode do not; reduced motion keeps the tap and drops the
   pop.
-- Scroll-to-top: the button grows in and shrinks away, and cannot be tapped
-  while hidden.
+- Scroll-to-top: the button grows in and shrinks away, cannot be tapped or
+  read out while it goes, a hidden one does not lift a snack bar, and with
+  reduced motion it comes and goes at once.

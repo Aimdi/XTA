@@ -39,6 +39,7 @@ import 'package:xta/user.dart';
 import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reload_status.dart';
 import 'package:xta/plugins/x/x_plugin.dart';
 
@@ -397,13 +398,14 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       ),
       floatingActionButton: ScopedBuilder<ProfileScrollStore, bool>(
         store: _scrollStore,
-        onState: (_, visible) => visible
-            ? FloatingActionButton(
-                tooltip: L10n.of(context).scroll_to_top,
-                onPressed: _scrollToTop,
-                child: const Icon(Icons.arrow_upward),
-              )
-            : const SizedBox.shrink(),
+        onState: (_, visible) => XtaGrowIn(
+          visible: visible,
+          child: FloatingActionButton(
+            tooltip: L10n.of(context).scroll_to_top,
+            onPressed: _scrollToTop,
+            child: const Icon(Icons.arrow_upward),
+          ),
+        ),
       ),
     );
   }
