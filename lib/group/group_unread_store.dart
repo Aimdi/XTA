@@ -11,6 +11,7 @@ import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_catch_up.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
 import 'package:xta/group/feed_read_position.dart';
+import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread.dart';
@@ -181,13 +182,18 @@ Future<List<FeedChunkMember>> _followingMembers(Database database) async {
   return followingChunkMembers([
     for (final row in rows)
       if (UserSubscription.fromMap(row) case final user)
-        (id: user.id, createdAt: user.createdAt, inFeed: user.inFeed),
+        (
+          id: user.id,
+          screenName: user.screenName,
+          createdAt: user.createdAt,
+          inFeed: user.inFeed,
+        ),
   ]);
 }
 
 Future<List<FeedMemberRow>> _memberRows(Database database) async {
   final users = await database.rawQuery(
-    'SELECT sgm.group_id, s.id, s.created_at FROM $tableSubscription s '
+    'SELECT sgm.group_id, s.id, s.screen_name, s.created_at FROM $tableSubscription s '
     'INNER JOIN $tableSubscriptionGroupMember sgm ON sgm.profile_id = s.id',
   );
   final searches = await database.rawQuery(
@@ -207,11 +213,15 @@ FeedMemberRow _row(Map<String, Object?> row, {required bool search}) {
       : (row['created_at'] == null
             ? DateTime.now()
             : DateTime.parse(row['created_at'] as String));
+  final id = row['id'] as String;
   return FeedMemberRow(
     groupId: row['group_id'] as String,
-    id: row['id'] as String,
+    id: id,
     createdAt: createdAt,
     search: search,
+    term: search
+        ? savedSearchTerm(id)
+        : userSearchTerm(row['screen_name'] as String? ?? ''),
   );
 }
 

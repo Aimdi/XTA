@@ -53,6 +53,7 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
 import 'package:xta/group/feed_search_fallback.dart';
+import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/group_media_page.dart';
 import 'package:xta/group/feed_chunk_concurrency.dart';
 import 'package:xta/ui/floating_notice.dart';
@@ -655,46 +656,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     );
   }
 
-  String _buildSearchQuery(List<Subscription> users) {
-    var query = '';
-
-    var remainingLength = 512 - query.length;
-
-    for (var user in users) {
-      var queryToAdd = '';
-      if (user is UserSubscription) {
-        queryToAdd = 'from:${user.screenName}';
-      } else if (user is SearchSubscription) {
-        queryToAdd = '"${user.id}"';
-      }
-
-      // If we can add this user to the query and still be less than ~512 characters, do so
-      if (query.length + queryToAdd.length < remainingLength) {
-        if (query != '' && query.isNotEmpty) {
-          query += ' OR ';
-        }
-
-        query += queryToAdd;
-      } else {
-        // Otherwise, add the search future and start a new one
-        assert(false, 'should never reach here');
-        query = queryToAdd;
-      }
-    }
-
-    if (!widget.includeReplies) {
-      query += ' -filter:replies ';
-    }
-
-    if (!widget.includeRetweets) {
-      query += ' -filter:retweets ';
-    } else {
-      query += ' include:nativeretweets ';
-    }
-
-    return query;
-  }
-
   /// Profiles still load while SearchTimeline fails. One page per member,
   /// capped, so a 39-abo group does not open 39 UserTweets at once.
   Future<List<TweetChain>> _fallbackUserTimelines(List<Subscription> users) {
@@ -803,7 +764,11 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         // SearchTimeline is a different rate-limit bucket from UserTweets. A
         // throw here used to abort every other chunk and replace the feed with
         // the hourglass, even when profiles still loaded.
-        var query = _buildSearchQuery(chunk.users);
+        final query = buildFeedSearchQuery(
+          chunk.users.map(feedSearchTermFor),
+          includeReplies: widget.includeReplies,
+          includeRetweets: widget.includeRetweets,
+        );
         ReadWork.checkpoint();
         final network = await fetchChunkWithFallback(
           search: () => _networkReads.start(

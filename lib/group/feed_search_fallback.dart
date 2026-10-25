@@ -17,8 +17,8 @@ import 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/utils/request_budget.dart';
 
 /// Max in-flight UserTweets requests while recovering a failed search.
-/// Lower than chunk search concurrency: two in-flight chunks of 16 users
-/// would otherwise open 32 profile requests at once.
+/// Lower than chunk search concurrency: two in-flight chunks of twenty-odd
+/// accounts would otherwise open forty-odd profile requests at once.
 const int feedUserTimelineFallbackConcurrency = 2;
 
 /// Profiles are worth asking for whenever the search failed, unless they

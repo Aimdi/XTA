@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
+import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread.dart';
@@ -52,12 +53,14 @@ void main() {
     );
   });
 
-  test('17 members partition into two hashes', () {
+  test('members pack into hashes by the length of their search', () {
+    // 15-character names: twenty fill one 512-character search, ten are left.
     final members = [
-      for (var i = 0; i < 17; i++)
+      for (var i = 0; i < 30; i++)
         FeedChunkMember(
           id: '$i',
           createdAt: t0.add(Duration(minutes: i)),
+          term: userSearchTerm('user_long_n${'$i'.padLeft(4, '0')}'),
         ),
     ];
     final hashes = feedChunkHashesFor(
@@ -69,14 +72,18 @@ void main() {
     expect(
       hashes.first,
       feedChunkHash(
-        [for (var i = 0; i < 16; i++) '$i'],
+        [for (var i = 0; i < 20; i++) '$i'],
         includeReplies: true,
         includeRetweets: true,
       ),
     );
     expect(
       hashes.last,
-      feedChunkHash(['16'], includeReplies: true, includeRetweets: true),
+      feedChunkHash(
+        [for (var i = 20; i < 30; i++) '$i'],
+        includeReplies: true,
+        includeRetweets: true,
+      ),
     );
   });
 
@@ -165,8 +172,20 @@ void main() {
   test('a parent group hashes the union of nested members', () {
     final parentOf = {'child': 'parent', 'parent': null};
     final members = [
-      FeedMemberRow(groupId: 'parent', id: 'a', createdAt: t0, search: false),
-      FeedMemberRow(groupId: 'child', id: 'b', createdAt: t1, search: false),
+      FeedMemberRow(
+        groupId: 'parent',
+        id: 'a',
+        createdAt: t0,
+        search: false,
+        term: 'from:a',
+      ),
+      FeedMemberRow(
+        groupId: 'child',
+        id: 'b',
+        createdAt: t1,
+        search: false,
+        term: 'from:b',
+      ),
     ];
     final parentHash = feedChunkHash(
       ['a', 'b'],

@@ -24,7 +24,6 @@ import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:provider/provider.dart';
 
-export 'package:xta/group/feed_chunk_hash.dart' show feedChunkSize;
 export 'package:xta/group/feed_chunk_plan.dart' show SubscriptionGroupFeedChunk;
 
 class GroupScreenArguments {

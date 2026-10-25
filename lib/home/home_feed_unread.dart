@@ -3,6 +3,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
 import 'package:xta/group/feed_read_position.dart';
+import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/group_unread.dart';
 
 /// Last-read mark for the combined Following feed (`following`, else legacy `-1`).
@@ -12,10 +13,16 @@ DateTime? lastReadForFollowing(Map<String, DateTime> lastReadByGroup) =>
 
 /// In-feed X accounts, the same set Following hashes (search stays out).
 List<FeedChunkMember> followingChunkMembers(
-  Iterable<({String id, DateTime createdAt, bool inFeed})> users,
+  Iterable<({String id, String screenName, DateTime createdAt, bool inFeed})>
+  users,
 ) => [
   for (final user in users)
-    if (user.inFeed) FeedChunkMember(id: user.id, createdAt: user.createdAt),
+    if (user.inFeed)
+      FeedChunkMember(
+        id: user.id,
+        createdAt: user.createdAt,
+        term: userSearchTerm(user.screenName),
+      ),
 ];
 
 /// Whether Following's cached chunks are newer than the last-read mark.
