@@ -2,6 +2,7 @@ import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/client/errors.dart';
 import 'package:xta/ui/read_failure_kind.dart';
 export 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/client/x_cookie_login.dart';
@@ -19,7 +20,21 @@ String readFailureMessage(L10n l10n, Object? error) => switch (readFailureKind(e
   ReadFailureKind.transactionUnavailable => l10n.reader_transaction_unavailable,
   ReadFailureKind.unavailable => l10n.reader_request_unavailable,
   ReadFailureKind.serviceUnavailable => l10n.reader_service_unavailable,
-  ReadFailureKind.unknown => l10n.oops_something_went_wrong,
+  ReadFailureKind.unknown => _xAnswer(l10n, error) ?? l10n.oops_something_went_wrong,
+};
+
+String? _xAnswer(L10n l10n, Object? error) =>
+    error is TwitterError ? describeTwitterErrorCode(l10n, error.code)?.message : null;
+
+/// What X's own error [code] tells a reader, or null for a code it does not explain.
+({String emoji, String message})? describeTwitterErrorCode(L10n l10n, int code) => switch (code) {
+  22 => (emoji: '🔒', message: l10n.private_profile),
+  34 => (emoji: '🤔', message: l10n.page_not_found),
+  50 => (emoji: '🕵️', message: l10n.user_not_found),
+  63 => (emoji: '👮', message: l10n.account_suspended),
+  200 => (emoji: '⛔', message: l10n.forbidden),
+  239 => (emoji: '💩', message: l10n.bad_guest_token),
+  _ => null,
 };
 
 class ReaderFailureNotice extends StatelessWidget {

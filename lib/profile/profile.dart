@@ -22,6 +22,7 @@ import 'package:xta/profile/posts_filter.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/profile/profile_feed_settings.dart';
 import 'package:xta/profile/profile_followed_by_line.dart';
+import 'package:xta/profile/profile_load_failure.dart';
 import 'package:xta/profile/profile_model.dart';
 import 'package:xta/profile/profile_note.dart';
 import 'package:xta/profile/profile_view_store.dart';
@@ -133,11 +134,7 @@ class _ProfileScreen extends StatelessWidget {
                 ? const ProfileLoadingSkeleton()
                 : triple.error != null
                 ? SafeArea(
-                    child: ReaderFailureNotice(
-                      error: triple.error,
-                      recoverAutomatically: false,
-                      onRetry: () => _retry(context),
-                    ),
+                    child: ProfileLoadFailure(error: triple.error, onRetry: () => _retry(context)),
                   )
                 // A failed refresh floats over the profile instead of pushing it
                 // down, below the status bar the header runs under.
