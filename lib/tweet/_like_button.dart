@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pref/pref.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/heart_burst.dart';
 import 'package:xta/ui/motion.dart';
 
@@ -51,22 +50,13 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
   }
 
   void _handleTap() {
-    if (widget.isLiked || _quietMotion) {
+    if (widget.isLiked || xtaReduceMotion(context) || quietActions(context)) {
       _controller.value = 0;
     } else {
       _controller.forward(from: 0);
     }
+    if (!widget.isLiked) actionTap(context);
     widget.onPressed?.call();
-  }
-
-  bool get _quietMotion {
-    if (xtaReduceMotion(context)) return true;
-    try {
-      final prefs = PrefService.of(context, listen: false);
-      return prefs.get(optionCalmMode) == true || prefs.get(optionZenMode) == true;
-    } catch (_) {
-      return false;
-    }
   }
 
   @override

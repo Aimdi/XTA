@@ -58,9 +58,13 @@ flat. It adds no posting surface and changes no data.
 ## 5. Saving pops, liking and saving tap
 
 - Saving a post pops the bookmark: it grows to 125 % and settles back with a
-  slight overshoot (300 ms). Unsaving swaps it at once, as unliking does.
-- Liking and saving give a light haptic tap; unliking and unsaving do not.
-  Calm and zen mode keep both quiet, as they keep the heart's burst.
+  slight overshoot (300 ms). It pops whenever the post becomes saved while it
+  shows, so filing it into a folder from the long-press sheet pops it too. A
+  post already saved when it scrolls into view does not pop. Unsaving swaps it
+  at once, as unliking does.
+- Liking and saving with a tap give a light haptic tap; unliking and unsaving
+  do not. Calm and zen mode keep the pop and both taps quiet, as they keep the
+  heart's burst. The Linux desktop has nothing to tap with.
 
 ## 6. Scroll-to-top grows in
 
@@ -93,7 +97,9 @@ Android's own vibration settings.
   has slid in, and carry on when the post is rebuilt mid-fill; a feed's and
   another post's are full at once, and so is an opened post's with reduced
   motion.
-- Saving: the bookmark pops on save and not on unsave; liking and saving tap,
-  unliking, unsaving and calm mode do not.
+- Saving: the bookmark pops on save, also from elsewhere while it shows, and
+  not on unsave or when it arrives saved; liking and saving tap, unliking,
+  unsaving, calm and zen mode do not; reduced motion keeps the tap and drops the
+  pop.
 - Scroll-to-top: the button grows in and shrinks away, and cannot be tapped
   while hidden.

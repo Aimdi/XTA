@@ -17,6 +17,7 @@ import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/quotes_screen.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/tweet/tweet_post_menu.dart';
+import 'package:xta/ui/action_feedback.dart';
 
 const _shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
 
@@ -241,6 +242,109 @@ void main() {
     await tester.pumpAndSettle();
     expect(models.saves.isSaved('123'), isFalse);
     expect(tester.takeException(), isNull);
+  });
+
+  group('saving and liking are felt', () {
+    final taps = <Object?>[];
+
+    setUp(() {
+      taps.clear();
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'HapticFeedback.vibrate') taps.add(call.arguments);
+          return null;
+        },
+      );
+    });
+
+    tearDown(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      );
+    });
+
+    double bookmarkScale(WidgetTester tester) => tester
+        .widget<ScaleTransition>(find.descendant(of: find.byType(ActionPop), matching: find.byType(ScaleTransition)))
+        .scale
+        .value;
+
+    Future<void> tapAndWatch(WidgetTester tester, Finder finder) async {
+      await tester.tap(finder);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+    }
+
+    testWidgets('saving pops the bookmark with a light tap; unsaving does neither', (tester) async {
+      await _pumpFooter(tester, _post());
+
+      await tapAndWatch(tester, find.byIcon(Icons.bookmark_border));
+      expect(bookmarkScale(tester), greaterThan(1));
+      expect(taps, ['HapticFeedbackType.lightImpact']);
+      await tester.pumpAndSettle();
+      expect(bookmarkScale(tester), 1);
+
+      await tapAndWatch(tester, find.byIcon(Icons.bookmark));
+      expect(bookmarkScale(tester), 1);
+      expect(taps, hasLength(1));
+    });
+
+    testWidgets('saving from elsewhere while the post shows pops it too', (tester) async {
+      final models = await _pumpFooter(tester, _post());
+      await models.saves.saveTweet('123', null, const {});
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(bookmarkScale(tester), greaterThan(1));
+      expect(taps, isEmpty, reason: 'the tap answers the reader\'s own tap');
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('an action already on when it shows stays still, and turning off does not pop', (tester) async {
+      Widget pop(bool active) => ActionPop(active: active, child: const SizedBox.square(dimension: 24));
+      double scale() => tester.widget<ScaleTransition>(find.byType(ScaleTransition)).scale.value;
+
+      await tester.pumpWidget(pop(true));
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(scale(), 1);
+      await tester.pumpWidget(pop(false));
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(scale(), 1);
+      await tester.pumpWidget(pop(true));
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(scale(), greaterThan(1));
+      await tester.pumpAndSettle();
+      expect(scale(), 1);
+    });
+
+    testWidgets('liking taps lightly; unliking does not', (tester) async {
+      await _pumpFooter(tester, _post());
+
+      await tapAndWatch(tester, find.byType(LikeButton));
+      expect(taps, ['HapticFeedbackType.lightImpact']);
+      await tester.pumpAndSettle();
+      await tapAndWatch(tester, find.byType(LikeButton));
+      expect(taps, hasLength(1));
+    });
+
+    for (final (name, mode) in [('calm', optionCalmMode), ('zen', optionZenMode)]) {
+      testWidgets('$name mode keeps saving and liking still and silent', (tester) async {
+        await _pumpFooter(tester, _post(), preferences: {mode: true});
+
+        await tapAndWatch(tester, find.byIcon(Icons.bookmark_border));
+        expect(bookmarkScale(tester), 1);
+        await tapAndWatch(tester, find.byType(LikeButton));
+        expect(taps, isEmpty);
+      });
+    }
+
+    testWidgets('with reduced motion saving still taps, without the pop', (tester) async {
+      await _pumpFooter(tester, _post(), preferences: {optionDisableAnimations: true});
+
+      await tapAndWatch(tester, find.byIcon(Icons.bookmark_border));
+      expect(bookmarkScale(tester), 1);
+      expect(taps, hasLength(1));
+    });
   });
 
   testWidgets('reposted-by opens the existing retweeters tab for this post', (tester) async {

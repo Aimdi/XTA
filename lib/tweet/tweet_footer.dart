@@ -22,6 +22,7 @@ import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/tweet/quote_actions.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/rolling_count.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/database/entities.dart';
@@ -262,6 +263,8 @@ Widget tweetFooterIconButton(
 
 /// An icon-only post action. [style] decides where the glyph sits in its 48dp
 /// target; the footer's centred style is the default.
+/// [active]: for an action whose icon pops as it turns on, as saving does,
+/// whether it is on.
 Widget tweetActionIconButton(
   BuildContext context, {
   required IconData icon,
@@ -270,9 +273,11 @@ Widget tweetActionIconButton(
   VoidCallback? onPressed,
   String? tooltip,
   ButtonStyle style = footerButtonStyle,
+  bool? active,
 }) {
+  final glyph = Icon(icon, fill: fill);
   final button = IconButton(
-    icon: Icon(icon, fill: fill),
+    icon: active == null ? glyph : ActionPop(active: active, child: glyph),
     color: color ?? Theme.of(context).colorScheme.primary,
     iconSize: kTweetActionGlyphSize,
     onPressed: onPressed,
@@ -641,6 +646,7 @@ class TweetFooterBar extends StatelessWidget {
                         icon: Icons.bookmark,
                         color: tweetReadableAccentColor(context),
                         fill: 1,
+                        active: true,
                         onPressed: () async {
                           await savedModel.deleteSavedTweet(tweetId);
                         },
@@ -652,10 +658,12 @@ class TweetFooterBar extends StatelessWidget {
                         icon: Icons.bookmark_border,
                         color: tint,
                         fill: 0,
+                        active: false,
                         style: _bookmarkStyle,
                         onPressed: tweetId == null
                             ? null
                             : () async {
+                                actionTap(context);
                                 // Goes wherever the reader last chose, when they have
                                 // asked for that to be remembered; unfiled otherwise, as
                                 // before. Routed through the shared save so a folder set
