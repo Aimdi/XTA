@@ -26,13 +26,16 @@ import 'package:xta/tweet/progressive_feed_view.dart';
 import 'package:xta/tweet/ticker/ticker_chart.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/floating_notice.dart';
+import 'package:xta/ui/image_fade_in.dart';
+import 'package:xta/ui/loading_hairline.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reorder_lift.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 /// Renders XTA's motion frame by frame, for review: the second pass of X's
-/// motion and the polish after it.
+/// motion and the two polish passes after it.
 ///   fvm flutter test test/x_motion_render_test.dart --dart-define=RENDER_X_MOTION=true
 /// The frames land in review-artifacts/renders/x-motion/.
 const _render = bool.fromEnvironment('RENDER_X_MOTION');
@@ -379,5 +382,89 @@ void main() {
     await tester.pumpAndSettle();
     await tester.pumpWidget(page(visible: false));
     await _frames(tester, 'top-out', step: 40, frames: 4);
+  });
+
+  testWidgets('a photo fades in over its placeholder', skip: !_render, (tester) async {
+    _screen(tester, 170);
+    final photo = MemoryImage((await tester.runAsync(_bannerPng))!);
+    Widget card({required bool fetched}) => _app(
+      Builder(
+        builder: (context) {
+          final placeholder = ColoredBox(color: skeletonBoneColor(context, 0));
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: AspectRatio(
+                aspectRatio: 3,
+                child: fetched
+                    ? ImageFadeIn(
+                        placeholder: placeholder,
+                        image: Image(image: photo, fit: BoxFit.cover),
+                      )
+                    : placeholder,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+    await tester.pumpWidget(card(fetched: false));
+    // Decoded on the real clock, as a fetched photo is before it is shown.
+    await tester.runAsync(() => precacheImage(photo, tester.element(find.byType(Scaffold))));
+    await tester.pumpWidget(card(fetched: true));
+    await _frames(tester, 'photo', step: 45, frames: 5);
+  });
+
+  testWidgets('a translation fades in as the post eases to its height', skip: !_render, (tester) async {
+    _screen(tester, 190);
+    final post = _post(replies: 2, likes: 36, views: 692);
+    final translated = ValueNotifier(false);
+    addTearDown(translated.dispose);
+    await tester.pumpWidget(
+      _withPostModels(
+        (likes: LikedTweetModel(), saves: SavedTweetModel()),
+        _app(
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ValueListenableBuilder(
+                  valueListenable: translated,
+                  builder: (context, translated, _) => XtaSwap(
+                    swap: translated,
+                    child: Text(
+                      translated
+                          ? 'Just a minute ago, my X forced a new interface design and motion graphics on me. '
+                                'Every tap now moves.'
+                          : 'Gerade eben hat mir X ein neues Design aufgezwungen.',
+                    ),
+                  ),
+                ),
+                _footer(post),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    translated.value = true;
+    await tester.pump();
+    await _frames(tester, 'translate', step: 45, frames: 5);
+  });
+
+  testWidgets('the loading line glides, fills and fades', skip: !_render, (tester) async {
+    _screen(tester, 2 * 56);
+    Widget feed({required bool loading, required double value}) =>
+        _app(LoadingHairline(loading: loading, value: value, child: _rows()));
+    await tester.pumpWidget(feed(loading: true, value: 0.3));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(feed(loading: true, value: 0.7));
+    await _frames(tester, 'line-glide', step: 40, frames: 4);
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(feed(loading: false, value: 0.7));
+    await _frames(tester, 'line-end', step: 60, frames: 5);
+    await tester.pumpAndSettle();
   });
 }
