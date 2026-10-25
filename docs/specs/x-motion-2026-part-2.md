@@ -49,7 +49,8 @@ viewer's bars coming in after a photo lands.
 - When the name appears in the bar (as today, once the header has scrolled
   away), the bar fades in the profile's banner behind it, cropped to the bar,
   blurred and darkened. The name and handle rise into place as they fade in,
-  and the bar's text, icons and status bar turn light over the banner. 200 ms.
+  and the bar's text, icons and status bar turn light over the banner. 180 ms,
+  XTA's standard motion time.
   Scrolling back to the top reverses it.
 - Without a banner the bar keeps its own colour and only the title rises in.
 - The banner is the copy the header already loaded, so nothing new is

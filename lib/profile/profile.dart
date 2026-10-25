@@ -1,5 +1,4 @@
 import 'package:xta/ui/reader_tab_view.dart';
-import 'dart:ui' as ui;
 
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -409,36 +408,13 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     );
   }
 
-  SliverAppBar _buildAppBar(BuildContext context, UserWithExtra user, ProfileViewState view, bool innerBoxIsScrolled) {
+  Widget _buildAppBar(BuildContext context, UserWithExtra user, ProfileViewState view, bool innerBoxIsScrolled) {
     final username = user.screenName ?? L10n.of(context).unknown;
-    return SliverAppBar(
-      pinned: true,
-      floating: false,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      surfaceTintColor: Colors.transparent,
-      titleSpacing: 0,
-      title: innerBoxIsScrolled
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  user.name ?? username,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: tweetLabelStyle(context),
-                ),
-                Text(
-                  '@$username',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textDirection: ui.TextDirection.ltr,
-                  style: tweetMetadataStyle(context).copyWith(fontSize: 11),
-                ),
-              ],
-            )
-          : null,
+    return ProfileTopBar(
+      name: user.name ?? username,
+      username: username,
+      bannerUrl: user.profileBannerUrl,
+      scrolled: innerBoxIsScrolled,
       actions: [
         IconButton(
           icon: const Icon(Icons.search),

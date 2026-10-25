@@ -1,9 +1,11 @@
-import 'dart:ui' show FontFeature;
+import 'dart:ui' show FontFeature, ImageFilter;
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/verified_badges.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -62,6 +64,153 @@ class ProfileBanner extends StatelessWidget {
         color: fallback,
         child: InkWell(onTap: uri == null ? null : onTap, child: image),
       ),
+    );
+  }
+}
+
+/// How dark the banner behind the top bar is made, so white text over any
+/// banner keeps at least 4.5:1 against it.
+const double kProfileBarBannerScrim = 0.55;
+
+/// The profile's banner behind the top bar once the header has scrolled away,
+/// blurred and darkened as X's is, with the name in white over it. The copy
+/// the header loaded is reused, so nothing new is downloaded.
+class ProfileBarBanner extends StatelessWidget {
+  final String uri;
+
+  const ProfileBarBanner({super.key, required this.uri});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: ClipRect(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ImageFiltered(
+              imageFilter: ImageFilter.blur(
+                sigmaX: 12,
+                sigmaY: 12,
+                tileMode: TileMode.clamp,
+              ),
+              child: ExtendedImage.network(
+                uri,
+                fit: BoxFit.cover,
+                // No spinner or retry button in the bar: until the picture
+                // is there, the darkened bar alone carries the name.
+                loadStateChanged: (state) =>
+                    state.extendedImageLoadState == LoadState.completed
+                    ? null
+                    : const SizedBox.shrink(),
+              ),
+            ),
+            ColoredBox(
+              color: Colors.black.withValues(alpha: kProfileBarBannerScrim),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The profile's top bar. Once the header has scrolled away ([scrolled]) the
+/// name rises into the bar over the profile's banner, blurred and darkened as
+/// X's is, and the bar's text, icons and status bar turn light over it.
+class ProfileTopBar extends StatelessWidget {
+  final String name;
+  final String username;
+  final String? bannerUrl;
+  final bool scrolled;
+  final List<Widget> actions;
+
+  const ProfileTopBar({
+    super.key,
+    required this.name,
+    required this.username,
+    required this.bannerUrl,
+    required this.scrolled,
+    required this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(end: scrolled ? 1 : 0),
+      duration: xtaMotionDuration(context, kXtaMotionStandard),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, _) => _barAt(context, t),
+    );
+  }
+
+  /// The bar at [t], from the header in view (0) to scrolled away (1).
+  SliverAppBar _barAt(BuildContext context, double t) {
+    final banner = bannerUrl;
+    final onBanner = banner == null ? 0.0 : t;
+    final theme = Theme.of(context);
+    final foreground = Color.lerp(
+      theme.appBarTheme.foregroundColor ?? theme.colorScheme.onSurface,
+      Colors.white,
+      onBanner,
+    );
+    return SliverAppBar(
+      pinned: true,
+      floating: false,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      foregroundColor: foreground,
+      // Named outright: left to Material, the actions fall back to the
+      // theme's grey icon buttons as soon as the colour moves.
+      iconTheme: IconThemeData(color: foreground),
+      actionsIconTheme: IconThemeData(color: foreground),
+      systemOverlayStyle: onBanner > 0.5 ? SystemUiOverlayStyle.light : null,
+      flexibleSpace: onBanner == 0
+          ? null
+          : Opacity(
+              opacity: onBanner,
+              child: ProfileBarBanner(uri: banner!),
+            ),
+      titleSpacing: 0,
+      title: t == 0
+          ? null
+          : Opacity(
+              opacity: t,
+              child: Transform.translate(
+                offset: Offset(0, 8 * (1 - t)),
+                child: _title(context, onBanner),
+              ),
+            ),
+      actions: actions,
+    );
+  }
+
+  /// The name and handle, turning white over the banner by [onBanner].
+  Widget _title(BuildContext context, double onBanner) {
+    final nameStyle = tweetLabelStyle(context);
+    final handleStyle = tweetMetadataStyle(context).copyWith(fontSize: 11);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: nameStyle.copyWith(
+            color: Color.lerp(nameStyle.color, Colors.white, onBanner),
+          ),
+        ),
+        Text(
+          '@$username',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textDirection: TextDirection.ltr,
+          style: handleStyle.copyWith(
+            color: Color.lerp(handleStyle.color, Colors.white70, onBanner),
+          ),
+        ),
+      ],
     );
   }
 }
