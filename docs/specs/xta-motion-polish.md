@@ -67,6 +67,11 @@ flat. It adds no posting surface and changes no data.
 - Liking and saving with a tap give a light haptic tap; unliking and unsaving
   do not. Calm and zen mode keep the pop and both taps quiet, as they keep the
   heart's burst. The Linux desktop has nothing to tap with.
+- Haptic feedback, a switch in Settings → Accessibility that is on by default,
+  turns these taps off, and every other tap XTA gives with them: following
+  from an avatar, opening the folder sheet or a folder's menu, a swipe that
+  turns the page, picking a single source in the home filter, and Pixiv's,
+  which keeps its own switch as well. The pop stays: it is motion, not touch.
 
 ## 6. Scroll-to-top grows in
 
@@ -79,8 +84,8 @@ flat. It adds no posting surface and changes no data.
 ## Reduced motion
 
 XTA's reduce-animations setting and Android's "remove animations" make every
-change in this pass happen at once. Haptic taps are not motion and follow
-Android's own vibration settings.
+change in this pass happen at once. Haptic taps are not motion: the Haptic
+feedback switch and Android's own vibration settings decide them.
 
 ## Not in this pass
 
@@ -106,6 +111,8 @@ Android's own vibration settings.
   not on unsave or when it arrives saved; liking and saving tap, unliking,
   unsaving, calm and zen mode do not; reduced motion keeps the tap and drops the
   pop.
+- Haptic feedback off: liking, saving, following from an avatar, a page swipe
+  and Pixiv's actions give no tap; the bookmark still pops.
 - Scroll-to-top: the button grows in and shrinks away, cannot be tapped or
   read out while it goes, a hidden one does not lift a snack bar, and with
   reduced motion it comes and goes at once.
