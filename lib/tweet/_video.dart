@@ -559,6 +559,9 @@ class _TweetVideoState extends State<TweetVideo> {
       );
     } finally {
       _isFullscreen = false;
+      // Unmounted while the route was up: dispose left the player to the
+      // route, and nothing else will give it back now the route has closed.
+      if (!mounted) _releasePlayer();
       await defaultExitNativeFullscreen();
     }
   }
@@ -925,33 +928,40 @@ class _TweetVideoState extends State<TweetVideo> {
     if (key != null) _pool?.markHidden(key, this);
     // Keep the pool ref across the native fullscreen handoff. The fullscreen
     // route uses the same player; releasing here would let eviction dispose it
-    // while it is still on screen. Detaching listeners is always safe.
-    if (!_isFullscreen) {
-      if (_ownsControllers) {
-        _pooled?.dispose();
-      } else if (key != null && _holdsPoolRef) {
-        if (!(_pool?.anyVisible(key) ?? false)) {
-          _pooled?.player.pause();
-        }
-        _holdsPoolRef = false;
-        final pool = _pool;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          pool?.release(key, acquisition: _poolAcquisition);
-          if (_ownsPool) pool?.releaseUnused();
-        });
-      }
-      // A player keyed to this State alone can never be re-attached once the
-      // State is gone. Left cached, it kept its decoder and buffers until the
-      // pool happened to need the room.
-      final acquisition = _poolAcquisition;
-      if (widget.tweetId == null && key != null && acquisition != null) {
-        final pool = _pool;
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) => pool?.discardIfUnused(key, acquisition),
-        );
-      }
-    }
+    // while it is still on screen, so _openFullscreen releases it once the
+    // route closes. Detaching listeners is always safe.
+    if (!_isFullscreen) _releasePlayer();
     super.dispose();
+  }
+
+  /// Lets go of the player once this tile is gone: one it owns is disposed,
+  /// a pooled one paused unless another tile shows it, and its pool reference
+  /// released after the frame.
+  void _releasePlayer() {
+    final key = _cacheKey;
+    if (_ownsControllers) {
+      _pooled?.dispose();
+    } else if (key != null && _holdsPoolRef) {
+      if (!(_pool?.anyVisible(key) ?? false)) {
+        _pooled?.player.pause();
+      }
+      _holdsPoolRef = false;
+      final pool = _pool;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        pool?.release(key, acquisition: _poolAcquisition);
+        if (_ownsPool) pool?.releaseUnused();
+      });
+    }
+    // A player keyed to this State alone can never be re-attached once the
+    // State is gone. Left cached, it kept its decoder and buffers until the
+    // pool happened to need the room.
+    final acquisition = _poolAcquisition;
+    if (widget.tweetId == null && key != null && acquisition != null) {
+      final pool = _pool;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => pool?.discardIfUnused(key, acquisition),
+      );
+    }
   }
 }
 
