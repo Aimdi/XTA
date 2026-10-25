@@ -70,6 +70,9 @@ Android's "remove animations", as it did.
   the name to a screen reader, and opens Recent, Popular, Custom and Filters;
   the closer fit drops the chevron, and too little room puts the tabs on a
   second row under the controls.
+- English at 390 dp and German at 411 and 390 dp fit one row, German at
+  360 dp the closer fit, and German at 320 dp with text ×1.3 two rows; in
+  each, no tab is scrolled out of sight.
 - The selected tab carries the marker; Media switches the feed to media.
 - The Feeds sheet's "Open navigation menu" opens the side menu, and a long
   press on it opens the avatar sheet.

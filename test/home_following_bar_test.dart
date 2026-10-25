@@ -135,16 +135,18 @@ void main() {
       await tester.pumpWidget(
         _app(
           Builder(
-            builder: (context) {
-              measured = homeFollowingBarLayout(context, width: width, actions: 3);
-              return const SizedBox();
-            },
+            builder: (context) => _bar(layout: measured = homeFollowingBarLayout(context, width: width, actions: 3)),
           ),
+          width: width,
           locale: locale,
           scale: scale,
         ),
       );
       expect(measured, fit);
+      final tabs = tester.state<ScrollableState>(
+        find.descendant(of: find.byType(HomeFollowingBar), matching: find.byType(Scrollable)),
+      );
+      expect(tabs.position.maxScrollExtent, 0, reason: 'no tab is scrolled out of sight');
     });
   }
 
