@@ -233,6 +233,18 @@
   "@choose_emoji": {},
   "choose_icon": "Choose icon",
   "@choose_icon": {},
+  "choose_icon_number": "Icon {number} of {count}",
+  "@choose_icon_number": {
+    "description": "What a screen reader says for one icon in the grid of the 'Choose icon' dialog of a group: number is its position in the grid, count how many icons there are.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Choose pages",
   "@choose_pages": {},
   "chrome_avatar_change": "Tap to change the picture in the upper left",
@@ -275,8 +287,20 @@
   "@colour_purple": {},
   "colour_yellow": "Yellow",
   "@colour_yellow": {},
+  "communities": "Communities",
+  "@communities": {},
+  "community": "Community",
+  "@community": {},
+  "community_about": "About",
+  "@community_about": {},
+  "community_created": "Created {date}",
+  "@community_created": {},
+  "community_members": "Members",
+  "@community_members": {},
   "community_notes_header": "Users added context",
   "@community_notes_header": {},
+  "community_rules": "Rules",
+  "@community_rules": {},
   "confirm_close_fritter": "Are you sure you want to close XTA?",
   "@confirm_close_fritter": {},
   "content_filter": "Content filter",
@@ -2672,6 +2696,10 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Add account",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Add instance",
+  "@plugin_mastodon_add_instance": {
+    "description": "Name of the + button beside the field where the reader types the address of another Mastodon instance; it adds that instance to the list."
+  },
   "plugin_mastodon_boosted": "{name} boosted",
   "@plugin_mastodon_boosted": {
     "placeholders": {
@@ -3795,10 +3823,30 @@
   "@scroll_to_top": {},
   "search": "Search",
   "@search": {},
+  "search_any_language": "Any language",
+  "@search_any_language": {
+    "description": "First choice of the language picker in the X search filters: results in every language, with no language filter."
+  },
+  "search_hide_links": "Hide links",
+  "@search_hide_links": {
+    "description": "X search filter chip: leave out posts that contain a link, as 'Hide replies' leaves out replies. Also labels the active filter above the results."
+  },
   "search_in_plugin": "Search {name}",
   "@search_in_plugin": {},
+  "search_include_links": "Include links",
+  "@search_include_links": {
+    "description": "X search filter chip: keep posts that contain a link along with every other post, which is X's default. Sits before 'Only links' and 'Hide links'."
+  },
   "search_links": "Links",
   "@search_links": {},
+  "search_only_links": "Only links",
+  "@search_only_links": {
+    "description": "X search filter chip: show only posts that contain a link. Also labels the active filter above the results."
+  },
+  "search_only_replies": "Only replies",
+  "@search_only_replies": {
+    "description": "X search filter chip: show only posts that are replies. Sits between 'Include replies' and 'Hide replies', and labels the active filter above the results."
+  },
   "search_saved_posts": "Search saved posts",
   "@search_saved_posts": {},
   "search_settings": "Search settings",
@@ -3929,6 +3977,10 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Columns",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Compact",
+  "@subscription_groups_compact": {
+    "description": "Choice beside the 2 and 3 column choices for the groups board: smaller tiles with the member faces beside the name"
+  },
   "subscription_groups_layout_board": "Show as board",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Show as list",
@@ -4144,12 +4196,16 @@
   "@unable_to_load_home_pages": {},
   "unable_to_load_replies": "Couldn't load replies",
   "@unable_to_load_replies": {},
+  "unable_to_load_the_community": "Unable to load the community",
+  "@unable_to_load_the_community": {},
   "unable_to_load_the_group": "Unable to load the group",
   "@unable_to_load_the_group": {},
   "unable_to_load_the_list_of_follows": "Unable to load the list of follows",
   "@unable_to_load_the_list_of_follows": {},
   "unable_to_load_the_list_of_retweets": "Unable to load who retweeted this post",
   "@unable_to_load_the_list_of_retweets": {},
+  "unable_to_load_the_members": "Unable to load the members",
+  "@unable_to_load_the_members": {},
   "unable_to_load_the_next_page_of_follows": "Unable to load the next page of follows",
   "@unable_to_load_the_next_page_of_follows": {},
   "unable_to_load_the_next_page_of_replies": "Unable to load the next page of replies",
@@ -5886,5 +5942,7 @@
   "plugin_substack_highlight_remove": "Remove highlight",
   "@plugin_substack_highlight_remove": {"description": "Tooltip of the button that deletes one highlight in the highlights sheet."},
   "plugin_substack_checking_link": "Checking the link…",
-  "@plugin_substack_checking_link": {"description": "Brief note shown at the bottom of the screen while the app asks a website whether a tapped link is a Substack post, before opening it in the reader or the browser."}
+  "@plugin_substack_checking_link": {"description": "Brief note shown at the bottom of the screen while the app asks a website whether a tapped link is a Substack post, before opening it in the reader or the browser."},
+  "protected_posts": "Only approved followers on X can see @{screenName}'s posts.",
+  "@protected_posts": {"description": "Shown in a protected X account's Posts, Posts and replies and Media tabs instead of its posts, which X sends only to the followers the account approved. 'Approved followers on X' are followers on X itself, not XTA's local follows. screenName is the account's handle."}
 }

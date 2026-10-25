@@ -45,6 +45,17 @@ class TwitterError {
   }
 }
 
+/// X sent no community for [id]: it does not exist, or is not shown to the
+/// account that asked.
+class CommunityUnavailableException implements Exception {
+  final String id;
+
+  CommunityUnavailableException(this.id);
+
+  @override
+  String toString() => 'Community unavailable {id: $id}';
+}
+
 class SearchHasNoTimelineException {
   final String? query;
 

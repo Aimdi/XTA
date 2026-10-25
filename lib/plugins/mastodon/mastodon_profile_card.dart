@@ -6,6 +6,7 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_text.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/urls.dart';
 
 String? mastodonProfileWebUrl(MastodonProfile? profile) => _webUrl(profile?.url);
@@ -106,7 +107,7 @@ class MastodonProfileCard extends StatelessWidget {
         if (profile.createdAt case final DateTime joined) ...[
           const SizedBox(height: 12),
           Text(
-            l10n.joined(DateFormat.yMMMM().format(joined)),
+            l10n.joined(DateFormat.yMMMM(currentFormattingLocale()).format(joined)),
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
         ],
@@ -218,7 +219,7 @@ class MastodonProfileCard extends StatelessWidget {
   }
 
   Widget _count(BuildContext context, int count, String label) => Semantics(
-    label: '${NumberFormat.decimalPattern().format(count)} $label',
+    label: '${NumberFormat.decimalPattern(currentFormattingLocale()).format(count)} $label',
     excludeSemantics: true,
     child: Text.rich(
       TextSpan(

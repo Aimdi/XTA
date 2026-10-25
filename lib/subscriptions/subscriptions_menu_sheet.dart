@@ -324,6 +324,15 @@ class _ColumnsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final columns = prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2;
+    final compact = prefs.get<bool>(optionSubscriptionGroupsCompact) ?? false;
+
+    Future<void> choose({int? columns, required bool compact}) async {
+      if (columns != null) {
+        await prefs.set(optionSubscriptionGroupsColumns, columns);
+      }
+      await prefs.set(optionSubscriptionGroupsCompact, compact);
+      onChanged();
+    }
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 16, 4),
@@ -337,20 +346,20 @@ class _ColumnsRow extends StatelessWidget {
           ),
           _CountChip(
             label: '2',
-            selected: columns != 3,
-            onTap: () async {
-              await prefs.set(optionSubscriptionGroupsColumns, 2);
-              onChanged();
-            },
+            selected: !compact && columns != 3,
+            onTap: () => choose(columns: 2, compact: false),
           ),
           const SizedBox(width: 8),
           _CountChip(
             label: '3',
-            selected: columns == 3,
-            onTap: () async {
-              await prefs.set(optionSubscriptionGroupsColumns, 3);
-              onChanged();
-            },
+            selected: !compact && columns == 3,
+            onTap: () => choose(columns: 3, compact: false),
+          ),
+          const SizedBox(width: 8),
+          _CountChip(
+            label: l10n.subscription_groups_compact,
+            selected: compact,
+            onTap: () => choose(compact: true),
           ),
         ],
       ),
@@ -452,17 +461,25 @@ class _CountChip extends StatelessWidget {
         child: InkWell(
           customBorder: const StadiumBorder(),
           onTap: onTap,
-          child: SizedBox.square(
-            dimension: kMinInteractiveDimension,
-            child: Center(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: selected
-                      ? contrastingForeground(accent)
-                      : onSurface,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
+          // A digit fills a 48 dp circle; a word grows it into a pill.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minWidth: kMinInteractiveDimension,
+              minHeight: kMinInteractiveDimension,
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: label.length > 2 ? 16 : 0,
+              ),
+              child: Center(
+                widthFactor: 1,
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: selected ? contrastingForeground(accent) : onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
                 ),
               ),
             ),

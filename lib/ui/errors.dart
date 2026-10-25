@@ -1,6 +1,6 @@
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:xta/ui/read_failure_kind.dart';
-import 'package:xta/ui/reader_failure.dart' show ScheduledReadRetry;
+import 'package:xta/ui/reader_failure.dart' show ScheduledReadRetry, describeTwitterErrorCode;
 import 'dart:async';
 import 'dart:io' show Platform, SocketException;
 
@@ -115,41 +115,9 @@ class UnknownTwitterErrorCode with SyntheticException implements Exception {
 }
 
 EmojiErrorWidget createEmojiError(TwitterError error) {
-  String emoji;
-  String message;
-
-  switch (error.code) {
-    case 22:
-      emoji = '🔒';
-      message = L10n.current.private_profile;
-      break;
-    case 34:
-      emoji = '🤔';
-      message = L10n.current.page_not_found;
-      break;
-    case 50:
-      emoji = '🕵️';
-      message = L10n.current.user_not_found;
-      break;
-    case 63:
-      emoji = '👮';
-      message = L10n.current.account_suspended;
-      break;
-    case 200:
-      emoji = '⛔';
-      message = L10n.current.forbidden;
-      break;
-    case 239:
-      emoji = '💩';
-      message = L10n.current.bad_guest_token;
-      break;
-    default:
-      emoji = '💥';
-      message = L10n.current.catastrophic_failure;
-      break;
-  }
-
-  return EmojiErrorWidget(emoji: emoji, message: message, errorMessage: error.message);
+  final described =
+      describeTwitterErrorCode(L10n.current, error.code) ?? (emoji: '💥', message: L10n.current.catastrophic_failure);
+  return EmojiErrorWidget(emoji: described.emoji, message: described.message, errorMessage: error.message);
 }
 
 class EmojiErrorWidget extends FritterErrorWidget {

@@ -10,11 +10,15 @@ class FeedMemberRow {
   final DateTime createdAt;
   final bool search;
 
+  /// What the member adds to its chunk's search: `from:name` or `(query)`.
+  final String term;
+
   const FeedMemberRow({
     required this.groupId,
     required this.id,
     required this.createdAt,
     required this.search,
+    required this.term,
   });
 }
 
@@ -66,7 +70,9 @@ List<FeedChunkMember> membersForGroupFeed({
   final members = <FeedChunkMember>[];
   for (final row in [...users, ...searches]) {
     if (seen.add(row.id)) {
-      members.add(FeedChunkMember(id: row.id, createdAt: row.createdAt));
+      members.add(
+        FeedChunkMember(id: row.id, createdAt: row.createdAt, term: row.term),
+      );
     }
   }
   return members;

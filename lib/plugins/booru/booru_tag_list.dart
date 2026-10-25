@@ -9,6 +9,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 typedef BooruTagGroup = ({BooruTagCategory? category, List<String> tags});
 
@@ -193,7 +194,7 @@ class _BooruTagGroupView extends StatelessWidget {
   Widget _chip(BuildContext context, String tag) {
     final name = booruTagDisplayName(tag);
     final count = info[tag]?.postCount;
-    final locale = Localizations.localeOf(context).toString();
+    final locale = formattingLocale(context);
     return PluginTagChip(
       key: ValueKey('booru-post-tag-$tag'),
       label: name,

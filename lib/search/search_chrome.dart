@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/search/advanced_search_model.dart';
+import 'package:xta/search/search_languages.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -12,14 +13,16 @@ const double kSearchTabsHeight = 52;
 const double kSearchFilterStripHeight = 56;
 const double kSearchControlRadius = 12;
 
-String advancedFilterLabel(BuildContext context, AdvancedSearchFilter filter) {
+/// The text of the removable chip [filter] shows above the results.
+String advancedFilterChipLabel(BuildContext context, AdvancedSearchState state, AdvancedSearchFilter filter) {
   final l10n = L10n.of(context);
-  return switch (filter) {
+  final label = switch (filter) {
     AdvancedSearchFilter.allWords => l10n.all_of_these_words,
     AdvancedSearchFilter.exactPhrase => l10n.this_exact_phrase,
     AdvancedSearchFilter.anyWords => l10n.any_of_these_words,
     AdvancedSearchFilter.noneWords => l10n.none_of_these_words,
     AdvancedSearchFilter.hashtags => l10n.these_hashtags,
+    AdvancedSearchFilter.language => l10n.language,
     AdvancedSearchFilter.fromAccounts => l10n.from_these_accounts,
     AdvancedSearchFilter.toAccounts => l10n.to_these_accounts,
     AdvancedSearchFilter.mentioningAccounts => l10n.mentioning_these_accounts,
@@ -29,13 +32,30 @@ String advancedFilterLabel(BuildContext context, AdvancedSearchFilter filter) {
     AdvancedSearchFilter.onlyMedia => l10n.only_show_posts_with_media,
     AdvancedSearchFilter.photos => l10n.photos,
     AdvancedSearchFilter.videos => l10n.videos,
-    AdvancedSearchFilter.links => l10n.search_links,
-    AdvancedSearchFilter.excludeReplies => l10n.hide_replies,
+    AdvancedSearchFilter.links => advancedInclusionLabels(l10n, filter)[state.links]!,
+    AdvancedSearchFilter.replies => advancedInclusionLabels(l10n, filter)[state.replies]!,
+    AdvancedSearchFilter.includeReposts => l10n.include_retweets,
     AdvancedSearchFilter.excludeRetweets => l10n.hide_retweets,
     AdvancedSearchFilter.since => l10n.since_date,
     AdvancedSearchFilter.until => l10n.until_date,
   };
+  final value = filter == AdvancedSearchFilter.language ? searchLanguageName(state.language) : state.valueOf(filter);
+  return value.isEmpty ? label : '$label: $value';
 }
+
+/// The choices of the replies or the links filter, each named for what it does to those posts.
+Map<AdvancedSearchInclusion, String> advancedInclusionLabels(L10n l10n, AdvancedSearchFilter filter) =>
+    filter == AdvancedSearchFilter.replies
+    ? {
+        AdvancedSearchInclusion.include: l10n.include_replies,
+        AdvancedSearchInclusion.only: l10n.search_only_replies,
+        AdvancedSearchInclusion.exclude: l10n.hide_replies,
+      }
+    : {
+        AdvancedSearchInclusion.include: l10n.search_include_links,
+        AdvancedSearchInclusion.only: l10n.search_only_links,
+        AdvancedSearchInclusion.exclude: l10n.search_hide_links,
+      };
 
 class XtaSearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -248,24 +268,17 @@ class AdvancedSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = XLookTokens.maybeOf(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(kTweetHorizontalPadding, kTweetSpace1, kTweetHorizontalPadding, kTweetSpace2),
+      padding: _advancedFieldPadding,
       child: TextField(
         controller: controller,
         onChanged: onChanged,
         keyboardType: number ? TextInputType.number : TextInputType.text,
         inputFormatters: number ? [FilteringTextInputFormatter.digitsOnly] : null,
         textInputAction: TextInputAction.next,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: tokens == null
-              ? Color.alphaBlend(
-                  tweetPrimaryColor(context).withValues(alpha: 0.04),
-                  Theme.of(context).scaffoldBackgroundColor,
-                )
-              : xLookInsetSurface(tokens),
+        decoration: _advancedFieldDecoration(
+          context,
+          label,
           suffixIcon: controller.text.isEmpty
               ? null
               : IconButton(
@@ -273,8 +286,94 @@ class AdvancedSearchField extends StatelessWidget {
                   icon: const Icon(Icons.close),
                   onPressed: onClear,
                 ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSearchControlRadius)),
         ),
+      ),
+    );
+  }
+}
+
+const _advancedFieldPadding = EdgeInsets.fromLTRB(
+  kTweetHorizontalPadding,
+  kTweetSpace1,
+  kTweetHorizontalPadding,
+  kTweetSpace2,
+);
+
+InputDecoration _advancedFieldDecoration(BuildContext context, String label, {Widget? suffixIcon}) {
+  final tokens = XLookTokens.maybeOf(context);
+  return InputDecoration(
+    labelText: label,
+    filled: true,
+    fillColor: tokens == null
+        ? Color.alphaBlend(
+            tweetPrimaryColor(context).withValues(alpha: 0.04),
+            Theme.of(context).scaffoldBackgroundColor,
+          )
+        : xLookInsetSurface(tokens),
+    suffixIcon: suffixIcon,
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSearchControlRadius)),
+  );
+}
+
+/// The language results are written in: any, or one of those X tags posts with, each named in its own language.
+class AdvancedSearchLanguageField extends StatelessWidget {
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  const AdvancedSearchLanguageField({super.key, required this.value, required this.onChanged});
+
+  Widget _item(String label) => Text(label, maxLines: 1, overflow: TextOverflow.ellipsis);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Padding(
+      padding: _advancedFieldPadding,
+      // The field label and the chosen language read as one control.
+      child: MergeSemantics(
+        child: DropdownButtonFormField<String>(
+          // A field per value, so a reset or a language read from the query shows in it.
+          key: ValueKey(value),
+          initialValue: value,
+          isExpanded: true,
+          decoration: _advancedFieldDecoration(context, l10n.language),
+          items: [
+            DropdownMenuItem(value: '', child: _item(l10n.search_any_language)),
+            for (final code in searchLanguageChoices(value))
+              DropdownMenuItem(value: code, child: _item(searchLanguageName(code))),
+          ],
+          onChanged: (code) => onChanged(code ?? ''),
+        ),
+      ),
+    );
+  }
+}
+
+/// One choice among [labels], as chips that wrap on a narrow screen or at large text.
+class AdvancedSearchChoices<T> extends StatelessWidget {
+  final Map<T, String> labels;
+  final T selected;
+  final ValueChanged<T> onSelected;
+
+  const AdvancedSearchChoices({super.key, required this.labels, required this.selected, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(kTweetHorizontalPadding, 0, kTweetHorizontalPadding, kTweetSpace2),
+      child: Wrap(
+        spacing: kTweetSpace2,
+        runSpacing: kTweetSpace1,
+        children: labels.entries
+            .map(
+              (entry) => ChoiceChip(
+                key: ValueKey(entry.key),
+                label: Text(entry.value),
+                selected: selected == entry.key,
+                onSelected: (_) => onSelected(entry.key),
+              ),
+            )
+            .toList(),
       ),
     );
   }

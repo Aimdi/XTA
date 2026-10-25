@@ -28,6 +28,9 @@ class TweetWithCard extends Tweet {
   /// subscribers, which X sends as a `TweetPreviewDisplay`.
   bool isSubscriberPreview = false;
 
+  /// The X community the post was written in, from `community_results`.
+  String? communityId;
+
   /// Alt text keyed by media `id_str`, from X's `ext_alt_text` (dropped by Media.fromJson).
   Map<String, String> mediaAltText = const {};
 
@@ -62,6 +65,7 @@ class TweetWithCard extends Tweet {
     json['noteText'] = noteText;
     json['noteEntities'] = noteEntities?.toJson();
     json['isSubscriberPreview'] = isSubscriberPreview;
+    json['communityId'] = communityId;
     if (mediaAltText.isNotEmpty) {
       json['mediaAltText'] = mediaAltText;
     }
@@ -140,6 +144,7 @@ class TweetWithCard extends Tweet {
     tweetWithCard.noteText = e['noteText'];
     tweetWithCard.noteEntities = e['noteEntities'] == null ? null : Entities.fromJson(e['noteEntities']);
     tweetWithCard.isSubscriberPreview = e['isSubscriberPreview'] as bool? ?? false;
+    tweetWithCard.communityId = e['communityId'] as String?;
     tweetWithCard.mediaAltText = _mediaAltTextFromJson(e['mediaAltText']) ??
         extractMediaAltText(e['extended_entities'] ?? e['extendedEntities']);
 
@@ -200,6 +205,8 @@ class TweetWithCard extends Tweet {
       int.tryParse(result['views']?['count'] ?? ''),
     );
     tweet.isSubscriberPreview = result[_subscriberPreviewMarker] == true;
+    final community = Json(result)['community_results']['result'];
+    tweet.communityId = community['id_str'].string ?? community['rest_id'].string;
 
     if (tweet.card == null && result['card']?['legacy'] != null) {
       tweet.card = result['card']['legacy'];

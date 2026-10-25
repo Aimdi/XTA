@@ -7,10 +7,10 @@
 library;
 
 import 'package:pref/pref.dart';
-import 'package:quiver/iterables.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
+import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/group_members.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/utils/iterables.dart';
@@ -35,7 +35,7 @@ typedef GroupFeedPlan = ({
 });
 
 /// Resolves [group]'s flags against the global defaults, orders its members
-/// oldest first and partitions the X members into search chunks.
+/// oldest first and packs the X members into search chunks.
 ///
 /// [excludedProfiles] only matters for the combined Following feed (`-1`),
 /// which leaves out the members of groups the reader has switched off.
@@ -51,11 +51,16 @@ GroupFeedPlan planGroupFeed(
       ? group.subscriptions.where((e) => subscriptionAllowedInFollowing(e, excludedProfiles))
       : group.subscriptions;
   // Oldest first, so a new member lands in the last chunk instead of reshuffling every group's chunks.
-  final members = allowed.sorted((a, b) => a.createdAt.compareTo(b.createdAt)).toList();
+  final members = allowed.sorted((a, b) => compareFeedMembers(a.createdAt, a.id, b.createdAt, b.id)).toList();
   // Plugin members are fetched by their plugin, never put into an X search query.
   final split = splitGroupMembers(members);
   final chunks = [
-    for (final users in partition(split.xMembers, feedChunkSize))
+    for (final users in packFeedChunks(
+      split.xMembers,
+      feedSearchTermFor,
+      includeReplies: includeReplies,
+      includeRetweets: includeRetweets,
+    ))
       SubscriptionGroupFeedChunk(users, includeReplies, includeRetweets),
   ];
   return (

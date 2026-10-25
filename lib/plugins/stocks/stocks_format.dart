@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/ui/contrast.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// X's own green and red, so a rising price reads the same here as it does on
 /// a cashtag in the timeline. Draw them through [stockTrendColour], which
@@ -27,17 +28,10 @@ Color stockTrendColour(BuildContext context, double? percent, {Color? background
   return ensureContrast(base, background ?? theme.scaffoldBackgroundColor);
 }
 
-/// The reader's locale when number symbols exist for it, else English —
-/// `intl` has none for Esperanto and throws rather than falling back.
-String stockNumberLocale() {
-  final locale = Intl.getCurrentLocale();
-  return NumberFormat.localeExists(locale) ? locale : 'en';
-}
-
 final Map<String, NumberFormat> _formats = {};
 
 NumberFormat _format(String kind, NumberFormat Function(String locale) build) {
-  final locale = stockNumberLocale();
+  final locale = currentFormattingLocale();
   return _formats.putIfAbsent('$kind/$locale', () => build(locale));
 }
 

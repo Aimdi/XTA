@@ -1,0 +1,17 @@
+appId: ${APP_ID}
+name: Should let a reader open a profile from a link and scroll its posts
+---
+- launchApp
+- openLink:
+    link: https://x.com/quax_tests_2
+    autoVerify: true
+- assertVisible: "(?s).*@quax_tests_2.*"
+- assertVisible: "(?s).*Moluyts.*"
+- scrollUntilVisible:
+    element: "(?s).*limited replies.*"
+    direction: DOWN
+- repeat:
+    times: 2
+    commands:
+      - swipe:
+          direction: DOWN

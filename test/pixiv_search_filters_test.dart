@@ -6,7 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
-import 'package:xta/utils/number_locale.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 import 'support/pixiv_reader_harness.dart';
 
@@ -233,7 +233,7 @@ void main() {
           delegates: const [DefaultWidgetsLocalizations.delegate],
           child: Builder(
             builder: (context) {
-              seen.add(numberFormatLocale(context));
+              seen.add(formattingLocale(context));
               return const SizedBox();
             },
           ),

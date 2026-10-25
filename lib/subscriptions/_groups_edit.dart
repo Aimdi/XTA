@@ -409,9 +409,10 @@ class _SubscriptionGroupEditDialogState
               itemCount: curatedGroupIcons.length,
               itemBuilder: (context, index) {
                 final entry = curatedGroupIcons[index];
+                // A spoken label rather than a tooltip: the icons have no names worth showing.
                 return IconButton(
                   onPressed: () => Navigator.pop(context, entry),
-                  icon: Icon(entry.data),
+                  icon: Icon(entry.data, semanticLabel: l10n.choose_icon_number(index + 1, curatedGroupIcons.length)),
                 );
               },
             ),

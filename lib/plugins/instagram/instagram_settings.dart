@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -124,7 +125,7 @@ class _InstagramSettingsScreenState extends State<InstagramSettingsScreen> {
               ),
             ),
           ),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_instagram_show_tab),
             subtitle: Text(l10n.plugin_instagram_show_tab_description),
             pref: optionPluginInstagramShowTab,
@@ -133,7 +134,7 @@ class _InstagramSettingsScreenState extends State<InstagramSettingsScreen> {
                 await pinPluginOnFeedStripIn(context, pluginIdInstagram);
               }
             },
-          ),
+          )),
           PrefTitle(title: Text(l10n.plugin_instagram_section_session)),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -149,6 +150,7 @@ class _InstagramSettingsScreenState extends State<InstagramSettingsScreen> {
                 helperText: l10n.plugin_instagram_cookies_description,
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
+                  tooltip: _cookiesHidden ? l10n.show : l10n.hide,
                   icon: Icon(
                     _cookiesHidden ? Icons.visibility : Icons.visibility_off,
                   ),

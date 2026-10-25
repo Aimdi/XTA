@@ -96,6 +96,7 @@ class _BlueskyImportFollowsScreenState extends State<BlueskyImportFollowsScreen>
     return Scaffold(
       appBar: AppBar(title: Text(l10n.plugin_bluesky_import_following)),
       floatingActionButton: FloatingActionButton(
+        tooltip: l10n.import,
         onPressed: _running ? null : _import,
         child: const Icon(Icons.cloud_download),
       ),

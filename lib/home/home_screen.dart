@@ -400,12 +400,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                   // pager. Edge-aware children explicitly hand off at their boundary.
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _barPages.length,
-                  onPageChanged: (page) {
-                    final previous = _pageIndex.value;
-                    _pageIndex.value = page;
-                    _visibility.show();
-                    _adoptSearchScope(previous, page);
-                  },
+                  onPageChanged: (page) => _showPage(from: _pageIndex.value, to: page),
                   itemBuilder: (context, index) {
                     return KeyedSubtree(
                       key: PageStorageKey<String>(_barPages[index].id),
@@ -456,6 +451,12 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
         ),
       ),
     );
+  }
+
+  void _showPage({required int from, required int to}) {
+    _pageIndex.value = to;
+    _visibility.show();
+    _adoptSearchScope(from, to);
   }
 
   void _adoptSearchScope(int from, int to) {
@@ -575,7 +576,11 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     final reduceMotion = xtaReduceMotion(context);
     if (!animate || reduceMotion) {
       _pendingPage = null;
+      final from = _pageIndex.value;
       _pageController.jumpToPage(target);
+      // A pager that has just gained pages still measures itself by the old
+      // count: a jump past its old end reports the old last page, or nothing.
+      if (_pageIndex.value != target) _showPage(from: from, to: target);
     } else {
       _pendingPage = target;
       unawaited(

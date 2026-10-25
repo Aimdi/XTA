@@ -4,6 +4,7 @@
 library;
 
 import 'package:intl/intl.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 final Map<String, NumberFormat> _compactByLocale = {};
 final Map<String, NumberFormat> _decimalByLocale = {};
@@ -11,8 +12,7 @@ final RegExp _letter = RegExp(r'\p{L}', unicode: true);
 
 const List<(int, String)> _units = [(1000000000, 'B'), (1000000, 'M'), (1000, 'K')];
 
-String _resolveLocale(String? locale) =>
-    Intl.verifiedLocale(locale ?? Intl.getCurrentLocale(), NumberFormat.localeExists, onFailure: (_) => 'en')!;
+String _resolveLocale(String? locale) => verifiedFormattingLocale(locale ?? Intl.getCurrentLocale());
 
 /// Cuts [value] down to what X displays: one decimal below ten of a unit,
 /// none above, and always rounded down — 9,190 is "9.1K", never "9.2K".

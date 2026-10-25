@@ -18,8 +18,9 @@ class _FakeGroupsModel extends GroupsModel {
 Widget _wrap({
   required Widget child,
   Map<String, dynamic> cache = const {},
+  PrefServiceCache? service,
 }) {
-  final prefs = PrefServiceCache(
+  final prefs = service ?? PrefServiceCache(
     cache: {
       optionSubscriptionGroupsOrderByField: 'name',
       optionSubscriptionGroupsOrderByAscending: true,
@@ -137,5 +138,55 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(l10n.subscription_groups_columns), findsNothing);
+  });
+
+  testWidgets('Kompakt is a third column choice, and 2 or 3 turn it off', (
+    tester,
+  ) async {
+    final prefs = PrefServiceCache(
+      cache: {
+        optionSubscriptionGroupsOrderByField: 'name',
+        optionSubscriptionGroupsOrderByAscending: true,
+        optionSubscriptionGroupsLayout: subscriptionGroupsLayoutBoard,
+        optionSubscriptionGroupsColumns: 3,
+        optionSubscriptionGroupsCompact: false,
+      },
+    );
+    await tester.pumpWidget(_wrap(service: prefs, child: _sheet(onGroups: true)));
+    await tester.pumpAndSettle();
+
+    final l10n = L10n.of(
+      tester.element(find.byType(SubscriptionsMenuSheet)),
+    );
+    bool selected(String label) => tester
+        .widget<Semantics>(
+          find
+              .ancestor(
+                of: find.text(label),
+                matching: find.byWidgetPredicate(
+                  (widget) =>
+                      widget is Semantics && widget.properties.selected != null,
+                ),
+              )
+              .first,
+        )
+        .properties
+        .selected!;
+
+    await tester.tap(find.text(l10n.subscription_groups_compact));
+    await tester.pumpAndSettle();
+    expect(prefs.get<bool>(optionSubscriptionGroupsCompact), isTrue);
+    expect(selected(l10n.subscription_groups_compact), isTrue);
+    expect(selected('3'), isFalse);
+    expect(
+      tester.getSize(find.text(l10n.subscription_groups_compact)).width,
+      lessThan(tester.view.physicalSize.width),
+    );
+
+    await tester.tap(find.text('2'));
+    await tester.pumpAndSettle();
+    expect(prefs.get<bool>(optionSubscriptionGroupsCompact), isFalse);
+    expect(prefs.get<int>(optionSubscriptionGroupsColumns), 2);
+    expect(selected('2'), isTrue);
   });
 }

@@ -1,0 +1,230 @@
+// ignore_for_file: avoid_print
+//
+// Installs an APK built with --dart-define=XTA_MOCK_X=http://10.0.2.2:<port>
+// (an emulator) or http://localhost:<port> (a device, through adb reverse) on
+// the running Android, serves the stand-in for X on that port, then runs each
+// Maestro flow against it, recording one video per flow. Fails when a flow
+// fails or the stand-in answered nothing (docs/mock-x.md).
+//
+//   fvm dart run tool/mock_x/emulator_qa.dart <apk> <flows folder or .yaml file> <output dir> [--port 8787]
+
+import 'dart:io';
+
+import 'app_preferences.dart';
+import 'mock_server.dart';
+import 'mock_x.dart';
+import 'video_cut.dart';
+
+const _usage =
+    'Usage: dart run tool/mock_x/emulator_qa.dart <apk> <flows folder or .yaml file> <output dir> [--port 8787]';
+
+Future<void> main(List<String> args) async {
+  final (positional, port) = _parseArgs(args);
+  if (positional.length != 3 || port == null) {
+    stderr.writeln(_usage);
+    exit(64);
+  }
+  final [apk, flowsPath, outPath] = positional;
+  final flows = _flows(flowsPath);
+  final out = await Directory(outPath).create(recursive: true);
+  final log = File('${out.path}/mock_x.log').openWrite();
+  final answers = <(String, MockAnswer)>[];
+  final server = await serveMockX(
+    MockX(Directory('test/fixtures')),
+    port: port,
+    onAnswer: (method, url, answer) {
+      answers.add(('$method ${url.path}', answer));
+      log.writeln('${answer.status} $method ${url.path}');
+      if (!answer.answered) log.writeln(answer.body);
+    },
+  );
+
+  final package = await _packageName(apk);
+  await _prepareDevice(apk, package, port);
+  // Maestro would otherwise pick whichever device adb lists first
+  final device = (await _run('adb', ['get-serialno'])).trim();
+  // Installs and starts Maestro's driver, which a cold emulator can be too slow
+  // for within the first flow's launchApp
+  await Process.run('maestro', ['--device', device, 'hierarchy']);
+  final failedFlows = [
+    for (final flow in flows)
+      if (!await _runFlow(flow, device, package, port, out)) flow.path,
+  ];
+  await File('${out.path}/logcat.txt').writeAsString(await _run('adb', ['logcat', '-d'], quiet: true));
+  await server.close(force: true);
+  await log.close();
+  exit(_report(failedFlows, answers) ? 0 : 1);
+}
+
+/// The positional arguments, and the port of --port (8787 by default, null
+/// when it is not a number).
+(List<String>, int?) _parseArgs(List<String> args) {
+  final portIndex = args.indexOf('--port');
+  if (portIndex < 0) return (args, 8787);
+  final port = portIndex + 1 < args.length ? int.tryParse(args[portIndex + 1]) : null;
+  return ([...args.take(portIndex), ...args.skip(portIndex + 2)], port);
+}
+
+/// The flow [path] names, or the flows of the folder it names, in the order
+/// Maestro would run them. Subflows live in folders below and are not run.
+List<File> _flows(String path) {
+  if (FileSystemEntity.isFileSync(path) && path.endsWith('.yaml')) return [File(path)];
+  if (!FileSystemEntity.isDirectorySync(path)) _fail('$path is neither a folder nor a .yaml flow');
+  final flows = Directory(path).listSync().whereType<File>().where((f) => f.path.endsWith('.yaml')).toList()
+    ..sort((a, b) => a.path.compareTo(b.path));
+  if (flows.isEmpty) _fail('$path holds no .yaml flow');
+  return flows;
+}
+
+Future<String> _packageName(String apk) async {
+  String sortable(String path) => path.split('/').last.split('.').map((part) => part.padLeft(6, '0')).join('.');
+  final buildTools = Directory(
+    '${Platform.environment['ANDROID_HOME']}/build-tools',
+  ).listSync().map((d) => d.path).toList()..sort((a, b) => sortable(a).compareTo(sortable(b)));
+  return (await _run('${buildTools.last}/aapt2', ['dump', 'packagename', apk])).trim();
+}
+
+/// Installs the app afresh and past its intro, makes x.com links open it rather
+/// than the browser, keeps the dialogs an overloaded emulator shows about slow
+/// apps from covering it, and turns on the dark theme.
+Future<void> _prepareDevice(String apk, String package, int port) async {
+  await _run('adb', ['wait-for-device']);
+  await _run('adb', ['shell', 'settings', 'put', 'global', 'hide_error_dialogs', '1']);
+  await _run('adb', ['reverse', 'tcp:$port', 'tcp:$port']);
+  await _run('adb', ['install', '-r', apk]);
+  // Every run starts from a fresh app, whatever an earlier one left
+  await _run('adb', ['shell', 'pm', 'clear', package]);
+  await _writePreferences(package);
+  await _run('adb', [
+    'shell',
+    'pm',
+    'set-app-links-user-selection',
+    '--user',
+    '0',
+    '--package',
+    package,
+    'true',
+    'x.com',
+  ]);
+  await _run('adb', ['shell', 'cmd', 'uimode', 'night', 'yes']);
+  await _run('adb', ['logcat', '-c']);
+}
+
+Future<void> _writePreferences(String package) async {
+  final local = File('${(await Directory.systemTemp.createTemp('xta_prefs')).path}/prefs.xml');
+  await local.writeAsString(sharedPreferencesXml(emulatorPreferences));
+  await _run('adb', ['push', local.path, '/data/local/tmp/xta_prefs.xml']);
+  await _run('adb', [
+    'shell',
+    "cat /data/local/tmp/xta_prefs.xml | run-as $package sh -c "
+        "'mkdir -p shared_prefs && cat > shared_prefs/FlutterSharedPreferences.xml'",
+  ]);
+}
+
+/// Runs [flow] while recording the screen, one video per flow in [out], and
+/// tells whether it passed.
+Future<bool> _runFlow(File flow, String device, String package, int port, Directory out) async {
+  final name = flow.uri.pathSegments.last.replaceAll(RegExp(r'\.yaml$'), '');
+  final onDevice = '/sdcard/$name.mp4';
+  // A reconnected adb drops the mapping a device reaches the stand-in through
+  await _run('adb', ['reverse', 'tcp:$port', 'tcp:$port']);
+  // Closes an "isn't responding" dialog shown before hide_error_dialogs took effect
+  await _run('adb', ['shell', 'am', 'broadcast', '-a', 'android.intent.action.CLOSE_SYSTEM_DIALOGS']);
+  final recorder = await Process.start('adb', ['shell', 'screenrecord', '--bit-rate', '8000000', onDevice]);
+  await Future<void>.delayed(const Duration(seconds: 1));
+  final maestro = await Process.start('maestro', [
+    ...['--device', device, 'test', '-e', 'APP_ID=$package'],
+    ...['--debug-output', '${out.path}/maestro/$name', flow.path],
+  ], mode: ProcessStartMode.inheritStdio);
+  final passed = await maestro.exitCode == 0;
+  if (!passed) await _printFailure(name, device, Directory('${out.path}/maestro/$name'));
+  await Process.run('adb', ['shell', 'pkill', '-INT', 'screenrecord']);
+  await recorder.exitCode;
+  final video = '${out.path}/$name.mp4';
+  final pulled = await Process.run('adb', ['pull', onDevice, video]);
+  if (pulled.exitCode == 0) {
+    await _cutStart(video);
+  } else {
+    print('::warning::No video of $name: ${pulled.stderr}');
+  }
+  return passed;
+}
+
+final _label = RegExp(r'"(?:text|accessibilityText|hintText)"\s*:\s*"((?:[^"\\]|\\.)*)"');
+
+/// Prints what tells why a flow failed without opening its artifact: the text
+/// on screen, the end of Maestro's log and any crash of the app.
+Future<void> _printFailure(String name, String device, Directory debugOutput) async {
+  final hierarchy = await Process.run('maestro', ['--device', device, 'hierarchy']);
+  _printGroup('On screen when $name failed', {
+    for (final match in _label.allMatches('${hierarchy.stdout}'))
+      if (match.group(1)!.trim().isNotEmpty) match.group(1)!,
+  });
+  final logs = debugOutput.existsSync()
+      ? debugOutput.listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('maestro.log')).toList()
+      : <File>[];
+  if (logs.isNotEmpty) _printGroup("End of Maestro's log for $name", _tail(logs.last.readAsLinesSync(), 40));
+  final crashes = await Process.run('adb', ['logcat', '-d', '-b', 'crash']);
+  final crashLines = '${crashes.stdout}'.split('\n').where((line) => line.trim().isNotEmpty).toList();
+  if (crashLines.isNotEmpty) _printGroup('Crashes logged before $name failed', _tail(crashLines, 60));
+}
+
+Iterable<String> _tail(List<String> lines, int count) => lines.skip(lines.length > count ? lines.length - count : 0);
+
+void _printGroup(String title, Iterable<String> lines) {
+  print('::group::$title');
+  lines.forEach(print);
+  print('::endgroup::');
+}
+
+/// Cuts the still screen shown while Maestro starts.
+Future<void> _cutStart(String video) async {
+  if (!await _hasFfmpeg()) {
+    print("::warning::ffmpeg is missing, the videos keep Maestro's start-up");
+    return;
+  }
+  final freezes = await Process.run('ffmpeg', ['-i', video, '-vf', freezeFilter, '-f', 'null', '-']);
+  final cut = cutPoint('${freezes.stderr}');
+  if (cut == null) return;
+  final trimmed = '$video.trimmed.mp4';
+  await _run('ffmpeg', [
+    ...['-v', 'error', '-y', '-ss', '${cut.inMicroseconds / Duration.microsecondsPerSecond}', '-i', video],
+    ...['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-pix_fmt', 'yuv420p', trimmed],
+  ]);
+  await File(trimmed).rename(video);
+}
+
+Future<bool> _hasFfmpeg() =>
+    Process.run('ffmpeg', ['-version']).then((result) => result.exitCode == 0, onError: (_) => false);
+
+/// Prints the outcome as GitHub Actions annotations, and tells whether the run
+/// passed.
+bool _report(List<String> failedFlows, List<(String, MockAnswer)> answers) {
+  final unanswered = [
+    for (final (request, answer) in answers)
+      if (!answer.answered) '$request: ${answer.body.split('\n').first}',
+  ];
+  final served = answers.length - unanswered.length;
+  print('The stand-in for X answered $served request(s) and could not answer ${unanswered.length}');
+  for (final request in unanswered.toSet()) {
+    print('::warning::The stand-in for X could not answer $request');
+  }
+  if (served == 0) print('::error::The stand-in for X answered no request: the app did not reach it');
+  for (final flow in failedFlows) {
+    print('::error::$flow failed');
+  }
+  return failedFlows.isEmpty && served > 0;
+}
+
+/// Runs [executable] and returns its output, or exits when it fails.
+Future<String> _run(String executable, List<String> args, {bool quiet = false}) async {
+  if (!quiet) print('\$ $executable ${args.join(' ')}');
+  final result = await Process.run(executable, args);
+  if (result.exitCode != 0) _fail('$executable ${args.join(' ')} exited with ${result.exitCode}\n${result.stderr}');
+  return '${result.stdout}';
+}
+
+Never _fail(String message) {
+  print('::error::$message');
+  exit(1);
+}

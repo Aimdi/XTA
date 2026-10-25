@@ -14,13 +14,15 @@
 /// callers should ask.
 library;
 
-/// Names for locales CLDR has no entry for, so the picker has something to show
-/// besides the code itself.
+/// Names for locales CLDR has no entry for, or names only in English, so the
+/// picker has something to show besides the code itself.
 const _ourNames = <String, String>{
   // CLDR names `be` and `be_BY` but not the Latin-script Belarusian this app is
   // translated into, so the language list read "be_Latn" to the very readers
   // who chose it.
   'be_Latn': 'biełaruskaja (łacinka)',
+  // CLDR names `no` only in English; it is the code X tags Norwegian posts with.
+  'no': 'norsk',
 };
 
 /// What to call [code] in its own language, or null when nothing here knows.

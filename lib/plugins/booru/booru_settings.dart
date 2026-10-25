@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -355,12 +356,12 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               if (mounted) setState(() {});
             },
           ),
-          PrefSwitch(
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_booru_in_home_feed),
             subtitle: Text(l10n.plugin_booru_in_home_feed_description),
             pref: optionPluginBooruInHomeFeed,
-          ),
-          PrefSwitch(
+          )),
+          LabeledPref(child: PrefSwitch(
             title: Text(l10n.plugin_booru_show_tab),
             subtitle: Text(l10n.plugin_booru_show_tab_description),
             pref: optionPluginBooruShowTab,
@@ -369,7 +370,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                 await pinPluginOnFeedStripIn(context, pluginIdBooru);
               }
             },
-          ),
+          )),
           const BooruDisplaySettings(),
           const BooruPromptSettings(),
           PrefTitle(title: Text(l10n.download)),

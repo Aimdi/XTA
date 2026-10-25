@@ -4,4 +4,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The stand-in for X (tool/mock_x, docs/mock-x.md) is served over plain
+         HTTP on localhost. Release builds keep refusing cleartext. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>

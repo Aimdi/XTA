@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Room reserved for the price labels down the right edge.
 const double kTickerAxisWidth = 54;
@@ -75,11 +76,12 @@ class _TickerChartState extends State<TickerChart> {
     // A month of daily closes needs a day and a month; a day of minute bars
     // needs the time. The span decides, not the range that was asked for.
     final span = points.last.at.difference(points.first.at);
+    final locale = currentFormattingLocale();
     final format = span.inDays >= 200
-        ? DateFormat.yMMM()
+        ? DateFormat.yMMM(locale)
         : span.inDays >= 2
-        ? DateFormat.Md()
-        : DateFormat.Hm();
+        ? DateFormat.Md(locale)
+        : DateFormat.Hm(locale);
 
     return [
       format.format(points.first.at),

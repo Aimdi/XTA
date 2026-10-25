@@ -145,6 +145,7 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
                     hintText: l10n.plugin_instagram_search_hint,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
+                      tooltip: l10n.plugin_instagram_search,
                       icon: const Icon(Icons.arrow_forward),
                       onPressed: _runSearch,
                     ),

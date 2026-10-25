@@ -194,6 +194,7 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
               dense: true,
               title: Text(instance),
               trailing: IconButton(
+                tooltip: l10n.delete,
                 icon: const Icon(Icons.delete_outline),
                 onPressed: () => _removeExtra(instance),
               ),
@@ -204,6 +205,7 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
               hintText: l10n.plugin_mastodon_instance_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                tooltip: l10n.plugin_mastodon_add_instance,
                 icon: const Icon(Icons.add),
                 onPressed: _addExtra,
               ),

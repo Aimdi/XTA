@@ -1,0 +1,384 @@
+name: X signing auto-fix
+
+# When the daily live checks find X's request signing (x-client-transaction-id)
+# broken, asks Claude for a fix and opens it as a draft pull request for a
+# person to review. It never pushes to an existing branch and never merges.
+# Without an ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN secret it does
+# nothing. Playbook and setup: docs/fix-x-signing.md, docs/cloud-testing.md.
+on:
+  workflow_run:
+    workflows: [api-canary]
+    types: [completed]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: x-signing-autofix
+  cancel-in-progress: false
+
+env:
+  FIX_BRANCH_PREFIX: fix/x-signing-
+  SIGNING_TESTS: >-
+    test/client_transaction_bootstrap_test.dart
+    test/client_transaction_modern_bootstrap_test.dart
+    test/transaction_key_test.dart
+
+jobs:
+  confirm:
+    name: Confirm that signing is broken
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.head_branch == github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+    outputs:
+      fix: ${{ steps.decide.outputs.fix }}
+    steps:
+      - name: Decide whether to look
+        id: gate
+        env:
+          CONFIGURED: ${{ secrets.ANTHROPIC_API_KEY != '' || secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+          EVENT: ${{ github.event_name }}
+          CANARY_RUN: ${{ github.event.workflow_run.id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          x_checks() {
+            gh api "repos/$GH_REPO/actions/runs/$CANARY_RUN/jobs" --paginate \
+              --jq '.jobs[] | select(.name == "Live checks - X") | .conclusion'
+          }
+          go=false
+          if [ "$CONFIGURED" != "true" ]; then
+            echo "::notice::Neither ANTHROPIC_API_KEY nor CLAUDE_CODE_OAUTH_TOKEN is set, so no fix is attempted. See docs/cloud-testing.md."
+          elif [ "$EVENT" = "workflow_run" ] && [ "$(x_checks)" = "success" ]; then
+            echo "::notice::The X live checks passed; another service failed."
+          else
+            since=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+            mine="[.[] | select(.headRefName | startswith(\"$FIX_BRANCH_PREFIX\"))] | length"
+            open=$(gh pr list --state open --limit 200 --json headRefName --jq "$mine")
+            recent=$(gh pr list --state all --search "created:>=$since" --limit 100 --json headRefName --jq "$mine")
+            if [ "$open" != 0 ] || [ "$recent" != 0 ]; then
+              echo "::notice::A signing fix is open ($open) or was opened in the last 24 hours ($recent)."
+            else
+              go=true
+            fi
+          fi
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == 'true'
+        with:
+          persist-credentials: false
+
+      - uses: subosito/flutter-action@v2
+        if: steps.gate.outputs.go == 'true'
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: Prepare pinned sources
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          set -euo pipefail
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+
+      - name: Derive live X signing data and fetch a public profile
+        id: probe
+        if: steps.gate.outputs.go == 'true'
+        continue-on-error: true
+        run: >-
+          flutter test test/live/x_bootstrap_smoke_test.dart
+          --no-pub --dart-define=RUN_LIVE=true --reporter json
+          > before.jsonl 2>&1
+
+      - name: Tell a signing failure from the rest
+        id: decide
+        if: steps.gate.outputs.go == 'true'
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PROBE_OUTCOME: ${{ steps.probe.outcome }}
+        run: |
+          set -euo pipefail
+          classification=$(python3 scripts/report_canary.py X "$RUN_URL" "$PROBE_OUTCOME" before.jsonl before.md)
+          cat before.md >> "$GITHUB_STEP_SUMMARY"
+          case "$classification" in
+            service) echo "fix=true" >> "$GITHUB_OUTPUT" ;;
+            success) echo "::notice::Signing works; the live checks failed for another reason." ;;
+            *) echo "::notice::The probe did not reach X ($classification), so no fix is attempted." ;;
+          esac
+
+      - uses: actions/upload-artifact@v4
+        if: steps.decide.outputs.fix == 'true'
+        with:
+          name: signing-before
+          path: before.md
+          retention-days: 14
+
+  fix:
+    name: Ask Claude for a fix
+    needs: confirm
+    if: needs.confirm.outputs.fix == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # Read-only on purpose: Claude edits the checkout, the last job publishes it.
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.collect.outputs.changed }}
+      verified: ${{ steps.verdict.outputs.verified }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: Prepare pinned sources
+        run: |
+          set -euo pipefail
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: signing-before
+          path: ${{ runner.temp }}/signing
+
+      # Headless, an "ask" rule is a refusal, and lib/client is where the fix
+      # goes. The edited settings are restored before the change is collected.
+      - name: Let the run edit lib/client
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/x-signing"
+          jq 'del(.permissions.ask)' .claude/settings.json > "$RUNNER_TEMP/settings.json"
+          mv "$RUNNER_TEMP/settings.json" .claude/settings.json
+
+      - name: Fix the signing
+        id: claude
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ github.token }}
+          prompt: |
+            XTA's daily live check failed on X's request signing: deriving the
+            x-client-transaction-id header broke, or X refused a request signed
+            with it. The check's report is in ${{ runner.temp }}/signing/before.md.
+
+            Follow docs/fix-x-signing.md to find what X changed and repair the
+            signing, keeping CLAUDE.md's hard rules. Change only what the fix
+            needs, under lib/client/, test/ or docs/, and add or update a
+            regression test that reproduces the shape X serves now, next to the
+            existing bootstrap tests.
+
+            The runner has no fvm: run flutter and dart directly. Keep
+            everything you download under ${{ runner.temp }}/x-signing, never in
+            the repository. Do not commit or push: this workflow tests your
+            change and opens it as a draft pull request.
+
+            If signing works and something else made the check fail, change
+            nothing and say what failed.
+          claude_args: >-
+            --max-turns 80
+            --add-dir ${{ runner.temp }}
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(flutter test:*),Bash(flutter analyze:*),Bash(dart format:*),Bash(git diff:*),Bash(git status:*),Bash(curl:*),Bash(ls:*),Bash(wc:*)"
+            --disallowedTools "Bash(git push:*),Bash(git commit:*),Bash(gh:*),WebFetch,WebSearch"
+
+      - name: Collect the change
+        id: collect
+        if: always()
+        env:
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/signing"
+          mkdir -p "$dir"
+          git checkout -- .claude
+          git clean -fdq -- .claude
+          if [ -n "$EXECUTION_FILE" ] && [ -f "$EXECUTION_FILE" ]; then
+            cp "$EXECUTION_FILE" "$dir/claude-execution.json"
+          fi
+          git add -A
+          git diff --cached --binary > "$dir/signing-fix.patch"
+          git diff --cached --stat
+          changed=false
+          allowed=true
+          if [ -s "$dir/signing-fix.patch" ]; then
+            changed=true
+            if git diff --cached --name-only | grep -vE '^(lib/client/|test/|docs/)' > "$dir/outside.txt"; then
+              allowed=false
+              echo "::error::The change touches files outside lib/client/, test/ and docs/:"
+              cat "$dir/outside.txt"
+            fi
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          echo "allowed=$allowed" >> "$GITHUB_OUTPUT"
+
+      - name: Analyze
+        id: analyze
+        if: steps.collect.outputs.changed == 'true' && steps.collect.outputs.allowed == 'true'
+        continue-on-error: true
+        run: flutter analyze --no-fatal-infos
+
+      - name: Signing tests
+        id: unit
+        if: steps.collect.outputs.changed == 'true' && steps.collect.outputs.allowed == 'true'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          read -ra tests <<< "$SIGNING_TESTS"
+          flutter test --no-pub "${tests[@]}"
+
+      - name: Live check with the fix
+        id: live
+        if: steps.collect.outputs.changed == 'true' && steps.collect.outputs.allowed == 'true'
+        continue-on-error: true
+        run: >-
+          flutter test test/live/x_bootstrap_smoke_test.dart
+          --no-pub --dart-define=RUN_LIVE=true --reporter json
+          > "$RUNNER_TEMP/signing/after.jsonl" 2>&1
+
+      - name: Verdict
+        id: verdict
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          CHANGED: ${{ steps.collect.outputs.changed }}
+          ALLOWED: ${{ steps.collect.outputs.allowed }}
+          ANALYZE: ${{ steps.analyze.outcome }}
+          UNIT: ${{ steps.unit.outcome }}
+          LIVE: ${{ steps.live.outcome }}
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/signing"
+          verified=false
+          if [ "$CHANGED" != "true" ]; then
+            reason="Claude made no change; its account is in the signing-fix artifact."
+          elif [ "$ALLOWED" != "true" ]; then
+            reason="The change touches files the auto-fix may not change."
+          elif [ "$ANALYZE" != "success" ]; then
+            reason="flutter analyze reported errors or warnings with the change."
+          elif [ "$UNIT" != "success" ]; then
+            reason="The signing tests fail with the change."
+          elif [ "$LIVE" != "success" ]; then
+            reason="The live check still fails with the change."
+          else
+            verified=true
+          fi
+          if [ -s "$dir/after.jsonl" ]; then
+            python3 scripts/report_canary.py X "$RUN_URL" "$LIVE" "$dir/after.jsonl" "$dir/after.md" > /dev/null
+          fi
+          echo "verified=$verified" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Signing auto-fix"
+            echo
+            if [ "$verified" = true ]; then
+              echo "The change passed analysis, the signing tests and the live check. A draft pull request follows."
+            else
+              echo "No pull request: $reason"
+            fi
+            echo
+            if [ -f "$dir/after.md" ]; then cat "$dir/after.md"; fi
+            if [ -s "$dir/signing-fix.patch" ]; then
+              echo
+              echo '~~~diff'
+              head -c 60000 "$dir/signing-fix.patch"
+              echo
+              echo '~~~'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$verified" != true ]; then
+            echo "::error::$reason"
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: signing-fix
+          path: ${{ runner.temp }}/signing/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  pull-request:
+    name: Open the fix as a draft
+    needs: fix
+    if: needs.fix.outputs.changed == 'true' && needs.fix.outputs.verified == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      # A pull request opened with this token starts no workflows of its own.
+      actions: write
+    env:
+      BRANCH: fix/x-signing-${{ github.run_id }}
+      BASE: ${{ github.ref_name }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      CANARY_URL: ${{ github.event.workflow_run.html_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: signing-fix
+          path: ${{ runner.temp }}/signing
+
+      - name: Commit the fix on a new branch
+        run: |
+          set -euo pipefail
+          git apply --index "$RUNNER_TEMP/signing/signing-fix.patch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -q -F - <<EOF
+          Repair X request signing
+
+          The daily live check found X's request signing (x-client-transaction-id)
+          broken. The X signing auto-fix workflow wrote this change and checked
+          it with the analyzer, the signing tests and the live check:
+          $RUN_URL
+
+          Co-Authored-By: Claude <noreply@anthropic.com>
+          EOF
+          git push origin "HEAD:refs/heads/$BRANCH"
+
+      - name: Open the draft pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/signing"
+          {
+            echo "The [X signing auto-fix workflow]($RUN_URL) wrote this change after the live check found X's request signing (\`x-client-transaction-id\`) broken."
+            if [ -n "$CANARY_URL" ]; then echo "It was started by the [failed live checks]($CANARY_URL)."; fi
+            echo
+            echo "**A person must review it before it is marked ready or merged.** It passed \`flutter analyze\`, the signing tests and the live bootstrap check on the runner; the playbook it followed is \`docs/fix-x-signing.md\`."
+            echo
+            echo "## Live check before the fix"
+            echo
+            cat "$dir/before.md"
+            echo
+            echo "## Live check with the fix"
+            echo
+            cat "$dir/after.md"
+            echo
+            echo "🤖 Generated with [Claude Code](https://claude.com/claude-code) by the X signing auto-fix workflow"
+          } > "$RUNNER_TEMP/pr-body.md"
+          gh pr create --draft --base "$BASE" --head "$BRANCH" \
+            --title "Repair X request signing" --body-file "$RUNNER_TEMP/pr-body.md"
+          gh workflow run verify.yml --ref "$BRANCH"
+          gh workflow run x-bootstrap-check.yml --ref "$BRANCH"

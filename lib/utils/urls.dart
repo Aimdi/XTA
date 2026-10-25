@@ -471,6 +471,26 @@ String? extractListId(String input) {
   return _parseAsListLink(uri.pathSegments.where((e) => e.isNotEmpty).toList())?.id;
 }
 
+/// An `x.com/i/communities/{id}` link, or that community's `/about` page.
+class CommunityUriInfo extends UriParseResult {
+  final String id;
+  final bool about;
+
+  CommunityUriInfo(this.id, {this.about = false});
+}
+
+CommunityUriInfo? _parseAsCommunityLink(List<String> parts) {
+  // https://x.com/i/communities/1472249315724771329 and …/about
+  if (parts.length < 3 || parts[0] != 'i' || parts[1] != 'communities' || !RegExp(r'^\d+$').hasMatch(parts[2])) {
+    return null;
+  }
+  return switch (parts.skip(3).toList()) {
+    [] => CommunityUriInfo(parts[2]),
+    ['about'] => CommunityUriInfo(parts[2], about: true),
+    _ => null,
+  };
+}
+
 class PostUriInfo extends UriParseResult {
   String? screenName;
   String id;
@@ -588,6 +608,10 @@ Future<UriParseResult> parseUri(Uri link) async {
   final listInfo = _parseAsListLink(parts);
   if (listInfo != null) {
     return listInfo;
+  }
+  final communityInfo = _parseAsCommunityLink(parts);
+  if (communityInfo != null) {
+    return communityInfo;
   }
   final liveInfo = _parseAsLiveLink(link);
   if (liveInfo != null) {

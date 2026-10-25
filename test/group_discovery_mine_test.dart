@@ -10,6 +10,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
+import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/feed_chunk_plan.dart';
 import 'package:xta/group/group_discovery.dart';
 import 'package:xta/group/group_discovery_feed.dart';
@@ -60,11 +61,15 @@ void main() {
     expect(plan.includeReplies, isFalse);
     expect(plan.includeRetweets, isTrue);
     expect(plan.members.first.id, 'm1');
-    expect(plan.chunks.map((chunk) => chunk.users.length), [feedChunkSize, 20 - feedChunkSize]);
+    // Twenty short names fit one search.
+    expect(plan.chunks.map((chunk) => chunk.users.length), [20]);
     expect(
       plan.chunks.map((chunk) => chunk.hash),
       feedChunkHashesFor(
-        [for (final member in members) FeedChunkMember(id: member.id, createdAt: member.createdAt)],
+        [
+          for (final member in members)
+            FeedChunkMember(id: member.id, createdAt: member.createdAt, term: userSearchTerm(member.screenName)),
+        ],
         includeReplies: false,
         includeRetweets: true,
       ),
@@ -74,12 +79,19 @@ void main() {
 
   test('mining reads the chunks the feed stored and reports which members they covered', () async {
     final prefs = PrefServiceCache(defaults: {optionGlobalIncludeReplies: true, optionGlobalIncludeRetweets: true});
-    final members = [for (var i = 1; i <= 18; i++) _member('m$i', i)];
+    // Fifteen-character names: twenty share the first search, two the second.
+    String name(int i) => 'member_long_${'$i'.padLeft(3, '0')}';
+    final members = [for (var i = 1; i <= 22; i++) _member(name(i), i)];
     final plan = planGroupFeed(_group(members), prefs: prefs);
+    expect(plan.chunks.map((chunk) => chunk.users.length), [20, 2]);
     final db = await Repository.writable();
     final chains = [
-      TweetChain(id: 't1', isPinned: false, tweets: [_tweet('t1', 'm1')..retweetedStatusWithCard = _tweet('r1', 'c1')]),
-      TweetChain(id: 't2', isPinned: false, tweets: [_tweet('t2', 'm3')..quotedStatusWithCard = _tweet('q1', 'c1')]),
+      TweetChain(
+        id: 't1',
+        isPinned: false,
+        tweets: [_tweet('t1', name(1))..retweetedStatusWithCard = _tweet('r1', 'c1')],
+      ),
+      TweetChain(id: 't2', isPinned: false, tweets: [_tweet('t2', name(3))..quotedStatusWithCard = _tweet('q1', 'c1')]),
     ];
     await db.insert(tableFeedGroupChunk, {
       'cursor_id': 1,
@@ -89,7 +101,7 @@ void main() {
 
     final mined = await mineFeedDiscovery(await Repository.readOnly(), plan);
     expect(mined.covered, {for (final member in plan.chunks.first.users) member.id});
-    expect(mined.covered, isNot(contains('m17')));
+    expect(mined.covered, isNot(contains(name(21))));
     final ranked = rankDiscoveryAccounts(mined.accounts, followed: {}, groupName: '🍫');
     expect(ranked.single.id, 'c1');
     expect(ranked.single.memberCount, 2);

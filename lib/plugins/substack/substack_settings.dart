@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
@@ -18,15 +19,19 @@ class SubstackSettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
-          PrefSwitch(
-            title: Text(l10n.plugin_substack_native_reader),
-            subtitle: Text(l10n.plugin_substack_native_reader_description),
-            pref: optionPluginSubstackNativeReader,
+          LabeledPref(
+            child: PrefSwitch(
+              title: Text(l10n.plugin_substack_native_reader),
+              subtitle: Text(l10n.plugin_substack_native_reader_description),
+              pref: optionPluginSubstackNativeReader,
+            ),
           ),
-          PrefSwitch(
-            title: Text(l10n.plugin_substack_mark_read_on_scroll),
-            subtitle: Text(l10n.plugin_substack_mark_read_on_scroll_description),
-            pref: optionPluginSubstackMarkReadOnScroll,
+          LabeledPref(
+            child: PrefSwitch(
+              title: Text(l10n.plugin_substack_mark_read_on_scroll),
+              subtitle: Text(l10n.plugin_substack_mark_read_on_scroll_description),
+              pref: optionPluginSubstackMarkReadOnScroll,
+            ),
           ),
           const Divider(),
           const SubstackOpmlSection(),

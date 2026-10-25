@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/community/community_screen.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/booru/booru_link_open.dart';
 import 'package:xta/plugins/booru/booru_links.dart';
@@ -100,6 +101,13 @@ Future<bool> _openX(BuildContext context, String url) async {
       return true;
     case LiveUriInfo(url: final watchUrl):
       await openLivePlayerFromUrl(context, watchUrl);
+      return true;
+    case CommunityUriInfo(id: final id, about: final about):
+      await Navigator.pushNamed(
+        context,
+        routeCommunity,
+        arguments: CommunityScreenArguments(id, about: about),
+      );
       return true;
     default:
       return false;

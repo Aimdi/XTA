@@ -49,6 +49,10 @@ class XEndpoints {
   static const userOriginalsTimeline = 'UserOriginalsTimeline';
   static const userRepostsTimeline = 'UserRepostsTimeline';
   static const audioSpaceById = 'AudioSpaceById';
+  static const community = 'CommunityQuery';
+  static const communityTweets = 'CommunityTweetsTimeline';
+  static const communityMembers = 'membersSliceTimeline_Query';
+  static const communitiesSearch = 'CommunitiesSearchQuery';
 
   static const Map<String, XEndpoint> shipped = {
     userByRestId: XEndpoint(
@@ -132,6 +136,32 @@ class XEndpoints {
       name: audioSpaceById,
       operation: 'AudioSpaceById',
       queryId: 'Bh0L6azTQoMs9rJKeCF4wQ',
+      host: 'x.com',
+    ),
+    // A community's header; a guest may read it. The three below need an account.
+    community: XEndpoint(
+      name: community,
+      operation: 'CommunityQuery',
+      queryId: '-ElI1vg3dYbttVMhBhGdLw',
+      host: 'x.com',
+    ),
+    // Its Top tab, ranked by relevance.
+    communityTweets: XEndpoint(
+      name: communityTweets,
+      operation: 'CommunityTweetsTimeline',
+      queryId: 'wXey4HQTUdYUlWWXltWMpg',
+      host: 'x.com',
+    ),
+    communityMembers: XEndpoint(
+      name: communityMembers,
+      operation: 'membersSliceTimeline_Query',
+      queryId: 'woAp_YdzAdqnWDrqLTNpAw',
+      host: 'x.com',
+    ),
+    communitiesSearch: XEndpoint(
+      name: communitiesSearch,
+      operation: 'CommunitiesSearchQuery',
+      queryId: 'HKgnJbw10TZW41Na4ToaSw',
       host: 'x.com',
     ),
   };

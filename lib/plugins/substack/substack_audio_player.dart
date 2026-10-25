@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/substack/podcast_store.dart';
-import 'package:xta/utils/number_locale.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// The reader screen's controls for a podcast post's episode.
 ///
@@ -100,7 +100,7 @@ class _SpeedMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final format = NumberFormat.decimalPattern(numberFormatLocale(context));
+    final format = NumberFormat.decimalPattern(formattingLocale(context));
     String label(double value) => '${format.format(value)}×';
     return PopupMenuButton<double>(
       tooltip: L10n.of(context).playback_speed,

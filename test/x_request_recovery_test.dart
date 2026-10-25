@@ -114,6 +114,17 @@ void main() {
     await expectLater(RequestBudget(Duration.zero).run(() async => ++calls), throwsA(isA<TimeoutException>()));
     expect(calls, 0);
   });
+  test('a step that timed out leaves no time to start another', () async {
+    // Its timer can fire just before the deadline, leaving a sliver of budget;
+    // a few rounds make that likely.
+    var calls = 0;
+    for (var round = 0; round < 10; round++) {
+      final budget = RequestBudget(const Duration(milliseconds: 5));
+      await expectLater(budget.run(() => Completer<void>().future), throwsA(isA<TimeoutException>()));
+      await expectLater(budget.run(() async => ++calls), throwsA(isA<TimeoutException>()));
+    }
+    expect(calls, 0);
+  });
   test('pinned HomeTimeline times out and aborts its own request', () async {
     final client = _StallingClient();
     xHttpClient = client;

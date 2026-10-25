@@ -8,6 +8,7 @@ import 'package:xta/trends/trends_model.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -71,7 +72,7 @@ class _TrendsListState extends State<TrendsList> {
           );
         }
 
-        var numberFormat = NumberFormat.compact();
+        var numberFormat = NumberFormat.compact(locale: currentFormattingLocale());
 
         return RefreshIndicator(
           onRefresh: () async {

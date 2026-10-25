@@ -16,7 +16,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_saucenao.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_shortcuts.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
-import 'package:xta/utils/number_locale.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 typedef PixivImagePicker = Future<Uint8List?> Function();
 
@@ -259,10 +259,8 @@ class _PixivSauceRowState extends State<_PixivSauceRow> {
     );
   }
 
-  String _percent(BuildContext context, double similarity) => NumberFormat.decimalPercentPattern(
-    locale: numberFormatLocale(context),
-    decimalDigits: 1,
-  ).format(similarity / 100);
+  String _percent(BuildContext context, double similarity) =>
+      NumberFormat.decimalPercentPattern(locale: formattingLocale(context), decimalDigits: 1).format(similarity / 100);
 
   /// The work's picture, unless the reader's filters or mutes keep it out of their feeds.
   Widget _thumb(BuildContext context, PixivIllust? illust) {

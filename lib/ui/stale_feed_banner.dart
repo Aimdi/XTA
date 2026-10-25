@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/stale_feed_preview.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Banner shown above cached posts when a feed's first page failed.
 ///
@@ -103,7 +104,7 @@ class StaleFeedBanner extends StatelessWidget {
       return L10n.of(context).feed_cached_posts_from_unknown_time;
     }
     final local = cachedAt.toLocal();
-    final locale = Localizations.localeOf(context).toString();
+    final locale = formattingLocale(context);
     final today = sameCalendarDay(local, DateTime.now());
     final format = today ? DateFormat.Hm(locale) : DateFormat.yMMMd(locale).add_Hm();
     return L10n.of(context).feed_cached_posts_from(format.format(local));

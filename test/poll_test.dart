@@ -1,14 +1,37 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/_card.dart';
+import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/poll_results.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/capped_network_image.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 Map<String, dynamic> _card(Map<String, String> values) => {
       'binding_values': {for (final entry in values.entries) entry.key: {'string_value': entry.value}}
     };
+
+/// x.com/quax_tests/status/2109301223363064091 as the client reads it: a poll
+/// of three options, each with its image, one vote on the third.
+TweetWithCard _imagePoll() => TweetWithCard.fromGraphqlJson(
+    jsonDecode(File('test/fixtures/TweetDetail/image_poll.json').readAsStringSync()) as Map<String, dynamic>);
+
+/// The card's bindings, keyed, to break on purpose.
+Map<String, dynamic> _bindings(TweetWithCard post) => post.card!['binding_values'] as Map<String, dynamic>;
+
+String _imageUrl(TweetWithCard post, int choice, String size) =>
+    _bindings(post)['choice${choice}_image$size']['image_value']['url'] as String;
+
+List<String> _imageUrls(TweetWithCard post, String size) => [for (var i = 1; i <= 3; i++) _imageUrl(post, i, size)];
 
 void main() {
   group('reading a poll', () {
@@ -97,6 +120,189 @@ void main() {
           2)!;
 
       expect(poll.endsAt, isNull);
+    });
+  });
+
+  group('reading a poll with images', () {
+    test('reads how many options it has, and each option with its image at both sizes', () {
+      final post = _imagePoll();
+      expect(TweetPoll.choiceCountOf(post.card!), 3);
+
+      final poll = TweetPoll.fromCard(post.card!, 3)!;
+      expect(poll.choices.map((c) => c.label), ['Option A', 'Option B', 'Option C']);
+      expect(poll.choices.map((c) => c.thumbnailUrl), _imageUrls(post, ''));
+      expect(poll.choices.map((c) => c.imageUrl), _imageUrls(post, '_original'));
+      expect(poll.choices.map(poll.leads), [false, false, true]);
+    });
+
+    test('an option without an image keeps its place among the others', () {
+      final post = _imagePoll();
+      _bindings(post).removeWhere((key, _) => key.startsWith('choice2_image'));
+      final poll = TweetPoll.fromCard(post.card!, 3)!;
+
+      expect([poll.choices[1].thumbnailUrl, poll.choices[1].imageUrl], [null, null]);
+      expect(poll.choicesWithImages.map((c) => c.label), ['Option A', 'Option C']);
+    });
+
+    test('either size of an image stands in for the other', () {
+      final post = _imagePoll();
+      final thumbnail = _imageUrl(post, 3, '');
+      final original = _imageUrl(post, 1, '_original');
+      _bindings(post)
+        ..remove('choice1_image')
+        ..remove('choice3_image_original');
+      final poll = TweetPoll.fromCard(post.card!, 3)!;
+
+      expect(poll.choices.first.thumbnailUrl, original);
+      expect(poll.choices.last.imageUrl, thumbnail);
+    });
+
+    test('a text poll has no images', () {
+      final poll = TweetPoll.fromCard(
+          _card({'choice1_label': 'Yes', 'choice1_count': '1', 'choice2_label': 'No', 'choice2_count': '2'}), 2)!;
+
+      expect(poll.choicesWithImages, isEmpty);
+    });
+
+    test('a card that gives no usable number of options has none', () {
+      final post = _imagePoll();
+      for (final count in [null, '0', 'three']) {
+        if (count == null) {
+          _bindings(post).remove('choice_count');
+        } else {
+          _bindings(post)['choice_count'] = {'string_value': count};
+        }
+        expect(TweetPoll.choiceCountOf(post.card!), isNull, reason: '$count');
+      }
+    });
+  });
+
+  group('drawing a poll with images', () {
+    Future<void> pumpCard(WidgetTester tester, TweetWithCard post,
+        {Map<String, dynamic> prefs = const {}, double width = 411, double textScale = 1}) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      await tester.pumpWidget(PrefService(
+        service: PrefServiceCache(cache: prefs),
+        child: MaterialApp(
+          theme: xLookLightTheme(null),
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(width, 800), textScaler: TextScaler.linear(textScale)),
+            child: Scaffold(body: SingleChildScrollView(child: TweetCard(tweet: post, card: post.card))),
+          ),
+        ),
+      ));
+      await tester.pump();
+    }
+
+    List<String> loadedImages(WidgetTester tester) =>
+        [for (final image in tester.widgetList<CappedNetworkImage>(find.byType(CappedNetworkImage))) image.url];
+
+    /// Taps the image of option [index] and waits for the viewer it opens.
+    Future<TweetMediaView> openImage(WidgetTester tester, int index) async {
+      await tester.tap(find.byType(PollChoiceImage).at(index));
+      await tester.pump(const Duration(milliseconds: 250));
+      // The viewer's photo never loads here, and its spinner never settles.
+      await tester.pump(const Duration(milliseconds: 400));
+      return tester.widget<TweetMediaView>(find.byType(TweetMediaView));
+    }
+
+    testWidgets('shows each option beside its image', (tester) async {
+      final post = _imagePoll();
+      await pumpCard(tester, post);
+
+      for (final label in ['Option A', 'Option B', 'Option C']) {
+        expect(find.text(label), findsOneWidget);
+      }
+      expect(loadedImages(tester), _imageUrls(post, ''), reason: 'the small size, which is all a bar shows');
+      for (final (index, bar) in tester.widgetList<PollOptionBar>(find.byType(PollOptionBar)).indexed) {
+        final image = find.descendant(of: find.byWidget(bar), matching: find.byType(PollChoiceImage));
+        expect(tester.getSize(image), const Size.square(kTweetTouchTarget), reason: 'option ${index + 1}');
+        expect(tester.getRect(image).left - tester.getRect(find.byWidget(bar)).left, 6,
+            reason: 'as far in from the start of its bar as from the top');
+      }
+    });
+
+    testWidgets('opens the full images in the viewer, on the one tapped', (tester) async {
+      final post = _imagePoll();
+      await pumpCard(tester, post);
+      final viewer = await openImage(tester, 1);
+
+      expect(viewer.entries.map((e) => e.media.mediaUrlHttps), _imageUrls(post, '_original'));
+      expect(viewer.initialIndex, 1);
+      expect(viewer.tweetMedia, isFalse, reason: 'a size suffix would break these whole URLs');
+    });
+
+    testWidgets('an option without an image keeps its bar, and the viewer skips it', (tester) async {
+      final post = _imagePoll();
+      _bindings(post).removeWhere((key, _) => key.startsWith('choice2_image'));
+      await pumpCard(tester, post);
+
+      expect(find.text('Option B'), findsOneWidget);
+      expect(loadedImages(tester), [_imageUrl(post, 1, ''), _imageUrl(post, 3, '')]);
+      final viewer = await openImage(tester, 1);
+      expect(viewer.entries.map((e) => e.media.mediaUrlHttps), [
+        _imageUrl(post, 1, '_original'),
+        _imageUrl(post, 3, '_original'),
+      ]);
+      expect(viewer.initialIndex, 1, reason: 'the second image is the third option\'s');
+    });
+
+    testWidgets('shows no image when images are disabled', (tester) async {
+      await pumpCard(tester, _imagePoll(), prefs: {optionImageQuality: 'disabled'});
+
+      expect(find.text('Option A'), findsOneWidget);
+      expect(find.byType(PollChoiceImage), findsNothing);
+    });
+
+    testWidgets('loads no image before a tap when media load manually', (tester) async {
+      final post = _imagePoll();
+      await pumpCard(tester, post, prefs: {optionMediaDisableAutoload: true});
+
+      expect(find.byType(PollChoiceImage), findsNWidgets(3), reason: 'each image waits in its place');
+      expect(loadedImages(tester), isEmpty);
+      final viewer = await openImage(tester, 2);
+      expect(viewer.entries.map((e) => e.media.mediaUrlHttps), _imageUrls(post, '_original'));
+      expect(viewer.initialIndex, 2);
+    });
+
+    testWidgets('reads each image as part of its option, and opens it', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpCard(tester, _imagePoll());
+
+      final option = find.descendant(of: find.byType(PollOptionBar).first, matching: find.byType(MergeSemantics));
+      expect(tester.getSemantics(option), isSemantics(label: 'Media\nOption A\n0%', isButton: true, hasTapAction: true));
+      handle.dispose();
+    });
+
+    testWidgets('draws nothing for a poll with images that does not say how many options it has', (tester) async {
+      final post = _imagePoll();
+      _bindings(post).remove('choice_count');
+      await pumpCard(tester, post);
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(PollOptionBar), findsNothing);
+    });
+
+    testWidgets('fits 320dp at twice the text size with its images', (tester) async {
+      await pumpCard(tester, _imagePoll(), width: 320, textScale: 2);
+
+      expect(tester.takeException(), isNull, reason: 'no overflow');
+      for (final bar in tester.widgetList<PollOptionBar>(find.byType(PollOptionBar))) {
+        final barRect = tester.getRect(find.byWidget(bar));
+        final percent = tester.getRect(find.descendant(of: find.byWidget(bar), matching: find.text(bar.percent)));
+        expect(barRect.right - percent.right, closeTo(12, 0.5), reason: '${bar.label}: the share stays at the end');
+        expect(barRect.right, lessThanOrEqualTo(320));
+      }
     });
   });
 

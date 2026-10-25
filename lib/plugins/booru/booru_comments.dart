@@ -10,6 +10,7 @@ import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_load_store.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_text.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// The post's comments, read-only, fetched when the section is opened.
 class BooruComments extends StatefulWidget {
@@ -79,7 +80,7 @@ class _CommentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).toString();
+    final locale = formattingLocale(context);
     final created = comment.createdAt;
     final meta = [?comment.author, if (created != null) DateFormat.yMMMd(locale).format(created.toLocal())].join(' · ');
     return Padding(

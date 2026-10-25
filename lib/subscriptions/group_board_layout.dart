@@ -25,3 +25,19 @@ double groupTileTextGrowth(double textScale) => 1 + (textScale.clamp(1.0, 2.0) -
 /// or null to keep the phone's aspect ratio.
 double? groupTileExtent({required int chosen, required int columns, required double textScale}) =>
     columns > chosen.clamp(2, 3) ? kGroupTileWideHeight * groupTileTextGrowth(textScale) : null;
+
+/// Edge of the member mosaic on a Kompakt tile.
+const double kCompactGroupCoverExtent = 40;
+
+/// Height of a Kompakt tile at normal text size: the mosaic beside two lines.
+const double kCompactGroupTileHeight = 60;
+
+/// The name and count lines of a Kompakt tile at 1x (16 and 13 sp, with room
+/// for a tall line height), and its padding and border above and below them.
+const double _compactTextHeight = 44;
+const double _compactChrome = 14;
+
+/// A Kompakt tile's height at [textScale]: its two lines set it once they
+/// outgrow the mosaic.
+double compactGroupTileExtent(double textScale) =>
+    math.max(kCompactGroupTileHeight, _compactTextHeight * textScale.clamp(1.0, 3.0) + _compactChrome);

@@ -191,7 +191,7 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
     var data = await _collect();
     var exportData = jsonEncode(data.toJson());
 
-    var dateFormat = DateFormat('yyyy-MM-dd');
+    var dateFormat = DateFormat('yyyy-MM-dd', 'en_US');
     var fileName = 'xta-${dateFormat.format(DateTime.now())}.json';
 
     var path = await saveWithDialog(fileName: fileName, data: Uint8List.fromList(utf8.encode(exportData)));
@@ -209,7 +209,11 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
       title: L10n.of(context).export,
       floatingActionButton: noExportOptionSelected()
           ? null
-          : FloatingActionButton(onPressed: _export, child: const Icon(Icons.save)),
+          : FloatingActionButton(
+              tooltip: L10n.of(context).export,
+              onPressed: _export,
+              child: const Icon(Icons.save),
+            ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

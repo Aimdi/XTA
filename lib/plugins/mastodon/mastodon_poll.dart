@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Multiple-choice results count voters, because one person can choose several
 /// options. Older servers may omit that denominator; keep the count in that case.
@@ -21,7 +22,7 @@ class MastodonPollResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final locale = Localizations.localeOf(context).toString();
+    final locale = formattingLocale(context);
     final closed = poll.expired || (poll.expiresAt?.isBefore(DateTime.now()) ?? false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

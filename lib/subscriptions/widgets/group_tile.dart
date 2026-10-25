@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/subscriptions/group_board_layout.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/widgets/avatar_mosaic.dart';
 import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
@@ -26,6 +27,10 @@ class GroupTile extends StatefulWidget {
   /// Newer cached posts than the last-read mark. Tests omit this.
   final bool unread;
 
+  /// Lays the tile out sideways, the faces beside the name and count: the
+  /// board's Kompakt choice.
+  final bool compact;
+
   const GroupTile({
     super.key,
     required this.group,
@@ -34,6 +39,7 @@ class GroupTile extends StatefulWidget {
     this.onDiscover,
     this.animate = true,
     this.unread = false,
+    this.compact = false,
   });
 
   @override
@@ -53,9 +59,6 @@ class _GroupTileState extends State<GroupTile> {
   Widget build(BuildContext context) {
     final tokens = GroupBoardTokens.resolve(context);
     final group = widget.group;
-    // The group's own colour, unharmonised: X does not rotate a user's colour
-    // towards a theme accent.
-    final accentColor = group.color ?? groupFallbackColor(group.name);
     // A colour the reader chose has to be visible somewhere. Most tiles show a
     // mosaic of member faces, which left a chosen colour with nowhere to appear
     // at all — picking one did nothing. It now tints the tile's border and lays
@@ -68,13 +71,23 @@ class _GroupTileState extends State<GroupTile> {
     );
 
     final tileColor = tokens.tile;
-    final titleColor = GroupBoardTokens.ensureContrast(
-      tokens.onSurface,
-      tileColor,
-    );
     final metaColor = GroupBoardTokens.ensureContrast(
       tokens.secondary,
       tileColor,
+    );
+    final name = _name(
+      GroupBoardTokens.ensureContrast(tokens.onSurface, tileColor),
+      metaColor,
+    );
+    final count = Text(
+      countLabel,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        color: metaColor,
+      ),
     );
 
     final tile = Container(
@@ -91,104 +104,9 @@ class _GroupTileState extends State<GroupTile> {
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        // Never larger than the space actually left after the
-                        // text, so a 2x font scale shrinks the cover instead
-                        // of overflowing the tile.
-                        final extent = constraints.biggest.shortestSide.clamp(
-                          0.0,
-                          74.0,
-                        );
-
-                        // A mark the user chose themselves outranks the
-                        // member faces: they asked for that emoji or icon.
-                        final Widget cover = hasExplicitGroupMark(group)
-                            ? Center(
-                                child: GroupMark.forGroup(
-                                  group,
-                                  size: extent * 0.78,
-                                ),
-                              )
-                            : AvatarMosaic(
-                                extent: extent,
-                                members: group.memberPreviews,
-                                groupName: group.name,
-                                groupColor: accentColor,
-                                accent: tokens.accent,
-                                ringColor: tokens.tile,
-                              );
-
-                        // NSFW groups sit under Censored: blur the mosaic so
-                        // the board does not advertise adult avatars at a glance.
-                        if (!group.nsfw) {
-                          return cover;
-                        }
-                        return ImageFiltered(
-                          imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                          child: cover,
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      if (group.pinned) ...[
-                        Icon(Icons.push_pin, size: 13, color: metaColor),
-                        const SizedBox(width: 4),
-                      ],
-                      if (group.nsfw) ...[
-                        Icon(
-                          Icons.visibility_off_outlined,
-                          size: 13,
-                          color: metaColor,
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                      Expanded(
-                        child: Text(
-                          group.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2,
-                            color: titleColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    countLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: metaColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: widget.compact
+          ? _compactContent(tokens, name, count)
+          : _coverContent(tokens, name, count),
     );
 
     final accessibleTile = Semantics(
@@ -228,15 +146,139 @@ class _GroupTileState extends State<GroupTile> {
       ),
     );
     if (widget.onDiscover == null) return accessibleTile;
+    final discover = IconButton(
+      tooltip: l10n.group_discovery_ai,
+      onPressed: widget.onDiscover,
+      icon: const Icon(Icons.auto_awesome, size: 20),
+    );
     return Stack(
       children: [
         Positioned.fill(child: accessibleTile),
-        Positioned(
-          top: 2, right: 2,
-          child: IconButton(
-            tooltip: l10n.group_discovery_ai,
-            onPressed: widget.onDiscover,
-            icon: const Icon(Icons.auto_awesome, size: 20),
+        if (widget.compact)
+          PositionedDirectional(
+            top: 0,
+            bottom: 0,
+            end: 2,
+            child: Center(child: discover),
+          )
+        else
+          PositionedDirectional(top: 2, end: 2, child: discover),
+      ],
+    );
+  }
+
+  /// The large tile: the cover above the name and count.
+  Widget _coverContent(GroupBoardTokens tokens, Widget name, Widget count) =>
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: LayoutBuilder(
+                      // Never larger than the space actually left after the
+                      // text, so a 2x font scale shrinks the cover instead of
+                      // overflowing the tile.
+                      builder: (context, constraints) => _cover(
+                        tokens,
+                        constraints.biggest.shortestSide.clamp(0.0, 74.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  name,
+                  const SizedBox(height: 2),
+                  count,
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+
+  /// The Kompakt tile: the cover at the start, the name and count beside it,
+  /// clear of the discovery button when there is one.
+  Widget _compactContent(GroupBoardTokens tokens, Widget name, Widget count) =>
+      Padding(
+        padding: EdgeInsetsDirectional.fromSTEB(
+          10,
+          6,
+          widget.onDiscover == null ? 10 : 48,
+          6,
+        ),
+        child: Row(
+          children: [
+            _cover(tokens, kCompactGroupCoverExtent),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [name, const SizedBox(height: 1), count],
+              ),
+            ),
+          ],
+        ),
+      );
+
+  /// The member faces, or the mark the reader chose, at [extent].
+  Widget _cover(GroupBoardTokens tokens, double extent) {
+    final group = widget.group;
+    // A mark the user chose themselves outranks the member faces: they asked
+    // for that emoji or icon.
+    final Widget cover = hasExplicitGroupMark(group)
+        ? Center(child: GroupMark.forGroup(group, size: extent * 0.78))
+        : AvatarMosaic(
+            extent: extent,
+            members: group.memberPreviews,
+            groupName: group.name,
+            // The group's own colour, unharmonised: X does not rotate a user's
+            // colour towards a theme accent.
+            groupColor: group.color ?? groupFallbackColor(group.name),
+            accent: tokens.accent,
+            ringColor: tokens.tile,
+          );
+
+    // NSFW groups sit under Censored: blur the mosaic so the board does not
+    // advertise adult avatars at a glance.
+    if (!group.nsfw) {
+      return cover;
+    }
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      child: cover,
+    );
+  }
+
+  /// The name, after the pinned and NSFW marks.
+  Widget _name(Color titleColor, Color metaColor) {
+    final group = widget.group;
+    return Row(
+      children: [
+        if (group.pinned) ...[
+          Icon(Icons.push_pin, size: 13, color: metaColor),
+          const SizedBox(width: 4),
+        ],
+        if (group.nsfw) ...[
+          Icon(Icons.visibility_off_outlined, size: 13, color: metaColor),
+          const SizedBox(width: 4),
+        ],
+        Expanded(
+          child: Text(
+            group.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.2,
+              color: titleColor,
+            ),
           ),
         ),
       ],

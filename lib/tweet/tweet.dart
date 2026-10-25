@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/community/community_screen.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
@@ -104,6 +105,10 @@ class TweetTileState extends State<TweetTile> {
   // The spans currently on display, rebuilt when the parts behind them change
   // (translate / show original) rather than on every build of the tile.
   List<InlineSpan> _displaySpans = const [];
+
+  /// Whether [_displaySpans] show anything. A post whose only text is a link
+  /// its card shows instead has nothing left, and gets no text block.
+  bool _showsText = false;
 
   /// The post actually shown: a retweet displays the post it carries.
   TweetWithCard get _displayedTweet => tweet.retweetedStatusWithCard ?? tweet;
@@ -223,8 +228,11 @@ class TweetTileState extends State<TweetTile> {
   }
 
   /// Displays [parts]. Call from inside a `setState`.
-  void _showParts(List<RichTextPart> parts) =>
-      _displaySpans = displayRichText(parts);
+  void _showParts(List<RichTextPart> parts) {
+    _displaySpans = displayRichText(parts);
+    final text = TextSpan(children: _displaySpans).toPlainText();
+    _showsText = text.trim().isNotEmpty;
+  }
 
   /// X's no-linguistic-content codes: media-only, mentions-only, cashtags-only,
   /// short/undetermined text. Nothing there to translate.
@@ -357,16 +365,6 @@ class TweetTileState extends State<TweetTile> {
       user.idStr != null &&
       user.screenName != null &&
       user.name != null;
-
-  UserSubscription _subscriptionFor(User user) => UserSubscription(
-    id: user.idStr!,
-    screenName: user.screenName!,
-    name: user.name!,
-    profileImageUrlHttps: user.profileImageUrlHttps,
-    verified: user.verified ?? false,
-    createdAt: user.createdAt ?? DateTime.now(),
-    inFeed: true,
-  );
 
   /// Offers to subscribe to a not-yet-followed author, or to file them into
   /// groups right away (which subscribes them too).
@@ -640,7 +638,7 @@ class TweetTileState extends State<TweetTile> {
     Widget content = Container();
 
     final textEnd = tweet.displayTextRange?.elementAtOrNull(1);
-    if (textEnd == null || textEnd != 0) {
+    if ((textEnd == null || textEnd != 0) && _showsText) {
       content = DefaultTextStyle.merge(
         style: tweetBodyStyle(context),
         child: Padding(
@@ -773,9 +771,11 @@ class TweetTileState extends State<TweetTile> {
               followed: subscriptions.any((s) => s.id == tweet.user!.idStr),
               onFollow: () => context
                   .read<SubscriptionsModel>()
-                  .toggleSubscribe(_subscriptionFor(tweet.user!), false),
-              onMore: () =>
-                  _showSubscribeSheet(context, _subscriptionFor(tweet.user!)),
+                  .toggleSubscribe(subscriptionForUser(tweet.user!), false),
+              onMore: () => _showSubscribeSheet(
+                context,
+                subscriptionForUser(tweet.user!),
+              ),
             ),
           );
 
@@ -837,6 +837,25 @@ class TweetTileState extends State<TweetTile> {
           )
         : null;
 
+    // X names only the community's id in a post; its page has the rest.
+    final communityId = isQuotedTweet ? null : tweet.communityId;
+    final communityBadge = communityId == null
+        ? null
+        : _TweetTileLeading(
+            icon: Icons.groups_outlined,
+            onTap: () => Navigator.pushNamed(
+              context,
+              routeCommunity,
+              arguments: CommunityScreenArguments(communityId),
+            ),
+            children: [
+              TextSpan(
+                text: L10n.of(context).community,
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
+          );
+
     final articleLink = _articleLink;
     final skipBroadcastCard =
         isBroadcastCard(tweet.card) && tweetHasVideoMedia(tweet);
@@ -880,6 +899,7 @@ class TweetTileState extends State<TweetTile> {
             retweetBanner,
             ?pinnedBadge,
             ?threadBadge,
+            ?communityBadge,
             _buildThreadBody(
               avatar,
               Padding(
@@ -932,6 +952,7 @@ class TweetTileState extends State<TweetTile> {
                   retweetBanner,
                   ?pinnedBadge,
                   ?threadBadge,
+                  ?communityBadge,
                   headerTile,
                   ...bodyChildren,
                 ],

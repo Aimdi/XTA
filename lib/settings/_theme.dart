@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/settings/settings_chrome.dart';
 
 /// The accent names, kept beside the picker because they exist only for it.
@@ -80,28 +81,28 @@ class SettingsThemeFragment extends StatelessWidget {
           ),
           SettingsSection(
             children: [
-              SettingsControlTarget(id: optionThemeTrueBlack, child: PrefSwitch(
+              SettingsControlTarget(id: optionThemeTrueBlack, child: LabeledPref(child: PrefSwitch(
                 title: Text(l10n.true_black),
                 pref: optionThemeTrueBlack,
                 subtitle: Text(l10n.use_true_black_for_the_dark_mode_theme),
                 onChange: (value) {
                   prefs.set(optionThemeTrueBlackTweetCards, value);
                 },
-              )),
-              SettingsControlTarget(id: optionThemeTrueBlackTweetCards, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionThemeTrueBlackTweetCards, child: LabeledPref(child: PrefSwitch(
                 title: Text(l10n.true_black_tweet_cards),
                 pref: optionThemeTrueBlackTweetCards,
                 disabled: !prefs.get(optionThemeTrueBlack),
                 subtitle: Text(l10n.use_true_black_for_tweet_cards),
-              )),
-              SettingsControlTarget(id: optionShowNavigationLabels, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionShowNavigationLabels, child: LabeledPref(child: PrefSwitch(
                 title: Text(l10n.show_navigation_labels),
                 pref: optionShowNavigationLabels,
-              )),
-              SettingsControlTarget(id: optionHideNavigationOnScroll, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionHideNavigationOnScroll, child: LabeledPref(child: PrefSwitch(
                 title: Text(l10n.hide_navigation_on_scroll),
                 pref: optionHideNavigationOnScroll,
-              )),
+              ))),
             ],
           ),
         ],

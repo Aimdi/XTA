@@ -230,11 +230,12 @@ List<RichTextPart> buildRichText(
 
   var index = 0;
   for (final entity in entities) {
+    final text = _runesToText(runes, index, entity.getEntityStart());
     _addTextRuns(
       context,
       parts,
       spanContext,
-      _runesToText(runes, index, entity.getEntityStart()),
+      _leftOutAtEnd(entity, runes) ? text?.trimRight() : text,
     );
     parts.add(RichTextPart(entity.getContent(spanContext), null));
     index = entity.getEntityEnd();
@@ -244,6 +245,14 @@ List<RichTextPart> buildRichText(
   _recognizersOf[parts] = recognizers;
   return parts;
 }
+
+/// Whether [entity] is a link the text leaves out with nothing but space after
+/// it. The line break before such a link would end the text on an empty line,
+/// a blank above the card that shows the link.
+bool _leftOutAtEnd(Entity entity, List<int> runes) =>
+    entity is UrlEntity &&
+    entity.leftOut &&
+    (_runesToText(runes, entity.getEntityEnd())?.trim().isEmpty ?? true);
 
 /// Splits [text] around the mentions and hashtags descriptions carry without
 /// entities, adding a run per piece.

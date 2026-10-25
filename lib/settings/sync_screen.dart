@@ -7,6 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/_data.dart';
 import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/webdav_sync.dart';
 
 /// Carries the same payload as the backup export to a WebDAV server the reader
@@ -131,7 +132,7 @@ class _SyncScreenState extends State<SyncScreen> {
                 for (final version in versions)
                   SimpleDialogOption(
                     onPressed: () => Navigator.pop(context, version),
-                    child: Text(DateFormat.yMd().add_Hms().format(version.savedAt.toLocal())),
+                    child: Text(DateFormat.yMd(currentFormattingLocale()).add_Hms().format(version.savedAt.toLocal())),
                   ),
               ],
       ),
@@ -196,9 +197,7 @@ class _SyncScreenState extends State<SyncScreen> {
             Text(
               lastSync == null
                   ? L10n.of(context).sync_never
-                  : L10n.of(
-                      context,
-                    ).sync_last(DateFormat.yMd(Localizations.localeOf(context).toString()).add_Hm().format(lastSync)),
+                  : L10n.of(context).sync_last(DateFormat.yMd(formattingLocale(context)).add_Hm().format(lastSync)),
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 16),

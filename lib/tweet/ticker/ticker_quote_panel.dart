@@ -11,6 +11,7 @@ import 'package:xta/tweet/ticker/ticker_range.dart';
 import 'package:xta/tweet/ticker/ticker_stats.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
 import 'package:xta/ui/loading_hairline.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Everything above a ticker's posts: which instrument, the price and its
 /// move, the session, the range-selectable chart, and today's statistics —
@@ -137,7 +138,7 @@ class _QuoteHeader extends StatelessWidget {
     final scrubbed = state.scrubbed;
     final caption = scrubbed == null
         ? tickerRangeLabel(context, state.range)
-        : DateFormat.yMMMd().add_Hm().format(scrubbed.at);
+        : DateFormat.yMMMd(currentFormattingLocale()).add_Hm().format(scrubbed.at);
 
     return Wrap(
       spacing: 8,

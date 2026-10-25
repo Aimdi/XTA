@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_display.dart';
@@ -22,25 +23,33 @@ class BooruDisplaySettings extends StatelessWidget {
           subtitle: Text(_columnsLabel(l10n, columns)),
           onTap: () => _pickColumns(context, prefs, columns),
         ),
-        PrefSwitch(
-          title: Text(l10n.plugin_booru_small_thumbnails),
-          subtitle: Text(l10n.plugin_booru_small_thumbnails_description),
-          pref: optionPluginBooruSmallThumbnails,
+        LabeledPref(
+          child: PrefSwitch(
+            title: Text(l10n.plugin_booru_small_thumbnails),
+            subtitle: Text(l10n.plugin_booru_small_thumbnails_description),
+            pref: optionPluginBooruSmallThumbnails,
+          ),
         ),
-        PrefSwitch(
-          title: Text(l10n.plugin_booru_tile_details),
-          subtitle: Text(l10n.plugin_booru_tile_details_description),
-          pref: optionPluginBooruTileDetails,
+        LabeledPref(
+          child: PrefSwitch(
+            title: Text(l10n.plugin_booru_tile_details),
+            subtitle: Text(l10n.plugin_booru_tile_details_description),
+            pref: optionPluginBooruTileDetails,
+          ),
         ),
-        PrefSwitch(
-          title: Text(l10n.plugin_booru_blur_explicit),
-          subtitle: Text(l10n.plugin_booru_blur_explicit_description),
-          pref: optionPluginBooruBlurExplicit,
+        LabeledPref(
+          child: PrefSwitch(
+            title: Text(l10n.plugin_booru_blur_explicit),
+            subtitle: Text(l10n.plugin_booru_blur_explicit_description),
+            pref: optionPluginBooruBlurExplicit,
+          ),
         ),
-        PrefSwitch(
-          title: Text(l10n.plugin_booru_original_in_viewer),
-          subtitle: Text(l10n.plugin_booru_original_in_viewer_description),
-          pref: optionPluginBooruOriginalInViewer,
+        LabeledPref(
+          child: PrefSwitch(
+            title: Text(l10n.plugin_booru_original_in_viewer),
+            subtitle: Text(l10n.plugin_booru_original_in_viewer_description),
+            pref: optionPluginBooruOriginalInViewer,
+          ),
         ),
       ],
     );

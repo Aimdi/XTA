@@ -3,7 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/reading/article_reading_store.dart';
-import 'package:xta/utils/number_locale.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 class ArticleReaderControls extends StatelessWidget {
   final ArticleReadingStore store;
@@ -26,7 +26,7 @@ class ArticleReaderControls extends StatelessWidget {
     store: store,
     onState: (context, state) {
       final l10n = L10n.of(context);
-      final percent = NumberFormat.percentPattern(numberFormatLocale(context)).format(state.point.fraction);
+      final percent = NumberFormat.percentPattern(formattingLocale(context)).format(state.point.fraction);
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [

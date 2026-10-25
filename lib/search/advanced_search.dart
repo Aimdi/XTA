@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/search/advanced_search_model.dart';
 import 'package:xta/search/search_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Full-screen progressive form that returns the structured filters used to
 /// compose an X search query. Dismissing it leaves the existing search intact.
@@ -93,14 +94,16 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   }) {
     return AdvancedSearchDateRow(
       label: label,
-      value: value == null ? L10n.of(context).not_set : DateFormat('yyyy-MM-dd').format(value),
+      value: value == null
+          ? L10n.of(context).not_set
+          : DateFormat('yyyy-MM-dd', currentFormattingLocale()).format(value),
       selected: value != null,
       onTap: () => _pickDate(current: value, onChanged: onChanged),
       onClear: () => onChanged(null),
     );
   }
 
-  List<Widget> _wordFields(BuildContext context) {
+  List<Widget> _wordFields(BuildContext context, AdvancedSearchState state) {
     final l10n = L10n.of(context);
     return [
       _field(AdvancedSearchFilter.allWords, l10n.all_of_these_words),
@@ -108,6 +111,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
       _field(AdvancedSearchFilter.anyWords, l10n.any_of_these_words),
       _field(AdvancedSearchFilter.noneWords, l10n.none_of_these_words),
       _field(AdvancedSearchFilter.hashtags, l10n.these_hashtags),
+      AdvancedSearchLanguageField(value: state.language, onChanged: _store.setLanguage),
     ];
   }
 
@@ -126,47 +130,47 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
       _field(AdvancedSearchFilter.minReplies, l10n.minimum_replies, number: true),
       _field(AdvancedSearchFilter.minLikes, l10n.minimum_likes, number: true),
       _field(AdvancedSearchFilter.minRetweets, l10n.minimum_reposts, number: true),
+      _dateRow(label: l10n.since_date, value: state.since, onChanged: _store.setSince),
+      _dateRow(label: l10n.until_date, value: state.until, onChanged: _store.setUntil),
+    ];
+  }
+
+  List<Widget> _contentFields(BuildContext context, AdvancedSearchState state) {
+    final l10n = L10n.of(context);
+    return [
+      AdvancedSearchChoices(
+        labels: {
+          AdvancedSearchContentFilter.all: l10n.all,
+          AdvancedSearchContentFilter.media: l10n.media,
+          AdvancedSearchContentFilter.photos: l10n.photos,
+          AdvancedSearchContentFilter.videos: l10n.videos,
+        },
+        selected: state.contentFilter,
+        onSelected: _store.setContentFilter,
+      ),
+      AdvancedSearchChoices(
+        key: const ValueKey(AdvancedSearchFilter.replies),
+        labels: advancedInclusionLabels(l10n, AdvancedSearchFilter.replies),
+        selected: state.replies,
+        onSelected: _store.setReplies,
+      ),
+      AdvancedSearchChoices(
+        key: const ValueKey(AdvancedSearchFilter.links),
+        labels: advancedInclusionLabels(l10n, AdvancedSearchFilter.links),
+        selected: state.links,
+        onSelected: _store.setLinks,
+      ),
       AdvancedSearchToggleRow(
-        label: l10n.hide_replies,
-        value: state.excludeReplies,
-        onChanged: _store.setExcludeReplies,
+        label: l10n.include_retweets,
+        value: state.includeReposts,
+        onChanged: _store.setIncludeReposts,
       ),
       AdvancedSearchToggleRow(
         label: l10n.hide_retweets,
         value: state.excludeRetweets,
         onChanged: _store.setExcludeRetweets,
       ),
-      _dateRow(label: l10n.since_date, value: state.since, onChanged: _store.setSince),
-      _dateRow(label: l10n.until_date, value: state.until, onChanged: _store.setUntil),
     ];
-  }
-
-  Widget _contentChoices(AdvancedSearchState state) {
-    final l10n = L10n.of(context);
-    final labels = {
-      AdvancedSearchContentFilter.all: l10n.all,
-      AdvancedSearchContentFilter.media: l10n.media,
-      AdvancedSearchContentFilter.photos: l10n.photos,
-      AdvancedSearchContentFilter.videos: l10n.videos,
-      AdvancedSearchContentFilter.links: l10n.search_links,
-    };
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding),
-      child: Wrap(
-        spacing: kTweetSpace2,
-        runSpacing: kTweetSpace1,
-        children: labels.entries
-            .map(
-              (entry) => ChoiceChip(
-                key: ValueKey(entry.key),
-                label: Text(entry.value),
-                selected: state.contentFilter == entry.key,
-                onSelected: (_) => _store.setContentFilter(entry.key),
-              ),
-            )
-            .toList(),
-      ),
-    );
   }
 
   @override
@@ -189,7 +193,11 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
           body: ListView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
-              AdvancedFilterSection(icon: Icons.text_fields, title: l10n.search_term, children: _wordFields(context)),
+              AdvancedFilterSection(
+                icon: Icons.text_fields,
+                title: l10n.search_term,
+                children: _wordFields(context, state),
+              ),
               AdvancedFilterSection(
                 icon: Icons.alternate_email,
                 title: l10n.account,
@@ -198,7 +206,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
               AdvancedFilterSection(
                 icon: Icons.perm_media_outlined,
                 title: l10n.content_filter,
-                children: [_contentChoices(state)],
+                children: _contentFields(context, state),
               ),
               AdvancedFilterSection(icon: Icons.tune, title: l10n.filters, children: _filterFields(context, state)),
               SearchQueryPreview(query: state.query),

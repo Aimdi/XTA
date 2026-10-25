@@ -14,10 +14,13 @@ responses over hand-written stubs.
 | `Retweeters/module.json` | Hand-shaped Retweeters `TimelineTimelineModule` + `userResults` | `TimelineParser.parseUsersTimeline` |
 | `UnifiedCard/image_carousel_website.json` | Card of a recorded `TweetResultByRestId` (QuaX fixture, MIT), trimmed to two pictures | `CarouselCardData`, `TweetCard` |
 | `UnifiedCard/grok_share.json` | Card of a recorded `TweetResultByRestId` (QuaX fixture, MIT), conversation text shortened | `GrokShareCardData`, `TweetCard` |
+| `TweetDetail/image_poll.json` | Focal post of a `TweetDetail` for x.com/quax_tests/status/2109301223363064091, recorded by QuaX: a `…:poll_choice_images` card, three options with an image each; Grok and edit fields and the image colour palettes dropped | `TweetPoll`, `TweetCard` (`poll_test.dart`) |
 | `TweetDetail/subscriber_preview.json` | `TweetDetail` body for x.com/Osemka8/status/2105589900078641579, recorded by QuaX: a `TweetPreviewDisplay` focal post and an `ExclusiveTweet` reply | `TimelineParser.createTweetChains` (`subscriber_preview_test.dart`) |
 | `UserTweets/subscriber_previews.json` | x.com/Osemka8 posts tab recorded by QuaX (`UserOriginalsTimeline`), slimmed to a post, a `profile-originals-conversation-` thread of previews, a preview and the bottom cursor | `TimelineParser.createUnconversationedChains` |
 | `UserByScreenName/modern.json` | `UserByScreenName` (`KybxDj9RrADIITXlGG8kpw`) for the QuaX test account `@quax_tests`, recorded by QuaX — no `legacy` left | `UserWithExtra.fromNonLegacyJson` / `pinnedTweetIdsOf` |
+| `UserByScreenName/quax_tests_2.json` | `UserByScreenName` (`AMIBMjtxEEATh4z8V9GtRg`) for `@quax_tests_2`, recorded by QuaX (MIT) on x.com/quax_tests_2/media, body only | the stand-in for X (`tool/mock_x`, `mock_x_test.dart`) |
 | `UserOriginalsTimeline/page.json` | `UserOriginalsTimeline` (`qtvmQffnepvr0oPe4A8MqQ`) for `@quax_tests_2`, recorded by QuaX, slimmed to two posts + cursors | `TimelineParser.createUnconversationedChains` |
+| `Community/community.json`, `timeline.json`, `members.json`, `search.json` | `CommunityQuery`, `CommunityTweetsTimeline`, `membersSliceTimeline_Query` and `CommunitiesSearchQuery` for x.com/i/communities/1472249315724771329 ("Flutter") and a search for `flutter`, recorded by QuaX on 2026-10-24 (MIT); the timeline slimmed to three posts and its cursors, members and search to three entries | `Community`, `parseCommunityMembers`, `parseCommunitySearch` (`community_parse_test.dart`) |
 | `Pixivision/article_en.html`, `Pixivision/article_zh.html` | Hand-shaped pixivision.net article pages in the English and Chinese layouts | `parsePixivisionArticle` |
 | `Reddit/listing_pics.html`, `listing_aww.html`, `listing_flutterdev_top.html`, `listing_android.html` | www.reddit.com's community feed piece (`/svc/shreddit/community-more-posts/…`) for r/pics, r/aww, r/FlutterDev (top, week) and r/Android on 2026-10-20, trimmed to a picture, a gallery, crossposts, a video, self, text and link posts | `readWwwListing` (`reddit_www_test.dart`) |
 | `Reddit/profile_posts.html` | The profile feed piece for u/spez, trimmed to three posts | `readWwwListing` |
@@ -52,6 +55,13 @@ That layer found three live crashes when it was added:
   unguarded, so every profile view would have broken at once.
 - `createTweetChains` threw on an entry whose `tweet_results` or `content` had
   moved, losing the entire page rather than the one entry.
+
+## The stand-in for X
+
+`tool/mock_x` serves these files to an app built with `--dart-define=XTA_MOCK_X=…`
+(see `docs/mock-x.md`); `mockRoutes` in `tool/mock_x/mock_x.dart` says which file
+answers which request. Trimming a fixture changes what the emulator flows of
+`.maestro/` see, so re-run `test/mock_x_test.dart` after editing one.
 
 ## Rules
 

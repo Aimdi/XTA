@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/community/community_search_results.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
@@ -68,6 +69,7 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
   late final SearchTweetsPagination _latestTweets;
   late final SearchMediaPagination _mediaResults;
   late final SearchUsersModel _searchUsersModel;
+  late final CommunitySearchPagination _communities;
   late final RecentSearchesStore _history;
 
   Timer? _debounce;
@@ -79,13 +81,14 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
   void initState() {
     super.initState();
     final initialQuery = (widget.query ?? '').trim();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: widget.initialTab)
+    _tabController = TabController(length: 5, vsync: this, initialIndex: widget.initialTab)
       ..addListener(_applyPendingQuery);
     _viewStore = SearchViewStore(initialQuery: initialQuery);
     _topTweets = SearchTweetsPagination(product: 'Top');
     _latestTweets = SearchTweetsPagination(product: 'Latest');
     _mediaResults = SearchMediaPagination();
     _searchUsersModel = SearchUsersModel();
+    _communities = CommunitySearchPagination();
     _history = RecentSearchesStore(PrefService.of(context, listen: false));
 
     _queryController.text = initialQuery;
@@ -115,6 +118,7 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
     _latestTweets.dispose();
     _mediaResults.dispose();
     _searchUsersModel.destroy();
+    _communities.dispose();
     _viewStore.destroy();
     unawaited(_history.destroy());
     super.dispose();
@@ -163,6 +167,8 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
         _mediaResults.updateQuery(query);
       case 3:
         _searchUsersModel.searchUsers(query);
+      case 4:
+        _communities.updateQuery(query);
     }
   }
 
@@ -242,14 +248,12 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
 
   List<Widget> _filterChips(AdvancedSearchState advanced) {
     return advanced.activeFilters
-        .map((filter) {
-          final label = advancedFilterLabel(context, filter);
-          final value = advanced.valueOf(filter);
-          return SearchActiveFilterChip(
-            label: value.isEmpty ? label : '$label: $value',
+        .map(
+          (filter) => SearchActiveFilterChip(
+            label: advancedFilterChipLabel(context, advanced, filter),
             onDeleted: () => _clearFilter(filter),
-          );
-        })
+          ),
+        )
         .toList(growable: false);
   }
 
@@ -281,6 +285,7 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
                 store: _searchUsersModel,
                 onRetry: () => _searchUsersModel.searchUsers(state.query),
               ),
+              CommunitySearchResults(model: _communities),
             ],
           ),
         ),
@@ -311,6 +316,7 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
         Tab(text: l10n.recent),
         Tab(text: l10n.media),
         Tab(text: l10n.account),
+        Tab(text: l10n.communities),
       ],
     );
     final fieldHeight = enlargedText ? kSearchLargeTextFieldHeight : kSearchFieldHeight;

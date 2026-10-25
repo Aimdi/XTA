@@ -11,6 +11,7 @@ import 'package:xta/settings/_crash_reports.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/utils/desktop.dart';
 
@@ -106,34 +107,34 @@ class SettingsGeneralFragment extends StatelessWidget {
             title: L10n.of(context).general,
             children: [
               SettingsControlTarget(id: optionLocale, child: languagePicker()),
-              SettingsControlTarget(id: optionShouldCheckForUpdates, child: PrefSwitch(
+              SettingsControlTarget(id: optionShouldCheckForUpdates, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).should_check_for_updates_label),
                 pref: optionShouldCheckForUpdates,
                 subtitle: Text(
                   L10n.of(context).should_check_for_updates_description,
                 ),
-              )),
-              SettingsControlTarget(id: optionConfirmClose, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionConfirmClose, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).option_confirm_close_label),
                 subtitle: Text(
                   L10n.of(context).option_confirm_close_description,
                 ),
                 pref: optionConfirmClose,
-              )),
+              ))),
               // The desktop opens every link in the default browser.
               if (!isDesktop) const BrowserPickerTile(),
-              SettingsControlTarget(id: optionCleanLinks, child: PrefSwitch(
+              SettingsControlTarget(id: optionCleanLinks, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).option_clean_links_label),
                 subtitle: Text(
                   L10n.of(context).option_clean_links_description,
                 ),
                 pref: optionCleanLinks,
-              )),
-              if (!isDesktop) SettingsControlTarget(id: optionDisableScreenshots, child: PrefSwitch(
+              ))),
+              if (!isDesktop) SettingsControlTarget(id: optionDisableScreenshots, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).disable_screenshots),
                 subtitle: Text(L10n.of(context).disable_screenshots_hint),
                 pref: optionDisableScreenshots,
-              )),
+              ))),
             ],
           ),
           SettingsSection(

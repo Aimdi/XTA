@@ -95,7 +95,6 @@ void main() {
     const choices = {
       AdvancedSearchContentFilter.photos: 'filter:images',
       AdvancedSearchContentFilter.videos: 'filter:videos',
-      AdvancedSearchContentFilter.links: 'filter:links',
       AdvancedSearchContentFilter.media: 'filter:media',
       AdvancedSearchContentFilter.all: '',
     };
@@ -126,14 +125,13 @@ void main() {
       AdvancedSearchContentFilter.media: AdvancedSearchFilter.onlyMedia,
       AdvancedSearchContentFilter.photos: AdvancedSearchFilter.photos,
       AdvancedSearchContentFilter.videos: AdvancedSearchFilter.videos,
-      AdvancedSearchContentFilter.links: AdvancedSearchFilter.links,
     };
     for (final entry in filters.entries) {
       final state = AdvancedSearchState(
         allWords: 'flutter',
         fromAccounts: 'alice',
         contentFilter: entry.key,
-        excludeReplies: true,
+        replies: AdvancedSearchInclusion.exclude,
         excludeRetweets: true,
       );
 
@@ -144,7 +142,7 @@ void main() {
       expect(cleared.activeFilters, [
         AdvancedSearchFilter.allWords,
         AdvancedSearchFilter.fromAccounts,
-        AdvancedSearchFilter.excludeReplies,
+        AdvancedSearchFilter.replies,
         AdvancedSearchFilter.excludeRetweets,
       ]);
       expect(state.valueOf(entry.value), isEmpty);
@@ -152,9 +150,14 @@ void main() {
   });
 
   test('clearing an inactive content filter retains the active choice', () {
-    const state = AdvancedSearchState(contentFilter: AdvancedSearchContentFilter.links);
-    for (final filter in [AdvancedSearchFilter.onlyMedia, AdvancedSearchFilter.photos, AdvancedSearchFilter.videos]) {
-      expect(state.clear(filter).query, 'filter:links');
+    const state = AdvancedSearchState(contentFilter: AdvancedSearchContentFilter.videos);
+    for (final filter in [
+      AdvancedSearchFilter.onlyMedia,
+      AdvancedSearchFilter.photos,
+      AdvancedSearchFilter.links,
+      AdvancedSearchFilter.replies,
+    ]) {
+      expect(state.clear(filter).query, 'filter:videos');
     }
   });
 
@@ -163,13 +166,13 @@ void main() {
       const AdvancedSearchState(fromAccounts: 'alice', contentFilter: AdvancedSearchContentFilter.photos),
     );
     addTearDown(store.destroy);
-    store.setExcludeReplies(true);
+    store.setReplies(AdvancedSearchInclusion.exclude);
     store.setExcludeRetweets(true);
     expect(store.state.query, 'from:alice filter:images -filter:replies -filter:retweets');
 
-    store.clear(AdvancedSearchFilter.excludeReplies);
+    store.clear(AdvancedSearchFilter.replies);
     expect(store.state.query, 'from:alice filter:images -filter:retweets');
-    store.setExcludeReplies(true);
+    store.setReplies(AdvancedSearchInclusion.exclude);
     store.clear(AdvancedSearchFilter.excludeRetweets);
     expect(store.state.query, 'from:alice filter:images -filter:replies');
 
@@ -177,7 +180,7 @@ void main() {
     expect(store.state.query, isEmpty);
     expect(store.state.activeFilters, isEmpty);
     expect(store.state.contentFilter, AdvancedSearchContentFilter.all);
-    expect(store.state.excludeReplies, isFalse);
+    expect(store.state.replies, AdvancedSearchInclusion.include);
     expect(store.state.excludeRetweets, isFalse);
   });
 
@@ -188,12 +191,12 @@ void main() {
       const AdvancedSearchState(
         allWords: 'flutter',
         contentFilter: AdvancedSearchContentFilter.videos,
-        excludeReplies: true,
+        replies: AdvancedSearchInclusion.exclude,
         excludeRetweets: true,
       ),
     );
 
-    final advanced = store.clearFilter(AdvancedSearchFilter.excludeReplies);
+    final advanced = store.clearFilter(AdvancedSearchFilter.replies);
 
     expect(advanced.query, 'flutter filter:videos -filter:retweets');
     expect(store.state.query, advanced.query);
@@ -208,9 +211,10 @@ void main() {
     const query = 'cats from:alice filter:images -filter:replies -filter:retweets';
     final state = AdvancedSearchState.fromQuery(query);
 
-    expect(state.allWords, 'cats from:alice');
+    expect(state.allWords, 'cats');
+    expect(state.fromAccounts, 'alice');
     expect(state.contentFilter, AdvancedSearchContentFilter.photos);
-    expect(state.excludeReplies, isTrue);
+    expect(state.replies, AdvancedSearchInclusion.exclude);
     expect(state.excludeRetweets, isTrue);
     expect(state.query, query);
     expect(
@@ -225,7 +229,6 @@ void main() {
       'cats "filter:images"',
       '(cats filter:images)',
       'cats (filter:images OR filter:videos)',
-      'cats filter:images lang:en',
       'cats "filter:images',
       'cats (filter:images',
       'cats ) filter:images',
@@ -247,7 +250,7 @@ void main() {
     final state = AdvancedSearchState.fromQuery('$prefix filter:links');
 
     expect(state.allWords, prefix);
-    expect(state.contentFilter, AdvancedSearchContentFilter.links);
+    expect(state.links, AdvancedSearchInclusion.only);
     expect(state.clear(AdvancedSearchFilter.links).query, prefix);
   });
 }

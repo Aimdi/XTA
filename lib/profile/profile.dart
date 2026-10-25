@@ -22,9 +22,11 @@ import 'package:xta/profile/posts_filter.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/profile/profile_feed_settings.dart';
 import 'package:xta/profile/profile_followed_by_line.dart';
+import 'package:xta/profile/profile_load_failure.dart';
 import 'package:xta/profile/profile_model.dart';
 import 'package:xta/profile/profile_note.dart';
 import 'package:xta/profile/profile_view_store.dart';
+import 'package:xta/profile/protected_posts_gate.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/_media.dart';
@@ -35,6 +37,7 @@ import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/reload_status.dart';
@@ -131,11 +134,7 @@ class _ProfileScreen extends StatelessWidget {
                 ? const ProfileLoadingSkeleton()
                 : triple.error != null
                 ? SafeArea(
-                    child: ReaderFailureNotice(
-                      error: triple.error,
-                      recoverAutomatically: false,
-                      onRetry: () => _retry(context),
-                    ),
+                    child: ProfileLoadFailure(error: triple.error, onRetry: () => _retry(context)),
                   )
                 // A failed refresh floats over the profile instead of pushing it
                 // down, below the status bar the header runs under.
@@ -167,7 +166,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   final GlobalKey<NestedScrollViewState> _nestedScrollViewKey = GlobalKey();
   final ProfileViewStore _viewStore = ProfileViewStore();
   final ProfileScrollStore _scrollStore = ProfileScrollStore();
-  final NumberFormat _numberFormat = NumberFormat.compact();
+  final NumberFormat _numberFormat = NumberFormat.compact(locale: currentFormattingLocale());
 
   late TabController _tabController;
   bool _tabControllerInitialized = false;
@@ -354,27 +353,39 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             child: ReaderTabView(
               controller: _tabController,
               children: [
-                _withFilter(
-                  _filterFor(context, ProfileTabs.posts, view),
+                _postsTab(
+                  context,
+                  user,
+                  _withFilter(
+                    _filterFor(context, ProfileTabs.posts, view),
+                    ProfileTweets(
+                      user: user,
+                      type: 'profile',
+                      includeReplies: false,
+                      pinnedTweets: widget.profile.pinnedTweets,
+                      pref: prefs,
+                      filter: view.postsFilter,
+                    ),
+                  ),
+                ),
+                _postsTab(
+                  context,
+                  user,
                   ProfileTweets(
                     user: user,
                     type: 'profile',
-                    includeReplies: false,
+                    includeReplies: true,
                     pinnedTweets: widget.profile.pinnedTweets,
                     pref: prefs,
-                    filter: view.postsFilter,
                   ),
                 ),
-                ProfileTweets(
-                  user: user,
-                  type: 'profile',
-                  includeReplies: true,
-                  pinnedTweets: widget.profile.pinnedTweets,
-                  pref: prefs,
-                ),
-                _withFilter(
-                  _filterFor(context, ProfileTabs.media, view),
-                  ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
+                _postsTab(
+                  context,
+                  user,
+                  _withFilter(
+                    _filterFor(context, ProfileTabs.media, view),
+                    ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
+                  ),
                 ),
                 _withFilter(
                   _filterFor(context, ProfileTabs.saved, view),
@@ -388,7 +399,11 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       floatingActionButton: ScopedBuilder<ProfileScrollStore, bool>(
         store: _scrollStore,
         onState: (_, visible) => visible
-            ? FloatingActionButton(onPressed: _scrollToTop, child: const Icon(Icons.arrow_upward))
+            ? FloatingActionButton(
+                tooltip: L10n.of(context).scroll_to_top,
+                onPressed: _scrollToTop,
+                child: const Icon(Icons.arrow_upward),
+              )
             : const SizedBox.shrink(),
       ),
     );
@@ -516,7 +531,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       result.add(
         ProfileMetadataItem(
           icon: Icons.calendar_today_outlined,
-          child: Text(L10n.of(context).joined(DateFormat('MMMM yyyy').format(user.createdAt!))),
+          child: Text(
+            L10n.of(context).joined(DateFormat('MMMM yyyy', currentFormattingLocale()).format(user.createdAt!)),
+          ),
         ),
       );
     }
@@ -574,6 +591,15 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     final value = PrefService.of(context, listen: false).get<String>(optionShareBaseUrl);
     return value == null || value.isEmpty ? 'https://x.com' : value;
   }
+
+  /// One of [user]'s posts tabs, or why X sends none of their posts. A filter
+  /// above [tab] goes with it: there would be nothing to narrow.
+  Widget _postsTab(BuildContext context, UserWithExtra user, Widget tab) => ProtectedPostsGate(
+    hidden: user.postsHidden,
+    screenName: user.screenName,
+    message: L10n.of(context).protected_posts(user.screenName ?? L10n.of(context).unknown),
+    child: tab,
+  );
 
   /// The tab's filter sits right above its content, so what it narrows is never off screen from where it is set.
   Widget _withFilter(Widget? filter, Widget content) => filter == null

@@ -47,7 +47,12 @@ void main() {
       ];
       final members = followingChunkMembers([
         for (final user in users)
-          (id: user.id, createdAt: user.createdAt, inFeed: user.inFeed),
+          (
+            id: user.id,
+            screenName: user.screenName,
+            createdAt: user.createdAt,
+            inFeed: user.inFeed,
+          ),
       ]);
       expect(members.map((m) => m.id), ['1', '3']);
 
@@ -77,7 +82,7 @@ void main() {
   });
 
   test('Following is unread when its cached chunk is newer than last read', () {
-    final members = [FeedChunkMember(id: '1', createdAt: t0)];
+    final members = [FeedChunkMember(id: '1', createdAt: t0, term: 'from:1')];
     final hash = feedChunkHash(
       ['1'],
       includeReplies: true,

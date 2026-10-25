@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:ffcache/ffcache.dart';
 import 'package:xta/catcher/exceptions.dart';
+import 'package:xta/client/community_models.dart';
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/errors.dart';
 import 'package:xta/client/transport.dart';
@@ -15,9 +16,11 @@ import 'package:xta/profile/profile_model.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/cache.dart';
 import 'package:xta/utils/iterables.dart';
+import 'package:xta/utils/json.dart';
 
 // Re-exported so the 37 files importing client.dart keep compiling unchanged
 // after the transport, the error types and the tweet model moved out.
+export 'package:xta/client/community_models.dart';
 export 'package:xta/client/errors.dart';
 export 'package:xta/client/transport.dart';
 export 'package:xta/client/timeline_parser.dart';
@@ -299,6 +302,61 @@ class Twitter {
       cursorTop: users.previousCursorStr,
       users: users.users?.map((e) => UserWithExtra.fromJson(e.toJson())).toList() ?? [],
     );
+  }
+
+  static const Map<String, bool> _communityFeatures = {
+    'c9s_list_members_action_api_enabled': false,
+    'c9s_superc9s_indication_enabled': false,
+  };
+
+  // GraphQL "CommunityQuery" — a community's header and rules. A guest may read it.
+  static Future<Community> getCommunity(String id) async {
+    final uri = XEndpoints.uri(XEndpoints.community, {
+      'variables': jsonEncode({'communityId': id}),
+      'features': jsonEncode(_communityFeatures),
+    });
+    final response = await _twitterApi.client.get(uri);
+    return Community.fromQuery(Json(jsonDecode(response.body))) ?? (throw CommunityUnavailableException(id));
+  }
+
+  // GraphQL "CommunityTweetsTimeline" — a community's Top tab, as the web opens it.
+  static Future<TweetStatus> getCommunityTweets(String id, {String? cursor}) async {
+    final uri = XEndpoints.uri(XEndpoints.communityTweets, {
+      'variables': jsonEncode({
+        'communityId': id,
+        'count': 20,
+        'cursor': ?cursor,
+        'displayLocation': 'Community',
+        'rankingMode': 'Relevance',
+        'withCommunity': true,
+      }),
+      'features': jsonEncode(_timelineFeatures),
+    });
+    final response = await _twitterApi.client.get(uri);
+    final timeline = communityTimelineOf(Json(jsonDecode(response.body)));
+    if (timeline == null) {
+      return TweetStatus(chains: const [], cursorBottom: null, cursorTop: null);
+    }
+    return TimelineParser.createUnconversationedChainsGraphql(timeline, 'tweet', [], true, true);
+  }
+
+  // GraphQL "membersSliceTimeline_Query" — one page of a community's members.
+  // The web client sends no features and a null first cursor.
+  static Future<Follows> getCommunityMembers(String id, {String? cursor}) async {
+    final uri = XEndpoints.uri(XEndpoints.communityMembers, {
+      'variables': jsonEncode({'communityId': id, 'cursor': cursor}),
+    });
+    final response = await _twitterApi.client.get(uri);
+    return parseCommunityMembers(Json(jsonDecode(response.body)));
+  }
+
+  // GraphQL "CommunitiesSearchQuery" — one page of communities matching [query].
+  static Future<CommunitySearchPage> searchCommunities(String query, {String? cursor}) async {
+    final uri = XEndpoints.uri(XEndpoints.communitiesSearch, {
+      'variables': jsonEncode({'query': query, 'cursor': cursor}),
+    });
+    final response = await _twitterApi.client.get(uri);
+    return parseCommunitySearch(Json(jsonDecode(response.body)));
   }
 
   // GraphQL "Retweeters" — people who reposted [tweetId]. Read-only; this does

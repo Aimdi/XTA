@@ -6,6 +6,7 @@ import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// The day, week or month whose popular posts [child] shows. A host without
 /// a popular list gets a note instead: [child] then holds its top scores.
@@ -52,7 +53,7 @@ class BooruPopularTab extends StatelessWidget {
       TextButton(
         key: const ValueKey('booru-popular-date'),
         onPressed: () => _pickDate(context),
-        child: Text(booruPopularDateLabel(query, Localizations.localeOf(context).toString())),
+        child: Text(booruPopularDateLabel(query, formattingLocale(context))),
       ),
       IconButton(
         tooltip: l10n.plugin_booru_popular_later,

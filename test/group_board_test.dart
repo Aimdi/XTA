@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/subscriptions/group_board_layout.dart';
 import 'package:xta/subscriptions/widgets/avatar_mosaic.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/subscriptions/widgets/group_tile.dart';
@@ -247,6 +248,56 @@ void main() {
       await tester.pump();
 
       expect(tester.takeException(), isNull);
+    });
+
+    group('Kompakt', () {
+      Widget compactTile({VoidCallback? onDiscover, double width = 190, double textScale = 1}) => MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
+            child: Center(
+              child: SizedBox(
+                width: width,
+                height: compactGroupTileExtent(textScale),
+                child: GroupTile(
+                  compact: true,
+                  group: _group(name: 'Demographics & German EU', previews: _members(4, withAvatars: false)),
+                  onTap: () {},
+                  onDiscover: onDiscover,
+                ),
+              ),
+            ),
+          );
+
+      testWidgets('lays the faces beside the name and count in 60 dp', (tester) async {
+        await tester.pumpWidget(_wrap(compactTile()));
+        await tester.pump();
+
+        expect(tester.takeException(), isNull);
+        final mosaic = tester.getRect(find.byType(AvatarMosaic));
+        final name = tester.getRect(find.text('Demographics & German EU'));
+        final count = tester.getRect(find.text('15 subscriptions'));
+        expect(mosaic.size, const Size.square(kCompactGroupCoverExtent));
+        expect(mosaic.right, lessThan(name.left));
+        expect(count.top, greaterThanOrEqualTo(name.bottom), reason: 'the count sits under the name');
+        expect(tester.getSize(find.byType(GroupTile)).height, kCompactGroupTileHeight);
+        expect(tester.getSemantics(find.byType(GroupTile)).label, 'Demographics & German EU, 15 subscriptions');
+      });
+
+      testWidgets('keeps the name clear of the discovery button', (tester) async {
+        await tester.pumpWidget(_wrap(compactTile(onDiscover: () {})));
+        await tester.pump();
+
+        final name = tester.getRect(find.text('Demographics & German EU'));
+        final discover = tester.getRect(find.byIcon(Icons.auto_awesome));
+        expect(name.right, lessThanOrEqualTo(discover.left));
+        expect(tester.getSize(find.byType(IconButton)).height, greaterThanOrEqualTo(48));
+      });
+
+      testWidgets('grows with 2x text instead of overflowing', (tester) async {
+        await tester.pumpWidget(_wrap(compactTile(textScale: 2, width: 160)));
+        await tester.pump();
+
+        expect(tester.takeException(), isNull);
+      });
     });
 
     testWidgets('tapping calls onTap', (tester) async {

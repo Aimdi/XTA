@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_ui.dart';
@@ -26,10 +27,12 @@ class OfflineVoicesSection extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
           child: Text(l10n.tts_offline_voices, style: theme.textTheme.labelLarge),
         ),
-        PrefSwitch(
-          pref: optionTtsOfflineVoice,
-          title: Text(l10n.tts_offline_voices_use),
-          subtitle: Text(l10n.tts_offline_voices_use_description),
+        LabeledPref(
+          child: PrefSwitch(
+            pref: optionTtsOfflineVoice,
+            title: Text(l10n.tts_offline_voices_use),
+            subtitle: Text(l10n.tts_offline_voices_use_description),
+          ),
         ),
         ScopedBuilder<VoiceDownloadStore, Map<String, VoiceInstall>>(
           store: store,

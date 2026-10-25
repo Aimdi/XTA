@@ -18,6 +18,7 @@ import 'package:xta/subscriptions/widgets/group_tile.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/x_controls.dart';
+import 'package:xta/utils/reader_value_store.dart';
 import 'package:provider/provider.dart';
 
 export 'package:xta/subscriptions/_groups_edit.dart'
@@ -37,21 +38,20 @@ VoidCallback? _discoveryAction(BuildContext context, SubscriptionGroup group) {
 class SubscriptionGroupsPage extends StatefulWidget {
   final ScrollController scrollController;
 
-  const SubscriptionGroupsPage({super.key, required this.scrollController});
+  /// What the screen's header search filters by; without one, every group shows.
+  final ReaderValueStore<String>? query;
+
+  const SubscriptionGroupsPage({
+    super.key,
+    required this.scrollController,
+    this.query,
+  });
 
   @override
   State<SubscriptionGroupsPage> createState() => _SubscriptionGroupsPageState();
 }
 
 class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
-  final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   Widget _buildEmptyState(BuildContext context) {
     return ListView(
       controller: widget.scrollController,
@@ -96,27 +96,19 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-      child: XSearchField(
-        controller: _searchController,
-        hintText: L10n.of(context).search,
-        onChanged: (_) => setState(() {}),
-      ),
-    );
-  }
-
   /// The board: a compact grid of member-faced tiles.
   Widget _buildBoard(
     BuildContext context,
     List<SubscriptionGroup> groups, {
-    required List<Widget> header,
     required bool animate,
     required Set<String> unreadIds,
   }) {
     final prefs = PrefService.of(context);
-    final chosen = prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2;
+    final compact = prefs.get<bool>(optionSubscriptionGroupsCompact) ?? false;
+    // Kompakt tiles sit two to a phone row, like the large ones.
+    final chosen = compact
+        ? 2
+        : prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2;
 
     // Large text needs taller tiles, or the title and count would squeeze the
     // avatar mosaic out of the tile entirely.
@@ -132,15 +124,17 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
       return SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
+          mainAxisSpacing: compact ? 8 : 10,
+          crossAxisSpacing: compact ? 8 : 10,
           childAspectRatio:
               groupTileBaseRatio(columns) / groupTileTextGrowth(textScale),
-          mainAxisExtent: groupTileExtent(
-            chosen: chosen,
-            columns: columns,
-            textScale: textScale,
-          ),
+          mainAxisExtent: compact
+              ? compactGroupTileExtent(textScale)
+              : groupTileExtent(
+                  chosen: chosen,
+                  columns: columns,
+                  textScale: textScale,
+                ),
         ),
         delegate: SliverChildBuilderDelegate((context, index) {
           final group = items[index];
@@ -148,6 +142,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
           final tile = GroupTile(
             key: ValueKey(group.id),
             group: group,
+            compact: compact,
             animate: animate,
             unread: unreadIds.contains(group.id),
             onDiscover: _discoveryAction(context, group),
@@ -180,7 +175,6 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
       // Build a row ahead so avatars decode before they scroll into view.
       scrollCacheExtent: const ScrollCacheExtent.pixels(300),
       slivers: [
-        SliverToBoxAdapter(child: Column(children: header)),
         if (parts.safe.isNotEmpty)
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
@@ -224,7 +218,6 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
   Widget _buildReorderableList(
     BuildContext context,
     List<SubscriptionGroup> groups, {
-    required List<Widget> header,
     required bool canReorder,
     required Set<String> unreadIds,
     Map<String, int> depths = const {},
@@ -240,7 +233,6 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
 
     return ReorderableListView.builder(
       scrollController: widget.scrollController,
-      header: header.isEmpty ? null : Column(children: header),
       padding: EdgeInsets.fromLTRB(
         8,
         4,
@@ -308,6 +300,15 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final query = widget.query;
+    if (query == null) return _buildGroups(context, '');
+    return ScopedBuilder<ReaderValueStore<String>, String>(
+      store: query,
+      onState: (context, text) => _buildGroups(context, text.toLowerCase()),
+    );
+  }
+
+  Widget _buildGroups(BuildContext context, String query) {
     // Plain ScopedBuilder: .transition wraps the board in AnimatedSwitcher,
     // so the empty ListView and the board CustomScrollView both attach the
     // same scrollController for 300ms and Flutter asserts.
@@ -324,7 +325,6 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
           return _buildEmptyState(context);
         }
 
-        final query = _searchController.text.toLowerCase();
         var groups = query.isEmpty
             ? state
             : state
@@ -357,18 +357,11 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         // How far each group is indented, so a nested one reads as nested.
         final depths = {for (final g in groups) g.id: depthOf(g.id, parents)};
 
-        // The search field scrolls away with the groups rather than sitting
-        // above them. It used to be a fixed child of a Column with the grid
-        // in an Expanded below, so tiles slid under it and were sliced off
-        // mid-card at the top of the viewport.
-        final header = [if (state.length > 5) _buildSearchBar(context)];
-
         return GroupUnreadScope(
           builder: (context, unreadIds) => asList
               ? _buildReorderableList(
                   context,
                   groups,
-                  header: header,
                   canReorder: canReorder,
                   unreadIds: unreadIds,
                   depths: depths,
@@ -376,7 +369,6 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
               : _buildBoard(
                   context,
                   groups,
-                  header: header,
                   animate: animate,
                   unreadIds: unreadIds,
                 ),

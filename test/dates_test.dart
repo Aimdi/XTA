@@ -32,6 +32,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('5 minutes ago'), findsNothing);
-    expect(find.text(absoluteDateFormat.format(timestamp.toLocal())), findsOneWidget);
+    expect(find.text(absoluteDateFormat().format(timestamp.toLocal())), findsOneWidget);
   });
 }

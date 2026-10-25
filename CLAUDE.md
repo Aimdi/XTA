@@ -133,7 +133,8 @@ via `FFCache`. `client_unauthenticated.dart` uses a hardcoded bearer token from
 
 **When X changes something**, the file to open is `endpoints.dart` (a rotated
 query id) or `timeline_parser.dart` / `tweet_models.dart` (a reshaped response)
-— not the whole client.
+— not the whole client. Broken request signing has its own playbook,
+`docs/fix-x-signing.md`.
 
 **Account selection strategy.** `QuackerTwitterClient.fetch()` in `transport.dart` does not pick a random account — it asks `AccountSelector` (`account_selector.dart`, a pure/testable policy) for a *healthy* account, then retries on another account on error. Two distinct health signals:
 - **Rate limit (`429`)** is **per-endpoint** (X rate-limits per endpoint, not per account). It is tracked **in memory** by `RateLimitTracker` (`rate_limit_tracker.dart`), keyed by `(accountId, uri.path)`, with the reset time from X's `x-rate-limit-reset` header (else `rateLimitFallback`). Not persisted — windows are short. The selector receives this via an injected `isRateLimited` predicate.
@@ -220,6 +221,9 @@ merge/release. No automatic hooks are installed.
 - Android build: `fvm flutter build apk --debug` → `build/app/outputs/flutter-apk/app-debug.apk`.
 - Linux build: `fvm flutter build linux --release` → `build/linux/x64/release/bundle/xta`
   (needs `libgtk-3-dev` and `libmpv-dev`; see `docs/desktop.md`).
+- Emulator UI flows against a stand-in for X (no account, no live request):
+  `.maestro/` with `tool/mock_x`, run by `.github/workflows/emulator-qa.yml`;
+  see `docs/mock-x.md`.
 - Details: `docs/cloud-testing.md`.
 
 Without `/dev/kvm` there is no usable Android emulator. Interactive Android UI

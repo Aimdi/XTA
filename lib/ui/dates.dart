@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:xta/utils/formatting_locale.dart';
 
-final absoluteDateFormat = DateFormat.yMMMd().add_Hms();
+final Map<String, DateFormat> _absoluteDateFormats = {};
+
+/// "Oct 9, 2026 16:12:05" in the app's language. Looked up on each use, one
+/// per locale: a single format built on first use kept the language the app
+/// started in, and threw when that was one intl has no dates for.
+DateFormat absoluteDateFormat() {
+  final locale = currentFormattingLocale();
+  return _absoluteDateFormats.putIfAbsent(locale, () => DateFormat.yMMMd(locale).add_Hms());
+}
 
 String createRelativeDate(DateTime dateTime) {
   return timeago.format(dateTime, locale: Intl.shortLocale(Intl.getCurrentLocale()));
@@ -56,7 +65,7 @@ class _TimestampState extends State<Timestamp> {
       if (_useRelativeTimestamp) {
         formattedTime = _relative(timestamp);
       } else {
-        formattedTime = absoluteDateFormat.format(timestamp.toLocal());
+        formattedTime = absoluteDateFormat().format(timestamp.toLocal());
       }
     }
   }
@@ -77,7 +86,7 @@ class _TimestampState extends State<Timestamp> {
           _useRelativeTimestamp = !_useRelativeTimestamp;
           formattedTime = _useRelativeTimestamp
               ? _relative(timestamp)
-              : absoluteDateFormat.format(timestamp.toLocal());
+              : absoluteDateFormat().format(timestamp.toLocal());
         });
       },
     );

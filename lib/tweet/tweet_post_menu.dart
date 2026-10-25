@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
-import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
@@ -51,15 +50,7 @@ class TweetPostMenuButton extends StatelessWidget {
 
   Future<void> _fileAuthorInGroups(BuildContext context) async {
     final author = tweet.user!;
-    final user = UserSubscription(
-      id: author.idStr!,
-      screenName: author.screenName!,
-      name: author.name ?? author.screenName!,
-      profileImageUrlHttps: author.profileImageUrlHttps,
-      verified: author.verified ?? false,
-      createdAt: author.createdAt ?? DateTime.now(),
-      inFeed: true,
-    );
+    final user = subscriptionForUser(author);
     final groups = await context.read<GroupsModel>().listGroupsForUser(user.id);
     if (!context.mounted) return;
     await pickUserGroups(

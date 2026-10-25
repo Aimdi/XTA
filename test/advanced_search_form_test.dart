@@ -99,8 +99,10 @@ void main() {
       tester,
       initialState: AdvancedSearchState(
         allWords: 'flutter',
-        contentFilter: AdvancedSearchContentFilter.links,
-        excludeReplies: true,
+        language: 'fr',
+        contentFilter: AdvancedSearchContentFilter.photos,
+        links: AdvancedSearchInclusion.only,
+        replies: AdvancedSearchInclusion.exclude,
         excludeRetweets: true,
         since: DateTime(2026, 1, 1),
       ),
@@ -110,13 +112,69 @@ void main() {
     await tester.tap(find.byIcon(Icons.restart_alt));
     await tester.pumpAndSettle();
     expect(tester.widget<TextField>(find.byType(TextField).first).controller!.text, isEmpty);
+    expect(find.text('Any language'), findsWidgets);
+    expect(find.text('français'), findsNothing);
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
 
     expect(result, isNotNull);
     expect(result!.activeFilters, isEmpty);
     expect(result!.contentFilter, AdvancedSearchContentFilter.all);
+    expect(result!.links, AdvancedSearchInclusion.include);
+    expect(result!.language, isEmpty);
     expect(result!.query, isEmpty);
+  });
+
+  testWidgets('language, reply, link and repost controls show the typed query and apply', (tester) async {
+    tester.view.physicalSize = const Size(320, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    AdvancedSearchState? result;
+    await _openForm(
+      tester,
+      initialState: AdvancedSearchState.fromQuery('cats lang:fr filter:replies -filter:links include:nativeretweets'),
+      textScale: 2,
+      onResult: (state) => result = state,
+    );
+    Finder choice(AdvancedSearchFilter row, AdvancedSearchInclusion value) =>
+        find.descendant(of: find.byKey(ValueKey(row)), matching: find.byKey(ValueKey(value)));
+    bool selected(AdvancedSearchFilter row, AdvancedSearchInclusion value) =>
+        tester.widget<ChoiceChip>(choice(row, value)).selected;
+    SwitchListTile toggle(String label) =>
+        tester.widget<SwitchListTile>(find.ancestor(of: find.text(label), matching: find.byType(SwitchListTile)));
+
+    final language = find.byType(DropdownButtonFormField<String>);
+    expect(find.descendant(of: language, matching: find.text('français')), findsWidgets);
+    expect(tester.getSemantics(language), isSemantics(label: 'Language\nfrançais', isButton: true, hasTapAction: true));
+    await tester.tap(language);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Deutsch').last);
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: language, matching: find.text('Deutsch')), findsWidgets);
+
+    await _reveal(tester, choice(AdvancedSearchFilter.links, AdvancedSearchInclusion.exclude));
+    expect(selected(AdvancedSearchFilter.replies, AdvancedSearchInclusion.only), isTrue);
+    expect(selected(AdvancedSearchFilter.links, AdvancedSearchInclusion.exclude), isTrue);
+    await _reveal(tester, find.text('Hide retweets'));
+    expect(toggle('Include reposts').value, isTrue);
+    expect(toggle('Hide retweets').value, isFalse);
+
+    await tester.tap(find.text('Hide retweets'));
+    await tester.pumpAndSettle();
+    expect(toggle('Include reposts').value, isFalse);
+    for (final row in [AdvancedSearchFilter.replies, AdvancedSearchFilter.links]) {
+      final next = row == AdvancedSearchFilter.replies ? AdvancedSearchInclusion.exclude : AdvancedSearchInclusion.only;
+      await _reveal(tester, choice(row, next));
+      await tester.tap(choice(row, next));
+      await tester.pumpAndSettle();
+      expect(selected(row, next), isTrue);
+    }
+
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    expect(result?.query, 'cats lang:de filter:links -filter:replies -filter:retweets');
   });
 
   testWidgets('dismissing edited content leaves the original search intact', (tester) async {
@@ -131,7 +189,10 @@ void main() {
         dismissed = true;
       },
     );
-    final links = find.byKey(const ValueKey(AdvancedSearchContentFilter.links));
+    final links = find.descendant(
+      of: find.byKey(const ValueKey(AdvancedSearchFilter.links)),
+      matching: find.byKey(const ValueKey(AdvancedSearchInclusion.only)),
+    );
     await _reveal(tester, links);
     await tester.tap(links);
     await tester.pumpAndSettle();

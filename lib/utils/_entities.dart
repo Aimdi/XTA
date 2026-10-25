@@ -107,14 +107,18 @@ class UrlEntity extends Entity {
 
   UrlEntity(this.url, this.onTap, {this.hidden = false}) : super(url.indices);
 
+  /// Whether the text leaves the link out. An article, broadcast or Space link
+  /// is shown as its own block under the text, and a [hidden] one by a card,
+  /// so leaving the URL in the text too would say the same thing twice.
+  bool get leftOut =>
+      hidden ||
+      articleIdIn(url.expandedUrl) != null ||
+      broadcastIdIn(url.expandedUrl) != null ||
+      spaceIdIn(url.expandedUrl) != null;
+
   @override
   InlineSpan getContent(EntitySpanContext context) {
-    // An article or broadcast link is shown as its own block under the text,
-    // so leaving the URL in the text too would say the same thing twice.
-    if (hidden ||
-        articleIdIn(url.expandedUrl) != null ||
-        broadcastIdIn(url.expandedUrl) != null ||
-        spaceIdIn(url.expandedUrl) != null) {
+    if (leftOut) {
       return const TextSpan(text: '');
     }
 

@@ -1,6 +1,7 @@
 import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/ui/labeled_pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -29,25 +30,25 @@ class SettingsAccessibilityFragment extends StatelessWidget {
                 max: 1.5,
                 divisions: 10,
               )),
-              SettingsControlTarget(id: optionDisableAnimations, child: PrefSwitch(
+              SettingsControlTarget(id: optionDisableAnimations, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).disable_animations),
                 pref: optionDisableAnimations,
                 subtitle: Text(
                   L10n.of(context).disable_animations_description,
                 ),
-              )),
-              SettingsControlTarget(id: optionTickerChart, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionTickerChart, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).ticker_chart),
                 pref: optionTickerChart,
                 subtitle: Text(L10n.of(context).ticker_chart_description),
-              )),
-              SettingsControlTarget(id: optionGestureDoubleTapLike, child: PrefSwitch(
+              ))),
+              SettingsControlTarget(id: optionGestureDoubleTapLike, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).gesture_double_tap_like),
                 pref: optionGestureDoubleTapLike,
                 subtitle: Text(
                   L10n.of(context).gesture_double_tap_like_description,
                 ),
-              )),
+              ))),
               SettingsNavigationRow(
                 icon: Icons.record_voice_over_outlined,
                 title: L10n.of(context).settings_speech,
