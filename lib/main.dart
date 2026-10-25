@@ -159,6 +159,7 @@ import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/image_disk_cache.dart';
+import 'package:xta/utils/mock_x.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -452,6 +453,10 @@ Future<void> main() async {
   });
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (mockXEnabled) {
+    useMockX(Uri.parse(mockXServer));
+  }
 
   if (Platform.isLinux) {
     sqfliteFfiInit();
@@ -1467,7 +1472,9 @@ class _FritterAppState extends State<FritterApp> {
                   // dialog's place, and a later rebuild must not bring it back.
                   if (!_accountDialogShown) {
                     _accountDialogShown = true;
-                    if (introSeen) {
+                    // The stand-in for X answers a guest, so asking to sign
+                    // in would only cover the screens under test.
+                    if (introSeen && !mockXEnabled) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         final navigatorContext = _navigatorKey.currentContext;
                         if (navigatorContext != null) {

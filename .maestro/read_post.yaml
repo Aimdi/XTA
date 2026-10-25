@@ -1,0 +1,10 @@
+appId: ${APP_ID}
+name: Should let a reader open a post from a link and come back
+---
+- launchApp
+- openLink:
+    link: https://x.com/Osemka8/status/2105589900078641579
+    autoVerify: true
+- assertVisible: "(?s).*written about this.*"
+- back
+- assertNotVisible: "(?s).*written about this.*"

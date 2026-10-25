@@ -1,0 +1,10 @@
+appId: ${APP_ID}
+name: Should tell a reader that an account does not exist
+---
+- launchApp
+- openLink:
+    link: https://x.com/nobody_by_this_name
+    autoVerify: true
+- assertVisible: "(?s).*User not found.*"
+- back
+- assertNotVisible: "(?s).*User not found.*"

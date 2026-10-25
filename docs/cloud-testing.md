@@ -15,6 +15,7 @@ work.
 | Live reads of every account-free source | `fvm flutter test test/live/sources_smoke_test.dart --dart-define=RUN_LIVE=true` (needs a network that reaches them; the daily `api-canary` runs it on GitHub) |
 | Debug APK | `fvm flutter build apk --debug` |
 | One-shot verify | `bash scripts/cloud_verify.sh` |
+| X screens against a stand-in for X | `fvm flutter test test/mock_x_test.dart`; the emulator flows run on GitHub (`emulator-qa`), see `docs/mock-x.md` |
 
 ## Interactive app use
 

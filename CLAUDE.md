@@ -220,6 +220,9 @@ merge/release. No automatic hooks are installed.
 - Android build: `fvm flutter build apk --debug` → `build/app/outputs/flutter-apk/app-debug.apk`.
 - Linux build: `fvm flutter build linux --release` → `build/linux/x64/release/bundle/xta`
   (needs `libgtk-3-dev` and `libmpv-dev`; see `docs/desktop.md`).
+- Emulator UI flows against a stand-in for X (no account, no live request):
+  `.maestro/` with `tool/mock_x`, run by `.github/workflows/emulator-qa.yml`;
+  see `docs/mock-x.md`.
 - Details: `docs/cloud-testing.md`.
 
 Without `/dev/kvm` there is no usable Android emulator. Interactive Android UI

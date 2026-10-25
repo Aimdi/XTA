@@ -1,0 +1,89 @@
+name: Emulator QA
+
+# Runs the Maestro flows of .maestro/ on an Android emulator, against the
+# stand-in for X that tool/mock_x serves from test/fixtures, and keeps a video
+# of each flow (docs/mock-x.md). No X account or live X request is involved.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.maestro/**'
+      - 'tool/mock_x/**'
+      - 'lib/utils/mock_x*.dart'
+      - 'lib/community/**'
+      - 'lib/profile/**'
+      - 'lib/status.dart'
+      - 'android/app/src/profile/**'
+      - 'test/fixtures/**'
+      - '.github/workflows/emulator-qa.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: emulator-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAESTRO_VERSION: '2.11.0'
+  MAESTRO_SHA256: '5384593cb4e7a106489e75a821d157dd43f4e438df6bc308b72e82c685e1283a'
+
+jobs:
+  flows:
+    name: Maestro flows on an emulator
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Generate sources and icons
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          python3 -m pip install -r requirements.txt
+          python3 generate_icons.py
+          dart run flutter_launcher_icons
+      - name: Build the app against the stand-in for X
+        run: >-
+          flutter build apk --profile --target-platform android-x64
+          --dart-define=XTA_MOCK_X=http://localhost:8787
+      - name: Install Maestro
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/maestro.zip" \
+            "https://github.com/mobile-dev-inc/Maestro/releases/download/cli-$MAESTRO_VERSION/maestro.zip"
+          echo "$MAESTRO_SHA256  $RUNNER_TEMP/maestro.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/maestro/bin" >> "$GITHUB_PATH"
+      - name: Let the emulator use KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Run the flows
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: dart run tool/mock_x/emulator_qa.dart build/app/outputs/flutter-apk/app-profile.apk .maestro emulator-output
+      - name: Keep the videos and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-qa
+          path: emulator-output
+          if-no-files-found: ignore

@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+name: Should let a reader open a community, read its rules and list its members
+---
+- launchApp
+- openLink:
+    link: https://x.com/i/communities/1472249315724771329
+    autoVerify: true
+- assertVisible: "(?s).*unofficial Flutter community.*"
+- tapOn: "(?s)About.*"
+- assertVisible: "(?s).*Be kind and respectful.*"
+- tapOn: "(?s)Popular.*"
+- tapOn: "(?s).*[0-9] members.*"
+- assertVisible: "(?s).*tadaspetra.*"
+- back
+- assertVisible: "(?s).*unofficial Flutter community.*"
