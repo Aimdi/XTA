@@ -5,6 +5,50 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/link_stack.dart';
 
 void main() {
+  testWidgets('a link stack eases open and closed', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en')],
+        home: Scaffold(
+          body: ListView(
+            children: [
+              LinkStack(
+                posts: [
+                  (_) => const ListTile(title: Text('Original commentary')),
+                  (_) => const ListTile(title: Text('A different perspective')),
+                  (_) => const ListTile(title: Text('A third take')),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    double height() => tester.getSize(find.byType(LinkStack)).height;
+    final closed = height();
+
+    await tester.tap(find.byType(TextButton));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 90));
+    final opening = height();
+    await tester.pumpAndSettle();
+    final open = height();
+    expect(opening, inExclusiveRange(closed, open));
+
+    await tester.tap(find.byType(TextButton));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 90));
+    expect(height(), inExclusiveRange(closed, open));
+    await tester.pumpAndSettle();
+    expect(height(), closed);
+  });
+
   for (final dark in [false, true]) {
     for (final scale in [1.0, 2.0]) {
       testWidgets('link stack preserves each commentary, dark=$dark scale=$scale', (tester) async {

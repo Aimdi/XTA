@@ -210,7 +210,8 @@ class XtaAnimatedSize extends StatelessWidget {
 }
 
 /// Cross-fades compact state changes. Optional size animation is reserved for
-/// small chrome such as a filter strip, never whole feeds or paginated pages.
+/// small chrome such as a filter strip, or a part of a post that opens and
+/// closes, never whole feeds or paginated pages.
 class XtaAnimatedSwitcher extends StatelessWidget {
   final Widget child;
   final Duration duration;
@@ -225,6 +226,20 @@ class XtaAnimatedSwitcher extends StatelessWidget {
     this.alignment = AlignmentDirectional.topStart,
   });
 
+  /// Only the incoming child gives the size, so the size eases to it at once
+  /// while the outgoing one fades out over it, clipped, instead of holding
+  /// the old size until it has gone.
+  static Widget _sizedByIncoming(Widget? current, List<Widget> previous) {
+    return Stack(
+      alignment: AlignmentDirectional.topStart,
+      children: [
+        for (final child in previous)
+          PositionedDirectional(top: 0, start: 0, end: 0, child: child),
+        ?current,
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final resolved = xtaMotionDuration(context, duration);
@@ -233,6 +248,9 @@ class XtaAnimatedSwitcher extends StatelessWidget {
       reverseDuration: resolved,
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
+      layoutBuilder: animateSize
+          ? _sizedByIncoming
+          : AnimatedSwitcher.defaultLayoutBuilder,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
         child: child,

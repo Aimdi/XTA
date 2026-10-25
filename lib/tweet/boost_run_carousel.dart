@@ -9,6 +9,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
+import 'package:xta/ui/motion.dart';
 
 /// A horizontal row of compact boost cards for consecutive retweets.
 ///
@@ -56,26 +57,35 @@ class _BoostRunCarouselState extends State<BoostRunCarousel> {
             ],
           ),
         ),
-        if (_expanded)
-          for (final chain in widget.chains)
-            TweetConversation(
-              key: ValueKey('boost-expanded-${chain.id}'),
-              id: chain.id,
-              tweets: chain.tweets,
-              username: widget.username,
-              isPinned: chain.isPinned,
-            )
-        else
-          SizedBox(
-            height: 88,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              itemCount: widget.chains.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, index) => _BoostCard(chain: widget.chains[index], username: widget.username),
-            ),
-          ),
+        XtaAnimatedSwitcher(
+          animateSize: true,
+          child: _expanded
+              ? Column(
+                  key: const ValueKey('boosts-open'),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final chain in widget.chains)
+                      TweetConversation(
+                        key: ValueKey('boost-expanded-${chain.id}'),
+                        id: chain.id,
+                        tweets: chain.tweets,
+                        username: widget.username,
+                        isPinned: chain.isPinned,
+                      ),
+                  ],
+                )
+              : SizedBox(
+                  key: const ValueKey('boosts-row'),
+                  height: 88,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    itemCount: widget.chains.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) => _BoostCard(chain: widget.chains[index], username: widget.username),
+                  ),
+                ),
+        ),
       ],
     );
   }
