@@ -13,18 +13,26 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
 import 'package:xta/main.dart' show xtaLocalizationsDelegates;
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/tweet/_card.dart';
 import 'package:xta/tweet/focal_post.dart';
+import 'package:xta/tweet/poll_fill.dart';
+import 'package:xta/tweet/progressive_feed_store.dart';
+import 'package:xta/tweet/progressive_feed_view.dart';
 import 'package:xta/tweet/ticker/ticker_chart.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/ui/floating_notice.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reorder_lift.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
-/// Renders the second pass of X's motion frame by frame, for review:
+/// Renders XTA's motion frame by frame, for review: the second pass of X's
+/// motion and the polish after it.
 ///   fvm flutter test test/x_motion_render_test.dart --dart-define=RENDER_X_MOTION=true
 /// The frames land in review-artifacts/renders/x-motion/.
 const _render = bool.fromEnvironment('RENDER_X_MOTION');
@@ -33,15 +41,60 @@ const _shot = ValueKey('x-motion-shot');
 Future<void> _frame(WidgetTester tester, String name) =>
     expectLater(find.byKey(_shot), matchesGoldenFile('../review-artifacts/renders/x-motion/$name.png'));
 
+/// Renders [name]-0 and on, [step] apart, over [frames] frames.
+Future<void> _frames(WidgetTester tester, String name, {required int step, required int frames}) async {
+  for (var frame = 0; frame < frames; frame++) {
+    if (frame > 0) await tester.pump(Duration(milliseconds: step));
+    await _frame(tester, '$name-${frame * step}');
+  }
+}
+
 /// The whole screen is the shot, overlay included: a dragged row is drawn
 /// there, above the list it came from.
-Widget _app(Widget child) => MaterialApp(
+Widget _app(Widget child, {Widget? floatingActionButton}) => MaterialApp(
   debugShowCheckedModeBanner: false,
   theme: xLookLightsOutTheme(null),
   localizationsDelegates: xtaLocalizationsDelegates,
   supportedLocales: const [Locale('en')],
   builder: (context, app) => RepaintBoundary(key: _shot, child: app),
-  home: Scaffold(body: child),
+  home: Scaffold(body: child, floatingActionButton: floatingActionButton),
+);
+
+/// Rows of a feed for a notice to float over.
+Widget _rows() => ListView(
+  children: [
+    for (final row in ['Soccer', 'Stocks & Economy', 'Politics', 'Sports'])
+      ListTile(leading: const Icon(Icons.tag), title: Text(row)),
+  ],
+);
+
+typedef _PostModels = ({LikedTweetModel likes, SavedTweetModel saves});
+
+/// [child] with the models and settings a post's footer reads, ended with
+/// the test.
+Widget _withPostModels(_PostModels models, Widget child) {
+  addTearDown(models.likes.destroy);
+  addTearDown(models.saves.destroy);
+  return MultiProvider(
+    providers: [
+      Provider<LikedTweetModel>.value(value: models.likes),
+      Provider<SavedTweetModel>.value(value: models.saves),
+    ],
+    child: PrefService(
+      service: PrefServiceCache(cache: {optionZenMode: false, optionCalmMode: false}),
+      child: child,
+    ),
+  );
+}
+
+Widget _footer(TweetWithCard post) => TweetFooterBar(
+  tweet: post,
+  tweetText: post.fullText!,
+  shareBaseUrl: '',
+  locale: const Locale('en'),
+  showViews: false,
+  onOpenTweet: () {},
+  onCaptureImage: () async => null,
 );
 
 /// A phone-wide screen [height] points tall.
@@ -97,38 +150,20 @@ void main() {
   });
 
   testWidgets('counts roll from the copy to X\'s numbers', skip: !_render, (tester) async {
-    final likes = LikedTweetModel();
-    final saves = SavedTweetModel();
-    addTearDown(likes.destroy);
-    addTearDown(saves.destroy);
     _screen(tester, 96);
     final copy = _post(replies: 1, likes: 35, views: 624);
     final answer = _post(replies: 2, likes: 36, views: 692);
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          Provider<LikedTweetModel>.value(value: likes),
-          Provider<SavedTweetModel>.value(value: saves),
-        ],
-        child: PrefService(
-          service: PrefServiceCache(cache: {optionZenMode: false, optionCalmMode: false}),
-          child: _app(
-            CountRollOrigin(
-              tweet: copy,
-              child: Column(
-                children: [
-                  TweetFocalMetaLine(createdAt: answer.createdAt, views: answer.viewCount, fromViews: copy.viewCount),
-                  TweetFooterBar(
-                    tweet: answer,
-                    tweetText: answer.fullText!,
-                    shareBaseUrl: '',
-                    locale: const Locale('en'),
-                    showViews: false,
-                    onOpenTweet: () {},
-                    onCaptureImage: () async => null,
-                  ),
-                ],
-              ),
+      _withPostModels(
+        (likes: LikedTweetModel(), saves: SavedTweetModel()),
+        _app(
+          CountRollOrigin(
+            tweet: copy,
+            child: Column(
+              children: [
+                TweetFocalMetaLine(createdAt: answer.createdAt, views: answer.viewCount, fromViews: copy.viewCount),
+                _footer(answer),
+              ],
             ),
           ),
         ),
@@ -250,5 +285,99 @@ void main() {
       if (ms > 0) await tester.pump(const Duration(milliseconds: 175));
       await _frame(tester, 'chart-$ms');
     }
+  });
+
+  testWidgets('a notice drops in and lifts away', skip: !_render, (tester) async {
+    _screen(tester, 4 * 56);
+    Widget page({required bool notice}) => _app(
+      FloatingNotice(
+        notice: notice
+            ? NoticePill(
+                child: TextButton.icon(onPressed: () {}, icon: const Icon(Icons.refresh), label: const Text('Retry')),
+              )
+            : null,
+        child: _rows(),
+      ),
+    );
+    await tester.pumpWidget(page(notice: false));
+    await tester.pumpWidget(page(notice: true));
+    await _frames(tester, 'notice-in', step: 45, frames: 5);
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(page(notice: false));
+    await _frames(tester, 'notice-out', step: 40, frames: 4);
+  });
+
+  testWidgets('new posts drop in over the feed, above its chips', skip: !_render, (tester) async {
+    _screen(tester, 4 * 56);
+    final store = ProgressiveFeedStore();
+    await tester.pumpWidget(_app(ProgressiveFeedView(store: store, builder: (_) => _rows())));
+    store.update(
+      ProgressiveFeedState(
+        pending: {'x': []},
+        sources: {'substack': FeedSourceState(error: Exception('offline'))},
+      ),
+    );
+    await _frames(tester, 'new-posts', step: 45, frames: 5);
+    await tester.pumpWidget(const SizedBox());
+    await store.destroy();
+  });
+
+  testWidgets('an opened post\'s poll fills in', skip: !_render, (tester) async {
+    _screen(tester, 172);
+    final post = TweetWithCard()
+      ..idStr = '1'
+      ..card = {
+        'name': 'poll3choice_text_only',
+        'binding_values': {
+          for (final (index, (label, votes)) in [('Android', '412'), ('iPhone', '233'), ('Neither', '57')].indexed) ...{
+            'choice${index + 1}_label': {'string_value': label},
+            'choice${index + 1}_count': {'string_value': votes},
+          },
+        },
+      };
+    await tester.pumpWidget(
+      PrefService(
+        service: PrefServiceCache(cache: const {}),
+        child: _app(
+          FocalPostScope(
+            id: '1',
+            child: FocalPollFill(
+              child: TweetCard(tweet: post, card: post.card),
+            ),
+          ),
+        ),
+      ),
+    );
+    // The fill starts after the frame that asked for it.
+    await tester.pump();
+    await _frames(tester, 'poll', step: 140, frames: 7);
+  });
+
+  testWidgets('saving pops the bookmark', skip: !_render, (tester) async {
+    _screen(tester, 48);
+    final models = (likes: LikedTweetModel(), saves: SavedTweetModel());
+    final post = _post(replies: 2, likes: 36, views: 692);
+    await tester.pumpWidget(_withPostModels(models, _app(_footer(post))));
+    models.saves.update([SavedTweet(id: '1', user: '9', content: '{}')], force: true);
+    await tester.pump();
+    await _frames(tester, 'save', step: 60, frames: 6);
+  });
+
+  testWidgets('scroll to top grows in and shrinks away', skip: !_render, (tester) async {
+    _screen(tester, 4 * 56);
+    Widget page({required bool visible}) => _app(
+      _rows(),
+      floatingActionButton: XtaGrowIn(
+        visible: visible,
+        child: FloatingActionButton(onPressed: () {}, child: const Icon(Icons.arrow_upward)),
+      ),
+    );
+    await tester.pumpWidget(page(visible: false));
+    await tester.pumpWidget(page(visible: true));
+    await _frames(tester, 'top-in', step: 45, frames: 5);
+    // Shown a while, as when the reader scrolls back up.
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(page(visible: false));
+    await _frames(tester, 'top-out', step: 40, frames: 4);
   });
 }

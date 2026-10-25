@@ -32,9 +32,11 @@ flat. It adds no posting surface and changes no data.
 - A notice that stays mounted while it has nothing to say (a group's batch
   retry, which keeps its retry budget) drops in when its pill comes, like the
   rest: the pill plays its own arrival.
-- A leaving notice can no longer be tapped or read out.
-- Notices below another still wait for its height, so they never overlap, and
-  glide to their new place (180 ms) when it comes, goes or changes size.
+- A leaving notice can no longer be tapped, focused or read out.
+- Notices below another still wait for its height, so they never overlap.
+  They glide up (180 ms) once it has gone or shrunk, but make room at once for
+  one arriving or growing, before its pill shows at all: gliding down, they
+  would be drawn over the pill dropping in above them.
 - Dismissing the notice over cached posts lets it lift away over the same
   list, instead of swapping the list out from under the reader.
 
@@ -92,7 +94,8 @@ Android's own vibration settings.
 - Notices: a pill drops in and lifts away, one that stays mounted drops in
   when its pill comes, a leaving one cannot be tapped or read out, an update in
   place does not move it, a notice below glides up once the one above has
-  gone, and with reduced motion all of it is at once.
+  gone and makes room at once for one arriving, and with reduced motion all of
+  it is at once.
 - New posts: the pill floats over the feed without moving the posts, sits
   above source chips, and reveals on a tap.
 - Polls: an opened post's bars grow in order to their shares, once the screen

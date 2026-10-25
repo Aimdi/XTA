@@ -177,6 +177,25 @@ void main() {
     final path = [for (var frame = 0; frame < 30; frame++) await _frame(tester, innerTop)];
     expect(path.where((top) => top > 8 && top < outer.bottom + 8), isNotEmpty, reason: 'it glides, not jumps');
     expect(path.last, 8);
+
+    // An outer pill arriving: the inner one makes room before it shows at all.
+    double outerOpacity() => tester
+        .widgetList<Opacity>(
+          find.ancestor(
+            of: find.descendant(of: find.byKey(const ValueKey('outer')), matching: find.byType(FrostedPill)),
+            matching: find.byType(Opacity),
+          ),
+        )
+        .fold(1.0, (opacity, fade) => opacity * fade.opacity);
+    await tester.pumpWidget(nested(outer: true));
+    for (var frame = 0; frame < 15; frame++) {
+      if (innerTop() != outer.bottom + 8) {
+        expect(innerTop(), 8, reason: 'frame $frame: no step between');
+        expect(outerOpacity(), 0, reason: 'frame $frame: still in its old place under a pill already showing');
+      }
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    expect(innerTop(), outer.bottom + 8);
   });
 
   testWidgets('a floating notice is announced when it appears', (tester) async {

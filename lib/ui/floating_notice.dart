@@ -86,15 +86,9 @@ class _FloatingNoticeState extends State<FloatingNotice> {
         _NoticeShelf(below: _below, child: widget.child),
         ValueListenableBuilder<double>(
           valueListenable: _above,
-          // Gliding, so a notice below another moves aside for it, or up once
-          // it has gone.
-          builder: (context, above, _) => AnimatedPositioned(
-            duration: xtaMotionDuration(context, kXtaMotionStandard),
-            curve: Curves.easeOutCubic,
+          builder: (context, above, _) => _NoticeSlot(
             // Below the status bar when the content runs under it.
             top: MediaQuery.paddingOf(context).top + kTweetSpace2 + above,
-            left: kTweetSpace3,
-            right: kTweetSpace3,
             child: Center(
               // Measured through its exit too, so a notice below rises only
               // once this one has gone.
@@ -108,6 +102,39 @@ class _FloatingNoticeState extends State<FloatingNotice> {
       ],
     );
   }
+}
+
+/// Places a notice [top] down. It glides up once a notice above it has gone or
+/// shrunk, but makes room at once for one arriving or growing: gliding down,
+/// it would be drawn over the pill dropping in above it.
+class _NoticeSlot extends StatefulWidget {
+  final double top;
+  final Widget child;
+
+  const _NoticeSlot({required this.top, required this.child});
+
+  @override
+  State<_NoticeSlot> createState() => _NoticeSlotState();
+}
+
+class _NoticeSlotState extends State<_NoticeSlot> {
+  bool _rising = false;
+
+  @override
+  void didUpdateWidget(_NoticeSlot oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.top != oldWidget.top) _rising = widget.top < oldWidget.top;
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedPositioned(
+    duration: _rising ? xtaMotionDuration(context, kXtaMotionStandard) : Duration.zero,
+    curve: Curves.easeOutCubic,
+    top: widget.top,
+    left: kTweetSpace3,
+    right: kTweetSpace3,
+    child: widget.child,
+  );
 }
 
 /// How far above its place a notice starts as it drops in, and rises to as it
