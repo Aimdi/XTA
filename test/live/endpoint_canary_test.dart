@@ -39,6 +39,7 @@ void main() {
     XEndpoints.userByScreenName,
     XEndpoints.userTweetsAndReplies,
     XEndpoints.audioSpaceById,
+    XEndpoints.community,
   };
   const madeUpId = 'AAAAAAAAAAAAAAAAAAAAAA';
 
