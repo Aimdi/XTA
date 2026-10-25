@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Choisir une icône",
   "@choose_icon": {},
+  "choose_icon_number": "Icône {number} sur {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Choisir les pages",
   "@choose_pages": {},
   "chrome_avatar_change": "Touchez pour changer l’image en haut à gauche",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Ajouter un compte",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Ajouter une instance",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} a boosté",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Robot",

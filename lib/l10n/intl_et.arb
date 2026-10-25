@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Vali ikoon",
   "@choose_icon": {},
+  "choose_icon_number": "Ikoon {number}/{count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Vali lehed",
   "@choose_pages": {},
   "chrome_avatar_change": "Puuduta, et muuta ülal vasakul olevat pilti",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Lisa konto",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Lisa server",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} tõstis",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bot",

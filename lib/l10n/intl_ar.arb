@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "اختر أيقونة",
   "@choose_icon": {},
+  "choose_icon_number": "الأيقونة {number} من {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "اختيار الصفحات",
   "@choose_pages": {},
   "chrome_avatar_change": "اضغط لتغيير الصورة في أعلى اليسار",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "إضافة حساب",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "إضافة خادم",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "عزّز {name}",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "بوت",

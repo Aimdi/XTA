@@ -295,6 +295,7 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
               hintText: l10n.plugin_threads_direct_cookies_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                tooltip: _cookiesHidden ? l10n.show : l10n.hide,
                 icon: Icon(
                   _cookiesHidden ? Icons.visibility : Icons.visibility_off,
                 ),
@@ -315,6 +316,7 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
               hintText: l10n.plugin_threads_direct_bearer_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                tooltip: _bearerHidden ? l10n.show : l10n.hide,
                 icon: Icon(
                   _bearerHidden ? Icons.visibility : Icons.visibility_off,
                 ),
@@ -383,6 +385,7 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
             decoration: InputDecoration(
               labelText: l10n.plugin_threads_api_token,
               suffixIcon: IconButton(
+                tooltip: _tokenHidden ? l10n.show : l10n.hide,
                 icon: Icon(
                   _tokenHidden ? Icons.visibility : Icons.visibility_off,
                 ),

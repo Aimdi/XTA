@@ -149,6 +149,7 @@ class _InstagramSettingsScreenState extends State<InstagramSettingsScreen> {
                 helperText: l10n.plugin_instagram_cookies_description,
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
+                  tooltip: _cookiesHidden ? l10n.show : l10n.hide,
                   icon: Icon(
                     _cookiesHidden ? Icons.visibility : Icons.visibility_off,
                   ),

@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Simge seç",
   "@choose_icon": {},
+  "choose_icon_number": "Simge {number}/{count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Sayfaları seçin",
   "@choose_pages": {},
   "chrome_avatar_change": "Sol üstteki resmi değiştirmek için dokunun",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Hesap ekle",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Sunucu ekle",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} boostladı",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bot",

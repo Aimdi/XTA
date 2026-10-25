@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Pilih ikon",
   "@choose_icon": {},
+  "choose_icon_number": "Ikon {number} dari {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Pilih halaman",
   "@choose_pages": {},
   "chrome_avatar_change": "Ketuk untuk mengubah gambar di kiri atas",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Tambah akun",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Tambahkan instans",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} mem-boost",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bot",

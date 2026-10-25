@@ -389,7 +389,11 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       floatingActionButton: ScopedBuilder<ProfileScrollStore, bool>(
         store: _scrollStore,
         onState: (_, visible) => visible
-            ? FloatingActionButton(onPressed: _scrollToTop, child: const Icon(Icons.arrow_upward))
+            ? FloatingActionButton(
+                tooltip: L10n.of(context).scroll_to_top,
+                onPressed: _scrollToTop,
+                child: const Icon(Icons.arrow_upward),
+              )
             : const SizedBox.shrink(),
       ),
     );

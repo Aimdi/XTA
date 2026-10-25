@@ -115,6 +115,7 @@ class _BlueskyImportStarterPackScreenState
     return Scaffold(
       appBar: AppBar(title: Text(l10n.plugin_bluesky_import_starter)),
       floatingActionButton: FloatingActionButton(
+        tooltip: l10n.import,
         onPressed: _running ? null : _import,
         child: const Icon(Icons.cloud_download),
       ),

@@ -233,6 +233,18 @@
   "@choose_emoji": {},
   "choose_icon": "Choose icon",
   "@choose_icon": {},
+  "choose_icon_number": "Icon {number} of {count}",
+  "@choose_icon_number": {
+    "description": "What a screen reader says for one icon in the grid of the 'Choose icon' dialog of a group: number is its position in the grid, count how many icons there are.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Choose pages",
   "@choose_pages": {},
   "chrome_avatar_change": "Tap to change the picture in the upper left",
@@ -2672,6 +2684,10 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Add account",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Add instance",
+  "@plugin_mastodon_add_instance": {
+    "description": "Name of the + button beside the field where the reader types the address of another Mastodon instance; it adds that instance to the list."
+  },
   "plugin_mastodon_boosted": "{name} boosted",
   "@plugin_mastodon_boosted": {
     "placeholders": {

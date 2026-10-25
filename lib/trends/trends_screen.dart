@@ -163,6 +163,7 @@ class _TrendsScreenState extends State<TrendsScreen>
           ),
           floatingActionButton: showX
               ? FloatingActionButton(
+                  tooltip: L10n.of(context).discover_add_location,
                   child: const Icon(Icons.add),
                   onPressed: () async => showModalBottomSheet(
                     context: context,

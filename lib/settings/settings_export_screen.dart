@@ -209,7 +209,11 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
       title: L10n.of(context).export,
       floatingActionButton: noExportOptionSelected()
           ? null
-          : FloatingActionButton(onPressed: _export, child: const Icon(Icons.save)),
+          : FloatingActionButton(
+              tooltip: L10n.of(context).export,
+              onPressed: _export,
+              child: const Icon(Icons.save),
+            ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

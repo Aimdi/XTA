@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Vybrat ikonu",
   "@choose_icon": {},
+  "choose_icon_number": "Ikona {number} z {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Vybrat stránky",
   "@choose_pages": {},
   "chrome_avatar_change": "Klepnutím změníte obrázek vlevo nahoře",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Přidat účet",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Přidat instanci",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} boostnul(a)",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bot",

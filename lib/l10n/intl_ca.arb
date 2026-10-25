@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Tria una icona",
   "@choose_icon": {},
+  "choose_icon_number": "Icona {number} de {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Tria les pàgines",
   "@choose_pages": {},
   "chrome_avatar_change": "Toqueu per canviar la imatge de dalt a l’esquerra",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Afegeix un compte",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Afegeix una instància",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} ha impulsat",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bot",

@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "आइकन चुनें",
   "@choose_icon": {},
+  "choose_icon_number": "{count} में से आइकन {number}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "पृष्ठ चुनें",
   "@choose_pages": {},
   "chrome_avatar_change": "ऊपर बाएँ चित्र बदलने के लिए टैप करें",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "खाता जोड़ें",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "इंस्टेंस जोड़ें",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} ने बूस्ट किया",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "बॉट",

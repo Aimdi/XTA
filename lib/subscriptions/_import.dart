@@ -182,6 +182,7 @@ class _SubscriptionImportScreenState extends State<SubscriptionImportScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: l10n.import,
         child: const Icon(Icons.cloud_download),
         onPressed: () async => await importSubscriptions(),
       ),

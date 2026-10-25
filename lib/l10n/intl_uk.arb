@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Вибрати значок",
   "@choose_icon": {},
+  "choose_icon_number": "Значок {number} з {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Вибрати сторінки",
   "@choose_pages": {},
   "chrome_avatar_change": "Торкніться, щоб змінити зображення зліва вгорі",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Додати обліковий запис",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Додати сервер",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} зробив(ла) буст",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Бот",

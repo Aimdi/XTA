@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Wybierz ikonę",
   "@choose_icon": {},
+  "choose_icon_number": "Ikona {number} z {count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Wybierz karty",
   "@choose_pages": {},
   "chrome_avatar_change": "Dotknij, aby zmienić obraz w lewym górnym rogu",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Dodaj konto",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Dodaj instancję",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name} podbił(a)",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bot",

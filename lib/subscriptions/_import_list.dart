@@ -203,6 +203,7 @@ class _ListImportScreenState extends State<ListImportScreen> {
             ],
           )),
       floatingActionButton: FloatingActionButton(
+        tooltip: L10n.of(context).import,
         child: const Icon(Icons.cloud_download),
         onPressed: () async => await importList(),
       ),

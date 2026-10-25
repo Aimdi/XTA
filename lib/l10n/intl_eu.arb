@@ -215,6 +215,17 @@
   "@choose_emoji": {},
   "choose_icon": "Aukeratu ikono bat",
   "@choose_icon": {},
+  "choose_icon_number": "Ikonoa: {number}/{count}",
+  "@choose_icon_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "choose_pages": "Aukeratu orriak",
   "@choose_pages": {},
   "chrome_avatar_change": "Sakatu goian ezkerreko irudia aldatzeko",
@@ -2548,6 +2559,8 @@
   "@plugin_mastodon_accounts": {},
   "plugin_mastodon_add": "Gehitu kontua",
   "@plugin_mastodon_add": {},
+  "plugin_mastodon_add_instance": "Gehitu instantzia",
+  "@plugin_mastodon_add_instance": {},
   "plugin_mastodon_boosted": "{name}(e)k bultzatu du",
   "@plugin_mastodon_boosted": {},
   "plugin_mastodon_bot": "Bota",
