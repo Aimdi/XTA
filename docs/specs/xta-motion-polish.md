@@ -29,7 +29,14 @@ flat. It adds no posting surface and changes no data.
   it fades in (180 ms), and fades out while rising when it goes (120 ms).
 - A notice whose content changes while it shows (a countdown, another source
   failing) updates in place; only coming and going move.
-- Notices below another still wait for its height, so they never overlap.
+- A notice that stays mounted while it has nothing to say (a group's batch
+  retry, which keeps its retry budget) drops in when its pill comes, like the
+  rest: the pill plays its own arrival.
+- A leaving notice can no longer be tapped or read out.
+- Notices below another still wait for its height, so they never overlap, and
+  glide to their new place (180 ms) when it comes, goes or changes size.
+- Dismissing the notice over cached posts lets it lift away over the same
+  list, instead of swapping the list out from under the reader.
 
 ## 3. "New posts" floats
 
@@ -73,8 +80,10 @@ Android's own vibration settings.
 ## Tests
 
 - Avatars: a fetched avatar fades in; one already loaded does not.
-- Notices: a pill drops in and lifts away, an update in place does not move
-  it, and with reduced motion both are at once.
+- Notices: a pill drops in and lifts away, one that stays mounted drops in
+  when its pill comes, a leaving one cannot be tapped or read out, an update in
+  place does not move it, a notice below glides up once the one above has
+  gone, and with reduced motion all of it is at once.
 - New posts: the pill floats over the feed without moving the posts, sits
   above source chips, and reveals on a tap.
 - Polls: an opened post's bars grow in order to their shares; a feed's are

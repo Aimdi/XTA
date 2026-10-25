@@ -524,28 +524,31 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return null;
     }
 
-    final list = CachedTweetList(preview!, username: widget.username, interleaved: widget.interleaved);
-    if (_staleBannerDismissed) {
-      return list;
-    }
-
+    // Still under its notice once that is dismissed, so the posts stay where
+    // the reader had them while it lifts away.
     return FloatingNotice(
-      notice: NoticePill(
-        child: ReaderFailureNotice(
-          error: pagingErrorOf(state)?.error ?? state.error,
-          compact: true,
-          recoverAutomatically: false,
-          contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
-          onRetry: _retryFirstPage,
-          onDismiss: () {
-            _staleBannerDismissed = true;
-            _view.update(_view.state + 1);
-          },
-        ),
-      ),
-      child: list,
+      notice: _staleNotice(pagingErrorOf(state)?.error ?? state.error, _retryFirstPage),
+      child: CachedTweetList(preview!, username: widget.username, interleaved: widget.interleaved),
     );
   }
+
+  /// Why X's posts did not come, over the posts shown instead, until the
+  /// reader dismisses it.
+  Widget? _staleNotice(Object? error, VoidCallback onRetry) => _staleBannerDismissed
+      ? null
+      : NoticePill(
+          child: ReaderFailureNotice(
+            error: error,
+            compact: true,
+            recoverAutomatically: false,
+            contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
+            onRetry: onRetry,
+            onDismiss: () {
+              _staleBannerDismissed = true;
+              _view.update(_view.state + 1);
+            },
+          ),
+        );
 
   void _retryFirstPage() {
     _staleBannerDismissed = false;
@@ -623,24 +626,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     required Object? error,
     required VoidCallback onRetry,
   }) {
-    return FloatingNotice(
-      notice: _staleBannerDismissed
-          ? null
-          : NoticePill(
-              child: ReaderFailureNotice(
-                error: error,
-                compact: true,
-                recoverAutomatically: false,
-                contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
-                onRetry: onRetry,
-                onDismiss: () {
-                  _staleBannerDismissed = true;
-                  _view.update(_view.state + 1);
-                },
-              ),
-            ),
-      child: _interleavedOnlyList(context, items, null),
-    );
+    return FloatingNotice(notice: _staleNotice(error, onRetry), child: _interleavedOnlyList(context, items, null));
   }
 
   // The PagedListView normally kicks off the first page when it mounts. While

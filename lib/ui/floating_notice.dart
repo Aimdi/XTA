@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/ui/height_probe.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 /// Floats [notice] over the top edge of [child] instead of laying it out
 /// above it, so a failure that leaves the content readable never pushes that
@@ -55,12 +56,6 @@ class _FloatingNoticeState extends State<FloatingNotice> {
   }
 
   @override
-  void didUpdateWidget(FloatingNotice oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.notice == null) _measured(0);
-  }
-
-  @override
   void dispose() {
     _above.removeListener(_place);
     _height.dispose();
@@ -84,33 +79,89 @@ class _FloatingNoticeState extends State<FloatingNotice> {
 
   @override
   Widget build(BuildContext context) {
-    final notice = widget.notice;
     return Stack(
       // The child is laid out exactly as it would be without the notice.
       fit: StackFit.passthrough,
       children: [
         _NoticeShelf(below: _below, child: widget.child),
-        if (notice != null)
-          ValueListenableBuilder<double>(
-            valueListenable: _above,
-            builder: (context, above, _) => Positioned(
-              // Below the status bar when the content runs under it.
-              top: MediaQuery.paddingOf(context).top + kTweetSpace2 + above,
-              left: kTweetSpace3,
-              right: kTweetSpace3,
-              child: Center(
-                child: HeightProbe(onHeight: _measured, child: notice),
+        ValueListenableBuilder<double>(
+          valueListenable: _above,
+          // Gliding, so a notice below another moves aside for it, or up once
+          // it has gone.
+          builder: (context, above, _) => AnimatedPositioned(
+            duration: xtaMotionDuration(context, kXtaMotionStandard),
+            curve: Curves.easeOutCubic,
+            // Below the status bar when the content runs under it.
+            top: MediaQuery.paddingOf(context).top + kTweetSpace2 + above,
+            left: kTweetSpace3,
+            right: kTweetSpace3,
+            child: Center(
+              // Measured through its exit too, so a notice below rises only
+              // once this one has gone.
+              child: HeightProbe(
+                onHeight: _measured,
+                child: _LeavingNotice(notice: widget.notice),
               ),
             ),
           ),
+        ),
       ],
     );
   }
 }
 
+/// How far above its place a notice starts as it drops in, and rises to as it
+/// lifts away.
+const double kNoticeDrop = 12;
+
+/// A notice [t] of the way into its place: clear and [kNoticeDrop] above it at
+/// 0, opaque and in it at 1.
+Widget _noticeAt(double t, Widget child) => Transform.translate(
+  offset: Offset(0, -kNoticeDrop * (1 - t)),
+  child: Opacity(opacity: t, alwaysIncludeSemantics: true, child: child),
+);
+
+/// Keeps a notice that went away on screen while it lifts away, where it can
+/// no longer be tapped or focused.
+///
+/// Arriving is the [NoticePill]'s own: a notice may stay mounted while it shows
+/// nothing, and then comes when its pill does.
+class _LeavingNotice extends StatelessWidget {
+  final Widget? notice;
+
+  const _LeavingNotice({required this.notice});
+
+  static Widget _transition(Widget child, Animation<double> animation) => AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final leaving = animation.status == AnimationStatus.reverse;
+      return IgnorePointer(
+        ignoring: leaving,
+        child: ExcludeSemantics(excluding: leaving, child: _noticeAt(animation.value, child!)),
+      );
+    },
+    child: child,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final notice = this.notice;
+    return AnimatedSwitcher(
+      duration: Duration.zero,
+      reverseDuration: xtaMotionDuration(context, kXtaMotionFast),
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: _transition,
+      child: notice == null
+          ? const SizedBox.shrink(key: ValueKey('no-notice'))
+          : KeyedSubtree(key: const ValueKey('notice'), child: notice),
+    );
+  }
+}
+
 /// A notice's surface while it floats over content: the frosted pill Home's
-/// navigation bar sits on, sized to what it holds, and announced when it
-/// appears since nothing moves to draw the eye.
+/// navigation bar sits on, sized to what it holds. It drops in from
+/// [kNoticeDrop] above as it fades in, and is announced when it appears since
+/// nothing below it moves to draw the eye.
 class NoticePill extends StatelessWidget {
   final Widget child;
 
@@ -118,14 +169,21 @@ class NoticePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      container: true,
-      liveRegion: true,
-      child: FrostedPill(
-        palette: HomeNavigationPalette.of(context),
-        height: kTweetTouchTarget,
-        // A notice row would otherwise stretch the pill across the screen.
-        child: IntrinsicWidth(child: child),
+    // Played once, as the pill arrives: one whose content changes stays put.
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: xtaMotionDuration(context, kXtaMotionStandard),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, pill) => _noticeAt(t, pill!),
+      child: Semantics(
+        container: true,
+        liveRegion: true,
+        child: FrostedPill(
+          palette: HomeNavigationPalette.of(context),
+          height: kTweetTouchTarget,
+          // A notice row would otherwise stretch the pill across the screen.
+          child: IntrinsicWidth(child: child),
+        ),
       ),
     );
   }

@@ -32,6 +32,10 @@ Widget _createUserAvatar(String? uri, double size, [int? cacheWidth]) {
         switch (state.extendedImageLoadState) {
           case LoadState.failed:
             return const Icon(Icons.error_outline);
+          // Fetched rather than drawn from memory: it fades in as photos do,
+          // instead of popping in beside them.
+          case LoadState.completed when !state.wasSynchronouslyLoaded:
+            return XtaFadeIn(child: state.completedWidget);
           default:
             return state.completedWidget;
         }

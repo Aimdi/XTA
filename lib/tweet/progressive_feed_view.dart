@@ -16,33 +16,32 @@ class ProgressiveFeedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ScopedBuilder<ProgressiveFeedStore, ProgressiveFeedState>(
     store: store,
-    onState: (context, state) => Column(
-      children: [
-        if (state.hasPending)
-          TextButton.icon(
-            onPressed: store.reveal,
-            icon: const Icon(Icons.arrow_upward),
-            label: Text(L10n.of(context).reader_new_posts),
-          ),
-        // Neither loading nor a source to act on takes room of its own: a
-        // hairline over the posts says one is loading, and a chip floats over
-        // them only for something the reader can act on — a failure or cached
-        // posts.
-        Expanded(
-          child: FloatingNotice(
-            notice: state.sources.values.any(_worthAChip)
-                ? NoticePill(
-                    child: _SourceChips(store: store, sources: state.sources),
-                  )
-                : null,
-            child: LoadingHairline(
-              loading: state.sources.values.any((source) => source.loading),
-              semanticsLabel: L10n.of(context).reader_source_loading,
-              child: builder(state.items),
-            ),
-          ),
+    // Nothing here takes room of its own. New posts waiting float over the top
+    // of the feed; a hairline over the posts says a source is loading, and a
+    // chip floats below for something the reader can act on — a failure or
+    // cached posts.
+    onState: (context, state) => FloatingNotice(
+      notice: state.hasPending
+          ? NoticePill(
+              child: TextButton.icon(
+                onPressed: store.reveal,
+                icon: const Icon(Icons.arrow_upward),
+                label: Text(L10n.of(context).reader_new_posts),
+              ),
+            )
+          : null,
+      child: FloatingNotice(
+        notice: state.sources.values.any(_worthAChip)
+            ? NoticePill(
+                child: _SourceChips(store: store, sources: state.sources),
+              )
+            : null,
+        child: LoadingHairline(
+          loading: state.sources.values.any((source) => source.loading),
+          semanticsLabel: L10n.of(context).reader_source_loading,
+          child: builder(state.items),
         ),
-      ],
+      ),
     ),
   );
 }
