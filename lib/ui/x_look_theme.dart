@@ -118,50 +118,70 @@ class XLookTokens extends ThemeExtension<XLookTokens> {
   }
 }
 
+/// The subset of Noto Sans Math bundled for the bold and italic Unicode
+/// letters (U+1D400–1D7FF) some posts are written in. Inter has none of them,
+/// and the system fonts that do lack their accents, which showed as boxes.
+const xLookMathFontFamily = 'NotoSansMathAccents';
+
+/// What every Inter style of the theme falls back on.
+const xLookFontFallback = [xLookMathFontFamily];
+
 TextTheme _xLookTextTheme(Brightness brightness, Color onBg, Color secondary) {
   final base = brightness == Brightness.light
       ? Typography.material2021().black
       : Typography.material2021().white;
   return base
-      .apply(fontFamily: 'Inter', bodyColor: onBg, displayColor: onBg)
+      .apply(
+        fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
+        bodyColor: onBg,
+        displayColor: onBg,
+      )
       .copyWith(
         bodyLarge: base.bodyLarge?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 15,
           color: onBg,
           height: 1.35,
         ),
         bodyMedium: base.bodyMedium?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 15,
           color: onBg,
           height: 1.35,
         ),
         bodySmall: base.bodySmall?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 13,
           color: secondary,
         ),
         titleLarge: base.titleLarge?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: onBg,
         ),
         titleMedium: base.titleMedium?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 15,
           fontWeight: FontWeight.w700,
           color: onBg,
         ),
         titleSmall: base.titleSmall?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 14,
           fontWeight: FontWeight.w700,
           color: onBg,
         ),
         labelLarge: base.labelLarge?.copyWith(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontWeight: FontWeight.w700,
           color: onBg,
         ),
@@ -274,6 +294,7 @@ ThemeData xLookThemeData(
     cardColor: tokens.card,
     dividerColor: tokens.divider,
     fontFamily: 'Inter',
+    fontFamilyFallback: xLookFontFallback,
     textTheme: _xLookTextTheme(
       brightness,
       tokens.onBackground,
@@ -286,6 +307,7 @@ ThemeData xLookThemeData(
       scrolledUnderElevation: 0,
       titleTextStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 20,
         fontWeight: FontWeight.w700,
         color: tokens.onBackground,
@@ -300,6 +322,7 @@ ThemeData xLookThemeData(
         final selected = states.contains(WidgetState.selected);
         return TextStyle(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontSize: 11,
           fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
           color: selected ? readableAccent : tokens.secondary,
@@ -321,6 +344,7 @@ ThemeData xLookThemeData(
       backgroundColor: floatingSurface,
       contentTextStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 15,
         color: tokens.onBackground,
       ),
@@ -343,6 +367,7 @@ ThemeData xLookThemeData(
       ),
       textStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 15,
         color: tokens.onBackground,
       ),
@@ -362,6 +387,7 @@ ThemeData xLookThemeData(
     dropdownMenuTheme: DropdownMenuThemeData(
       textStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 15,
         color: tokens.onBackground,
       ),
@@ -386,12 +412,14 @@ ThemeData xLookThemeData(
       ),
       titleTextStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 20,
         fontWeight: FontWeight.w700,
         color: tokens.onBackground,
       ),
       contentTextStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 15,
         color: tokens.onBackground,
       ),
@@ -415,11 +443,13 @@ ThemeData xLookThemeData(
       unselectedLabelColor: tokens.secondary,
       labelStyle: const TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 15,
         fontWeight: FontWeight.w700,
       ),
       unselectedLabelStyle: const TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 15,
         fontWeight: FontWeight.w500,
       ),
@@ -434,6 +464,7 @@ ThemeData xLookThemeData(
       textColor: tokens.onBackground,
       subtitleTextStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 13,
         color: tokens.secondary,
       ),
@@ -445,11 +476,13 @@ ThemeData xLookThemeData(
       shape: const StadiumBorder(),
       labelStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 14,
         color: tokens.onBackground,
       ),
       secondaryLabelStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 14,
         color: onAccent,
       ),
@@ -464,6 +497,7 @@ ThemeData xLookThemeData(
       ),
       textStyle: TextStyle(
         fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
         fontSize: 13,
         color: tokens.onBackground,
       ),
@@ -473,7 +507,11 @@ ThemeData xLookThemeData(
       fillColor: tokens.card == tokens.background
           ? insetSurface
           : tokens.card,
-      hintStyle: TextStyle(fontFamily: 'Inter', color: tokens.secondary),
+      hintStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontFamilyFallback: xLookFontFallback,
+        color: tokens.secondary,
+      ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24),
         borderSide: BorderSide(color: tokens.border),
@@ -492,6 +530,7 @@ ThemeData xLookThemeData(
         foregroundColor: readableAccent,
         textStyle: const TextStyle(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -569,6 +608,7 @@ ThemeData xLookThemeData(
         shape: const StadiumBorder(),
         textStyle: const TextStyle(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -582,6 +622,7 @@ ThemeData xLookThemeData(
         shape: const StadiumBorder(),
         textStyle: const TextStyle(
           fontFamily: 'Inter',
+          fontFamilyFallback: xLookFontFallback,
           fontWeight: FontWeight.w700,
         ),
       ),

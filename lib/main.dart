@@ -473,6 +473,12 @@ Future<void> main() async {
     yield LicenseEntryWithLineBreaks(const ['Inter'], license);
   });
 
+  // So does the subset of Noto Sans Math the theme falls back on.
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('assets/fonts/NotoSansMath-OFL.txt');
+    yield LicenseEntryWithLineBreaks(const ['Noto Sans Math'], license);
+  });
+
   // sherpa-onnx (on-device voices) links espeak-ng, which is GPL-3.0-or-later.
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/licenses/espeak-ng.txt');

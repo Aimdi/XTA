@@ -49,6 +49,7 @@ existing presets do.
 | `lib/settings/_theme.dart` | Dropdown entries (ARB labels) |
 | `lib/tweet/tweet_chrome.dart` | Prefer extension tokens when present |
 | `assets/fonts/Inter-*.ttf` | OFL Inter Regular + Bold |
+| `assets/fonts/NotoSansMath-Accents.ttf` | OFL subset of Noto Sans Math (from QuaX): the bold and italic Unicode letters and their accents, every Inter style's fallback |
 | `pubspec.yaml` | Font family registration (no pinned-dep bumps) |
 
 ## Rules
