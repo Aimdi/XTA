@@ -46,6 +46,8 @@ Future<void> _pumpTile(
   String? focalId,
   double width = 411,
   Map<String, WidgetBuilder> routes = const {},
+  TweetWithCard? openedFrom,
+  bool settle = true,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = Size(width, 900);
@@ -57,6 +59,9 @@ Future<void> _pumpTile(
   addTearDown(saves.destroy);
 
   Widget tile = TweetTile(clickable: true, tweet: tweet, tweetOpened: focalId != null);
+  if (openedFrom != null) {
+    tile = CountRollOrigin(tweet: openedFrom, child: tile);
+  }
   if (focalId != null) {
     tile = FocalPostScope(id: focalId, child: tile);
   }
@@ -98,7 +103,7 @@ Future<void> _pumpTile(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) await tester.pumpAndSettle();
 }
 
 /// A post ending in a link to the recorded Grok share of
@@ -334,6 +339,44 @@ void main() {
       final text = tester.widget<RichText>(find.descendant(of: line, matching: find.byType(RichText)));
       expect(text.text.toPlainText(), isNot(contains('View')));
       expect(text.text.toPlainText(), contains('Oct 9, 2026'));
+    });
+
+    testWidgets('rolls its counts from the copy it was opened from to X\'s', (tester) async {
+      final copy = _post(views: 624)
+        ..replyCount = 1
+        ..favoriteCount = 35;
+      final answer = _post(views: 692)
+        ..replyCount = 2
+        ..favoriteCount = 36;
+      await _pumpTile(tester, answer, focalId: '1', openedFrom: copy, settle: false);
+      await tester.pump(const Duration(milliseconds: 120));
+
+      for (final (left, arrived) in [('1', '2'), ('35', '36'), ('624', '692')]) {
+        expect(find.text(left), findsOneWidget, reason: 'the copy\'s $left is still leaving');
+        expect(find.text(arrived), findsOneWidget);
+      }
+
+      await tester.pumpAndSettle();
+      for (final (left, arrived) in [('1', '2'), ('35', '36'), ('624', '692')]) {
+        expect(find.text(left), findsNothing);
+        expect(find.text(arrived), findsOneWidget);
+      }
+      final line = tester.getSemantics(find.byType(TweetFocalMetaLine));
+      expect(line.label, endsWith('692 Views'), reason: 'one line for a screen reader, with the new count');
+    });
+
+    testWidgets('a copy of another post rolls nothing', (tester) async {
+      await _pumpTile(
+        tester,
+        _post(),
+        focalId: '1',
+        openedFrom: _post(id: '2', views: 5),
+        settle: false,
+      );
+      await tester.pump(const Duration(milliseconds: 120));
+
+      expect(find.text('5'), findsNothing);
+      expect(find.text('9.1K'), findsOneWidget);
     });
 
     testWidgets('only the opened post gets the line', (tester) async {

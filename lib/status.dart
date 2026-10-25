@@ -118,6 +118,10 @@ class _StatusScreenState extends State<_StatusScreen> {
   /// retry for missing replies).
   bool _bypassThreadCache = false;
 
+  /// The copy the post was opened from, until the conversation's first build
+  /// has replaced it: the post's counts roll from its numbers to X's.
+  late TweetWithCard? _countsFrom = widget.initialTweet;
+
   @override
   void initState() {
     super.initState();
@@ -429,11 +433,21 @@ class _StatusScreenState extends State<_StatusScreen> {
               // footer already advertised replies.
               return _buildPreview(context, loading: false, showThreadEnd: true);
             }
-            return _buildConversation(context);
+            return _rollingCountsFrom(_buildConversation(context));
           },
         ),
       ),
     );
+  }
+
+  /// Hands the copy to the conversation's first build only, so the post does
+  /// not roll again when it is scrolled back into view. The origin stays in
+  /// the tree, empty, so the conversation is not rebuilt from scratch.
+  Widget _rollingCountsFrom(Widget conversation) {
+    if (_countsFrom != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _countsFrom = null);
+    }
+    return CountRollOrigin(tweet: _countsFrom, child: conversation);
   }
 
   Widget _buildPreview(BuildContext context, {bool loading = true, bool showThreadEnd = false}) {

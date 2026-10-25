@@ -883,6 +883,7 @@ class TweetTileState extends State<TweetTile> {
         TweetFocalMetaLine(
           createdAt: createdAt,
           views: _hideCounts(prefs) ? null : tweet.viewCount,
+          fromViews: CountRollOrigin.of(context, tweet.idStr)?.viewCount,
         ),
       // A quoted tweet shows no action bar: its reply/repost/like counts belong
       // to the quoted post, not to the one being read, and a second footer row

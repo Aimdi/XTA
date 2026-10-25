@@ -11,6 +11,12 @@ import 'package:xta/ui/motion.dart';
 class LikeButton extends StatefulWidget {
   final bool isLiked;
   final String label;
+
+  /// X's like count, which [label] shows; a like here never changes it.
+  final int? count;
+
+  /// What the count showed before this button was built, which it rolls from.
+  final FooterCountFrom? from;
   final Color? color;
 
   /// The heart's colour once liked, which the burst plays in. The theme accent
@@ -23,6 +29,8 @@ class LikeButton extends StatefulWidget {
     super.key,
     required this.isLiked,
     required this.label,
+    this.count,
+    this.from,
     required this.color,
     required this.onPressed,
     this.activeColor,
@@ -78,6 +86,8 @@ class _LikeButtonState extends State<LikeButton> with SingleTickerProviderStateM
         ),
         widget.label,
         widget.color,
+        count: widget.count,
+        from: widget.from,
       ),
     );
 

@@ -17,10 +17,12 @@ import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/engagement_count.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/tweet/quote_actions.dart';
+import 'package:xta/ui/rolling_count.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/database/entities.dart';
 import 'package:share_plus/share_plus.dart';
@@ -295,11 +297,19 @@ Widget tweetFooterTextButton(
   Color? color,
   VoidCallback? onPressed,
   String? semanticLabel,
+  int? count,
+  FooterCountFrom? from,
 ]) {
   final button = TextButton(
     onPressed: onPressed,
     style: footerButtonStyle,
-    child: footerCountContent(Icon(icon, size: kTweetActionGlyphSize, color: color), label, color),
+    child: footerCountContent(
+      Icon(icon, size: kTweetActionGlyphSize, color: color),
+      label,
+      color,
+      count: count,
+      from: from,
+    ),
   );
   if (label.trim().isNotEmpty || semanticLabel == null) {
     return button;
@@ -312,17 +322,24 @@ Widget tweetFooterTextButton(
   );
 }
 
-/// A count action's glyph followed, when there is one, by its number.
-Widget footerCountContent(Widget icon, String label, Color? color) => Row(
+/// What a count showed before its footer was built: the copy an opened post
+/// was shown from, which the count rolls from.
+typedef FooterCountFrom = ({String label, int count});
+
+/// A count action's glyph followed, when there is one, by its number, which
+/// rolls to a new [count] as X's does.
+Widget footerCountContent(Widget icon, String label, Color? color, {int? count, FooterCountFrom? from}) => Row(
   mainAxisSize: MainAxisSize.min,
   children: [
     icon,
     if (label.isNotEmpty) ...[
       const SizedBox(width: kFooterIconLabelGap),
-      Text(
+      RollingCount(
         label,
-        maxLines: 1,
+        value: count,
         style: TextStyle(color: color, fontSize: kFooterLabelFontSize),
+        from: from?.label,
+        fromValue: from?.count,
       ),
     ],
   ],
@@ -348,7 +365,12 @@ class TweetViewsCount extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: kFooterButtonPadding),
           child: Center(
             widthFactor: 1,
-            child: footerCountContent(Icon(Icons.bar_chart, size: kTweetActionGlyphSize, color: color), label, color),
+            child: footerCountContent(
+              Icon(Icons.bar_chart, size: kTweetActionGlyphSize, color: color),
+              label,
+              color,
+              count: views,
+            ),
           ),
         ),
       ),
@@ -523,6 +545,12 @@ class TweetFooterBar extends StatelessWidget {
 
           String label(String? value) => fit.showCounts ? (value ?? '') : '';
 
+          // An opened post is first drawn from the copy it was opened from;
+          // its counts roll from that copy's numbers to X's.
+          final origin = CountRollOrigin.of(context, tweet.idStr);
+          FooterCountFrom? rollFrom(int? count) =>
+              origin == null || hideCounts || count == null ? null : (label: label(formatCount(count)), count: count);
+
           void openQuotes() {
             if (tweetId == null) {
               return;
@@ -547,6 +575,8 @@ class TweetFooterBar extends StatelessWidget {
                 tint,
                 tweetId == null ? null : onOpenTweet,
                 L10n.of(context).open_post,
+                tweet.replyCount,
+                rollFrom(origin?.replyCount),
               ),
             ),
             GestureDetector(
@@ -560,6 +590,8 @@ class TweetFooterBar extends StatelessWidget {
                 tint,
                 tweetId == null ? null : openQuotes,
                 L10n.of(context).quotes,
+                repostTotal,
+                rollFrom(origin == null ? null : (origin.retweetCount ?? 0) + (origin.quoteCount ?? 0)),
               ),
             ),
             ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
@@ -575,6 +607,8 @@ class TweetFooterBar extends StatelessWidget {
                 return LikeButton(
                   isLiked: isLiked,
                   label: label(likeLabel),
+                  count: tweet.favoriteCount,
+                  from: rollFrom(origin?.favoriteCount),
                   color: isLiked ? tweetReadableAccentColor(context) : tint,
                   activeColor: tweetReadableAccentColor(context),
                   tooltip: isLiked ? L10n.of(context).unlike_on_this_device : L10n.of(context).like_on_this_device,
