@@ -55,7 +55,7 @@ jobs:
           dart run flutter_launcher_icons
       - name: Build the app against the stand-in for X
         run: >-
-          flutter build apk --profile --target-platform android-x64
+          flutter build apk --profile --target-platform android-x64 --no-tree-shake-icons
           --dart-define=XTA_MOCK_X=http://localhost:8787
       - name: Install Maestro
         run: |

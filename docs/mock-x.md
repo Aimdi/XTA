@@ -41,7 +41,7 @@ fvm flutter run --debug --dart-define=XTA_MOCK_X=http://localhost:8787
 The whole emulator run, as CI does it:
 
 ```bash
-fvm flutter build apk --profile --dart-define=XTA_MOCK_X=http://localhost:8787
+fvm flutter build apk --profile --no-tree-shake-icons --dart-define=XTA_MOCK_X=http://localhost:8787
 fvm dart run tool/mock_x/emulator_qa.dart \
   build/app/outputs/flutter-apk/app-profile.apk .maestro emulator-output
 ```
