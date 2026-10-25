@@ -8,6 +8,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/tts_settings.dart';
 import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/utils/desktop.dart';
 
 class SettingsAccessibilityFragment extends StatelessWidget {
   const SettingsAccessibilityFragment({super.key});
@@ -36,6 +37,11 @@ class SettingsAccessibilityFragment extends StatelessWidget {
                 subtitle: Text(
                   L10n.of(context).disable_animations_description,
                 ),
+              ))),
+              if (!isDesktop) SettingsControlTarget(id: optionHapticFeedback, child: LabeledPref(child: PrefSwitch(
+                title: Text(L10n.of(context).haptic_feedback),
+                pref: optionHapticFeedback,
+                subtitle: Text(L10n.of(context).haptic_feedback_description),
               ))),
               SettingsControlTarget(id: optionTickerChart, child: LabeledPref(child: PrefSwitch(
                 title: Text(L10n.of(context).ticker_chart),

@@ -65,6 +65,17 @@ void main() {
     expect(played, [PixivHaptic.light, PixivHaptic.medium]);
   });
 
+  test('XTA\'s Haptic feedback switch silences Pixiv\'s too', () {
+    final played = <PixivHaptic>[];
+    final haptics = PixivHaptics(clock: () => DateTime(2026), play: (kind) async => played.add(kind));
+
+    haptics.play(
+      PrefServiceCache(cache: {optionPluginPixivHaptics: true, optionHapticFeedback: false}),
+      PixivHaptic.light,
+    );
+    expect(played, isEmpty);
+  });
+
   testWidgets('the reader\'s page sheet buzzes when a long press opens it, not from its button', (tester) async {
     final played = await _pumpRecording(tester, PixivReaderScreen(illust: pixivWork(pages: 1), vertical: false));
     await tester.tap(find.byKey(const ValueKey('pixiv-reader-more')));

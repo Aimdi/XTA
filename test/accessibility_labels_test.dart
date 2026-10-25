@@ -229,6 +229,7 @@ Widget o() => PixivPrefSwitch(pref: key, title: Text(label));
       defaults: {
         optionTextScaleFactor: 1.0,
         optionDisableAnimations: false,
+        optionHapticFeedback: true,
         optionTickerChart: true,
         optionGestureDoubleTapLike: false,
         optionXLookBackground: xLookBackgroundSystem,

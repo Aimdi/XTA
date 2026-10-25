@@ -72,6 +72,8 @@ flat. It adds no posting surface and changes no data.
   from an avatar, opening the folder sheet or a folder's menu, a swipe that
   turns the page, picking a single source in the home filter, and Pixiv's,
   which keeps its own switch as well. The pop stays: it is motion, not touch.
+  So does the buzz Android gives any long press, which its own touch feedback
+  setting governs; the switch says it covers liking, saving and following.
 
 ## 6. Scroll-to-top grows in
 

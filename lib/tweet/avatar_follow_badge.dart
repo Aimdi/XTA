@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/action_feedback.dart';
 import 'package:xta/ui/motion.dart';
 
 /// Diameter of the follow badge on an avatar of [avatarSize], ring included.
@@ -66,11 +66,11 @@ class AvatarFollowBadge extends StatelessWidget {
                       key: const ValueKey('avatar-follow-badge'),
                       radius: target / 2,
                       onTap: () {
-                        HapticFeedback.lightImpact();
+                        lightHaptic(context);
                         onFollow();
                       },
                       onLongPress: () {
-                        HapticFeedback.selectionClick();
+                        selectionHaptic(context);
                         onMore();
                       },
                       child: Center(

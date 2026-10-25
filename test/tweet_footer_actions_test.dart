@@ -338,6 +338,16 @@ void main() {
       });
     }
 
+    testWidgets('with haptic feedback off saving still pops, and neither it nor liking taps', (tester) async {
+      await _pumpFooter(tester, _post(), preferences: {optionHapticFeedback: false});
+
+      await tapAndWatch(tester, find.byIcon(Icons.bookmark_border));
+      expect(bookmarkScale(tester), greaterThan(1));
+      await tester.pumpAndSettle();
+      await tapAndWatch(tester, find.byType(LikeButton));
+      expect(taps, isEmpty);
+    });
+
     testWidgets('with reduced motion saving still taps, without the pop', (tester) async {
       await _pumpFooter(tester, _post(), preferences: {optionDisableAnimations: true});
 

@@ -69,6 +69,7 @@ void main() {
       isTrue,
     );
     expect(settingsControls(l10n).any((result) => result.target == optionTextScaleFactor), isTrue);
+    expect(searchSettingsControls(l10n, 'haptic').any((result) => result.target == optionHapticFeedback), isTrue);
     expect(searchSettingsControls(l10n, 'not-a-setting'), isEmpty);
     await h.close(tester);
   });

@@ -16,11 +16,28 @@ bool quietActions(BuildContext context) {
   return prefs?.get<bool>(optionCalmMode) == true || prefs?.get<bool>(optionZenMode) == true;
 }
 
-/// The light tap of liking or saving. Android's own touch feedback setting
-/// decides whether it is felt; the desktop has nothing to tap with.
+/// Whether XTA answers touch with haptic taps, as it does unless the reader
+/// turned Haptic feedback off in Accessibility. Android's own touch feedback
+/// setting can still silence them, and the desktop has nothing to tap with.
+bool hapticFeedbackOn(BuildContext context) {
+  if (isDesktop) return false;
+  final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+  return prefs?.get<bool>(optionHapticFeedback) ?? true;
+}
+
+/// A light tap answering a tap or a long press, when [hapticFeedbackOn].
+void lightHaptic(BuildContext context) {
+  if (hapticFeedbackOn(context)) HapticFeedback.lightImpact();
+}
+
+/// The click of a choice taking effect, when [hapticFeedbackOn].
+void selectionHaptic(BuildContext context) {
+  if (hapticFeedbackOn(context)) HapticFeedback.selectionClick();
+}
+
+/// The light tap of liking or saving, which calm and zen mode keep quiet too.
 void actionTap(BuildContext context) {
-  if (isDesktop || quietActions(context)) return;
-  HapticFeedback.lightImpact();
+  if (!quietActions(context)) lightHaptic(context);
 }
 
 /// Grows to [kActionPopScale], then settles back past its size and home.

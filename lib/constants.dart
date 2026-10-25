@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const optionDisableAnimations = 'accessibility.disable_animations';
+const optionHapticFeedback = 'accessibility.haptic_feedback';
 const optionTextScaleFactor = 'accessibility.text_scale_factor';
 
 const optionDisableScreenshots = 'disable_screenshots';
