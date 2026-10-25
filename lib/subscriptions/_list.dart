@@ -143,39 +143,46 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
   Widget _buildList(BuildContext context, String query) {
     final model = context.read<SubscriptionsModel>();
 
+    // Every change saved from the list reloads it. The rows it had stay where
+    // the reader left them meanwhile: a spinner in their place threw the
+    // scroll back to the top. Only a first load has nothing else to show.
     return ScopedBuilder<SubscriptionsModel, List<Subscription>>(
       store: model,
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      onLoading: (_) => model.state.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : _buildLoaded(context, model.state, query),
       onError: (_, e) => FullPageErrorWidget(
         error: e,
         stackTrace: null,
         prefix: L10n.of(context).unable_to_refresh_the_subscriptions,
       ),
-      onState: (_, state) {
-        if (state.isEmpty) {
-          return _emptyState(
-            context,
-            message: L10n.of(context).no_subscriptions_try_searching_or_importing_some,
-            showImport: true,
-          );
-        }
+      onState: (_, state) => _buildLoaded(context, state, query),
+    );
+  }
 
-        return Scrollbar(
-          controller: widget.scrollController,
-          interactive: true,
-          child: CustomScrollView(
-            controller: widget.scrollController,
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(8, 4, 8, 16 + MediaQuery.paddingOf(context).bottom),
-                sliver: query.isEmpty
-                    ? _buildReorderableSliver(context, state)
-                    : _buildFilteredSliver(context, state, query),
-              ),
-            ],
+  Widget _buildLoaded(BuildContext context, List<Subscription> state, String query) {
+    if (state.isEmpty) {
+      return _emptyState(
+        context,
+        message: L10n.of(context).no_subscriptions_try_searching_or_importing_some,
+        showImport: true,
+      );
+    }
+
+    return Scrollbar(
+      controller: widget.scrollController,
+      interactive: true,
+      child: CustomScrollView(
+        controller: widget.scrollController,
+        slivers: [
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(8, 4, 8, 16 + MediaQuery.paddingOf(context).bottom),
+            sliver: query.isEmpty
+                ? _buildReorderableSliver(context, state)
+                : _buildFilteredSliver(context, state, query),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
