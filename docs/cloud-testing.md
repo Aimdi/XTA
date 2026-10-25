@@ -17,6 +17,28 @@ work.
 | One-shot verify | `bash scripts/cloud_verify.sh` |
 | X screens against a stand-in for X | `fvm flutter test test/mock_x_test.dart`; the emulator flows run on GitHub (`emulator-qa`), see `docs/mock-x.md` |
 
+## Live checks and the signing auto-fix
+
+The daily `api-canary` workflow runs the live checks on GitHub and opens an
+issue when a service fails. When the X checks fail on X's request signing,
+the `X signing auto-fix` workflow (`.github/workflows/x-signing-autofix.yml`)
+asks Claude for a fix and opens it as a draft pull request (playbook:
+`docs/fix-x-signing.md`). It needs, from the repository owner:
+
+- A repository secret: `ANTHROPIC_API_KEY` (an Anthropic API key) or
+  `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`, for a Claude
+  subscription). Without either, the workflow stops at its first step with a
+  notice and changes nothing.
+- **Settings → Actions → General → Workflow permissions → Allow GitHub Actions
+  to create and approve pull requests**, so the workflow's own token can open
+  the draft.
+
+It tries at most once per failed canary, and not while a fix pull request is
+open or was opened in the last 24 hours. A pull request opened with the
+workflow's token starts no `pull_request` workflows, so the auto-fix starts
+`verify` and `X bootstrap check` on its branch itself; their results show on
+the pull request.
+
 ## Interactive app use
 
 1. **Preferred:** pair a physical phone via wireless ADB  
