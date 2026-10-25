@@ -60,6 +60,23 @@ void main() {
     expect(focusNodes.keys, [0, 1, 2], reason: 'Discover reads its focus node by index');
   });
 
+  testWidgets('tapping a tab fades its page in', (tester) async {
+    await _pumpTabs(tester, [feed, subscriptions, trending]);
+    double pageOpacity() => tester
+        .widget<FadeTransition>(find.ancestor(of: find.byType(PageView), matching: find.byType(FadeTransition)).first)
+        .opacity
+        .value;
+    expect(pageOpacity(), 1);
+
+    await tester.tap(find.text(L10n.current.discover));
+    await tester.pump();
+    expect(find.text('page trending'), findsOneWidget, reason: 'the page is there at once');
+    await tester.pump(const Duration(milliseconds: 30));
+    expect(pageOpacity(), inExclusiveRange(0, 1));
+    await tester.pumpAndSettle();
+    expect(pageOpacity(), 1);
+  });
+
   testWidgets('a tab enabled after the start is highlighted when tapped', (tester) async {
     await _pumpTabs(tester, [feed, subscriptions]);
     await _pumpTabs(tester, [feed, subscriptions, trending]);
