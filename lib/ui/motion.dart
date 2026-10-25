@@ -42,6 +42,71 @@ class XtaFadeIn extends StatelessWidget {
   }
 }
 
+/// [child] fading in as it first appears when [arriving], as content does
+/// where its placeholders stood; otherwise drawn as it is. [arriving] is read
+/// once, as it first appears, and only an arriving child runs an animation: a
+/// list can wrap every tile and fade only its first ones.
+class XtaArrival extends StatefulWidget {
+  final bool arriving;
+  final Widget child;
+
+  const XtaArrival({super.key, required this.arriving, required this.child});
+
+  @override
+  State<XtaArrival> createState() => _XtaArrivalState();
+}
+
+class _XtaArrivalState extends State<XtaArrival>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _fade;
+  Animation<double>? _opacity;
+  bool _decided = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_decided) return;
+    _decided = true;
+    if (!widget.arriving || xtaReduceMotion(context)) return;
+    final fade = _fade = AnimationController(
+      vsync: this,
+      duration: kXtaMotionStandard,
+    )..forward();
+    _opacity = fade.drive(CurveTween(curve: Curves.easeOutCubic));
+  }
+
+  @override
+  void dispose() {
+    _fade?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Decided before the first build and never again, so the child keeps its
+    // place in the tree, and its state, for good.
+    final opacity = _opacity;
+    if (opacity == null) return widget.child;
+    return FadeTransition(opacity: opacity, child: widget.child);
+  }
+}
+
+/// The first frame of something that builds its children as they are needed,
+/// such as a list's first tiles: [arriving] is true for the children built in
+/// it, and false for every one built after, as the reader scrolls.
+class XtaArrivalWindow {
+  bool _open = true;
+  bool _closing = false;
+
+  bool get arriving {
+    if (_open && !_closing) {
+      _closing = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _open = false);
+    }
+    return _open;
+  }
+}
+
 /// Cross-fades compact state changes. Optional size animation is reserved for
 /// small chrome such as a filter strip, never whole feeds or paginated pages.
 class XtaAnimatedSwitcher extends StatelessWidget {
