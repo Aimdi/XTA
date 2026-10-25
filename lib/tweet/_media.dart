@@ -23,6 +23,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/ui/rolling_count.dart';
 import 'package:path/path.dart' as path;
 import 'package:pref/pref.dart';
 import 'package:share_plus/share_plus.dart';
@@ -755,9 +756,22 @@ class _TweetMediaViewState extends State<TweetMediaView> {
                   label:
                       '${L10n.of(context).media} '
                       '${_currentIndex + 1}/${widget.entries.length}',
+                  // The number rolls up going forward and down going back.
                   child: ExcludeSemantics(
-                    child: Text(
-                      '${_currentIndex + 1} / ${widget.entries.length}',
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.baseline,
+                            baseline: TextBaseline.alphabetic,
+                            child: RollingCount(
+                              '${_currentIndex + 1}',
+                              value: _currentIndex + 1,
+                            ),
+                          ),
+                          TextSpan(text: ' / ${widget.entries.length}'),
+                        ],
+                      ),
                     ),
                   ),
                 )
