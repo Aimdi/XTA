@@ -29,7 +29,7 @@ Map<String, RememberedFollows> _remembered(int followers) => {
   'other': (at: DateTime(2026, 10), follows: const []),
 };
 
-Future<void> _pump(WidgetTester tester, int followers, {Locale locale = const Locale('en')}) async {
+Future<void> _pump(WidgetTester tester, int followers, {Locale locale = const Locale('en'), bool settle = true}) async {
   final prefs = PrefServiceCache();
   final groups = GroupsModel(prefs);
   final subscriptions = SubscriptionsModel(prefs, groups);
@@ -61,7 +61,7 @@ Future<void> _pump(WidgetTester tester, int followers, {Locale locale = const Lo
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) await tester.pumpAndSettle();
 }
 
 int _avatars() =>
@@ -72,6 +72,23 @@ void main() {
     await _pump(tester, 0);
     expect(find.byType(ProfileFollowedByRow), findsNothing);
     expect(find.textContaining('Followed by'), findsNothing);
+  });
+
+  testWidgets('the row grows and fades in once its followers are known', (tester) async {
+    await _pump(tester, 1, settle: false);
+    final line = find.byType(ProfileFollowedByLine);
+    for (var frame = 0; frame < 30 && find.byType(ProfileFollowedByRow).evaluate().isEmpty; frame++) {
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    await tester.pump(const Duration(milliseconds: 90));
+    final rowOpacity = tester
+        .widget<Opacity>(find.ancestor(of: find.byType(ProfileFollowedByRow), matching: find.byType(Opacity)).first)
+        .opacity;
+    expect(rowOpacity, inExclusiveRange(0, 1));
+    final growing = tester.getSize(line).height;
+
+    await tester.pumpAndSettle();
+    expect(growing, inExclusiveRange(0, tester.getSize(line).height));
   });
 
   testWidgets('one follower', (tester) async {

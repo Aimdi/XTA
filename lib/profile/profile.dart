@@ -534,6 +534,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       result.add(
         ProfileCountButton(
           count: _numberFormat.format(user.friendsCount),
+          value: user.friendsCount,
           label: L10n.of(context).following,
           onTap: () => _openFollows(context, user, 'following'),
         ),
@@ -543,6 +544,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       result.add(
         ProfileCountButton(
           count: _numberFormat.format(user.followersCount),
+          value: user.followersCount,
           label: L10n.of(context).followers,
           onTap: () => _openFollows(context, user, 'followers'),
         ),

@@ -8,6 +8,7 @@ import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/image_fade_in.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/rolling_count.dart';
 import 'package:xta/ui/verified_badges.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
@@ -322,22 +323,73 @@ class ProfileMetadataItem extends StatelessWidget {
   }
 }
 
-class ProfileCountButton extends StatelessWidget {
+/// Following or followers: [count] and its [label]. When X's copy of the
+/// profile replaces the cached one, the count rolls to its new number, as a
+/// post's counts do; until then it is plain text.
+class ProfileCountButton extends StatefulWidget {
   final String count;
+
+  /// The number [count] shows, which picks the way it rolls.
+  final int? value;
   final String label;
   final VoidCallback onTap;
 
   const ProfileCountButton({
     super.key,
     required this.count,
+    this.value,
     required this.label,
     required this.onTap,
   });
 
   @override
+  State<ProfileCountButton> createState() => _ProfileCountButtonState();
+}
+
+class _ProfileCountButtonState extends State<ProfileCountButton> {
+  /// What the count showed before it first changed.
+  ({String text, int? value})? _from;
+
+  @override
+  void didUpdateWidget(ProfileCountButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_from == null && oldWidget.count != widget.count) {
+      _from = (text: oldWidget.count, value: oldWidget.value);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final style = tweetLabelStyle(
+      context,
+    ).copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
+    final from = _from;
+    final text = Text.rich(
+      TextSpan(
+        children: [
+          if (from == null)
+            TextSpan(text: widget.count, style: style)
+          else
+            WidgetSpan(
+              alignment: PlaceholderAlignment.baseline,
+              baseline: TextBaseline.alphabetic,
+              child: RollingCount(
+                widget.count,
+                value: widget.value,
+                style: style,
+                from: from.text,
+                fromValue: from.value,
+              ),
+            ),
+          TextSpan(
+            text: ' ${widget.label}',
+            style: tweetMetadataStyle(context),
+          ),
+        ],
+      ),
+    );
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       borderRadius: BorderRadius.circular(kProfileControlRadius),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
@@ -347,19 +399,14 @@ class ProfileCountButton extends StatelessWidget {
             alignment: AlignmentDirectional.centerStart,
             widthFactor: 1,
             heightFactor: 1,
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: count,
-                    style: tweetLabelStyle(context).copyWith(
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
+            // A rolling count sits in the line as a widget, which a screen
+            // reader would read apart from its label.
+            child: from == null
+                ? text
+                : Semantics(
+                    label: '${widget.count} ${widget.label}',
+                    child: ExcludeSemantics(child: text),
                   ),
-                  TextSpan(text: ' $label', style: tweetMetadataStyle(context)),
-                ],
-              ),
-            ),
           ),
         ),
       ),

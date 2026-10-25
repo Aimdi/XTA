@@ -7,6 +7,7 @@ import 'package:xta/profile/profile_followed_by.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
+import 'package:xta/ui/motion.dart';
 
 const double _avatarSize = 20;
 const double _avatarOverlap = 6;
@@ -51,12 +52,17 @@ class _ProfileFollowedByLineState extends State<ProfileFollowedByLine> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<ProfileFollowedByStore, ProfileFollowedBy>(
-      store: _store,
-      onLoading: (_) => const SizedBox.shrink(),
-      onError: (_, _) => const SizedBox.shrink(),
-      onState: (context, followedBy) =>
-          followedBy.followers.isEmpty ? const SizedBox.shrink() : ProfileFollowedByRow(followedBy: followedBy),
+    // It arrives after the profile, so it grows in rather than pushing the
+    // tabs down at once.
+    return XtaAnimatedSize(
+      child: ScopedBuilder<ProfileFollowedByStore, ProfileFollowedBy>(
+        store: _store,
+        onLoading: (_) => const SizedBox.shrink(),
+        onError: (_, _) => const SizedBox.shrink(),
+        onState: (context, followedBy) => followedBy.followers.isEmpty
+            ? const SizedBox.shrink()
+            : XtaFadeIn(child: ProfileFollowedByRow(followedBy: followedBy)),
+      ),
     );
   }
 }
