@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Выдаліць вылучэнне",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Правяраем спасылку…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Твіты @{screenName} могуць бачыць толькі ўхваленыя чытачы ў X.",
+  "@protected_posts": {}
 }

@@ -355,27 +355,39 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             child: ReaderTabView(
               controller: _tabController,
               children: [
-                _withFilter(
-                  _filterFor(context, ProfileTabs.posts, view),
+                _postsTab(
+                  context,
+                  user,
+                  _withFilter(
+                    _filterFor(context, ProfileTabs.posts, view),
+                    ProfileTweets(
+                      user: user,
+                      type: 'profile',
+                      includeReplies: false,
+                      pinnedTweets: widget.profile.pinnedTweets,
+                      pref: prefs,
+                      filter: view.postsFilter,
+                    ),
+                  ),
+                ),
+                _postsTab(
+                  context,
+                  user,
                   ProfileTweets(
                     user: user,
                     type: 'profile',
-                    includeReplies: false,
+                    includeReplies: true,
                     pinnedTweets: widget.profile.pinnedTweets,
                     pref: prefs,
-                    filter: view.postsFilter,
                   ),
                 ),
-                ProfileTweets(
-                  user: user,
-                  type: 'profile',
-                  includeReplies: true,
-                  pinnedTweets: widget.profile.pinnedTweets,
-                  pref: prefs,
-                ),
-                _withFilter(
-                  _filterFor(context, ProfileTabs.media, view),
-                  ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
+                _postsTab(
+                  context,
+                  user,
+                  _withFilter(
+                    _filterFor(context, ProfileTabs.media, view),
+                    ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
+                  ),
                 ),
                 _withFilter(
                   _filterFor(context, ProfileTabs.saved, view),
@@ -581,6 +593,14 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     final value = PrefService.of(context, listen: false).get<String>(optionShareBaseUrl);
     return value == null || value.isEmpty ? 'https://x.com' : value;
   }
+
+  /// One of [user]'s posts tabs, or why X sends none of their posts. A filter
+  /// above [tab] goes with it: there would be nothing to narrow.
+  Widget _postsTab(BuildContext context, UserWithExtra user, Widget tab) => ProtectedPostsGate(
+    hidden: user.postsHidden,
+    message: L10n.of(context).protected_posts(user.screenName ?? L10n.of(context).unknown),
+    child: tab,
+  );
 
   /// The tab's filter sits right above its content, so what it narrows is never off screen from where it is set.
   Widget _withFilter(Widget? filter, Widget content) => filter == null

@@ -223,7 +223,16 @@ class UserWithExtra extends User {
   /// [UserBadges.badges] then falls back to the `verified` flag.
   UserVerification? verification;
 
+  /// Whether the account X answered for follows this user on X, as X said;
+  /// null when it did not say.
+  bool? following;
+
   UserWithExtra();
+
+  /// Whether X keeps this user's posts from the reader: it sends none of a
+  /// protected account's posts to an account that does not follow it.
+  // `this.`: a bare `protected` is the annotation package:meta exports.
+  bool get postsHidden => this.protected == true && following != true;
 
   factory UserWithExtra.fromArguments({
     String? idStr,
@@ -284,6 +293,7 @@ class UserWithExtra extends User {
   Map<String, dynamic> toJson() {
     var json = super.toJson();
     json['potentiallySensitive'] = possiblySensitive;
+    json['following'] = following;
     json.addAll(verification?.toJson() ?? const {});
 
     return json;
@@ -323,6 +333,7 @@ class UserWithExtra extends User {
       'description': user['profile_bio']['description'].string,
       'entities': entities is Map<String, dynamic> ? entities : null,
       'protected': user['privacy']['protected'].boolean,
+      'following': user['relationship_perspectives']['following'].boolean,
       'followers_count': user['relationship_counts']['followers'].integer,
       'friends_count': user['relationship_counts']['following'].integer,
       'favorites_count': user['action_counts']['favorites_count'].integer,
@@ -372,6 +383,7 @@ class UserWithExtra extends User {
       ..withheldScope = json['withheld_scope'] as String?;
 
     userWithExtra.possiblySensitive = json['possibly_sensitive'] as bool?;
+    userWithExtra.following = Json(json)['following'].boolean;
     userWithExtra.verification = UserVerification.fromJson(json);
 
     return userWithExtra;

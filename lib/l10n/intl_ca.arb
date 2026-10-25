@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Elimina el ressaltat",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "S’està comprovant l’enllaç…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Només els seguidors aprovats a X poden veure els tuits de @{screenName}.",
+  "@protected_posts": {}
 }

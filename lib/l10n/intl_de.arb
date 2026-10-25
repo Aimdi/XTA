@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Markierung entfernen",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Link wird geprüft …",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Nur bestätigte Follower auf X können die Tweets von @{screenName} sehen.",
+  "@protected_posts": {}
 }

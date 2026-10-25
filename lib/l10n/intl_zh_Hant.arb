@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "移除醒目提示",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "正在檢查連結…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "只有 X 上經核准的追蹤者才能查看 @{screenName} 的推文。",
+  "@protected_posts": {}
 }

@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Forigi emfazon",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Kontrolante la ligilon…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Nur aprobitaj abonantoj ĉe X povas vidi la pepojn de @{screenName}.",
+  "@protected_posts": {}
 }

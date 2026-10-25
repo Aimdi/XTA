@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Xóa đánh dấu",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Đang kiểm tra liên kết…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Chỉ những người theo dõi được chấp thuận trên X mới có thể xem bài viết của @{screenName}.",
+  "@protected_posts": {}
 }

@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Markering verwijderen",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Link controleren…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Alleen goedgekeurde volgers op X kunnen de berichten van @{screenName} zien.",
+  "@protected_posts": {}
 }

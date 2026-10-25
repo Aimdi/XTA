@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Hapus sorotan",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Memeriksa tautan…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Hanya pengikut yang disetujui di X yang dapat melihat cuitan @{screenName}.",
+  "@protected_posts": {}
 }

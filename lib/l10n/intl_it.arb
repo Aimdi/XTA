@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Rimuovi evidenziazione",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Controllo del link…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Solo i seguaci approvati su X possono vedere i tweet di @{screenName}.",
+  "@protected_posts": {}
 }

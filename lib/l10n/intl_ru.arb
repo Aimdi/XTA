@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Удалить выделение",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Проверяем ссылку…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Твиты @{screenName} могут видеть только одобренные читатели в X.",
+  "@protected_posts": {}
 }

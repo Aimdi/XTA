@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Elimină evidențierea",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Se verifică linkul…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Doar urmăritorii aprobați de pe X pot vedea postările lui @{screenName}.",
+  "@protected_posts": {}
 }

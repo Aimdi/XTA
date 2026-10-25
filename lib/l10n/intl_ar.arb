@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "إزالة التمييز",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "جارٍ التحقق من الرابط…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "لا يرى تغريدات @{screenName} إلا المتابعون المعتمدون على X.",
+  "@protected_posts": {}
 }

@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Kendu nabarmendua",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Esteka egiaztatzen…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "X-en onartutako jarraitzaileek soilik ikus ditzakete @{screenName} kontuaren txioak.",
+  "@protected_posts": {}
 }

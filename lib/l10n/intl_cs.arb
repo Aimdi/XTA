@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Odstranit zvýraznění",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Kontroluje se odkaz…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Tweety uživatele @{screenName} vidí jen schválení sledující na X.",
+  "@protected_posts": {}
 }

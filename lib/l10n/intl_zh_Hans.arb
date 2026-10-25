@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "移除高亮",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "正在检查链接…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "只有 X 上经批准的关注者才能查看 @{screenName} 的推文。",
+  "@protected_posts": {}
 }

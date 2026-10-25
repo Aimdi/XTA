@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Видалити виділення",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Перевіряємо посилання…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Твіти @{screenName} можуть бачити лише схвалені підписники в X.",
+  "@protected_posts": {}
 }

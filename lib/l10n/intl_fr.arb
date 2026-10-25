@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Retirer le surlignage",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Vérification du lien…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Seuls les abonnés approuvés sur X peuvent voir les tweets de @{screenName}.",
+  "@protected_posts": {}
 }

@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Fjern utheving",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Sjekker lenken …",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Bare godkjente følgere på X kan se tvitringene til @{screenName}.",
+  "@protected_posts": {}
 }

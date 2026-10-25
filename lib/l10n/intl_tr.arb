@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Vurguyu kaldır",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Bağlantı kontrol ediliyor…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "@{screenName} kullanıcısının tweetlerini yalnızca X'teki onaylanmış takipçiler görebilir.",
+  "@protected_posts": {}
 }

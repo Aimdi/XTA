@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "हाइलाइट हटाएँ",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "लिंक जाँचा जा रहा है…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "केवल X पर स्वीकृत अनुसरणकर्ता ही @{screenName} की पोस्ट देख सकते हैं।",
+  "@protected_posts": {}
 }

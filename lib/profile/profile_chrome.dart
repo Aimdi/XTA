@@ -531,6 +531,33 @@ class ProfileEmptyState extends StatelessWidget {
   }
 }
 
+/// A tab of a protected account's posts, which X sends only to the account's
+/// approved followers. While they are [hidden] the tab says so in [message],
+/// and [child] is never built, so nothing asks X for them.
+class ProtectedPostsGate extends StatelessWidget {
+  final bool hidden;
+  final String message;
+  final Widget child;
+
+  const ProtectedPostsGate({
+    super.key,
+    required this.hidden,
+    required this.message,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!hidden) return child;
+    // A scroll view, as the tab it stands in for, so the header above still
+    // scrolls away.
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [TweetStateTile(icon: Icons.lock_outline, message: message)],
+    );
+  }
+}
+
 class ProfileLoadingSkeleton extends StatelessWidget {
   const ProfileLoadingSkeleton({super.key});
 

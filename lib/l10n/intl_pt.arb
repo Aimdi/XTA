@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Remover destaque",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "A verificar a ligação…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Só os seguidores aprovados no X podem ver os tweets de @{screenName}.",
+  "@protected_posts": {}
 }

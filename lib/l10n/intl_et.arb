@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Eemalda esiletõst",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Linki kontrollimine…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Kasutaja @{screenName} säutse näevad ainult kinnitatud jälgijad X-is.",
+  "@protected_posts": {}
 }

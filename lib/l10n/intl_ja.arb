@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "ハイライトを削除",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "リンクを確認しています…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "@{screenName} のツイートは、X で承認されたフォロワーだけが見られます。",
+  "@protected_posts": {}
 }

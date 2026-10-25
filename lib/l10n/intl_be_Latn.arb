@@ -5528,5 +5528,7 @@
   "plugin_substack_highlight_remove": "Vydalić vyłučennie",
   "@plugin_substack_highlight_remove": {},
   "plugin_substack_checking_link": "Pravierajem spasyłku…",
-  "@plugin_substack_checking_link": {}
+  "@plugin_substack_checking_link": {},
+  "protected_posts": "Tvity @{screenName} mohuć bačyć tolki ŭchvalienyja čytačy ŭ X.",
+  "@protected_posts": {}
 }
