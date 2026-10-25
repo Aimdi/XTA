@@ -21,36 +21,31 @@ UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chr
 KNOWN = {'2064719054846427390', '2066984244854050990', '2079273272274026718'}
 SHEETS_LEFT = [48]
 
-ARTICLES = [
-    'https://techcrunch.com/2026/07/20/x-relaunches-a-rebuilt-android-app-after-year-long-effort/',
-    'https://roboin.io/article/en/2026/07/21/x-officially-launches-new-android-app/',
-    'https://www.digitaltrends.com/social-media/x-finally-rebuilt-its-neglected-android-app-and-it-only-took-a-year/',
-    'https://www.tech2.com/apps/x-app-for-android-users-gets-major-design-changes-and-runs-faster-text-ws-l-10229437.html',
-    'https://www.businesstoday.in/technology/news/story/x-unveils-rebuilt-android-app-for-improved-performance-whats-new-544108-2026-07-21',
-    'https://onlinemarketing.de/technologie/x-veroeffentlicht-neu-entwickelte-android-app',
-    'https://gigazine.net/gsc_news/en/20260721-x-rebuilds-android-app/',
-    'https://gigazine.net/news/20260721-x-rebuilds-android-app/',
-    'https://jang.com.pk/en/69482-x-rolls-out-rebuild-android-app-for-improved-user-experience-news',
-    'https://betanews.com/article/x-launches-a-completely-rebuilt-version-of-its-android-app/',
-    'https://easternherald.com/2026/07/21/x-android-app-rebuilt-kotlin-jetpack-compose/',
-    'https://www.neowin.net/news/x-launches-new-android-app-built-from-scratch-some-features-still-pending/',
-    'https://news.livedoor.com/article/detail/31875394/',
+# The launch video, already studied, under every account that posted it.
+KNOWN |= {'2079276059250270240', '2079275369304150492'}
+SEEN_VIDEOS = {'2079270544470650881'}
+
+# X's Android engineers, as Nikita Bier named them on launch day, and the
+# accounts that announced the rebuild.
+HANDLES = [
+    'attilablenesi', 'geruk', 'e_matsyuk', 'zhao0506', 'arkann1985', 'x_belous', 'adrian579086',
+    'vcoolish', 'art_antonov', 'gilsjulio', 'theapache64', 'nikitabier', 'XEng', 'Engineering',
 ]
+MIRRORS = ['https://xcancel.com', 'https://nitter.net', 'https://nitter.poast.org']
 
 SEARCHES = [
-    'x.com new X Android app rebuilt video',
-    'nikitabier Android app rebuilt from the ground up',
-    'X Android app new animations Jetpack Compose',
-    'X Lite Android beta screen recording',
-    'new X app Android like animation',
-    'X Android custom timelines video',
+    'X Android app new animation video',
+    'X Lite Android beta video',
+    'new X Android app screen recording',
+    'X Android rebuilt smooth animations',
+    'theapache64 X Android',
+    'geruk X Android app',
+    'e_matsyuk X Android',
+    'X app Android like animation new',
+    'X Android custom timelines pin topics',
+    'X Android Jetpack Compose motion',
 ]
-
-YOUTUBE = [
-    'new X app Android rebuilt hands on',
-    'X Android app redesign 2026',
-    'X Lite Android app',
-]
+KEYWORDS = re.compile(r'android|animat|motion|compose|smooth|rebuil|new app|x lite|timeline|redesign|ui\b', re.I)
 
 
 def get(url, binary=False, timeout=60):
@@ -123,9 +118,19 @@ def post(status_id, author):
         print('fxtwitter failed', e)
         return
     t = data.get('tweet') or {}
-    print('author', (t.get('author') or {}).get('screen_name'), 'date', t.get('created_at'))
-    print('text', (t.get('text') or '').replace('\n', ' ')[:600])
-    for i, v in enumerate(((t.get('media') or {}).get('videos') or [])[:2]):
+    text = (t.get('text') or '').replace('\n', ' ')
+    videos = (t.get('media') or {}).get('videos') or []
+    print('author', (t.get('author') or {}).get('screen_name'), 'date', t.get('created_at'), 'videos', len(videos))
+    print('text', text[:600])
+    if not KEYWORDS.search(text):
+        return
+    for i, v in enumerate(videos[:2]):
+        source = re.search(r'/(\d{15,20})/', v.get('url') or '')
+        if source and source.group(1) in SEEN_VIDEOS:
+            print('video already seen', v.get('url'))
+            continue
+        if source:
+            SEEN_VIDEOS.add(source.group(1))
         print('video', v.get('url'), v.get('duration'), v.get('width'), v.get('height'))
         path = OUT / f'p{status_id}-{i}.mp4'
         try:
@@ -136,12 +141,32 @@ def post(status_id, author):
 
 
 def search(query):
-    url = 'https://html.duckduckgo.com/html/?q=' + urllib.parse.quote(query)
-    try:
-        return get(url)
-    except Exception as e:
-        print('search failed', query, e)
-        return ''
+    """Result pages from two engines, for the X posts they link."""
+    pages = []
+    for url in (
+        'https://html.duckduckgo.com/html/?q=' + urllib.parse.quote(query),
+        'https://www.bing.com/search?q=' + urllib.parse.quote(f'{query} site:x.com'),
+    ):
+        try:
+            pages.append(get(url))
+        except Exception as e:
+            print('search failed', url, e)
+    return urllib.parse.unquote(' '.join(pages))
+
+
+def mirror_posts(handle):
+    """The handle's recent posts from the first public mirror that answers."""
+    for mirror in MIRRORS:
+        try:
+            html = get(f'{mirror}/{handle}', timeout=40)
+        except Exception as e:
+            print('mirror failed', mirror, handle, e)
+            continue
+        found = {m.group(1) for m in re.finditer(rf'/{handle}/status/(\d{{15,20}})', html, re.I)}
+        print(f'===== MIRROR {mirror} {handle}', len(html), 'posts', len(found))
+        if found:
+            return {i: handle for i in found}
+    return {}
 
 
 def youtube(query, found):
@@ -175,30 +200,17 @@ def youtube_video(video_id):
 
 
 def main():
-    statuses, videos = {}, set()
-    for url in ARTICLES:
-        print(f'===== ARTICLE {url}')
-        try:
-            html = get(url)
-        except Exception as e:
-            print('article failed', e)
-            continue
-        found = status_ids(html)
-        print('posts', found, 'youtube', youtube_ids(html))
-        statuses.update(found)
-        videos |= youtube_ids(html)
+    statuses = {}
+    for handle in HANDLES:
+        statuses.update(mirror_posts(handle))
     for query in SEARCHES:
-        found = status_ids(urllib.parse.unquote(search(query)))
+        found = status_ids(search(query))
         print(f'===== SEARCH {query}', found)
         statuses.update(found)
-    for query in YOUTUBE:
-        youtube(query, videos)
-    print('===== ALL POSTS', statuses)
+    print('===== ALL POSTS', len(statuses))
     for status_id, author in statuses.items():
         if status_id not in KNOWN:
             post(status_id, author)
-    for video_id in list(videos)[:4]:
-        youtube_video(video_id)
 
 
 main()
