@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/backup_data.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// What the reader agreed to once they had seen what the file holds.
 class ImportChoice {
@@ -119,7 +120,7 @@ String? _origin(BuildContext context, SettingsData data) {
     return null;
   }
 
-  final locale = Localizations.localeOf(context).toString();
+  final locale = formattingLocale(context);
 
   return L10n.of(context).import_preview_from(
     version,

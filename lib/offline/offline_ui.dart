@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_models.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 String offlineBytes(BuildContext context, int bytes) {
-  final locale = Localizations.localeOf(context).toString();
+  final locale = formattingLocale(context);
   if (bytes < 1024) return '${NumberFormat.decimalPattern(locale).format(bytes)} B';
   if (bytes < 1024 * 1024) return '${NumberFormat('0.#', locale).format(bytes / 1024)} KiB';
   return '${NumberFormat('0.#', locale).format(bytes / (1024 * 1024))} MiB';

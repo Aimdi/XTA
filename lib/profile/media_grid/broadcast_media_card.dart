@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Broadcast metadata sits outside the preview so even audio-only rooms remain
 /// identifiable, and long titles do not compete with playback controls.
@@ -77,7 +78,7 @@ class BroadcastMediaCard extends StatelessWidget {
                       ),
                     if (date != null)
                       Text(
-                        DateFormat.yMMMd().format(date.toLocal()),
+                        DateFormat.yMMMd(currentFormattingLocale()).format(date.toLocal()),
                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                   ],

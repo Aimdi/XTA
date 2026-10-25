@@ -28,6 +28,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/reload_status.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// What a failed Bluesky read should say.
 String blueskyErrorMessage(L10n l10n, Object error) {
@@ -651,7 +652,12 @@ class BlueskyProfileCard extends StatelessWidget {
                 children: [
                   Icon(Icons.calendar_today_outlined, size: 14, color: theme.hintColor),
                   const SizedBox(width: 4),
-                  Flexible(child: Text(l10n.joined(DateFormat('MMMM yyyy').format(createdAt)), style: metadataStyle)),
+                  Flexible(
+                    child: Text(
+                      l10n.joined(DateFormat('MMMM yyyy', currentFormattingLocale()).format(createdAt)),
+                      style: metadataStyle,
+                    ),
+                  ),
                 ],
               ),
             ),

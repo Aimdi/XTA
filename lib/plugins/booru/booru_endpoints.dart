@@ -50,7 +50,8 @@ class BooruSite {
       endpoint('/index.php', {'page': 'dapi', 's': kind, 'q': 'index', 'json': '1', ...query});
 }
 
-final _day = DateFormat('yyyy-MM-dd');
+/// The sites read the date, so it is written in Western digits whatever the reader's language.
+final _day = DateFormat('yyyy-MM-dd', 'en_US');
 
 /// Popular posts for [query]; null where the engine has no such list.
 Uri? booruPopularUri(BooruSite site, BooruPopularQuery query, {required int page, required int limit}) {

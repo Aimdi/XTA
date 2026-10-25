@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_detail_caption.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_list_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// What tapping an Info row does.
 sealed class PixivInfoAction {
@@ -98,7 +99,7 @@ class PixivProfileInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rows = pixivProfileInfoRows(L10n.of(context), profile, Intl.getCurrentLocale());
+    final rows = pixivProfileInfoRows(L10n.of(context), profile, currentFormattingLocale());
     return ListView.separated(
       padding: EdgeInsets.only(top: 8, bottom: 16 + MediaQuery.paddingOf(context).bottom),
       itemCount: rows.length,

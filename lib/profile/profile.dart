@@ -35,6 +35,7 @@ import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/reload_status.dart';
@@ -167,7 +168,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   final GlobalKey<NestedScrollViewState> _nestedScrollViewKey = GlobalKey();
   final ProfileViewStore _viewStore = ProfileViewStore();
   final ProfileScrollStore _scrollStore = ProfileScrollStore();
-  final NumberFormat _numberFormat = NumberFormat.compact();
+  final NumberFormat _numberFormat = NumberFormat.compact(locale: currentFormattingLocale());
 
   late TabController _tabController;
   bool _tabControllerInitialized = false;
@@ -516,7 +517,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       result.add(
         ProfileMetadataItem(
           icon: Icons.calendar_today_outlined,
-          child: Text(L10n.of(context).joined(DateFormat('MMMM yyyy').format(user.createdAt!))),
+          child: Text(
+            L10n.of(context).joined(DateFormat('MMMM yyyy', currentFormattingLocale()).format(user.createdAt!)),
+          ),
         ),
       );
     }

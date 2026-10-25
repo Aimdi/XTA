@@ -388,4 +388,5 @@ bool _positive(String value) {
   return number != null && number > 0;
 }
 
-String _formatDate(DateTime? value) => value == null ? '' : DateFormat('yyyy-MM-dd').format(value);
+/// X's query syntax, not the reader's: `since:2026-01-31` in Western digits.
+String _formatDate(DateTime? value) => value == null ? '' : DateFormat('yyyy-MM-dd', 'en_US').format(value);

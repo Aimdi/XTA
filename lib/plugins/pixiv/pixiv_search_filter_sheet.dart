@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_filters.dart';
-import 'package:xta/utils/number_locale.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/reader_value_store.dart';
 
 /// What the filter sheet hands back: the filter, and whether to keep it.

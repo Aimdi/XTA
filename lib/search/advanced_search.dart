@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/search/advanced_search_model.dart';
 import 'package:xta/search/search_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Full-screen progressive form that returns the structured filters used to
 /// compose an X search query. Dismissing it leaves the existing search intact.
@@ -93,7 +94,9 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   }) {
     return AdvancedSearchDateRow(
       label: label,
-      value: value == null ? L10n.of(context).not_set : DateFormat('yyyy-MM-dd').format(value),
+      value: value == null
+          ? L10n.of(context).not_set
+          : DateFormat('yyyy-MM-dd', currentFormattingLocale()).format(value),
       selected: value != null,
       onTap: () => _pickDate(current: value, onChanged: onChanged),
       onClear: () => onChanged(null),

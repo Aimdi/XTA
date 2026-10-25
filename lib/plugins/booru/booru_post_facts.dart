@@ -4,6 +4,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/plugin_storage.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 typedef BooruFact = ({IconData icon, String text, String? label});
 
@@ -57,7 +58,7 @@ class BooruPostFacts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).toString();
+    final locale = formattingLocale(context);
     final facts = booruPostFacts(post, L10n.of(context), locale);
     final muted = theme.colorScheme.onSurfaceVariant;
     return Padding(

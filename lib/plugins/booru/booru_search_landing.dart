@@ -10,6 +10,7 @@ import 'package:xta/plugins/booru/booru_search_store.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/booru/booru_tag_style.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// What sits under the field while editing: suggestions for the tag being
 /// typed, otherwise quick operators, saved searches and recent searches.
@@ -146,7 +147,7 @@ class _SuggestionTile extends StatelessWidget {
 
 /// Short counts stay exact; some locales do not abbreviate thousands at all.
 String _postCount(BuildContext context, int count) {
-  final locale = Localizations.localeOf(context).toString();
+  final locale = formattingLocale(context);
   return count < 1000000
       ? NumberFormat.decimalPattern(locale).format(count)
       : NumberFormat.compact(locale: locale).format(count);

@@ -8,6 +8,7 @@ import 'package:xta/settings/diagnostics_model.dart';
 import 'package:xta/settings/diagnostics_report.dart';
 import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/ui/motion.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Makes the account-selection and endpoint machinery visible.
 ///
@@ -81,7 +82,7 @@ class _DiagnosticsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dates = DateFormat.yMd(Localizations.localeOf(context).toString()).add_Hm();
+    final dates = DateFormat.yMd(formattingLocale(context)).add_Hm();
 
     return ListView(
       padding: EdgeInsets.only(bottom: 16 + MediaQuery.of(context).padding.bottom),

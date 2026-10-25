@@ -7,6 +7,7 @@ import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/plugins/plugin_storage.dart';
 import 'package:xta/plugins/plugin_tag_chip.dart';
 import 'package:xta/ui/contrast.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 const ehCoverWidth = 120.0;
 const _ehCoverAspect = 0.7;
@@ -132,7 +133,7 @@ class EhGalleryFacts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final locale = Localizations.localeOf(context).toString();
+    final locale = formattingLocale(context);
     final language = detail.language;
     final size = detail.fileSizeBytes;
     final favorited = detail.favoritedCount;

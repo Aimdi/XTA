@@ -4,6 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Poll totals and shares are written in the reader's locale. Building a
 /// pattern parses it, so one of each is kept per locale rather than one per
@@ -30,7 +31,7 @@ class TweetPollResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Intl.getCurrentLocale();
+    final locale = currentFormattingLocale();
     final percent = _percentFormat(locale);
 
     return Padding(

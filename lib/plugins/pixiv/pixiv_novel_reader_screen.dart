@@ -29,7 +29,7 @@ import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_store.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
-import 'package:xta/utils/number_locale.dart';
+import 'package:xta/utils/formatting_locale.dart';
 import 'package:xta/utils/urls.dart';
 
 /// The widest the text runs; wider screens centre it.

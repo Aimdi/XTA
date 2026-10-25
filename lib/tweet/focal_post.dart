@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/engagement_count.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/utils/formatting_locale.dart';
 
 /// Names the post a conversation screen was opened on, so that one tile — and
 /// only that one — is drawn the way X draws an opened post.
@@ -61,7 +62,7 @@ class TweetFocalMetaLine extends StatelessWidget {
   String _timeAndDate(BuildContext context) {
     final (time, date) = focalPostTimeAndDate(
       createdAt!,
-      Intl.getCurrentLocale(),
+      currentFormattingLocale(),
       use24Hour: MediaQuery.alwaysUse24HourFormatOf(context),
     );
     return '$time · $date';
