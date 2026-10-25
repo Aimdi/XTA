@@ -3795,10 +3795,30 @@
   "@scroll_to_top": {},
   "search": "Search",
   "@search": {},
+  "search_any_language": "Any language",
+  "@search_any_language": {
+    "description": "First choice of the language picker in the X search filters: results in every language, with no language filter."
+  },
+  "search_hide_links": "Hide links",
+  "@search_hide_links": {
+    "description": "X search filter chip: leave out posts that contain a link, as 'Hide replies' leaves out replies. Also labels the active filter above the results."
+  },
   "search_in_plugin": "Search {name}",
   "@search_in_plugin": {},
+  "search_include_links": "Include links",
+  "@search_include_links": {
+    "description": "X search filter chip: keep posts that contain a link along with every other post, which is X's default. Sits before 'Only links' and 'Hide links'."
+  },
   "search_links": "Links",
   "@search_links": {},
+  "search_only_links": "Only links",
+  "@search_only_links": {
+    "description": "X search filter chip: show only posts that contain a link. Also labels the active filter above the results."
+  },
+  "search_only_replies": "Only replies",
+  "@search_only_replies": {
+    "description": "X search filter chip: show only posts that are replies. Sits between 'Include replies' and 'Hide replies', and labels the active filter above the results."
+  },
   "search_saved_posts": "Search saved posts",
   "@search_saved_posts": {},
   "search_settings": "Search settings",

@@ -2,12 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 
+part 'advanced_search_reader.dart';
+
 enum AdvancedSearchFilter {
   allWords,
   exactPhrase,
   anyWords,
   noneWords,
   hashtags,
+  language,
   fromAccounts,
   toAccounts,
   mentioningAccounts,
@@ -18,13 +21,17 @@ enum AdvancedSearchFilter {
   photos,
   videos,
   links,
-  excludeReplies,
+  replies,
+  includeReposts,
   excludeRetweets,
   since,
   until,
 }
 
-enum AdvancedSearchContentFilter { all, media, photos, videos, links }
+enum AdvancedSearchContentFilter { all, media, photos, videos }
+
+/// Whether results keep posts of one kind among the others, keep only them, or leave them out.
+enum AdvancedSearchInclusion { include, only, exclude }
 
 const Object _unchangedDate = Object();
 
@@ -35,6 +42,9 @@ class AdvancedSearchState {
   final String anyWords;
   final String noneWords;
   final String hashtags;
+
+  /// The code `lang:` takes, or empty for every language.
+  final String language;
   final String fromAccounts;
   final String toAccounts;
   final String mentioningAccounts;
@@ -44,7 +54,9 @@ class AdvancedSearchState {
   final DateTime? since;
   final DateTime? until;
   final AdvancedSearchContentFilter contentFilter;
-  final bool excludeReplies;
+  final AdvancedSearchInclusion links;
+  final AdvancedSearchInclusion replies;
+  final bool includeReposts;
   final bool excludeRetweets;
 
   const AdvancedSearchState({
@@ -53,6 +65,7 @@ class AdvancedSearchState {
     this.anyWords = '',
     this.noneWords = '',
     this.hashtags = '',
+    this.language = '',
     this.fromAccounts = '',
     this.toAccounts = '',
     this.mentioningAccounts = '',
@@ -63,52 +76,26 @@ class AdvancedSearchState {
     this.until,
     bool onlyMedia = false,
     AdvancedSearchContentFilter? contentFilter,
-    this.excludeReplies = false,
+    this.links = AdvancedSearchInclusion.include,
+    this.replies = AdvancedSearchInclusion.include,
+    this.includeReposts = false,
     this.excludeRetweets = false,
   }) : contentFilter =
            contentFilter ?? (onlyMedia ? AdvancedSearchContentFilter.media : AdvancedSearchContentFilter.all);
 
   bool get onlyMedia => contentFilter == AdvancedSearchContentFilter.media;
 
-  factory AdvancedSearchState.fromQuery(String query) {
-    var state = AdvancedSearchState(allWords: query.trim());
-    final trailingOperator = RegExp(r'(^|\s)(-?filter:\w+)$');
-    while (true) {
-      final match = trailingOperator.firstMatch(state.allWords);
-      if (match == null) return state;
-      final prefix = state.allWords.substring(0, match.start).trimRight();
-      if (!_isTopLevelPrefix(prefix) || RegExp(r'(^|\s)(AND|OR|NOT)$').hasMatch(prefix)) {
-        return state;
-      }
-      final restored = state._restoreTrailingFilter(match.group(2)!);
-      if (restored == null) return state;
-      state = restored.copyWith(allWords: prefix);
-    }
-  }
-
-  AdvancedSearchState? _restoreTrailingFilter(String operator) {
-    final content = switch (operator) {
-      'filter:media' => AdvancedSearchContentFilter.media,
-      'filter:images' => AdvancedSearchContentFilter.photos,
-      'filter:videos' => AdvancedSearchContentFilter.videos,
-      'filter:links' => AdvancedSearchContentFilter.links,
-      _ => null,
-    };
-    if (content != null) {
-      return contentFilter == AdvancedSearchContentFilter.all ? copyWith(contentFilter: content) : null;
-    }
-    return switch (operator) {
-      '-filter:replies' when !excludeReplies => copyWith(excludeReplies: true),
-      '-filter:retweets' when !excludeRetweets => copyWith(excludeRetweets: true),
-      _ => null,
-    };
-  }
+  /// The filters the form can show for [query]; whatever it cannot stays in [allWords] as typed.
+  factory AdvancedSearchState.fromQuery(String query) => _readQuery(query);
 
   String get query => buildAdvancedSearchQueryFromState(this);
 
   List<AdvancedSearchFilter> get activeFilters {
     return AdvancedSearchFilter.values.where(_isActive).toList(growable: false);
   }
+
+  /// Whether a filter besides the plain words is set, as when a typed query carries operators.
+  bool get hasOperators => activeFilters.any((filter) => filter != AdvancedSearchFilter.allWords);
 
   bool _isActive(AdvancedSearchFilter filter) {
     return switch (filter) {
@@ -117,6 +104,7 @@ class AdvancedSearchState {
       AdvancedSearchFilter.anyWords => anyWords.trim().isNotEmpty,
       AdvancedSearchFilter.noneWords => noneWords.trim().isNotEmpty,
       AdvancedSearchFilter.hashtags => hashtags.trim().isNotEmpty,
+      AdvancedSearchFilter.language => language.isNotEmpty,
       AdvancedSearchFilter.fromAccounts => fromAccounts.trim().isNotEmpty,
       AdvancedSearchFilter.toAccounts => toAccounts.trim().isNotEmpty,
       AdvancedSearchFilter.mentioningAccounts => mentioningAccounts.trim().isNotEmpty,
@@ -126,8 +114,9 @@ class AdvancedSearchState {
       AdvancedSearchFilter.onlyMedia => onlyMedia,
       AdvancedSearchFilter.photos => contentFilter == AdvancedSearchContentFilter.photos,
       AdvancedSearchFilter.videos => contentFilter == AdvancedSearchContentFilter.videos,
-      AdvancedSearchFilter.links => contentFilter == AdvancedSearchContentFilter.links,
-      AdvancedSearchFilter.excludeReplies => excludeReplies,
+      AdvancedSearchFilter.links => links != AdvancedSearchInclusion.include,
+      AdvancedSearchFilter.replies => replies != AdvancedSearchInclusion.include,
+      AdvancedSearchFilter.includeReposts => includeReposts,
       AdvancedSearchFilter.excludeRetweets => excludeRetweets,
       AdvancedSearchFilter.since => since != null,
       AdvancedSearchFilter.until => until != null,
@@ -141,6 +130,7 @@ class AdvancedSearchState {
       AdvancedSearchFilter.anyWords => anyWords.trim(),
       AdvancedSearchFilter.noneWords => noneWords.trim(),
       AdvancedSearchFilter.hashtags => hashtags.trim(),
+      AdvancedSearchFilter.language => language,
       AdvancedSearchFilter.fromAccounts => fromAccounts.trim(),
       AdvancedSearchFilter.toAccounts => toAccounts.trim(),
       AdvancedSearchFilter.mentioningAccounts => mentioningAccounts.trim(),
@@ -151,7 +141,8 @@ class AdvancedSearchState {
       AdvancedSearchFilter.photos ||
       AdvancedSearchFilter.videos ||
       AdvancedSearchFilter.links ||
-      AdvancedSearchFilter.excludeReplies ||
+      AdvancedSearchFilter.replies ||
+      AdvancedSearchFilter.includeReposts ||
       AdvancedSearchFilter.excludeRetweets => '',
       AdvancedSearchFilter.since => _formatDate(since),
       AdvancedSearchFilter.until => _formatDate(until),
@@ -164,6 +155,7 @@ class AdvancedSearchState {
     String? anyWords,
     String? noneWords,
     String? hashtags,
+    String? language,
     String? fromAccounts,
     String? toAccounts,
     String? mentioningAccounts,
@@ -174,7 +166,9 @@ class AdvancedSearchState {
     Object? until = _unchangedDate,
     bool? onlyMedia,
     AdvancedSearchContentFilter? contentFilter,
-    bool? excludeReplies,
+    AdvancedSearchInclusion? links,
+    AdvancedSearchInclusion? replies,
+    bool? includeReposts,
     bool? excludeRetweets,
   }) {
     return AdvancedSearchState(
@@ -183,6 +177,7 @@ class AdvancedSearchState {
       anyWords: anyWords ?? this.anyWords,
       noneWords: noneWords ?? this.noneWords,
       hashtags: hashtags ?? this.hashtags,
+      language: language ?? this.language,
       fromAccounts: fromAccounts ?? this.fromAccounts,
       toAccounts: toAccounts ?? this.toAccounts,
       mentioningAccounts: mentioningAccounts ?? this.mentioningAccounts,
@@ -192,7 +187,9 @@ class AdvancedSearchState {
       since: identical(since, _unchangedDate) ? this.since : since as DateTime?,
       until: identical(until, _unchangedDate) ? this.until : until as DateTime?,
       contentFilter: contentFilter ?? _contentWithOnlyMedia(onlyMedia),
-      excludeReplies: excludeReplies ?? this.excludeReplies,
+      links: links ?? this.links,
+      replies: replies ?? this.replies,
+      includeReposts: includeReposts ?? this.includeReposts,
       excludeRetweets: excludeRetweets ?? this.excludeRetweets,
     );
   }
@@ -216,6 +213,7 @@ class AdvancedSearchState {
       AdvancedSearchFilter.anyWords => copyWith(anyWords: ''),
       AdvancedSearchFilter.noneWords => copyWith(noneWords: ''),
       AdvancedSearchFilter.hashtags => copyWith(hashtags: ''),
+      AdvancedSearchFilter.language => copyWith(language: ''),
       AdvancedSearchFilter.fromAccounts => copyWith(fromAccounts: ''),
       AdvancedSearchFilter.toAccounts => copyWith(toAccounts: ''),
       AdvancedSearchFilter.mentioningAccounts => copyWith(mentioningAccounts: ''),
@@ -225,8 +223,9 @@ class AdvancedSearchState {
       AdvancedSearchFilter.onlyMedia => copyWith(onlyMedia: false),
       AdvancedSearchFilter.photos => _clearContent(AdvancedSearchContentFilter.photos),
       AdvancedSearchFilter.videos => _clearContent(AdvancedSearchContentFilter.videos),
-      AdvancedSearchFilter.links => _clearContent(AdvancedSearchContentFilter.links),
-      AdvancedSearchFilter.excludeReplies => copyWith(excludeReplies: false),
+      AdvancedSearchFilter.links => copyWith(links: AdvancedSearchInclusion.include),
+      AdvancedSearchFilter.replies => copyWith(replies: AdvancedSearchInclusion.include),
+      AdvancedSearchFilter.includeReposts => copyWith(includeReposts: false),
       AdvancedSearchFilter.excludeRetweets => copyWith(excludeRetweets: false),
       AdvancedSearchFilter.since => copyWith(since: null),
       AdvancedSearchFilter.until => copyWith(until: null),
@@ -255,13 +254,22 @@ class AdvancedSearchStore extends Store<AdvancedSearchState> {
     update(next);
   }
 
+  void setLanguage(String value) => update(state.copyWith(language: value));
+
   void setOnlyMedia(bool value) => update(state.copyWith(onlyMedia: value));
 
   void setContentFilter(AdvancedSearchContentFilter value) => update(state.copyWith(contentFilter: value));
 
-  void setExcludeReplies(bool value) => update(state.copyWith(excludeReplies: value));
+  void setLinks(AdvancedSearchInclusion value) => update(state.copyWith(links: value));
 
-  void setExcludeRetweets(bool value) => update(state.copyWith(excludeRetweets: value));
+  void setReplies(AdvancedSearchInclusion value) => update(state.copyWith(replies: value));
+
+  /// Reposts brought in and retweets left out contradict each other, so turning one on turns the other off.
+  void setIncludeReposts(bool value) =>
+      update(state.copyWith(includeReposts: value, excludeRetweets: value ? false : null));
+
+  void setExcludeRetweets(bool value) =>
+      update(state.copyWith(excludeRetweets: value, includeReposts: value ? false : null));
 
   void setSince(DateTime? value) => update(state.copyWith(since: value));
 
@@ -279,109 +287,62 @@ String _orGroup(Iterable<String> items) {
   return list.length == 1 ? list.first : '(${list.join(' OR ')})';
 }
 
-void _addPrefixedGroup(List<String> parts, String input, String Function(String) toOperator) {
+String? _prefixedGroup(String input, String Function(String) toOperator) {
   final items = _tokens(input).map(toOperator).toList();
-  if (items.isNotEmpty) parts.add(_orGroup(items));
+  return items.isEmpty ? null : _orGroup(items);
 }
 
-void _addMinimum(List<String> parts, String input, String operator) {
+String? _minimum(String input, String operator) {
   final number = int.tryParse(input.trim());
-  if (number != null && number > 0) parts.add('$operator:$number');
+  return number != null && number > 0 ? '$operator:$number' : null;
 }
 
-String buildAdvancedSearchQueryFromState(AdvancedSearchState state) {
-  return buildAdvancedSearchQuery(
-    allWords: state.allWords,
-    exactPhrase: state.exactPhrase,
-    anyWords: state.anyWords,
-    noneWords: state.noneWords,
-    hashtags: state.hashtags,
-    fromAccounts: state.fromAccounts,
-    toAccounts: state.toAccounts,
-    mentioningAccounts: state.mentioningAccounts,
-    minReplies: state.minReplies,
-    minLikes: state.minLikes,
-    minRetweets: state.minRetweets,
-    since: state.since,
-    until: state.until,
-    onlyMedia: state.onlyMedia,
-    contentFilter: state.contentFilter,
-    excludeReplies: state.excludeReplies,
-    excludeRetweets: state.excludeRetweets,
-  );
+/// The query X receives, in a fixed order so the same filters always send the same text.
+String buildAdvancedSearchQueryFromState(AdvancedSearchState state) => [
+  ..._wordOperators(state),
+  if (state.language.isNotEmpty) 'lang:${state.language}',
+  ?_prefixedGroup(state.fromAccounts, (user) => 'from:${user.replaceAll('@', '')}'),
+  ?_prefixedGroup(state.toAccounts, (user) => 'to:${user.replaceAll('@', '')}'),
+  ?_prefixedGroup(state.mentioningAccounts, (user) => '@${user.replaceAll('@', '')}'),
+  ?_minimum(state.minReplies, 'min_replies'),
+  ?_minimum(state.minLikes, 'min_faves'),
+  ?_minimum(state.minRetweets, 'min_retweets'),
+  if (state.since != null) 'since:${_formatDate(state.since)}',
+  if (state.until != null) 'until:${_formatDate(state.until)}',
+  ..._kindOperators(state),
+].join(' ');
+
+List<String> _wordOperators(AdvancedSearchState state) {
+  final any = _tokens(state.anyWords);
+  return [
+    if (state.allWords.trim().isNotEmpty) state.allWords.trim(),
+    if (state.exactPhrase.trim().isNotEmpty) '"${state.exactPhrase.trim()}"',
+    if (any.isNotEmpty) _orGroup(any),
+    ..._tokens(state.noneWords).map((word) => '-$word'),
+    ?_prefixedGroup(state.hashtags, (tag) => tag.startsWith('#') ? tag : '#$tag'),
+  ];
 }
 
-String buildAdvancedSearchQuery({
-  required String allWords,
-  required String exactPhrase,
-  required String anyWords,
-  required String noneWords,
-  required String hashtags,
-  required String fromAccounts,
-  required String toAccounts,
-  required String mentioningAccounts,
-  required String minReplies,
-  required String minLikes,
-  required String minRetweets,
-  DateTime? since,
-  DateTime? until,
-  required bool onlyMedia,
-  AdvancedSearchContentFilter? contentFilter,
-  bool excludeReplies = false,
-  bool excludeRetweets = false,
-}) {
-  final parts = <String>[];
-  if (allWords.trim().isNotEmpty) parts.add(allWords.trim());
-  if (exactPhrase.trim().isNotEmpty) parts.add('"${exactPhrase.trim()}"');
-  final any = _tokens(anyWords);
-  if (any.isNotEmpty) parts.add(_orGroup(any));
-  parts.addAll(_tokens(noneWords).map((word) => '-$word'));
-  _addPrefixedGroup(parts, hashtags, (tag) => tag.startsWith('#') ? tag : '#$tag');
-  _addPrefixedGroup(parts, fromAccounts, (user) => 'from:${user.replaceAll('@', '')}');
-  _addPrefixedGroup(parts, toAccounts, (user) => 'to:${user.replaceAll('@', '')}');
-  _addPrefixedGroup(parts, mentioningAccounts, (user) => '@${user.replaceAll('@', '')}');
-  _addMinimum(parts, minReplies, 'min_replies');
-  _addMinimum(parts, minLikes, 'min_faves');
-  _addMinimum(parts, minRetweets, 'min_retweets');
-  if (since != null) parts.add('since:${_formatDate(since)}');
-  if (until != null) parts.add('until:${_formatDate(until)}');
-  final content = contentFilter ?? (onlyMedia ? AdvancedSearchContentFilter.media : AdvancedSearchContentFilter.all);
-  final contentOperator = _contentOperator(content);
-  if (contentOperator != null) parts.add(contentOperator);
-  if (excludeReplies) parts.add('-filter:replies');
-  if (excludeRetweets) parts.add('-filter:retweets');
-  return parts.join(' ');
-}
+List<String> _kindOperators(AdvancedSearchState state) => [
+  ?_contentOperator(state.contentFilter),
+  ?_inclusionOperator('links', state.links),
+  ?_inclusionOperator('replies', state.replies),
+  if (state.includeReposts) 'include:nativeretweets',
+  if (state.excludeRetweets) '-filter:retweets',
+];
 
 String? _contentOperator(AdvancedSearchContentFilter filter) => switch (filter) {
   AdvancedSearchContentFilter.all => null,
   AdvancedSearchContentFilter.media => 'filter:media',
   AdvancedSearchContentFilter.photos => 'filter:images',
   AdvancedSearchContentFilter.videos => 'filter:videos',
-  AdvancedSearchContentFilter.links => 'filter:links',
 };
 
-bool _isTopLevelPrefix(String prefix) {
-  var quoted = false;
-  var escaped = false;
-  var parentheses = 0;
-  for (final character in prefix.split('')) {
-    if (escaped) {
-      escaped = false;
-      continue;
-    }
-    if (character == r'\') {
-      escaped = true;
-    } else if (character == '"') {
-      quoted = !quoted;
-    } else if (!quoted && character == '(') {
-      parentheses++;
-    } else if (!quoted && character == ')') {
-      if (--parentheses < 0) return false;
-    }
-  }
-  return !quoted && !escaped && parentheses == 0;
-}
+String? _inclusionOperator(String kind, AdvancedSearchInclusion inclusion) => switch (inclusion) {
+  AdvancedSearchInclusion.include => null,
+  AdvancedSearchInclusion.only => 'filter:$kind',
+  AdvancedSearchInclusion.exclude => '-filter:$kind',
+};
 
 bool _positive(String value) {
   final number = int.tryParse(value.trim());

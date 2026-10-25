@@ -242,14 +242,12 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
 
   List<Widget> _filterChips(AdvancedSearchState advanced) {
     return advanced.activeFilters
-        .map((filter) {
-          final label = advancedFilterLabel(context, filter);
-          final value = advanced.valueOf(filter);
-          return SearchActiveFilterChip(
-            label: value.isEmpty ? label : '$label: $value',
+        .map(
+          (filter) => SearchActiveFilterChip(
+            label: advancedFilterChipLabel(context, advanced, filter),
             onDeleted: () => _clearFilter(filter),
-          );
-        })
+          ),
+        )
         .toList(growable: false);
   }
 

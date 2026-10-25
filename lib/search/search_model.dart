@@ -25,18 +25,24 @@ class SearchViewState {
 }
 
 /// Committed result query plus the optional structured filters that produced
-/// it. The text controller remains a draft until debounce or IME submission.
+/// it, or that its typed operators describe. The text controller remains a
+/// draft until debounce or IME submission.
 class SearchViewStore extends Store<SearchViewState> {
-  SearchViewStore({String initialQuery = ''}) : super(SearchViewState(query: initialQuery.trim()));
+  SearchViewStore({String initialQuery = ''}) : super(_typed(initialQuery.trim()));
+
+  static SearchViewState _typed(String query) {
+    final typed = AdvancedSearchState.fromQuery(query);
+    return SearchViewState(query: query, advanced: typed.hasOperators ? typed : const AdvancedSearchState());
+  }
 
   void commitQuery(String query) {
     final trimmed = query.trim();
-    final advanced = state.advanced.query == trimmed ? state.advanced : const AdvancedSearchState();
-    update(SearchViewState(query: trimmed, advanced: advanced));
+    final described = state.advanced.query == trimmed;
+    update(described ? SearchViewState(query: trimmed, advanced: state.advanced) : _typed(trimmed));
   }
 
   void invalidateAdvancedForDraft(String query) {
-    if (state.advanced.activeFilters.isEmpty || state.advanced.query == query.trim()) {
+    if (state.advanced.activeFilters.isEmpty || state.query == query.trim()) {
       return;
     }
     update(state.copyWith(advanced: const AdvancedSearchState()));
