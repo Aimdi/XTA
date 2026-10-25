@@ -13,6 +13,7 @@ import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/poll_fill.dart';
 import 'package:xta/tweet/poll_results.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/unified_card.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
@@ -20,6 +21,7 @@ import 'package:xta/links/link_opening.dart';
 import 'package:xta/links/link_preview_card.dart';
 import 'package:xta/tweet/tweet_link_context.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/ui/image_fade_in.dart';
 import 'package:xta/utils/json.dart';
 
 class TweetCard extends StatefulWidget {
@@ -148,6 +150,10 @@ class _TweetCardState extends State<TweetCard> {
             cache: true,
             fit: fit,
             cacheWidth: cacheWidth,
+            loadStateChanged: (state) => fadeInImageLoadState(
+              state,
+              placeholder: ColoredBox(color: skeletonBoneColor(context, 0)),
+            ),
           );
         },
       ),

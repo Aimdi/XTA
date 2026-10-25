@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/ui/image_fade_in.dart';
 
 /// A group's members rendered as its cover art.
 ///
@@ -171,12 +172,9 @@ class AvatarMosaic extends StatelessWidget {
         retries: 2,
         cacheWidth: cachePx,
         cacheHeight: cachePx,
-        loadStateChanged: (state) => switch (state.extendedImageLoadState) {
-          // Showing the monogram while loading keeps the mosaic's geometry
-          // stable — no blank hole, no layout shift when the image lands.
-          LoadState.loading || LoadState.failed => fallback,
-          LoadState.completed => null,
-        },
+        // The monogram while loading keeps the mosaic's geometry stable — no
+        // blank hole, no layout shift — and the photo fades in over it.
+        loadStateChanged: (state) => fadeInImageLoadState(state, placeholder: fallback, failed: fallback),
       ),
     );
   }

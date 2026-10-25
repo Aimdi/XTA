@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/image_fade_in.dart';
 
 /// How a link preview inside a post is drawn.
 enum LinkPreviewLayout {
@@ -46,7 +47,8 @@ Widget _networkImage(BuildContext context, String url, int? cacheWidth) => Exten
   fit: BoxFit.cover,
   cache: true,
   cacheWidth: cacheWidth,
-  loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? const _LinkGlyph() : null,
+  loadStateChanged: (state) =>
+      fadeInImageLoadState(state, placeholder: const SizedBox.shrink(), failed: const _LinkGlyph()),
 );
 
 const double kLinkPreviewTileSize = 56;

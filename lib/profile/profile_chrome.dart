@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
+import 'package:xta/ui/image_fade_in.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/verified_badges.dart';
@@ -48,11 +49,11 @@ class ProfileBanner extends StatelessWidget {
               width: double.infinity,
               height: height,
               fit: BoxFit.cover,
-              loadStateChanged: (state) =>
-                  switch (state.extendedImageLoadState) {
-                    LoadState.failed => ColoredBox(color: fallback),
-                    _ => null,
-                  },
+              loadStateChanged: (state) => fadeInImageLoadState(
+                state,
+                placeholder: ColoredBox(color: fallback),
+                failed: ColoredBox(color: fallback),
+              ),
             ),
     );
 

@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/ui/image_fade_in.dart';
 
 /// A network image decoded at the size it is actually painted at.
 ///
@@ -11,7 +12,15 @@ class CappedNetworkImage extends StatelessWidget {
   final String url;
   final BoxFit fit;
 
-  const CappedNetworkImage({super.key, required this.url, this.fit = BoxFit.cover});
+  /// Shown while the image loads, and under it as it fades in.
+  final Widget placeholder;
+
+  const CappedNetworkImage({
+    super.key,
+    required this.url,
+    this.fit = BoxFit.cover,
+    this.placeholder = const SizedBox.shrink(),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +28,13 @@ class CappedNetworkImage extends StatelessWidget {
       builder: (context, constraints) {
         final maxW = constraints.maxWidth;
         final cacheWidth = maxW.isFinite && maxW > 0 ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil() : null;
-        return ExtendedImage.network(url, cache: true, fit: fit, cacheWidth: cacheWidth);
+        return ExtendedImage.network(
+          url,
+          cache: true,
+          fit: fit,
+          cacheWidth: cacheWidth,
+          loadStateChanged: (state) => fadeInImageLoadState(state, placeholder: placeholder),
+        );
       },
     );
   }

@@ -9,6 +9,7 @@ import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/image_fade_in.dart';
 
 const double _avatarSize = 32;
 
@@ -98,7 +99,7 @@ class LinkPostContextBar extends StatelessWidget {
         height: _avatarSize,
         fit: BoxFit.cover,
         cacheWidth: (_avatarSize * MediaQuery.devicePixelRatioOf(context)).ceil(),
-        loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? fallback : null,
+        loadStateChanged: (state) => fadeInImageLoadState(state, placeholder: fallback, failed: fallback),
       ),
     );
   }
