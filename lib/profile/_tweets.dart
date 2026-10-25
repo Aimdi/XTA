@@ -12,6 +12,7 @@ import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/user.dart';
@@ -61,6 +62,9 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   bool _bypassCache = false;
   bool _firstLoadStarted = false;
   MergedTimeline? _merged;
+
+  /// The posts fade in over their placeholders.
+  final _afterPlaceholders = XtaAfterPlaceholders();
 
   @override
   bool get wantKeepAlive => true;
@@ -224,7 +228,7 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
               // slot (SliverFillRemaining) is the inner scrollable. Show skeleton /
               // error / empty outside it, and only mount the list once posts exist.
               if (pagingAwaitingFirstPage(state)) {
-                return const TweetFeedSkeleton();
+                return _afterPlaceholders.placeholders(const TweetFeedSkeleton());
               }
               if (state.items == null) {
                 return ListView(
@@ -246,7 +250,7 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
                   ),
                 );
               }
-              return PagedListView<int, TweetChain>(
+              final posts = PagedListView<int, TweetChain>(
                 padding: EdgeInsets.zero,
                 state: state,
                 fetchNextPage: fetchNextPage,
@@ -272,6 +276,7 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
                   ),
                 ),
               );
+              return _afterPlaceholders.content(posts);
             },
           ),
         ),

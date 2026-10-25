@@ -30,6 +30,7 @@ import 'package:xta/ui/caught_up_end_card.dart';
 import 'package:xta/ui/stale_feed_banner.dart';
 import 'package:xta/ui/loading_hairline.dart';
 import 'package:xta/ui/floating_notice.dart';
+import 'package:xta/ui/motion.dart';
 
 typedef TweetPageResult = ({List<TweetChain> chains, String? nextCursor});
 typedef TweetPageLoader = Future<TweetPageResult> Function(String? cursor);
@@ -343,6 +344,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   bool _staleBannerDismissed = false;
   final _view = ReaderValueStore<int>(0);
   bool _hadPreview = false;
+
+  /// The first page fades in over its placeholders, never over posts already
+  /// on screen: cached ones, or another network's while X's are on their way.
+  final _afterPlaceholders = XtaAfterPlaceholders();
 
   PagingController<int, TweetChain> get _controller => widget.feed.controller;
 
@@ -677,6 +682,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     _hadPreview = _showingPreview;
     if (_showingPreview) {
       _maybeStartFirstLoad();
+      _afterPlaceholders.shownOther();
       return _wrapWithRefresh(
         CachedTweetList(widget.firstPagePreview!, username: widget.username, interleaved: widget.interleaved),
       );
@@ -684,6 +690,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
     final stale = _buildStaleView();
     if (stale != null) {
+      _afterPlaceholders.shownOther();
       return _wrapWithRefresh(stale);
     }
 
@@ -697,6 +704,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         final (boundary, buckets) = _placementFor(loaded);
         final endCard = _buildEndCard(loaded);
         if (onlyInterleavedToShow(chains: state.items, items: widget.interleaved)) {
+          _afterPlaceholders.shownOther();
           return _interleavedOnlyList(context, buckets.last, endCard);
         }
         // X's first page failed and there is no cached tweet list to fall
@@ -704,6 +712,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         // search must not hide the subreddit that is actually in this group.
         if (showInterleavedOnXFailure(chains: state.items, items: widget.interleaved) &&
             (pagingErrorOf(state)?.error ?? state.error) != null) {
+          _afterPlaceholders.shownOther();
           return _pluginPostsWithXError(
             context,
             items: buckets.last.isNotEmpty ? buckets.last : widget.interleaved,
@@ -720,9 +729,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           if (widget.interleaved.isNotEmpty) {
             // X's posts are on their way: a line over the plugin posts says so,
             // where a bar closing the list took room only a scroll down found.
+            _afterPlaceholders.shownOther();
             return LoadingHairline(loading: true, child: _interleavedOnlyList(context, _linkGrouping!.plugins, null));
           }
-          return const TweetFeedSkeleton();
+          return _afterPlaceholders.placeholders(const TweetFeedSkeleton());
         }
         if (state.items == null) {
           return ListView(
@@ -738,7 +748,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         if (loaded.isEmpty) {
           return _buildEmpty(context, endCard);
         }
-        return ReadingColumn(
+        final posts = ReadingColumn(
           // paddingOf, not of(): the whole-list builder must not take a
           // dependency on every MediaQuery change (keyboard, text scale).
           padding: EdgeInsets.only(top: 4, bottom: MediaQuery.paddingOf(context).bottom),
@@ -792,6 +802,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             ),
           ),
         );
+        return _afterPlaceholders.content(posts);
       },
     );
 

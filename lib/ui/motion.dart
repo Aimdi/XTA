@@ -107,6 +107,28 @@ class XtaArrivalWindow {
   }
 }
 
+/// Fades content in where placeholders stood: [placeholders] notes that they
+/// are on screen, and the [content] that next replaces them arrives with a
+/// fade. Content replacing anything else, such as posts kept from last time,
+/// is drawn at once, so nothing the reader is looking at blinks.
+class XtaAfterPlaceholders {
+  bool _shown = false;
+
+  Widget placeholders(Widget placeholders) {
+    _shown = true;
+    return placeholders;
+  }
+
+  Widget content(Widget content) {
+    final arriving = _shown;
+    _shown = false;
+    return XtaArrival(arriving: arriving, child: content);
+  }
+
+  /// Something other than the placeholders went on screen.
+  void shownOther() => _shown = false;
+}
+
 /// Cross-fades compact state changes. Optional size animation is reserved for
 /// small chrome such as a filter strip, never whole feeds or paginated pages.
 class XtaAnimatedSwitcher extends StatelessWidget {

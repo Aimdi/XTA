@@ -103,19 +103,27 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _ProfileScreen extends StatelessWidget {
+class _ProfileScreen extends StatefulWidget {
   final String? id;
   final String? screenName;
   final int? tabIndex;
 
   const _ProfileScreen({required this.id, required this.screenName, required this.tabIndex});
 
+  @override
+  State<_ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<_ProfileScreen> {
+  /// The profile fades in over its skeleton, not over a cached copy.
+  final _afterPlaceholders = XtaAfterPlaceholders();
+
   void _retry(BuildContext context) {
     final model = context.read<ProfileModel>();
-    if (id != null) {
-      model.loadProfileById(id!);
+    if (widget.id != null) {
+      model.loadProfileById(widget.id!);
     } else {
-      model.loadProfileByScreenName(screenName!);
+      model.loadProfileByScreenName(widget.screenName!);
     }
   }
 
@@ -131,19 +139,21 @@ class _ProfileScreen extends StatelessWidget {
             recoverableFailure: () => recoverableReadFailure(model.error ?? model.state.refreshError),
             retry: () => _retry(context),
             child: triple.isLoading
-                ? const ProfileLoadingSkeleton()
+                ? _afterPlaceholders.placeholders(const ProfileLoadingSkeleton())
                 : triple.error != null
                 ? SafeArea(
                     child: ProfileLoadFailure(error: triple.error, onRetry: () => _retry(context)),
                   )
                 // A failed refresh floats over the profile instead of pushing it
                 // down, below the status bar the header runs under.
-                : ReloadStatus(
-                    loading: triple.state.refreshing,
-                    error: triple.state.refreshError,
-                    source: pluginIdX,
-                    onRetry: () => _retry(context),
-                    child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
+                : _afterPlaceholders.content(
+                    ReloadStatus(
+                      loading: triple.state.refreshing,
+                      error: triple.state.refreshError,
+                      source: pluginIdX,
+                      onRetry: () => _retry(context),
+                      child: ProfileScreenBody(profile: triple.state, defaultTabIndex: widget.tabIndex),
+                    ),
                   ),
           ),
         ),

@@ -62,6 +62,41 @@ void main() {
     });
   });
 
+  group('content after placeholders', () {
+    /// What a surface shows over time: placeholders, posts kept from last
+    /// time, or the content.
+    Future<void> show(WidgetTester tester, XtaAfterPlaceholders after, String what) => tester.pumpWidget(
+      _app(switch (what) {
+        'placeholders' => after.placeholders(const Text('placeholders')),
+        'kept' => () {
+          after.shownOther();
+          return const Text('kept');
+        }(),
+        _ => after.content(const Text('content')),
+      }),
+    );
+
+    testWidgets('fades in where the placeholders were', (tester) async {
+      final after = XtaAfterPlaceholders();
+      await show(tester, after, 'placeholders');
+      await show(tester, after, 'content');
+      expect(_opacity(tester), 0);
+      await tester.pumpAndSettle();
+      expect(_opacity(tester), 1);
+    });
+
+    testWidgets('is drawn at once over posts kept from last time, and on a first build', (tester) async {
+      final after = XtaAfterPlaceholders();
+      await show(tester, after, 'content');
+      expect(_fade, findsNothing);
+
+      await show(tester, after, 'placeholders');
+      await show(tester, after, 'kept');
+      await show(tester, after, 'content');
+      expect(_fade, findsNothing);
+    });
+  });
+
   testWidgets('a list\'s first tiles arrive; those built later, as it scrolls, do not', (tester) async {
     final window = XtaArrivalWindow();
     final arrived = <int, bool>{};
