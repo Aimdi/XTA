@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "列数",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "紧凑",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "以网格显示",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "以列表显示",

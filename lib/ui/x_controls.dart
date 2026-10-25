@@ -61,11 +61,15 @@ class XSearchField extends StatefulWidget {
   final String hintText;
   final ValueChanged<String>? onChanged;
 
+  /// Focuses the field as it appears, for a search the reader just opened.
+  final bool autofocus;
+
   const XSearchField({
     super.key,
     required this.controller,
     required this.hintText,
     this.onChanged,
+    this.autofocus = false,
   });
 
   @override
@@ -105,6 +109,7 @@ class _XSearchFieldState extends State<XSearchField> {
     return TextField(
       controller: widget.controller,
       focusNode: _focusNode,
+      autofocus: widget.autofocus,
       textInputAction: TextInputAction.search,
       style: TextStyle(color: xOnSurface(context), fontSize: 15),
       cursorColor: accent,

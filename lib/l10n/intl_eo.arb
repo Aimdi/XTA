@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Kolumnoj",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Kompakta",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Montri kiel tabulon",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Montri kiel liston",

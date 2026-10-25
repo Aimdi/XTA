@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Veerud",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Kompaktne",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Kuva ruudustikuna",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Kuva loendina",

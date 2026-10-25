@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Coloane",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Compact",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Afișează ca panou",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Afișează ca listă",

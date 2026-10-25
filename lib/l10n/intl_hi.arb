@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "स्तंभ",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "कॉम्पैक्ट",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "बोर्ड के रूप में दिखाएँ",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "सूची के रूप में दिखाएँ",

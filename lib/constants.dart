@@ -589,6 +589,8 @@ const optionSubscriptionGroupsOrderByField =
     'subscription_groups.order_by.field';
 // How many tile columns the groups board shows (2 = bold, 3 = compact).
 const optionSubscriptionGroupsColumns = 'subscription_groups.columns';
+// Sideways group tiles, the faces beside the name: the board's Kompakt choice.
+const optionSubscriptionGroupsCompact = 'subscription_groups.compact';
 // How the groups tab is laid out. This used to be implied by the sort order —
 // picking "custom" silently switched to the list and back again — so the
 // layout looked as though it could not be chosen.

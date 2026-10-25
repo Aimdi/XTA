@@ -22,8 +22,8 @@ header row, and a compact tile as a choice.
   Back or system back closes the search and clears it. Swiping between tabs
   keeps the query and filters the other list; the hint says which list is
   searched.
-- The query lives in a `ReaderValueStore<String?>` the screen owns (null while
-  search is closed); both pages read it instead of keeping their own field.
+- The screen owns the search in two `ReaderValueStore`s, whether it is open
+  and the query; both pages read the query instead of keeping their own field.
 - When the screen is pushed (from the X reader) the Back button stays at the
   start of the row.
 

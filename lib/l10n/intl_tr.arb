@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Sütunlar",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Kompakt",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Pano olarak göster",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Liste olarak göster",

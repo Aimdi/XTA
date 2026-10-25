@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Kolonner",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Kompakt",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Vis som tavle",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Vis som liste",

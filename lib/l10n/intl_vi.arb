@@ -3800,6 +3800,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Số cột",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Thu gọn",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Hiển thị dạng bảng",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Hiển thị dạng danh sách",

@@ -3977,6 +3977,10 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Columns",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Compact",
+  "@subscription_groups_compact": {
+    "description": "Choice beside the 2 and 3 column choices for the groups board: smaller tiles with the member faces beside the name"
+  },
   "subscription_groups_layout_board": "Show as board",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Show as list",

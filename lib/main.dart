@@ -743,6 +743,7 @@ Future<void> main() async {
       alwaysShowFullTweetContents: true,
       optionSubscriptionGroupsOrderByField: 'name',
       optionSubscriptionGroupsColumns: 2,
+      optionSubscriptionGroupsCompact: false,
       optionSubscriptionGroupsLayout: subscriptionGroupsLayoutBoard,
       optionAiBaseUrl: '',
       optionAiApiKey: '',

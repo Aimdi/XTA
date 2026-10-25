@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Slupki",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Kampaktna",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Pakazać doškaj",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Pakazać spisam",

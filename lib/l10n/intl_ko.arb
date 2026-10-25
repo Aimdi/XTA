@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "열",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "컴팩트",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "보드로 보기",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "목록으로 보기",

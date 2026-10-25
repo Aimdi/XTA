@@ -13,24 +13,21 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/user.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/ui/x_controls.dart';
+import 'package:xta/utils/reader_value_store.dart';
 
 class SubscriptionUsersPage extends StatefulWidget {
   final ScrollController scrollController;
 
-  const SubscriptionUsersPage({super.key, required this.scrollController});
+  /// What the screen's header search filters by; without one, everyone shows.
+  final ReaderValueStore<String>? query;
+
+  const SubscriptionUsersPage({super.key, required this.scrollController, this.query});
 
   @override
   State<SubscriptionUsersPage> createState() => _SubscriptionUsersPageState();
 }
 
 class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
-  final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   Widget _emptyState(BuildContext context, {required String message, bool showImport = false}) {
     return ListView(
@@ -75,20 +72,6 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
           ),
         ],
       ],
-    );
-  }
-
-  Widget _buildSearchBar(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        child: XSearchField(
-          controller: _searchController,
-          hintText: L10n.of(context).search_subscriptions,
-          onChanged: (_) => setState(() {}),
-        ),
-      ),
     );
   }
 
@@ -148,6 +131,15 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
 
   @override
   Widget build(BuildContext context) {
+    final query = widget.query;
+    if (query == null) return _buildList(context, '');
+    return ScopedBuilder<ReaderValueStore<String>, String>(
+      store: query,
+      onState: (context, text) => _buildList(context, text.toLowerCase()),
+    );
+  }
+
+  Widget _buildList(BuildContext context, String query) {
     final model = context.read<SubscriptionsModel>();
 
     return ScopedBuilder<SubscriptionsModel, List<Subscription>>(
@@ -167,19 +159,14 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
           );
         }
 
-        final query = _searchController.text.toLowerCase();
         return Scrollbar(
           controller: widget.scrollController,
           interactive: true,
           child: CustomScrollView(
             controller: widget.scrollController,
             slivers: [
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _SearchHeaderDelegate(child: _buildSearchBar(context)),
-              ),
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(8, 0, 8, 16 + MediaQuery.paddingOf(context).bottom),
+                padding: EdgeInsets.fromLTRB(8, 4, 8, 16 + MediaQuery.paddingOf(context).bottom),
                 sliver: query.isEmpty
                     ? _buildReorderableSliver(context, state)
                     : _buildFilteredSliver(context, state, query),
@@ -190,24 +177,6 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
       },
     );
   }
-}
-
-class _SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-
-  _SearchHeaderDelegate({required this.child});
-
-  @override
-  double get minExtent => 64;
-
-  @override
-  double get maxExtent => 64;
-
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) => child;
-
-  @override
-  bool shouldRebuild(covariant _SearchHeaderDelegate oldDelegate) => child != oldDelegate.child;
 }
 
 /// Back-compat wrapper for the people list as a sliver group.

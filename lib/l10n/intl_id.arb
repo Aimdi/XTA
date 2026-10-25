@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Kolom",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Ringkas",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Tampilkan sebagai papan",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Tampilkan sebagai daftar",

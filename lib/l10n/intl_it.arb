@@ -3803,6 +3803,8 @@
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Colonne",
   "@subscription_groups_columns": {},
+  "subscription_groups_compact": "Compatto",
+  "@subscription_groups_compact": {},
   "subscription_groups_layout_board": "Mostra a griglia",
   "@subscription_groups_layout_board": {},
   "subscription_groups_layout_list": "Mostra come elenco",
