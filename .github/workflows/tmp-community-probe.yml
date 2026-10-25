@@ -1,0 +1,29 @@
+name: Temporary community id probe
+
+on:
+  push:
+    branches: [claude/admiring-mayer-bdfg95]
+    paths:
+      - 'test/live/community_probe_test.dart'
+      - '.github/workflows/tmp-community-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: Probe
+        run: flutter test test/live/community_probe_test.dart --no-pub --dart-define=RUN_LIVE=true --reporter expanded
