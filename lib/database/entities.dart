@@ -9,7 +9,10 @@ import 'package:xta/subscriptions/group_mark_style.dart';
 import 'package:xta/user.dart';
 import 'package:intl/intl.dart';
 
-final DateFormat sqliteDateFormat = DateFormat('yyyy-MM-dd hh:mm:ss');
+/// `created_at` as stored, read back with [DateTime.parse]: a 24-hour clock
+/// (`hh` saved 13:37 as 01:37) and a fixed locale, since the reader's may
+/// lack date data (Esperanto) or write other digits.
+final DateFormat sqliteDateFormat = DateFormat('yyyy-MM-dd HH:mm:ss', 'en_US');
 
 mixin ToMappable {
   Map<String, dynamic> toMap();
