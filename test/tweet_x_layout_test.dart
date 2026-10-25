@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/community/community_screen.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
@@ -39,7 +40,13 @@ TweetWithCard _post({String id = '1', String lang = 'ru', int? views = 77123, Tw
   ..isQuoteStatus = quoted != null
   ..quotedStatusWithCard = quoted;
 
-Future<void> _pumpTile(WidgetTester tester, TweetWithCard tweet, {String? focalId, double width = 411}) async {
+Future<void> _pumpTile(
+  WidgetTester tester,
+  TweetWithCard tweet, {
+  String? focalId,
+  double width = 411,
+  Map<String, WidgetBuilder> routes = const {},
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = Size(width, 900);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -86,6 +93,7 @@ Future<void> _pumpTile(WidgetTester tester, TweetWithCard tweet, {String? focalI
           ],
           supportedLocales: const [Locale('en')],
           home: Scaffold(body: SingleChildScrollView(child: tile)),
+          routes: routes,
         ),
       ),
     ),
@@ -212,6 +220,32 @@ void main() {
       await _pumpTile(tester, _post(lang: 'en'));
 
       expect(find.byIcon(Icons.lock_outline), findsNothing);
+    });
+
+    testWidgets('a community post names its community and opens it', (tester) async {
+      await _pumpTile(
+        tester,
+        _post(lang: 'en')..communityId = '1472249315724771329',
+        routes: {routeCommunity: (context) => Text('opened ${ModalRoute.of(context)!.settings.arguments}')},
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byIcon(Icons.groups_outlined), findsOneWidget);
+      await tester.tap(find.text('Community'));
+      await tester.pumpAndSettle();
+      expect(find.text('opened ${const CommunityScreenArguments('1472249315724771329')}'), findsOneWidget);
+    });
+
+    testWidgets('a quoted community post leaves its community to its own page', (tester) async {
+      await _pumpTile(
+        tester,
+        _post(
+          lang: 'en',
+          quoted: _post(id: '2', lang: 'en')..communityId = '1',
+        ),
+      );
+
+      expect(find.byIcon(Icons.groups_outlined), findsNothing);
     });
   });
 

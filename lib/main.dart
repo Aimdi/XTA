@@ -30,6 +30,7 @@ import 'package:xta/client/endpoint_overrides.dart';
 import 'package:xta/client/x_cookie_login.dart';
 import 'package:xta/client/headers.dart';
 
+import 'package:xta/community/community_screen.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/downloads/download_destination.dart';
@@ -1440,6 +1441,7 @@ class _FritterAppState extends State<FritterApp> {
                   routeSettingsHome: (context) => const SettingsHomeFragment(),
                   routeQuotes: (context) => const QuotesScreen(),
                   routeTicker: (context) => const TickerScreen(),
+                  routeCommunity: (context) => const CommunityScreen(),
                   routeStatus: (context) => const StatusScreen(),
                   routeAntennas: (context) => const AntennaScreen(),
                   routeAntennaFeed: (context) => const AntennaFeedScreen(),
@@ -1592,6 +1594,13 @@ class _DefaultPageState extends State<DefaultPage> {
           context,
           routeStatus,
           arguments: StatusScreenArguments(id: id, username: screenName),
+        );
+        return;
+      case CommunityUriInfo(id: final id, about: final about):
+        Navigator.pushNamed(
+          context,
+          routeCommunity,
+          arguments: CommunityScreenArguments(id, about: about),
         );
         return;
       case ListUriInfo(id: final id):

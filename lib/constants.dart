@@ -904,6 +904,7 @@ const routeSettingsExport = '/settings/export';
 const routeSettingsHome = '/settings/home';
 const routeQuotes = '/quotes';
 const routeTicker = '/ticker';
+const routeCommunity = '/community';
 const routeStatus = '/status';
 const routeAntennas = '/antennas';
 const routeAntennaFeed = '/antenna';

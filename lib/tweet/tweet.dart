@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/community/community_screen.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
@@ -364,16 +365,6 @@ class TweetTileState extends State<TweetTile> {
       user.idStr != null &&
       user.screenName != null &&
       user.name != null;
-
-  UserSubscription _subscriptionFor(User user) => UserSubscription(
-    id: user.idStr!,
-    screenName: user.screenName!,
-    name: user.name!,
-    profileImageUrlHttps: user.profileImageUrlHttps,
-    verified: user.verified ?? false,
-    createdAt: user.createdAt ?? DateTime.now(),
-    inFeed: true,
-  );
 
   /// Offers to subscribe to a not-yet-followed author, or to file them into
   /// groups right away (which subscribes them too).
@@ -780,9 +771,11 @@ class TweetTileState extends State<TweetTile> {
               followed: subscriptions.any((s) => s.id == tweet.user!.idStr),
               onFollow: () => context
                   .read<SubscriptionsModel>()
-                  .toggleSubscribe(_subscriptionFor(tweet.user!), false),
-              onMore: () =>
-                  _showSubscribeSheet(context, _subscriptionFor(tweet.user!)),
+                  .toggleSubscribe(subscriptionForUser(tweet.user!), false),
+              onMore: () => _showSubscribeSheet(
+                context,
+                subscriptionForUser(tweet.user!),
+              ),
             ),
           );
 
@@ -844,6 +837,25 @@ class TweetTileState extends State<TweetTile> {
           )
         : null;
 
+    // X names only the community's id in a post; its page has the rest.
+    final communityId = isQuotedTweet ? null : tweet.communityId;
+    final communityBadge = communityId == null
+        ? null
+        : _TweetTileLeading(
+            icon: Icons.groups_outlined,
+            onTap: () => Navigator.pushNamed(
+              context,
+              routeCommunity,
+              arguments: CommunityScreenArguments(communityId),
+            ),
+            children: [
+              TextSpan(
+                text: L10n.of(context).community,
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
+          );
+
     final articleLink = _articleLink;
     final skipBroadcastCard =
         isBroadcastCard(tweet.card) && tweetHasVideoMedia(tweet);
@@ -887,6 +899,7 @@ class TweetTileState extends State<TweetTile> {
             retweetBanner,
             ?pinnedBadge,
             ?threadBadge,
+            ?communityBadge,
             _buildThreadBody(
               avatar,
               Padding(
@@ -939,6 +952,7 @@ class TweetTileState extends State<TweetTile> {
                   retweetBanner,
                   ?pinnedBadge,
                   ?threadBadge,
+                  ?communityBadge,
                   headerTile,
                   ...bodyChildren,
                 ],

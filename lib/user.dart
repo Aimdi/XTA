@@ -83,6 +83,19 @@ class UserAvatar extends StatelessWidget {
   }
 }
 
+/// A local follow for [user] as X sent it, which may lack the name, the badge
+/// or the date [UserSubscription.fromUser] insists on: members of a community
+/// and authors of posts carry no account date.
+UserSubscription subscriptionForUser(User user) => UserSubscription(
+  id: user.idStr!,
+  screenName: user.screenName!,
+  name: user.name ?? user.screenName!,
+  profileImageUrlHttps: user.profileImageUrlHttps,
+  verified: user.verified ?? false,
+  createdAt: user.createdAt ?? DateTime.now(),
+  inFeed: true,
+);
+
 class UserTile extends StatelessWidget {
   final Subscription user;
 
