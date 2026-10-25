@@ -1,4 +1,7 @@
-import 'package:dart_twitter_api/twitter_api.dart' show QuotedStatusPermalink, User;
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dart_twitter_api/twitter_api.dart' show Entities, QuotedStatusPermalink, User;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,8 +12,10 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/engagement_count.dart';
 import 'package:xta/tweet/focal_post.dart';
+import 'package:xta/tweet/grok_share_card.dart';
 import 'package:xta/tweet/tweet.dart';
 import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -86,6 +91,43 @@ Future<void> _pumpTile(WidgetTester tester, TweetWithCard tweet, {String? focalI
     ),
   );
   await tester.pumpAndSettle();
+}
+
+/// A post ending in a link to the recorded Grok share of
+/// test/fixtures/UnifiedCard/grok_share.json, with that card. [text] is what
+/// comes before the link.
+TweetWithCard _grokPost(String text) {
+  const link = 'https://t.co/CH5rknAUC4';
+  final raw = jsonDecode(File('test/fixtures/UnifiedCard/grok_share.json').readAsStringSync()) as Map<String, dynamic>;
+  final full = '$text$link';
+  return _post(lang: 'en')
+    ..fullText = full
+    ..displayTextRange = [0, full.length]
+    ..entities = Entities.fromJson({
+      'urls': [
+        {
+          'url': link,
+          'expanded_url': 'https://x.com/i/grok/share/96b0a07447744eb79d03cbcaaf76e19f',
+          'display_url': 'x.com/i/grok/share/9…',
+          'indices': [text.length, full.length],
+        },
+      ],
+    })
+    ..card = {
+      ...raw,
+      'binding_values': {for (final e in raw['binding_values'] as List) e['key'] as String: e['value']},
+    };
+}
+
+/// The post's own text blocks, leaving out the Grok question in its card.
+List<ExpandableTweetText> _postTexts(WidgetTester tester) {
+  final inCard = tester
+      .widgetList(find.descendant(of: find.byType(GrokShareCard), matching: find.byType(ExpandableTweetText)))
+      .toSet();
+  return [
+    for (final text in tester.widgetList<ExpandableTweetText>(find.byType(ExpandableTweetText)))
+      if (!inCard.contains(text)) text,
+  ];
 }
 
 Rect _glyph(WidgetTester tester, IconData icon) => tester.getRect(find.byIcon(icon).first);
@@ -170,6 +212,26 @@ void main() {
       await _pumpTile(tester, _post(lang: 'en'));
 
       expect(find.byIcon(Icons.lock_outline), findsNothing);
+    });
+  });
+
+  group('a Grok share', () {
+    testWidgets('leaves no blank above its card when its link was all the text', (tester) async {
+      await _pumpTile(tester, _grokPost(''));
+
+      expect(find.byType(GrokShareCard), findsOneWidget);
+      expect(_postTexts(tester), isEmpty, reason: 'the card shows the link, so no text is left to draw');
+    });
+
+    testWidgets('ends the text above its card on its last word', (tester) async {
+      await _pumpTile(tester, _grokPost('I discussed with Grok today !\n'));
+
+      final text = _postTexts(tester).single;
+      expect(
+        TextSpan(children: text.textSpans).toPlainText(),
+        'I discussed with Grok today !',
+        reason: 'the line break before the link would leave an empty line above the card',
+      );
     });
   });
 

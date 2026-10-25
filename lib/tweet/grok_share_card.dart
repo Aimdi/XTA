@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/profile/profile.dart';
+import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/unified_card.dart';
 import 'package:xta/user.dart';
@@ -48,10 +49,28 @@ class GrokShareCard extends StatelessWidget {
   }
 }
 
-class _GrokQuestion extends StatelessWidget {
+class _GrokQuestion extends StatefulWidget {
   final String message;
 
   const _GrokQuestion({required this.message});
+
+  @override
+  State<_GrokQuestion> createState() => _GrokQuestionState();
+}
+
+class _GrokQuestionState extends State<_GrokQuestion> {
+  static const _maxLines = 3;
+
+  // Kept across builds: new spans fold a question the reader unfolded.
+  late List<InlineSpan> _spans = [TextSpan(text: widget.message)];
+
+  @override
+  void didUpdateWidget(_GrokQuestion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.message != oldWidget.message) {
+      _spans = [TextSpan(text: widget.message)];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +86,11 @@ class _GrokQuestion extends StatelessWidget {
             decoration: BoxDecoration(color: colors.secondaryContainer, borderRadius: BorderRadius.circular(18)),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: kTweetSpace3, vertical: kTweetSpace2),
-              child: Text(
-                message,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+              // A long question offers the rest, as a long post does; the card
+              // around it still opens the conversation on a tap.
+              child: DefaultTextStyle.merge(
                 style: tweetBodyStyle(context).copyWith(color: colors.onSecondaryContainer),
+                child: ExpandableTweetText(textSpans: _spans, maxLines: _maxLines),
               ),
             ),
           ),

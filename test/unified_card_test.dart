@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/_card.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/grok_share_card.dart';
@@ -77,6 +78,44 @@ Future<void> _pump(WidgetTester tester, Widget child) async {
 
 Future<void> _pumpCard(WidgetTester tester, Map<String, dynamic> card) =>
     _pump(tester, TweetCard(tweet: _tweet(card), card: card));
+
+/// [text] as a post reads it, its links described by [entities].
+Future<String> _shownText(
+  WidgetTester tester,
+  String text,
+  Entities entities, {
+  bool hideGrokShareLinks = false,
+}) async {
+  late String shown;
+  await _pump(
+    tester,
+    Builder(
+      builder: (context) {
+        final parts = buildRichText(context, text, entities, hideGrokShareLinks: hideGrokShareLinks);
+        shown = TextSpan(children: displayRichText(parts)).toPlainText();
+        disposeRichTextParts(parts);
+        return const SizedBox();
+      },
+    ),
+  );
+  return shown;
+}
+
+/// A post's only link, [url] at [indices], leading to [expandedUrl].
+Entities _link(String url, String expandedUrl, List<int> indices) => Entities.fromJson({
+  'urls': [
+    {'url': url, 'expanded_url': expandedUrl, 'display_url': expandedUrl.substring(8), 'indices': indices},
+  ],
+});
+
+/// The question of a recorded Grok share (x.com/quax_tests/status/2109405630372991224), too long for three lines.
+const _longQuestion =
+    "Here I'm having a discussion with grok but I speak a lot. How are you doing grok ? I would like to chat with "
+    "you to test my Android app ! But for this I need to fill my message so that I it's long enough to make my test "
+    'case relevant.';
+
+Map<String, dynamic> _question(Map<String, dynamic> unified) =>
+    (_details(unified)['conversation_preview'] as List).first as Map<String, dynamic>;
 
 void main() {
   group('unifiedCardOf', () {
@@ -223,6 +262,38 @@ void main() {
       expect(shown, contains('x.com/i/grok/share'));
     });
 
+    testWidgets('leave no line break behind when they end the text', (tester) async {
+      // The text of x.com/quax_tests/status/2109403816038666716, recorded by QuaX.
+      const text = 'I discussed with Grok today !\nhttps://t.co/v55JVdUSt7';
+      final link = _link('https://t.co/v55JVdUSt7', 'https://x.com/i/grok/share/32db3dd9ab8941ecbad132eeadd54f37', [
+        30,
+        53,
+      ]);
+
+      expect(
+        await _shownText(tester, text, link, hideGrokShareLinks: true),
+        'I discussed with Grok today !',
+        reason: 'the line break would end the text on an empty line above the card',
+      );
+      expect(
+        await _shownText(tester, text, link),
+        'I discussed with Grok today !\nx.com/i/grok/share/32db3dd9ab8941ecbad132eeadd54f37',
+        reason: 'a link the text keeps keeps its line',
+      );
+    });
+
+    testWidgets('keep the text around them when more follows', (tester) async {
+      final link = _link('https://t.co/g', 'https://x.com/i/grok/share/abc123', [5, 19]);
+
+      expect(await _shownText(tester, 'Look https://t.co/g at this', link, hideGrokShareLinks: true), 'Look  at this');
+    });
+
+    testWidgets('leave no line break before a broadcast shown under the text either', (tester) async {
+      final link = _link('https://t.co/b', 'https://x.com/i/broadcasts/1ZkJzbdvLgRJv', [10, 24]);
+
+      expect(await _shownText(tester, 'Live now\n\nhttps://t.co/b', link), 'Live now');
+    });
+
     test('a hidden link entity paints nothing', () {
       final url = Url.fromJson({
         'expanded_url': 'https://x.com/i/grok/share/abc123',
@@ -254,6 +325,42 @@ void main() {
       expect(find.text('Is this real?'), findsOneWidget);
       expect(find.textContaining('Yes, the clip is real footage'), findsOneWidget);
       expect(find.textContaining('grok:render'), findsNothing);
+    });
+
+    testWidgets('lets a Grok question longer than three lines be unfolded', (tester) async {
+      await _pumpCard(tester, _edited('grok_share', (u) => _question(u)['message'] = _longQuestion));
+      final question = find.ancestor(of: find.text(_longQuestion), matching: find.byType(ExpandableTweetText));
+      Finder showMore() => find.descendant(of: question, matching: find.text('Show more'));
+
+      expect(showMore(), findsOneWidget, reason: 'cut after three lines, the rest a tap away');
+      await tester.tap(showMore());
+      await tester.pump();
+      expect(showMore(), findsNothing);
+
+      await _pumpCard(tester, _edited('grok_share', (u) => _question(u)['message'] = _longQuestion));
+      expect(showMore(), findsNothing, reason: 'drawing the card again keeps the question unfolded');
+    });
+
+    testWidgets('shows a short Grok question whole', (tester) async {
+      await _pumpCard(tester, _keyedCard('grok_share'));
+
+      expect(find.text('Is this real?'), findsOneWidget);
+      expect(find.text('Show more'), findsNothing);
+    });
+
+    testWidgets('opens the Grok conversation from its question', (tester) async {
+      final card = _edited('grok_share', (u) => _question(u)['message'] = _longQuestion);
+      var opened = 0;
+      await _pump(
+        tester,
+        GrokShareCard(share: GrokShareCardData.fromUnified(unifiedCardOf(card)!)!, onTap: () => opened++),
+      );
+
+      await tester.tap(find.text(_longQuestion));
+      expect(opened, 1, reason: 'the question is part of the card, which opens the conversation');
+      await tester.tap(find.text('Show more'));
+      await tester.pump();
+      expect(opened, 1, reason: 'Show more unfolds the question and opens nothing');
     });
 
     testWidgets('keeps an icon where Grok\'s picture goes when there is none', (tester) async {

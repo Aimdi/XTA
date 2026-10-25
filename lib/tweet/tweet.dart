@@ -105,6 +105,10 @@ class TweetTileState extends State<TweetTile> {
   // (translate / show original) rather than on every build of the tile.
   List<InlineSpan> _displaySpans = const [];
 
+  /// Whether [_displaySpans] show anything. A post whose only text is a link
+  /// its card shows instead has nothing left, and gets no text block.
+  bool _showsText = false;
+
   /// The post actually shown: a retweet displays the post it carries.
   TweetWithCard get _displayedTweet => tweet.retweetedStatusWithCard ?? tweet;
 
@@ -223,8 +227,11 @@ class TweetTileState extends State<TweetTile> {
   }
 
   /// Displays [parts]. Call from inside a `setState`.
-  void _showParts(List<RichTextPart> parts) =>
-      _displaySpans = displayRichText(parts);
+  void _showParts(List<RichTextPart> parts) {
+    _displaySpans = displayRichText(parts);
+    final text = TextSpan(children: _displaySpans).toPlainText();
+    _showsText = text.trim().isNotEmpty;
+  }
 
   /// X's no-linguistic-content codes: media-only, mentions-only, cashtags-only,
   /// short/undetermined text. Nothing there to translate.
@@ -640,7 +647,7 @@ class TweetTileState extends State<TweetTile> {
     Widget content = Container();
 
     final textEnd = tweet.displayTextRange?.elementAtOrNull(1);
-    if (textEnd == null || textEnd != 0) {
+    if ((textEnd == null || textEnd != 0) && _showsText) {
       content = DefaultTextStyle.merge(
         style: tweetBodyStyle(context),
         child: Padding(
