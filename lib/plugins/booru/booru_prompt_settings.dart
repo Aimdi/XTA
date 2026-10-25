@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_labels.dart';
 import 'package:xta/plugins/booru/booru_prompt.dart';
+import 'package:xta/ui/reorder_lift.dart';
 
 /// The kinds of tag "Copy tags as prompt" writes, in its order: drag a kind
 /// to move it, switch it off to leave it out.
@@ -30,6 +31,7 @@ class BooruPromptSettings extends StatelessWidget {
           child: Text(l10n.plugin_booru_prompt_help, style: Theme.of(context).textTheme.bodySmall),
         ),
         ReorderableListView(
+          proxyDecorator: xtaReorderLift,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           buildDefaultDragHandles: false,

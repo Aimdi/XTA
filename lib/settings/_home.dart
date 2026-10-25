@@ -6,6 +6,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/ui/motion.dart';
+import 'package:xta/ui/reorder_lift.dart';
 
 class SettingsHomeFragment extends StatelessWidget {
   const SettingsHomeFragment({super.key});
@@ -42,6 +43,7 @@ class SettingsHomeFragment extends StatelessWidget {
             return XtaFadeIn(
               key: const ValueKey('settings-home-content'),
               child: ReorderableListView.builder(
+                proxyDecorator: xtaReorderLift,
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   var page = data[index];

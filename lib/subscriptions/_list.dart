@@ -10,6 +10,7 @@ import 'package:xta/subscriptions/_import.dart';
 import 'package:xta/subscriptions/subscription_look.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reorder_lift.dart';
 import 'package:xta/user.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/ui/x_controls.dart';
@@ -96,7 +97,7 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
     return SliverReorderableList(
       itemCount: subLst.length,
       // The dragged row is drawn in the overlay, away from the page's Material.
-      proxyDecorator: (child, _, _) => Material(type: MaterialType.transparency, child: child),
+      proxyDecorator: xtaReorderLift,
       itemBuilder: (context, i) => ReorderableDelayedDragStartListener(
         key: ValueKey(subLst[i].id),
         index: i,

@@ -62,8 +62,9 @@ viewer's bars coming in after a photo lands.
   reorderable list: subscriptions in custom order, groups, the home tabs in
   Settings and in the add-tab sheet, saved folders, Pixiv favourite tags and
   Booru prompts. The picked-up row grows to 103 %, gets an 8 dp shadow,
-  rounded corners and the raised surface colour; dropping it settles it back.
-  Flutter's default gave a shadow only, and the subscriptions list had none.
+  rounded corners and the surface menus and sheets float on, which stands
+  clear of a true black page too; dropping it settles it back. Flutter's
+  default gave a shadow only, and the subscriptions list had none.
 
 ## 4. The price line draws in
 

@@ -8,6 +8,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_discovery_screen.dart';
+import 'package:xta/ui/reorder_lift.dart';
 import 'package:xta/utils/ai_client.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_tree.dart';
@@ -232,6 +233,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     ];
 
     return ReorderableListView.builder(
+      proxyDecorator: xtaReorderLift,
       scrollController: widget.scrollController,
       padding: EdgeInsets.fromLTRB(
         8,
