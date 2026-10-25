@@ -5,6 +5,8 @@
 /// middle of a timeline.
 library;
 
+import 'package:xta/utils/json.dart';
+
 class PollChoice {
   final String label;
   final double count;
@@ -12,7 +14,12 @@ class PollChoice {
   /// This option's share of the vote, 0..1. Zero when nobody has voted yet.
   final double share;
 
-  const PollChoice({required this.label, required this.count, required this.share});
+  /// The option's image at the size its bar shows it, and at full size. Both
+  /// null for an option without one.
+  final String? thumbnailUrl;
+  final String? imageUrl;
+
+  const PollChoice({required this.label, required this.count, required this.share, this.thumbnailUrl, this.imageUrl});
 }
 
 class TweetPoll {
@@ -28,6 +35,19 @@ class TweetPoll {
 
   /// Whether [choice] has the most votes. Nothing leads a poll nobody voted in.
   bool leads(PollChoice choice) => leadingCount > 0 && choice.count == leadingCount;
+
+  /// The options that carry an image, in order: what the viewer swipes through.
+  List<PollChoice> get choicesWithImages => [
+    for (final choice in choices)
+      if (choice.imageUrl != null) choice,
+  ];
+
+  /// How many options a poll with images has. Its card says so in a binding
+  /// rather than in its name, as the text polls do.
+  static int? choiceCountOf(Map<String, dynamic> card) {
+    final count = Json(card)['binding_values']['choice_count']['string_value'].integer;
+    return count != null && count > 0 ? count : null;
+  }
 
   static TweetPoll? fromCard(Map<String, dynamic> card, int numberOfChoices) {
     final values = card['binding_values'];
@@ -55,12 +75,24 @@ class TweetPoll {
     final endsAtRaw = stringAt('end_datetime_utc');
 
     return TweetPoll(
-      choices: [
-        for (var i = 0; i < labels.length; i++)
-          PollChoice(label: labels[i], count: counts[i], share: total == 0 ? 0 : counts[i] / total)
-      ],
+      choices: [for (var i = 0; i < labels.length; i++) _choice(values, i + 1, labels[i], counts[i], total)],
       total: total,
       endsAt: endsAtRaw == null ? null : DateTime.tryParse(endsAtRaw),
+    );
+  }
+
+  /// Option [choice] (counted from 1) with its share of [total] and its image.
+  /// Of the image's sizes, each stands in for the other when X sends only one.
+  static PollChoice _choice(Map values, int choice, String label, double count, double total) {
+    String? image(String size) => Json(values)['choice${choice}_image$size']['image_value']['url'].string;
+    final thumbnail = image('');
+    final original = image('_original');
+    return PollChoice(
+      label: label,
+      count: count,
+      share: total == 0 ? 0 : count / total,
+      thumbnailUrl: thumbnail ?? original,
+      imageUrl: original ?? thumbnail,
     );
   }
 }

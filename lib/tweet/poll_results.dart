@@ -4,6 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/capped_network_image.dart';
 import 'package:xta/utils/formatting_locale.dart';
 
 /// Poll totals and shares are written in the reader's locale. Building a
@@ -27,7 +28,15 @@ NumberFormat _percentFormat(String locale) =>
 class TweetPollResults extends StatelessWidget {
   final TweetPoll poll;
 
-  const TweetPollResults({super.key, required this.poll});
+  /// Opens an option's image full screen. The images stay out of the bars
+  /// without it.
+  final void Function(PollChoice choice)? onOpenImage;
+
+  /// Whether the images load on their own. Otherwise each waits for its tap,
+  /// like the post's media when the reader loads media manually.
+  final bool loadImages;
+
+  const TweetPollResults({super.key, required this.poll, this.onOpenImage, this.loadImages = true});
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +54,7 @@ class TweetPollResults extends StatelessWidget {
               share: choice.share,
               percent: percent.format(choice.share),
               leading: poll.leads(choice),
+              image: _imageOf(choice),
             ),
           Padding(
             padding: const EdgeInsets.only(top: kTweetSpace1),
@@ -53,6 +63,13 @@ class TweetPollResults extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget? _imageOf(PollChoice choice) {
+    final open = onOpenImage;
+    final url = choice.thumbnailUrl;
+    if (open == null || url == null) return null;
+    return PollChoiceImage(url: loadImages ? url : null, onTap: () => open(choice));
   }
 
   /// "1,234 votes · Ends in 2 days".
@@ -77,6 +94,7 @@ class TweetPollResults extends StatelessWidget {
 class PollOptionBar extends StatelessWidget {
   static const double minHeight = 36;
   static const double radius = 6;
+  static const double _inset = kTweetSpace1 + 2;
 
   final String label;
 
@@ -88,12 +106,16 @@ class PollOptionBar extends StatelessWidget {
 
   final bool leading;
 
+  /// The option's image, set at the start of the bar.
+  final Widget? image;
+
   const PollOptionBar({
     super.key,
     required this.label,
     required this.share,
     required this.percent,
     required this.leading,
+    this.image,
   });
 
   @override
@@ -124,9 +146,16 @@ class PollOptionBar extends StatelessWidget {
               // Grows with the text instead of clipping it at large sizes.
               constraints: const BoxConstraints(minHeight: minHeight),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: kTweetSpace3, vertical: kTweetSpace1 + 2),
+                // An image sits as far in from the start as from the top.
+                padding: EdgeInsetsDirectional.fromSTEB(
+                  image == null ? kTweetSpace3 : _inset,
+                  _inset,
+                  kTweetSpace3,
+                  _inset,
+                ),
                 child: Row(
                   children: [
+                    if (image != null) ...[image!, const SizedBox(width: kTweetSpace3)],
                     Expanded(
                       child: Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: style),
                     ),
@@ -137,6 +166,41 @@ class PollOptionBar extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// An option's image at the start of its bar, opening full screen on a tap.
+/// Without [url] it is a placeholder: nothing loads until that tap.
+class PollChoiceImage extends StatelessWidget {
+  static const double size = kTweetTouchTarget;
+
+  final String? url;
+  final VoidCallback onTap;
+
+  const PollChoiceImage({super.key, required this.url, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final url = this.url;
+    final secondary = tweetSecondaryColor(context);
+    return Semantics(
+      button: true,
+      label: L10n.of(context).media,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(PollOptionBar.radius),
+          child: SizedBox.square(
+            dimension: size,
+            child: ColoredBox(
+              color: secondary.withValues(alpha: 0.12),
+              child: url == null ? Icon(Icons.image_outlined, color: secondary) : CappedNetworkImage(url: url),
+            ),
+          ),
         ),
       ),
     );

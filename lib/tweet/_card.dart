@@ -324,9 +324,29 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  Widget _createVoteCard(BuildContext context, Map<String, dynamic> card, int numberOfChoices) {
+  Widget _createVoteCard(BuildContext context, Map<String, dynamic> card, int numberOfChoices, String imageSize) {
     final poll = TweetPoll.fromCard(card, numberOfChoices);
-    return poll == null ? Container() : TweetPollResults(poll: poll);
+    if (poll == null) return Container();
+    final loadManually = PrefService.of(context, listen: false).get<bool>(optionMediaDisableAutoload) ?? false;
+    return TweetPollResults(
+      poll: poll,
+      onOpenImage: imageSize == 'disabled' ? null : (choice) => _openPollImages(context, poll, choice),
+      loadImages: !loadManually,
+    );
+  }
+
+  /// The full images of every option in the viewer, opened on [choice]'s.
+  void _openPollImages(BuildContext context, TweetPoll poll, PollChoice choice) {
+    final pictured = poll.choicesWithImages;
+    pushTweetMediaViewer<void>(
+      context,
+      TweetMediaView(
+        initialIndex: pictured.indexOf(choice),
+        media: [for (final option in pictured) createMediaFromUrl(option.imageUrl, null)],
+        username: widget.tweet.user?.screenName ?? '',
+        tweetMedia: false,
+      ),
+    );
   }
 
   /// A large-image card stays large only when its picture is the content —
@@ -452,13 +472,18 @@ class _TweetCardState extends State<TweetCard> {
       // default and render nothing at all.
       case 'poll2choice_text_only':
       case 'poll2choice_image':
-        return _createVoteCard(context, card, 2);
+        return _createVoteCard(context, card, 2, imageSize);
       case 'poll3choice_text_only':
       case 'poll3choice_image':
-        return _createVoteCard(context, card, 3);
+        return _createVoteCard(context, card, 3, imageSize);
       case 'poll4choice_text_only':
       case 'poll4choice_image':
-        return _createVoteCard(context, card, 4);
+        return _createVoteCard(context, card, 4, imageSize);
+      // A poll whose options each carry an image: a number before its name,
+      // and its number of options in a binding.
+      case String name when name.endsWith(':poll_choice_images'):
+        final choices = TweetPoll.choiceCountOf(card);
+        return choices == null ? Container() : _createVoteCard(context, card, choices, imageSize);
       case 'promo_website':
         // https://twitter.com/CMEGroup/status/1573288572647612416
         final values = Json(card)['binding_values'];
