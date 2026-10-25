@@ -65,6 +65,8 @@ jobs:
           echo "$MAESTRO_SHA256  $RUNNER_TEMP/maestro.zip" | sha256sum -c -
           unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/maestro/bin" >> "$GITHUB_PATH"
+      - name: Install ffmpeg to trim the videos
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg
       - name: Let the emulator use KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \

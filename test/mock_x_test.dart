@@ -106,21 +106,23 @@ void main() {
     setUp(answers.clear);
     tearDown(() => expect(answers.where((answer) => !answer.answered).map((answer) => answer.body), isEmpty));
 
-    test('open a profile and page through its posts', () async {
+    test('open a profile and page through its posts and reposts', () async {
       final profile = await Twitter.getProfileByScreenName('quax_tests_2');
       expect(profile.user.name, 'Moluyts');
-      Future<TweetStatus> posts(String? cursor) => Twitter.getTweets(
+      Future<TweetStatus> posts(String? cursor, {bool reposts = false}) => Twitter.getTweets(
         profile.user.idStr!,
         'profile',
         profile.pinnedTweets,
         cursor: cursor,
         includeReplies: false,
+        reposts: reposts,
         getTweetsCounter: () => 0,
         incrementTweetsCounter: () {},
       );
       final first = await posts(null);
       expect(first.chains, isNotEmpty);
       expect((await posts(first.cursorBottom)).chains, isEmpty);
+      expect((await posts(null, reposts: true)).chains, isEmpty, reason: 'the Posts tab reads reposts beside posts');
     });
 
     test('say that an account does not exist', () async {

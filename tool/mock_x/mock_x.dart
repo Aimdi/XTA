@@ -34,6 +34,19 @@ class MockRoute {
 
 const _flutterCommunity = '1472249315724771329';
 
+const _emptyUserTimeline = {
+  'data': {
+    'user': {
+      'result': {
+        '__typename': 'User',
+        'timeline': {
+          'timeline': {'instructions': <Object>[]},
+        },
+      },
+    },
+  },
+};
+
 /// Everything the flows of .maestro/ open, answered from test/fixtures.
 const mockRoutes = <String, MockRoute>{
   'UserByScreenName': MockRoute(
@@ -47,6 +60,8 @@ const mockRoutes = <String, MockRoute>{
   ),
   'UserOriginalsTimeline': MockRoute({'*': 'UserOriginalsTimeline/page.json'}),
   'UserTweetsAndReplies': MockRoute({'*': 'UserOriginalsTimeline/page.json'}),
+  // The Posts tab reads reposts beside the posts; the recorded accounts repost nothing.
+  'UserRepostsTimeline': MockRoute({}, missing: _emptyUserTimeline),
   'TweetDetail': MockRoute(
     {'2105589900078641579': 'TweetDetail/subscriber_preview.json'},
     key: 'focalTweetId',

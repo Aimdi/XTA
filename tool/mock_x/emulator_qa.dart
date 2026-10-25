@@ -27,12 +27,12 @@ Future<void> main(List<String> args) async {
   final flows = _flows(flowsPath);
   final out = await Directory(outPath).create(recursive: true);
   final log = File('${out.path}/mock_x.log').openWrite();
-  final answers = <MockAnswer>[];
+  final answers = <(String, MockAnswer)>[];
   final server = await serveMockX(
     MockX(Directory('test/fixtures')),
     port: port,
     onAnswer: (method, url, answer) {
-      answers.add(answer);
+      answers.add(('$method ${url.path}', answer));
       log.writeln('${answer.status} $method ${url.path}');
       if (!answer.answered) log.writeln(answer.body);
     },
@@ -131,6 +131,7 @@ Future<bool> _runFlow(File flow, String device, String package, Directory out) a
     ...['--debug-output', '${out.path}/maestro/$name', flow.path],
   ], mode: ProcessStartMode.inheritStdio);
   final passed = await maestro.exitCode == 0;
+  if (!passed) await _printScreen(name, device);
   await Process.run('adb', ['shell', 'pkill', '-INT', 'screenrecord']);
   await recorder.exitCode;
   final video = '${out.path}/$name.mp4';
@@ -141,6 +142,21 @@ Future<bool> _runFlow(File flow, String device, String package, Directory out) a
     print('::warning::No video of $name: ${pulled.stderr}');
   }
   return passed;
+}
+
+final _label = RegExp(r'"(?:text|accessibilityText|hintText)"\s*:\s*"((?:[^"\\]|\\.)*)"');
+
+/// Prints the text the app exposed on screen, which tells why a flow failed
+/// without opening its artifact.
+Future<void> _printScreen(String name, String device) async {
+  final hierarchy = await Process.run('maestro', ['--device', device, 'hierarchy']);
+  final labels = {
+    for (final match in _label.allMatches('${hierarchy.stdout}'))
+      if (match.group(1)!.trim().isNotEmpty) match.group(1)!,
+  };
+  print('::group::On screen when $name failed');
+  labels.forEach(print);
+  print('::endgroup::');
 }
 
 /// Cuts the still screen shown while Maestro starts.
@@ -165,11 +181,16 @@ Future<bool> _hasFfmpeg() =>
 
 /// Prints the outcome as GitHub Actions annotations, and tells whether the run
 /// passed.
-bool _report(List<String> failedFlows, List<MockAnswer> answers) {
-  final served = answers.where((a) => a.answered).length;
-  final unanswered = answers.length - served;
-  print('The stand-in for X answered $served request(s) and could not answer $unanswered');
-  if (unanswered > 0) print('::warning::The stand-in for X could not answer $unanswered request(s), see mock_x.log');
+bool _report(List<String> failedFlows, List<(String, MockAnswer)> answers) {
+  final unanswered = [
+    for (final (request, answer) in answers)
+      if (!answer.answered) '$request: ${answer.body.split('\n').first}',
+  ];
+  final served = answers.length - unanswered.length;
+  print('The stand-in for X answered $served request(s) and could not answer ${unanswered.length}');
+  for (final request in unanswered.toSet()) {
+    print('::warning::The stand-in for X could not answer $request');
+  }
   if (served == 0) print('::error::The stand-in for X answered no request: the app did not reach it');
   for (final flow in failedFlows) {
     print('::error::$flow failed');
