@@ -15,7 +15,7 @@ and smooths them the same way. It adds no posting surface and changes no data.
 | Translating a post | The text is swapped in one frame and everything below it jumps | The translation fades in while the post eases to its new height, and so does the original on the way back |
 | A profile refreshing from X | Following and followers change as plain text; "Followed by" pops in and pushes the tabs down | The counts roll; "Followed by" grows in |
 | Things that open inside a feed | Price chips, link stacks, folded posts, repost runs and a revealed sensitive post change height at once | They ease to their new height |
-| Muting and starting a video | The mute icon swaps; the mute badge pops in as a video starts | The icon cross-fades; the badge and the loading ring fade in |
+| Muting a video | The mute icon swaps | The icon cross-fades |
 | Tapping a tab in the bottom bar | The page is replaced in one frame | The new page fades in quickly |
 | The line over a loading feed | It appears and vanishes at once, and batch progress steps | It fades in and out, progress glides, and it fills before it goes |
 | Swiping in the media viewer | "1 / 4" changes at once | The number rolls, as counts do |
@@ -75,9 +75,8 @@ and smooths them the same way. It adds no posting surface and changes no data.
 
 ## 7. Video
 
-- The mute badge's icon cross-fades between muted and unmuted.
-- When a feed video starts, the mute badge and the loading ring fade in
-  instead of popping.
+- The mute icon cross-fades between muted and unmuted (120 ms), on the badge
+  of a feed video and in the full-screen player.
 
 ## 8. Bottom-bar tabs
 
@@ -115,6 +114,9 @@ change in this pass happen at once.
   "Posts / Media" switch: each puts a second scrolling body on screen during a
   cross-fade, and nested scrolling allows one at a time.
 - "Show additional replies": the new replies land among those already shown.
+- Fading in a video's mute badge and loading ring as it starts: both belong to
+  several of the player's states, each built afresh, so a fade on arrival
+  would replay at every step.
 
 ## Tests
 
@@ -130,7 +132,7 @@ change in this pass happen at once.
   "Followed by" grows in.
 - Expanders: price chips, link stacks, folded posts and repost runs ease their
   height; a sensitive reveal eases too.
-- Video: the mute icon cross-fades.
+- Video: the mute icon cross-fades, and swaps at once with reduced motion.
 - Tabs: a tap fades the new page in; a swipe does not.
 - Loading line: it fades in and out, progress glides, and it fills before it
   goes.

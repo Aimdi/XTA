@@ -34,6 +34,7 @@ Widget _app(
   required VideoControllerPool pool,
   bool autoPlay = true,
   TextDirection direction = TextDirection.ltr,
+  bool animations = false,
 }) {
   return PrefService(
     service: PrefServiceCache(
@@ -45,7 +46,7 @@ Widget _app(
         optionMediaBackgroundPlayback: false,
         optionMediaAllowBackgroundPlayOtherApps: false,
         optionMediaVideoQuality: 'large',
-        optionDisableAnimations: true,
+        optionDisableAnimations: !animations,
       },
     ),
     child: MultiProvider(
@@ -143,6 +144,24 @@ void main() {
     await tester.tap(find.byType(VideoMuteBadge));
     await tester.pump();
     expect(_isMuted(tester), before);
+    await _unmount(tester);
+  });
+
+  testWidgets('with animations on, the badge cross-fades from one icon to the other', (tester) async {
+    await _pumpLoading(tester, _app(_xVideo(), pool: VideoControllerPool(maxSize: 1), animations: true));
+    final before = _isMuted(tester);
+    final was = find.byIcon(before ? Icons.volume_off : Icons.volume_up);
+    final becomes = find.byIcon(before ? Icons.volume_up : Icons.volume_off);
+
+    await tester.tap(find.byType(VideoMuteBadge));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(was, findsOneWidget, reason: 'fading out');
+    expect(becomes, findsOneWidget, reason: 'fading in');
+
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(was, findsNothing);
+    expect(becomes, findsOneWidget);
     await _unmount(tester);
   });
 

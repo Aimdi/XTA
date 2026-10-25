@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 const double kVideoMuteDiscSize = 30;
 const double kVideoMuteCornerInset = 12;
@@ -121,7 +122,15 @@ class _GlassDisc extends StatelessWidget {
                   colors: [Colors.white.withValues(alpha: 0.16), Colors.white.withValues(alpha: 0)],
                 ),
               ),
-              child: Icon(muted ? Icons.volume_off : Icons.volume_up, size: 16, color: Colors.white),
+              child: XtaAnimatedSwitcher(
+                duration: kXtaMotionFast,
+                child: Icon(
+                  muted ? Icons.volume_off : Icons.volume_up,
+                  key: ValueKey(muted),
+                  size: 16,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ),
