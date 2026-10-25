@@ -41,6 +41,7 @@ import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/reader_value_store.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -54,6 +55,7 @@ import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
 import 'package:xta/group/feed_search_fallback.dart';
 import 'package:xta/group/feed_search_query.dart';
+import 'package:xta/group/unrelated_posts.dart';
 import 'package:xta/group/group_media_page.dart';
 import 'package:xta/group/feed_chunk_concurrency.dart';
 import 'package:xta/ui/floating_notice.dart';
@@ -130,6 +132,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   // the stored ones because it ran out of allowance. The catch-up card must not
   // claim the reader is finished when this is true.
   bool _gapCapped = false;
+
+  /// Whether this page's searches brought posts from outside the feed.
+  final _unrelatedPosts = ReaderValueStore<bool>(false);
 
   // Reading position: the boundary is loaded once per mount and stays frozen,
   // so the "You're caught up" divider never moves mid-session.
@@ -519,6 +524,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   void dispose() {
     _cancelBatches();
     _batches.destroy();
+    _unrelatedPosts.destroy();
     if (_usesCache) _feedController.controller.cancel();
     _pluginFeed.destroy();
     _chunkRefreshDebounce?.cancel();
@@ -603,13 +609,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return (await repository.insert(tableFeedGroupCursor, {}, nullColumnHack: 'id')).toString();
   }
 
-  bool feedContainsUnrelatedTweets(TweetStatus tweets, List<Subscription> users) {
-    final screenNames = users.map((e) => e.screenName).toSet();
-    return tweets.chains.any(
-      (chain) => chain.tweets.any((tweet) => tweet.user != null && !screenNames.contains(tweet.user!.screenName)),
-    );
-  }
-
   Future<void> showUnrelatedPostsInFeedWarning() async {
     await showDialog(
       context: context,
@@ -638,7 +637,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             TextButton(
               child: Text(L10n.of(context).more_info),
               onPressed: () async {
-                await openUri(context, "https://github.com/Teskann/XTA/issues/26");
+                await openUri(context, "https://github.com/Teskann/QuaX/issues/26");
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }
@@ -788,7 +787,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         ReadWork.checkpoint();
         var searchPage = network.search;
         if (searchPage != null) {
-          shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(searchPage, chunk.users);
+          shouldShowUnrelatedPostsInFeedWarning |= chunkHasUnrelatedPosts(searchPage.chains, chunk.users);
         }
 
         final fresh = searchPage?.chains ?? network.fallbackChains;
@@ -907,10 +906,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     if (!mounted) throw const ReadCancelled();
-    if (shouldShowUnrelatedPostsInFeedWarning &&
-        !PrefService.of(context, listen: false).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
-      await showUnrelatedPostsInFeedWarning();
-    }
+    // A pill over the posts rather than a dialog in front of them. It stays
+    // until the next first page, even when later pages are fine.
+    _unrelatedPosts.update(shouldShowUnrelatedPostsInFeedWarning || (cursorKey != null && _unrelatedPosts.state));
     ReadWork.checkpoint();
     if (!mounted) throw const ReadCancelled();
 
@@ -1045,6 +1043,23 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     );
   }
 
+  Future<void> _explainUnrelatedPosts() async {
+    await showUnrelatedPostsInFeedWarning();
+    if (!mounted) return;
+    if (PrefService.of(context, listen: false).get(optionDisableWarningsForUnrelatedPostsInFeed) == true) {
+      _unrelatedPosts.update(false);
+    }
+  }
+
+  Widget _unrelatedPostsNotice() => ScopedBuilder<Store<bool>, bool>(
+    store: _unrelatedPosts,
+    onState: (context, found) {
+      final hidden = PrefService.of(context, listen: false).get(optionDisableWarningsForUnrelatedPostsInFeed) == true;
+      if (!found || hidden) return const SizedBox.shrink();
+      return UnrelatedPostsPill(onExplain: _explainUnrelatedPosts);
+    },
+  );
+
   /// The bar above already shows progress; the count only earns a row when
   /// some batches failed and can be retried.
   Widget _batchRetryRow(BuildContext context, BatchReadState<GroupBatchResult> batches) {
@@ -1114,40 +1129,43 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                     loading: widget.chunks.isNotEmpty && batches.loading,
                     value: batches.total == 0 ? null : batches.results.length / batches.total,
                     semanticsLabel: L10n.of(context).reader_batch_progress(batches.results.length, batches.total),
-                    child: PaginatedTweetList(
-                      feed: _feedController,
-                      loadPage: _listTweetsShared,
-                      username: null,
-                      firstPagePreview: _progressivePreview.isNotEmpty ? _progressivePreview : _cachedPreview,
-                      firstPagePreviewCachedAt: _cachedPreviewAt,
-                      foldReasons: _foldReasons,
-                      onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
-                      catchUpMayBeIncomplete: () => _gapCapped,
-                      onRefresh: () async {
-                        // Not awaited: the reader is waiting on X's first page, and
-                        // the plugins are beside it rather than in front of it.
-                        unawaited(_loadPluginPosts());
-                        // Only this group's rows. The wipe used to take the whole table
-                        // with it, so pulling to refresh one feed made every other feed
-                        // refetch its first page from the network next time it opened.
-                        final hashes = widget.chunks.map((e) => e.hash).toList();
-                        if (hashes.isEmpty) {
-                          return;
-                        }
+                    child: FloatingNotice(
+                      notice: _unrelatedPostsNotice(),
+                      child: PaginatedTweetList(
+                        feed: _feedController,
+                        loadPage: _listTweetsShared,
+                        username: null,
+                        firstPagePreview: _progressivePreview.isNotEmpty ? _progressivePreview : _cachedPreview,
+                        firstPagePreviewCachedAt: _cachedPreviewAt,
+                        foldReasons: _foldReasons,
+                        onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
+                        catchUpMayBeIncomplete: () => _gapCapped,
+                        onRefresh: () async {
+                          // Not awaited: the reader is waiting on X's first page, and
+                          // the plugins are beside it rather than in front of it.
+                          unawaited(_loadPluginPosts());
+                          // Only this group's rows. The wipe used to take the whole table
+                          // with it, so pulling to refresh one feed made every other feed
+                          // refetch its first page from the network next time it opened.
+                          final hashes = widget.chunks.map((e) => e.hash).toList();
+                          if (hashes.isEmpty) {
+                            return;
+                          }
 
-                        var repository = await Repository.writable();
-                        await repository.delete(
-                          tableFeedGroupChunk,
-                          where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
-                          whereArgs: hashes,
-                        );
-                      },
-                      firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
-                      newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-                      emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
-                      isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
-                      caughtUpDividerKey: _caughtUpKey,
-                      interleaved: items,
+                          var repository = await Repository.writable();
+                          await repository.delete(
+                            tableFeedGroupChunk,
+                            where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
+                            whereArgs: hashes,
+                          );
+                        },
+                        firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+                        newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+                        emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
+                        isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
+                        caughtUpDividerKey: _caughtUpKey,
+                        interleaved: items,
+                      ),
                     ),
                   ),
                 ),
