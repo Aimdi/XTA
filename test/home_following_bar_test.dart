@@ -181,8 +181,12 @@ void main() {
   });
 
   testWidgets('The selected tab carries the marker, and Media asks for media', (tester) async {
+    final semantics = tester.ensureSemantics();
     var toggled = 0;
     await tester.pumpWidget(_app(_bar(onMediaToggle: () => toggled++)));
+    expect(tester.getSemantics(find.byKey(_posts)), isSemantics(label: 'Posts', isSelected: true, isButton: true));
+    expect(tester.getSemantics(find.byKey(_media)), isSemantics(label: 'Media', isSelected: false, isButton: true));
+    semantics.dispose();
     Color? marker(Key tab) {
       final container = tester.widget<AnimatedContainer>(
         find.descendant(of: find.byKey(tab), matching: find.byType(AnimatedContainer)),

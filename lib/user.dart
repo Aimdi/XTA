@@ -8,6 +8,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/profile/profile.dart';
+import 'package:xta/profile/profile_chrome.dart' show kProfileControlRadius;
 import 'package:xta/subscriptions/group_membership_sheet.dart';
 import 'package:xta/subscriptions/subscription_unfollow.dart';
 import 'package:xta/subscriptions/users_model.dart';
@@ -159,7 +160,12 @@ class FollowButton extends StatelessWidget {
   final Subscription user;
   final Color? color;
 
-  const FollowButton({super.key, required this.user, this.color});
+  /// Draws the button in place of its icon, from whether [user] is followed
+  /// and shown in the main feed, as a profile's header does; the menu stays
+  /// the same.
+  final Widget Function(BuildContext context, ({bool followed, bool inFeed}) state)? builder;
+
+  const FollowButton({super.key, required this.user, this.color, this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +188,9 @@ class FollowButton extends StatelessWidget {
 
         return PopupMenuButton<String>(
           tooltip: text,
-          icon: icon,
+          icon: builder == null ? icon : null,
+          borderRadius: builder == null ? null : BorderRadius.circular(kProfileControlRadius),
+          child: builder?.call(context, (followed: followed, inFeed: inFeed)),
           itemBuilder: (context) => [
             PopupMenuItem(value: 'toggle_subscribe', child: Text(text)),
             PopupMenuItem(

@@ -7,9 +7,9 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/label_width.dart';
 import 'package:xta/ui/motion.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 const double kHomeFollowingBarHeight = 48;
-const double kHomeTabMarkerHeight = 3;
 const double kHomeOrderChipHeight = 32;
 
 /// The order chip at its widest, with a two-digit count, with and without its
@@ -29,14 +29,11 @@ enum HomeFollowingBarLayout {
   twoRows,
 }
 
-TextStyle _tabStyle({required bool selected}) =>
-    TextStyle(fontSize: 15, fontWeight: selected ? FontWeight.w700 : FontWeight.w500);
-
 /// The fit for a bar [width] wide with [actions] 48 dp buttons, measured with
 /// both tabs in the selected style so the widest state is the one that fits.
 HomeFollowingBarLayout homeFollowingBarLayout(BuildContext context, {required double width, required int actions}) {
   final l10n = L10n.of(context);
-  final style = (Theme.of(context).textTheme.labelLarge ?? const TextStyle()).merge(_tabStyle(selected: true));
+  final style = (Theme.of(context).textTheme.labelLarge ?? const TextStyle()).merge(readerTabNameStyle(selected: true));
   double tabs(double padding) => labelsWidth(context, [l10n.tweets, l10n.media], style, padding: 2 * padding);
   double controls(double chip) => kTweetSpace1 + chip + actions * kTweetTouchTarget + kHomeAppBarEndInset;
   return switch (width) {
@@ -192,39 +189,41 @@ class HomeFollowingBar extends StatelessWidget {
 
   Widget _modeTab(BuildContext context, bool media, String label, double padding) {
     final selected = mediaOnly == media;
-    return Semantics(
-      selected: selected,
-      child: TextButton(
-        key: ValueKey(media ? 'home-media-toggle' : 'home-posts-tab'),
-        onPressed: () {
-          if (!selected) onMediaToggle();
-        },
-        style: TextButton.styleFrom(
-          minimumSize: const Size(kTweetTouchTarget, kHomeFollowingBarHeight),
-          foregroundColor: selected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
-          padding: EdgeInsets.symmetric(horizontal: padding),
-          shape: const RoundedRectangleBorder(),
-        ),
-        child: SizedBox(
-          height: kHomeFollowingBarHeight,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Text(label, style: _tabStyle(selected: selected)),
-              PositionedDirectional(
-                start: 0,
-                end: 0,
-                bottom: 0,
-                child: AnimatedContainer(
-                  duration: xtaMotionDuration(context, kXtaMotionStandard),
-                  height: kHomeTabMarkerHeight,
-                  decoration: BoxDecoration(
-                    color: selected ? tweetReadableAccentColor(context) : Colors.transparent,
-                    borderRadius: BorderRadius.circular(kHomeTabMarkerHeight),
+    return MergeSemantics(
+      child: Semantics(
+        selected: selected,
+        child: TextButton(
+          key: ValueKey(media ? 'home-media-toggle' : 'home-posts-tab'),
+          onPressed: () {
+            if (!selected) onMediaToggle();
+          },
+          style: TextButton.styleFrom(
+            minimumSize: const Size(kTweetTouchTarget, kHomeFollowingBarHeight),
+            foregroundColor: selected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
+            padding: EdgeInsets.symmetric(horizontal: padding),
+            shape: const RoundedRectangleBorder(),
+          ),
+          child: SizedBox(
+            height: kHomeFollowingBarHeight,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Text(label, style: readerTabNameStyle(selected: selected)),
+                PositionedDirectional(
+                  start: 0,
+                  end: 0,
+                  bottom: 0,
+                  child: AnimatedContainer(
+                    duration: xtaMotionDuration(context, kXtaMotionStandard),
+                    height: kReaderTabMarkerHeight,
+                    decoration: BoxDecoration(
+                      color: selected ? tweetReadableAccentColor(context) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(kReaderTabMarkerHeight),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

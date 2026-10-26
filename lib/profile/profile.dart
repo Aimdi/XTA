@@ -48,20 +48,16 @@ typedef TabTitleBuilder = String Function(BuildContext context);
 class NavigationTab {
   final ProfileTabs id;
   final TabTitleBuilder titleBuilder;
-  final IconData icon;
 
-  const NavigationTab(this.id, this.titleBuilder, this.icon);
+  const NavigationTab(this.id, this.titleBuilder);
 }
 
 final List<NavigationTab> profileTabs = [
-  NavigationTab(ProfileTabs.posts, (context) => L10n.of(context).tweets, Icons.article_outlined),
-  NavigationTab(
-    ProfileTabs.postsAndReplies,
-    (context) => L10n.of(context).tweets_and_replies,
-    Icons.mode_comment_outlined,
-  ),
-  NavigationTab(ProfileTabs.media, (context) => L10n.of(context).media, Icons.perm_media_outlined),
-  NavigationTab(ProfileTabs.saved, (context) => L10n.of(context).saved, Icons.bookmark_border),
+  NavigationTab(ProfileTabs.posts, (context) => L10n.of(context).tweets),
+  // X calls the tab with posts and replies "Replies".
+  NavigationTab(ProfileTabs.postsAndReplies, (context) => L10n.of(context).plugin_profile_replies),
+  NavigationTab(ProfileTabs.media, (context) => L10n.of(context).media),
+  NavigationTab(ProfileTabs.saved, (context) => L10n.of(context).saved),
 ];
 
 class ProfileScreenArguments {
@@ -176,7 +172,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   final GlobalKey<NestedScrollViewState> _nestedScrollViewKey = GlobalKey();
   final ProfileViewStore _viewStore = ProfileViewStore();
   final ProfileScrollStore _scrollStore = ProfileScrollStore();
-  final NumberFormat _numberFormat = NumberFormat.compact(locale: currentFormattingLocale());
 
   late TabController _tabController;
   bool _tabControllerInitialized = false;
@@ -334,6 +329,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     final width = MediaQuery.sizeOf(context).width;
     final bannerHeight = (width / 3).clamp(120.0, kProfileBannerHeight).toDouble();
     final username = user.screenName ?? L10n.of(context).unknown;
+    final tabNames = [for (final tab in profileTabs) tab.titleBuilder(context)];
 
     return Scaffold(
       body: ExtendedNestedScrollView(
@@ -345,14 +341,13 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
           SliverPersistentHeader(
             pinned: true,
             delegate: ProfileTabsDelegate(
+              height: kProfileFlatTabHeight,
               ProfileTabsBar(
                 controller: _tabController,
-                tabs: [
-                  for (final tab in profileTabs)
-                    Tab(
-                      child: _ProfileTabLabel(icon: tab.icon, label: tab.titleBuilder(context)),
-                    ),
-                ],
+                height: kProfileFlatTabHeight,
+                flat: true,
+                even: readerTabsFitEvenly(context, tabNames, width: width),
+                tabs: [for (final name in tabNames) Tab(text: name)],
               ),
             ),
           ),
@@ -447,8 +442,13 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   }
 
   Widget _buildIdentityHeader(BuildContext context, UserWithExtra user, String username, double bannerHeight) {
+    final l10n = L10n.of(context);
     final bannerUrl = user.profileBannerUrl;
     final avatarUrl = user.profileImageUrlHttps?.replaceAll('_normal', '_400x400');
+    final followLabelled = profileFollowLabelFits(context, [
+      l10n.subscribed,
+      l10n.subscribe,
+    ], width: MediaQuery.sizeOf(context).width);
 
     return ProfileIdentityHeader(
       banner: ProfileBanner(
@@ -464,8 +464,16 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       ),
       actions: ProfileActionCluster(
         children: [
-          ProfileFeedSettingsButton(user: user, color: tweetReadableAccentColor(context)),
-          FollowButton(user: UserSubscription.fromUser(user), color: tweetReadableAccentColor(context)),
+          ProfileFeedSettingsButton(user: user, color: tweetPrimaryColor(context)),
+          FollowButton(
+            user: UserSubscription.fromUser(user),
+            builder: (context, state) => ProfileFollowFace(
+              followed: state.followed,
+              inFeed: state.inFeed,
+              label: state.followed ? l10n.subscribed : l10n.subscribe,
+              compact: !followLabelled,
+            ),
+          ),
         ],
       ),
       name: user.name ?? username,
@@ -479,8 +487,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
           : SelectableText.rich(
               TextSpan(
                 style: tweetBodyStyle(context).copyWith(height: 1.45),
-                children: displayRichText(_descriptionParts),
+                children: tightenBlankLines(displayRichText(_descriptionParts), kProfileBioBlankLine),
               ),
+              strutStyle: kProfileBioStrut,
             ),
       metadata: _profileMetadata(context, user),
       counts: _profileCounts(context, user),
@@ -533,7 +542,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     if (user.friendsCount != null) {
       result.add(
         ProfileCountButton(
-          count: _numberFormat.format(user.friendsCount),
+          count: profileCount(user.friendsCount!, currentFormattingLocale()),
           value: user.friendsCount,
           label: L10n.of(context).following,
           onTap: () => _openFollows(context, user, 'following'),
@@ -543,7 +552,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     if (user.followersCount != null) {
       result.add(
         ProfileCountButton(
-          count: _numberFormat.format(user.followersCount),
+          count: profileCount(user.followersCount!, currentFormattingLocale()),
           value: user.followersCount,
           label: L10n.of(context).followers,
           onTap: () => _openFollows(context, user, 'followers'),
@@ -600,76 +609,38 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
         );
 
   Widget? _filterFor(BuildContext context, ProfileTabs tab, ProfileViewState view) {
+    final l10n = L10n.of(context);
     return switch (tab) {
-      ProfileTabs.posts => ProfileFilterChips<PostsFilter>(
+      ProfileTabs.posts => ProfileFilterBar<PostsFilter>(
         selected: view.postsFilter,
         options: [
-          ProfileFilterOption(value: PostsFilter.all, label: L10n.of(context).all, icon: Icons.article_outlined),
-          ProfileFilterOption(value: PostsFilter.posts, label: L10n.of(context).tweets, icon: Icons.notes_outlined),
-          ProfileFilterOption(value: PostsFilter.retweets, label: L10n.of(context).retweets, icon: Icons.repeat),
+          ProfileFilterOption(value: PostsFilter.all, label: l10n.all),
+          ProfileFilterOption(value: PostsFilter.posts, label: l10n.tweets),
+          ProfileFilterOption(value: PostsFilter.retweets, label: l10n.retweets),
         ],
         onSelected: _selectPostsFilter,
       ),
-      ProfileTabs.media => ProfileFilterChips<MediaFilter>(
+      ProfileTabs.media => ProfileFilterBar<MediaFilter>(
         selected: view.mediaFilter,
         options: [
-          ProfileFilterOption(value: MediaFilter.all, label: L10n.of(context).all, icon: Icons.perm_media_outlined),
-          ProfileFilterOption(
-            value: MediaFilter.photos,
-            label: L10n.of(context).photos,
-            icon: Icons.photo_library_outlined,
-          ),
-          ProfileFilterOption(
-            value: MediaFilter.videos,
-            label: L10n.of(context).videos,
-            icon: Icons.video_library_outlined,
-          ),
-          ProfileFilterOption(
-            value: MediaFilter.broadcasts,
-            label: L10n.of(context).broadcasts,
-            icon: Icons.live_tv_outlined,
-          ),
+          ProfileFilterOption(value: MediaFilter.all, label: l10n.all),
+          ProfileFilterOption(value: MediaFilter.photos, label: l10n.photos),
+          ProfileFilterOption(value: MediaFilter.videos, label: l10n.videos),
+          ProfileFilterOption(value: MediaFilter.broadcasts, label: l10n.broadcasts),
         ],
         onSelected: _selectMediaFilter,
       ),
-      ProfileTabs.saved => ProfileFilterChips<ArchiveFilter>(
+      ProfileTabs.saved => ProfileFilterBar<ArchiveFilter>(
         selected: view.archiveFilter,
         options: [
-          ProfileFilterOption(value: ArchiveFilter.all, label: L10n.of(context).all, icon: Icons.inventory_2_outlined),
-          ProfileFilterOption(
-            value: ArchiveFilter.likes,
-            label: L10n.of(context).favorites,
-            icon: Icons.favorite_border,
-          ),
-          ProfileFilterOption(
-            value: ArchiveFilter.bookmarks,
-            label: L10n.of(context).plugin_category_bookmarks,
-            icon: Icons.bookmark_border,
-          ),
+          ProfileFilterOption(value: ArchiveFilter.all, label: l10n.all),
+          ProfileFilterOption(value: ArchiveFilter.likes, label: l10n.favorites),
+          ProfileFilterOption(value: ArchiveFilter.bookmarks, label: l10n.plugin_category_bookmarks),
         ],
         onSelected: _selectArchiveFilter,
       ),
       ProfileTabs.postsAndReplies => null,
     };
-  }
-}
-
-class _ProfileTabLabel extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _ProfileTabLabel({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: kTweetActionIconSize),
-        const SizedBox(width: kTweetSpace2),
-        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-      ],
-    );
   }
 }
 

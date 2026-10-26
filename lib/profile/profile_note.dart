@@ -86,8 +86,9 @@ class ProfileNoteStore extends Store<ProfileNoteState> {
 ///
 /// The old inline TextField lived in the collapsing [SliverAppBar] without
 /// being counted in `expandedHeight`, so the tab bar ate the field, clipped
-/// the label, and hid the save button. A one-line chip plus a sheet keeps the
-/// header small and lets typing/saving happen outside the nested scroll view.
+/// the label, and hid the save button. A flat one-line row across the header
+/// plus a sheet keeps the header small and lets typing/saving happen outside
+/// the nested scroll view.
 class ProfileNoteCard extends StatefulWidget {
   final String userId;
   final ProfileNoteLoader? loader;
@@ -160,65 +161,49 @@ class _ProfileNoteCardState extends State<ProfileNoteCard> {
       store: _store,
       onState: (context, state) {
         final empty = state.note.isEmpty;
-        final label = empty ? L10n.of(context).profile_note_title : state.note;
-        return Padding(
-          padding: const EdgeInsets.only(top: kTweetSpace1),
-          child: Material(
-            color: Color.alphaBlend(
-              tweetSecondaryColor(context).withValues(alpha: 0.06),
-              tweetSurfaceColor(context),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-              side: BorderSide(
-                color: tweetDividerColor(context),
-                width: kTweetDividerThickness,
+        final label = empty ? L10n.of(context).profile_note_add : state.note;
+        final body = tweetBodyStyle(context);
+        return Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            key: const Key('profile_note_row'),
+            onTap: state.loading ? null : _openEditor,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minHeight: kTweetTouchTarget,
               ),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              key: const Key('profile_note_chip'),
-              onTap: state.loading ? null : _openEditor,
-              borderRadius: BorderRadius.circular(8),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: kTweetTouchTarget,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: kTweetHorizontalPadding,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kTweetSpace3,
-                  ),
-                  child: Row(
-                    children: [
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.sticky_note_2_outlined,
+                      size: kTweetActionIconSize,
+                      color: tweetSecondaryColor(context),
+                    ),
+                    const SizedBox(width: kTweetSpace3),
+                    Expanded(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: empty ? body.copyWith(color: tweetSecondaryColor(context)) : body,
+                      ),
+                    ),
+                    if (state.loading)
+                      const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else
                       Icon(
-                        Icons.sticky_note_2_outlined,
+                        Icons.edit_outlined,
                         size: 18,
                         color: tweetSecondaryColor(context),
                       ),
-                      const SizedBox(width: kTweetSpace2),
-                      Expanded(
-                        child: Text(
-                          label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: empty
-                              ? tweetMetadataStyle(context)
-                              : tweetBodyStyle(context).copyWith(fontSize: 13),
-                        ),
-                      ),
-                      if (state.loading)
-                        const SizedBox.square(
-                          dimension: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      else
-                        Icon(
-                          Icons.edit_outlined,
-                          size: 18,
-                          color: tweetSecondaryColor(context),
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
