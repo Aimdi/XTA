@@ -4,7 +4,6 @@ import 'dart:ui' show FontFeature, ImageFilter;
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart' show NumberFormat;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/image_fade_in.dart';
@@ -39,14 +38,6 @@ const StrutStyle kProfileBioStrut = StrutStyle(fontSize: 6, height: 1);
 /// What the follow button's face takes beside its label.
 const double _followFaceChrome =
     kTweetSpace2 + _followIconSize + _followLabelGap + _followChevronGap + _followIconSize + kTweetSpace1;
-
-/// A count on the profile as its language writes it: abbreviated where the
-/// language abbreviates (62.6K), grouped where it writes the number out
-/// (62.646).
-String profileCount(int count, String locale) {
-  final compact = NumberFormat.compact(locale: locale).format(count);
-  return compact == '$count' ? NumberFormat.decimalPattern(locale).format(count) : compact;
-}
 
 TextStyle profileFollowLabelStyle(BuildContext context) =>
     tweetLabelStyle(context).copyWith(fontSize: 15, fontWeight: FontWeight.w600);
