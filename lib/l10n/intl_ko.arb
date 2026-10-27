@@ -901,7 +901,7 @@
   "@intro_welcome_title": {},
   "invalid_list_url_or_id": "리스트 링크나 ID로 보이지 않습니다",
   "@invalid_list_url_or_id": {},
-  "joined": "가입일",
+  "joined": "가입일: {date}",
   "@joined": {},
   "language": "언어",
   "@language": {},

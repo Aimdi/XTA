@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/profile/profile_note.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -162,6 +163,13 @@ void main() {
       expect(find.textContaining('62.646 Follower', findRichText: true), findsOneWidget);
       expect(find.text('Seit August 2024'), findsOneWidget);
       await settleProfile(tester);
+    });
+
+    test('says when the account joined, with the date, in every language', () async {
+      for (final locale in L10n.delegate.supportedLocales) {
+        final l10n = await L10n.load(locale);
+        expect(l10n.joined('§'), contains('§'), reason: '$locale');
+      }
     });
 
     testWidgets('lays the note across the width between hairlines', (tester) async {

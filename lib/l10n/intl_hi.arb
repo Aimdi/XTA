@@ -901,7 +901,7 @@
   "@intro_welcome_title": {},
   "invalid_list_url_or_id": "यह सूची का लिंक या ID जैसा नहीं दिखता",
   "@invalid_list_url_or_id": {},
-  "joined": "शामिल हुए",
+  "joined": "{date} में शामिल हुए",
   "@joined": {},
   "language": "भाषा",
   "@language": {},

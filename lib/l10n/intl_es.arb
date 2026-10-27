@@ -901,7 +901,7 @@
   "@intro_welcome_title": {},
   "invalid_list_url_or_id": "Esto no parece un enlace ni un ID de lista",
   "@invalid_list_url_or_id": {},
-  "joined": "Se unió",
+  "joined": "Se unió en {date}",
   "@joined": {},
   "language": "Idioma",
   "@language": {},

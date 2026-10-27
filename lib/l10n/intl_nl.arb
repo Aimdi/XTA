@@ -901,7 +901,7 @@
   "@intro_welcome_title": {},
   "invalid_list_url_or_id": "Dit ziet er niet uit als een lijstlink of lijst-ID",
   "@invalid_list_url_or_id": {},
-  "joined": "Lid geworden",
+  "joined": "Lid sinds {date}",
   "@joined": {},
   "language": "Taal",
   "@language": {},

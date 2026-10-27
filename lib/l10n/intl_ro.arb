@@ -901,7 +901,7 @@
   "@intro_welcome_title": {},
   "invalid_list_url_or_id": "Acesta nu pare a fi un link sau un ID de listă",
   "@invalid_list_url_or_id": {},
-  "joined": "Membru din",
+  "joined": "Membru din {date}",
   "@joined": {},
   "language": "Limbă",
   "@language": {},
