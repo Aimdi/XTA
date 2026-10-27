@@ -3981,6 +3981,8 @@
   "@speech_stop": {},
   "subscribe": "Subscribe",
   "@subscribe": {},
+  "subscribed": "Subscribed",
+  "@subscribed": {},
   "subscription_group_member_count": "{count, plural, one{1 subscription} other{{count} subscriptions}}",
   "@subscription_group_member_count": {},
   "subscription_groups_columns": "Columns",
@@ -4558,6 +4560,8 @@
   "@profile_followed_by_two": {
     "description": "Same line as profile_followed_by_one with two subscription names."
   },
+  "profile_note_add": "Add private note",
+  "@profile_note_add": {},
   "profile_followed_by_three": "Followed by {first}, {second} and {third}",
   "@profile_followed_by_three": {
     "description": "Same line as profile_followed_by_one with three subscription names."

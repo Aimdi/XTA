@@ -1,8 +1,10 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/theme_presets.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
@@ -198,7 +200,7 @@ void main() {
     },
   );
 
-  testWidgets('profile actions stay in one compact row and remain tappable', (
+  testWidgets('profile actions stay flat in one row and remain tappable', (
     tester,
   ) async {
     var settingsTapped = false;
@@ -233,9 +235,23 @@ void main() {
       tester.getTopLeft(settings).dx,
       lessThan(tester.getTopLeft(follow).dx),
     );
+    for (final button in find.byType(IconButton).evaluate()) {
+      expect(
+        tester.getSize(find.byWidget(button.widget)),
+        const Size.square(kTweetTouchTarget),
+      );
+    }
     expect(
-      tester.getSize(find.byType(ProfileActionSurface).first),
-      const Size.square(kTweetTouchTarget),
+      find.descendant(
+        of: find.byType(ProfileActionCluster),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is DecoratedBox &&
+              (widget.decoration as BoxDecoration?)?.border != null,
+        ),
+      ),
+      findsNothing,
+      reason: 'no ring or pill around the actions',
     );
 
     await tester.tap(settings);
@@ -342,24 +358,18 @@ void main() {
   testWidgets('profile filter shows every choice and marks the selected one without color alone', (
     tester,
   ) async {
+    final semantics = tester.ensureSemantics();
     String? picked;
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookLightTheme(null),
         home: Scaffold(
-          body: ProfileFilterChips<String>(
+          body: ProfileFilterBar<String>(
             selected: 'photos',
             options: const [
-              ProfileFilterOption(
-                value: 'all',
-                label: 'All',
-                icon: Icons.perm_media_outlined,
-              ),
-              ProfileFilterOption(
-                value: 'photos',
-                label: 'Photos',
-                icon: Icons.photo_library_outlined,
-              ),
+              ProfileFilterOption(value: 'all', label: 'All'),
+              ProfileFilterOption(value: 'photos', label: 'Photos'),
+              ProfileFilterOption(value: 'videos', label: 'Videos'),
             ],
             onSelected: (value) => picked = value,
           ),
@@ -367,15 +377,81 @@ void main() {
       ),
     );
 
-    expect(find.text('All'), findsOneWidget);
-    expect(find.text('Photos'), findsOneWidget);
-    expect(find.byIcon(Icons.check), findsOneWidget);
+    FontWeight? weight(String label) =>
+        tester.renderObject<RenderParagraph>(find.text(label)).text.style?.fontWeight;
+    expect(weight('Photos'), FontWeight.w700);
+    expect(weight('All'), FontWeight.w500);
+    expect(weight('Videos'), FontWeight.w500);
+    expect(find.byType(Icon), findsNothing, reason: 'words only: no icon, check or pill');
+    expect(find.byType(ChoiceChip), findsNothing);
     expect(
-      tester.getSize(find.byType(ChoiceChip).first).height,
-      greaterThanOrEqualTo(kTweetTouchTarget),
+      tester.getSemantics(find.text('Photos')),
+      isSemantics(isSelected: true, isButton: true, hasSelectedState: true),
     );
+    expect(
+      tester.getSemantics(find.text('All')),
+      isSemantics(isSelected: false, isButton: true, hasSelectedState: true),
+    );
+    for (final label in ['All', 'Photos', 'Videos']) {
+      final target = find.ancestor(of: find.text(label), matching: find.byType(TextButton));
+      expect(tester.getSize(target).height, greaterThanOrEqualTo(kTweetTouchTarget));
+    }
 
     await tester.tap(find.text('All'));
     expect(picked, 'all');
+    semantics.dispose();
+  });
+
+  testWidgets('flat profile tabs share the width and mark the selected name', (
+    tester,
+  ) async {
+    late TabController controller;
+    Future<void> pump({required bool even}) => tester.pumpWidget(
+      MaterialApp(
+        theme: xLookLightTheme(null),
+        home: DefaultTabController(
+          length: 2,
+          child: Builder(
+            builder: (context) {
+              controller = DefaultTabController.of(context);
+              return Scaffold(
+                body: ProfileTabsBar(
+                  controller: controller,
+                  height: kProfileFlatTabHeight,
+                  flat: true,
+                  even: even,
+                  tabs: const [
+                    Tab(text: 'Posts'),
+                    Tab(text: 'Media'),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await pump(even: true);
+    expect(
+      tester.getSize(find.byType(ProfileTabsBar)).height,
+      kProfileFlatTabHeight,
+    );
+    var tabBar = tester.widget<TabBar>(find.byType(TabBar));
+    expect(tabBar.isScrollable, isFalse);
+    expect(tabBar.indicatorSize, TabBarIndicatorSize.label);
+    final marker = tabBar.indicator! as UnderlineTabIndicator;
+    expect(marker.borderSide.width, kReaderTabMarkerHeight);
+    expect(marker.borderRadius, isNotNull);
+    expect(
+      tester.getCenter(find.text('Media')).dx - tester.getCenter(find.text('Posts')).dx,
+      moreOrLessEquals(tester.getSize(find.byType(TabBar)).width / 2, epsilon: 1),
+      reason: 'each name centred in half the bar',
+    );
+
+    await pump(even: false);
+    tabBar = tester.widget<TabBar>(find.byType(TabBar));
+    expect(tabBar.isScrollable, isTrue);
+    expect(tabBar.tabAlignment, TabAlignment.start);
   });
 }

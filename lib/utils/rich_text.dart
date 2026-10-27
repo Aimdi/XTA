@@ -196,6 +196,31 @@ List<InlineSpan> displayRichText(List<RichTextPart> richText) {
   ];
 }
 
+final _blankLines = RegExp(r'\n{2,}');
+
+/// [spans] with each blank line between paragraphs set in [gap], a fraction of
+/// a line tall. The text stays the same, so a copy still holds the blank lines.
+List<InlineSpan> tightenBlankLines(List<InlineSpan> spans, TextStyle gap) => [
+  for (final span in spans)
+    if (span is TextSpan && span.children == null && (span.text?.contains(_blankLines) ?? false))
+      ..._tightened(span, gap)
+    else
+      span,
+];
+
+/// [span]'s text with every newline after the first of a run in [gap]: each of
+/// those begins a blank line, and an empty line is as tall as its newline.
+Iterable<TextSpan> _tightened(TextSpan span, TextStyle gap) sync* {
+  final text = span.text!;
+  var start = 0;
+  for (final run in _blankLines.allMatches(text)) {
+    yield TextSpan(text: text.substring(start, run.start + 1), style: span.style, recognizer: span.recognizer);
+    yield TextSpan(text: text.substring(run.start + 1, run.end), style: gap);
+    start = run.end;
+  }
+  yield TextSpan(text: text.substring(start), style: span.style, recognizer: span.recognizer);
+}
+
 /// All of a post's runs, in order: the entities where X placed them, and the
 /// text between them scanned for what descriptions leave unmarked.
 ///

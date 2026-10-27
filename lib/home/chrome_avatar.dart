@@ -149,25 +149,6 @@ class ChromeAvatarMark extends StatelessWidget {
   }
 }
 
-/// The app bar's leading slot: custom chrome avatar when set, else the
-/// primary account monogram. Tap opens the drawer; long-press sets the picture.
-class DrawerAvatarButton extends StatelessWidget {
-  const DrawerAvatarButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Account?>(
-      future: primaryAccount(),
-      builder: (context, snapshot) => IconButton(
-        tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-        onPressed: () => Scaffold.of(context).openDrawer(),
-        onLongPress: () => showChromeAvatarSheet(context),
-        icon: ChromeAvatarMark(account: snapshot.data, size: 30),
-      ),
-    );
-  }
-}
-
 Future<void> showChromeAvatarSheet(BuildContext context) async {
   final store = context.read<ChromeAvatarStore>();
   final accounts = await getAccounts();

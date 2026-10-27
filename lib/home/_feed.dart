@@ -16,7 +16,6 @@ import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/alt_microblogging_selector.dart';
 import 'package:xta/home/home_account_filter.dart';
-import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_hiding_header.dart';
 import 'package:xta/home/home_timeline_controls.dart';
 import 'package:xta/home/home_swipe_navigation.dart';
@@ -97,6 +96,10 @@ class FeedTabOption {
 /// Stacked posts for Following, spark for For you — matches the chip-style tab row.
 const IconData followingTabIcon = Icons.dynamic_feed;
 const IconData forYouTabIcon = Icons.auto_awesome_outlined;
+
+/// Following's bar holds three buttons beside its chip: Feeds, search in the
+/// loaded posts and Home feed accounts.
+const _followingBarActions = 3;
 
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
@@ -225,43 +228,9 @@ class _FeedScreenState extends State<FeedScreen> {
   void Function()? _disposeGroupFilterObserver;
   Timer? _unreadReloadDebounce;
   bool _restoredMediaMode = false;
-  bool _controlsUpdateQueued = false;
   Set<String> _lastDisabledAccountIds = const {};
   Set<String> _lastDisabledGroupIds = const {};
   List<String> _lastStripPlugins = const [];
-
-  @override
-  void initState() {
-    super.initState();
-    widget.scrollController.addListener(_queueControlsUpdate);
-  }
-
-  @override
-  void didUpdateWidget(covariant FeedScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.scrollController != widget.scrollController) {
-      oldWidget.scrollController.removeListener(_queueControlsUpdate);
-      widget.scrollController.addListener(_queueControlsUpdate);
-    }
-    _queueControlsUpdate();
-  }
-
-  void _queueControlsUpdate() {
-    if (!mounted || _controlsUpdateQueued) return;
-    _controlsUpdateQueued = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controlsUpdateQueued = false;
-      if (!mounted || widget.scrollController.positions.length != 1) return;
-      final position = widget.scrollController.positions.single;
-      if (!position.hasContentDimensions || position.axis != Axis.vertical) return;
-      _view.observeScroll(
-        extentBefore: position.extentBefore,
-        scrollExtent: position.maxScrollExtent - position.minScrollExtent,
-        controlsHeight: _tab == FeedTab.following ? kHomeTimelineControlsHeight : 0,
-      );
-    });
-    WidgetsBinding.instance.ensureVisualUpdate();
-  }
 
   @override
   void didChangeDependencies() {
@@ -396,7 +365,6 @@ class _FeedScreenState extends State<FeedScreen> {
     _disposeStripObserver?.call();
     _disposeAccountFilterObserver?.call();
     _disposeGroupFilterObserver?.call();
-    widget.scrollController.removeListener(_queueControlsUpdate);
     _unreadReloadDebounce?.cancel();
     _filterReload?.cancel();
     _forYouFeed.dispose();
@@ -459,21 +427,28 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
-  PreferredSizeWidget _readingControls(BuildContext context) {
+  /// Following's one bar: the presentation tabs, the order chip, the source
+  /// picker, and search and the account filter.
+  Widget _followingBar(BuildContext context, FeedTabOption source, bool unread, HomeFollowingBarLayout layout) {
     final model = context.read<GroupModel>();
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(kHomeTimelineControlsHeight),
-      child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-        store: model,
-        onState: (context, group) => group.id.isEmpty
-            ? const SizedBox(height: kHomeTimelineControlsHeight)
-            : HomeTimelineControls(
-                group: group,
-                mediaOnly: _view.state.followingMediaOnly,
-                onOrderSelected: (order) => _selectOrder(context, model, order),
-                onMediaToggle: _toggleMediaOnly,
-                onFilters: () => showFeedSettings(context, model),
-              ),
+    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+      store: model,
+      onState: (context, group) => HomeFollowingBar(
+        group: group.id.isEmpty ? null : group,
+        mediaOnly: _view.state.followingMediaOnly,
+        onOrderSelected: (order) => _selectOrder(context, model, order),
+        onMediaToggle: _toggleMediaOnly,
+        onFilters: () => showFeedSettings(context, model),
+        layout: layout,
+        actions: [
+          HomeTimelineTitle(
+            label: source.titleBuilder(context),
+            mark: source.markAt(24),
+            unread: unread,
+            onPressed: () => _pickSource(context),
+          ),
+          ..._timelineActions(context, refresh: false),
+        ],
       ),
     );
   }
@@ -536,7 +511,6 @@ class _FeedScreenState extends State<FeedScreen> {
   );
 
   Widget _buildFeed(BuildContext context, bool grouped) {
-    _queueControlsUpdate();
     // Strip membership is observed separately; listening to every pref here
     // rebuilt Following on theme, zen, and unrelated plugin writes.
     final BasePrefService prefs = PrefService.of(context, listen: false);
@@ -556,6 +530,10 @@ class _FeedScreenState extends State<FeedScreen> {
     }
 
     final docked = tab.isPlugin;
+    // Only Following draws this bar; plugin sources size their own headers.
+    final barLayout = docked
+        ? null
+        : homeFollowingBarLayout(context, width: MediaQuery.sizeOf(context).width, actions: _followingBarActions);
     final activePlugin = pluginById(tab.id);
     // X's library destinations in its options already reach its whole client.
     final client = tab == FeedTab.x ? null : activePlugin;
@@ -578,69 +556,59 @@ class _FeedScreenState extends State<FeedScreen> {
         flatAppBar: true,
         fixedHeader: true,
         headerFrame: (context, header) => HomeHidingHeader(child: header),
-        toolbarHeight: tab.isPlugin ? pluginToolbarHeight(context) : null,
-        toolbarBuilder: docked
-            ? (context) => GroupUnreadScope(
-                builder: (context, unreadIds) {
-                  final services = Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (grouped && isAltMicrobloggingSource(tab.id))
-                        AltMicrobloggingSelector(
-                          compact: true,
-                          sourceIds: available.map((option) => option.id.id).toList(),
-                          selected: tab.id,
-                          unread: unreadIds,
-                          onSelected: (id) {
-                            Navigator.pop(context);
-                            _selectStripTab(FeedTab(id));
-                          },
-                        ),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Scaffold.of(context).openDrawer();
-                        },
-                        onLongPress: () => showChromeAvatarSheet(context),
-                        icon: const Icon(Icons.menu),
-                        label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
-                      ),
-                    ],
-                  );
-                  final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
-                  if (tab.id == 'substack') {
-                    return SubstackCompactHeader(
-                      store: _dock,
-                      unread: unread,
-                      onPickSource: () => _pickSource(context),
-                      services: services,
-                    );
-                  }
-                  return PluginCompactHeader(
-                    plugin: activePlugin!,
-                    store: _dock,
-                    unread: unread,
-                    onPickSource: () => _pickSource(context),
-                    services: services,
-                  );
-                },
-              )
-            : null,
-        leading: const DrawerAvatarButton(),
-        // Only Following still uses the app bar; plugin sources draw toolbarBuilder.
-        titleBuilder: (context) {
-          final source = available.firstWhere((option) => option.id == tab);
-          return GroupUnreadScope(
-            builder: (context, unreadIds) => HomeTimelineTitle(
-              label: source.titleBuilder(context),
-              mark: source.markAt(24),
-              unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
-              onPressed: () => _pickSource(context),
-            ),
-          );
-        },
-        actionsBuilder: (context) => [HomeAppBarActions(children: _timelineActions(context, refresh: false))],
+        toolbarHeight: barLayout == null ? pluginToolbarHeight(context) : homeFollowingBarHeight(barLayout),
+        toolbarBuilder: (context) => GroupUnreadScope(
+          builder: (context, unreadIds) {
+            final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
+            if (barLayout != null) {
+              return _followingBar(context, available.firstWhere((option) => option.id == tab), unread, barLayout);
+            }
+            final services = Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (grouped && isAltMicrobloggingSource(tab.id))
+                  AltMicrobloggingSelector(
+                    compact: true,
+                    sourceIds: available.map((option) => option.id.id).toList(),
+                    selected: tab.id,
+                    unread: unreadIds,
+                    onSelected: (id) {
+                      Navigator.pop(context);
+                      _selectStripTab(FeedTab(id));
+                    },
+                  ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Scaffold.of(context).openDrawer();
+                  },
+                  onLongPress: () => showChromeAvatarSheet(context),
+                  icon: const Icon(Icons.menu),
+                  label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
+                ),
+              ],
+            );
+            if (tab.id == 'substack') {
+              return SubstackCompactHeader(
+                store: _dock,
+                unread: unread,
+                onPickSource: () => _pickSource(context),
+                services: services,
+              );
+            }
+            return PluginCompactHeader(
+              plugin: activePlugin!,
+              store: _dock,
+              unread: unread,
+              onPickSource: () => _pickSource(context),
+              services: services,
+            );
+          },
+        ),
+        // Every source draws its whole bar above, so the app bar's slots stay empty.
+        titleBuilder: (_) => const SizedBox.shrink(),
+        actionsBuilder: (_) => const [],
         bodyBuilder: (context) => HomeReadingViewport(
           store: _dock.controls,
           source: tab.id,
@@ -649,11 +617,6 @@ class _FeedScreenState extends State<FeedScreen> {
           controls: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              HomeCollapsingControls(
-                key: const ValueKey('home-reading-controls'),
-                visible: _view.state.controlsVisible && tab == FeedTab.following,
-                child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
-              ),
               if (tab == FeedTab.x)
                 PluginDockContribution(
                   key: const ValueKey('home-x-timeline-actions'),
@@ -666,34 +629,26 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
             ],
           ),
-          child: NotificationListener<ScrollMetricsNotification>(
-            onNotification: (notification) {
-              if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
-                _queueControlsUpdate();
-              }
-              return false;
-            },
-            child: HomeSwipeNavigation(
-              key: const ValueKey('home-source-swipe'),
-              index: available.indexWhere((source) => source.id == tab),
-              count: available.length,
-              identity: available.map((source) => source.id.id).join('|'),
-              onChanged: (index) => _swipeToSource(tab, available, index),
-              previewBuilder: (context, index) => Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    index > available.indexWhere((source) => source.id == tab) ? Icons.arrow_forward : Icons.arrow_back,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(available[index].titleBuilder(context), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  ),
-                ],
-              ),
-              child: _timelineBody(tab, prefs),
+          child: HomeSwipeNavigation(
+            key: const ValueKey('home-source-swipe'),
+            index: available.indexWhere((source) => source.id == tab),
+            count: available.length,
+            identity: available.map((source) => source.id.id).join('|'),
+            onChanged: (index) => _swipeToSource(tab, available, index),
+            previewBuilder: (context, index) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  index > available.indexWhere((source) => source.id == tab) ? Icons.arrow_forward : Icons.arrow_back,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(available[index].titleBuilder(context), maxLines: 2, overflow: TextOverflow.ellipsis),
+                ),
+              ],
             ),
+            child: _timelineBody(tab, prefs),
           ),
         ),
       ),

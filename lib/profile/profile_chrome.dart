@@ -1,11 +1,14 @@
+import 'dart:math' as math;
 import 'dart:ui' show FontFeature, ImageFilter;
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart' show NumberFormat;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/image_fade_in.dart';
+import 'package:xta/ui/label_width.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/rolling_count.dart';
@@ -15,9 +18,47 @@ import 'package:xta/user.dart';
 import 'package:xta/user_verification.dart';
 
 const double kProfileBannerHeight = 168;
-const double kProfileAvatarSize = 88;
+const double kProfileAvatarSize = 80;
+const double kProfileAvatarRing = 3;
 const double kProfileTabHeight = 52;
+
+/// The X profile's flat tab bar, as tall as Home's bar.
+const double kProfileFlatTabHeight = 48;
 const double kProfileControlRadius = 8;
+const double _followIconSize = 18;
+const double _followLabelGap = 6;
+const double _followChevronGap = 2;
+
+/// A blank line between a bio's paragraphs: about a third of a line.
+const TextStyle kProfileBioBlankLine = TextStyle(fontSize: 6, height: 1);
+
+/// A strut no taller than [kProfileBioBlankLine]. Selectable text holds every
+/// line at least as tall as its strut, by default a whole line of the text.
+const StrutStyle kProfileBioStrut = StrutStyle(fontSize: 6, height: 1);
+
+/// What the follow button's face takes beside its label.
+const double _followFaceChrome =
+    kTweetSpace2 + _followIconSize + _followLabelGap + _followChevronGap + _followIconSize + kTweetSpace1;
+
+/// A count on the profile as its language writes it: abbreviated where the
+/// language abbreviates (62.6K), grouped where it writes the number out
+/// (62.646).
+String profileCount(int count, String locale) {
+  final compact = NumberFormat.compact(locale: locale).format(count);
+  return compact == '$count' ? NumberFormat.decimalPattern(locale).format(count) : compact;
+}
+
+TextStyle profileFollowLabelStyle(BuildContext context) =>
+    tweetLabelStyle(context).copyWith(fontSize: 15, fontWeight: FontWeight.w600);
+
+/// Whether the longer of the follow button's [labels] fits beside the avatar
+/// and the settings button in a header [width] wide.
+bool profileFollowLabelFits(BuildContext context, List<String> labels, {required double width}) {
+  final style = profileFollowLabelStyle(context);
+  final longest = labels.map((label) => labelsWidth(context, [label], style)).fold(0.0, math.max);
+  const beside = 2 * kTweetHorizontalPadding + kProfileAvatarSize + kTweetSpace2 + kTweetTouchTarget;
+  return beside + _followFaceChrome + longest <= width;
+}
 
 class ProfileBanner extends StatelessWidget {
   final String? uri;
@@ -260,7 +301,7 @@ class ProfileAvatar extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: surface, width: 4),
+              border: Border.all(color: surface, width: kProfileAvatarRing),
             ),
             clipBehavior: Clip.antiAlias,
             child: avatar,
@@ -292,7 +333,7 @@ class ProfileMetadataItem extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsetsDirectional.only(
-          end: kTweetSpace3,
+          end: kTweetSpace4,
           bottom: kTweetSpace1,
         ),
         child: Row(
@@ -419,19 +460,23 @@ class ProfileTabsBar extends ReaderTabBar {
     super.key,
     required super.controller,
     required super.tabs,
-  }) : super(height: kProfileTabHeight);
+    super.height = kProfileTabHeight,
+    super.flat,
+    super.even,
+  });
 }
 
 class ProfileTabsDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
+  final double height;
 
-  const ProfileTabsDelegate(this.child);
-
-  @override
-  double get minExtent => kProfileTabHeight;
+  const ProfileTabsDelegate(this.child, {this.height = kProfileTabHeight});
 
   @override
-  double get maxExtent => kProfileTabHeight;
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
 
   @override
   Widget build(
@@ -442,7 +487,7 @@ class ProfileTabsDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(ProfileTabsDelegate oldDelegate) =>
-      oldDelegate.child != child;
+      oldDelegate.child != child || oldDelegate.height != height;
 }
 
 /// Profile-specific composition: media establishes identity, then compact
@@ -567,14 +612,16 @@ class ProfileIdentityHeader extends StatelessWidget {
                 ],
                 if (metadata.isNotEmpty) ...[
                   const SizedBox(height: kTweetSpace3),
-                  Wrap(children: metadata),
+                  // A tappable link is a 48 dp target; the date beside it
+                  // lines up with its text.
+                  Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: metadata),
                 ],
                 if (counts.isNotEmpty) Wrap(children: counts),
                 ?followedBy,
-                if (note != null) note!,
               ],
             ),
           ),
+          if (note case final note?) ...[tweetHairlineDivider(context), note],
           tweetHairlineDivider(context),
         ],
       ),
@@ -582,43 +629,61 @@ class ProfileIdentityHeader extends StatelessWidget {
   }
 }
 
+/// The header's actions beside the avatar, flat: no ring or pill around them.
 class ProfileActionCluster extends StatelessWidget {
   final List<Widget> children;
 
   const ProfileActionCluster({super.key, required this.children});
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var index = 0; index < children.length; index++) ...[
-          if (index > 0) const SizedBox(width: kTweetSpace2),
-          ProfileActionSurface(child: children[index]),
-        ],
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: children);
 }
 
-class ProfileActionSurface extends StatelessWidget {
-  final Widget child;
+/// The follow button's face in the header: an icon for what the subscription
+/// is, its [label], and a chevron for the menu it opens. [compact] leaves the
+/// label to a screen reader when there is no room to draw it.
+class ProfileFollowFace extends StatelessWidget {
+  final bool followed;
+  final bool inFeed;
+  final String label;
+  final bool compact;
 
-  const ProfileActionSurface({super.key, required this.child});
+  const ProfileFollowFace({
+    super.key,
+    required this.followed,
+    required this.inFeed,
+    required this.label,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: kTweetTouchTarget,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: tweetDividerColor(context),
-            width: kTweetDividerThickness,
+    final color = followed ? tweetPrimaryColor(context) : tweetReadableAccentColor(context);
+    final icon = !followed ? Icons.add : (inFeed ? Icons.check : Icons.visibility_off_outlined);
+    // A menu button drawn from a child is not marked as a button on its own.
+    return Semantics(
+      button: true,
+      label: compact ? label : null,
+      child: SizedBox(
+        height: kTweetTouchTarget,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(start: kTweetSpace2, end: kTweetSpace1),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              XtaAnimatedSwitcher(
+                duration: kXtaMotionFast,
+                child: Icon(icon, key: ValueKey(icon), size: _followIconSize, color: color),
+              ),
+              if (!compact) ...[
+                const SizedBox(width: _followLabelGap),
+                Text(label, maxLines: 1, style: profileFollowLabelStyle(context).copyWith(color: color)),
+              ],
+              const SizedBox(width: _followChevronGap),
+              Icon(Icons.expand_more, size: _followIconSize, color: tweetSecondaryColor(context)),
+            ],
           ),
-          borderRadius: BorderRadius.circular(kTweetTouchTarget / 2),
         ),
-        child: Align(child: child),
       ),
     );
   }
@@ -628,24 +693,19 @@ class ProfileActionSurface extends StatelessWidget {
 class ProfileFilterOption<T> {
   final T value;
   final String label;
-  final IconData icon;
 
-  const ProfileFilterOption({
-    required this.value,
-    required this.label,
-    required this.icon,
-  });
+  const ProfileFilterOption({required this.value, required this.label});
 }
 
-/// One filter convention for Posts, Media and the local Archive: every choice is a chip in a row directly above
-/// the content it filters, one tap away. The selected chip carries a check and a filled background, so colour is
-/// never the only active-state signal.
-class ProfileFilterChips<T> extends StatelessWidget {
+/// One filter convention for Posts, Media and the local Archive: every choice is a word in a row directly above
+/// the content it filters, one tap away. The selected word is bold as well as in the text colour, so colour is never
+/// the only sign of it, and a screen reader says it is selected.
+class ProfileFilterBar<T> extends StatelessWidget {
   final T selected;
   final List<ProfileFilterOption<T>> options;
   final ValueChanged<T> onSelected;
 
-  const ProfileFilterChips({
+  const ProfileFilterBar({
     super.key,
     required this.selected,
     required this.options,
@@ -654,43 +714,38 @@ class ProfileFilterChips<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = tweetReadableAccentColor(context);
-    final muted = tweetSecondaryColor(context);
-    final theme = Theme.of(context);
+    return SizedBox(
+      height: kTweetTouchTarget,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding - kTweetSpace3),
+        child: Row(children: [for (final option in options) _option(context, option)]),
+      ),
+    );
+  }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding - 4),
-      child: Row(
-        children: [
-          for (final option in options)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: kTweetSpace2),
-              child: Builder(builder: (context) {
-                final isSelected = option.value == selected;
-                return ChoiceChip(
-                  selected: isSelected,
-                  showCheckmark: false,
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                  avatar: Icon(
-                    isSelected ? Icons.check : option.icon,
-                    size: 18,
-                    color: isSelected ? accent : muted,
-                  ),
-                  label: Text(option.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  labelStyle: theme.textTheme.labelLarge?.copyWith(
-                    color: isSelected ? accent : muted,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                  selectedColor: accent.withValues(alpha: 0.14),
-                  backgroundColor: Colors.transparent,
-                  side: BorderSide(color: isSelected ? accent.withValues(alpha: 0.5) : tweetDividerColor(context)),
-                  shape: const StadiumBorder(),
-                  onSelected: (_) => onSelected(option.value),
-                );
-              }),
-            ),
-        ],
+  Widget _option(BuildContext context, ProfileFilterOption<T> option) {
+    final isSelected = option.value == selected;
+    // Merged, or the selected state would sit on a node of its own beside
+    // the button a screen reader reads.
+    return MergeSemantics(
+      child: Semantics(
+        selected: isSelected,
+        inMutuallyExclusiveGroup: true,
+        child: TextButton(
+          onPressed: () => onSelected(option.value),
+          style: TextButton.styleFrom(
+            minimumSize: const Size(kTweetTouchTarget, kTweetTouchTarget),
+            padding: const EdgeInsets.symmetric(horizontal: kTweetSpace3),
+            foregroundColor: isSelected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kProfileControlRadius)),
+          ),
+          child: Text(
+            option.label,
+            maxLines: 1,
+            style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500),
+          ),
+        ),
       ),
     );
   }
