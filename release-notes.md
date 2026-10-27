@@ -1,34 +1,25 @@
-## XTA — aimdi184
+## XTA — aimdi185
 
-### Motion, as in X's new app
+### Home: Following in one bar
 
-- **Counts roll.** When X sends newer numbers, an opened post's views, replies, reposts and likes roll to them: the old number slides up and out as the new one comes in. A refreshed profile's Following and Followers roll too, and so does the media viewer's "1 / 4" as you swipe.
-- **The profile bar takes the banner.** Once a profile's header has scrolled away, the top bar shows its banner, blurred and darkened, behind the name. Scrolling back to the top clears it.
-- **A dragged row lifts.** Reordering subscriptions, groups, home tabs, saved folders, Pixiv tags or Booru prompts, the row you hold grows a little and floats on a shadow while the rows around it make room.
-- **A stock's price line draws itself in** from left to right when its chart opens or you pick another range.
+- **One bar instead of two rows.** Posts | Media sit at the start; the order and filters, Feeds, search in the loaded posts and Home feed accounts at the end. The order chip shows how many filters are on; its name is in the tooltip and read out.
+- **The side menu is in the Feeds sheet.** The avatar has left the bar: "Open navigation menu" under "Add timeline" opens the menu, and a long press on it opens the avatar sheet.
+- **Narrow screens and large text.** When the names do not fit, the tabs move closer together; with large text on a small phone they get a row of their own. Nothing is cut off.
+- The bar leaves and comes back with the bottom bar, and nothing folds away on its own while you read.
 
-### Things arrive instead of popping in
+### The profile, flat
 
-- **Images fade in.** Avatars, card images, link previews, video posters, the media grid, poll options, the profile banner and the faces on group boards wait on a quiet surface and fade in once fetched, instead of a spinner. One already loaded shows at once.
-- **Opening a post** fades its replies and the reply order bar in where the placeholders were, and the post you opened stays still. An opened post's poll bars fill in to their shares.
-- **First pages fade in.** A feed's first page, a profile's posts and a profile itself fade in over their placeholders. Posts that replace cached ones already on screen do not blink.
-- **Notices drop in and lift away**, and "New posts" floats over the feed, above its source chips, without moving the posts.
-- **Translate eases.** The translation fades in while the post eases to its new height, so the media and footer below glide instead of jumping. Show original does the same, and a post opened with "Show more" stays open.
-- **What opens inside a feed eases to its new height:** price chips, "more posts with this link", folded posts, repost runs and a revealed sensitive post. "Followed by" on a profile grows in.
-- **Smaller touches.** Saving pops the bookmark. The profile's scroll-to-top button grows in and shrinks away. The video mute icon cross-fades. A tapped bottom-bar tab fades its page in. The line over a loading feed fades in and out, glides with a group's progress and fills before it goes.
-
-With reduced motion, XTA's own setting or Android's "remove animations", all of it happens at once.
-
-### Haptic feedback
-
-- **Liking and saving tap lightly.** Unliking and unsaving do not, and calm and zen mode keep it quiet.
-- **Settings → Accessibility → Haptic feedback** turns off every tap XTA gives: liking and saving, following from an avatar, the folder sheet, page swipes, the home filter and Pixiv's. It is on by default. Android's own buzz on a long press follows Android's touch feedback setting.
+- **No pills, rings or boxes.** Settings is a plain icon. Follow says what it is: "Subscribed" with a check, an eye-off icon when the account is hidden from the main feed, or "Subscribe", and it opens the same menu as before.
+- **A tighter header.** A bio's paragraphs sit closer together, the link and the join date share a row, and the private note is one flat row: "Add private note".
+- **Tabs and filters are words.** Posts | Replies | Media | Saved share the width when they fit, with a rounded line under the selected one. The filters below them are plain words, the selected one in bold.
+- **German counts are written out**, as in 1.379 and 62.646, and German profiles say "Seit August 2024" instead of "Seit August 2024 bei Twitter".
 
 ### Fixes
 
-- **The Subscriptions list stays where you had it** when you unsubscribe someone or put them in or out of the main feed, instead of flashing to a spinner and jumping back to the top.
+- **Spanish, Hindi, Korean, Dutch and Romanian profiles show the join date again.** They said only "Joined", without it.
+- **Screen readers say which tab or filter is selected** on Home's Posts | Media and the profile's filters.
 
-Everything else is as in aimdi183.
+Everything else is as in aimdi184.
 
 ### Licence note
 
@@ -36,10 +27,10 @@ The downloadable voices use sherpa-onnx, whose library includes espeak-ng under 
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi184_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001530**, above every aimdi183 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
+For most Android phones, use **`xta-aimdi185_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001540**, above every aimdi184 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
 
-For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.184-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
+For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.185-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
 
-The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs, and **`xta-aimdi184-debug-symbols.zip`** and **`xta-aimdi184-linux-debug-symbols.zip`** hold the debug symbols for reading crash traces.
+The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs, and **`xta-aimdi185-debug-symbols.zip`** and **`xta-aimdi185-linux-debug-symbols.zip`** hold the debug symbols for reading crash traces.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi183)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi184)
