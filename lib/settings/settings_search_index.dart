@@ -319,4 +319,16 @@ List<SettingsControlResult> settingsControls(L10n l10n) => [
     l10n.gesture_double_tap_like,
     l10n.gesture_double_tap_like_description,
   ),
+  SettingsControlResult(
+    SearchableSettingsSection.accessibility,
+    optionSwipeBackAnywhere,
+    l10n.swipe_back_anywhere,
+    l10n.swipe_back_anywhere_description,
+  ),
+  SettingsControlResult(
+    SearchableSettingsSection.accessibility,
+    optionSwipeBackTilt,
+    l10n.swipe_back_tilt,
+    l10n.swipe_back_tilt_description,
+  ),
 ];

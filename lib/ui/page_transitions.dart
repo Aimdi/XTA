@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// A pushed screen fades in while settling from a little larger, as X opens a
-/// post or a profile: readable almost at once, and nothing slides across the
-/// screen. Android's back gesture drives the page instead: it shrinks and
-/// follows the finger with the page behind showing around it, as X's
-/// predictive back does.
+/// profile: readable almost at once, and nothing slides across the screen. An
+/// opened post comes in as a card instead (`XtaCardPageRoute`). Android's back
+/// gesture drives the page: it shrinks and follows the finger with the page
+/// behind showing around it, as X's predictive back does.
 class XtaPageTransitionsBuilder extends PageTransitionsBuilder {
   const XtaPageTransitionsBuilder();
 

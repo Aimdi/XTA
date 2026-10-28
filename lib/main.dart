@@ -123,6 +123,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/trends/trends_model.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/live_player_screen.dart';
+import 'package:xta/ui/card_page_route.dart';
 import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
@@ -508,6 +509,8 @@ Future<void> main() async {
       optionDisableAnimations: false,
       optionHapticFeedback: true,
       optionGestureDoubleTapLike: false,
+      optionSwipeBackAnywhere: true,
+      optionSwipeBackTilt: true,
       optionTickerChart: true,
       optionTextScaleFactor: 1.0,
       optionDisableScreenshots: false,
@@ -1450,10 +1453,14 @@ class _FritterAppState extends State<FritterApp> {
                   routeQuotes: (context) => const QuotesScreen(),
                   routeTicker: (context) => const TickerScreen(),
                   routeCommunity: (context) => const CommunityScreen(),
-                  routeStatus: (context) => const StatusScreen(),
                   routeAntennas: (context) => const AntennaScreen(),
                   routeAntennaFeed: (context) => const AntennaFeedScreen(),
                   routeDeck: (context) => const DeckScreen(),
+                },
+                // A post opens as a card the reader can drag back.
+                onGenerateRoute: (settings) => switch (settings.name) {
+                  routeStatus => XtaCardPageRoute<dynamic>(settings: settings, builder: (_) => const StatusScreen()),
+                  _ => null,
                 },
                 builder: (context, child) {
                   // Neither dialog belongs over the first-launch cards.

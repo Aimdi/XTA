@@ -22,6 +22,10 @@ animation in XTA. It only moves pages; nothing is posted or written.
 - The page it was opened from shrinks to 96 %, rounds its corners (16 dp) and
   darkens by 25 % as the post covers it, over a near-black backdrop. It is
   back to full size, square and clear once the post is 85 % of a width away.
+- Behind a dark page that is not black (Dim) the backdrop is black, as in the
+  concept's dark mode; behind a black page (Lights out) it stays near-black,
+  and the lifted card gets a faint light edge, since a black card over a black
+  page would not show at all.
 - The back button, Android's back button and a pop from code slide the post
   out past the right edge (220 ms, easeInQuad), lifted the same way.
 - In a right-to-left language all of this is mirrored: the post comes from the
@@ -51,6 +55,8 @@ animation in XTA. It only moves pages; nothing is posted or written.
     (stiffness 900, critically damped), carrying the speed it was let go at;
     its turn and swing settle and it lands flat.
 - Grabbing it again while it drops back catches it where it is.
+- A back press while the card is held or dropping back throws it from where
+  it is, rather than jumping to the slide out.
 - The page behind follows the card in every phase, as it does while the post
   slides in and out.
 
@@ -95,9 +101,9 @@ work as before.
 Accessibility, after "Double-tap to like":
 
 - "Swipe back from anywhere": "Drag an opened post from anywhere on it to go
-  back. Off: only from the edge of the screen".
+  back. Off: only from the edge of the screen."
 - "Tilt with your finger": "A post you drag back turns around your finger and
-  swings with your speed".
+  swings with your speed."
 
 The concept's "Slow motion" and "Show gesture values" are its demo controls
 and are not carried over.
