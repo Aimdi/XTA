@@ -1,170 +1,168 @@
-import 'package:flutter_triple/flutter_triple.dart';
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/group_identity.dart';
-import 'package:xta/ui/x_controls.dart';
+import 'package:xta/subscriptions/group_pick.dart';
+import 'package:xta/ui/action_feedback.dart';
+import 'package:xta/ui/quick_pick_sheet.dart';
+import 'package:xta/utils/quick_pick.dart';
 
-/// Picks which groups someone belongs to.
+const _markSize = 30.0;
+
+/// Picks which groups someone belongs to: the groups as chips that tick with
+/// a tap, a search that can create a group, and a line that says where the
+/// account is. The choice applies as the sheet closes, however it is closed,
+/// so there is nothing to save and nothing to cancel.
 ///
-/// Replaces a third-party multi-select dialog, which is why this screen used to
-/// look like nothing else in the app: tall rows with bare checkboxes, a pair of
-/// text buttons, and a search field hidden behind an icon in the title bar —
-/// present, but not somewhere anyone would find it.
-///
-/// Everything here is in service of picking quickly. The search field is simply
-/// there. Rows are dense and carry each group's own mark, so a list of twenty
-/// is scanned by colour rather than read. Groups the person is already in sort
-/// to the top, because confirming one is the commonest reason to open this at
-/// all.
-///
-/// Returns the chosen group ids, or null if dismissed.
+/// Returns the chosen group ids, or null when they are the ones it opened
+/// with: closing it untouched follows no one and changes nothing.
 Future<List<String>?> showGroupMembershipSheet(
   BuildContext context, {
   required List<SubscriptionGroup> groups,
   required List<String> selected,
-}) {
-  return showModalBottomSheet<List<String>>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    showDragHandle: true,
-    builder: (_) => _GroupMembershipSheet(groups: groups, selected: selected),
-  );
-}
-
-typedef GroupMembershipSelection = ({Set<String> chosen, String query});
-
-class GroupMembershipStore extends Store<GroupMembershipSelection> {
-  GroupMembershipStore(List<String> selected) : super((chosen: Set.unmodifiable(selected), query: ''));
-
-  void search(String query) => update((chosen: state.chosen, query: query.trim().toLowerCase()));
-
-  void toggle(String id) {
-    final next = state.chosen.toSet();
-    if (!next.remove(id)) next.add(id);
-    update((chosen: Set.unmodifiable(next), query: state.query));
+}) async {
+  final prefs = PrefService.of(context, listen: false);
+  final selection = GroupMembershipStore(selected);
+  final openOrder = groupPickOrder(groups, selected: selected, recent: recentGroupPicks(prefs));
+  try {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => _GroupMembershipSheet(
+        selection: selection,
+        openOrder: openOrder,
+        shown: max(kQuickPickShown, selected.length),
+      ),
+    );
+    final chosen = selection.state;
+    final initial = selected.toSet();
+    if (setEquals(chosen, initial)) return null;
+    await rememberGroupPicks(prefs, chosen.difference(initial));
+    return chosen.toList();
+  } finally {
+    selection.destroy();
   }
 }
 
 class _GroupMembershipSheet extends StatefulWidget {
-  final List<SubscriptionGroup> groups;
-  final List<String> selected;
+  final GroupMembershipStore selection;
 
-  const _GroupMembershipSheet({required this.groups, required this.selected});
+  /// The order the chips open in, fixed once, so a chip never moves from
+  /// under a finger.
+  final List<String> openOrder;
+
+  /// How many chips show before All groups: enough for every group the
+  /// account is in.
+  final int shown;
+
+  const _GroupMembershipSheet({required this.selection, required this.openOrder, required this.shown});
 
   @override
   State<_GroupMembershipSheet> createState() => _GroupMembershipSheetState();
 }
 
 class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
-  final TextEditingController _search = TextEditingController();
-  late final GroupMembershipStore _selection = GroupMembershipStore(widget.selected);
-  Set<String> get _chosen => _selection.state.chosen;
-
-  /// The order the list opens in, fixed once.
-  ///
-  /// Sorted here rather than on every build: rows must not jump out from under a
-  /// finger the moment one is ticked.
-  late final List<SubscriptionGroup> _ordered = [
-    ...widget.groups.where((g) => _chosen.contains(g.id)),
-    ...widget.groups.where((g) => !_chosen.contains(g.id)),
-  ];
+  final _view = QuickPickStore();
+  final _field = TextEditingController();
 
   @override
   void dispose() {
-    _search.dispose();
-    _selection.destroy();
+    _view.destroy();
+    _field.dispose();
     super.dispose();
   }
 
-  List<SubscriptionGroup> get _visible {
-    final query = _selection.state.query;
-    if (query.isEmpty) {
-      return _ordered;
-    }
-    return _ordered.where((g) => g.name.toLowerCase().contains(query)).toList(growable: false);
+  void _toggle(String id) {
+    widget.selection.toggle(id);
+    selectionHaptic(context);
+  }
+
+  Future<void> _create() async {
+    final name = _view.state.query.trim();
+    if (name.isEmpty) return;
+    final id = await context.read<GroupsModel>().createGroup(name);
+    _field.clear();
+    _view.created(id);
+    widget.selection.add(id);
+    if (mounted) selectionHaptic(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    final theme = Theme.of(context);
-    return ScopedBuilder<GroupMembershipStore, GroupMembershipSelection>(
-      store: _selection,
-      onState: (context, selection) {
-      final visible = _visible;
-      return FractionallySizedBox(
-      heightFactor: 0.85,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-            child: Row(
-              children: [
-                Expanded(child: Text(l10n.select, style: theme.textTheme.titleLarge)),
-                if (_chosen.isNotEmpty)
-                  Text('${_chosen.length}', style: TextStyle(color: theme.colorScheme.primary)),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
-            child: XSearchField(
-              controller: _search,
-              hintText: l10n.search,
-              onChanged: _selection.search,
-            ),
-          ),
-          Expanded(
-            child: visible.isEmpty
-                ? Center(child: Text(l10n.no_subscription_groups_yet, textAlign: TextAlign.center))
-                : ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    itemCount: visible.length,
-                    itemBuilder: (context, index) {
-                      final group = visible[index];
-                      final checked = _chosen.contains(group.id);
-
-                      return CheckboxListTile(
-                        value: checked,
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.trailing,
-                        // The whole row is the target, not a 20px box at its edge.
-                        secondary: GroupMark.forGroup(group, size: 32),
-                        title: Text(
-                          group.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: checked
-                              ? TextStyle(
-                                  color: readableGroupColor(group, theme), fontWeight: FontWeight.w600)
-                              : null,
-                        ),
-                        onChanged: (_) => _selection.toggle(group.id),
-                      );
-                    },
-                  ),
-          ),
-          const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: () => Navigator.pop(context, _chosen.toList()),
-                  child: Text(l10n.save),
-                ),
-              ],
-            ),
-          ),
-        ],
+    return ScopedBuilder<GroupsModel, List<SubscriptionGroup>>(
+      store: context.read<GroupsModel>(),
+      onState: (context, groups) => ScopedBuilder<QuickPickStore, QuickPickView>(
+        store: _view,
+        onState: (context, view) => ScopedBuilder<GroupMembershipStore, Set<String>>(
+          store: widget.selection,
+          onState: (context, chosen) => _sheet(context, groups, view, chosen),
+        ),
       ),
     );
-      },
+  }
+
+  Widget _sheet(BuildContext context, List<SubscriptionGroup> groups, QuickPickView view, Set<String> chosen) {
+    final l10n = L10n.of(context);
+    final ordered = quickPickOrdered(groups, widget.openOrder, view.createdIds, (group) => group.id);
+    final chips = quickPickChips(ordered, view, (group) => group.name, shown: widget.shown);
+    final placed = [
+      for (final group in ordered)
+        if (chosen.contains(group.id)) group.name,
+    ];
+    return QuickPickBody(
+      title: QuickPickTitle(
+        title: l10n.add_to_group,
+        allLabel: l10n.group_sheet_all_groups,
+        onShowAll: chips.hasMore ? _view.showAll : null,
+      ),
+      field: _field,
+      onSearch: _view.search,
+      sectionLabel: _sectionLabel(l10n, groups, chips),
+      createRow: chips.canCreate
+          ? QuickPickCreateRow(label: l10n.group_sheet_create(view.query.trim()), onTap: _create)
+          : null,
+      chips: [
+        for (final group in chips.items)
+          QuickPickChip(
+            key: ValueKey('group-pick-${group.id}'),
+            mark: GroupMark.forGroup(group, size: _markSize),
+            label: group.name,
+            selected: chosen.contains(group.id),
+            onTap: () => _toggle(group.id),
+          ),
+      ],
+      status: QuickPickStatusLine(
+        placed: placed.isNotEmpty,
+        icon: placed.isEmpty ? Icons.circle_outlined : Icons.check_circle_outline,
+        text: _status(l10n, placed),
+      ),
     );
   }
+
+  String? _sectionLabel(L10n l10n, List<SubscriptionGroup> groups, QuickPickChips<SubscriptionGroup> chips) {
+    if (groups.isEmpty && chips.section == QuickPickSection.recent) return l10n.no_subscription_groups_yet;
+    if (chips.items.isEmpty && chips.section != QuickPickSection.noMatch) return null;
+    return quickPickSectionText(
+      l10n,
+      chips.section,
+      all: l10n.group_sheet_all_groups,
+      noMatch: l10n.group_sheet_no_match,
+    );
+  }
+
+  String _status(L10n l10n, List<String> names) => switch (names) {
+    [] => l10n.group_sheet_in_none,
+    [final one] => l10n.group_sheet_in_one(one),
+    [final first, final second] => l10n.group_sheet_in_two(first, second),
+    _ => l10n.group_sheet_in_many(names.length),
+  };
 }

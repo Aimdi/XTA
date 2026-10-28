@@ -59,22 +59,23 @@ and the folder editor.
 ## Strings
 
 New, in every language: `save_sheet_title` "Save to", `save_sheet_all_folders`
-"All folders", `save_sheet_search_hint` "Search or create",
-`save_sheet_recent` "Recently used", `save_sheet_matches` "Matches",
-`save_sheet_no_match` "No folder found", `save_sheet_create`
+"All folders", `save_sheet_no_match` "No folder found", `save_sheet_create`
 "Create “{name}” and save", `save_sheet_not_saved` "Not saved yet",
-`save_sheet_saved_unfiled` "Saved without a folder".
+`save_sheet_saved_unfiled` "Saved without a folder". Shared with the group
+picker: `picker_search_or_create` "Search or create", `picker_recently_used`
+"Recently used", `picker_matches` "Matches".
 
 Reused: `saved_to_folder`, `save_folder_remember`,
 `save_folder_remember_description`.
 
 ## Code
 
-- `lib/saved/save_sheet_model.dart`: the order the chips open in, the
-  matches for a search and whether the typed name is taken, as pure functions,
-  and a Store for the search, all folders and the folders created in the sheet.
+- `lib/saved/save_sheet_model.dart`: the order the folders open in.
 - `lib/saved/save_sheet.dart`: the sheet. `showSaveToFolderSheet` keeps its
   signature, so every caller opens the new sheet.
+- The search, the order, the create rule and the sheet's parts are shared
+  with the group picker: `lib/utils/quick_pick.dart` and
+  `lib/ui/quick_pick_sheet.dart` (see `group-sheet-quick-pick.md`).
 
 ## Tests
 

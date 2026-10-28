@@ -3,14 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/saved/save_sheet_model.dart';
+import 'package:xta/ui/quick_pick_sheet.dart';
 
 import 'support/save_sheet_harness.dart';
 
 Finder _chip(String id) => find.byKey(ValueKey('save-folder-$id'));
 
-String _status(WidgetTester tester) => tester.widget<Text>(find.byKey(const ValueKey('save-sheet-status'))).data!;
+String _status(WidgetTester tester) => tester.widget<Text>(find.byKey(kQuickPickStatusKey)).data!;
 
-bool _checked(WidgetTester tester, String id) => tester.widget<FilterChip>(_chip(id)).selected;
+bool _checked(WidgetTester tester, String id) => tester.widget<QuickPickChip>(_chip(id)).selected;
 
 void main() {
   group('the order the chips open in', () {
@@ -29,47 +30,6 @@ void main() {
     test('a post in a folder that is gone is passed over', () {
       final order = saveSheetFolderOrder([savedPost('a', 'gone'), savedPost('b', 'f1')], folders.take(2).toList());
       expect(order.map((folder) => folder.id), ['f1', 'f0']);
-    });
-
-    test('six show until All folders, which shows every one', () {
-      const view = (query: '', showAll: false, createdIds: <String>[]);
-      final recent = saveSheetChips(folders, view);
-      expect(recent.folders, hasLength(kSaveSheetRecentCount));
-      expect(recent.section, SaveSheetSection.recent);
-      expect(recent.hasMore, isTrue);
-
-      final all = saveSheetChips(folders, (query: '', showAll: true, createdIds: const []));
-      expect(all.folders, hasLength(8));
-      expect(all.section, SaveSheetSection.all);
-      expect(all.hasMore, isFalse);
-    });
-
-    test('folders created in the sheet lead, and every folder shows once', () {
-      final ordered = saveSheetOrdered([...folders.take(3), savedFolder('new', 'New')], ['f2', 'f0', 'f1'], ['new']);
-      expect(ordered.map((folder) => folder.id), ['new', 'f2', 'f0', 'f1']);
-    });
-  });
-
-  group('searching', () {
-    final folders = [savedFolder('art', 'Art'), savedFolder('trip', 'Japan Trip'), savedFolder('news', 'News')];
-
-    test('matches ignore case, and a typed name can become a folder', () {
-      final chips = saveSheetChips(folders, (query: ' JAP', showAll: false, createdIds: const []));
-      expect(chips.folders.map((folder) => folder.id), ['trip']);
-      expect(chips.section, SaveSheetSection.matches);
-      expect(chips.canCreate, isTrue);
-    });
-
-    test('a name a folder has, whatever its case, cannot be created again', () {
-      expect(folderNameTaken(folders, 'japan trip'), isTrue);
-      expect(saveSheetChips(folders, (query: 'japan trip ', showAll: false, createdIds: const [])).canCreate, isFalse);
-    });
-
-    test('nothing found says so and offers the name', () {
-      final chips = saveSheetChips(folders, (query: 'Kyoto', showAll: false, createdIds: const []));
-      expect(chips.folders, isEmpty);
-      expect(chips.section, SaveSheetSection.noMatch);
-      expect(chips.canCreate, isTrue);
     });
   });
 
@@ -119,7 +79,7 @@ void main() {
       expect(find.text('No folder found'), findsOneWidget);
       expect(_chip('art'), findsNothing);
 
-      await tester.tap(find.byKey(const ValueKey('save-sheet-create')));
+      await tester.tap(find.byKey(kQuickPickCreateKey));
       await tester.pumpAndSettle();
       expect(harness.folders.state.map((folder) => folder.name), contains('Kyoto'));
       expect(harness.folderOfPost, 'new-Kyoto');
@@ -137,7 +97,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Matches'), findsOneWidget);
       expect(_chip('news'), findsOneWidget);
-      expect(find.byKey(const ValueKey('save-sheet-create')), findsNothing);
+      expect(find.byKey(kQuickPickCreateKey), findsNothing);
     });
 
     testWidgets('All folders shows the folders beyond the first six', (tester) async {
@@ -148,13 +108,13 @@ void main() {
       expect(_chip('f6'), findsNothing);
       expect(_chip('f5'), findsNothing);
 
-      await tester.tap(find.byKey(const ValueKey('save-sheet-all')));
+      await tester.tap(find.byKey(kQuickPickAllKey));
       await tester.pumpAndSettle();
       for (var i = 0; i < 8; i++) {
         expect(_chip('f$i'), findsOneWidget);
       }
       expect(find.text('All folders'), findsOneWidget);
-      expect(find.byKey(const ValueKey('save-sheet-all')), findsNothing);
+      expect(find.byKey(kQuickPickAllKey), findsNothing);
     });
 
     testWidgets('a pick is remembered while Remember this folder is on', (tester) async {

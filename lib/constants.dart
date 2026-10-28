@@ -598,6 +598,9 @@ const optionSubscriptionGroupsCompact = 'subscription_groups.compact';
 const optionSubscriptionGroupsLayout = 'subscription_groups.layout';
 const subscriptionGroupsLayoutBoard = 'board';
 const subscriptionGroupsLayoutList = 'list';
+// The groups last added in the group picker, newest first, comma-separated:
+// its "Recently used" chips.
+const optionSubscriptionGroupsRecentPicks = 'subscription_groups.recent_picks';
 const optionSubscriptionOrderByAscending = 'subscription.order_by.ascending';
 const optionSubscriptionOrderCustom = 'subscription.order_by.custom';
 const optionSubscriptionOrderByField = 'subscription.order_by.field';

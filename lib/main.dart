@@ -746,6 +746,7 @@ Future<void> main() async {
       optionSubscriptionGroupsColumns: 2,
       optionSubscriptionGroupsCompact: false,
       optionSubscriptionGroupsLayout: subscriptionGroupsLayoutBoard,
+      optionSubscriptionGroupsRecentPicks: '',
       optionAiBaseUrl: '',
       optionAiApiKey: '',
       optionAiModel: '',

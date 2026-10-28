@@ -2,124 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pref/pref.dart';
-import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
-import 'package:xta/generated/l10n.dart';
-import 'package:xta/group/group_model.dart';
-import 'package:xta/profile/profile.dart';
-import 'package:xta/subscriptions/group_ungrouped.dart';
 import 'package:xta/subscriptions/group_ungrouped_screen.dart';
 import 'package:xta/subscriptions/group_ungrouped_sorter.dart';
 import 'package:xta/subscriptions/group_ungrouped_sorter_screen.dart';
-import 'package:xta/subscriptions/users_model.dart';
 
-UserSubscription _user(String id, String handle, String name) => UserSubscription(
-  id: id,
-  screenName: handle,
-  name: name,
-  profileImageUrlHttps: null,
-  verified: false,
-  createdAt: DateTime(2020),
-  inFeed: true,
-);
+import 'support/groups_harness.dart';
 
-SubscriptionGroup _group(String id, String name) =>
-    SubscriptionGroup(id: id, name: name, icon: '', color: null, numberOfMembers: 0, createdAt: DateTime(2020));
-
-final _alpha = _user('a', 'alpha_1', 'Alpha');
-final _beta = _user('b', 'beta_2', 'Beta');
-
-/// Memberships in memory; writes throw while [failing].
-class _FakeGroups extends GroupsModel {
-  _FakeGroups(super.prefs, List<SubscriptionGroup> groups) {
-    update(groups);
-  }
-
-  final members = <SubscriptionGroupMember>[];
-  final removed = <String>[];
-  var failing = false;
-  GroupUngroupedPlan? applied;
-
-  List<String> groupsOf(String profile) => [
-    for (final member in members)
-      if (member.profile == profile) member.group,
-  ];
-
-  @override
-  Future<void> addToGroups(String profile, Iterable<String> groupIds) async {
-    if (failing) throw StateError('disk full');
-    members.addAll([for (final group in groupIds) SubscriptionGroupMember(group: group, profile: profile)]);
-  }
-
-  @override
-  Future<void> removeFromGroups(String profile, Iterable<String> groupIds) async {
-    removed.add('$profile:${groupIds.join(',')}');
-    members.removeWhere((member) => member.profile == profile && groupIds.contains(member.group));
-  }
-
-  @override
-  Future<String> createGroup(String name) async {
-    final id = 'new-$name';
-    update([...state, _group(id, name)]);
-    return id;
-  }
-
-  @override
-  Future<List<SubscriptionGroupMember>> listGroupMembers() async => List.of(members);
-
-  @override
-  Future<int> applyUngroupedPlan(GroupUngroupedPlan plan) async {
-    applied = plan;
-    members.addAll([
-      for (final row in plan.assign) SubscriptionGroupMember(group: row.groupId, profile: row.accountId),
-    ]);
-    return plan.moveCount;
-  }
-}
-
-class _Harness {
-  final prefs = PrefServiceCache(defaults: {optionDisableAnimations: true});
-  late final _FakeGroups groups;
-  late final SubscriptionsModel subscriptions;
-
-  _Harness({List<SubscriptionGroup>? groups, List<Subscription> subscriptions = const []}) {
-    this.groups = _FakeGroups(prefs, groups ?? [_group('art', 'Art'), _group('news', 'News')]);
-    this.subscriptions = SubscriptionsModel(prefs, this.groups)..update(subscriptions);
-  }
-
-  Future<void> pump(WidgetTester tester, Widget home) async {
-    await tester.pumpWidget(
-      PrefService(
-        service: prefs,
-        child: MultiProvider(
-          providers: [
-            Provider<GroupsModel>.value(value: groups),
-            Provider<SubscriptionsModel>.value(value: subscriptions),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: const [
-              L10n.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: L10n.delegate.supportedLocales,
-            onGenerateRoute: (settings) => MaterialPageRoute(
-              builder: (_) =>
-                  Scaffold(body: Text('${settings.name} ${(settings.arguments as ProfileScreenArguments?)?.id}')),
-            ),
-            home: home,
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-  }
-}
+final _alpha = testUser('a', 'alpha_1', 'Alpha');
+final _beta = testUser('b', 'beta_2', 'Beta');
 
 Future<void> _tapKey(WidgetTester tester, String key) async {
   await tester.tap(find.byKey(ValueKey(key)));
@@ -218,7 +111,7 @@ void main() {
 
   group('the sorter screen', () {
     testWidgets('a tap on a group puts the account in it and shows the next', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha, _beta]));
       expect(find.text('Alpha'), findsOneWidget);
       expect(find.text('@alpha_1'), findsOneWidget);
@@ -232,7 +125,7 @@ void main() {
     });
 
     testWidgets('Skip leaves the account where it is; Undo takes each choice back', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha, _beta]));
       await _tapKey(tester, 'sorter-group-art');
       await _tapKey(tester, 'sorter-skip');
@@ -252,37 +145,34 @@ void main() {
     });
 
     testWidgets('Several groups places the account in every group ticked', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha]));
       await _tapKey(tester, 'sorter-several');
-      await tester.tap(find.widgetWithText(CheckboxListTile, 'Art'));
-      await tester.tap(find.widgetWithText(CheckboxListTile, 'News'));
-      await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
-      await tester.pumpAndSettle();
+      await _tapKey(tester, 'group-pick-art');
+      await _tapKey(tester, 'group-pick-news');
+      await closeSheet(tester);
       expect(harness.groups.groupsOf('a'), ['art', 'news']);
       expect(find.text('Placed 1 subscription'), findsOneWidget);
     });
 
     testWidgets('closing Several groups with nothing ticked changes nothing', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha]));
       await _tapKey(tester, 'sorter-several');
-      await tester.tap(find.widgetWithText(FilledButton, 'Save'));
-      await tester.pumpAndSettle();
+      await closeSheet(tester);
       expect(harness.groups.members, isEmpty);
       expect(find.text('Alpha'), findsOneWidget);
     });
 
     testWidgets('one group needs no Several groups', (tester) async {
-      final harness = _Harness(groups: [_group('art', 'Art')]);
+      final harness = GroupsHarness(groups: [testGroup('art', 'Art')]);
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha]));
       expect(find.byKey(const ValueKey('sorter-several')), findsNothing);
       expect(find.byKey(const ValueKey('sorter-create')), findsOneWidget);
     });
 
     testWidgets('Create group asks for a name and puts the account in the new group', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha, _beta]));
       await _tapKey(tester, 'sorter-create');
       final create = find.widgetWithText(FilledButton, 'Create');
@@ -298,7 +188,7 @@ void main() {
     });
 
     testWidgets('the skipped ones can be sorted again', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha, _beta]));
       await _tapKey(tester, 'sorter-skip');
       await _tapKey(tester, 'sorter-skip');
@@ -312,7 +202,7 @@ void main() {
     });
 
     testWidgets('a failed save keeps the card and says so', (tester) async {
-      final harness = _Harness()..groups.failing = true;
+      final harness = GroupsHarness()..groups.failing = true;
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha, _beta]));
       await _tapKey(tester, 'sorter-group-art');
       expect(find.text('Could not apply the groups.'), findsOneWidget);
@@ -327,7 +217,7 @@ void main() {
         return null;
       });
       addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha, _beta]));
       await _tapKey(tester, 'sorter-group-art');
       await _tapKey(tester, 'sorter-skip');
@@ -335,14 +225,14 @@ void main() {
     });
 
     testWidgets('Open profile leads to the account', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, UngroupedSorterScreen(accounts: [_alpha]));
       await _tapKey(tester, 'sorter-open-profile');
       expect(find.text('$routeProfile a'), findsOneWidget);
     });
 
     testWidgets('with nobody to sort it says everyone is in a group', (tester) async {
-      final harness = _Harness();
+      final harness = GroupsHarness();
       await harness.pump(tester, const UngroupedSorterScreen(accounts: []));
       expect(find.text('Every subscription is already in a group.'), findsOneWidget);
       expect(find.byKey(const ValueKey('sorter-skip')), findsNothing);
@@ -351,12 +241,12 @@ void main() {
   });
 
   group('Sort ungrouped', () {
-    final nasa = _user('nasa', 'nasa', 'NASA');
-    final esa = _user('esa', 'esa', 'ESA Space');
-    final mika = _user('mk', 'mk_t0927', 'Mika');
+    final nasa = testUser('nasa', 'nasa', 'NASA');
+    final esa = testUser('esa', 'esa', 'ESA Space');
+    final mika = testUser('mk', 'mk_t0927', 'Mika');
 
-    _Harness harnessWith(List<Subscription> subscriptions) {
-      final harness = _Harness(groups: [_group('space', 'Space')], subscriptions: subscriptions);
+    GroupsHarness harnessWith(List<Subscription> subscriptions) {
+      final harness = GroupsHarness(groups: [testGroup('space', 'Space')], subscriptions: subscriptions);
       harness.groups.members.add(SubscriptionGroupMember(group: 'space', profile: 'nasa'));
       return harness;
     }
