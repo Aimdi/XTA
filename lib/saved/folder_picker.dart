@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -7,6 +6,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/immich/immich_client.dart';
 import 'package:xta/plugins/immich/immich_uploader.dart';
+import 'package:xta/saved/save_sheet.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/ui/action_feedback.dart';
@@ -148,16 +148,15 @@ Future<void> _uploadToImmich({
   }
 }
 
-/// Opens the "save to folder" bottom sheet for a post, saving it first if needed.
+/// Opens the "save to folder" sheet for a post: a tap on a folder files the
+/// post there, saving it first if needed.
 Future<void> showSaveToFolderSheet(BuildContext context,
     {required String tweetId, String? userId, required Map<String, dynamic> content}) async {
   var savedModel = context.read<SavedTweetModel>();
   var folderModel = context.read<SavedTweetFolderModel>();
-  var messenger = ScaffoldMessenger.of(context);
   lightHaptic(context);
 
   await folderModel.listFolders();
-
   if (!context.mounted) {
     return;
   }
@@ -165,149 +164,20 @@ Future<void> showSaveToFolderSheet(BuildContext context,
   await showModalBottomSheet(
     context: context,
     showDragHandle: true,
-    builder: (_) => _SaveToFolderSheet(
-        tweetId: tweetId,
-        userId: userId,
-        content: content,
-        savedModel: savedModel,
-        folderModel: folderModel,
-        messenger: messenger),
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => SaveToFolderSheet(
+      tweetId: tweetId,
+      savedModel: savedModel,
+      folderModel: folderModel,
+      file: (context, folderId) async {
+        final prefs = PrefService.of(context, listen: false);
+        await fileSavedTweet(context, tweetId: tweetId, userId: userId, content: content, folderId: folderId);
+        // The pick is what gets remembered, so the next plain tap lands here too.
+        await rememberSaveFolder(prefs, folderId);
+      },
+    ),
   );
-}
-
-class _SaveToFolderSheet extends StatelessWidget {
-  final String tweetId;
-  final String? userId;
-  final Map<String, dynamic> content;
-  final SavedTweetModel savedModel;
-  final SavedTweetFolderModel folderModel;
-  final ScaffoldMessengerState messenger;
-
-  const _SaveToFolderSheet(
-      {required this.tweetId,
-      required this.userId,
-      required this.content,
-      required this.savedModel,
-      required this.folderModel,
-      required this.messenger});
-
-  Future<void> _file(BuildContext context, String? folderId, String label) async {
-    final prefs = PrefService.of(context, listen: false);
-    final save = fileSavedTweet(context, tweetId: tweetId, userId: userId, content: content, folderId: folderId);
-
-    Navigator.pop(context);
-    await save;
-
-    // The pick is what gets remembered, so the next plain tap lands here too.
-    await rememberSaveFolder(prefs, folderId);
-
-    messenger.showSnackBar(SnackBar(
-      content: Text(L10n.current.saved_to_folder(label)),
-      duration: const Duration(seconds: 3),
-    ));
-  }
-
-  Future<void> _createAndFile(BuildContext context) async {
-    var folder = await showCreateFolderDialog(context, folderModel);
-    if (folder != null && context.mounted) {
-      await _file(context, folder.id, folder.name);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: ScopedBuilder<SavedTweetFolderModel, List<SavedTweetFolder>>(
-        store: folderModel,
-        onState: (context, folders) {
-          var current = savedModel.folderOf(tweetId);
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 4, 24, 12),
-                child: Row(
-                  children: [
-                    Icon(Icons.bookmark_add_outlined),
-                    const SizedBox(width: 12),
-                    Text(L10n.of(context).save_to_folder, style: Theme.of(context).textTheme.titleMedium),
-                  ],
-                ),
-              ),
-              // Switched off, every plain tap on the bookmark lands unfiled and
-              // filing is a long-press each time. Switched on, the folder just
-              // picked becomes where saves go until another is picked.
-              SwitchListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                secondary: const Icon(Icons.push_pin_outlined),
-                title: Text(L10n.of(context).save_folder_remember),
-                subtitle: Text(L10n.of(context).save_folder_remember_description),
-                value: PrefService.of(context).get<bool>(optionSavedStickyFolderEnabled) == true,
-                onChanged: (value) async {
-                  final prefs = PrefService.of(context, listen: false);
-                  await prefs.set(optionSavedStickyFolderEnabled, value);
-                  // Turning it on adopts wherever this post already is, so the
-                  // switch means something before the next pick rather than
-                  // waiting for one.
-                  if (value) {
-                    await prefs.set(optionSavedStickyFolderId, savedModel.folderOf(tweetId) ?? '');
-                  }
-                },
-              ),
-              const Divider(),
-              // Scrolls rather than overflowing the sheet once there are more
-              // folders than fit (ported from upstream ffea8688).
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _FolderTile(
-                          label: L10n.of(context).unfiled,
-                          selected: current == null,
-                          onTap: () => _file(context, null, L10n.of(context).unfiled)),
-                      ...folders.map((f) => _FolderTile(
-                          label: f.name,
-                          selected: current == f.id,
-                          onTap: () => _file(context, f.id, f.name))),
-                    ],
-                  ),
-                ),
-              ),
-              const Divider(),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                leading: const Icon(Icons.create_new_folder_outlined),
-                title: Text(L10n.of(context).create_new_folder),
-                onTap: () => _createAndFile(context),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _FolderTile extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _FolderTile({required this.label, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-      title: Text(label),
-      trailing: selected ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary) : null,
-      onTap: onTap,
-    );
-  }
 }
 
 Future<SavedTweetFolder?> showCreateFolderDialog(BuildContext context, SavedTweetFolderModel folderModel,
