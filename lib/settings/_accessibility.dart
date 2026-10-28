@@ -55,6 +55,16 @@ class SettingsAccessibilityFragment extends StatelessWidget {
                   L10n.of(context).gesture_double_tap_like_description,
                 ),
               ))),
+              SettingsControlTarget(id: optionSwipeBackAnywhere, child: LabeledPref(child: PrefSwitch(
+                title: Text(L10n.of(context).swipe_back_anywhere),
+                pref: optionSwipeBackAnywhere,
+                subtitle: Text(L10n.of(context).swipe_back_anywhere_description),
+              ))),
+              SettingsControlTarget(id: optionSwipeBackTilt, child: LabeledPref(child: PrefSwitch(
+                title: Text(L10n.of(context).swipe_back_tilt),
+                pref: optionSwipeBackTilt,
+                subtitle: Text(L10n.of(context).swipe_back_tilt_description),
+              ))),
               SettingsNavigationRow(
                 icon: Icons.record_voice_over_outlined,
                 title: L10n.of(context).settings_speech,

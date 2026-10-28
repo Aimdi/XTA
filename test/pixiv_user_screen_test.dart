@@ -357,4 +357,112 @@ void main() {
     expect(value.left, label.left);
     await disposePixiv(tester);
   });
+
+  group('the header in the Kanten style', () {
+    const follow = ValueKey('pixiv-follow-9');
+    const group = ValueKey('pixiv-profile-group');
+
+    double corner(WidgetTester tester, Key button) {
+      final material = tester.widget<Material>(
+        find.descendant(of: find.byKey(button), matching: find.byType(Material)).first,
+      );
+      return ((material.shape! as RoundedRectangleBorder).borderRadius as BorderRadius).topLeft.x;
+    }
+
+    testWidgets('Follow fills the row with an edge and Add to group sits beside it with its name', (tester) async {
+      // Wide enough for the test font, which draws every glyph 1 em wide.
+      await _pump(tester, _api(), size: const Size(600, 844));
+      expect(tester.widget(find.byKey(follow)), isA<FilledButton>());
+      expect(corner(tester, follow), 8);
+      expect(tester.widget(find.byKey(group)), isA<OutlinedButton>());
+      expect(corner(tester, group), 8);
+      expect(find.descendant(of: find.byKey(group), matching: find.text('Add to group')), findsOneWidget);
+      final header = tester.getRect(find.byType(PixivUserHeader));
+      final followRect = tester.getRect(find.byKey(follow));
+      final groupRect = tester.getRect(find.byKey(group));
+      expect(followRect.left, header.left + 16);
+      expect(groupRect.right, header.right - 16);
+      expect(groupRect.left - followRect.right, 8);
+      expect(followRect.top, groupRect.top);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('once followed, Follow is outlined and says Unfollow', (tester) async {
+      await _pump(tester, _api());
+      await tester.tap(find.byKey(follow));
+      await settlePixiv(tester);
+      expect(tester.widget(find.byKey(follow)), isA<OutlinedButton>());
+      expect(find.descendant(of: find.byKey(follow), matching: find.text('Unfollow')), findsOneWidget);
+      expect(corner(tester, follow), 8);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('Add to group keeps its icon and tooltip at 320 dp with text x2', (tester) async {
+      await _pump(tester, FakePixivSocialApi(profile: pixivProfileOf()), size: const Size(320, 640), text: 2);
+      expect(find.descendant(of: find.byKey(group), matching: find.byType(Text)), findsNothing);
+      expect(find.byTooltip('Add to group'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('your own profile shows Add to group alone', (tester) async {
+      await _pump(tester, _api(), ownId: 9);
+      expect(find.byKey(follow), findsNothing);
+      expect(find.byKey(group), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('Premium is an outlined badge', (tester) async {
+      await _pump(tester, FakePixivSocialApi(profile: pixivProfileOf(premium: true)));
+      final badge = tester.widget<DecoratedBox>(
+        find.ancestor(of: find.text('Premium member'), matching: find.byType(DecoratedBox)).first,
+      );
+      final decoration = badge.decoration as BoxDecoration;
+      expect(decoration.border, isNotNull);
+      expect(decoration.color, isNull);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('a count leads with its number in bold, and a hairline closes the header', (tester) async {
+      await _pump(tester, _api());
+      final works = tester.widget<Text>(
+        find.descendant(of: find.byKey(const ValueKey('pixiv-profile-works-count')), matching: find.byType(Text)),
+      );
+      final spans = (works.textSpan! as TextSpan).children!.cast<TextSpan>();
+      expect(spans.first.text, '8');
+      expect(spans.first.style?.fontWeight, FontWeight.w700);
+      expect(spans.last.text, ' works');
+      expect(spans.last.style?.fontWeight, isNull);
+      expect(find.descendant(of: find.byType(PixivUserHeader), matching: find.byType(Divider)), findsOneWidget);
+      await disposePixiv(tester);
+    });
+
+    testWidgets('German writes the following count out in full', (tester) async {
+      final api = _api();
+      await pumpPixiv(
+        tester,
+        const PixivUserScreen(userId: 9),
+        extraProviders: [api.provider],
+        locale: const Locale('de'),
+      );
+      expect(find.text('1.500 gefolgt'), findsOneWidget);
+      await disposePixiv(tester);
+    });
+  });
+
+  test('a count finds its number wherever the language puts it', () {
+    const white = Color(0xFFFFFFFF);
+    const grey = Color(0xFF7A7F85);
+    String bold(TextSpan span) => [
+      for (final child in (span.children ?? const <InlineSpan>[]).cast<TextSpan>())
+        if (child.style?.fontWeight == FontWeight.w700) child.text,
+    ].join();
+    TextSpan count(String label, String number) =>
+        pixivCountSpan(label, number, numberColor: white, restColor: grey);
+
+    expect(bold(count('139 Werke', '139')), '139');
+    expect(bold(count('作品 139', '139')), '139');
+    expect(count('作品 139', '139').toPlainText(), '作品 139');
+    expect(count('لا أعمال', '0').children, isNull, reason: 'a count spelled out stays as it is');
+  });
 }

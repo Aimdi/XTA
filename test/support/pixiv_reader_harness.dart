@@ -178,6 +178,10 @@ Future<PixivHarness> pumpPixiv(
 
   /// Fakes for a feature's own API classes, so a batch need not edit this harness.
   List<SingleChildWidget> extraProviders = const [],
+
+  /// The app's theme and language when a test needs them, as renders do.
+  ThemeData? theme,
+  Locale? locale,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -218,6 +222,8 @@ Future<PixivHarness> pumpPixiv(
           ...extraProviders,
         ],
         child: MaterialApp(
+          theme: theme,
+          locale: locale,
           localizationsDelegates: const [
             L10n.delegate,
             GlobalMaterialLocalizations.delegate,

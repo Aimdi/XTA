@@ -158,6 +158,9 @@ class PixivProfileView extends StatelessWidget {
         SliverAppBar(
           pinned: true,
           title: Text(scope.profile.user.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+          // Named outright: left to the theme, Back takes the grey of icon
+          // buttons while the actions beside it are drawn in the text colour.
+          iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
           actions: pixivProfileActions(context, scope),
         ),
         SliverToBoxAdapter(

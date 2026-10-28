@@ -598,6 +598,9 @@ const optionSubscriptionGroupsCompact = 'subscription_groups.compact';
 const optionSubscriptionGroupsLayout = 'subscription_groups.layout';
 const subscriptionGroupsLayoutBoard = 'board';
 const subscriptionGroupsLayoutList = 'list';
+// The groups last added in the group picker, newest first, comma-separated:
+// its "Recently used" chips.
+const optionSubscriptionGroupsRecentPicks = 'subscription_groups.recent_picks';
 const optionSubscriptionOrderByAscending = 'subscription.order_by.ascending';
 const optionSubscriptionOrderCustom = 'subscription.order_by.custom';
 const optionSubscriptionOrderByField = 'subscription.order_by.field';
@@ -688,6 +691,13 @@ const optionTweetsShowSubscribeBadge = 'tweets.show_subscribe_badge';
 // is coming, so a reader who does not want the gesture should not pay the
 // delay for it.
 const optionGestureDoubleTapLike = 'gestures.double_tap_like';
+
+// An opened post goes back as a card dragged from anywhere on it; off, only
+// from the edge of the screen (docs/specs/post-swipe-back-card.md).
+const optionSwipeBackAnywhere = 'gestures.swipe_back_anywhere';
+
+// The dragged card turns around the finger and swings with its speed.
+const optionSwipeBackTilt = 'gestures.swipe_back_tilt';
 
 // The TradingView chart on a ticker screen. It is the one thing XTA loads
 // from outside X, so it is named plainly and can be switched off; the posts

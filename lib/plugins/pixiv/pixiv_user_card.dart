@@ -18,6 +18,7 @@ import 'package:xta/plugins/pixiv/pixiv_novel_open.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
+import 'package:xta/ui/label_width.dart';
 import 'package:xta/utils/json.dart';
 
 const pixivPreviewWorks = 3;
@@ -26,8 +27,25 @@ const pixivPreviewWorks = 3;
 /// button; with less room the button moves under the name.
 const pixivCardNameMinEm = 8.0;
 
-/// The button's padding, icon and gap around its label (Material 3 tonal icon button).
-const _followButtonChrome = 66.0;
+/// A Material 3 icon button's padding, icon and gap around its label.
+const _labelledButtonChrome = 66.0;
+
+/// The corner of a profile's buttons in the Kanten style: an edge, not a pill.
+const pixivEdgedRadius = 8.0;
+
+const _edgedPadding = 14.0;
+
+/// An outlined Kanten button's padding, icon and gap around its label.
+const pixivEdgedButtonChrome = 2 * _edgedPadding + 18 + 8;
+
+/// An outlined button in a profile's Kanten style, a 48dp target.
+ButtonStyle pixivEdgedOutlinedStyle(BuildContext context) => OutlinedButton.styleFrom(
+  minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension),
+  padding: const EdgeInsets.symmetric(horizontal: _edgedPadding),
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(pixivEdgedRadius)),
+  side: BorderSide(color: Theme.of(context).colorScheme.outline),
+  foregroundColor: Theme.of(context).colorScheme.onSurface,
+);
 
 /// The avatar and the gaps either side of the name in the card header.
 const _headerChrome = 40.0 + 12 + 8;
@@ -61,24 +79,18 @@ List<PixivNovel> pixivVisiblePreviewNovels(
     .take(pixivPreviewWorks)
     .toList();
 
+/// How wide an icon button gets with the longest of [labels] at the reader's
+/// text size, with [chrome] around its label.
+double pixivLabelledButtonWidth(BuildContext context, List<String> labels, {double chrome = _labelledButtonChrome}) {
+  final style = Theme.of(context).textTheme.labelLarge ?? const TextStyle();
+  return labels.map((label) => labelsWidth(context, [label], style)).fold(0.0, max) + chrome;
+}
+
 /// How wide the follow button gets with the longer of its two labels at the
 /// reader's text size, so the layout does not jump when the follow flips.
 double pixivFollowButtonWidth(BuildContext context) {
   final l10n = L10n.of(context);
-  final style = Theme.of(context).textTheme.labelLarge;
-  double measure(String label) {
-    final painter = TextPainter(
-      text: TextSpan(text: label, style: style),
-      textScaler: MediaQuery.textScalerOf(context),
-      textDirection: Directionality.of(context),
-      maxLines: 1,
-    )..layout();
-    final width = painter.width;
-    painter.dispose();
-    return width;
-  }
-
-  return max(measure(l10n.plugin_pixiv_follow), measure(l10n.plugin_pixiv_unfollow)) + _followButtonChrome;
+  return pixivLabelledButtonWidth(context, [l10n.plugin_pixiv_follow, l10n.plugin_pixiv_unfollow]);
 }
 
 /// Follow / Unfollow for one creator, with a 48dp target and a spinner while
@@ -89,7 +101,11 @@ class PixivFollowButton extends StatelessWidget {
   final PixivUser user;
   final ValueChanged<bool>? onChanged;
 
-  const PixivFollowButton({super.key, required this.user, this.onChanged});
+  /// The profile's main action in the Kanten style: filled with an edge while
+  /// it asks to follow, outlined once followed. Cards keep the tonal pill.
+  final bool prominent;
+
+  const PixivFollowButton({super.key, required this.user, this.onChanged, this.prominent = false});
 
   Future<void> _toggle(BuildContext context) async {
     final l10n = L10n.of(context);
@@ -116,20 +132,48 @@ class PixivFollowButton extends StatelessWidget {
 
   Widget _button(BuildContext context, {required bool followed, required bool busy}) {
     final l10n = L10n.of(context);
+    final key = ValueKey('pixiv-follow-${user.id}');
+    final onPressed = busy ? null : () => _toggle(context);
+    final onLongPress = busy ? null : () => editPixivFollow(context, user, onChanged: onChanged);
     final icon = busy
         ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
         : Icon(followed ? Icons.person_remove_outlined : Icons.person_add_alt_1_outlined);
-    return FilledButton.tonalIcon(
-      key: ValueKey('pixiv-follow-${user.id}'),
-      style: FilledButton.styleFrom(minimumSize: const Size(kMinInteractiveDimension, kMinInteractiveDimension)),
-      onPressed: busy ? null : () => _toggle(context),
-      onLongPress: busy ? null : () => editPixivFollow(context, user, onChanged: onChanged),
-      icon: icon,
-      label: Text(
-        followed ? l10n.plugin_pixiv_unfollow : l10n.plugin_pixiv_follow,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+    final label = Text(
+      followed ? l10n.plugin_pixiv_unfollow : l10n.plugin_pixiv_follow,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+    const minimumSize = Size(kMinInteractiveDimension, kMinInteractiveDimension);
+    if (!prominent) {
+      return FilledButton.tonalIcon(
+        key: key,
+        style: FilledButton.styleFrom(minimumSize: minimumSize),
+        onPressed: onPressed,
+        onLongPress: onLongPress,
+        icon: icon,
+        label: label,
+      );
+    }
+    if (followed) {
+      return OutlinedButton.icon(
+        key: key,
+        style: pixivEdgedOutlinedStyle(context),
+        onPressed: onPressed,
+        onLongPress: onLongPress,
+        icon: icon,
+        label: label,
+      );
+    }
+    return FilledButton.icon(
+      key: key,
+      style: FilledButton.styleFrom(
+        minimumSize: minimumSize,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(pixivEdgedRadius)),
       ),
+      onPressed: onPressed,
+      onLongPress: onLongPress,
+      icon: icon,
+      label: label,
     );
   }
 }

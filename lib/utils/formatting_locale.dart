@@ -17,6 +17,13 @@ String currentFormattingLocale() => verifiedFormattingLocale(Intl.getCurrentLoca
 String decimalCount(BuildContext context, num value) =>
     NumberFormat.decimalPattern(formattingLocale(context)).format(value);
 
+/// A count on a profile as [locale] writes it: abbreviated where the language
+/// abbreviates (62.6K), grouped where it writes the number out (62.646).
+String profileCount(int count, String locale) {
+  final compact = NumberFormat.compact(locale: locale).format(count);
+  return compact == '$count' ? NumberFormat.decimalPattern(locale).format(count) : compact;
+}
+
 bool _canFormat(String locale) => NumberFormat.localeExists(locale) && _hasDateSymbols(locale);
 
 /// intl's date symbols arrive with the app's first [Localizations]. Before

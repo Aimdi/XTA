@@ -14,7 +14,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/plugin_account_subscription.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/plugin_storage.dart';
-import 'package:xta/subscriptions/group_membership_sheet.dart';
+import 'package:xta/subscriptions/group_pick.dart';
 import 'package:xta/subscriptions/users_model.dart';
 
 PrefServiceCache _prefs() => PrefServiceCache(
@@ -117,10 +117,8 @@ void main() {
     final store = GroupMembershipStore(initial);
     store.toggle('group-a');
     store.toggle('group-b');
-    store.search(' ART ');
     expect(initial, ['group-a']);
-    expect(store.state.chosen, {'group-b'});
-    expect(store.state.query, 'art');
+    expect(store.state, {'group-b'});
     store.destroy();
   });
 }
