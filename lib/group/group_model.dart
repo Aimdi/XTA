@@ -21,6 +21,31 @@ import 'package:uuid/uuid.dart';
 
 var defaultGroupIcon = '{"pack":"custom","key":"rss_feed"}';
 
+/// Writes a new group's row and returns its id. The reply and repost filters
+/// stay null, so the group follows the global default rather than the
+/// columns' own "on".
+Future<String> _insertNewGroup(
+  DatabaseExecutor database,
+  String name, {
+  String? icon,
+  Color? color,
+  String? emoji,
+  int markStyle = GroupMarkStyle.auto,
+}) async {
+  final id = const Uuid().v4();
+  await database.insert(tableSubscriptionGroup, {
+    'id': id,
+    'name': name,
+    'color': color?.toARGB32(),
+    'icon': icon ?? defaultGroupIcon,
+    'include_replies': null,
+    'include_retweets': null,
+    'emoji': emoji,
+    'mark_style': markStyle,
+  });
+  return id;
+}
+
 IconData deserializeIconData(String iconData) {
   try {
     var icon = deserializeIcon(jsonDecode(iconData));
@@ -465,15 +490,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     var placed = 0;
     for (final group in groups) {
       if (group.accountIds.length < 2) continue;
-      final id = const Uuid().v4();
-      await database.insert(tableSubscriptionGroup, {
-        'id': id,
-        'name': group.name,
-        'icon': defaultGroupIcon,
-        'include_replies': null,
-        'include_retweets': null,
-        'mark_style': GroupMarkStyle.auto,
-      });
+      final id = await _insertNewGroup(database, group.name);
       final batch = database.batch();
       for (final profile in group.accountIds) {
         batch.insert(tableSubscriptionGroupMember, {'group_id': id, 'profile_id': profile});
@@ -492,6 +509,46 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     }
     await batch.commit(noResult: true);
     return assign.length;
+  }
+
+  /// Puts [profile] in [groupIds] as well as any group it is in already.
+  ///
+  /// Unlike [saveUserGroupMembership], offers no app-wide undo: the sorter
+  /// that calls it keeps one of its own.
+  Future<void> addToGroups(String profile, Iterable<String> groupIds) => _writeMemberships(
+    groupIds,
+    (batch, group) => batch.insert(tableSubscriptionGroupMember, {
+      'group_id': group,
+      'profile_id': profile,
+    }, conflictAlgorithm: ConflictAlgorithm.ignore),
+  );
+
+  /// Takes [profile] out of [groupIds] and no other group.
+  Future<void> removeFromGroups(String profile, Iterable<String> groupIds) => _writeMemberships(
+    groupIds,
+    (batch, group) => batch.delete(
+      tableSubscriptionGroupMember,
+      where: 'group_id = ? AND profile_id = ?',
+      whereArgs: [group, profile],
+    ),
+  );
+
+  Future<void> _writeMemberships(Iterable<String> groupIds, void Function(Batch batch, String group) write) async {
+    final database = await Repository.writable();
+    final batch = database.batch();
+    for (final group in groupIds) {
+      write(batch, group);
+    }
+    await batch.commit(noResult: true);
+    await reloadGroups();
+  }
+
+  /// Creates an empty group called [name] with the default mark and returns
+  /// its id.
+  Future<String> createGroup(String name) async {
+    final id = await _insertNewGroup(await Repository.writable(), name);
+    await reloadGroups();
+    return id;
   }
 
   Future saveUserGroupMembership(String user, List<String> memberships) async {
@@ -575,20 +632,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
 
       // First insert or update the subscription group details
       if (id == null) {
-        id = const Uuid().v4();
-
-        // Leave the reply/retweet filters null so a new group follows the
-        // global default instead of the column's own "on" default.
-        await database.insert(tableSubscriptionGroup, {
-          'id': id,
-          'name': name,
-          'color': color?.toARGB32(),
-          'icon': icon,
-          'include_replies': null,
-          'include_retweets': null,
-          'emoji': emoji,
-          'mark_style': markStyle,
-        });
+        id = await _insertNewGroup(database, name, icon: icon, color: color, emoji: emoji, markStyle: markStyle);
       } else {
         await database.update(
           tableSubscriptionGroup,

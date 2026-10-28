@@ -208,8 +208,6 @@ Widget buildSubscriptionTile(BuildContext context, Subscription user) {
     return UserTile(key: Key(user.id), user: user);
   }
 
-  final destination = subscriptionDestination(user);
-
   return ListTile(
     key: Key(user.id),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
@@ -223,16 +221,6 @@ Widget buildSubscriptionTile(BuildContext context, Subscription user) {
           subscription: user, ensureFollowed: () async {})),
       FollowButton(user: user),
     ]),
-    onTap: () {
-      if (destination != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => destination()));
-        return;
-      }
-      Navigator.pushNamed(
-        context,
-        routeSearch,
-        arguments: SearchArguments(0, focusInputOnOpen: false, query: user.id),
-      );
-    },
+    onTap: () => openSubscription(context, user),
   );
 }

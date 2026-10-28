@@ -4640,6 +4640,16 @@
   "@sort_oldest": {
     "description": "Order option: oldest posts first"
   },
+  "sort_one_by_one": "Sort one by one",
+  "@sort_one_by_one": {},
+  "sort_one_progress": "{current} of {total}",
+  "@sort_one_progress": {"placeholders": {"current": {"type": "int"}, "total": {"type": "int"}}},
+  "sort_one_several_groups": "Several groups",
+  "@sort_one_several_groups": {},
+  "sort_one_skipped": "{count, plural, one{Skipped 1 subscription} other{Skipped {count} subscriptions}}",
+  "@sort_one_skipped": {},
+  "sort_one_sort_skipped": "Sort the skipped ones",
+  "@sort_one_sort_skipped": {},
   "sort_most_liked": "Most liked",
   "@sort_most_liked": {
     "description": "Order option: posts with the most likes first"

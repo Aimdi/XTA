@@ -23,7 +23,9 @@ go through them one at a time.
   on to the accounts it could not place, if there are any, instead of closing.
 - **One account at a time.** A card shows the avatar, the name, the handle and
   Open profile, to see who the account is; coming back from the profile shows
-  the same card. The bar says how far along the sorting is: "3 of 41".
+  the same card. An X account's picture sits on a disc that shows while it
+  loads or when there is none. The bar says how far along the sorting is:
+  "3 of 41".
 - **A tap places and moves on.** The groups are chips carrying their own marks,
   in the order of the Groups tab. A tap puts the account in that group, saved
   at once, and shows the next account.
@@ -79,7 +81,11 @@ Reused: `sort_ungrouped`, `skip`, `reader_undo`, `group_discovery_open_profile`,
   written in one place for `saveGroup`, `applyUngroupedPlan` and
   `createGroup`.
 - Opening a subscription's screen, as a row of the subscriptions list does,
-  becomes `openSubscription`, for the list and the card.
+  becomes `openSubscription`, for the list and the card. `subscriptionAvatar`
+  takes a size for an X account too, for the card's 72 dp picture; without
+  one it draws as before.
+- Undo and Skip share the footer while they fit, and stack with large text on
+  a narrow phone.
 
 ## Tests
 

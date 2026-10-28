@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/group_ungrouped_model.dart';
+import 'package:xta/subscriptions/group_ungrouped_sorter_screen.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/ai_client.dart';
@@ -51,6 +53,21 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
     );
   }
 
+  /// The subscriptions the plan leaves without a group, in its order.
+  List<Subscription> _leftovers() {
+    final byId = {for (final subscription in context.read<SubscriptionsModel>().state) subscription.id: subscription};
+    return [for (final id in _model.state.plan.leftoverIds) ?byId[id]];
+  }
+
+  MaterialPageRoute<void> _sorterRoute() =>
+      MaterialPageRoute(builder: (_) => UngroupedSorterScreen(accounts: _leftovers()));
+
+  /// Sorts the leftovers by hand, then plans again from what is left.
+  Future<void> _sortOneByOne() async {
+    await Navigator.push(context, _sorterRoute());
+    await _start();
+  }
+
   Future<void> _apply() async {
     if (_applying.state) return;
     _applying.setApplying(true);
@@ -63,7 +80,12 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.sort_ungrouped_applied(count))),
       );
-      Navigator.pop(context);
+      // The accounts the plan could not place come next, one at a time.
+      if (_model.state.plan.leftoverIds.isEmpty) {
+        Navigator.pop(context);
+      } else {
+        Navigator.pushReplacement(context, _sorterRoute());
+      }
     } catch (error, stack) {
       if (!mounted) return;
       _applying.setApplying(false);
@@ -98,7 +120,9 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
                   onPressed: applying ? null : () => _start(useAi: true),
                 ),
               ),
-            Expanded(child: _PlanBody(state: state, applying: applying, onApply: _apply)),
+            Expanded(
+              child: _PlanBody(state: state, applying: applying, onApply: _apply, onSortOneByOne: _sortOneByOne),
+            ),
           ]),
         ),
       ),
@@ -110,11 +134,13 @@ class _PlanBody extends StatelessWidget {
   final GroupUngroupedState state;
   final bool applying;
   final VoidCallback onApply;
+  final VoidCallback onSortOneByOne;
 
   const _PlanBody({
     required this.state,
     required this.applying,
     required this.onApply,
+    required this.onSortOneByOne,
   });
 
   @override
@@ -122,18 +148,32 @@ class _PlanBody extends StatelessWidget {
     final l10n = L10n.of(context);
     final plan = state.plan;
     if (plan.isEmpty) {
-      return ListView(
-        padding: const EdgeInsets.all(16),
+      return Column(
         children: [
-          Text(l10n.sort_ungrouped_description),
-          const SizedBox(height: 16),
-          if (state.aiFailed) Text(l10n.group_ai_fallback),
-          Text(plan.leftoverIds.isEmpty ? l10n.sort_ungrouped_empty : l10n.no_results),
-          if (plan.leftoverIds.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(l10n.sort_ungrouped_leftover),
-            Text(plan.leftoverIds.map(state.handleOf).join(', ')),
-          ],
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(l10n.sort_ungrouped_description),
+                const SizedBox(height: 16),
+                if (state.aiFailed) Text(l10n.group_ai_fallback),
+                Text(plan.leftoverIds.isEmpty ? l10n.sort_ungrouped_empty : l10n.no_results),
+                if (plan.leftoverIds.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text(l10n.sort_ungrouped_leftover),
+                  Text(plan.leftoverIds.map(state.handleOf).join(', ')),
+                ],
+              ],
+            ),
+          ),
+          if (plan.leftoverIds.isNotEmpty)
+            _planFooter(
+              FilledButton(
+                key: const ValueKey('sort-one-by-one'),
+                onPressed: applying ? null : onSortOneByOne,
+                child: Text(l10n.sort_one_by_one),
+              ),
+            ),
         ],
       );
     }
@@ -203,26 +243,37 @@ class _PlanBody extends StatelessWidget {
                       .map((handle) => '@$handle')
                       .join(', '),
                 ),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    key: const ValueKey('sort-one-by-one'),
+                    onPressed: applying ? null : onSortOneByOne,
+                    icon: const Icon(Icons.style_outlined),
+                    label: Text(l10n.sort_one_by_one),
+                  ),
+                ),
               ],
             ],
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: FilledButton(
-              onPressed: applying ? null : onApply,
-              child: applying
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.sort_ungrouped_apply),
-            ),
+        _planFooter(
+          FilledButton(
+            onPressed: applying ? null : onApply,
+            child: applying
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(l10n.sort_ungrouped_apply),
           ),
         ),
       ],
     );
   }
 }
+
+/// The plan's main action, at the foot of the screen.
+Widget _planFooter(Widget button) => SafeArea(
+  child: Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 16), child: button),
+);
