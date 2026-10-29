@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "id": "tildes",
+  "version": 1,
+  "name": "Tildes",
+  "description": "A non-profit community site for links and discussion.",
+  "homepage": "https://tildes.net",
+  "color": "#2E71B8",
+  "hosts": ["tildes.net"],
+  "layout": "links",
+  "type": "html",
+  "items": "article.topic",
+  "fields": {
+    "id": "@id",
+    "title": "h1.topic-title a",
+    "link": "h1.topic-title a@href",
+    "author": ".topic-info-source, .link-user",
+    "date": "time@datetime",
+    "comments": ".topic-info-comments a",
+    "discussion": ".topic-info-comments a@href",
+    "tags": ".topic-tags a"
+  },
+  "feeds": [
+    { "id": "activity", "name": "Activity", "url": "https://tildes.net/?order=activity", "next": "#pagination-next a@href" },
+    { "id": "new", "name": "New", "url": "https://tildes.net/?order=new", "next": "#pagination-next a@href" }
+  ]
+}

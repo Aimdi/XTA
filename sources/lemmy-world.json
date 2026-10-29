@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "id": "lemmy-world",
+  "version": 1,
+  "name": "Lemmy.world",
+  "description": "Posts from the communities on lemmy.world, a Lemmy instance.",
+  "homepage": "https://lemmy.world",
+  "color": "#00BC8C",
+  "hosts": ["lemmy.world"],
+  "layout": "posts",
+  "type": "json",
+  "items": "posts",
+  "fields": {
+    "id": "post.id",
+    "title": "post.name",
+    "text": "post.body",
+    "link": "https://lemmy.world/post/{post.id}",
+    "author": "creator.name",
+    "avatar": "creator.avatar",
+    "image": "post.thumbnail_url",
+    "date": "post.published",
+    "score": "counts.score",
+    "comments": "counts.comments"
+  },
+  "feeds": [
+    { "id": "hot", "name": "Hot", "url": "https://lemmy.world/api/v3/post/list?type_=All&sort=Hot&limit=20&page={page}" },
+    { "id": "new", "name": "New", "url": "https://lemmy.world/api/v3/post/list?type_=All&sort=New&limit=20&page={page}" },
+    { "id": "top-day", "name": "Top today", "url": "https://lemmy.world/api/v3/post/list?type_=All&sort=TopDay&limit=20&page={page}" }
+  ],
+  "search": { "url": "https://lemmy.world/api/v3/search?q={query}&type_=Posts&limit=20&page={page}" },
+  "article": { "url": "https://lemmy.world/api/v3/post?id={id}", "html": "post_view.post.body" }
+}

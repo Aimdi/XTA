@@ -89,7 +89,7 @@ void main() {
       expect(post.title, 'Hello world');
       expect(post.link, 'https://tildes.net/~comp/1/hello');
       expect(post.text, 'An excerpt');
-      expect(post.comments, 5);
+      expect(post.comments, 1205);
       expect(post.date, DateTime.utc(2026, 10, 29, 10));
     });
 

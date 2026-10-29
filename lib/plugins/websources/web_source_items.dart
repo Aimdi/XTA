@@ -227,7 +227,16 @@ String? _plain(String? value) {
   return trimmed.isEmpty ? null : trimmed;
 }
 
-int? _count(String? value) => value == null ? null : int.tryParse(value) ?? double.tryParse(value)?.round();
+final _firstNumber = RegExp(r'\d[\d,]*');
+
+/// A count as sites write it: `12`, `12.0`, or within text, `1,234 comments`.
+int? _count(String? value) {
+  if (value == null) return null;
+  final exact = int.tryParse(value) ?? double.tryParse(value)?.round();
+  if (exact != null) return exact;
+  final found = _firstNumber.firstMatch(value)?.group(0);
+  return found == null ? null : int.tryParse(found.replaceAll(',', ''));
+}
 
 final _digits = RegExp(r'^\d+$');
 

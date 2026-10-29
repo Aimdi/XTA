@@ -115,7 +115,7 @@ const htmlPage = '''<html><body><ol>
     <h1 class="topic-title"><a href="/~comp/1/hello">Hello   world</a></h1>
     <div class="topic-text-excerpt">An <b>excerpt</b></div>
     <time datetime="2026-10-29T10:00:00Z">2h</time>
-    <span class="topic-info-comments"><span>5</span></span>
+    <span class="topic-info-comments"><span>1,205 comments</span></span>
   </article></li>
   <li><article class="topic" id="topic-2"><div>no title or text</div></article></li>
 </ol><a id="next-page" href="/?after=topic-1">Next</a></body></html>''';

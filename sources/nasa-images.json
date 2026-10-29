@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "id": "nasa-images",
+  "version": 1,
+  "name": "NASA Images",
+  "description": "Pictures from the NASA Image and Video Library.",
+  "homepage": "https://images.nasa.gov",
+  "color": "#0B3D91",
+  "hosts": ["images-api.nasa.gov", "images.nasa.gov"],
+  "layout": "gallery",
+  "type": "json",
+  "items": "collection.items",
+  "fields": {
+    "id": "data[0].nasa_id",
+    "title": "data[0].title",
+    "text": "data[0].description",
+    "date": "data[0].date_created",
+    "image": "links[0].href",
+    "link": "https://images.nasa.gov/details/{data[0].nasa_id}"
+  },
+  "feeds": [
+    { "id": "nebulae", "name": "Nebulae", "url": "https://images-api.nasa.gov/search?q=nebula&media_type=image&page={page}" },
+    { "id": "earth", "name": "Earth", "url": "https://images-api.nasa.gov/search?q=earth%20from%20space&media_type=image&page={page}" },
+    { "id": "moon", "name": "Moon", "url": "https://images-api.nasa.gov/search?q=moon&media_type=image&page={page}" }
+  ],
+  "search": { "url": "https://images-api.nasa.gov/search?q={query}&media_type=image&page={page}" }
+}
