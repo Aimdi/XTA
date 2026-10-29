@@ -11,13 +11,17 @@ class WebSourceMark extends StatelessWidget {
   final WebSourceDefinition source;
   final double size;
 
-  const WebSourceMark({super.key, required this.source, this.size = 24});
+  /// False before the reader agrees to the source's sites: its picture is
+  /// on one of them.
+  final bool picture;
+
+  const WebSourceMark({super.key, required this.source, this.size = 24, this.picture = true});
 
   @override
   Widget build(BuildContext context) {
     final initial = _Initial(source: source, size: size);
     final icon = source.icon;
-    if (icon == null) return initial;
+    if (icon == null || !picture) return initial;
     return ClipOval(
       child: ExtendedImage.network(
         icon.toString(),

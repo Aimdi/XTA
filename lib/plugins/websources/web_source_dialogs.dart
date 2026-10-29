@@ -52,7 +52,7 @@ Future<bool> confirmWebSource(
   final agreed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      icon: WebSourceMark(source: source, size: 40),
+      icon: WebSourceMark(source: source, size: 40, picture: false),
       title: Text(
         update ? l10n.plugin_websources_update_title(source.name) : l10n.plugin_websources_consent_title(source.name),
       ),

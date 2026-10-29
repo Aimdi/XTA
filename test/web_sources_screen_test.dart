@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -178,7 +179,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Add source lists the published sources and adds one once agreed', (tester) async {
+  testWidgets('Add source lists the published sources and adds one once agreed, fetching nothing from it before', (
+    tester,
+  ) async {
     final prefs = _prefs();
     await tester.pumpWidget(
       _app(
@@ -191,9 +194,10 @@ void main() {
               {'id': 'lobsters', 'name': 'Lobsters', 'description': 'Links', 'url': 'sources/lobsters.json'},
             ],
           }),
-          'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/sources/lobsters.json': jsonEncode(
-            linksSourceJson(),
-          ),
+          'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/sources/lobsters.json': jsonEncode({
+            ...linksSourceJson(),
+            'icon': 'https://lobste.rs/icon.png',
+          }),
         }),
       ),
     );
@@ -203,6 +207,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Add Lobsters?'), findsOneWidget);
     expect(find.text('lobste.rs'), findsOneWidget);
+    final dialog = find.byType(AlertDialog);
+    expect(find.descendant(of: dialog, matching: find.byType(ExtendedImage)), findsNothing);
+    expect(find.descendant(of: dialog, matching: find.text('L')), findsOneWidget);
 
     await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.widgetWithText(FilledButton, 'Add')));
     await tester.pumpAndSettle();
