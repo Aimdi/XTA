@@ -717,6 +717,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     bool shouldShowUnrelatedPostsInFeedWarning = false;
+    // What X sent during this load. The stored chunks shown with it are left
+    // out: the accounts in them are as X showed them when they were stored.
+    final arrived = <TweetChain>[];
 
     // Cap in-flight chunk searches — unbounded Future.wait was the #165 failure
     // mode for 1000+ subscriptions (60+ concurrent searches → 404 cascade).
@@ -799,6 +802,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         }
 
         final fresh = searchPage?.chains ?? network.fallbackChains;
+        arrived.addAll(fresh);
         if (fresh.isNotEmpty) {
           tweets.addAll(fresh);
 
@@ -844,6 +848,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
               if (page.chains.isNotEmpty) {
                 tweets.addAll(page.chains);
+                arrived.addAll(page.chains);
                 await repository.insert(tableFeedGroupChunk, {
                   'cursor_id': int.parse(nextCursor),
                   'hash': hash,
@@ -890,6 +895,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         }
       },
     );
+    // A followed account may have a new handle, name or picture since it was
+    // followed; the posts X just sent say what they are now.
+    unawaited(_subscriptions?.refreshProfiles(postAuthors(arrived)));
     if (cursorKey != null) await pageBatches.destroy();
     ReadWork.checkpoint();
 
@@ -904,9 +912,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     var threads = prepare(chunkResults);
-    // A followed account may have a new handle, name or picture since it was
-    // followed; the posts X just sent say what they are now.
-    unawaited(_subscriptions?.refreshProfiles(postAuthors(chunkResults.expand((e) => e.chains))));
     if (cursorKey == null && !_catchUpEnabled && _userHasScrolled && _progressivePreview.isNotEmpty) {
       final byId = {for (final chain in threads) chain.id: chain};
       threads = [
