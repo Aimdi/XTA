@@ -18,21 +18,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - service: X
-            key: x
-            tests: test/live/guest_api_smoke_test.dart test/live/x_bootstrap_smoke_test.dart test/live/endpoint_canary_test.dart
-          - service: Instagram
-            key: instagram
-            tests: test/live/instagram_search_smoke_test.dart
-          - service: TikTok
-            key: tiktok
-            tests: test/live/tiktok_search_smoke_test.dart
-          - service: Substack
-            key: substack
-            tests: test/live/substack_custom_domain_smoke_test.dart
-          - service: Other sources
-            key: sources
-            tests: test/live/sources_smoke_test.dart
+          # Temporary: only the Danbooru probe, to see how the host answers
+          # tag suggestions and tag searches. Reverted before the PR.
+          - service: Danbooru probe
+            key: danbooru-probe
+            tests: test/live/booru_danbooru_probe_test.dart
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
