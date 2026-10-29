@@ -21,6 +21,10 @@ after QuaX 4.20 did the same (Teskann/QuaX#283). Nothing is written to X.
   keeps, XTA saves what X sends now. A profile opened from X does the same
   for its account.
 - This needs no request of its own: it reads only answers that arrive anyway.
+- Only what X sent during that load counts. The stored pages a feed shows
+  with it, and a profile read from the device, are left out: the accounts
+  in them are as X showed them when they were stored, so they could put an
+  older name back.
 - Only what X sent is saved: a handle, name or picture X left out stays as
   it was. The same picture at another size (`_normal`, `_400x400`…) is not
   a change.
