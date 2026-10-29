@@ -42,9 +42,11 @@ after QuaX 4.20 did the same (Teskann/QuaX#283). Nothing is written to X.
 
 ## Tests
 
-- The authors include reposted and quoted posts' authors.
+- The authors include reposted and quoted posts' authors, and the author
+  of a post quoted by a reposted one.
 - A changed name, handle or picture is picked up; the same picture at
-  another size, an account not followed, or one X sent without a name is
+  another size, an account not followed, or an empty name or picture is
   not; what X left out is kept.
 - The model writes only changed rows, tells the feeds to rebuild only for a
-  new handle, and leaves the rest of the subscriptions alone.
+  new handle, and leaves the rest of the subscriptions alone, including a
+  feed setting changed while the write was under way.

@@ -37,15 +37,26 @@ X but the reads XTA already makes.
 
 - Builds read `endpoints.json` and `plugins.json` from the repository's
   default branch (`HEAD`), so a correction published there reaches them.
+- Installs save the default address with their settings on first launch,
+  so changing the default alone moves no install. At startup, an install
+  that saved the `main` (or the older `master`) address is moved to the new
+  one and forgets the ids it read from `main`: the shipped ids apply until
+  the default branch's file is read, on that launch. An address set by hand
+  stays.
 - Installs up to aimdi186 keep reading `main`. Until they have updated, a
   correction is copied to `main` as well; the check below says when the two
-  differ.
+  differ. Deleting `main` would not help them: an install keeps applying
+  the last file it fetched until it fetches another.
 
 ### The guest check judges what installs apply
 
 - `endpoint_canary_test.dart` applies the files installs fetch, the default
   branch's and `main`'s, over the shipped ids, and judges every distinct id
-  in force. A guest-readable id that no longer exists fails it, as before.
+  in force: the shipped ones, and those of each published file and of this
+  checkout's file (published once merged). A guest-readable id that no
+  longer exists fails it, as before, naming who uses it. A published file
+  that cannot be read is named and not judged; the report below fails on
+  it.
 - Guest-readable ids in force are as old as the oldest others (they came
   from the same releases), so a purge of old ids shows there too.
 
@@ -85,9 +96,14 @@ against recorded answers.
 ## Code
 
 - `lib/constants.dart`: `githubPublishBranch` is `HEAD`.
+- `lib/utils/published_documents.dart` (new): moves a saved earlier default
+  address to today's; run in `lib/main.dart` with the other settings
+  migrations, before the cached ids are applied.
 - `test/live/support/x_query_id_record.dart` (new, pure): the record's ids
-  by operation, the ids in force from shipped ids and a published file, and
-  each id's age in the record's history.
+  by operation, the ids in force from shipped ids and a published file, who
+  applies each id, and each id's age in the record's history.
+- `test/live/support/published_registries.dart` (new): where each kind of
+  install reads `endpoints.json`, read as they read it.
 - `test/live/x_query_ids_test.dart` (new): the daily report.
 - `test/live/endpoint_canary_test.dart`: applies the published files
   installs fetch.
@@ -103,3 +119,7 @@ against recorded answers.
 - An id's age: today when the newest version has it, days since the newest
   version that has it otherwise, unknown when no version read has it.
 - The published files must match: a `main` that differs is named.
+- A saved `main` or `master` address moves to the default branch's and
+  drops what was read from it; an address set by hand, or one already on
+  the default branch, stays with what was read from it. The plugin
+  catalogue's address moves the same way.
