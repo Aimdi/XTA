@@ -321,7 +321,7 @@ Map<WebSourceField, String> _fields(Json list, Json file, WebSourcePageType type
       for (final field in WebSourceField.values) field: ?source[field.name].string,
   };
   for (final MapEntry(key: field, value: rule) in merged.entries) {
-    if (rule.length > _maxRuleLength || !_validRule(rule, type)) {
+    if (!_validRule(rule, type)) {
       throw _Refused(WebSourceRefusal.invalid, '$key.fields.${field.name}');
     }
   }
@@ -335,9 +335,9 @@ Map<WebSourceField, String> _fields(Json list, Json file, WebSourcePageType type
 }
 
 /// Whether [rule] can be read from a [type] page: a path or selector, or a
-/// template whose every placeholder is one.
+/// template whose every placeholder is one, in at most [_maxRuleLength].
 bool _validRule(String rule, WebSourcePageType type, {bool items = false}) {
-  if (rule.isEmpty) return false;
+  if (rule.isEmpty || rule.length > _maxRuleLength) return false;
   if (!items && isTemplate(rule)) return templatePlaceholders(rule).every((part) => _validRule(part, type));
   return switch (type) {
     WebSourcePageType.json => isJsonPath(rule),

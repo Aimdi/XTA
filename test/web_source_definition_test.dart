@@ -155,6 +155,16 @@ void main() {
       expect(_read(field), _refused(WebSourceRefusal.invalid, 'feeds[0].fields.title'));
     });
 
+    test('a rule longer than 300 characters, or one written to fail slowly', () {
+      final feed = {'id': 'a', 'name': 'A', 'url': 'https://lobste.rs/a.json'};
+      expect(_read(_withFeed({...feed, 'items': 'a' * 301})), _refused(WebSourceRefusal.invalid, 'feeds[0].items'));
+      expect(_read(_withFeed({...feed, 'next': 'a' * 301})), _refused(WebSourceRefusal.invalid, 'feeds[0].next'));
+      expect(
+        _read(_withFeed({...feed, 'items': '${'a' * 299}{'})),
+        _refused(WebSourceRefusal.invalid, 'feeds[0].items'),
+      );
+    }, timeout: const Timeout(Duration(seconds: 10)));
+
     test('an article address that names no field of the post', () {
       expect(
         _read(_with(postsSourceJson(), 'article', {'url': 'https://lemmy.world/api/v3/post', 'html': 'post.body'})),

@@ -31,7 +31,10 @@ class JsonPathEvery extends JsonPathStep {
   const JsonPathEvery();
 }
 
-final _jsonPath = RegExp(r'^\$?(?:\.?[^.\[\]{}@\s]+|\[(?:\d+|\*)\])*$');
+// Each step after the first starts with `.` or `[`, so a path can be split
+// into steps only one way: a rule written to fail slowly cannot hang the
+// app while its file is read.
+final _jsonPath = RegExp(r'^\$?[^.\[\]{}@\s]*(?:\.[^.\[\]{}@\s]+|\[(?:\d+|\*)\][^.\[\]{}@\s]*)*$');
 final _jsonStep = RegExp(r'([^.\[\]{}@\s]+)|\[(\d+|\*)\]');
 
 /// Whether [path] is a JSON path: keys, `[n]`, `[*]`, and `$` for the page.

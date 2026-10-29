@@ -47,6 +47,23 @@ void main() {
       expect(isJsonPath('a b'), isFalse);
       expect(isJsonPath(''), isFalse);
     });
+
+    test('keys may follow an index without a dot', () {
+      expect(isJsonPath('images[0]url'), isTrue);
+      expect(
+        jsonValuesAt({
+          'images': [
+            {'url': 'a.jpg'},
+          ],
+        }, 'images[0]url'),
+        ['a.jpg'],
+      );
+    });
+
+    test('a long path that is not one is refused at once', () {
+      expect(isJsonPath('${'a' * 4000}{'), isFalse);
+      expect(isJsonPath('${'a[0]b' * 4000}@'), isFalse);
+    }, timeout: const Timeout(Duration(seconds: 10)));
   });
 
   group('templates', () {

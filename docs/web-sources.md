@@ -145,7 +145,7 @@ are limited to `hosts`.
 
 ## Rules
 
-A rule says where a value is. A field's rule is at most 300 characters.
+A rule says where a value is, in at most 300 characters.
 
 **JSON paths** read from the post: `title`, `user.name`, `images[0].url`;
 `[*]` takes every element of a list (`tags[*]`, `media[*].url`), and `$`
