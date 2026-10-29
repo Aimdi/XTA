@@ -867,6 +867,13 @@ const defaultPluginCatalogueUrl =
 const defaultWebSourceCatalogueUrl =
     'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/sources.json';
 
+/// Repairs for the networks' fragile values (docs/specs/published-repairs.md),
+/// the copy last read, and when.
+const defaultPluginRepairsUrl =
+    'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/repairs.json';
+const optionPluginRepairsKept = 'plugin.repairs.kept';
+const optionPluginRepairsReadAt = 'plugin.repairs.read_at';
+
 // Offline read cache for threads and profile timelines (feed_group_chunk covers
 // group feeds). Short windows: these are re-read within a session far more
 // often than they change, and a stale entry is still served when a request

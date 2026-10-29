@@ -9,6 +9,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/plugins/tiktok/tiktok_parse.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 
 enum TikTokErrorKind {
   network,
@@ -28,9 +29,7 @@ class TikTokException implements Exception {
   String toString() => 'TikTokException{$kind: $message}';
 }
 
-const tiktokUserAgent =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+String get tiktokUserAgent => PluginRepairs.tiktokUserAgent.value;
 
 const tiktokWebOrigin = 'https://www.tiktok.com';
 
@@ -189,7 +188,7 @@ class TikTokClient {
   }) {
     final msToken = _cookies['msToken'];
     return {
-      'aid': '1988',
+      'aid': PluginRepairs.tiktokAid.value,
       'app_language': 'en',
       'app_name': 'tiktok_web',
       'browser_language': 'en-US',

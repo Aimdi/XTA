@@ -1,0 +1,22 @@
+{
+  "_comment": "Repairs for the networks' fragile values, read by every install once a day and applied over what each release ships (docs/specs/published-repairs.md). Only keys a build knows are used, and only values that fit their kind: request and app ids, versions, client ids, user agents. Nothing here can change where a request goes. Each entry must be the value this repository ships (a unit test checks it): to repair a network, change the value here and in lib/plugins/plugin_repairs.dart together.",
+  "format": 1,
+  "repairs": {
+    "threads.guest_doc_id": "6232751443445612",
+    "threads.guest_query_name": "BarcelonaProfileThreadsTabQuery",
+    "threads.app_id": "238260118697367",
+    "threads.asbd_id": "129477",
+    "threads.app_user_agent": "Barcelona 289.0.0.77.109 Android",
+    "threads.web_user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+    "instagram.app_id": "936619743392459",
+    "instagram.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "tiktok.aid": "1988",
+    "tiktok.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "pixiv.app_version": "5.0.234",
+    "pixiv.user_agent": "PixivAndroidApp/5.0.234 (Android 11; Pixel 5)",
+    "pixiv.client_id": "MOBrBDS8blbauoSck0ZfDbtuzpyT",
+    "pixiv.client_secret": "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj",
+    "reddit.web_user_agent": "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+    "stocks.user_agent": "Mozilla/5.0 (Android) XTA"
+  }
+}

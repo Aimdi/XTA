@@ -15,6 +15,7 @@ import 'package:xta/plugins/reddit/reddit_www_embed.dart';
 import 'package:xta/plugins/reddit/reddit_www_search.dart';
 import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/json.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 
 /// How many posts one subreddit listing page asks Reddit for.
 ///
@@ -774,8 +775,7 @@ class RedditClient {
   /// route could refuse a reader who had done nothing wrong and had no client
   /// id to fall back on. A scraper has to look like a browser, which is what
   /// Stealth sends too.
-  static const publicUserAgent =
-      'Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+  static String get publicUserAgent => PluginRepairs.redditWebUserAgent.value;
 
   /// Reddit's documented value for "do not associate this with a device".
   static const deviceId = 'DO_NOT_TRACK_THIS_DEVICE';

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_search.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 
 enum TickerErrorKind { notFound, unavailable, badResponse }
 
@@ -34,7 +35,7 @@ class TickerClient {
   static const _timeout = Duration(seconds: 15);
 
   /// A browser-ish agent: the host refuses an empty one outright.
-  static const userAgent = 'Mozilla/5.0 (Android) XTA';
+  static String get userAgent => PluginRepairs.stocksUserAgent.value;
 
   /// Every name to try for a cashtag, in order.
   static List<String> candidatesFor(String symbol) => tickerCandidates(symbol);

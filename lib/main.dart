@@ -165,6 +165,7 @@ import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/image_disk_cache.dart';
 import 'package:xta/utils/mock_x.dart';
 import 'package:xta/utils/published_documents.dart';
+import 'package:xta/plugins/plugin_repairs_registry.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -816,6 +817,10 @@ Future<void> main() async {
   final endpointRegistry = EndpointRegistry(prefService);
   endpointRegistry.applyCached();
   unawaited(endpointRegistry.refresh());
+  // The other networks' published repairs, the same way.
+  final pluginRepairs = PluginRepairsRegistry(prefService);
+  pluginRepairs.applyKept();
+  unawaited(pluginRepairs.refresh());
 
   // Deriving the transaction key costs two round trips to x.com and it is
   // triggered lazily by the first API call, so it used to sit in front of the

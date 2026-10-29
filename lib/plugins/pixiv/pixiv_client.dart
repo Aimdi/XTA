@@ -14,6 +14,7 @@ import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
 import 'package:xta/utils/json.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 
 enum PixivErrorKind {
   notConfigured,
@@ -92,7 +93,7 @@ class PixivClient {
   static const _timeout = Duration(seconds: 15);
   static const _apiHost = 'app-api.pixiv.net';
   static const _apiBase = 'https://$_apiHost';
-  static const _userAgent = 'PixivAndroidApp/5.0.234 (Android 11; Pixel 5)';
+  static String get _userAgent => PluginRepairs.pixivUserAgent.value;
 
   /// The salt behind `X-Client-Hash`, as widely documented as the id above.
   ///
@@ -133,7 +134,7 @@ class PixivClient {
       'User-Agent': _userAgent,
       'App-OS': 'android',
       'App-OS-Version': '11',
-      'App-Version': '5.0.234',
+      'App-Version': PluginRepairs.pixivAppVersion.value,
       'Accept': 'application/json',
       'Accept-Language': pixivAcceptLanguage(locale()),
       'X-Client-Time': time,
