@@ -67,7 +67,7 @@ String _age(RecordedAge? age, DateTime today) => switch (age) {
   DroppedFromRecord(:final days) => '$days days${days > _oldAfterDays ? ', OLD' : ''}',
   OlderThanRecord(:final since) => () {
     final days = today.difference(since).inDays;
-    return 'over $days days${days > _oldAfterDays ? ', OLD' : ''}';
+    return 'over $days days${days >= _oldAfterDays ? ', OLD' : ''}';
   }(),
 };
 
