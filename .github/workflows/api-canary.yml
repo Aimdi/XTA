@@ -53,6 +53,7 @@ jobs:
           classification=$(python3 scripts/report_canary.py "$SERVICE" "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md)
           echo "classification=$classification" >> "$GITHUB_OUTPUT"
           cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
+          cat canary-report.md
       - name: Report service failure
         if: failure() && steps.probe.outcome == 'failure' && steps.summary.outputs.classification == 'service'
         env:
