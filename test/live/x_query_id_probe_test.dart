@@ -76,19 +76,43 @@ void main() {
 
       final ids = <String, Set<String>>{};
       final filesWith = <String, int>{};
+      final hits = <String, int>{};
       final contexts = <String>[];
-      final seen = <Uri>{};
+      final seen = <Uri>{...roots};
+      print('PROBE roots: ${roots.map((uri) => uri.path).join(' ')}');
       var queue = roots.toList();
       var bytes = 0;
+      var read = 0;
       var depth = 0;
-      while (queue.isNotEmpty && seen.length < 500 && depth < 8) {
-        final next = <Uri>[];
-        for (final uri in queue) {
-          if (!seen.add(uri) || seen.length > 500) continue;
-          try {
-            final response = await client.get(uri, headers: _browser);
-            if (response.statusCode != 200) continue;
-            final text = response.body;
+      final probes = {
+        'queryId:"': RegExp(r'queryId:"'),
+        "queryId:'": RegExp(r"queryId:'"),
+        'queryId (any)': RegExp(r'queryId'),
+        'operationName': RegExp(r'operationName'),
+        '/graphql/': RegExp(r'/graphql/'),
+        'graphql (any case)': RegExp(r'graphql', caseSensitive: false),
+        'TweetDetail (any)': RegExp(r'TweetDetail'),
+        'SearchTimeline (any)': RegExp(r'SearchTimeline'),
+        'HomeTimeline (any)': RegExp(r'HomeTimeline'),
+        'UserByScreenName (any)': RegExp(r'UserByScreenName'),
+      };
+      while (queue.isNotEmpty && read < 6000 && depth < 12) {
+        final next = <Uri>{};
+        for (var i = 0; i < queue.length && read < 6000; i += 24) {
+          final batch = queue.sublist(i, (i + 24).clamp(0, queue.length));
+          final bodies = await Future.wait(
+            batch.map((uri) async {
+              try {
+                final response = await client.get(uri, headers: _browser);
+                return response.statusCode == 200 ? (uri: uri, text: response.body) : null;
+              } catch (_) {
+                return null;
+              }
+            }),
+          );
+          for (final body in bodies.nonNulls) {
+            read++;
+            final text = body.text;
             bytes += text.length;
             for (final match in _definition.allMatches(text)) {
               ids.putIfAbsent(match.group(2)!, () => {}).add(match.group(1)!);
@@ -96,27 +120,29 @@ void main() {
             for (final match in _definitionReversed.allMatches(text)) {
               ids.putIfAbsent(match.group(1)!, () => {}).add(match.group(2)!);
             }
-            for (final operation in XEndpoints.all.map((endpoint) => endpoint.operation).toSet()) {
-              final at = text.indexOf('"$operation"');
-              if (at < 0) continue;
-              filesWith[operation] = (filesWith[operation] ?? 0) + 1;
-              if (contexts.length < 4 && (operation == 'TweetDetail' || operation == 'SearchTimeline')) {
-                contexts.add('${uri.pathSegments.last}: ${_context(text, at)}');
+            for (final MapEntry(key: label, value: pattern) in probes.entries) {
+              final match = pattern.firstMatch(text);
+              if (match == null) continue;
+              hits[label] = (hits[label] ?? 0) + 1;
+              if (contexts.where((line) => line.startsWith('[$label]')).length < 2) {
+                contexts.add('[$label] ${body.uri.pathSegments.last}: ${_context(text, match.start)}');
               }
             }
-            next.addAll(_references(uri, text).where((ref) => !seen.contains(ref)));
-          } catch (error) {
-            print('PROBE fetch ${uri.pathSegments.last} -> ERROR $error');
+            for (final operation in XEndpoints.all.map((endpoint) => endpoint.operation).toSet()) {
+              if (text.contains(operation)) filesWith[operation] = (filesWith[operation] ?? 0) + 1;
+            }
+            next.addAll(_references(body.uri, text).where(seen.add));
           }
         }
-        queue = next.toSet().toList();
+        queue = next.toList();
         depth++;
       }
       for (final context in contexts) {
         print('PROBE context $context');
       }
+      print('PROBE hits per pattern (files): $hits');
       print(
-        'PROBE scripts read: ${seen.length}, ${bytes ~/ 1024} KiB, depth $depth, operations defined: ${ids.length}',
+        'PROBE scripts read: $read of ${seen.length} found, ${bytes ~/ 1024} KiB, depth $depth, operations defined: ${ids.length}',
       );
 
       final log = Logger('probe');
