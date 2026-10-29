@@ -1,86 +1,85 @@
-// A temporary probe of how Danbooru answers XTA's tag suggestions and tag
-// searches, run from CI where the host is reachable:
+// A temporary live check of the fixed Danbooru search, run from CI where the
+// host is reachable:
 //   fvm flutter test test/live/booru_danbooru_probe_test.dart --dart-define=RUN_LIVE=true
-// It prints what it sees and never fails.
-import 'dart:convert';
-
+// It prints what the client asked and got, and never fails.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/plugins/booru/booru_client.dart';
 
-const _danbooru = 'https://danbooru.donmai.us';
-const _agent = 'XTA-Booru/0.1 (by Aimdi; read-only; +https://github.com/Aimdi/XTA)';
+class _Logged extends http.BaseClient {
+  final _inner = http.Client();
+  final lines = <String>[];
 
-String _short(String text, int length) => text.length <= length ? text : '${text.substring(0, length)}…';
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final response = await _inner.send(request);
+    lines.add('${response.statusCode} ${request.url.path} ${Uri.decodeQueryComponent(request.url.query)}');
+    return response;
+  }
 
-Future<void> _raw(String label, String host, String path, Map<String, String> query, {int length = 400}) async {
-  final uri = Uri.parse(host).replace(path: path, queryParameters: query);
-  final watch = Stopwatch()..start();
+  void flush(String label) {
+    for (final line in lines) {
+      print('PROBE   $label: $line');
+    }
+    lines.clear();
+  }
+}
+
+Future<void> _scenario(String label, _Logged http, Future<String> Function() run) async {
   try {
-    final response = await http.get(uri, headers: {'User-Agent': _agent, 'Accept': 'application/json'});
-    print(
-      'PROBE $label -> ${response.statusCode} in ${watch.elapsedMilliseconds} ms '
-      '${_short(response.body.replaceAll('\n', ' '), length)}',
-    );
+    print('PROBE $label -> ${await run()}');
+  } on BooruException catch (error) {
+    print('PROBE $label -> ${error.kind} ${error.message}');
   } catch (error) {
     print('PROBE $label -> ERROR $error');
   }
-  await Future<void>.delayed(const Duration(milliseconds: 800));
-}
-
-Future<void> _autocomplete(String host, String query, {int limit = 12, int length = 3000}) => _raw(
-  'autocomplete ${Uri.parse(host).host} "$query" limit $limit',
-  host,
-  '/autocomplete.json',
-  {'search[query]': query, 'search[type]': 'tag_query', 'limit': '$limit'},
-  length: length,
-);
-
-Future<void> _compact(String host, String query) async {
-  final uri = Uri.parse(host).replace(
-    path: '/autocomplete.json',
-    queryParameters: {'search[query]': query, 'search[type]': 'tag_query', 'limit': '12'},
-  );
-  try {
-    final response = await http.get(uri, headers: {'User-Agent': _agent, 'Accept': 'application/json'});
-    final decoded = jsonDecode(response.body);
-    final rows = decoded is List
-        ? [
-            for (final row in decoded)
-              if (row is Map)
-                '${row['type']}:${row['value']}(${row['post_count']},${row['category']})'
-                    '${row['antecedent'] == null ? '' : ' <- ${row['antecedent']}'}',
-          ]
-        : ['not a list: ${_short(response.body, 200)}'];
-    print('PROBE compact "$query" -> ${response.statusCode} ${rows.join(' | ')}');
-  } catch (error) {
-    print('PROBE compact "$query" -> ERROR $error');
-  }
-  await Future<void>.delayed(const Duration(milliseconds: 800));
+  http.flush(label);
 }
 
 void main() {
   const enabled = bool.fromEnvironment('RUN_LIVE', defaultValue: false);
 
   test(
-    'Danbooru: autocomplete, tag lookups, tag limit and score order',
+    'Danbooru: the fixed suggestions and searches',
     () async {
-      for (final query in [
-        'miku',
-        'kancolle',
-        'blue_eyse',
-        '初音',
-        'langley',
-        'hatsune_m',
-        'rating',
-        '1gir',
-        'fate/',
-        'maid_',
-      ]) {
-        await _compact(_danbooru, query);
+      final http = _Logged();
+      final client = BooruClient(PrefServiceCache(cache: {}), httpClient: http);
+
+      for (final typed in ['miku', 'kancolle', 'blue_eyse', '初音', 'frieren']) {
+        await _scenario('suggest "$typed"', http, () async {
+          final suggestions = await client.suggestTags(typed);
+          return suggestions
+              .take(5)
+              .map((s) => '${s.alias == null ? '' : '${s.alias} -> '}${s.name} (${s.postCount}, ${s.category?.name})')
+              .join(' | ');
+        });
       }
-      for (final query in ['kancolle', 'blue_eyse', '初音']) {
-        await _autocomplete(_danbooru, query, limit: 2, length: 1200);
+
+      Future<String> search(String query, {int page = 1}) async {
+        final result = await client.search(query, page: page);
+        final ids = result.posts.take(3).map((post) => post.id).join(',');
+        return '${result.posts.length} shown of ${result.allowed.length} allowed, more: ${result.hasMore}, first: $ids';
       }
+
+      await _scenario('two tags', http, () => search('blue_eyes long_hair'));
+      await _scenario('three tags', http, () => search('blue_eyes long_hair smile'));
+      await _scenario('three tags, page 2', http, () => search('blue_eyes long_hair smile', page: 2));
+      await _scenario('three tags, a rare one', http, () => search('blue_eyes long_hair frieren'));
+      await _scenario('four tags with an exclusion', http, () => search('1girl blue_eyes long_hair -smile'));
+      await _scenario('score order on a big tag', http, () => search('blue_eyes order:score'));
+      await _scenario('score order past the limit', http, () => search('frieren long_hair order:score'));
+      await _scenario('following, three tags', http, () async {
+        final posts = await client.postsForTags(['blue_eyes long_hair smile']);
+        return '${posts.length} posts';
+      });
+
+      final sensitive = BooruClient(PrefServiceCache(cache: {optionPluginBooruMaxRating: 's'}), httpClient: http);
+      await _scenario('three tags, sensitive cap', http, () async {
+        final result = await sensitive.search('blue_eyes long_hair smile');
+        return '${result.posts.length} shown of ${result.allowed.length} allowed';
+      });
     },
     timeout: const Timeout(Duration(minutes: 5)),
     skip: enabled ? false : 'Pass --dart-define=RUN_LIVE=true to hit the live services',
