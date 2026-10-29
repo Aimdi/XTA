@@ -10,6 +10,7 @@ import 'package:html/parser.dart' as html;
 import 'package:xta/plugins/rss/rss_parser.dart';
 import 'package:xta/plugins/websources/web_source_definition.dart';
 import 'package:xta/plugins/websources/web_source_paths.dart';
+import 'package:xta/utils/background_parse.dart';
 
 const webSourceMaxItems = 100;
 
@@ -93,6 +94,17 @@ WebSourcePage webSourcePage(
   WebSourcePageType.html => _htmlPage(source, list, body, url, page: page, query: query),
   WebSourcePageType.rss => _rssPage(source, body, url),
 };
+
+/// [webSourcePage], off the UI thread once [body] is long enough to stall a
+/// frame: a page can be up to 4 MB.
+Future<WebSourcePage> readWebSourcePage(
+  WebSourceDefinition source,
+  WebSourceList list,
+  String body,
+  Uri url, {
+  int? page,
+  String? query,
+}) => parseInBackground((body) => webSourcePage(source, list, body, url, page: page, query: query), body);
 
 WebSourcePage _jsonPage(
   WebSourceDefinition source,
@@ -281,6 +293,11 @@ Uri? webSourceArticleUrl(WebSourceArticle article, WebSourceItem item) {
   final filled = fillTemplate(article.url, (name) => item.values[name], encode: true);
   return filled == null ? null : Uri.tryParse(filled);
 }
+
+/// [webSourceArticleHtml], off the UI thread once [body] is long enough to
+/// stall a frame.
+Future<String?> readWebSourceArticleHtml(WebSourceArticle article, String body) =>
+    parseInBackground((body) => webSourceArticleHtml(article, body), body);
 
 /// The markup [article] reads from [body], an article page.
 String? webSourceArticleHtml(WebSourceArticle article, String body) {

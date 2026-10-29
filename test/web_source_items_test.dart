@@ -40,6 +40,17 @@ void main() {
       expect(webSourcePage(source, hottest, '{oops', url).items, isEmpty);
     });
 
+    test('a long page is read the same off the UI thread', () async {
+      final long =
+          '[${List.filled(300, '{"short_id": "x", "title": "${'t' * 80}", "url": "https://example.org/a"}').join(',')}]';
+      final background = await readWebSourcePage(source, hottest, long, url, page: 1);
+
+      expect(long.length, greaterThan(20000));
+      expect(background.items, hasLength(webSourceMaxItems));
+      expect(background.items.first.title, 't' * 80);
+      expect(background.next, Uri.parse('https://lobste.rs/page/2.json'));
+    });
+
     test('search fills the query', () {
       expect(
         webSourceListUrl(source.search!, query: 'dart & flutter'),

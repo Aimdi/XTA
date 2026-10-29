@@ -63,5 +63,5 @@ class WebSourceFeedStore extends Store<List<WebSourceItem>> {
   }
 
   Future<WebSourcePage> _load(Uri url, int page) async =>
-      webSourcePage(source, list, await client.page(source, url, list.type), url, page: page, query: query);
+      readWebSourcePage(source, list, await client.page(source, url, list.type), url, page: page, query: query);
 }

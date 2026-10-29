@@ -194,7 +194,8 @@ Future<List<InterleavedItem>> loadWebSourceInterleaved(BuildContext context, Lis
 Future<List<WebSourceItem>> _firstPage(WebSourceClient client, WebSourceDefinition source, WebSourceList list) async {
   final url = webSourceListUrl(list);
   if (url == null) return const [];
-  return webSourcePage(source, list, await client.page(source, url, list.type), url, page: list.firstPage).items;
+  final body = await client.page(source, url, list.type);
+  return (await readWebSourcePage(source, list, body, url, page: list.firstPage)).items;
 }
 
 InterleavedItem _interleaved(WebSourceDefinition source, WebSourceItem item, DateTime date) =>

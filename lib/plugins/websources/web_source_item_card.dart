@@ -46,8 +46,10 @@ Future<String?> _articleHtml(BuildContext context, WebSourceDefinition source, W
   final url = article == null ? null : webSourceArticleUrl(article, item);
   if (article == null || url == null || !source.allows(url)) return null;
   final client = context.read<WebSourceClient>();
-  final body = await withWebSourceProgress(context, () => client.page(source, url, article.type));
-  return body == null ? null : webSourceArticleHtml(article, body);
+  return withWebSourceProgress<String?>(
+    context,
+    () async => readWebSourceArticleHtml(article, await client.page(source, url, article.type)),
+  );
 }
 
 RssItem _readerItem(WebSourceDefinition source, WebSourceItem item, String html) => RssItem(
