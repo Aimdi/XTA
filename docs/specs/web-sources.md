@@ -51,9 +51,12 @@ XTA fetches the pages and draws the posts. Nothing is posted anywhere.
   are followed by hand, at most three, and only to listed sites.
 - It cannot run code: no JavaScript, no regular expressions. Its rules are
   paths into JSON and CSS selectors into HTML, read by XTA's own code.
-- Limits: a source file of at most 64 KB, 12 lists, 8 sites; a page of at
-  most 4 MB and 100 posts; 20 seconds per request; one request a second
-  per source.
+- Limits: a source file of at most 64 KB, 12 lists, 8 sites, rules of at
+  most 300 characters; a page of at most 4 MB and 100 posts, read off the
+  UI thread when long; 20 seconds per request; one request a second per
+  source.
+- Nothing is fetched from a source's sites, its icon included, until the
+  reader agrees to them.
 - Links and pictures inside posts may point anywhere, as in any feed
   reader; they are opened or loaded as XTA opens links and loads pictures.
 
