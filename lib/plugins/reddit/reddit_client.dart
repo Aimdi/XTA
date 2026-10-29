@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/plugins/reddit/reddit_html.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_comments_json.dart';
@@ -15,7 +16,6 @@ import 'package:xta/plugins/reddit/reddit_www_embed.dart';
 import 'package:xta/plugins/reddit/reddit_www_search.dart';
 import 'package:xta/utils/background_parse.dart';
 import 'package:xta/utils/json.dart';
-import 'package:xta/plugins/plugin_repairs.dart';
 
 /// How many posts one subreddit listing page asks Reddit for.
 ///

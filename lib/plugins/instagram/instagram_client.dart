@@ -10,8 +10,8 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/instagram/instagram_discovery.dart';
 import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_parse.dart';
-import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/plugin_repairs.dart';
+import 'package:xta/plugins/threads/threads_direct_client.dart';
 
 enum InstagramErrorKind {
   network,

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_search.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
-import 'package:xta/plugins/plugin_repairs.dart';
 
 enum TickerErrorKind { notFound, unavailable, badResponse }
 

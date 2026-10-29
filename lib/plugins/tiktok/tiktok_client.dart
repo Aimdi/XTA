@@ -7,9 +7,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/plugins/tiktok/tiktok_parse.dart';
-import 'package:xta/plugins/plugin_repairs.dart';
 
 enum TikTokErrorKind {
   network,

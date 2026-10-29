@@ -5,8 +5,8 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-import 'package:xta/utils/json.dart';
 import 'package:xta/plugins/plugin_repairs.dart';
+import 'package:xta/utils/json.dart';
 
 /// Browser OAuth (PKCE) for Pixiv — same flow community clients like Pixez use.
 ///

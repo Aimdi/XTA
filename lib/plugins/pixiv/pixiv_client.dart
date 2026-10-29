@@ -13,8 +13,8 @@ import 'package:xta/plugins/pixiv/pixiv_lru_cache.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_profile.dart';
-import 'package:xta/utils/json.dart';
 import 'package:xta/plugins/plugin_repairs.dart';
+import 'package:xta/utils/json.dart';
 
 enum PixivErrorKind {
   notConfigured,
