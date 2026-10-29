@@ -826,11 +826,14 @@ const optionEndpointRegistryUrl = 'api.endpoint_registry.url';
 const optionEndpointRegistryCache = 'api.endpoint_registry.cache';
 const optionEndpointRegistryFetchedAt = 'api.endpoint_registry.fetched_at';
 
-/// The branch the published documents are read from.
+/// The branch the published documents are read from: the repository's
+/// default branch, whatever it is called.
 ///
 /// Named once: both registries pointed at `master`, which this fork does not
-/// have, so every fetch 404'd and neither had ever been read.
-const githubPublishBranch = 'main';
+/// have, so every fetch 404'd and neither had ever been read. Then at `main`,
+/// which releases stopped merging into in August, so every install applied
+/// its stale query ids over the shipped ones.
+const githubPublishBranch = 'HEAD';
 
 const defaultEndpointRegistryUrl =
     'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/endpoints.json';

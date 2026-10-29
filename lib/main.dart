@@ -161,6 +161,7 @@ import 'package:xta/utils/media_quality.dart';
 import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/image_disk_cache.dart';
 import 'package:xta/utils/mock_x.dart';
+import 'package:xta/utils/published_documents.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -791,6 +792,7 @@ Future<void> main() async {
   await migrateDownloadTypeDefault(prefService);
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
   await migrateBooruCredentialsHost(prefService);
+  await migratePublishedDocumentUrls(prefService);
 
   CrashReporter.install(prefService);
   // A restored backup changes the setting too, so the queue follows the setting itself.
