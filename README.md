@@ -80,6 +80,7 @@ installed plugin stays installed when its catalogue availability changes.
 | **Hacker News** | Story feeds and discussions, with local likes and bookmarks. |
 | **Substack** | Publication follows, article reading, text-to-speech and podcast playback. |
 | **RSS** | Follow feeds, read articles and bring subscriptions into Home and groups. |
+| **Web sources** | Add simple sites from a published list or a link: their lists, search and articles in XTA's own screens, with follows into Home and groups. A source reads only the sites it names, after you agree; [writing one](docs/web-sources.md). |
 | **Booru** | Browse imageboard hosts (Danbooru, Gelbooru, Moebooru, e621 and their forks): latest and popular posts, tag search, a swipeable viewer with tags by kind, related posts, comments and wiki; follow tags into groups. |
 | **Stocks & crypto** | Watchlists, charts and cashtag posts; find crypto by ticker or contract, with network-aware identity and DEX Screener quotes. |
 | **Karakeep** | Send selected bookmarks to a configured Karakeep instance. |

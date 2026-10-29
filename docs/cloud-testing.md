@@ -14,6 +14,8 @@ work.
 | Live guest API smoke | `fvm flutter test test/live/guest_api_smoke_test.dart --dart-define=RUN_LIVE=true` |
 | Live reads of every account-free source | `fvm flutter test test/live/sources_smoke_test.dart --dart-define=RUN_LIVE=true` (needs a network that reaches them; the daily `api-canary` runs it on GitHub) |
 | X query id report | `fvm flutter test test/live/x_query_ids_test.dart --dart-define=RUN_LIVE=true` (reads GitHub's API; the daily `api-canary` runs it as "X query ids") |
+| Published web sources | `fvm flutter test test/live/web_sources_smoke_test.dart --dart-define=RUN_LIVE=true` (reads every source in `sources.json`; the daily `api-canary` runs it as "Web sources"; see `docs/web-sources.md`) |
+| Published repairs file | `fvm flutter test test/live/published_repairs_test.dart --dart-define=RUN_LIVE=true` (reads the default branch's `repairs.json`; the daily `api-canary` runs it with "Other sources") |
 | Debug APK | `fvm flutter build apk --debug` |
 | One-shot verify | `bash scripts/cloud_verify.sh` |
 | X screens against a stand-in for X | `fvm flutter test test/mock_x_test.dart`; the emulator flows run on GitHub (`emulator-qa`), see `docs/mock-x.md` |
@@ -25,7 +27,12 @@ issue when a service fails. Its "X query ids" row lists, for every X
 operation, the id each kind of install uses and how long ago X's web stopped
 using it; it fails when installs cannot read the published `endpoints.json`
 or when `main` publishes other ids than the default branch
-(`docs/specs/x-query-id-watch.md`). When the X checks fail on X's request signing,
+(`docs/specs/x-query-id-watch.md`). Its "Web sources" row reads every list
+of every published web source and fails when one brings no posts (the
+site changed and the source needs a new rule, `docs/web-sources.md`); the
+"Other sources" row also reads the published `repairs.json` and fails when
+installs could not use an entry (`docs/specs/published-repairs.md`). When
+the X checks fail on X's request signing,
 the `X signing auto-fix` workflow (`.github/workflows/x-signing-autofix.yml`)
 asks Claude for a fix and opens it as a draft pull request (playbook:
 `docs/fix-x-signing.md`). It needs, from the repository owner:
