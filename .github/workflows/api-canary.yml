@@ -18,9 +18,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - service: X query id probe
-            key: x-probe
-            tests: test/live/x_query_id_probe_test.dart
+          - service: X
+            key: x
+            tests: test/live/guest_api_smoke_test.dart test/live/x_bootstrap_smoke_test.dart test/live/endpoint_canary_test.dart
+          - service: X query ids
+            key: x-ids
+            tests: test/live/x_query_ids_test.dart
+          - service: Instagram
+            key: instagram
+            tests: test/live/instagram_search_smoke_test.dart
+          - service: TikTok
+            key: tiktok
+            tests: test/live/tiktok_search_smoke_test.dart
+          - service: Substack
+            key: substack
+            tests: test/live/substack_custom_domain_smoke_test.dart
+          - service: Other sources
+            key: sources
+            tests: test/live/sources_smoke_test.dart
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -37,6 +52,9 @@ jobs:
         id: probe
         env:
           TEST_FILES: ${{ matrix.tests }}
+          # The query id report reads a public repository's history through
+          # GitHub's API, which allows a token far more requests.
+          GITHUB_TOKEN: ${{ matrix.key == 'x-ids' && github.token || '' }}
         run: |
           read -ra files <<< "$TEST_FILES"
           flutter test "${files[@]}" --dart-define=RUN_LIVE=true --reporter json > canary.jsonl 2>&1
@@ -51,7 +69,6 @@ jobs:
           classification=$(python3 scripts/report_canary.py "$SERVICE" "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md)
           echo "classification=$classification" >> "$GITHUB_OUTPUT"
           cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
-          cat canary-report.md
       - name: Report service failure
         if: failure() && steps.probe.outcome == 'failure' && steps.summary.outputs.classification == 'service'
         env:
