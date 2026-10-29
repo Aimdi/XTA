@@ -121,7 +121,7 @@ void main() {
 
       final boxes = _markBoxes(tester);
       expect(boxes.keys, containsAll(['home-source-following', 'home-source-x', 'home-group-art']));
-      expect(boxes.keys.where((key) => key.startsWith('home-source-')), hasLength(grouped ? 13 : 15));
+      expect(boxes.keys.where((key) => key.startsWith('home-source-')), hasLength(grouped ? 14 : 16));
       for (final box in boxes.values) {
         expect(box.size, const Size.square(homeTimelineMarkSize));
         expect(box.center.dx, boxes.values.first.center.dx);

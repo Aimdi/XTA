@@ -90,6 +90,9 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
+import 'package:xta/plugins/websources/web_source_client.dart';
+import 'package:xta/plugins/websources/web_source_follows_store.dart';
+import 'package:xta/plugins/websources/web_sources_store.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
@@ -600,6 +603,12 @@ Future<void> main() async {
       optionPluginRssEnabled: false,
       optionPluginRssShowTab: true,
       optionPluginRssInHomeFeed: false,
+      optionPluginWebSourcesEnabled: false,
+      optionPluginWebSourcesShowTab: true,
+      optionPluginWebSourcesInstalled: '[]',
+      optionPluginWebSourcesFollows: '[]',
+      optionPluginWebSourcesInHomeFeed: false,
+      optionPluginWebSourcesCheckedAt: '',
       optionPluginRssFeeds: '[]',
       optionPluginRssReadIds: '[]',
       optionPluginRssTags: '{}',
@@ -956,6 +965,14 @@ Future<void> main() async {
     final rssRead = RssReadStore(prefService);
     final rssTags = RssTagsStore(prefService);
     final rssTimeline = RssTimelineStore(rssClient, rssFeeds);
+    final webSourceClient = WebSourceClient();
+    final webSources = WebSourcesStore(prefService);
+    final webSourceFollows = WebSourceFollowsStore(prefService);
+    if (prefService.get<bool>(optionPluginWebSourcesEnabled) == true) {
+      // Off the startup path: at most once a day, each installed source's
+      // file is read again for an update.
+      unawaited(webSources.checkForUpdates(webSourceClient));
+    }
     final tiktokClient = TikTokClient(prefService);
     final tiktokFollows = TikTokFollowsStore();
     final tiktokLikes = TikTokLikesStore(prefService);
@@ -1194,6 +1211,9 @@ Future<void> main() async {
                 Provider(create: (_) => rssRead),
                 Provider(create: (_) => rssTags),
                 Provider(create: (_) => rssTimeline),
+                Provider(create: (_) => webSourceClient),
+                Provider(create: (_) => webSources),
+                Provider(create: (_) => webSourceFollows),
                 Provider(create: (_) => tiktokClient),
                 Provider(create: (_) => tiktokFollows),
                 Provider(create: (_) => tiktokLikes),

@@ -102,16 +102,20 @@ class WebSourceClient {
 
   static Future<List<int>> _bounded(http.StreamedResponse response, Uri uri, int maxBytes) async {
     if ((response.contentLength ?? 0) > maxBytes) throw WebSourceFailure(WebSourceFailureKind.tooLarge, uri);
-    final bytes = <int>[];
     try {
-      await for (final chunk in response.stream.timeout(webSourceRequestTimeout)) {
-        bytes.addAll(chunk);
-        if (bytes.length > maxBytes) throw WebSourceFailure(WebSourceFailureKind.tooLarge, uri);
-      }
+      return await _collect(response.stream, uri, maxBytes).timeout(webSourceRequestTimeout);
     } on WebSourceFailure {
       rethrow;
     } on Exception {
       throw WebSourceFailure(WebSourceFailureKind.unreachable, uri);
+    }
+  }
+
+  static Future<List<int>> _collect(Stream<List<int>> stream, Uri uri, int maxBytes) async {
+    final bytes = <int>[];
+    await for (final chunk in stream) {
+      bytes.addAll(chunk);
+      if (bytes.length > maxBytes) throw WebSourceFailure(WebSourceFailureKind.tooLarge, uri);
     }
     return bytes;
   }

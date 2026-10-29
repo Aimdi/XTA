@@ -18,6 +18,7 @@ import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/threads/threads_plugin.dart';
 import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
+import 'package:xta/plugins/websources/web_sources_plugin.dart';
 
 /// Built-in plugins shipped with XTA, ordered the way the store groups them.
 final List<XtaPlugin> builtInPlugins = [
@@ -30,6 +31,7 @@ final List<XtaPlugin> builtInPlugins = [
   HackerNewsPlugin(),
   SubstackPlugin(),
   RssPlugin(),
+  WebSourcesPlugin(),
   PixivPlugin(),
   BooruPlugin(),
   EhViewerPlugin(),

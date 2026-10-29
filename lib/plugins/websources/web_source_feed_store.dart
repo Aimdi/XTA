@@ -17,6 +17,10 @@ class WebSourceFeedStore extends Store<List<WebSourceItem>> {
   Uri? _next;
   var _page = 0;
   var _loadingMore = false;
+  DateTime? _failedAt;
+
+  /// How long a page that failed waits before scrolling asks for it again.
+  static const retryAfter = Duration(seconds: 5);
 
   WebSourceFeedStore(this.client, this.source, this.list, {this.query}) : super(const []);
 
@@ -35,7 +39,9 @@ class WebSourceFeedStore extends Store<List<WebSourceItem>> {
   /// ends the list, so a site that repeats its last page is not read forever.
   Future<void> loadMore() async {
     final next = _next;
+    final failedAt = _failedAt;
     if (next == null || _loadingMore || state.isEmpty) return;
+    if (failedAt != null && DateTime.now().difference(failedAt) < retryAfter) return;
     _loadingMore = true;
     try {
       final page = await _load(next, _page + 1);
@@ -46,7 +52,11 @@ class WebSourceFeedStore extends Store<List<WebSourceItem>> {
       ];
       _page++;
       _next = fresh.isEmpty ? null : page.next;
+      _failedAt = null;
       update([...state, ...fresh]);
+    } on Exception {
+      // The list keeps what it has; the next scroll after a pause tries again.
+      _failedAt = DateTime.now();
     } finally {
       _loadingMore = false;
     }
