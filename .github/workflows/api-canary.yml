@@ -20,7 +20,7 @@ jobs:
         include:
           - service: Web sources
             key: websources
-            tests: test/live/web_sources_smoke_test.dart
+            tests: test/live/zz_tildes_probe_test.dart test/live/web_sources_smoke_test.dart
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
