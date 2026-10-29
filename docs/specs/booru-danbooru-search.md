@@ -72,7 +72,8 @@ rating cap never count.
   not end the feed, and the feed skips such pages as it does for the rating
   cap.
 - Only when the metatags that count are more than the host takes (for
-  example two `order:` terms on a guest) does the tag-limit message stay.
+  example `order:score`, `fav:` and `ordfav:` together on a guest) does the
+  tag-limit message stay.
 - This holds wherever posts are searched: the search screen, related and
   added tags, tag pages, saved searches in Following.
 - Known limit: a tag left to the device is compared by name, so an alias
@@ -96,6 +97,10 @@ rating cap never count.
   for and kept per search; posts filtered on the device; the timeout kind.
 - `lib/plugins/booru/booru_tag_limit.dart` (new): pure parts: which tokens
   count on Danbooru, the split, the limit read from the host's answer.
+- `lib/plugins/booru/booru_endpoints.dart`: the autocomplete request, and
+  the tag list lookup shared by a post's tags and the split.
+- `lib/plugins/booru/booru_query.dart`: where a typed word starts in a name,
+  for the bold match.
 - `lib/plugins/booru/booru_parse.dart`: autocomplete rows; the blacklist's
   matcher shared as `booruPostMatches` for the device's part of a search.
 - `lib/plugins/booru/booru_models.dart`: `BooruTagSuggestion.alias`.
@@ -114,4 +119,7 @@ rating cap never count.
 - The client: a 3-tag search on a guest gets 422, then sends 2 tags and
   filters the third on the device; the next search goes straight to the
   split; pages keep the same split; a 500 timeout has its own kind.
-- The suggestion row shows the alias and the arrow.
+- The suggestion row shows the alias and the arrow, and picking it adds
+  the tag.
+- Live (`test/live/sources_smoke_test.dart`): `miku` suggests
+  `hatsune_miku`, and a 3-tag search shows posts.
