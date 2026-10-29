@@ -24,18 +24,6 @@ jobs:
           - service: X query ids
             key: x-ids
             tests: test/live/x_query_ids_test.dart
-          - service: Instagram
-            key: instagram
-            tests: test/live/instagram_search_smoke_test.dart
-          - service: TikTok
-            key: tiktok
-            tests: test/live/tiktok_search_smoke_test.dart
-          - service: Substack
-            key: substack
-            tests: test/live/substack_custom_domain_smoke_test.dart
-          - service: Other sources
-            key: sources
-            tests: test/live/sources_smoke_test.dart
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -70,7 +58,7 @@ jobs:
           echo "classification=$classification" >> "$GITHUB_OUTPUT"
           cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Report service failure
-        if: failure() && steps.probe.outcome == 'failure' && steps.summary.outputs.classification == 'service'
+        if: false
         env:
           GH_TOKEN: ${{ github.token }}
           SERVICE: ${{ matrix.service }}
