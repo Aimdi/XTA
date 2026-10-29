@@ -1,25 +1,26 @@
-## XTA — aimdi185
+## XTA — aimdi186
 
-### Home: Following in one bar
+### Swipe back from a post
 
-- **One bar instead of two rows.** Posts | Media sit at the start; the order and filters, Feeds, search in the loaded posts and Home feed accounts at the end. The order chip shows how many filters are on; its name is in the tooltip and read out.
-- **The side menu is in the Feeds sheet.** The avatar has left the bar: "Open navigation menu" under "Add timeline" opens the menu, and a long press on it opens the avatar sheet.
-- **Narrow screens and large text.** When the names do not fit, the tabs move closer together; with large text on a small phone they get a row of their own. Nothing is cut off.
-- The bar leaves and comes back with the bottom bar, and nothing folds away on its own while you read.
+- **Drag a post away to go back.** An opened post slides in over the page you came from, which shrinks and darkens behind it. Drag the post to the right and it lifts off as a card that turns around your finger and swings with your speed. Let go past about a third of the screen, or throw it, and it flies off; let go sooner and it drops back into place.
+- **Android's back gesture moves the card too**, from either edge of the screen.
+- **Two switches in Settings → Accessibility**: "Swipe back from anywhere" (off: only from the edge of the screen) and "Tilt with your finger".
+- A post's row of photos and a video's seek bar keep their own swipes. With reduced motion the post appears and leaves at once, and a drag moves it flat.
 
-### The profile, flat
+### Choosing groups and folders
 
-- **No pills, rings or boxes.** Settings is a plain icon. Follow says what it is: "Subscribed" with a check, an eye-off icon when the account is hidden from the main feed, or "Subscribe", and it opens the same menu as before.
-- **A tighter header.** A bio's paragraphs sit closer together, the link and the join date share a row, and the private note is one flat row: "Add private note".
-- **Tabs and filters are words.** Posts | Replies | Media | Saved share the width when they fit, with a rounded line under the selected one. The filters below them are plain words, the selected one in bold.
-- **German counts are written out**, as in 1.379 and 62.646, and German profiles say "Seit August 2024" instead of "Seit August 2024 bei Twitter".
+- **Add to group is a quick pick.** Groups are chips with their marks, the account's own first, then the ones you picked last. "Search or create" finds a group or makes one ("Create “Japan” and add"). A line at the foot says where the account is, and the choice applies as the sheet closes: there is no Save, and closing it unchanged follows no one.
+- **Save to folder works the same way.** A long press on the bookmark shows the folders as chips: a tap files the post at once, "Create “Japan” and save" makes a folder from the search, and the foot says where the post is. Remember this folder stays.
 
-### Fixes
+### Sort ungrouped, one by one
 
-- **Spanish, Hindi, Korean, Dutch and Romanian profiles show the join date again.** They said only "Joined", without it.
-- **Screen readers say which tab or filter is selected** on Home's Posts | Media and the profile's filters.
+- **Accounts Sort ungrouped could not place can be sorted one at a time.** A card per account with Open profile and how far along you are; tap a group to place it and move on, or use Several groups, Create group, Skip and Undo. Every choice is saved as you make it, and after Apply the screen goes on to the accounts left over.
 
-Everything else is as in aimdi184.
+### Pixiv profile
+
+- **The header in the "Kanten" style.** Follow spans its own row, filled until you follow and outlined after, with Add to group beside it; the Premium badge is outlined, counts lead with the number in bold, and a line sits above the tabs.
+
+Everything else is as in aimdi185.
 
 ### Licence note
 
@@ -27,10 +28,10 @@ The downloadable voices use sherpa-onnx, whose library includes espeak-ng under 
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi185_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001540**, above every aimdi184 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
+For most Android phones, use **`xta-aimdi186_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 APKs are also supplied. The base version code is **400001550**, above every aimdi185 variant. The app ID (`com.aimdi.xta`) and release signing identity are unchanged for in-place updates.
 
-For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.185-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
+For Linux, use the Arch package (`sudo pacman -U xta-bin-4.12.0.186-1-x86_64.pkg.tar.zst`), the attached `PKGBUILD` (`makepkg -si`) or the portable tarball. **`SHA256SUMS-linux`** lists their checksums. See [docs/desktop.md](https://github.com/Aimdi/XTA/blob/claude/main/docs/desktop.md).
 
-The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs, and **`xta-aimdi185-debug-symbols.zip`** and **`xta-aimdi185-linux-debug-symbols.zip`** hold the debug symbols for reading crash traces.
+The release workflow checks translations, skill synchronization, analysis and the full Flutter test suite on the tagged source before building. **`release-build.json`** and **`SHA256SUMS`** accompany the APKs, and **`xta-aimdi186-debug-symbols.zip`** and **`xta-aimdi186-linux-debug-symbols.zip`** hold the debug symbols for reading crash traces.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi184)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi185)
