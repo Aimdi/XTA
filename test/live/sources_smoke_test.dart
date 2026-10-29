@@ -165,6 +165,19 @@ void main() {
     }
 
     test(
+      'Danbooru: a tag found by a word of its name, and a search with three tags',
+      () async {
+        final suggestions = await client.suggestTags('miku');
+        expect(suggestions.map((s) => s.name), contains('hatsune_miku'));
+        final page = await client.search('blue_eyes long_hair smile');
+        expect(page.allowed, isNotEmpty);
+        report('Booru Danbooru: "miku" suggests ${suggestions.first.name}; three tags gave ${page.allowed.length}');
+      },
+      timeout: timeout,
+      skip: skip,
+    );
+
+    test(
       'Danbooru: latest and popular',
       () async {
         final latest = await client.latest();
