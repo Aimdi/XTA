@@ -1667,6 +1667,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Too many tags for one search on this host — remove some",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "The host took too long with this search — add a tag or sort it another way",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "The host is busy or limiting requests — try again later",

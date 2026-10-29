@@ -15,6 +15,7 @@ String booruErrorMessage(L10n l10n, Object? error) {
     BooruErrorKind.needsCredentials => l10n.plugin_booru_error_needs_key,
     BooruErrorKind.tooDeep => l10n.plugin_booru_end_of_results,
     BooruErrorKind.tagLimit => l10n.plugin_booru_error_tag_limit,
+    BooruErrorKind.timedOut => l10n.plugin_booru_error_timed_out,
     BooruErrorKind.notFound => l10n.plugin_booru_error_not_found,
     BooruErrorKind.badResponse => l10n.plugin_booru_error_response,
   };

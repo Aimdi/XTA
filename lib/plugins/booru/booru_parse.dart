@@ -49,6 +49,29 @@ List<BooruTagSuggestion> parseBooruTagSuggestions(
   ];
 }
 
+/// Danbooru's autocomplete rows: the tag in `value`, and in `antecedent` the
+/// other name that led to it. Rows that are not tags are left out. Null when
+/// the answer is not a list of rows, so that the tags can be asked for
+/// another way.
+List<BooruTagSuggestion>? parseBooruAutocomplete(Object? raw) {
+  final rows = Json(raw);
+  if (rows.raw is! List) return null;
+  return [for (final row in rows.list) ?_autocompleteRow(row)];
+}
+
+BooruTagSuggestion? _autocompleteRow(Json row) {
+  final name = row['value'].string;
+  final isTag = row['type'].string?.startsWith('tag') ?? true;
+  if (name == null || name.isEmpty || !isTag) return null;
+  final alias = row['antecedent'].string;
+  return BooruTagSuggestion(
+    name: name,
+    postCount: row['post_count'].integer,
+    category: _categoryOf(row, BooruEngine.danbooru),
+    alias: alias == null || alias.isEmpty || alias == name ? null : alias,
+  );
+}
+
 final _xmlTag = RegExp(r'<tag\s([^>]*?)/?>');
 final _xmlAttribute = RegExp(r'(\w+)="([^"]*)"');
 
@@ -421,21 +444,21 @@ bool booruPostAllowed(BooruPost post, BooruRating maxRating) {
 }
 
 /// Whether any blacklist entry hides [post]. An entry is one tag or several;
-/// several hide a post only when all of them match. `-tag` matches a post
-/// without the tag, `~a ~b` matches a post with either, `rating:x` uses the
-/// host's own rating letters, and the metatags [booruMetatagMatches] knows
-/// (`score:<0`, `user:name`, `filetype:gif`…) compare what the post says.
-bool booruPostMuted(BooruPost post, Set<String> entries) {
-  if (entries.isEmpty) return false;
-  final tags = post.tags.map((tag) => tag.toLowerCase()).toSet();
-  return entries.any((entry) => _entryMatches(post, tags, entry));
-}
+/// several hide a post only when all of them match ([booruPostMatches]).
+bool booruPostMuted(BooruPost post, Set<String> entries) =>
+    entries.any((entry) => booruPostMatches(post, booruQueryTokens(entry)));
 
-bool _entryMatches(BooruPost post, Set<String> tags, String entry) {
-  final tokens = booruQueryTokens(entry).map(BooruQueryToken.parse).toList();
-  if (tokens.isEmpty) return false;
-  final either = tokens.where((t) => t.operator == BooruTagOperator.either);
-  final rest = tokens.where((t) => t.operator != BooruTagOperator.either);
+/// Whether [post] answers every one of [tokens] the way the hosts' searches
+/// read them: `-tag` matches a post without the tag, `~a ~b` matches a post
+/// with either, `rating:x` uses the host's own rating letters, and the
+/// metatags [booruMetatagMatches] knows (`score:<0`, `user:name`,
+/// `filetype:gif`…) compare what the post says. No tokens match nothing.
+bool booruPostMatches(BooruPost post, List<String> tokens) {
+  final parsed = tokens.map(BooruQueryToken.parse).toList();
+  if (parsed.isEmpty) return false;
+  final tags = post.tags.map((tag) => tag.toLowerCase()).toSet();
+  final either = parsed.where((t) => t.operator == BooruTagOperator.either);
+  final rest = parsed.where((t) => t.operator != BooruTagOperator.either);
   return rest.every((t) => _tokenMatches(post, tags, t)) &&
       (either.isEmpty || either.any((t) => _tokenMatches(post, tags, t)));
 }

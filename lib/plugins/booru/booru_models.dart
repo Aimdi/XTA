@@ -359,7 +359,16 @@ class BooruTagSuggestion {
   final int? postCount;
   final BooruTagCategory? category;
 
-  const BooruTagSuggestion({required this.name, this.postCount, this.category});
+  /// The other name the host found [name] through: an alias, a name in
+  /// another language, or the misspelling that was typed.
+  final String? alias;
+
+  const BooruTagSuggestion({
+    required this.name,
+    this.postCount,
+    this.category,
+    this.alias,
+  });
 }
 
 /// A translation note: a box on the picture, in the picture's own pixels,

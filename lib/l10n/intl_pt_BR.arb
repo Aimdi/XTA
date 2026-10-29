@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Tags demais para uma busca neste site — remova algumas",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "O site demorou demais com esta busca — adicione uma tag ou ordene de outro jeito",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "O site está sobrecarregado ou limitando as solicitações — tente de novo mais tarde",

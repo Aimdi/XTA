@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Za dużo tagów w jednym wyszukiwaniu w tym serwisie — usuń kilka",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "Serwis zbyt długo przetwarzał to wyszukiwanie — dodaj tag lub zmień sortowanie",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Serwis jest przeciążony lub ogranicza zapytania — spróbuj ponownie później",

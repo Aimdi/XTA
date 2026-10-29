@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "このサイトでは 1 回の検索に使えるタグ数を超えています。いくつか外してください",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "この検索はホストの処理に時間がかかりすぎました。タグを追加するか、別の並び順にしてください",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "拒否されました。ログインとAPIキーを確認してください",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "ホストが混雑しているか、リクエストを制限しています。しばらくしてから再試行してください",

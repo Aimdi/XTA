@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "For mange tagger for ett søk på dette nettstedet — fjern noen",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "Nettstedet brukte for lang tid på dette søket — legg til en tagg eller sorter på en annen måte",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Nettstedet er overbelastet eller begrenser forespørsler — prøv igjen senere",

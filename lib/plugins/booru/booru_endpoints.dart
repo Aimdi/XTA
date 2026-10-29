@@ -87,24 +87,42 @@ bool booruPopularPages(BooruEngine engine) => engine == BooruEngine.danbooru;
 /// where the host cannot answer for a list of tags.
 Uri? booruTagInfoUri(BooruSite site, {required String postId, required List<String> tags}) {
   if (tags.isEmpty) return null;
-  final limit = '${tags.length}';
-  switch (site.engine) {
-    case BooruEngine.danbooru:
-      return site.endpoint('/tags.json', {
-        'search[name_comma]': tags.join(','),
-        'only': 'name,category,post_count',
-        'limit': limit,
-      });
-    case BooruEngine.e621:
-      return site.endpoint('/tags.json', {'search[name]': tags.join(','), 'limit': limit});
-    case BooruEngine.gelbooruV2:
-      return site.dapi('tag', {'names': tags.join(' '), 'limit': limit});
-    // Moebooru looks tags up one pattern at a time; its post can name their
-    // kinds, though not their counts.
-    case BooruEngine.moebooru:
-      return site.endpoint('/post.json', {'tags': 'id:$postId', 'api_version': '2', 'include_tags': '1', 'limit': '1'});
+  // Moebooru looks tags up one pattern at a time; its post can name their
+  // kinds, though not their counts.
+  if (site.engine == BooruEngine.moebooru) {
+    return site.endpoint('/post.json', {'tags': 'id:$postId', 'api_version': '2', 'include_tags': '1', 'limit': '1'});
   }
+  return booruTagListUri(site, tags);
 }
+
+/// Kinds and post counts for [tags], in one request. Null without tags, or
+/// where the host looks tags up one pattern at a time (Moebooru).
+Uri? booruTagListUri(BooruSite site, List<String> tags) {
+  if (tags.isEmpty) return null;
+  final limit = '${tags.length}';
+  return switch (site.engine) {
+    BooruEngine.danbooru => site.endpoint('/tags.json', {
+      'search[name_comma]': tags.join(','),
+      'only': 'name,category,post_count',
+      'limit': limit,
+    }),
+    BooruEngine.e621 => site.endpoint('/tags.json', {'search[name]': tags.join(','), 'limit': limit}),
+    BooruEngine.gelbooruV2 => site.dapi('tag', {'names': tags.join(' '), 'limit': limit}),
+    BooruEngine.moebooru => null,
+  };
+}
+
+/// The site's own completion of [query]: tags by a word of their name, by
+/// alias, by a name in another language and past a typo, most used first.
+/// Danbooru keeps one; null elsewhere.
+Uri? booruAutocompleteUri(BooruSite site, String query, {required int limit}) => switch (site.engine) {
+  BooruEngine.danbooru => site.endpoint('/autocomplete.json', {
+    'search[query]': query,
+    'search[type]': 'tag_query',
+    'limit': '$limit',
+  }),
+  _ => null,
+};
 
 /// Tags the host finds alongside [tags]: Danbooru for a whole search, e621
 /// for one tag. Null where the host keeps no such list.

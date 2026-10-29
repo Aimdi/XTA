@@ -73,6 +73,16 @@ BooruPost _post(String id, List<String> tags) => BooruPost(
 
 void main() {
   group('query helpers', () {
+    test('what is typed is found where a word of the name starts', () {
+      expect(booruMatchStart('blue_eyes', 'blu'), 0);
+      expect(booruMatchStart('hatsune_miku', 'miku'), 8);
+      expect(booruMatchStart('admiral_(kancolle)', 'kancolle'), 9);
+      expect(booruMatchStart('fate/zero', 'zero'), 5);
+      expect(booruMatchStart('初音ミク', '初音'), 0);
+      expect(booruMatchStart('mikumiku', 'kumi'), isNull, reason: 'not where a word starts');
+      expect(booruMatchStart('blue_eyes', ''), isNull);
+    });
+
     test('appending skips repeats and lets a tag take its rival’s place', () {
       expect(appendBooruTokens(['cat'], ['cat', 'dog']), ['cat', 'dog']);
       expect(appendBooruTokens(['cat', 'dog'], ['-cat']), ['dog', '-cat']);

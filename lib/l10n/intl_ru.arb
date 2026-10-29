@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Слишком много тегов для одного поиска на этом сайте — уберите некоторые",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "Сайт слишком долго обрабатывал этот поиск — добавьте тег или выберите другую сортировку",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Сайт перегружен или ограничивает запросы — попробуйте позже",

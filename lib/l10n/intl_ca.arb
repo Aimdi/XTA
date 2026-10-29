@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Massa etiquetes per a una cerca en aquest lloc — elimina’n algunes",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "El lloc ha trigat massa amb aquesta cerca — afegeix una etiqueta o ordena-la d’una altra manera",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "El lloc està saturat o limita les sol·licituds — torna-ho a provar més tard",

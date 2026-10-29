@@ -1566,6 +1566,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Quá nhiều thẻ cho một lần tìm kiếm trên trang này — hãy bỏ bớt",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "Trang mất quá nhiều thời gian cho lần tìm kiếm này — hãy thêm thẻ hoặc sắp xếp theo cách khác",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Trang đang quá tải hoặc giới hạn yêu cầu — hãy thử lại sau",

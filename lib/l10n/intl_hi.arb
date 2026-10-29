@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "इस साइट पर एक खोज के लिए बहुत ज़्यादा टैग हैं — कुछ हटाएँ",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "इस खोज में साइट को बहुत ज़्यादा समय लगा — कोई टैग जोड़ें या दूसरे तरीके से क्रमबद्ध करें",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "साइट व्यस्त है या अनुरोध सीमित कर रही है — बाद में फिर से कोशिश करें",

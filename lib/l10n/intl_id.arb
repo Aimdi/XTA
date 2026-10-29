@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "Terlalu banyak tag untuk satu pencarian di situs ini — hapus beberapa",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "Situs terlalu lama memproses pencarian ini — tambahkan tag atau urutkan dengan cara lain",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "Situs sedang sibuk atau membatasi permintaan — coba lagi nanti",

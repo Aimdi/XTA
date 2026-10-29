@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "在此網站上單次搜尋的標籤過多，請移除一些",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "網站處理此搜尋耗時過長，請新增標籤或改用其他排序方式",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "網站忙碌中或正在限制請求，請稍後再試",

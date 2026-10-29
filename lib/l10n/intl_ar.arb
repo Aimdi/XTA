@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "عدد الوسوم كبير جدًا لبحث واحد على هذا الموقع — احذف بعضها",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "استغرق الموقع وقتًا طويلًا في هذا البحث — أضف وسمًا أو رتّب النتائج بطريقة أخرى",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "الموقع مشغول أو يحدّ من الطلبات — حاول مرة أخرى لاحقًا",

@@ -1569,6 +1569,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_tag_limit": "이 사이트에서 한 번에 검색하기에는 태그가 너무 많습니다. 일부를 빼세요",
   "@plugin_booru_error_tag_limit": {},
+  "plugin_booru_error_timed_out": "사이트가 이 검색을 처리하는 데 너무 오래 걸렸습니다. 태그를 추가하거나 다른 방식으로 정렬하세요",
+  "@plugin_booru_error_timed_out": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
   "plugin_booru_error_unavailable": "사이트가 혼잡하거나 요청을 제한하고 있습니다. 나중에 다시 시도하세요",
