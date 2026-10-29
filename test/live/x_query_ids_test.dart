@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -108,13 +109,14 @@ void main() {
         record = 'the record could not be read ($error), so no ages';
       }
 
+      final nameWidth = XEndpoints.all.map((endpoint) => endpoint.name.length).reduce(max) + 2;
       final report = [
         'X query ids, $record. Published files: '
             '${current == null ? 'default branch UNREADABLE' : 'default branch ${current.length} entries'}, '
             '${legacy == null ? 'main not readable' : 'main ${legacy.length} entries'}.',
         for (final endpoint in XEndpoints.all)
           [
-            endpoint.name.padRight(24),
+            endpoint.name.padRight(nameWidth),
             for (final MapEntry(key: who, value: ids) in inForce.entries)
               '$who: ${_idWithAge(endpoint.operation, ids[endpoint.name]!, versions, today)}',
             'web now: ${versions.isEmpty ? '?' : versions.first.ids[endpoint.operation] ?? 'not in the record'}',

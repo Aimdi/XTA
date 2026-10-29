@@ -132,4 +132,12 @@ void main() {
       expect(queryIdPattern.hasMatch(id), isTrue, reason: '$name has a malformed query id');
     });
   });
+
+  test('the published endpoints.json names the ids this build ships', () {
+    // An entry applies to newer builds too, so one left behind when a shipped
+    // id moves on holds them back on the older id. Change both together.
+    parseEndpointRegistry(File('endpoints.json').readAsStringSync()).forEach((name, id) {
+      expect(id, XEndpoints.shipped[name]?.queryId, reason: 'endpoints.json and endpoints.dart differ for $name');
+    });
+  });
 }
