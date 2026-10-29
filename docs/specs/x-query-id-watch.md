@@ -43,6 +43,11 @@ X but the reads XTA already makes.
   one and forgets the ids it read from `main`: the shipped ids apply until
   the default branch's file is read, on that launch. An address set by hand
   stays.
+- An entry in `endpoints.json` applies to every install that reads it,
+  newer builds too. So each entry names the id this repository ships for
+  that operation, and a correction changes both together: the file can
+  bring an older install up to the current ids, never hold a newer build
+  back on an older one, as `main`'s file did. A unit test checks it.
 - Installs up to aimdi186 keep reading `main`. Until they have updated, a
   correction is copied to `main` as well; the check below says when the two
   differ. Deleting `main` would not help them: an install keeps applying
@@ -107,6 +112,8 @@ against recorded answers.
 - `test/live/x_query_ids_test.dart` (new): the daily report.
 - `test/live/endpoint_canary_test.dart`: applies the published files
   installs fetch.
+- `test/endpoints_test.dart`: each entry of `endpoints.json` is the id
+  this repository ships.
 - `.github/workflows/api-canary.yml`: the new row; the GitHub token for the
   record's history.
 
@@ -119,6 +126,7 @@ against recorded answers.
 - An id's age: today when the newest version has it, days since the newest
   version that has it otherwise, unknown when no version read has it.
 - The published files must match: a `main` that differs is named.
+- Each entry of `endpoints.json` is the id this repository ships.
 - A saved `main` or `master` address moves to the default branch's and
   drops what was read from it; an address set by hand, or one already on
   the default branch, stays with what was read from it. The plugin
