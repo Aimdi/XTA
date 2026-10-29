@@ -7,6 +7,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/subscriptions/subscription_profiles.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/queued_store.dart';
@@ -186,6 +187,42 @@ class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List
       where: 'id = ?',
       whereArgs: [user.id],
     );
+  }
+
+  /// Saves what X now shows of the followed accounts among [users]: a new
+  /// handle, name or picture. Only changed rows are written. A new handle
+  /// reloads the subscriptions and rebuilds the feeds, which search by
+  /// handle; a new name or picture changes the list in place, since a
+  /// reload's listeners would drop the feeds kept in memory.
+  Future<void> refreshProfiles(Iterable<UserWithExtra> users) async {
+    final refreshed = refreshedSubscriptions(state, users);
+    if (refreshed.isEmpty) return;
+    final stored = {for (final subscription in state.whereType<UserSubscription>()) subscription.id: subscription};
+    final renamed = refreshed.values.any((fresh) => subscriptionRenamed(stored[fresh.id]!, fresh));
+    log.info('Refreshing ${refreshed.length} subscriptions from what X sent');
+
+    try {
+      final database = await Repository.writable();
+      final batch = database.batch();
+      for (final fresh in refreshed.values) {
+        batch.update(
+          tableSubscription,
+          {'screen_name': fresh.screenName, 'name': fresh.name, 'profile_image_url_https': fresh.profileImageUrlHttps},
+          where: 'id = ?',
+          whereArgs: [fresh.id],
+        );
+      }
+      await batch.commit(noResult: true);
+    } catch (error) {
+      log.warning('Could not save what X sent about followed accounts: $error');
+      return;
+    }
+
+    if (renamed) {
+      await reloadSubscriptions();
+    } else {
+      update(withProfiles(state, refreshed));
+    }
   }
 
   Future<void> removeSubscriptions(List<UserSubscription> users) async {

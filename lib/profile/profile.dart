@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:xta/ui/reader_tab_view.dart';
 
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
@@ -86,6 +88,18 @@ class ProfileScreen extends StatelessWidget {
     return Provider(
       create: (context) {
         final model = ProfileModel();
+        // A profile fresh from X says what a followed account is called and
+        // looks like now; one read from the device's copy may be older.
+        final subscriptions = context.read<SubscriptionsModel?>();
+        if (subscriptions != null) {
+          model.observer(
+            onState: (profile) {
+              if (!profile.refreshing && profile.cachedAt == null) {
+                unawaited(subscriptions.refreshProfiles([profile.user]));
+              }
+            },
+          );
+        }
         if (args.id != null) {
           model.loadProfileById(args.id!);
         } else {
