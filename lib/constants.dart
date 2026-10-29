@@ -521,6 +521,21 @@ const optionPluginInstagramCookies = 'plugin.instagram.cookies';
 const optionPluginInstagramSearchHistory = 'plugin.instagram.search_history';
 const optionPluginInstagramLikedPosts = 'plugin.instagram.liked_posts';
 
+const pluginIdWebSources = 'websources';
+const optionPluginWebSourcesEnabled = 'plugin.websources.enabled';
+const optionPluginWebSourcesShowTab = 'plugin.websources.show_tab';
+
+/// The installed sources: each one's file, where it came from, the sites the
+/// reader agreed to, and an update waiting for agreement (JSON list).
+const optionPluginWebSourcesInstalled = 'plugin.websources.installed';
+
+/// The followed lists, as subscriptions (JSON list).
+const optionPluginWebSourcesFollows = 'plugin.websources.follows';
+const optionPluginWebSourcesInHomeFeed = 'plugin.websources.in_home_feed';
+
+/// When the installed sources were last read again for updates.
+const optionPluginWebSourcesCheckedAt = 'plugin.websources.checked_at';
+
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.
 const optionPluginStoreShowPrivate = 'plugin_store.show_private';
@@ -847,6 +862,10 @@ const optionPluginCatalogueCache = 'plugin.catalogue.cache';
 const optionPluginCatalogueFetchedAt = 'plugin.catalogue.fetched_at';
 const defaultPluginCatalogueUrl =
     'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/plugins.json';
+
+/// The web sources this repository publishes (docs/specs/web-sources.md).
+const defaultWebSourceCatalogueUrl =
+    'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/sources.json';
 
 // Offline read cache for threads and profile timelines (feed_group_chunk covers
 // group feeds). Short windows: these are re-read within a session far more

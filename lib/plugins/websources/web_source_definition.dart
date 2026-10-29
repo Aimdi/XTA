@@ -192,6 +192,9 @@ WebSourceDefinition _definition(Json file, Map<String, Object?> raw) {
 }
 
 final _sourceId = RegExp(r'^[a-z0-9][a-z0-9-]{1,39}$');
+
+/// Whether [id] is a well-formed source id.
+bool isWebSourceId(String? id) => id != null && _sourceId.hasMatch(id);
 final _listId = RegExp(r'^[a-z0-9][a-z0-9-]{0,39}$');
 final _hostName = RegExp(r'^(?:\*\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$');
 final _hexColor = RegExp(r'^#[0-9A-Fa-f]{6}$');
