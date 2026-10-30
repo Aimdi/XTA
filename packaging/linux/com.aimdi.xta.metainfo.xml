@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream data: what software centres and menus show about XTA. -->
+<component type="desktop-application">
+  <id>com.aimdi.xta</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>XTA</name>
+  <summary>A private, read-oriented way to browse X</summary>
+  <description>
+    <p>
+      XTA reads X and other sources, such as Bluesky, Mastodon, Reddit,
+      Substack and RSS feeds, and never posts, likes or shares anything in
+      your name. The accounts you follow, your groups, saved posts and likes
+      stay on this computer.
+    </p>
+    <ul>
+      <li>Timelines of the accounts you follow, in groups you arrange</li>
+      <li>Profiles, conversations, search and communities</li>
+      <li>Saved posts with notes, offline articles and downloads</li>
+      <li>No trackers: XTA talks only to the sites you read</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">com.aimdi.xta.desktop</launchable>
+  <url type="homepage">https://github.com/Aimdi/XTA</url>
+  <url type="bugtracker">https://github.com/Aimdi/XTA/issues</url>
+  <developer id="com.github.aimdi">
+    <name>Aimdi</name>
+  </developer>
+  <provides>
+    <binary>xta</binary>
+  </provides>
+</component>
