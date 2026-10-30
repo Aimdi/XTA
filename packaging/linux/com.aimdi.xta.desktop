@@ -10,4 +10,3 @@ Categories=Network;News;
 Keywords=X;Twitter;Reader;Mastodon;Bluesky;RSS;
 StartupWMClass=com.aimdi.xta
 StartupNotify=true
-SingleMainWindow=true
