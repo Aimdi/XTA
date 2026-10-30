@@ -84,7 +84,8 @@ folder chosen in Settings is used instead when set.
 
 - **Back**: the mouse's back button, Alt+← and a keyboard's Back key go back,
   as Android's back gesture does. Esc goes back from a page too, after closing
-  a dialog, sheet or menu first, and not while you are typing.
+  a dialog, sheet or menu first; while you type in a page, the first Esc
+  leaves the text field.
 - **Refresh**: Home's timeline has a refresh button on the desktop, since a
   mouse cannot pull it down, and F5 or Ctrl+R refreshes the timeline in view
   (Home, a group, a deck column).

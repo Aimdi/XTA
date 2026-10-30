@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:xta/utils/desktop.dart';
 
 /// Esc: back from a page, unless something nearer takes it (a dialog, a sheet
-/// or a menu closes) or the reader is typing.
+/// or a menu closes). Typing in a page, the first Esc leaves the field.
 class EscapeBackIntent extends Intent {
   const EscapeBackIntent();
 }
@@ -76,13 +76,21 @@ class _EscapeBackAction extends Action<EscapeBackIntent> {
   @override
   bool isEnabled(EscapeBackIntent intent) {
     final navigator = navigatorKey.currentState;
-    if (navigator == null || !navigator.canPop() || topRoute(navigator) is! PageRoute) return false;
+    if (navigator == null || topRoute(navigator) is! PageRoute) return false;
     final focused = FocusManager.instance.primaryFocus?.context;
-    return focused == null || (!isEditingText(focused) && !canDismiss(focused));
+    if (focused != null && isEditingText(focused)) return true;
+    return navigator.canPop() && (focused == null || !canDismiss(focused));
   }
 
   @override
-  Object? invoke(EscapeBackIntent intent) => navigatorKey.currentState?.maybePop();
+  Object? invoke(EscapeBackIntent intent) {
+    final focus = FocusManager.instance.primaryFocus;
+    if (focus?.context case final focused? when isEditingText(focused)) {
+      focus!.unfocus();
+      return null;
+    }
+    return navigatorKey.currentState?.maybePop();
+  }
 }
 
 /// The route on top of [navigator], read without popping anything.

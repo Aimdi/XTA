@@ -57,14 +57,34 @@ void main() {
       expect(find.text('page'), findsOneWidget);
     });
 
-    testWidgets('Esc while typing stays put', (tester) async {
+    testWidgets('typing in a page, the first Esc leaves the field and the next goes back', (tester) async {
       await tester.pumpWidget(_app());
       await _openPage(tester, body: const TextField(autofocus: true));
 
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
       await tester.pumpAndSettle();
-
       expect(find.byType(TextField), findsOneWidget);
+      expect(FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<EditableText>(), isNull);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsNothing);
+    });
+
+    testWidgets('typing in a dialog, Esc closes the dialog as before', (tester) async {
+      await tester.pumpWidget(_app());
+      await _openPage(tester);
+      showDialog<void>(
+        context: _navigator.currentContext!,
+        builder: (_) => const AlertDialog(content: TextField(autofocus: true)),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('page'), findsOneWidget);
     });
 
     testWidgets('Esc on the first page does nothing', (tester) async {

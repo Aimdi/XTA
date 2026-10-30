@@ -57,8 +57,8 @@ display:
 - **The window reopens at its last size**, maximized if it was. The size is
   kept in `~/.local/share/com.aimdi.xta/window.ini`.
 - **Back**: the mouse's back button and Alt+← go back from any page. Esc
-  goes back too, after closing a dialog, sheet or menu first, and not while
-  typing in a field.
+  goes back too, after closing a dialog, sheet or menu first; typing in a
+  page, the first Esc leaves the field.
 - **Refresh**: on the desktop the Home timeline shows its refresh button,
   and F5 or Ctrl+R refreshes the timeline in view (Home, a group, a deck
   column).
@@ -103,8 +103,9 @@ their ⋯ button).
 ## Tests
 
 - Back: the mouse's back button, Alt+← and Esc go back from a page; Esc
-  closes a dialog without leaving the page under it; Esc while typing stays
-  put; none of them act off the desktop.
+  closes a dialog without leaving the page under it, even while typing in
+  it; typing in a page, the first Esc leaves the field and the next goes
+  back; none of them act off the desktop.
 - Refresh: F5 and Ctrl+R refresh a timeline; Home's refresh button shows
   on the desktop only.
 - Viewer: ← and → turn pages; the buttons show only where there is a page
