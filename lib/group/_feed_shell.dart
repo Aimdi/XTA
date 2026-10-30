@@ -12,6 +12,7 @@ import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/desktop_navigation.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 import 'package:xta/ui/reader_chrome.dart';
 
@@ -202,6 +203,10 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    return DesktopRefreshKeys(onRefresh: _feedRefreshController.refresh, child: _shell(context));
+  }
+
+  Widget _shell(BuildContext context) {
     return XtaSystemBars(
       child: Provider<GroupModel>.value(
         value: _groupModel,

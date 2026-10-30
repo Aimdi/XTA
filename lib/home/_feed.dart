@@ -40,6 +40,7 @@ import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/ui/scroll_to_top.dart';
+import 'package:xta/utils/desktop.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
 typedef FeedTabMarkBuilder = Widget Function(double size);
@@ -98,8 +99,9 @@ const IconData followingTabIcon = Icons.dynamic_feed;
 const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 
 /// Following's bar holds three buttons beside its chip: Feeds, search in the
-/// loaded posts and Home feed accounts.
-const _followingBarActions = 3;
+/// loaded posts and Home feed accounts, and on the desktop, where a mouse
+/// cannot pull the timeline down, refresh.
+int get _followingBarActions => isDesktop ? 4 : 3;
 
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
@@ -447,7 +449,7 @@ class _FeedScreenState extends State<FeedScreen> {
             unread: unread,
             onPressed: () => _pickSource(context),
           ),
-          ..._timelineActions(context, refresh: false),
+          ..._timelineActions(context, refresh: isDesktop),
         ],
       ),
     );

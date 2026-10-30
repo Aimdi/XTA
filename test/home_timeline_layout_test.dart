@@ -34,6 +34,7 @@ import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/read_visibility.dart';
 
 const _before = bool.fromEnvironment('HOME_LAYOUT_BEFORE');
@@ -349,6 +350,7 @@ void main() {
           expect(find.byKey(control).hitTestable(), findsOneWidget, reason: '$control');
         }
         expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
+        expect(find.byTooltip('Refresh'), findsNothing);
         expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
         expect(find.byType(HomeFeedStrip), findsNothing);
       }
@@ -421,6 +423,23 @@ void main() {
     expect(tester.getRect(find.byType(SubscriptionGroupScreenContent)).bottom, 844);
     expect(find.textContaining('Reading fixture 19', findRichText: true), findsOneWidget);
     expect(tester.getRect(find.byType(TweetTile).last).bottom, lessThanOrEqualTo(pill.top));
+    expect(tester.takeException(), isNull);
+  }, skip: _before);
+
+  testWidgets('On the desktop, where a mouse cannot pull it down, Following shows refresh', (tester) async {
+    debugDesktopOverride = true;
+    addTearDown(() => debugDesktopOverride = null);
+    tester.view.physicalSize = const Size(1100, 820);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+
+    expect(find.byTooltip('Refresh').hitTestable(), findsOneWidget);
+    expect(tester.getSize(find.byKey(_bar)).height, 48);
     expect(tester.takeException(), isNull);
   }, skip: _before);
 

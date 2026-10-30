@@ -161,6 +161,7 @@ import 'package:xta/speech/speech_bar.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/ui/desktop_navigation.dart';
 import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/image_disk_cache.dart';
 import 'package:xta/utils/mock_x.dart';
@@ -1533,8 +1534,12 @@ class _FritterAppState extends State<FritterApp> {
                   // way to stop it has to be reachable from wherever the reader
                   // has gone. Nothing is added while nothing is being read.
                   // Every route shares XtaScaffoldMessenger's timing rules.
-                  return XtaScaffoldMessenger(
-                    child: UndoHost(child: SpeechBarScaffold(child: child ?? Container())),
+                  // On a PC the mouse and keyboard go back too.
+                  return DesktopNavigation(
+                    navigatorKey: _navigatorKey,
+                    child: XtaScaffoldMessenger(
+                      child: UndoHost(child: SpeechBarScaffold(child: child ?? Container())),
+                    ),
                   );
                 },
               ),

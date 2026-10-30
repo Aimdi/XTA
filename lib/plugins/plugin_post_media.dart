@@ -12,6 +12,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/desktop_pager.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
@@ -786,30 +787,34 @@ class _PluginImageViewerState extends State<PluginImageViewer> {
             ),
           ],
         ),
-        body: ExtendedImageGesturePageView.builder(
+        body: DesktopPager(
           controller: _pages,
-          itemCount: widget.items.length,
-          onPageChanged: (i) => setState(() => _index = i),
-          itemBuilder: (context, i) {
-            final item = widget.items[i];
-            final custom = widget.imageBuilder;
-            if (custom != null) {
-              return InteractiveViewer(
-                minScale: 1,
-                maxScale: 4,
-                child: Center(
-                  child: custom(context, item, BoxFit.contain),
-                ),
+          count: widget.items.length,
+          child: ExtendedImageGesturePageView.builder(
+            controller: _pages,
+            itemCount: widget.items.length,
+            onPageChanged: (i) => setState(() => _index = i),
+            itemBuilder: (context, i) {
+              final item = widget.items[i];
+              final custom = widget.imageBuilder;
+              if (custom != null) {
+                return InteractiveViewer(
+                  minScale: 1,
+                  maxScale: 4,
+                  child: Center(
+                    child: custom(context, item, BoxFit.contain),
+                  ),
+                );
+              }
+              return TweetPhoto(
+                uri: item.url,
+                size: null,
+                fit: BoxFit.contain,
+                pullToClose: true,
+                inPageView: true,
               );
-            }
-            return TweetPhoto(
-              uri: item.url,
-              size: null,
-              fit: BoxFit.contain,
-              pullToClose: true,
-              inPageView: true,
-            );
-          },
+            },
+          ),
         ),
       ),
     );
