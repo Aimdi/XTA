@@ -92,10 +92,12 @@ their ⋯ button).
   attaches both packages.
 - `.github/workflows/verify.yml`: builds both packages, installs each on its
   Ubuntu version and starts XTA on a virtual display.
-- `lib/utils/desktop_keys.dart` (new): back by mouse button and keys.
+- `lib/ui/desktop_navigation.dart` (new): back by mouse button and keys,
+  and F5/Ctrl+R for a timeline.
 - `lib/ui/desktop_pager.dart` (new): keys and buttons for a viewer's pages.
-- `lib/main.dart`, `lib/home/_feed.dart`, `lib/group/_feed_shell.dart`, the
-  two picture viewers.
+- `lib/main.dart`, `lib/home/_feed.dart`, `lib/group/_feed_shell.dart`,
+  `lib/plugins/x/x_screen.dart`, the two picture viewers.
+- `scripts/smoke_linux_package.sh` (new): the CI start check.
 - `docs/desktop.md`, `README.md`.
 
 ## Tests

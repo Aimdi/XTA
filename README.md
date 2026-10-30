@@ -122,19 +122,27 @@ certificate before publication. See the [certificate fingerprints](certificate-f
 These checks establish build provenance; independently reproducible APKs are
 [still a separate goal](docs/reproducible-builds.md).
 
-### Linux desktop (Arch Linux)
+### Linux desktop
 
-Each release also carries a Linux desktop build: the Arch package
-`xta-bin-<version>-1-x86_64.pkg.tar.zst`, the `PKGBUILD` that builds it, and a
-portable `xta-aimdiNN-linux-x86_64.tar.gz` for other distributions.
+Each release also carries a Linux desktop build:
+
+| System | Download |
+|---|---|
+| Debian 12+, Ubuntu 24.04+, Linux Mint 22+ | `xta_<version>_amd64.deb` |
+| Ubuntu 22.04, Linux Mint 21, Pop!_OS 22.04, Zorin OS 17 | `xta_<version>_ubuntu22.04_amd64.deb` |
+| Arch Linux | `xta-bin-<version>-1-x86_64.pkg.tar.zst`, or its `PKGBUILD` |
+| Others | `xta-aimdiNN-linux-x86_64.tar.gz`, with `install.sh` for the menu |
 
 ```bash
-sudo pacman -U xta-bin-*-x86_64.pkg.tar.zst
+sudo apt install ./xta_*_amd64.deb          # Debian, Ubuntu, Mint
+sudo pacman -U xta-bin-*-x86_64.pkg.tar.zst  # Arch
 ```
 
-It reads, stores and backs up exactly as the Android app does. On the desktop
-an X account is added by pasting your x.com session cookies, and links and
-article readers open in your browser. See the [desktop guide](docs/desktop.md)
+It reads, stores and backs up exactly as the Android app does, and works with
+a mouse and keyboard: the mouse's back button, Alt+← and Esc go back, F5
+refreshes the timeline, and ← and → turn the pictures in the viewer. On the
+desktop an X account is added by pasting your x.com session cookies, and links
+and article readers open in your browser. See the [desktop guide](docs/desktop.md)
 for the details, other distributions and building it yourself.
 
 ## Accounts and privacy
