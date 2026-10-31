@@ -59,6 +59,8 @@ import 'package:xta/group/feed_search_query.dart';
 import 'package:xta/group/unrelated_posts.dart';
 import 'package:xta/group/group_media_page.dart';
 import 'package:xta/group/feed_chunk_concurrency.dart';
+import 'package:xta/subscriptions/subscription_profiles.dart';
+import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/floating_notice.dart';
 
 /// One chunk's contribution to a feed page: its chains, whether its gap-fill
@@ -122,6 +124,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   CursorPagingController<String, MediaGridItem>? _mediaPaging;
   final Set<String> _seenMediaKeys = <String>{};
   FeedSessionCache? _cache;
+  // Told who the accounts behind each page are; absent in some tests.
+  SubscriptionsModel? _subscriptions;
   ScrollController? _innerScrollController;
   bool _scrollRestoreScheduled = false;
   // Cached tweets shown while the first page loads, so opening the feed reveals
@@ -276,6 +280,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   @override
   void initState() {
     super.initState();
+    _subscriptions = context.read<SubscriptionsModel?>();
     if (_usesCache) {
       _cache = context.read<FeedSessionCache>();
       _feedController = _cache!.getOrCreateController(widget.cacheKey!);
@@ -712,6 +717,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     bool shouldShowUnrelatedPostsInFeedWarning = false;
+    // What X sent during this load. The stored chunks shown with it are left
+    // out: the accounts in them are as X showed them when they were stored.
+    final arrived = <TweetChain>[];
 
     // Cap in-flight chunk searches — unbounded Future.wait was the #165 failure
     // mode for 1000+ subscriptions (60+ concurrent searches → 404 cascade).
@@ -794,6 +802,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         }
 
         final fresh = searchPage?.chains ?? network.fallbackChains;
+        arrived.addAll(fresh);
         if (fresh.isNotEmpty) {
           tweets.addAll(fresh);
 
@@ -839,6 +848,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
               if (page.chains.isNotEmpty) {
                 tweets.addAll(page.chains);
+                arrived.addAll(page.chains);
                 await repository.insert(tableFeedGroupChunk, {
                   'cursor_id': int.parse(nextCursor),
                   'hash': hash,
@@ -885,6 +895,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         }
       },
     );
+    // A followed account may have a new handle, name or picture since it was
+    // followed; the posts X just sent say what they are now.
+    unawaited(_subscriptions?.refreshProfiles(postAuthors(arrived)));
     if (cursorKey != null) await pageBatches.destroy();
     ReadWork.checkpoint();
 

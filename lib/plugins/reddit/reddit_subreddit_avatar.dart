@@ -180,7 +180,7 @@ class _RedditSubredditAvatarState extends State<RedditSubredditAvatar> {
         filterQuality: FilterQuality.high,
         // Decode at least 512px so a 44dp tile stays sharp on dense screens.
         cacheWidth: decode < 512 ? 512 : decode,
-        headers: const {'User-Agent': RedditClient.publicUserAgent},
+        headers: {'User-Agent': RedditClient.publicUserAgent},
         loadStateChanged: (state) => state.extendedImageLoadState == LoadState.completed
             ? null
             : RedditAvatar(name: 'r/${widget.subreddit}', size: widget.size),

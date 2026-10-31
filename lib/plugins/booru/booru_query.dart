@@ -122,6 +122,21 @@ String? booruSuggestionPrefix(String input) {
   return token.value.toLowerCase();
 }
 
+final _wordBreak = RegExp(r'[^\p{L}\p{N}]', unicode: true);
+
+/// Where in [text] a word starting with [typed] begins: at the start, or
+/// after a character that is not a letter or digit (`hatsune_miku`,
+/// `fate/zero`). Null when no word does.
+int? booruMatchStart(String text, String typed) {
+  final lower = text.toLowerCase();
+  // Lower-casing can change the length (`İ`); the positions would not hold.
+  if (typed.isEmpty || lower.length != text.length) return null;
+  for (var start = lower.indexOf(typed); start >= 0; start = lower.indexOf(typed, start + 1)) {
+    if (start == 0 || _wordBreak.hasMatch(lower[start - 1])) return start;
+  }
+  return null;
+}
+
 /// [suggestion] carrying over the operator typed in [input] (`-blu` → `-blue_eyes`).
 String booruTokenFor(String input, String suggestion) => '${BooruTagOperator.of(input.trim()).prefix}$suggestion';
 

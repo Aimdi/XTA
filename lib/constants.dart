@@ -521,6 +521,21 @@ const optionPluginInstagramCookies = 'plugin.instagram.cookies';
 const optionPluginInstagramSearchHistory = 'plugin.instagram.search_history';
 const optionPluginInstagramLikedPosts = 'plugin.instagram.liked_posts';
 
+const pluginIdWebSources = 'websources';
+const optionPluginWebSourcesEnabled = 'plugin.websources.enabled';
+const optionPluginWebSourcesShowTab = 'plugin.websources.show_tab';
+
+/// The installed sources: each one's file, where it came from, the sites the
+/// reader agreed to, and an update waiting for agreement (JSON list).
+const optionPluginWebSourcesInstalled = 'plugin.websources.installed';
+
+/// The followed lists, as subscriptions (JSON list).
+const optionPluginWebSourcesFollows = 'plugin.websources.follows';
+const optionPluginWebSourcesInHomeFeed = 'plugin.websources.in_home_feed';
+
+/// When the installed sources were last read again for updates.
+const optionPluginWebSourcesCheckedAt = 'plugin.websources.checked_at';
+
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.
 const optionPluginStoreShowPrivate = 'plugin_store.show_private';
@@ -826,11 +841,14 @@ const optionEndpointRegistryUrl = 'api.endpoint_registry.url';
 const optionEndpointRegistryCache = 'api.endpoint_registry.cache';
 const optionEndpointRegistryFetchedAt = 'api.endpoint_registry.fetched_at';
 
-/// The branch the published documents are read from.
+/// The branch the published documents are read from: the repository's
+/// default branch, whatever it is called.
 ///
 /// Named once: both registries pointed at `master`, which this fork does not
-/// have, so every fetch 404'd and neither had ever been read.
-const githubPublishBranch = 'main';
+/// have, so every fetch 404'd and neither had ever been read. Then at `main`,
+/// which releases stopped merging into in August, so every install applied
+/// its stale query ids over the shipped ones.
+const githubPublishBranch = 'HEAD';
 
 const defaultEndpointRegistryUrl =
     'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/endpoints.json';
@@ -844,6 +862,17 @@ const optionPluginCatalogueCache = 'plugin.catalogue.cache';
 const optionPluginCatalogueFetchedAt = 'plugin.catalogue.fetched_at';
 const defaultPluginCatalogueUrl =
     'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/plugins.json';
+
+/// The web sources this repository publishes (docs/specs/web-sources.md).
+const defaultWebSourceCatalogueUrl =
+    'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/sources.json';
+
+/// Repairs for the networks' fragile values (docs/specs/published-repairs.md),
+/// the copy last read, and when.
+const defaultPluginRepairsUrl =
+    'https://raw.githubusercontent.com/$githubRepo/$githubPublishBranch/repairs.json';
+const optionPluginRepairsKept = 'plugin.repairs.kept';
+const optionPluginRepairsReadAt = 'plugin.repairs.read_at';
 
 // Offline read cache for threads and profile timelines (feed_group_chunk covers
 // group feeds). Short windows: these are re-read within a session far more

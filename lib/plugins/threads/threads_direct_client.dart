@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_parse.dart';
@@ -14,14 +15,14 @@ export 'package:xta/plugins/threads/threads_parse.dart';
 
 const _threadsWeb = threadsWebBase;
 const _instagramApi = 'https://i.instagram.com';
-const _igAppId = '238260118697367';
-const _barcelonaUa = 'Barcelona 289.0.0.77.109 Android';
-const _safariUa =
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1';
+String get _igAppId => PluginRepairs.threadsAppId.value;
+String get _barcelonaUa => PluginRepairs.threadsAppUserAgent.value;
+String get _safariUa => PluginRepairs.threadsWebUserAgent.value;
 
 /// Guest profile threads — `BarcelonaProfileThreadsTabQuery`. Rotates; if it
 /// 404s or returns empty, [fetchGuestAccount] falls back to SSR `thread_items`.
-const threadsGuestProfileThreadsDocId = '6232751443445612';
+/// A published repair can replace it (docs/specs/published-repairs.md).
+String get threadsGuestProfileThreadsDocId => PluginRepairs.threadsGuestDocId.value;
 
 /// Cookie names a browser Threads session must carry for cookie REST reads.
 const _requiredCookieKeys = [
@@ -366,7 +367,7 @@ class ThreadsDirectClient {
             ThreadsErrorKind.unauthorized,
             'session cleared',
           )),
-      'X-ASBD-ID': '129477',
+      'X-ASBD-ID': PluginRepairs.threadsAsbdId.value,
       'X-IG-WWW-Claim': '0',
       'Referer': '$_threadsWeb/',
       'Cookie': cookieHeader,
@@ -765,9 +766,9 @@ class ThreadsDirectClient {
         'Accept': '*/*',
         'Accept-Language': 'en-US,en;q=0.9',
         'X-IG-App-ID': _igAppId,
-        'X-ASBD-ID': '129477',
+        'X-ASBD-ID': PluginRepairs.threadsAsbdId.value,
         'X-FB-LSD': lsd,
-        'X-FB-Friendly-Name': 'BarcelonaProfileThreadsTabQuery',
+        'X-FB-Friendly-Name': PluginRepairs.threadsGuestQueryName.value,
         'Origin': _threadsWeb,
         'Referer': '$_threadsWeb/@$handle',
       },

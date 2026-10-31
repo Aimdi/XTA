@@ -11,6 +11,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/x/x_reader_chrome.dart';
 import 'package:xta/plugins/x/x_reader_routes.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
+import 'package:xta/ui/desktop_navigation.dart';
 
 /// The X source retains the established For you reader and its local state.
 class XTimelineView extends StatelessWidget {
@@ -78,34 +79,37 @@ class _XScreenState extends State<XScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Provider<FeedRefreshController>.value(
-    value: _refreshController,
-    child: Scaffold(
-      appBar: AppBar(
-        title: Text(L10n.of(context).source_x),
-        actions: [
-          IconButton(
-            tooltip: MaterialLocalizations.of(
-              context,
-            ).refreshIndicatorSemanticLabel,
-            icon: const Icon(Icons.refresh),
-            onPressed: _refreshController.refresh,
-          ),
-          IconButton(
-            tooltip: L10n.of(context).home_feed_accounts,
-            icon: const Icon(Icons.manage_accounts_outlined),
-            onPressed: () =>
-                showHomeAccountFilterSheet(context, onChanged: _refresh),
-          ),
-        ],
-      ),
-      body: PrimaryScrollController(
-        controller: widget.scrollController,
-        child: PluginEmbedded(
-          child: ScopedBuilder<HomeSelectionStore<int>, int>(
-            store: _revision,
-            onState: (_, revision) =>
-                XTimelineView(feed: _feed, revision: revision),
+  Widget build(BuildContext context) => DesktopRefreshKeys(
+    onRefresh: _refreshController.refresh,
+    child: Provider<FeedRefreshController>.value(
+      value: _refreshController,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(L10n.of(context).source_x),
+          actions: [
+            IconButton(
+              tooltip: MaterialLocalizations.of(
+                context,
+              ).refreshIndicatorSemanticLabel,
+              icon: const Icon(Icons.refresh),
+              onPressed: _refreshController.refresh,
+            ),
+            IconButton(
+              tooltip: L10n.of(context).home_feed_accounts,
+              icon: const Icon(Icons.manage_accounts_outlined),
+              onPressed: () =>
+                  showHomeAccountFilterSheet(context, onChanged: _refresh),
+            ),
+          ],
+        ),
+        body: PrimaryScrollController(
+          controller: widget.scrollController,
+          child: PluginEmbedded(
+            child: ScopedBuilder<HomeSelectionStore<int>, int>(
+              store: _revision,
+              onState: (_, revision) =>
+                  XTimelineView(feed: _feed, revision: revision),
+            ),
           ),
         ),
       ),

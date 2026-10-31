@@ -103,8 +103,8 @@ class _SuggestionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = booruTagColor(suggestion.category, theme.colorScheme);
-    final name = suggestion.name;
-    final matched = name.toLowerCase().startsWith(prefix) ? prefix.length : 0;
+    final muted = theme.colorScheme.onSurfaceVariant;
+    final alias = suggestion.alias;
     final count = suggestion.postCount;
     return InkWell(
       onTap: () => onTap(suggestion),
@@ -119,11 +119,18 @@ class _SuggestionTile extends StatelessWidget {
                   TextSpan(
                     style: theme.textTheme.bodyLarge?.copyWith(color: color),
                     children: [
-                      TextSpan(
-                        text: name.substring(0, matched),
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      TextSpan(text: name.substring(matched)),
+                      if (alias != null) ...[
+                        _matched(alias, style: TextStyle(color: muted)),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Icon(Icons.arrow_right_alt, size: 18, color: muted),
+                          ),
+                        ),
+                        TextSpan(text: suggestion.name),
+                      ] else
+                        _matched(suggestion.name),
                     ],
                   ),
                 ),
@@ -141,6 +148,24 @@ class _SuggestionTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// [text] with the word that starts with what is typed in bold.
+  TextSpan _matched(String text, {TextStyle? style}) {
+    final start = booruMatchStart(text, prefix);
+    if (start == null) return TextSpan(text: text, style: style);
+    final end = start + prefix.length;
+    return TextSpan(
+      style: style,
+      children: [
+        TextSpan(text: text.substring(0, start)),
+        TextSpan(
+          text: text.substring(start, end),
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        TextSpan(text: text.substring(end)),
+      ],
     );
   }
 }

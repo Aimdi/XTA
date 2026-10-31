@@ -23,6 +23,9 @@ enum PluginCategory {
 
   /// Photos and media destinations (Immich).
   media,
+
+  /// Sites added as web sources, from the published list or by link.
+  sites,
 }
 
 extension PluginCategoryL10n on PluginCategory {
@@ -36,6 +39,7 @@ extension PluginCategoryL10n on PluginCategory {
       PluginCategory.markets => l10n.plugin_category_markets,
       PluginCategory.bookmarks => l10n.plugin_category_bookmarks,
       PluginCategory.media => l10n.plugin_category_media,
+      PluginCategory.sites => l10n.plugin_category_sites,
     };
   }
 }

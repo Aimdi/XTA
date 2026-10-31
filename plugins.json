@@ -3,6 +3,7 @@
   "plugins": [
     { "id": "substack" },
     { "id": "rss" },
+    { "id": "websources" },
     { "id": "reddit" },
     { "id": "hackernews" },
     { "id": "threads" },

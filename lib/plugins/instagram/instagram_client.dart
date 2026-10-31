@@ -10,6 +10,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/instagram/instagram_discovery.dart';
 import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_parse.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 
 enum InstagramErrorKind {
@@ -31,13 +32,11 @@ class InstagramException implements Exception {
   String toString() => 'InstagramException{$kind: $message}';
 }
 
-const instagramUserAgent =
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-    '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+String get instagramUserAgent => PluginRepairs.instagramUserAgent.value;
 
 const instagramWebOrigin = 'https://www.instagram.com';
 const instagramApiOrigin = 'https://i.instagram.com';
-const instagramWebAppId = '936619743392459';
+String get instagramWebAppId => PluginRepairs.instagramAppId.value;
 
 final _setCookieSplit = RegExp(r',(?=[^;]+=)');
 

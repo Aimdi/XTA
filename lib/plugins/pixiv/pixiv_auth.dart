@@ -5,14 +5,15 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/utils/json.dart';
 
 /// Browser OAuth (PKCE) for Pixiv — same flow community clients like Pixez use.
 ///
 /// Read-only: only authorization_code and refresh_token grants; no write scopes.
 class PixivAuth {
-  static const clientId = 'MOBrBDS8blbauoSck0ZfDbtuzpyT';
-  static const clientSecret = 'lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj';
+  static String get clientId => PluginRepairs.pixivClientId.value;
+  static String get clientSecret => PluginRepairs.pixivClientSecret.value;
   static const authTokenUrl = 'https://oauth.secure.pixiv.net/auth/token';
   static const loginUrl = 'https://app-api.pixiv.net/web/v1/login';
   static const redirectUri = 'https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback';
@@ -67,10 +68,10 @@ class PixivAuth {
           .post(
             Uri.parse(authTokenUrl),
             headers: {
-              'User-Agent': 'PixivAndroidApp/5.0.234 (Android 11; Pixel 5)',
+              'User-Agent': PluginRepairs.pixivUserAgent.value,
               'App-OS': 'android',
               'App-OS-Version': '11',
-              'App-Version': '5.0.234',
+              'App-Version': PluginRepairs.pixivAppVersion.value,
               'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: {

@@ -93,6 +93,10 @@ class DiagnosticsReport {
   final List<EndpointDiagnostics> endpoints;
   final bool registryEnabled;
   final DateTime? registryFetchedAt;
+
+  /// The networks' published repairs in force, and when the file was read.
+  final int repairs;
+  final DateTime? repairsReadAt;
   final DateTime generatedAt;
   final List<String> operations;
   final Object? xSetupFailure;
@@ -104,6 +108,8 @@ class DiagnosticsReport {
     required this.endpoints,
     required this.registryEnabled,
     required this.registryFetchedAt,
+    this.repairs = 0,
+    this.repairsReadAt,
     required this.generatedAt,
     this.operations = const [],
     this.xSetupFailure,
@@ -154,6 +160,7 @@ class DiagnosticsReport {
         'last checked ${registryFetchedAt?.toIso8601String() ?? 'never'}, '
         '$overriddenCount override(s)',
       )
+      ..add('plugin repairs: $repairs in force, last read ${repairsReadAt?.toIso8601String() ?? 'never'}')
       ..add('')
       ..add('endpoints:');
 

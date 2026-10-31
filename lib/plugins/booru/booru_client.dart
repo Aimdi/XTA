@@ -16,6 +16,7 @@ import 'package:xta/plugins/booru/booru_parse.dart';
 import 'package:xta/plugins/booru/booru_popular.dart';
 import 'package:xta/plugins/booru/booru_query.dart';
 import 'package:xta/plugins/booru/booru_request_gate.dart';
+import 'package:xta/plugins/booru/booru_tag_limit.dart';
 
 enum BooruErrorKind {
   notConfigured,
@@ -39,6 +40,10 @@ enum BooruErrorKind {
   /// A 422: the search has more tags than the host allows at once
   /// (Danbooru: two for guests and Members).
   tagLimit,
+
+  /// A 500 saying the host's database gave up on the search: too many posts
+  /// to sort (Danbooru's `order:score` on a big tag).
+  timedOut,
   notFound,
   badResponse,
 }
@@ -47,8 +52,12 @@ class BooruException implements Exception {
   final BooruErrorKind kind;
   final String message;
 
+  /// With [BooruErrorKind.tagLimit]: how many tags the host said one search
+  /// may have, when it said.
+  final int? allowedTags;
+
   /// [message] often names the request URL; its credentials are masked.
-  BooruException(this.kind, String message)
+  BooruException(this.kind, String message, {this.allowedTags})
     : message = redactBooruCredentials(message);
 
   @override
@@ -81,6 +90,15 @@ class BooruClient {
   /// One per host: a burst to one site (Following's fan-out, a post's
   /// lookups) waits its turn without holding up another.
   final _gates = <String, BooruRequestGate>{};
+
+  /// How many tags one search may have, per site and account, once the
+  /// host has said; kept while the app runs.
+  final _tagLimits = <String, int>{};
+
+  /// How each search past a limit was shared out, so that its pages follow
+  /// on from one another.
+  final _splits = <String, BooruTagSplit>{};
+  static const _keptSplits = 200;
 
   static const _timeout = Duration(seconds: 20);
   static const _userAgent =
@@ -151,18 +169,110 @@ class BooruClient {
     }
 
     final from = site ?? this.site;
-    final effectiveTags = _withRatingTag(tags, from);
-    final uri = _postsUri(from, tags: effectiveTags, page: page, limit: limit);
-    final Object? raw;
+    final ({Object? raw, List<String> onDevice}) answer;
     try {
-      raw = await fetchJson(uri);
+      answer = await _postsFor(from, tags, page: page, limit: limit);
     } on BooruException catch (error) {
       if (error.kind != BooruErrorKind.tooDeep) rethrow;
       return BooruPostPage(posts: const [], page: page, hasMore: false);
     }
-    final parsed = parseBooruPosts(raw, engine: from.engine, host: from.host);
-    return _page(parsed, page: page, hasMore: parsed.length >= limit);
+    final parsed = parseBooruPosts(
+      answer.raw,
+      engine: from.engine,
+      host: from.host,
+    );
+    final onDevice = answer.onDevice;
+    return _page(
+      onDevice.isEmpty
+          ? parsed
+          : [
+              for (final post in parsed)
+                if (booruPostMatches(post, onDevice)) post,
+            ],
+      page: page,
+      hasMore: parsed.length >= limit,
+    );
   }
+
+  /// The host's answer for [tags], and the tags left for the device to
+  /// check on it. Until a site says how many tags it takes, a search goes
+  /// out whole; after that, one with more is shared out
+  /// ([splitBooruQuery]).
+  Future<({Object? raw, List<String> onDevice})> _postsFor(
+    BooruSite site,
+    List<String> tags, {
+    required int page,
+    required int limit,
+  }) async {
+    final account = _accountOf(site);
+    final known = _tagLimits[account];
+    final split = await _splitFor(site, tags, known);
+    try {
+      final raw = await fetchJson(
+        _postsUri(
+          site,
+          tags: _withRatingTag(split.host, site),
+          page: page,
+          limit: limit,
+        ),
+      );
+      return (raw: raw, onDevice: split.device);
+    } on BooruException catch (error) {
+      final allowed = error.allowedTags;
+      if (allowed == null || (known != null && known <= allowed)) rethrow;
+      _tagLimits[account] = allowed;
+      return _postsFor(site, tags, page: page, limit: limit);
+    }
+  }
+
+  /// How [tags] are shared out on [site] under [limit]: whole while the
+  /// limit is not known or they fit. Decided once per search, from how
+  /// many posts the host has for each tag.
+  Future<BooruTagSplit> _splitFor(
+    BooruSite site,
+    List<String> tags,
+    int? limit,
+  ) async {
+    if (limit == null || booruCountedTokens(tags) <= limit) {
+      return (host: tags, device: const <String>[]);
+    }
+    final key = '${_accountOf(site)}\n$limit\n${tags.join(' ')}';
+    final kept = _splits[key];
+    if (kept != null) return kept;
+    final uses = await _tagUses(site, booruPlainTags(tags));
+    final split = splitBooruQuery(tags, limit: limit, uses: uses);
+    if (split == null) {
+      throw BooruException(
+        BooruErrorKind.tagLimit,
+        '${site.host}: more counted metatags than $limit',
+        allowedTags: limit,
+      );
+    }
+    if (_splits.length >= _keptSplits) _splits.clear();
+    return _splits[key] = split;
+  }
+
+  /// How many posts [site] has for each of [tags], by lower-cased name;
+  /// none when it cannot say.
+  Future<Map<String, int>> _tagUses(BooruSite site, List<String> tags) async {
+    final uri = booruTagListUri(site, tags);
+    if (uri == null) return const {};
+    try {
+      final rows = parseBooruTagSuggestions(
+        await fetchTags(uri),
+        engine: site.engine,
+      );
+      return {
+        for (final row in rows) row.name.toLowerCase(): row.postCount ?? 0,
+      };
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  /// Limits differ by account: a site's guests and Members take two tags,
+  /// its Gold accounts more.
+  String _accountOf(BooruSite site) => '${site.host}\n${site.login}';
 
   /// Pagination follows the raw API page: the file, rating and mute filters
   /// must not make an empty filtered page look like the end of the feed.
@@ -349,6 +459,8 @@ class BooruClient {
     }
   }
 
+  /// Tags for what is being typed: the site's own autocomplete where it
+  /// keeps one, else the tags whose names start with it.
   Future<List<BooruTagSuggestion>> suggestTags(
     String prefix, {
     int limit = 12,
@@ -356,11 +468,28 @@ class BooruClient {
     final query = prefix.trim();
     if (query.isEmpty || !isConfigured) return const [];
 
+    final completed = await _autocomplete(query, limit: limit);
+    if (completed != null) return completed;
     final uri = _tagsUri(query: query, limit: limit);
     try {
       return parseBooruTagSuggestions(await fetchTags(uri), engine: engine);
     } catch (_) {
       return const [];
+    }
+  }
+
+  /// The site's autocomplete for [query]: null where it keeps none or did
+  /// not answer with rows, none when it could not be reached.
+  Future<List<BooruTagSuggestion>?> _autocomplete(
+    String query, {
+    required int limit,
+  }) async {
+    final uri = booruAutocompleteUri(site, query, limit: limit);
+    if (uri == null) return null;
+    try {
+      return parseBooruAutocomplete(await fetchJson(uri));
+    } on BooruException catch (error) {
+      return error.kind == BooruErrorKind.network ? const [] : null;
     }
   }
 
@@ -533,17 +662,23 @@ class BooruClient {
 
   /// What a status says went wrong, when it says something more specific than
   /// an unexpected answer. A 403 blames the credentials only if some went out.
-  BooruErrorKind? _statusFailure(int status, Uri uri) => switch (status) {
-    401 => BooruErrorKind.unauthorized,
-    403 when _sentCredentials(uri) => BooruErrorKind.unauthorized,
-    403 => BooruErrorKind.forbidden,
-    404 => BooruErrorKind.notFound,
-    410 => BooruErrorKind.tooDeep,
-    422 => BooruErrorKind.tagLimit,
-    429 => BooruErrorKind.rateLimited,
-    503 => BooruErrorKind.unavailable,
-    _ => null,
-  };
+  BooruErrorKind? _statusFailure(http.Response response, Uri uri) =>
+      switch (response.statusCode) {
+        401 => BooruErrorKind.unauthorized,
+        403 when _sentCredentials(uri) => BooruErrorKind.unauthorized,
+        403 => BooruErrorKind.forbidden,
+        404 => BooruErrorKind.notFound,
+        410 => BooruErrorKind.tooDeep,
+        422 => BooruErrorKind.tagLimit,
+        429 => BooruErrorKind.rateLimited,
+        500 when _timedOut(response.body) => BooruErrorKind.timedOut,
+        503 => BooruErrorKind.unavailable,
+        _ => null,
+      };
+
+  /// Danbooru's answer when its database gave up on a query.
+  static bool _timedOut(String body) =>
+      body.contains('QueryCanceled') || body.contains('timed out');
 
   /// What a successful answer in plain text says went wrong: Rule34 asks a
   /// guest for credentials that way, and gelbooru.com stops paging.
@@ -564,9 +699,15 @@ class BooruClient {
       uri.queryParameters.keys.any(booruCredentialParameters.contains);
 
   Object? _decodeJson(http.Response response, Uri uri) {
-    final failure = _statusFailure(response.statusCode, uri);
+    final failure = _statusFailure(response, uri);
     if (failure != null) {
-      throw BooruException(failure, '$uri: ${response.statusCode}');
+      throw BooruException(
+        failure,
+        '$uri: ${response.statusCode}',
+        allowedTags: failure == BooruErrorKind.tagLimit
+            ? booruTagLimitIn(response.body)
+            : null,
+      );
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw BooruException(

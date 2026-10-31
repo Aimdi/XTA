@@ -2,8 +2,10 @@ name: Linux desktop release
 
 # Builds the Linux desktop bundle for a release tag and attaches it beside the
 # APKs: the portable tarball, the Arch package and the PKGBUILD that builds
-# it. The two APK publishers call this once their release exists; run it by
-# hand to (re)attach the desktop build of a tag. See docs/desktop.md.
+# it, and the Debian/Ubuntu packages (one built on Ubuntu 22.04 for the
+# systems with libmpv1). The two APK publishers call this once their release
+# exists; run it by hand to (re)attach the desktop build of a tag. See
+# docs/desktop.md.
 on:
   workflow_call:
     inputs:
@@ -21,8 +23,22 @@ permissions:
   contents: write
 
 jobs:
-  linux-desktop:
-    runs-on: ubuntu-24.04
+  build:
+    name: Build (${{ matrix.system }})
+    runs-on: ${{ matrix.runner }}
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    strategy:
+      matrix:
+        include:
+          - system: Ubuntu 24.04 and Arch
+            runner: ubuntu-24.04
+            flavour: ''
+          # Ubuntu 22.04 and the systems built on it (Mint 21, Pop!_OS 22.04)
+          # ship libmpv1, which the main build cannot start with.
+          - system: Ubuntu 22.04
+            runner: ubuntu-22.04
+            flavour: ubuntu22.04
     steps:
       - name: Clone the repository
         uses: actions/checkout@v4
@@ -41,17 +57,45 @@ jobs:
         uses: ./.github/actions/build-linux
         with:
           release-tag: ${{ steps.tag.outputs.tag }}
+          flavour: ${{ matrix.flavour }}
+
+      - name: Collect what the release carries
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          FLAVOUR: ${{ matrix.flavour }}
+        run: |
+          mkdir -p build/linux-assets
+          cp build/linux-release/xta_*.deb build/linux-assets/
+          if [ -z "$FLAVOUR" ]; then
+            cp build/linux-release/xta-*-linux-x86_64.tar.gz build/linux-release/xta-bin-*.pkg.tar.zst \
+              build/linux-release/PKGBUILD build/linux-assets/
+            # flutter symbolize -d app.linux-x64.symbols turns a desktop trace back into names.
+            (cd build/linux-symbols && zip -qr "../linux-assets/xta-$RELEASE_TAG-linux-debug-symbols.zip" .)
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.runner }}
+          path: build/linux-assets/
+
+  attach:
+    name: Attach to the release
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: linux-assets
+          merge-multiple: true
 
       - name: Attach to the release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
         run: |
-          # flutter symbolize -d app.linux-x64.symbols turns a desktop trace back into names.
-          (cd build/linux-symbols && zip -qr "../linux-release/xta-$RELEASE_TAG-linux-debug-symbols.zip" .)
-          cd build/linux-release
-          sha256sum xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD > SHA256SUMS-linux
+          cd linux-assets
+          sha256sum xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD xta_*.deb > SHA256SUMS-linux
           cat SHA256SUMS-linux
           gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
-            xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD SHA256SUMS-linux \
+            xta-*-linux-x86_64.tar.gz xta-bin-*.pkg.tar.zst PKGBUILD xta_*.deb SHA256SUMS-linux \
             "xta-$RELEASE_TAG-linux-debug-symbols.zip"

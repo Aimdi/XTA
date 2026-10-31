@@ -11,6 +11,9 @@ import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/constants.dart';
 
+import 'support/published_registries.dart';
+import 'support/x_query_id_record.dart';
+
 /// Live canary over every GraphQL endpoint the app calls. Opt in with:
 ///   flutter test test/live/endpoint_canary_test.dart --dart-define=RUN_LIVE=true
 ///
@@ -22,6 +25,11 @@ import 'package:xta/constants.dart';
 /// A guest can only tell for the operations X lets guests read. The others
 /// answer a guest 404 whether their id is live or not (measured 2026-10-22),
 /// so they are listed but not judged.
+///
+/// It asks for every id an install can have in force: the shipped one, and
+/// the one each published `endpoints.json` puts over it (see
+/// `support/published_registries.dart`), plus this checkout's file, which is
+/// published once merged.
 ///
 /// Requests are signed (`x-client-transaction-id`) as the app signs them, and
 /// carry the bearer the guest token was issued for: X refuses a guest token
@@ -44,18 +52,22 @@ void main() {
   const madeUpId = 'AAAAAAAAAAAAAAAAAAAAAA';
 
   test(
-    'no X endpoint has had its query id rotated',
+    'no query id an install uses has been rotated',
     () async {
-      // Check what installs actually use: the published registry on top of the
-      // shipped ids. Without this the canary would keep flagging an endpoint
-      // that endpoints.json has already repaired.
-      final registry = File('endpoints.json');
-      if (registry.existsSync()) {
-        XEndpoints.applyOverrides(parseEndpointRegistry(registry.readAsStringSync()));
-      }
-
       final log = Logger('endpoint_canary');
       final client = http.Client();
+
+      final checkout = File('endpoints.json');
+      final published = await fetchPublishedRegistries(client);
+      final readers = readersOfIds(XEndpoints.shipped, {
+        'shipped': const {},
+        'this checkout': checkout.existsSync() ? parseEndpointRegistry(checkout.readAsStringSync()) : const {},
+        for (final MapEntry(key: who, value: ids) in published.entries) who: ?ids,
+      });
+      final unread = [
+        for (final MapEntry(key: who, value: ids) in published.entries)
+          if (ids == null) '${publishedRegistryUrls[who]} ($who)',
+      ];
 
       final String guestToken;
       try {
@@ -89,10 +101,17 @@ void main() {
 
       final rotated = <String>[];
       final unreachable = <String>[];
-      final report = [for (final MapEntry(:key, :value) in controls.entries) 'made-up id on $key: $value'];
+      final report = [
+        for (final MapEntry(:key, :value) in controls.entries) 'made-up id on $key: $value',
+        if (unread.isNotEmpty) 'not readable, so not judged: ${unread.join(', ')}',
+      ];
+      final probes = [
+        for (final endpoint in XEndpoints.all)
+          for (final MapEntry(key: id, value: who) in readers[endpoint.name]!.entries) (endpoint, id, who),
+      ];
 
-      for (final endpoint in XEndpoints.all) {
-        final uri = XEndpoints.uri(endpoint.name, params);
+      for (final (endpoint, id, who) in probes) {
+        final uri = Uri.https(endpoint.host, endpoint.pathFor(id), params);
         final judged = guestReadable.contains(endpoint.name);
 
         String verdict;
@@ -108,7 +127,7 @@ void main() {
             _ => 'alive',
           };
           if (code == 404 && judged) {
-            rotated.add(endpoint.name);
+            rotated.add('${endpoint.name} $id (${who.join(', ')})');
           }
         } catch (e) {
           // A blocked or flaky runner must not be reported as X breaking its
@@ -120,10 +139,10 @@ void main() {
 
         report.add(
           '${endpoint.name.padRight(22)} ${endpoint.host.padRight(12)} '
-          '${status.padLeft(3)}  $verdict  ${XEndpoints.queryId(endpoint.name)}',
+          '${status.padLeft(3)}  $verdict  $id  (${who.join(', ')})',
         );
 
-        // X rate limits per endpoint, but a burst of 13 requests from one guest
+        // X rate limits per endpoint, but a burst of requests from one guest
         // token still trips its abuse heuristics.
         await Future.delayed(const Duration(seconds: 2));
       }
@@ -146,18 +165,19 @@ void main() {
         isEmpty,
         reason:
             'X no longer knows these query ids, or no longer lets guests read them. Re-capture them from the '
-            'web client and publish the corrected ids in endpoints.json — see lib/client/endpoint_overrides.dart.',
+            'web client and publish the corrected ids in endpoints.json on the default branch and on main — see '
+            'lib/client/endpoint_overrides.dart.',
       );
 
       expect(
         unreachable.length,
-        lessThan(XEndpoints.all.length),
+        lessThan(probes.length),
         reason:
             'Every endpoint was unreachable, so this run proves nothing about X. Check the runner\'s '
             'network before reading anything into it.',
       );
     },
-    timeout: const Timeout(Duration(minutes: 3)),
+    timeout: const Timeout(Duration(minutes: 5)),
     skip: enabled ? false : 'Pass --dart-define=RUN_LIVE=true to hit live x.com',
   );
 }

@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Packages a `flutter build linux --release` bundle for a release:
-#   <out>/xta-<tag>-linux-x86_64.tar.gz  the bundle, its launcher and icon
+#   <out>/xta-<tag>-linux-x86_64.tar.gz  the bundle, install.sh, and under
+#                                        share/ its menu entry, icons and
+#                                        AppStream data, laid out as in /usr/share
 #   <out>/PKGBUILD                       the Arch package of that tarball
 # With --makepkg (on Arch, or in an archlinux container) it also builds
 #   <out>/xta-bin-<pkgver>-1-x86_64.pkg.tar.zst
+# scripts/package_deb.sh makes the Debian/Ubuntu package from the tarball.
 #
 # Usage: scripts/package_linux.sh <bundle-dir> <tag> <out-dir> [--makepkg]
 set -euo pipefail
@@ -30,13 +33,22 @@ stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT
 mkdir -p "$stage/$name" "$out"
 cp -a "$bundle/xta" "$bundle/lib" "$bundle/data" "$stage/$name/"
-install -m644 "$root/packaging/linux/com.aimdi.xta.desktop" "$stage/$name/"
 install -m644 "$root/LICENSE" "$stage/$name/"
-python3 - "$root/assets/icon.png" "$stage/$name/com.aimdi.xta.png" <<'PY'
+install -m755 "$root/packaging/linux/install.sh" "$stage/$name/"
+share="$stage/$name/share"
+install -Dm644 "$root/packaging/linux/com.aimdi.xta.desktop" "$share/applications/com.aimdi.xta.desktop"
+install -Dm644 "$root/packaging/linux/com.aimdi.xta.metainfo.xml" "$share/metainfo/com.aimdi.xta.metainfo.xml"
+python3 - "$root/assets/icon.png" "$share/icons/hicolor" <<'PY'
 import sys
+from pathlib import Path
 from PIL import Image
-Image.open(sys.argv[1]).convert("RGBA").resize((512, 512), Image.LANCZOS).save(sys.argv[2], optimize=True)
+icon = Image.open(sys.argv[1]).convert("RGBA")
+for size in (32, 48, 64, 128, 256, 512):
+    target = Path(sys.argv[2]) / f"{size}x{size}" / "apps" / "com.aimdi.xta.png"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    icon.resize((size, size), Image.LANCZOS).save(target, optimize=True)
 PY
+chmod -R u=rwX,go=rX "$share"
 
 # Same bytes for the same bundle: fixed order, owners and times.
 epoch=${SOURCE_DATE_EPOCH:-$(git -C "$root" log -1 --format=%ct)}

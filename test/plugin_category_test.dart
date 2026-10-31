@@ -20,6 +20,7 @@ void main() {
       PluginCategory.markets,
       PluginCategory.bookmarks,
       PluginCategory.media,
+      PluginCategory.sites,
     ]);
     expect(
       groups[0].plugins.map((p) => p.id),
@@ -47,6 +48,7 @@ void main() {
       PluginCategory.markets,
       PluginCategory.bookmarks,
       PluginCategory.media,
+      PluginCategory.sites,
     ]);
     expect(
       sections.availableByCategory

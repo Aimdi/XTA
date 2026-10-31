@@ -71,6 +71,25 @@ class _Client extends BooruClient {
   }
 }
 
+/// A host that finds tags through other names, as Danbooru's autocomplete does.
+class _AliasClient extends _Client {
+  _AliasClient(super.prefs);
+
+  @override
+  Future<List<BooruTagSuggestion>> suggestTags(String prefix, {int limit = 12}) async {
+    prefixes.add(prefix);
+    return const [
+      BooruTagSuggestion(
+        name: 'kantai_collection',
+        postCount: 548021,
+        category: BooruTagCategory.copyright,
+        alias: 'kancolle',
+      ),
+      BooruTagSuggestion(name: 'admiral_(kancolle)', postCount: 39123, category: BooruTagCategory.character),
+    ];
+  }
+}
+
 /// A host whose first pages the rating limit or blacklist emptied: only page 6 has a post left to show.
 class _HiddenClient extends _Client {
   _HiddenClient(super.prefs);
@@ -322,6 +341,21 @@ void main() {
 
       await _submit(tester);
       expect(harness.client.queries.last, 'cat_ears blue_archive');
+    });
+
+    testWidgets('a tag found through another name shows that name first, and picking it adds the tag', (tester) async {
+      final harness = await _open(tester, client: _AliasClient.new);
+      await _type(tester, 'kancolle');
+      expect(find.byIcon(Icons.arrow_right_alt), findsOneWidget, reason: 'only the row found through an alias');
+      expect(find.textContaining('kantai_collection'), findsOneWidget);
+
+      await tester.tap(find.textContaining('kantai_collection'));
+      await _settle(tester);
+      expect(_chip('kantai_collection'), findsOneWidget);
+      expect(tester.widget<TextField>(_field).controller!.text, isEmpty);
+
+      await _submit(tester);
+      expect(harness.client.queries.last, 'kantai_collection');
     });
 
     testWidgets('a minus typed before a tag survives the suggestion', (tester) async {

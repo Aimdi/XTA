@@ -21,6 +21,9 @@ jobs:
           - service: X
             key: x
             tests: test/live/guest_api_smoke_test.dart test/live/x_bootstrap_smoke_test.dart test/live/endpoint_canary_test.dart
+          - service: X query ids
+            key: x-ids
+            tests: test/live/x_query_ids_test.dart
           - service: Instagram
             key: instagram
             tests: test/live/instagram_search_smoke_test.dart
@@ -32,7 +35,10 @@ jobs:
             tests: test/live/substack_custom_domain_smoke_test.dart
           - service: Other sources
             key: sources
-            tests: test/live/sources_smoke_test.dart
+            tests: test/live/sources_smoke_test.dart test/live/published_repairs_test.dart
+          - service: Web sources
+            key: websources
+            tests: test/live/web_sources_smoke_test.dart
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -49,6 +55,9 @@ jobs:
         id: probe
         env:
           TEST_FILES: ${{ matrix.tests }}
+          # The query id report reads a public repository's history through
+          # GitHub's API, which allows a token far more requests.
+          GITHUB_TOKEN: ${{ matrix.key == 'x-ids' && github.token || '' }}
         run: |
           read -ra files <<< "$TEST_FILES"
           flutter test "${files[@]}" --dart-define=RUN_LIVE=true --reporter json > canary.jsonl 2>&1

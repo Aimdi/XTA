@@ -19,6 +19,7 @@ import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
+import 'package:xta/ui/desktop_pager.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
@@ -861,36 +862,40 @@ class _TweetMediaViewState extends State<TweetMediaView> {
               ),
           ],
         ),
-        body: ExtendedImageGesturePageView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: widget.entries.length,
-          itemBuilder: (BuildContext context, int index) {
-            final entry = widget.entries[index];
-
-            // mediaIndex is the index *within the entry's tweet* (it keys the
-            // pooled video controllers), not the page index.
-            final base = widget.heroBase;
-            return _TweetMediaThing(
-              item: entry.media,
-              username: entry.username,
-              size: size,
-              pullToClose: true,
-              inPageView: true,
-              tweetId: entry.tweetId,
-              mediaIndex: entry.mediaIndex,
-              heroTag: base != null && entry.media.type == 'photo'
-                  ? tweetPhotoHeroTag(base, entry.mediaIndex)
-                  : null,
-            );
-          },
+        body: DesktopPager(
           controller: _pageController,
-          onPageChanged: (index) {
-            setState(() => _currentIndex = index);
-            if (widget.onNearEnd != null &&
-                index >= widget.entries.length - _fetchAhead) {
-              widget.onNearEnd!();
-            }
-          },
+          count: widget.entries.length,
+          child: ExtendedImageGesturePageView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: widget.entries.length,
+            itemBuilder: (BuildContext context, int index) {
+              final entry = widget.entries[index];
+  
+              // mediaIndex is the index *within the entry's tweet* (it keys the
+              // pooled video controllers), not the page index.
+              final base = widget.heroBase;
+              return _TweetMediaThing(
+                item: entry.media,
+                username: entry.username,
+                size: size,
+                pullToClose: true,
+                inPageView: true,
+                tweetId: entry.tweetId,
+                mediaIndex: entry.mediaIndex,
+                heroTag: base != null && entry.media.type == 'photo'
+                    ? tweetPhotoHeroTag(base, entry.mediaIndex)
+                    : null,
+              );
+            },
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() => _currentIndex = index);
+              if (widget.onNearEnd != null &&
+                  index >= widget.entries.length - _fetchAhead) {
+                widget.onNearEnd!();
+              }
+            },
+          ),
         ),
       ),
     );

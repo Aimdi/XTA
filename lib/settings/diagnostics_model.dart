@@ -11,6 +11,7 @@ import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/plugins/plugin_repairs.dart';
 import 'package:xta/settings/diagnostics_report.dart';
 import 'package:xta/settings/main_thread_stalls.dart';
 
@@ -41,6 +42,8 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
         endpoints: XEndpoints.all.map(EndpointDiagnostics.of).toList(),
         registryEnabled: prefs.get<bool>(optionEndpointRegistryEnabled) != false,
         registryFetchedAt: DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? ''),
+        repairs: PluginRepairs.applied.length,
+        repairsReadAt: DateTime.tryParse(prefs.get<String>(optionPluginRepairsReadAt) ?? ''),
         generatedAt: now,
         operations: ReadActivityLog.shared.snapshot(),
         xSetupFailure: TwitterHeaders.lastInitializationFailure,

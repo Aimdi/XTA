@@ -90,6 +90,9 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
+import 'package:xta/plugins/websources/web_source_client.dart';
+import 'package:xta/plugins/websources/web_source_follows_store.dart';
+import 'package:xta/plugins/websources/web_sources_store.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
@@ -158,9 +161,12 @@ import 'package:xta/speech/speech_bar.dart';
 import 'package:xta/speech/speech_store.dart';
 import 'package:xta/speech/voice_download_store.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/ui/desktop_navigation.dart';
 import 'package:xta/utils/desktop.dart';
 import 'package:xta/utils/image_disk_cache.dart';
 import 'package:xta/utils/mock_x.dart';
+import 'package:xta/utils/published_documents.dart';
+import 'package:xta/plugins/plugin_repairs_registry.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -599,6 +605,12 @@ Future<void> main() async {
       optionPluginRssEnabled: false,
       optionPluginRssShowTab: true,
       optionPluginRssInHomeFeed: false,
+      optionPluginWebSourcesEnabled: false,
+      optionPluginWebSourcesShowTab: true,
+      optionPluginWebSourcesInstalled: '[]',
+      optionPluginWebSourcesFollows: '[]',
+      optionPluginWebSourcesInHomeFeed: false,
+      optionPluginWebSourcesCheckedAt: '',
       optionPluginRssFeeds: '[]',
       optionPluginRssReadIds: '[]',
       optionPluginRssTags: '{}',
@@ -791,6 +803,7 @@ Future<void> main() async {
   await migrateDownloadTypeDefault(prefService);
   await migrateFeedStripPins(prefService, firstLaunch: firstLaunch);
   await migrateBooruCredentialsHost(prefService);
+  await migratePublishedDocumentUrls(prefService);
 
   CrashReporter.install(prefService);
   // A restored backup changes the setting too, so the queue follows the setting itself.
@@ -805,6 +818,10 @@ Future<void> main() async {
   final endpointRegistry = EndpointRegistry(prefService);
   endpointRegistry.applyCached();
   unawaited(endpointRegistry.refresh());
+  // The other networks' published repairs, the same way.
+  final pluginRepairs = PluginRepairsRegistry(prefService);
+  pluginRepairs.applyKept();
+  unawaited(pluginRepairs.refresh());
 
   // Deriving the transaction key costs two round trips to x.com and it is
   // triggered lazily by the first API call, so it used to sit in front of the
@@ -954,6 +971,14 @@ Future<void> main() async {
     final rssRead = RssReadStore(prefService);
     final rssTags = RssTagsStore(prefService);
     final rssTimeline = RssTimelineStore(rssClient, rssFeeds);
+    final webSourceClient = WebSourceClient();
+    final webSources = WebSourcesStore(prefService);
+    final webSourceFollows = WebSourceFollowsStore(prefService);
+    if (prefService.get<bool>(optionPluginWebSourcesEnabled) == true) {
+      // Off the startup path: at most once a day, each installed source's
+      // file is read again for an update.
+      unawaited(webSources.checkForUpdates(webSourceClient));
+    }
     final tiktokClient = TikTokClient(prefService);
     final tiktokFollows = TikTokFollowsStore();
     final tiktokLikes = TikTokLikesStore(prefService);
@@ -1192,6 +1217,9 @@ Future<void> main() async {
                 Provider(create: (_) => rssRead),
                 Provider(create: (_) => rssTags),
                 Provider(create: (_) => rssTimeline),
+                Provider(create: (_) => webSourceClient),
+                Provider(create: (_) => webSources),
+                Provider(create: (_) => webSourceFollows),
                 Provider(create: (_) => tiktokClient),
                 Provider(create: (_) => tiktokFollows),
                 Provider(create: (_) => tiktokLikes),
@@ -1506,8 +1534,12 @@ class _FritterAppState extends State<FritterApp> {
                   // way to stop it has to be reachable from wherever the reader
                   // has gone. Nothing is added while nothing is being read.
                   // Every route shares XtaScaffoldMessenger's timing rules.
-                  return XtaScaffoldMessenger(
-                    child: UndoHost(child: SpeechBarScaffold(child: child ?? Container())),
+                  // On a PC the mouse and keyboard go back too.
+                  return DesktopNavigation(
+                    navigatorKey: _navigatorKey,
+                    child: XtaScaffoldMessenger(
+                      child: UndoHost(child: SpeechBarScaffold(child: child ?? Container())),
+                    ),
                   );
                 },
               ),

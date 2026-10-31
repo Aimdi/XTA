@@ -6,6 +6,7 @@
 #endif
 
 #include "flutter/generated_plugin_registrant.h"
+#include "window_state.h"
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -37,6 +38,16 @@ static void set_window_icon(GtkWindow* window) {
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
   MyApplication* self = MY_APPLICATION(application);
+
+  // Starting XTA again activates the copy already running: its window comes
+  // forward, rather than a second copy opening over the same settings and
+  // database, where the one that saved last would undo the other.
+  GList* windows = gtk_application_get_windows(GTK_APPLICATION(application));
+  if (windows != nullptr) {
+    gtk_window_present(GTK_WINDOW(windows->data));
+    return;
+  }
+
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
 
@@ -67,13 +78,14 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "XTA");
   }
 
-  // XTA's layouts are a reading column, so the window opens tall rather than
-  // wide; the minimum keeps the phone layouts from overflowing.
-  gtk_window_set_default_size(window, 1100, 820);
+  // XTA's layouts are a reading column, so the window first opens tall rather
+  // than wide, and then as the reader last left it; the minimum keeps the
+  // phone layouts from overflowing.
   GdkGeometry geometry = {};
   geometry.min_width = 360;
   geometry.min_height = 560;
   gtk_window_set_geometry_hints(window, nullptr, &geometry, GDK_HINT_MIN_SIZE);
+  window_state_track(window, 1100, 820);
   set_window_icon(window);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
@@ -164,7 +176,9 @@ MyApplication* my_application_new() {
   // the application to be recognized beyond its binary name.
   g_set_prgname(APPLICATION_ID);
 
+  // Unique: a second start hands over to the first (see activate). Without a
+  // session bus GLib runs it as a lone copy, as before.
   return MY_APPLICATION(g_object_new(my_application_get_type(),
-                                     "application-id", APPLICATION_ID, "flags",
-                                     G_APPLICATION_NON_UNIQUE, nullptr));
+                                     "application-id", APPLICATION_ID,
+                                     nullptr));
 }

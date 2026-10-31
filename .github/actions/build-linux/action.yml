@@ -1,14 +1,21 @@
 name: Build the Linux desktop bundle
 description: >-
-  Builds the Linux release bundle and packages it as the release tarball plus
-  its Arch PKGBUILD, in build/linux-release; the Dart symbols go to
-  build/linux-symbols. Shared by the PR check in
-  verify.yml and the release upload in linux-desktop.yml.
+  Builds the Linux release bundle and packages it as the release tarball, its
+  Arch PKGBUILD and package, and a Debian/Ubuntu package, in
+  build/linux-release; the Dart symbols go to build/linux-symbols. Shared by
+  the PR check in verify.yml and the release upload in linux-desktop.yml.
 
 inputs:
   release-tag:
     description: Tag baked into the build and named in the packages
     required: true
+  flavour:
+    description: >-
+      Empty for the main build (Ubuntu 24.04: libmpv2, also packaged for Arch).
+      A name such as ubuntu22.04 for a Debian package built against the
+      runner's own libmpv, named after it; no Arch package then.
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -38,6 +45,7 @@ runs:
       shell: bash
       env:
         RELEASE_TAG: ${{ inputs.release-tag }}
+        FLAVOUR: ${{ inputs.flavour }}
       run: |
         flutter config --no-analytics
         flutter pub get
@@ -45,10 +53,12 @@ runs:
         dart run flutter_iconpicker:generate_packs --packs material
         flutter build linux --release --no-tree-shake-icons --split-debug-info=build/linux-symbols --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG"
         PATH="$PWD/.venv/bin:$PATH" scripts/package_linux.sh build/linux/x64/release/bundle "$RELEASE_TAG" build/linux-release
+        scripts/package_deb.sh "build/linux-release/xta-$RELEASE_TAG-linux-x86_64.tar.gz" "$RELEASE_TAG" build/linux-release "$FLAVOUR"
 
     # makepkg refuses to run as root, and takes the tarball beside the
     # PKGBUILD rather than downloading it, so this also proves the PKGBUILD.
     - name: Build the Arch package
+      if: inputs.flavour == ''
       shell: bash
       run: |
         docker run --rm -v "$PWD/build/linux-release:/out" archlinux:base-devel bash -euc '

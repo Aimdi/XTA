@@ -43,8 +43,20 @@ jobs:
         run: bash scripts/check_skill_sync.sh
 
   linux:
-    name: Linux desktop build
-    runs-on: ubuntu-24.04
+    name: Linux desktop build (${{ matrix.system }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: Ubuntu 24.04 and Arch
+            runner: ubuntu-24.04
+            flavour: ''
+          # Ubuntu 22.04 and the systems built on it (Mint 21, Pop!_OS 22.04)
+          # ship libmpv1, which the main build cannot start with.
+          - system: Ubuntu 22.04
+            runner: ubuntu-22.04
+            flavour: ubuntu22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,6 +67,21 @@ jobs:
         uses: ./.github/actions/build-linux
         with:
           release-tag: verify
+          flavour: ${{ matrix.flavour }}
+
+      # Installs the Debian package on the system it was built for and starts
+      # XTA there: its window must open, it must keep running, and a second
+      # start must hand over to it.
+      - name: Install the package and start XTA
+        run: scripts/smoke_linux_package.sh build/linux-release/xta_*.deb build/linux-smoke
+
+      - name: Keep the screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-smoke-${{ matrix.runner }}
+          path: build/linux-smoke/
+          if-no-files-found: ignore
 
   dart:
     name: Format, analyze, test
