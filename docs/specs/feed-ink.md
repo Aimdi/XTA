@@ -47,13 +47,15 @@ second column beside it.
 - **The text starts right under the author line** (2 dp), as the canvas draws
   it.
 - **The footer** keeps its actions, counts and fit; its first glyph lines up
-  with the text.
+  with the text. The column is 60 dp narrower than the full width, so on a
+  360 dp phone the footer drops the view count, the first thing its fit lets
+  go, where it used to show it; every action keeps its 48 dp target.
 - Repost, pinned, thread and community lines already start at 68 dp; they
   stay.
 - **A self-thread** takes the same geometry: 40 dp avatars on the rail, which
   runs through their centres, and the text at 68 dp. A conversation's replies
   share the rail, so they take it too.
-- **Loading placeholders** take the same geometry.
+- **Loading placeholders** already have this geometry and stay as they are.
 
 Unchanged: the post a conversation was opened on (X's own large layout),
 quoted posts inside a post, community notes, and the Media tab's grid.
@@ -65,13 +67,14 @@ The same two columns as an X post, as the canvas draws it.
 - **The subreddit's picture**, 40 dp, as a rounded square (10 dp corners): a
   community, where people are round.
 - **One author line:** "r/sub" in bold, then "u/author · time" in the
-  secondary colour.
+  secondary colour, the time as short as an X post's ("15 Min.").
 - **The title is the post's text**, 15 px regular as an X post's text, up to
   six lines; the body, flair, NSFW and spoiler follow under it as now.
-- **The picture or video in the column**, with 16 dp corners and the hairline
-  border.
+- **The picture or video in the column**, with 16 dp corners and the same
+  hairline border as an X post's media.
 - **The footer:** upvote and its count, comments and their count, save and
-  open in browser, spread across the column.
+  open in browser, spread across the column. With large text on a narrow
+  phone they take a second row rather than shrink their targets.
 - Tap, long press, the picture's own tap and the vote stay as they are.
 
 ### Where a post came from
@@ -85,8 +88,13 @@ its avatar**, not with a strip and a label:
   in the card's colour around it;
 - a screen reader hears the network's name, as it heard the label.
 
-This covers Reddit, Mastodon, Bluesky, Threads and web sources, the posts that
-have an avatar. Substack, RSS and booru posts have none and keep their strip.
+This covers Reddit, Mastodon, Bluesky and Threads, the posts with an
+author's avatar. Substack, RSS and booru posts have none and keep their
+strip; so do web sources, whose card already names its site and shows the
+site's own mark.
+
+The time on an author line takes what the name leaves, and never less than
+45 % of the line, where an absolute date shortens.
 
 ### The Following bar
 
@@ -127,9 +135,9 @@ colour for the badge ring, the page colour under the bottom bar.
 
 - Mastodon, Bluesky and Threads posts keep their own layout (avatar and
   name above, text across the width); they gain only the avatar badge.
-- The canvas's purple accent: the accent stays the one chosen in settings, and
-  verified badges keep X's colours (blue, gold, grey), which say what kind of
-  account it is.
+- The canvas's purple accent: the accent stays the one chosen in settings.
+  The verified check already wears it, as the canvas draws it; gold and grey
+  still mark organisations and governments.
 - The canvas's Figtree typeface: XTA keeps Inter.
 - The other eight directions.
 
@@ -139,13 +147,13 @@ colour for the badge ring, the page colour under the bottom bar.
 - `lib/tweet/tweet_header.dart`: the one-line author line.
 - `lib/tweet/tweet.dart`: timeline posts and self-threads in the two columns.
 - `lib/tweet/thread_rail.dart`: the rail's geometry.
-- `lib/tweet/tweet_skeleton.dart`: placeholders in the same geometry.
 - `lib/ui/provenance_accent.dart`: the avatar badge; the strip only for posts
   without an avatar.
-- `lib/plugins/reddit/reddit_post_card.dart`, its avatar and media: the Reddit
-  post.
-- The Mastodon, Bluesky, Threads and web source cards and their mixed
-  timelines: the badge instead of the label and strip.
+- `lib/plugins/reddit/reddit_post_card.dart`: the Reddit post;
+  `reddit_media_frame.dart` draws the media hairline `lib/tweet/tweet_chrome.dart`
+  now shares.
+- The Mastodon, Bluesky and Threads cards and their mixed timelines: the
+  badge instead of the label and strip.
 - `lib/home/home_timeline_controls.dart`, `lib/home/_feed.dart`: the bar.
 - `lib/home/home_chrome.dart`: the bottom bar.
 
@@ -160,9 +168,10 @@ colour for the badge ring, the page colour under the bottom bar.
   avatars' centres.
 - A Reddit post: the rounded-square picture, one author line, the title in
   the body style, the media inside the column, the footer's four actions.
-- A mixed timeline: a Reddit, Mastodon, Bluesky and Threads post each carry
-  the badge with the network's name for a screen reader, and no strip; a
-  Substack post keeps its strip.
+- A mixed timeline: a Reddit post carries the badge with the network's name
+  for a screen reader, and no strip, bottom left in a right-to-left language;
+  a Substack post keeps its strip; Mastodon, Bluesky and Threads posts carry
+  their badge too.
 - The Following bar: the filter icon with its count, Feeds, search and the
   person with its dot, in that order, each 48 dp; the menu opens as before;
   German at 390, 360 and 320 dp ×1.3 fits as before.
