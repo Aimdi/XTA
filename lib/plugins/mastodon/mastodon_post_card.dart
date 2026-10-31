@@ -23,6 +23,7 @@ import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/ui/provenance_accent.dart';
 
 /// Avatar size matching X / Reddit cards so Fediverse posts don't look smaller.
 const double kMastodonAvatarSize = 48;
@@ -105,7 +106,14 @@ class MastodonPostCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(onTap: () => _openAuthor(context), child: _avatar(context)),
+                        GestureDetector(
+                          onTap: () => _openAuthor(context),
+                          child: ProvenanceAvatarBadge(
+                            pluginId: pluginIdMastodon,
+                            show: showSourceBadge,
+                            child: _avatar(context),
+                          ),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: GestureDetector(
@@ -217,10 +225,7 @@ class MastodonPostCard extends StatelessWidget {
       style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
     );
     final meta = [if (date != null) createRelativeDate(date), if (post.edited) l10n.plugin_mastodon_edited];
-    final badges = [
-      if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned),
-      if (showSourceBadge) PluginCardBadge(label: l10n.plugin_mastodon_title),
-    ];
+    final badges = [if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned)];
     if (large) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,

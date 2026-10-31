@@ -71,6 +71,7 @@ List<InterleavedItem> redditInterleavedItems(Iterable<RedditPost> posts) => [
   for (final post in posts)
     if (post.createdAt case final date?)
       provenanceInterleavedItem(
+        avatarBadge: true,
         date: date,
         pluginId: pluginIdReddit,
         id: '$pluginIdReddit:${post.id}',

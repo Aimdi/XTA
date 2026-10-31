@@ -82,22 +82,31 @@ class RedditMediaFrame extends StatelessWidget {
     );
 
     final ratio = aspectRatio;
+    final radius = BorderRadius.circular(tweetMediaRadiusOf(context));
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
-      child: ratio != null
-          ? AspectRatio(aspectRatio: ratio, child: painted)
-          : ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: kRedditMediaMinHeight,
-                maxHeight: maxHeight,
+    // The same hairline an X post's media has, drawn over the picture.
+    return DecoratedBox(
+      position: DecorationPosition.foreground,
+      decoration: BoxDecoration(
+        border: tweetMediaBorder(context),
+        borderRadius: radius,
+      ),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: ratio != null
+            ? AspectRatio(aspectRatio: ratio, child: painted)
+            : ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: kRedditMediaMinHeight,
+                  maxHeight: maxHeight,
+                ),
+                // The width is taken rather than asked for: an opened post lays
+                // its column out left-aligned, and without this a portrait photo
+                // would shrink to a narrow strip there while filling the card in
+                // the feed.
+                child: SizedBox(width: double.infinity, child: painted),
               ),
-              // The width is taken rather than asked for: an opened post lays
-              // its column out left-aligned, and without this a portrait photo
-              // would shrink to a narrow strip there while filling the card in
-              // the feed.
-              child: SizedBox(width: double.infinity, child: painted),
-            ),
+      ),
     );
   }
 }

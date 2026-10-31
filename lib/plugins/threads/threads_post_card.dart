@@ -29,6 +29,7 @@ import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/links/link_opening.dart';
 import 'package:xta/links/link_post_context.dart';
 import 'package:xta/links/link_preview_card.dart';
+import 'package:xta/ui/provenance_accent.dart';
 
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
@@ -137,7 +138,10 @@ class ThreadsPostCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(onTap: () => _openAuthor(context), child: _avatar(context)),
+                        GestureDetector(
+                          onTap: () => _openAuthor(context),
+                          child: ProvenanceAvatarBadge(pluginId: pluginIdThreads, show: showSourceBadge, child: _avatar(context)),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -301,7 +305,6 @@ class ThreadsPostCard extends StatelessWidget {
           handle: Text('@${post.handle}', maxLines: 1, overflow: TextOverflow.ellipsis, style: metaStyle),
           badges: [
             if (post.topicTag case final tag?) ThreadsTopicTag(tag: tag),
-            if (showSourceBadge) PluginCardBadge(label: L10n.of(context).plugin_threads_title),
           ],
         ),
       ],

@@ -108,6 +108,8 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+    // Its source shown, as in a mixed timeline: the network's badge on the avatar.
+    expect(find.byKey(const ValueKey('provenance-badge-reddit')), findsOneWidget);
   });
 
   testWidgets('a Mastodon card in German does not overflow a 320dp phone', (
@@ -135,6 +137,8 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+    // Its source shown, as in a mixed timeline: the network's badge on the avatar.
+    expect(find.byKey(const ValueKey('provenance-badge-mastodon')), findsOneWidget);
   });
 
   testWidgets('a Hacker News card in German does not overflow', (tester) async {
@@ -238,6 +242,8 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+    // Its source shown, as in a mixed timeline: the network's badge on the avatar.
+    expect(find.byKey(const ValueKey('provenance-badge-bluesky')), findsOneWidget);
   });
 
   testWidgets('a Threads card in German does not overflow', (tester) async {
@@ -276,6 +282,8 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+    // Its source shown, as in a mixed timeline: the network's badge on the avatar.
+    expect(find.byKey(const ValueKey('provenance-badge-threads')), findsOneWidget);
   });
 
   testWidgets('a Booru card in German does not overflow', (tester) async {
