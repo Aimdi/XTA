@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/thread_rail.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// A conversation chain placed at its depth in the reply tree.
 class ThreadNode {
@@ -208,12 +209,16 @@ class ThreadIndent extends StatelessWidget {
   final bool connectBottom;
   final Widget child;
 
+  /// Where [child] draws its avatar, for the rail to run through it.
+  final ThreadRailGeometry geometry;
+
   const ThreadIndent({
     super.key,
     required this.depth,
     required this.child,
     this.connectTop = false,
     this.connectBottom = false,
+    this.geometry = kPostRailGeometry,
   });
 
   @override
@@ -230,7 +235,9 @@ class ThreadIndent extends StatelessWidget {
           // Positioned for the same reason as the feed's thread rail: left
           // unpositioned it is the only thing sizing the Stack, and in a list
           // that means infinitely tall.
-          Positioned.fill(child: ThreadRailLines(connectTop: connectTop, connectBottom: connectBottom)),
+          Positioned.fill(
+            child: ThreadRailLines(connectTop: connectTop, connectBottom: connectBottom, geometry: geometry),
+          ),
           child,
         ],
       ),
@@ -256,7 +263,7 @@ class ThreadContinueRow extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 48),
         child: Padding(
           padding: EdgeInsetsDirectional.only(
-            start: threadNestedIndent(indentDepth) + kThreadRailLeft,
+            start: threadNestedIndent(indentDepth) + kTweetHorizontalPadding,
             top: 8,
             bottom: 8,
             end: 16,

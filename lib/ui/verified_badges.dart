@@ -44,6 +44,21 @@ class VerifiedBadges extends StatelessWidget {
   }
 }
 
+/// The width [VerifiedBadges] takes for [verification], laid out with the same [size], [gap] and
+/// [leadingGap].
+double verifiedBadgesWidth(
+  BuildContext context,
+  UserVerification verification, {
+  double size = 18,
+  double gap = 4,
+  bool leadingGap = true,
+}) {
+  final count = (verification.type == VerifiedType.none ? 0 : 1) + (verification.affiliation == null ? 0 : 1);
+  if (count == 0) return 0;
+  final gaps = leadingGap ? count : count - 1;
+  return count * MediaQuery.textScalerOf(context).scale(size) + gaps * gap;
+}
+
 class VerifiedCheck extends StatelessWidget {
   final VerifiedType type;
   final double size;

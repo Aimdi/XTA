@@ -9,6 +9,7 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_thread_store.dart';
+import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -174,6 +175,7 @@ class _ThreadsConversationList extends StatelessWidget {
         ThreadIndent(
           key: ValueKey('chain-${post.id}'),
           depth: 1,
+          geometry: kWideAvatarRailGeometry,
           connectTop: index > 0,
           connectBottom: index < chain.length - 1,
           child: identical(post, focus)
@@ -234,6 +236,7 @@ class _ThreadsConversationList extends StatelessWidget {
           ThreadsReplyPostRow() => ThreadIndent(
             key: ValueKey('reply-${row.post.id}'),
             depth: 1,
+            geometry: kWideAvatarRailGeometry,
             connectTop: row.connectTop,
             connectBottom: row.connectBottom,
             child: _card(context, row.post),

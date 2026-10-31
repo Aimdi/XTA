@@ -72,6 +72,7 @@ List<InterleavedItem> threadsInterleavedItems(
       for (final post in posts.where((post) => threadsFeedTakes(kinds, post)).take(limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
+            avatarBadge: true,
             date: date,
             pluginId: pluginIdThreads,
             id: '$pluginIdThreads:${post.id}',
@@ -84,7 +85,7 @@ List<InterleavedItem> threadsInterleavedItems(
                     'text': post.text,
                     'images': post.images,
                   },
-            build: (_) => ThreadsPostCard(post: post, showSourceBadge: false),
+            build: (_) => ThreadsPostCard(post: post, showSourceBadge: true),
           ),
     ];
 

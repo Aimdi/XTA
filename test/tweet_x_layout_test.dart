@@ -277,7 +277,9 @@ void main() {
   group('footer', () {
     testWidgets('orders reply, repost, like, views, then groups bookmark and share', (tester) async {
       final semantics = tester.ensureSemantics();
-      await _pumpTile(tester, _post());
+      // Wide enough for all four counts beside the avatar column in the test
+      // font, whose digits are a whole em wide.
+      await _pumpTile(tester, _post(), width: 480);
 
       final order = [
         Icons.chat_bubble_outline,
@@ -297,7 +299,7 @@ void main() {
       final grouped = order[5].left - order[4].right;
       final spread = order[2].left - order[1].right;
       expect(grouped, lessThan(spread / 2), reason: 'bookmark and share sit together at the end');
-      expect(411 - order[5].right, inInclusiveRange(12, 18));
+      expect(480 - order[5].right, inInclusiveRange(12, 18));
       for (final label in ['38', '506', '9.1K', '77K']) {
         expect(find.text(label), findsOneWidget);
       }
@@ -380,7 +382,7 @@ void main() {
     });
 
     testWidgets('only the opened post gets the line', (tester) async {
-      await _pumpTile(tester, _post(), focalId: 'another');
+      await _pumpTile(tester, _post(), focalId: 'another', width: 480);
 
       expect(find.byType(TweetFocalMetaLine), findsNothing);
       expect(find.byIcon(Icons.bar_chart), findsOneWidget);

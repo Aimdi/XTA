@@ -28,7 +28,6 @@ void main() {
           ThreadRailBody(
             connectTop: false,
             connectBottom: true,
-            indentBody: true,
             avatar: const SizedBox(width: 48, height: 48),
             header: const SizedBox(height: 20),
             bodyChildren: const [SizedBox(height: 100)],
@@ -49,7 +48,6 @@ void main() {
           ThreadRailBody(
             connectTop: true,
             connectBottom: true,
-            indentBody: true,
             avatar: const SizedBox(width: 48, height: 48),
             header: const SizedBox(height: 20),
             bodyChildren: const [SizedBox(height: 200)],

@@ -64,6 +64,7 @@ List<InterleavedItem> mastodonInterleavedItems(
   for (final post in posts.where((post) => mastodonFeedTakes(kinds, post)).take(limit))
     if (post.publishedAt case final date?)
       provenanceInterleavedItem(
+        avatarBadge: true,
         date: date,
         pluginId: pluginIdMastodon,
         id: '$pluginIdMastodon:${post.url}',

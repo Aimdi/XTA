@@ -466,7 +466,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     final h = _HomeHarness();
     addTearDown(() => h.close(tester));
-    await tester.runAsync(h.seed);
+    // Enough posts to scroll a little: two-column posts are shorter.
+    await tester.runAsync(() => h.seed(postCount: 7));
     await tester.pumpWidget(h.app(xLookLightTheme(null)));
     await _waitForFollowing(tester);
     final position = h.scroll.position;

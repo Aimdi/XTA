@@ -5,7 +5,6 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/bluesky/bluesky_archive.dart';
 import 'package:xta/plugins/bluesky/bluesky_activity.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
@@ -31,6 +30,7 @@ import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/links/link_opening.dart';
 import 'package:xta/links/link_post_context.dart';
 import 'package:xta/links/link_preview_card.dart';
+import 'package:xta/ui/provenance_accent.dart';
 
 const double kBlueskyAvatarSize = 48;
 
@@ -121,7 +121,14 @@ class BlueskyPostCard extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(onTap: () => _openAuthor(context), child: _avatar(context)),
+                        GestureDetector(
+                          onTap: () => _openAuthor(context),
+                          child: ProvenanceAvatarBadge(
+                            pluginId: pluginIdBluesky,
+                            show: showSourceBadge,
+                            child: _avatar(context),
+                          ),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -275,7 +282,6 @@ class BlueskyPostCard extends StatelessWidget {
 
   Widget _header(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = L10n.of(context);
     final date = post.publishedAt;
     final muted = theme.colorScheme.onSurfaceVariant;
 
@@ -301,10 +307,6 @@ class BlueskyPostCard extends StatelessWidget {
                 style: theme.textTheme.bodySmall!.copyWith(color: muted),
               ),
             ),
-            if (showSourceBadge) ...[
-              const SizedBox(width: kPluginMetaGap),
-              Tooltip(message: l10n.plugin_bluesky_title, child: const BlueskyButterflyIcon(size: 14)),
-            ],
             _followButton(context),
           ],
         ),

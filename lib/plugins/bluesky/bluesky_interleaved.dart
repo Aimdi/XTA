@@ -62,6 +62,7 @@ List<InterleavedItem> blueskyInterleavedItems(
       for (final post in posts.where((post) => blueskyFeedTakes(kinds, post)).take(limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
+            avatarBadge: true,
             date: date,
             pluginId: pluginIdBluesky,
             id: '$pluginIdBluesky:${post.uri}',

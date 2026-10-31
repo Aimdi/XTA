@@ -93,7 +93,7 @@ void main() {
     }
   });
 
-  testWidgets('Following\'s header is one bar: Posts | Media, then the chip, Feeds, search and accounts', (
+  testWidgets('Following\'s header is one bar: Posts | Media, then the filter icon, Feeds, search and accounts', (
     tester,
   ) async {
     final semantics = tester.ensureSemantics();
@@ -112,13 +112,14 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('The chip counts filters and says the order, without drawing its name', (tester) async {
+  testWidgets('The filter icon counts filters and says the order, without drawing its name', (tester) async {
     final semantics = tester.ensureSemantics();
     await tester.pumpWidget(_app(_bar()));
     final chip = find.byKey(_order);
     expect(find.descendant(of: chip, matching: find.text('Custom')), findsNothing);
     expect(find.descendant(of: chip, matching: find.text('${groupActiveFilterCount(_group())}')), findsOneWidget);
-    expect(find.descendant(of: chip, matching: find.byIcon(Icons.expand_more)), findsOneWidget);
+    expect(find.descendant(of: chip, matching: find.byIcon(Icons.filter_list)), findsOneWidget);
+    expect(tester.getSize(chip), const Size.square(48));
     expect(tester.getSemantics(chip), isSemantics(tooltip: 'Custom · Filters', isButton: true));
     semantics.dispose();
   });
@@ -150,11 +151,11 @@ void main() {
     });
   }
 
-  testWidgets('The closer fit keeps the chip and drops its chevron', (tester) async {
+  testWidgets('The closer fit keeps the filter icon', (tester) async {
     await tester.pumpWidget(_app(_bar(layout: HomeFollowingBarLayout.compact), width: 360));
     final chip = find.byKey(_order);
     expect(chip.hitTestable(), findsOneWidget);
-    expect(find.descendant(of: chip, matching: find.byIcon(Icons.expand_more)), findsNothing);
+    expect(find.descendant(of: chip, matching: find.byIcon(Icons.filter_list)), findsOneWidget);
     expect(tester.getSize(find.byType(HomeFollowingBar)).height, kHomeFollowingBarHeight);
     expect(tester.takeException(), isNull);
   });
@@ -167,11 +168,11 @@ void main() {
       expect(find.byKey(tab).hitTestable(), findsOneWidget);
       expect(tester.getCenter(find.byKey(tab)).dy, greaterThan(chip.dy + kHomeFollowingBarHeight / 2));
     }
-    expect(find.descendant(of: find.byKey(_order), matching: find.byIcon(Icons.expand_more)), findsOneWidget);
+    expect(find.descendant(of: find.byKey(_order), matching: find.byIcon(Icons.filter_list)), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('The chip waits for the group; the rest is there at once', (tester) async {
+  testWidgets('The filter icon waits for the group; the rest is there at once', (tester) async {
     await tester.pumpWidget(_app(_bar(loaded: false)));
     expect(find.byKey(_order), findsNothing);
     for (final tooltip in ['Feeds', 'Search loaded posts', 'Home feed accounts']) {
