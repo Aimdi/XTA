@@ -469,15 +469,7 @@ class _FeedScreenState extends State<FeedScreen> {
       onRefresh: () => context.read<FeedRefreshController>().refresh(),
       showSettings: false,
       extra: [
-        IconButton(
-          tooltip: L10n.of(context).home_feed_accounts,
-          icon: Badge.count(
-            count: filtered,
-            isLabelVisible: filtered > 0,
-            child: Icon(filtered > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
-          ),
-          onPressed: () => showHomeAccountFilterSheet(context),
-        ),
+        homeFeedAccountsButton(context, turnedOff: filtered, onPressed: () => showHomeAccountFilterSheet(context)),
       ],
     );
   }

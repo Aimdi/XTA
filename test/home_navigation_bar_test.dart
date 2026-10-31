@@ -6,7 +6,6 @@ import 'package:xta/constants.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_navigation_visibility.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
-import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const _labels = ['Start', 'Abonnements', 'Entdecken', 'Gespeichert'];
@@ -55,94 +54,64 @@ void _phone(WidgetTester tester, {double width = 390}) {
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
-Finder get _highlight => find.byKey(const ValueKey('home-navigation-highlight'));
+Finder get _surface => find.byKey(const ValueKey('home-navigation-surface'));
 
 Rect _destination(WidgetTester tester, int index) => tester.getRect(find.byType(NavigationDestination).at(index));
 
-HomeNavigationPalette _palette(WidgetTester tester) =>
-    HomeNavigationPalette.of(tester.element(find.byType(NavigationBar)));
-
-BoxDecoration _glass(WidgetTester tester) => tester
-    .widgetList<DecoratedBox>(find.descendant(of: find.byType(BackdropFilter), matching: find.byType(DecoratedBox)))
-    .map((box) => box.decoration)
-    .whereType<BoxDecoration>()
-    .first;
-
 void main() {
-  final themes = {'light': xLookLightTheme(null), 'dim': xLookDimTheme(null), 'lights out': xLookLightsOutTheme(null)};
+  final themes = {
+    'light': (xLookLightTheme(null), XLookTokens.light),
+    'dim': (xLookDimTheme(null), XLookTokens.dim),
+    'lights out': (xLookLightsOutTheme(null), XLookTokens.lightsOut),
+  };
 
-  for (final MapEntry(key: name, value: theme) in themes.entries) {
-    testWidgets('the $name pill is frosted glass the page shows through', (tester) async {
+  for (final MapEntry(key: name, value: (theme, tokens)) in themes.entries) {
+    testWidgets('the $name bar is flat across the bottom with a hairline on top', (tester) async {
       _phone(tester);
       await tester.pumpWidget(_app(theme));
 
-      final blur = find.descendant(of: find.byType(HomeNavigationBar), matching: find.byType(BackdropFilter));
-      expect(blur, findsOneWidget);
-      expect(find.ancestor(of: blur, matching: find.byType(ClipRRect)), findsWidgets);
-      final glass = _glass(tester);
-      expect(glass.color!.a, inInclusiveRange(0.7, 0.9));
-      expect(glass.border, isA<Border>());
-      expect((glass.border! as Border).top.width, kTweetDividerThickness);
-      expect(find.descendant(of: find.byType(HomeNavigationBar), matching: find.byType(ColoredBox)), findsNothing);
+      expect(find.descendant(of: find.byType(HomeNavigationBar), matching: find.byType(BackdropFilter)), findsNothing);
+      final surface = tester.widget<DecoratedBox>(_surface).decoration as BoxDecoration;
+      expect(surface.color, tokens.background.withValues(alpha: kHomeNavigationBarOpacity));
+      final top = (surface.border! as Border).top;
+      expect(top.width, kTweetDividerThickness);
+      expect(top.color, tokens.divider);
+      expect(tester.getRect(_surface), const Rect.fromLTRB(0, 844 - kHomeNavigationHeight, 390, 844));
+    });
+
+    testWidgets('on $name every icon is in the text colour and the selected one is filled', (tester) async {
+      _phone(tester);
+      await tester.pumpWidget(_app(theme, selected: 1));
+
+      expect(find.byIcon(Icons.people), findsOneWidget);
+      expect(find.byIcon(Icons.people_outlined), findsNothing);
+      expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+      for (final icon in [Icons.people, Icons.home_outlined, Icons.search_outlined]) {
+        final theme = IconTheme.of(tester.element(find.byIcon(icon)));
+        expect(theme.color, tokens.onBackground);
+        expect(theme.size, kHomeNavigationIconSize);
+      }
+      final selected = tester.widget<Text>(find.text('Abonnements')).style!;
+      final other = tester.widget<Text>(find.text('Entdecken')).style!;
+      expect(selected.fontWeight, FontWeight.w700);
+      expect(other.fontWeight, FontWeight.w500);
+      expect(selected.color, tokens.onBackground);
+      expect(other.color, tokens.onBackground);
     });
   }
 
-  testWidgets('Lights Out gets a dark translucent pill rather than black', (tester) async {
+  testWidgets('the bar keeps its colour under the system gesture area', (tester) async {
     _phone(tester);
-    await tester.pumpWidget(_app(xLookLightsOutTheme(null)));
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(size: Size(390, 844), padding: EdgeInsets.only(bottom: 24)),
+        child: _app(xLookLightsOutTheme(null)),
+      ),
+    );
 
-    final glass = _glass(tester).color!;
-    final overBlack = Color.alphaBlend(glass, const Color(0xFF000000));
-    expect(glass.a, lessThan(1));
-    expect(overBlack, isNot(const Color(0xFF000000)));
-    expect(relativeLuminance(overBlack), inExclusiveRange(0, 0.05));
-  });
-
-  testWidgets('the selected item sits on an accent highlight spanning icon and label', (tester) async {
-    _phone(tester);
-    await tester.pumpWidget(_app(xLookLightTheme(null), selected: 1));
-
-    final highlight = tester.getRect(_highlight);
-    final icon = tester.getRect(find.byIcon(Icons.people));
-    final label = tester.getRect(find.text('Abonnements'));
-    expect(highlight.top, lessThan(icon.top));
-    expect(highlight.bottom, greaterThan(label.bottom));
-    expect(highlight.left, lessThanOrEqualTo(label.left));
-    expect(highlight.right, greaterThanOrEqualTo(label.right));
-    expect(highlight.center.dx, closeTo(_destination(tester, 1).center.dx, 0.5));
-    expect(highlight.height, greaterThanOrEqualTo(kHomeNavigationHeight - 2 * kHomeNavigationHighlightInset));
-
-    final palette = _palette(tester);
-    final tint = (tester.widget<DecoratedBox>(_highlight).decoration as BoxDecoration).color!;
-    expect(tint.a, inExclusiveRange(0, 0.3));
-    expect(tint.withValues(alpha: 1), XLookTokens.light.accent);
-
-    final selected = tester.widget<Text>(find.text('Abonnements')).style!;
-    final other = tester.widget<Text>(find.text('Entdecken')).style!;
-    expect(selected.color, palette.selected);
-    expect(selected.fontWeight, FontWeight.w700);
-    expect(other.color, XLookTokens.light.onBackground);
-    expect(other.fontWeight, FontWeight.w500);
-    expect(IconTheme.of(tester.element(find.byIcon(Icons.people))).color, palette.selected);
-    expect(IconTheme.of(tester.element(find.byIcon(Icons.search_outlined))).color, XLookTokens.light.onBackground);
-  });
-
-  testWidgets('the selected colour reads at 4.5:1 through the glass for every accent', (tester) async {
-    for (final accent in xLookAccents.values) {
-      for (final base in [XLookTokens.light, XLookTokens.dim, XLookTokens.lightsOut]) {
-        final tokens = base.copyWith(accent: accent);
-        await tester.pumpWidget(_app(xLookThemeData(tokens, null)));
-        // MaterialApp animates between themes; read the palette once it lands.
-        await tester.pumpAndSettle();
-        final palette = _palette(tester);
-        final underLabel = Color.alphaBlend(palette.highlight, Color.alphaBlend(palette.glass, tokens.background));
-        expect(
-          contrastRatio(palette.selected, underLabel),
-          greaterThanOrEqualTo(4.5),
-          reason: '$accent on ${base.background}',
-        );
-      }
-    }
+    expect(tester.getRect(_surface).bottom, 844);
+    expect(tester.getRect(find.byType(NavigationBar)).bottom, 844 - 24);
+    expect(tester.getSize(find.byType(NavigationBar)).height, kHomeNavigationHeight);
   });
 
   testWidgets('every destination keeps a 48dp touch target on a narrow phone', (tester) async {
@@ -168,55 +137,22 @@ void main() {
         final paragraph = tester.renderObject<RenderParagraph>(label);
         expect(paragraph.maxLines, 1);
         expect(_destination(tester, i).contains(tester.getRect(label).topLeft), isTrue);
-        expect(tester.getRect(label).width, lessThanOrEqualTo(tester.getRect(_highlight).width));
       }
-      final first = _destination(tester, 0).center.dx;
-      expect(tester.getRect(_highlight).center.dx, closeTo(first, 0.5));
-      expect(first > 160, direction == TextDirection.rtl);
+      expect(_destination(tester, 0).center.dx > 160, direction == TextDirection.rtl);
     });
   }
 
-  testWidgets('without labels the icon is centred in its highlight', (tester) async {
+  testWidgets('without labels, as by default, the icons sit in the middle of the bar', (tester) async {
     _phone(tester);
     await tester.pumpWidget(_app(xLookLightTheme(null), showLabels: false));
 
-    final highlight = tester.getRect(_highlight);
-    expect(tester.getRect(find.byIcon(Icons.home)).center.dy, closeTo(highlight.center.dy, 0.5));
-  });
-
-  testWidgets('icons alone make the slimmest bar that still fits a finger', (tester) async {
-    _phone(tester);
-    await tester.pumpWidget(_app(xLookLightTheme(null), showLabels: false));
-
-    expect(tester.getSize(find.byType(NavigationBar)).height, kHomeNavigationIconOnlyHeight);
-    expect(kHomeNavigationIconOnlyHeight, lessThan(kHomeNavigationHeight));
+    final bar = tester.getRect(find.byType(NavigationBar));
+    expect(bar.height, kHomeNavigationHeight);
+    expect(tester.getRect(find.byIcon(Icons.home)).center.dy, closeTo(bar.center.dy, 1));
     for (var index = 0; index < 4; index++) {
       expect(_destination(tester, index).height, greaterThanOrEqualTo(kTweetTouchTarget));
     }
     expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('the highlight slides to a new selection', (tester) async {
-    _phone(tester);
-    await tester.pumpWidget(_app(xLookLightTheme(null), disableAnimations: false));
-    await tester.pumpWidget(_app(xLookLightTheme(null), selected: 2, disableAnimations: false));
-    await tester.pump(const Duration(milliseconds: 60));
-
-    final target = _destination(tester, 2).center.dx;
-    final moving = tester.getRect(_highlight).center.dx;
-    expect(moving, greaterThan(_destination(tester, 0).center.dx));
-    expect(moving, lessThan(target));
-    await tester.pumpAndSettle();
-    expect(tester.getRect(_highlight).center.dx, closeTo(target, 0.5));
-  });
-
-  testWidgets('reduced motion moves the highlight at once', (tester) async {
-    _phone(tester);
-    await tester.pumpWidget(_app(xLookLightTheme(null)));
-    await tester.pumpWidget(_app(xLookLightTheme(null), selected: 3));
-    await tester.pump();
-
-    expect(tester.getRect(_highlight).center.dx, closeTo(_destination(tester, 3).center.dx, 0.5));
   });
 
   group('sliding away while scrolling', _scrollingTests);
@@ -267,7 +203,7 @@ void _scrollingTests() {
     final visibility = store();
     await tester.pumpWidget(_scrolling(visibility));
     final clearance = MediaQuery.paddingOf(tester.element(find.byType(ListView))).bottom;
-    expect(clearance, greaterThan(kHomeNavigationHeight));
+    expect(clearance, greaterThanOrEqualTo(kHomeNavigationHeight));
 
     await tester.drag(find.byType(ListView), const Offset(0, -300));
     await tester.pumpAndSettle();

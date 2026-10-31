@@ -1,44 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_chrome.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/label_width.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 
 const double kHomeFollowingBarHeight = 48;
-const double kHomeOrderChipHeight = 32;
 
-/// The order chip at its widest, with a two-digit count, with and without its
-/// chevron.
-const double kHomeOrderChipWidth = 80;
-const double kHomeOrderChipCompactWidth = 64;
+/// The tabs' names and marker as the Ink canvas draws them (docs/specs/feed-ink.md): 16 px,
+/// 28 dp apart, a 4 dp marker.
+const double kHomeTabNameSize = 16;
+const double kHomeTabPadding = 14;
+const double kHomeTabMarkerHeight = 4;
+
+/// The dot on Home feed accounts while something is turned off.
+const double kHomeAccountsDotSize = 8;
+
+/// A tab's name in Following's bar.
+TextStyle homeTabNameStyle({required bool selected}) =>
+    readerTabNameStyle(selected: selected).copyWith(fontSize: kHomeTabNameSize);
 
 /// How Following's bar fits Posts | Media beside its controls.
 enum HomeFollowingBarLayout {
   /// One row, as the canvas draws it.
   oneRow,
 
-  /// One row with the tabs closer together and the chip without its chevron.
+  /// One row with the tabs closer together.
   compact,
 
   /// The tabs under the controls: even closer together they do not fit.
   twoRows,
 }
 
-/// The fit for a bar [width] wide with [actions] 48 dp buttons, measured with
-/// both tabs in the selected style so the widest state is the one that fits.
+/// The fit for a bar [width] wide with the order button and [actions] more 48 dp buttons, measured
+/// with both tabs in the selected style so the widest state is the one that fits.
 HomeFollowingBarLayout homeFollowingBarLayout(BuildContext context, {required double width, required int actions}) {
   final l10n = L10n.of(context);
-  final style = (Theme.of(context).textTheme.labelLarge ?? const TextStyle()).merge(readerTabNameStyle(selected: true));
+  final style = (Theme.of(context).textTheme.labelLarge ?? const TextStyle()).merge(homeTabNameStyle(selected: true));
   double tabs(double padding) => labelsWidth(context, [l10n.tweets, l10n.media], style, padding: 2 * padding);
-  double controls(double chip) => kTweetSpace1 + chip + actions * kTweetTouchTarget + kHomeAppBarEndInset;
+  final controls = kTweetSpace1 + (1 + actions) * kTweetTouchTarget + kHomeAppBarEndInset;
   return switch (width) {
-    _ when tabs(kTweetSpace3) + controls(kHomeOrderChipWidth) <= width => HomeFollowingBarLayout.oneRow,
-    _ when tabs(kTweetSpace2) + controls(kHomeOrderChipCompactWidth) <= width => HomeFollowingBarLayout.compact,
+    _ when tabs(kHomeTabPadding) + controls <= width => HomeFollowingBarLayout.oneRow,
+    _ when tabs(kTweetSpace2) + controls <= width => HomeFollowingBarLayout.compact,
     _ => HomeFollowingBarLayout.twoRows,
   };
 }
@@ -132,7 +141,7 @@ class HomeFollowingBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final group = this.group;
-    final padding = layout == HomeFollowingBarLayout.compact ? kTweetSpace2 : kTweetSpace3;
+    final padding = layout == HomeFollowingBarLayout.oneRow ? kHomeTabPadding : kTweetSpace2;
     final tabs = SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -140,13 +149,6 @@ class HomeFollowingBar extends StatelessWidget {
       ),
     );
     final controls = [
-      if (group != null)
-        HomeOrderChip(
-          group: group,
-          onOrderSelected: onOrderSelected,
-          onFilters: onFilters,
-          compact: layout == HomeFollowingBarLayout.compact,
-        ),
       // The canvas draws the bar's icons in the text colour, not the
       // secondary grey X Look gives icon buttons elsewhere.
       IconButtonTheme(
@@ -155,7 +157,12 @@ class HomeFollowingBar extends StatelessWidget {
             foregroundColor: tweetPrimaryColor(context),
           ).merge(IconButtonTheme.of(context).style),
         ),
-        child: HomeAppBarActions(children: actions),
+        child: HomeAppBarActions(
+          children: [
+            if (group != null) HomeOrderButton(group: group, onOrderSelected: onOrderSelected, onFilters: onFilters),
+            ...actions,
+          ],
+        ),
       ),
     ];
     return SizedBox(
@@ -208,17 +215,17 @@ class HomeFollowingBar extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Text(label, style: readerTabNameStyle(selected: selected)),
+                Text(label, style: homeTabNameStyle(selected: selected)),
                 PositionedDirectional(
                   start: 0,
                   end: 0,
                   bottom: 0,
                   child: AnimatedContainer(
                     duration: xtaMotionDuration(context, kXtaMotionStandard),
-                    height: kReaderTabMarkerHeight,
+                    height: kHomeTabMarkerHeight,
                     decoration: BoxDecoration(
                       color: selected ? tweetReadableAccentColor(context) : Colors.transparent,
-                      borderRadius: BorderRadius.circular(kReaderTabMarkerHeight),
+                      borderRadius: BorderRadius.circular(kHomeTabMarkerHeight),
                     ),
                   ),
                 ),
@@ -231,21 +238,14 @@ class HomeFollowingBar extends StatelessWidget {
   }
 }
 
-/// Ordering and filters in one chip. The order's name is said, not drawn:
-/// the chip shows how many filters are on, and [compact] drops the chevron.
-class HomeOrderChip extends StatelessWidget {
+/// Ordering and filters behind the filter icon. The order's name is said, not drawn; when filters
+/// are on, their count sits on the icon's corner in the accent colour.
+class HomeOrderButton extends StatelessWidget {
   final SubscriptionGroupGet group;
   final ValueChanged<int> onOrderSelected;
   final VoidCallback onFilters;
-  final bool compact;
 
-  const HomeOrderChip({
-    super.key,
-    required this.group,
-    required this.onOrderSelected,
-    required this.onFilters,
-    this.compact = false,
-  });
+  const HomeOrderButton({super.key, required this.group, required this.onOrderSelected, required this.onFilters});
 
   int get _order => group.custom ? 2 : (group.popular ? 1 : 0);
 
@@ -254,6 +254,7 @@ class HomeOrderChip extends StatelessWidget {
     final l10n = L10n.of(context);
     final labels = [l10n.recent, l10n.popular, l10n.custom];
     final filters = groupActiveFilterCount(group);
+    final accent = tweetAccentColor(context);
     return PopupMenuButton<int>(
       key: const ValueKey('home-order-menu'),
       initialValue: _order,
@@ -293,37 +294,38 @@ class HomeOrderChip extends StatelessWidget {
       ],
       child: Semantics(
         button: true,
-        child: SizedBox(
-          height: kTweetTouchTarget,
+        child: SizedBox.square(
+          dimension: kTweetTouchTarget,
           child: Center(
-            child: Container(
-              height: kHomeOrderChipHeight,
-              constraints: const BoxConstraints(minWidth: kTweetTouchTarget),
-              alignment: Alignment.center,
-              padding: EdgeInsetsDirectional.only(start: 10, end: compact ? 10 : 6),
-              decoration: BoxDecoration(
-                color: Color.alphaBlend(
-                  tweetPrimaryColor(context).withValues(alpha: 0.08),
-                  Theme.of(context).scaffoldBackgroundColor,
-                ),
-                border: Border.all(color: tweetDividerColor(context)),
-                borderRadius: BorderRadius.circular(kHomeOrderChipHeight / 2),
-              ),
-              child: IconTheme.merge(
-                data: IconThemeData(color: tweetPrimaryColor(context)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.sort, size: 18),
-                    if (filters > 0) ...[const SizedBox(width: kTweetSpace1), Badge.count(count: filters)],
-                    if (!compact) ...[const SizedBox(width: 2), const Icon(Icons.expand_more, size: 18)],
-                  ],
-                ),
-              ),
+            child: Badge.count(
+              count: filters,
+              isLabelVisible: filters > 0,
+              backgroundColor: accent,
+              textColor: contrastingForeground(accent),
+              child: Icon(Icons.filter_list, color: tweetPrimaryColor(context)),
             ),
           ),
         ),
       ),
     );
   }
+}
+
+/// Home feed accounts: a person, with a small dot while accounts or groups are turned off. A screen
+/// reader hears how many. A plain [IconButton], so a compact header still lists it among its
+/// options, under the same name it was pinned by.
+IconButton homeFeedAccountsButton(BuildContext context, {required int turnedOff, required VoidCallback onPressed}) {
+  final locale = Localizations.localeOf(context).toLanguageTag();
+  return IconButton(
+    tooltip: L10n.of(context).home_feed_accounts,
+    icon: Badge(
+      isLabelVisible: turnedOff > 0,
+      smallSize: kHomeAccountsDotSize,
+      child: Semantics(
+        value: turnedOff > 0 ? NumberFormat.decimalPattern(locale).format(turnedOff) : null,
+        child: const Icon(Icons.person_outline),
+      ),
+    ),
+    onPressed: onPressed,
+  );
 }

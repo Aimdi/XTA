@@ -11,32 +11,20 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/ui/height_probe.dart';
 
-const double kHomeNavigationHeight = 54;
+/// The bottom bar's height above the system's gesture area, with or without
+/// labels, as the Ink canvas draws it (docs/specs/feed-ink.md).
+const double kHomeNavigationHeight = 64;
 
-/// Icons alone need only one touch target's height.
-const double kHomeNavigationIconOnlyHeight = kTweetTouchTarget;
+/// How much of the page's colour the bar is drawn in.
+const double kHomeNavigationBarOpacity = 0.88;
 
-double homeNavigationHeight({required bool showLabels}) =>
-    showLabels ? kHomeNavigationHeight : kHomeNavigationIconOnlyHeight;
-
-/// Space between the floating bar and the screen's side edges.
-const double kHomeNavigationFloatInset = 16;
-
-/// Space above the floating bar, and below it when the system adds no inset.
-const double kHomeNavigationFloatGap = 8;
-
-/// How much of the pill's surface colour covers the page behind it.
+/// How much of a floating pill's surface colour covers the page behind it.
 const double kHomeNavigationLightGlass = 0.74;
 const double kHomeNavigationDarkGlass = 0.78;
 const double kHomeNavigationBlurSigma = 16;
-const double kHomeNavigationHighlightInset = 3;
-const double kHomeNavigationHighlightRadius = 20;
 const double kHomeNavigationLabelSize = 11;
-const double kHomeNavigationIconSize = 22;
-
-/// The extra bottom space balances the gap the icon slot leaves under its
-/// glyph, so icon and label sit centred in the highlight.
-const EdgeInsets kHomeNavigationLabelPadding = EdgeInsets.fromLTRB(6, 1, 6, 3);
+const double kHomeNavigationIconSize = 26;
+const EdgeInsets kHomeNavigationLabelPadding = EdgeInsets.fromLTRB(6, 2, 6, 0);
 
 const double kHomeFeedStripHeight = 64;
 const double kHomeFeedTabHorizontalPadding = 12;
@@ -298,7 +286,7 @@ class HomeNavigationItem {
   });
 }
 
-/// Colours of the floating bar.
+/// Colours of a frosted pill floating over the pages, such as a notice.
 ///
 /// The pill is translucent, so the selected colour is checked against a
 /// mid-tone page showing through it rather than against the bare background.
@@ -360,9 +348,15 @@ class HomeNavigationPalette {
   }
 }
 
-/// Home's navigation: a frosted pill floating over the pages, which scroll on
-/// behind it. The selected item sits on a soft accent highlight that spans its
-/// icon and label.
+/// The colour under the bottom bar: the page's own, mostly opaque.
+Color homeNavigationBarColor(BuildContext context) =>
+    (XLookTokens.maybeOf(context)?.background ??
+            Theme.of(context).colorScheme.surface)
+        .withValues(alpha: kHomeNavigationBarOpacity);
+
+/// Home's navigation, flat across the bottom as the Ink canvas draws it: the
+/// page's colour with a hairline along its top, the icons in the text colour,
+/// the selected one filled. The pages scroll on behind it.
 class HomeNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final List<HomeNavigationItem> items;
@@ -387,131 +381,63 @@ class HomeNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final reduceMotion =
         disableAnimations || MediaQuery.disableAnimationsOf(context);
-    final palette = HomeNavigationPalette.of(context);
-
-    return SafeArea(
-      top: false,
-      minimum: const EdgeInsets.only(bottom: kHomeNavigationFloatGap),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          kHomeNavigationFloatInset,
-          kHomeNavigationFloatGap,
-          kHomeNavigationFloatInset,
-          0,
+    return DecoratedBox(
+      key: const ValueKey('home-navigation-surface'),
+      decoration: BoxDecoration(
+        color: homeNavigationBarColor(context),
+        border: Border(
+          top: BorderSide(
+            color: tweetDividerColor(context),
+            width: kTweetDividerThickness,
+          ),
         ),
-        child: FrostedPill(
-          palette: palette,
-          height: homeNavigationHeight(showLabels: showLabels),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: _highlight(context, palette, reduceMotion),
-              ),
-              NavigationBarTheme(
-                data: _navigationTheme(context, palette),
-                child: _navigationBar(context, reduceMotion),
-              ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: NavigationBarTheme(
+          data: _navigationTheme(context),
+          child: NavigationBar(
+            selectedIndex: selectedIndex,
+            height: kHomeNavigationHeight,
+            animationDuration: reduceMotion ? Duration.zero : null,
+            labelBehavior: showLabels
+                ? NavigationDestinationLabelBehavior.alwaysShow
+                : NavigationDestinationLabelBehavior.alwaysHide,
+            destinations: [
+              for (final (index, item) in items.indexed) _holdable(index, item),
             ],
+            onDestinationSelected: onSelected,
           ),
         ),
       ),
     );
   }
 
-  NavigationBar _navigationBar(BuildContext context, bool reduceMotion) {
-    return NavigationBar(
-      selectedIndex: selectedIndex,
-      height: homeNavigationHeight(showLabels: showLabels),
-      animationDuration: reduceMotion ? Duration.zero : null,
-      labelBehavior: showLabels
-          ? NavigationDestinationLabelBehavior.alwaysShow
-          : NavigationDestinationLabelBehavior.alwaysHide,
-      destinations: items
-          .asMap()
-          .entries
-          .map(
-            (entry) => _holdable(context, entry.key, entry.value, reduceMotion),
-          )
-          .toList(growable: false),
-      onDestinationSelected: onSelected,
-    );
-  }
-
-  Widget _holdable(
-    BuildContext context,
-    int index,
-    HomeNavigationItem item,
-    bool reduceMotion,
-  ) {
+  Widget _holdable(int index, HomeNavigationItem item) {
     final holds = onLongPress != null && index == longPressIndex;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onLongPress: holds ? () => onLongPress!(index) : null,
       // Below NavigationBar's Material, which resets the default text style:
-      // a long label ends in an ellipsis instead of wrapping out of the pill.
+      // a long label ends in an ellipsis instead of wrapping out of the bar.
       child: DefaultTextStyle.merge(
         maxLines: 1,
         softWrap: false,
         overflow: TextOverflow.ellipsis,
-        child: _destination(
-          context,
-          item,
-          index == selectedIndex,
-          reduceMotion,
-          customLongPress: holds,
+        child: NavigationDestination(
+          tooltip: holds ? '' : null,
+          icon: item.icon,
+          selectedIcon: item.selectedIcon,
+          label: item.label,
         ),
       ),
     );
   }
 
-  /// One highlight that slides to the selected item.
-  Widget _highlight(
-    BuildContext context,
-    HomeNavigationPalette palette,
-    bool reduceMotion,
-  ) {
-    final count = items.length;
-    if (count == 0) return const SizedBox.shrink();
-    final index = selectedIndex.clamp(0, count - 1);
-
-    return AnimatedAlign(
-      alignment: AlignmentDirectional(
-        count == 1 ? 0 : index * 2 / (count - 1) - 1,
-        0,
-      ),
-      duration: reduceMotion
-          ? Duration.zero
-          : xtaMotionDuration(context, kXtaMotionNavigation),
-      curve: Curves.easeOutCubic,
-      child: FractionallySizedBox(
-        widthFactor: 1 / count,
-        heightFactor: 1,
-        child: Padding(
-          padding: const EdgeInsets.all(kHomeNavigationHighlightInset),
-          child: DecoratedBox(
-            key: const ValueKey('home-navigation-highlight'),
-            decoration: BoxDecoration(
-              color: palette.highlight,
-              borderRadius: BorderRadius.circular(
-                kHomeNavigationHighlightRadius,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  NavigationBarThemeData _navigationTheme(
-    BuildContext context,
-    HomeNavigationPalette palette,
-  ) {
+  NavigationBarThemeData _navigationTheme(BuildContext context) {
     final inherited = NavigationBarTheme.of(context);
     final fallbackLabel = Theme.of(context).textTheme.labelMedium;
-    Color colorOf(Set<WidgetState> states) =>
-        states.contains(WidgetState.selected)
-        ? palette.selected
-        : palette.unselected;
+    final ink = tweetPrimaryColor(context);
 
     return inherited.copyWith(
       backgroundColor: Colors.transparent,
@@ -519,13 +445,12 @@ class HomeNavigationBar extends StatelessWidget {
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       indicatorColor: Colors.transparent,
-      indicatorShape: const StadiumBorder(),
       labelPadding: kHomeNavigationLabelPadding,
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final style = inherited.labelTextStyle?.resolve(states);
         return (style ?? fallbackLabel)?.copyWith(
           fontSize: kHomeNavigationLabelSize,
-          color: colorOf(states),
+          color: ink,
           fontWeight: states.contains(WidgetState.selected)
               ? FontWeight.w700
               : FontWeight.w500,
@@ -534,41 +459,10 @@ class HomeNavigationBar extends StatelessWidget {
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final icon = inherited.iconTheme?.resolve(states);
         return (icon ?? const IconThemeData()).copyWith(
-          color: colorOf(states),
+          color: ink,
           size: kHomeNavigationIconSize,
         );
       }),
-    );
-  }
-
-  NavigationDestination _destination(
-    BuildContext context,
-    HomeNavigationItem item,
-    bool selected,
-    bool reduceMotion, {
-    bool customLongPress = false,
-  }) {
-    final duration = reduceMotion
-        ? Duration.zero
-        : xtaMotionDuration(context, kXtaMotionStandard);
-    final scale = selected ? 1.08 : 1.0;
-    final icon = selected ? item.selectedIcon : item.icon;
-
-    return NavigationDestination(
-      tooltip: customLongPress ? '' : null,
-      icon: AnimatedScale(
-        scale: scale,
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: icon,
-      ),
-      selectedIcon: AnimatedScale(
-        scale: scale,
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: icon,
-      ),
-      label: item.label,
     );
   }
 }
