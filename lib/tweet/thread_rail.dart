@@ -1,23 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_ink_layout.dart';
 
-/// Shared thread-rail geometry (feed thread bodies and status reply nesting).
-const double kThreadRailLeft = 16;
-const double kThreadRailTopGap = 10;
-const double kThreadRailAvatarSize = 48;
 const double kThreadRailLineWidth = 2;
 const double kThreadLevelWidth = 40;
 
 const int kThreadMaxVisualDepth = 2;
 
-double get threadRailLineX =>
-    kThreadRailLeft +
-    kThreadRailAvatarSize / 2 -
-    kThreadRailLineWidth / 2;
+/// Where a rail meets the avatars it joins: their start, top and size.
+@immutable
+class ThreadRailGeometry {
+  final double avatarStart;
+  final double avatarTop;
+  final double avatarSize;
 
-double get threadRailAvatarCenterY =>
-    kThreadRailTopGap + kThreadRailAvatarSize / 2;
+  const ThreadRailGeometry({
+    required this.avatarStart,
+    required this.avatarTop,
+    required this.avatarSize,
+  });
 
-double get threadRailBodyIndent => kThreadRailLeft + kThreadRailAvatarSize;
+  /// The line's leading edge, so the line runs through the avatars' centres.
+  double get lineX => avatarStart + avatarSize / 2 - kThreadRailLineWidth / 2;
+
+  double get avatarCenterY => avatarTop + avatarSize / 2;
+}
+
+/// Posts in a timeline or a conversation: the 40 dp avatar 16 dp in and
+/// 12 dp down (docs/specs/feed-ink.md).
+const kPostRailGeometry = ThreadRailGeometry(
+  avatarStart: kTweetHorizontalPadding,
+  avatarTop: kInkColumnTop,
+  avatarSize: kTweetAvatarSize,
+);
+
+/// Cards that draw a 48 dp avatar 16 dp in and 10 dp down, as Threads' do.
+const kWideAvatarRailGeometry = ThreadRailGeometry(
+  avatarStart: 16,
+  avatarTop: 10,
+  avatarSize: 48,
+);
 
 /// Extra left inset for a reply at [depth] in the status-thread tree.
 ///
@@ -37,12 +59,14 @@ class ThreadRailLines extends StatelessWidget {
   final bool connectTop;
   final bool connectBottom;
   final Color? lineColor;
+  final ThreadRailGeometry geometry;
 
   const ThreadRailLines({
     super.key,
     required this.connectTop,
     required this.connectBottom,
     this.lineColor,
+    this.geometry = kPostRailGeometry,
   });
 
   @override
@@ -60,15 +84,15 @@ class ThreadRailLines extends StatelessWidget {
       children: [
         if (connectTop)
           PositionedDirectional(
-            start: threadRailLineX,
+            start: geometry.lineX,
             top: 0,
-            height: threadRailAvatarCenterY,
+            height: geometry.avatarCenterY,
             child: lineSeg(),
           ),
         if (connectBottom)
           PositionedDirectional(
-            start: threadRailLineX,
-            top: threadRailAvatarCenterY,
+            start: geometry.lineX,
+            top: geometry.avatarCenterY,
             bottom: 0,
             child: lineSeg(),
           ),
@@ -77,12 +101,13 @@ class ThreadRailLines extends StatelessWidget {
   }
 }
 
-/// Feed-style thread body: avatar column, optional rail, header and body.
+/// The opened post of a thread: the rail from the post above into its
+/// avatar, the author beside the avatar, the text across the width under it.
 class ThreadRailBody extends StatelessWidget {
   final bool connectTop;
   final bool connectBottom;
-  final bool indentBody;
   final Widget avatar;
+  final String? avatarLabel;
   final Widget header;
   final List<Widget> bodyChildren;
   final VoidCallback onTapProfile;
@@ -91,11 +116,11 @@ class ThreadRailBody extends StatelessWidget {
     super.key,
     required this.connectTop,
     required this.connectBottom,
-    required this.indentBody,
     required this.avatar,
     required this.header,
     required this.bodyChildren,
     required this.onTapProfile,
+    this.avatarLabel,
   });
 
   @override
@@ -117,44 +142,25 @@ class ThreadRailBody extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(width: kThreadRailLeft),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: kThreadRailTopGap),
-                    SizedBox(
-                      width: kThreadRailAvatarSize,
-                      height: kThreadRailAvatarSize,
-                      child: Semantics(
-                        button: true,
-                        child: InkResponse(
-                          onTap: onTapProfile,
-                          radius: kThreadRailAvatarSize / 2,
-                          containedInkWell: true,
-                          customBorder: const CircleBorder(),
-                          child: avatar,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Expanded(child: header),
-              ],
-            ),
-            if (indentBody)
-              Padding(
-                padding: EdgeInsetsDirectional.only(
-                  start: threadRailBodyIndent,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: bodyChildren,
-                ),
+            Padding(
+              padding: const EdgeInsetsDirectional.only(
+                start: kInkAvatarTargetStart,
+                top: kInkAvatarTargetTop,
               ),
-            if (!indentBody) ...bodyChildren,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TweetAvatarTarget(
+                    avatar: avatar,
+                    size: kTweetAvatarSize,
+                    label: avatarLabel,
+                    onTap: onTapProfile,
+                  ),
+                  Expanded(child: header),
+                ],
+              ),
+            ),
+            ...bodyChildren,
           ],
         ),
       ],

@@ -22,6 +22,7 @@ import 'package:xta/tweet/avatar_follow_badge.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/unified_card.dart';
 import 'package:xta/tweet/tweet_header.dart';
+import 'package:xta/tweet/tweet_ink_layout.dart';
 import 'package:xta/tweet/tweet_post_menu.dart';
 import 'package:xta/tweet/unavailable_post.dart';
 import 'package:xta/tweet/focal_post.dart';
@@ -647,6 +648,14 @@ class TweetTileState extends State<TweetTile> {
     final locale = _effectiveLocale();
     final offersTranslation = tweet.article == null && _offerTranslation(locale);
 
+    // The post a conversation was opened on gets X's time · date · views line
+    // instead of a header timestamp and a views item in its footer.
+    final isFocal = _isFocal(context);
+
+    // Timeline posts in two columns (docs/specs/feed-ink.md); the opened post
+    // and a quoted one keep the author above the text.
+    final ink = !isQuotedTweet && !isFocal;
+
     // Only create the tweet content if the tweet contains text. X often omits
     // display_text_range on reshaped payloads — treat null as "has text".
     Widget content = Container();
@@ -657,9 +666,9 @@ class TweetTileState extends State<TweetTile> {
         style: tweetBodyStyle(context),
         child: Padding(
           // Fill the width so both RTL and LTR text are displayed correctly
-          padding: const EdgeInsetsDirectional.fromSTEB(
+          padding: EdgeInsetsDirectional.fromSTEB(
             kTweetHorizontalPadding,
-            kTweetSpace2,
+            ink ? kInkTextGap : kTweetSpace2,
             kTweetHorizontalPadding,
             kTweetSpace1,
           ),
@@ -693,10 +702,6 @@ class TweetTileState extends State<TweetTile> {
       );
     }
 
-    // The post a conversation screen was opened on gets X's time · date ·
-    // views line instead of a header timestamp and a views item in its footer.
-    final isFocal = _isFocal(context);
-
     // The post's top-right, next to the ⋯ menu — not in the footer strip,
     // which is for engagement and was one control too wide on a phone. Only on
     // posts there is something to translate: X offers nothing on a post
@@ -719,13 +724,14 @@ class TweetTileState extends State<TweetTile> {
 
     // X keeps translate and the ⋯ menu side by side at the top-right. A quoted
     // post has neither: tapping it opens the post, where both are.
+    final menuButton = TweetPostMenuButton(
+      tweet: tweet,
+      shareBaseUrl: shareBaseUrl,
+    );
     final headerActions = Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ?translateButton,
-        TweetPostMenuButton(tweet: tweet, shareBaseUrl: shareBaseUrl),
-      ],
+      children: [?translateButton, menuButton],
     );
 
     final footerBar = TweetFooterBar(
@@ -759,8 +765,6 @@ class TweetTileState extends State<TweetTile> {
     final isThreadTile = widget.threadConnectTop || widget.threadConnectBottom;
     final avatarSize = isQuotedTweet
         ? kTweetQuotedAvatarSize
-        : isThreadTile
-        ? kThreadRailAvatarSize
         : kTweetAvatarSize;
     final plainAvatar = hideAuthorInformation
         ? Icon(Icons.account_circle, size: avatarSize)
@@ -811,22 +815,35 @@ class TweetTileState extends State<TweetTile> {
       );
     }
 
-    final headerTile = TweetHeader(
-      avatar: avatar,
-      onOpenProfile: onTapProfile,
-      displayName: hideAuthorInformation ? null : tweet.user!.name,
-      handle: hideAuthorInformation ? null : tweet.user!.screenName,
-      verified: !hideAuthorInformation && (tweet.user!.verified ?? false),
-      verification: hideAuthorInformation ? null : tweet.user!.badges,
-      timestamp: createdAt == null || isFocal
-          ? null
-          : Timestamp(
-              timestamp: createdAt,
-              absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
-              compact: !widget.tweetOpened,
-            ),
-      trailing: isQuotedTweet ? null : headerActions,
-      compact: isQuotedTweet,
+    final displayName = hideAuthorInformation ? null : tweet.user!.name;
+    final handle = hideAuthorInformation ? null : tweet.user!.screenName;
+    final verified = !hideAuthorInformation && (tweet.user!.verified ?? false);
+    final verification = hideAuthorInformation ? null : tweet.user!.badges;
+    final timestamp = createdAt == null || isFocal
+        ? null
+        : Timestamp(
+            timestamp: createdAt,
+            absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
+            compact: !widget.tweetOpened,
+          );
+
+    Widget inkPost(List<Widget> body, {Widget? rail}) => TweetInkLayout(
+      avatar: TweetAvatarTarget(
+        avatar: avatar,
+        size: avatarSize,
+        label: displayName,
+        onTap: onTapProfile,
+      ),
+      authorLine: TweetAuthorLine(
+        displayName: displayName,
+        handle: handle,
+        verified: verified,
+        verification: verification,
+        timestamp: timestamp,
+      ),
+      trailing: [?translateButton, menuButton],
+      body: body,
+      rail: rail,
     );
 
     final pinnedBadge = isPinned
@@ -907,48 +924,42 @@ class TweetTileState extends State<TweetTile> {
       if (!isQuotedTweet) footerBar,
     ];
 
+    final contextLines = [
+      retweetBanner,
+      ?pinnedBadge,
+      ?threadBadge,
+      ?communityBadge,
+    ];
+
     if (isThreadTile) {
       return RepaintBoundary(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            retweetBanner,
-            ?pinnedBadge,
-            ?threadBadge,
-            ?communityBadge,
-            _buildThreadBody(
-              avatar,
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  kTweetSpace3,
-                  kTweetVerticalPadding,
-                  0,
-                  kTweetSpace1,
-                ),
-                child: TweetAuthorBlock(
-                  displayName: hideAuthorInformation ? null : tweet.user!.name,
-                  handle: hideAuthorInformation ? null : tweet.user!.screenName,
-                  verified:
-                      !hideAuthorInformation && (tweet.user!.verified ?? false),
-                  verification: hideAuthorInformation
-                      ? null
-                      : tweet.user!.badges,
-                  timestamp: createdAt == null || isFocal
-                      ? null
-                      : Timestamp(
-                          timestamp: createdAt,
-                          absoluteTimestamp: prefs.get(
-                            optionUseAbsoluteTimestamp,
-                          ),
-                          compact: !widget.tweetOpened,
-                        ),
+            ...contextLines,
+            if (isFocal)
+              _openedThreadPost(
+                avatar,
+                displayName,
+                TweetAuthorBlock(
+                  displayName: displayName,
+                  handle: handle,
+                  verified: verified,
+                  verification: verification,
+                  timestamp: timestamp,
                   trailing: headerActions,
                 ),
+                bodyChildren,
+                onTapProfile,
+              )
+            else
+              inkPost(
+                bodyChildren,
+                rail: ThreadRailLines(
+                  connectTop: widget.threadConnectTop,
+                  connectBottom: widget.threadConnectBottom,
+                ),
               ),
-              bodyChildren,
-              indentBody: widget.threadConnectBottom,
-              onTapProfile: onTapProfile,
-            ),
           ],
         ),
       );
@@ -965,12 +976,23 @@ class TweetTileState extends State<TweetTile> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  retweetBanner,
-                  ?pinnedBadge,
-                  ?threadBadge,
-                  ?communityBadge,
-                  headerTile,
-                  ...bodyChildren,
+                  ...contextLines,
+                  if (ink)
+                    inkPost(bodyChildren)
+                  else ...[
+                    TweetHeader(
+                      avatar: avatar,
+                      onOpenProfile: onTapProfile,
+                      displayName: displayName,
+                      handle: handle,
+                      verified: verified,
+                      verification: verification,
+                      timestamp: timestamp,
+                      trailing: isQuotedTweet ? null : headerActions,
+                      compact: isQuotedTweet,
+                    ),
+                    ...bodyChildren,
+                  ],
                 ],
               ),
             ),
@@ -998,19 +1020,29 @@ class TweetTileState extends State<TweetTile> {
   static bool _hideCounts(BasePrefService prefs) =>
       prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
-  Widget _buildThreadBody(
+  /// The opened post in a thread keeps X's large layout: the author beside
+  /// the avatar, the text across the width under it.
+  Widget _openedThreadPost(
     Widget avatar,
-    Widget header,
-    List<Widget> bodyChildren, {
-    required bool indentBody,
-    required VoidCallback onTapProfile,
-  }) {
+    String? avatarLabel,
+    Widget author,
+    List<Widget> bodyChildren,
+    VoidCallback onTapProfile,
+  ) {
     return ThreadRailBody(
       connectTop: widget.threadConnectTop,
       connectBottom: widget.threadConnectBottom,
-      indentBody: indentBody,
       avatar: avatar,
-      header: header,
+      avatarLabel: avatarLabel,
+      header: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          kInkColumnStart - kInkAvatarTargetStart - kTweetTouchTarget,
+          kInkColumnTop - kInkAvatarTargetTop,
+          0,
+          kTweetSpace1,
+        ),
+        child: author,
+      ),
       bodyChildren: bodyChildren,
       onTapProfile: onTapProfile,
     );

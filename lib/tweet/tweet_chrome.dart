@@ -213,26 +213,31 @@ class TweetMediaFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = XLookTokens.maybeOf(context);
-    final surface =
-        tokens?.card ?? Theme.of(context).colorScheme.surface;
-    final border = ensureContrast(
-      tokens?.border ?? Theme.of(context).colorScheme.outlineVariant,
-      surface,
-      minRatio: 1.3,
-    );
     return RepaintBoundary(
       child: Container(
         margin: margin,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          border: Border.all(color: border, width: kTweetDividerThickness),
+          border: tweetMediaBorder(context),
           borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
         ),
         child: child,
       ),
     );
   }
+}
+
+/// The hairline round a post's media, kept visible on any surface: one
+/// boundary for photos, GIFs and video from every network.
+Border tweetMediaBorder(BuildContext context) {
+  final tokens = XLookTokens.maybeOf(context);
+  final surface = tokens?.card ?? Theme.of(context).colorScheme.surface;
+  final border = ensureContrast(
+    tokens?.border ?? Theme.of(context).colorScheme.outlineVariant,
+    surface,
+    minRatio: 1.3,
+  );
+  return Border.all(color: border, width: kTweetDividerThickness);
 }
 
 /// A small overlay label used for media position and type badges.
