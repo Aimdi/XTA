@@ -20,6 +20,9 @@ class TweetAuthorBlock extends StatelessWidget {
   /// What a handle is written after: "@" on X, "u/" on Reddit.
   final String handlePrefix;
 
+  /// See [TweetAuthorLine.handleSpan].
+  final TweetHandleSpan? handleSpan;
+
   const TweetAuthorBlock({
     super.key,
     required this.displayName,
@@ -29,6 +32,7 @@ class TweetAuthorBlock extends StatelessWidget {
     this.timestamp,
     this.trailing,
     this.handlePrefix = '@',
+    this.handleSpan,
   });
 
   @override
@@ -73,11 +77,10 @@ class TweetAuthorBlock extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     if (handle != null)
-                      Text(
+                      _handleText(
                         '$handlePrefix$handle',
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: tweetMetadataStyle(context),
+                        tweetMetadataStyle(context),
+                        handleSpan,
                       ),
                     if (handle != null && timestamp != null)
                       Text('·', style: tweetMetadataStyle(context)),
@@ -179,6 +182,21 @@ TextStyle tweetAuthorMetaStyle(BuildContext context) => tweetDisplayNameStyle(
   context,
 ).copyWith(color: tweetSecondaryColor(context), fontWeight: FontWeight.w400);
 
+/// A handle drawn as more than its text, in the [style] of the line it is on.
+typedef TweetHandleSpan = InlineSpan Function(TextStyle style);
+
+/// A handle on one line, shortened with an ellipsis: as wide as what is drawn,
+/// so a shortened handle leaves no gap before the time.
+Widget _handleText(String text, TextStyle style, TweetHandleSpan? span) =>
+    Text.rich(
+      span?.call(style) ?? TextSpan(text: text),
+      maxLines: 1,
+      softWrap: false,
+      overflow: TextOverflow.ellipsis,
+      textWidthBasis: TextWidthBasis.longestLine,
+      style: style,
+    );
+
 /// The share of an author line its time always gets, however long the name.
 const double kTweetAuthorTimeShare = 0.45;
 
@@ -199,6 +217,10 @@ class TweetAuthorLine extends StatelessWidget {
   /// What a handle is written after: "@" on X, "u/" on Reddit.
   final String handlePrefix;
 
+  /// Draws the handle where it is more than "[handlePrefix][handle]":
+  /// Mastodon dims the server.
+  final TweetHandleSpan? handleSpan;
+
   /// Set where the name or the handle opens something of its own.
   final VoidCallback? onTapName;
   final VoidCallback? onTapHandle;
@@ -211,6 +233,7 @@ class TweetAuthorLine extends StatelessWidget {
     this.verification,
     this.timestamp,
     this.handlePrefix = '@',
+    this.handleSpan,
     this.onTapName,
     this.onTapHandle,
   });
@@ -228,6 +251,7 @@ class TweetAuthorLine extends StatelessWidget {
         verification: verification,
         timestamp: timestamp,
         handlePrefix: handlePrefix,
+        handleSpan: handleSpan,
       );
     }
     final meta = tweetAuthorMetaStyle(context);
@@ -342,16 +366,7 @@ class TweetAuthorLine extends StatelessWidget {
                         ),
                         child: _tappable(
                           onTapHandle,
-                          Text(
-                            '$handlePrefix$handle',
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                            // As wide as what is drawn, so a shortened handle
-                            // leaves no gap before the time.
-                            textWidthBasis: TextWidthBasis.longestLine,
-                            style: meta,
-                          ),
+                          _handleText('$handlePrefix$handle', meta, handleSpan),
                         ),
                       ),
               ),

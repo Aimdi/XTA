@@ -33,8 +33,10 @@ scaffold so the three stay alike:
 - **One author line** (TweetAuthorLine): the name, a verified check where the
   network has one (Threads), then "@handle · time" with the short time
   ("15 Min."). Mastodon keeps its instance dimmed in the handle, and adds
-  "edited" after the time when a post was edited. The handle gives way first;
-  with large text the handle and time take a second line.
+  "Edited" after the time when a post was edited, the first thing cut where
+  the line is short. The handle gives way first; with large text the handle
+  and time take a second line. A tap on the line opens the author, as before;
+  a tap on the time shows the date, as on an X post.
 - **Follow** (Bluesky, Threads) becomes a 48 dp icon at the end of the author
   line, where an X post has ⋯, with "Follow" as its tooltip and for a screen
   reader. It still goes once the account is followed.
@@ -43,13 +45,18 @@ scaffold so the three stay alike:
   reposter.
 - **"Replying to"** sits under the author line, as on X.
 - **The text, media, quotes, link cards, content warnings, Threads' topic tag
-  and "Show thread"** start at 68 dp, as before in order.
+  and "Show thread"** start at 68 dp, as before in order. The text takes an
+  X post's body style, 15 px where these cards had 16, so a mixed timeline
+  reads at one size.
 - **The actions** keep their buttons and counts; the row ends at the edge, so
   its last glyph lines up with an X post's share glyph.
 - Tap, long press and every button do what they did.
 
 A Threads conversation's rail then runs through the 40 dp avatars, as X's
-does, and its separate rail geometry goes.
+does, and its separate rail geometry goes. Each card draws its part of the
+rail itself: drawn behind the cards, as it was, the cards' own colour covered
+it. Connected posts go without the hairline between them, as an X thread's
+do, so the rail runs on unbroken.
 
 Their own screens (a Mastodon instance, a Bluesky feed, a Threads profile)
 show the same cards, so they change too.
@@ -62,19 +69,34 @@ author.
 
 ## Code
 
-- `lib/plugins/plugin_ink_post.dart` (new): the shared scaffold.
-- `lib/tweet/tweet_header.dart`: a handle builder for Mastodon's dimmed
+- `lib/plugins/plugin_ink_post.dart` (new): the shared scaffold and the
+  Follow icon.
+- `lib/tweet/tweet_header.dart`: a handle span for Mastodon's dimmed
   instance.
+- `lib/ui/dates.dart`: a suffix after the time, for "Edited".
 - `lib/plugins/mastodon/mastodon_post_card.dart`,
   `lib/plugins/bluesky/bluesky_post_card.dart`,
   `lib/plugins/threads/threads_post_card.dart`: the cards.
-- `lib/plugins/threads/threads_thread_screen.dart`, `lib/tweet/thread_rail.dart`:
-  the default rail.
+- `lib/plugins/plugin_profile_tabs.dart`: "Replying to" under the author line.
+- `lib/plugins/threads/threads_thread_screen.dart`, `lib/tweet/thread_rail.dart`,
+  `lib/tweet/threaded_conversation.dart`: one rail geometry, drawn in the card.
 
 ## Tests
 
+`test/feed_ink_networks_test.dart`:
+
 - Each card: the avatar at 16 dp, 40 dp, in a 48 dp target; the author line,
-  text and actions at 68 dp; name, handle and time on one line.
-- Follow: a 48 dp icon with its tooltip until the account is followed.
-- Repost and pinned lines at 68 dp; a repost line opens the reposter.
+  text and actions at 68 dp, the actions ending at the edge; name, handle and
+  time on one line, and on two with large text on a 320 dp phone; the author
+  and, in a mixed timeline, the network for a screen reader.
+- Follow: a 48 dp icon at the end of the author line with its tooltip until
+  the account is followed.
+- Repost, boost and pinned lines at 68 dp; a repost or boost line opens the
+  reposter. "Replying to" and Threads' topic under the author line.
+- Mastodon dims the server and says "Edited" after the time; Threads carries
+  its verified check on the author line.
+- A Threads conversation draws its rail inside the card, through the avatar,
+  without a hairline between connected posts.
 - German at 320 dp does not overflow (the existing card overflow tests).
+- Renders, with `--dart-define=RENDER_INK=true`: a mixed timeline in black,
+  light and large text right-to-left, and a Threads conversation.

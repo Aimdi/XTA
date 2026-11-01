@@ -138,7 +138,8 @@ SubscriptionGroupGet _group(int filters) => SubscriptionGroupGet(
 );
 
 /// [child] with everything a timeline post and a Reddit post read, in
-/// [locale] on a phone [size] at text [scale].
+/// [locale] on a phone [size] at text [scale]. [observers] see what a tap
+/// opens.
 Future<void> pumpInk(
   WidgetTester tester,
   Widget child, {
@@ -147,6 +148,7 @@ Future<void> pumpInk(
   Size size = const Size(390, 844),
   double scale = 1,
   TextDirection? direction,
+  List<NavigatorObserver> observers = const [],
 }) async {
   // As the app registers them at start: "19 Min." rather than "vor 19 Minuten".
   timeago.setLocaleMessages('de', timeago.DeMessages());
@@ -199,6 +201,7 @@ Future<void> pumpInk(
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: L10n.delegate.supportedLocales,
+          navigatorObservers: observers,
           builder: (context, app) => MediaQuery(
             data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
             child: direction == null ? app! : Directionality(textDirection: direction, child: app!),

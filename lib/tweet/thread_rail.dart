@@ -34,13 +34,6 @@ const kPostRailGeometry = ThreadRailGeometry(
   avatarSize: kTweetAvatarSize,
 );
 
-/// Cards that draw a 48 dp avatar 16 dp in and 10 dp down, as Threads' do.
-const kWideAvatarRailGeometry = ThreadRailGeometry(
-  avatarStart: 16,
-  avatarTop: 10,
-  avatarSize: 48,
-);
-
 /// Extra left inset for a reply at [depth] in the status-thread tree.
 ///
 /// Depth 0 is the opened tweet. Depth 1 is a direct reply — those sit flush
@@ -59,14 +52,12 @@ class ThreadRailLines extends StatelessWidget {
   final bool connectTop;
   final bool connectBottom;
   final Color? lineColor;
-  final ThreadRailGeometry geometry;
 
   const ThreadRailLines({
     super.key,
     required this.connectTop,
     required this.connectBottom,
     this.lineColor,
-    this.geometry = kPostRailGeometry,
   });
 
   @override
@@ -75,6 +66,7 @@ class ThreadRailLines extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final color = lineColor ?? Theme.of(context).colorScheme.outlineVariant;
+    const geometry = kPostRailGeometry;
     Widget lineSeg() => SizedBox(
       width: kThreadRailLineWidth,
       child: ColoredBox(color: color),

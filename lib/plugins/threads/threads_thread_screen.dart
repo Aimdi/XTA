@@ -9,8 +9,6 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_thread_store.dart';
-import 'package:xta/tweet/thread_rail.dart';
-import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
@@ -172,20 +170,23 @@ class _ThreadsConversationList extends StatelessWidget {
     ];
     return [
       for (final (index, post) in chain.indexed)
-        ThreadIndent(
-          key: ValueKey('chain-${post.id}'),
-          depth: 1,
-          geometry: kWideAvatarRailGeometry,
-          connectTop: index > 0,
-          connectBottom: index < chain.length - 1,
-          child: identical(post, focus)
-              ? ThreadsPostCard(
-                  post: post,
-                  showSourceBadge: false,
-                  openOnTap: false,
-                )
-              : _card(context, post),
-        ),
+        if (identical(post, focus))
+          ThreadsPostCard(
+            key: ValueKey('chain-${post.id}'),
+            post: post,
+            showSourceBadge: false,
+            openOnTap: false,
+            threadConnectTop: index > 0,
+            threadConnectBottom: index < chain.length - 1,
+          )
+        else
+          _card(
+            context,
+            post,
+            key: ValueKey('chain-${post.id}'),
+            connectTop: index > 0,
+            connectBottom: index < chain.length - 1,
+          ),
     ];
   }
 
@@ -233,13 +234,12 @@ class _ThreadsConversationList extends StatelessWidget {
       ),
       for (final row in threadsReplyRows(conversation, view))
         switch (row) {
-          ThreadsReplyPostRow() => ThreadIndent(
+          ThreadsReplyPostRow() => _card(
+            context,
+            row.post,
             key: ValueKey('reply-${row.post.id}'),
-            depth: 1,
-            geometry: kWideAvatarRailGeometry,
             connectTop: row.connectTop,
             connectBottom: row.connectBottom,
-            child: _card(context, row.post),
           ),
           ThreadsReplyMoreRow() => _MoreRepliesRow(
             key: ValueKey('more-${row.chain.first.id}'),
@@ -250,10 +250,18 @@ class _ThreadsConversationList extends StatelessWidget {
     ];
   }
 
-  Widget _card(BuildContext context, ThreadsPost post) => ThreadsPostCard(
-    key: ValueKey(post.id),
+  Widget _card(
+    BuildContext context,
+    ThreadsPost post, {
+    required Key key,
+    required bool connectTop,
+    required bool connectBottom,
+  }) => ThreadsPostCard(
+    key: key,
     post: post,
     showSourceBadge: false,
+    threadConnectTop: connectTop,
+    threadConnectBottom: connectBottom,
     onOpen: () => Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)),

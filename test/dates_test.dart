@@ -34,4 +34,15 @@ void main() {
     expect(find.text('5 minutes ago'), findsNothing);
     expect(find.text(absoluteDateFormat().format(timestamp.toLocal())), findsOneWidget);
   });
+
+  testWidgets('a timestamp a list hands to another post says that post\'s time', (tester) async {
+    final now = DateTime.now();
+    await tester.pumpWidget(MaterialApp(home: Timestamp(timestamp: now.subtract(const Duration(minutes: 5)))));
+    await tester.tap(find.byType(Timestamp));
+    await tester.pump();
+
+    // The same element, as an unkeyed card scrolled into another post's place.
+    await tester.pumpWidget(MaterialApp(home: Timestamp(timestamp: now.subtract(const Duration(hours: 3)))));
+    expect(find.text('3 hours ago'), findsOneWidget, reason: 'relative, as a fresh timestamp starts out');
+  });
 }

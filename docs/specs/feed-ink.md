@@ -135,6 +135,7 @@ colour for the badge ring, the page colour under the bottom bar.
 
 - Mastodon, Bluesky and Threads posts keep their own layout (avatar and
   name above, text across the width); they gain only the avatar badge.
+  docs/specs/feed-ink-networks.md has since given them the two columns.
 - The canvas's purple accent: the accent stays the one chosen in settings.
   The verified check already wears it, as the canvas draws it; gold and grey
   still mark organisations and governments.

@@ -16,13 +16,15 @@ import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
-import 'package:xta/plugins/plugin_card_row.dart';
+import 'package:xta/plugins/plugin_ink_post.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/tweet/tweet_header.dart';
+import 'package:xta/tweet/tweet_ink_layout.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
@@ -30,11 +32,9 @@ import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/links/link_opening.dart';
 import 'package:xta/links/link_post_context.dart';
 import 'package:xta/links/link_preview_card.dart';
-import 'package:xta/ui/provenance_accent.dart';
 
-const double kBlueskyAvatarSize = 48;
-
-/// A Bluesky post as a timeline card — avatar column, counts, quote, link card.
+/// A Bluesky post as a timeline card, laid out as an X post is
+/// (docs/specs/feed-ink-networks.md): counts, quote, link card.
 class BlueskyPostCard extends StatelessWidget {
   final BlueskyPost post;
   final bool showSourceBadge;
@@ -99,85 +99,79 @@ class BlueskyPostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final accounts = context.read<BlueskyAccountsStore>();
+    return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
+      store: accounts,
+      distinct: (_) => accounts.follows(post.handle),
+      onState: (context, _) => _post(context, following: accounts.follows(post.handle)),
+    );
+  }
 
-    return RepaintBoundary(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          tweetFlatCard(
-            color: theme.cardColor,
-            child: InkWell(
-              onTap: openOnTap ? () => _open(context) : null,
-              onLongPress: () => showBlueskyPostActions(context, post),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (post.isRepost) _repostBanner(context),
-                    if (post.replyToHandle != null && post.replyToHandle!.isNotEmpty)
-                      PluginReplyingTo(name: post.replyToHandle!),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () => _openAuthor(context),
-                          child: ProvenanceAvatarBadge(
-                            pluginId: pluginIdBluesky,
-                            show: showSourceBadge,
-                            child: _avatar(context),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              GestureDetector(
-                                onTap: () => _openAuthor(context),
-                                behavior: HitTestBehavior.opaque,
-                                child: _header(context),
-                              ),
-                              if (blueskyWarnsContent(post))
-                                BlueskyContentWarning(
-                                  key: ValueKey('warning-${post.uri}'),
-                                  identity: blueskyWarningIdentity(post),
-                                  unavailable: blueskyContentUnavailable(post),
-                                  child: _body(context),
-                                )
-                              else
-                                _body(context),
-                              _BlueskyEngagementRow(
-                                post: post,
-                                onOpen: () => _open(context),
-                                onOpenBrowser: () => _openBrowser(context),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+  Widget _post(BuildContext context, {required bool following}) {
+    final date = post.publishedAt;
+    final replyTo = post.replyToHandle;
+    return PluginInkPost(
+      pluginId: pluginIdBluesky,
+      showSourceBadge: showSourceBadge,
+      color: Theme.of(context).cardColor,
+      onTap: openOnTap ? () => _open(context) : null,
+      onLongPress: () => showBlueskyPostActions(context, post),
+      contextLines: [if (post.isRepost) _repostLine(context)],
+      avatar: _avatar(context),
+      authorName: post.authorName,
+      onOpenAuthor: () => _openAuthor(context),
+      authorLine: TweetAuthorLine(
+        displayName: post.authorName,
+        handle: post.handle,
+        verified: false,
+        timestamp: date == null ? null : Timestamp(timestamp: date, compact: true),
+      ),
+      trailing: [
+        if (!following)
+          pluginInkFollowButton(
+            context,
+            tooltip: L10n.of(context).plugin_bluesky_follow,
+            onPressed: () => _follow(context),
           ),
-          tweetHairlineDivider(context),
-        ],
+      ],
+      body: [
+        if (replyTo != null && replyTo.isNotEmpty) PluginReplyingTo(name: replyTo),
+        if (blueskyWarnsContent(post))
+          BlueskyContentWarning(
+            key: ValueKey('warning-${post.uri}'),
+            identity: blueskyWarningIdentity(post),
+            unavailable: blueskyContentUnavailable(post),
+            child: _body(context),
+          )
+        else
+          _body(context),
+      ],
+      actions: _BlueskyEngagementRow(
+        post: post,
+        onOpen: () => _open(context),
+        onOpenBrowser: () => _openBrowser(context),
       ),
     );
   }
+
+  void _follow(BuildContext context) => context.read<BlueskyAccountsStore>().add(
+    BlueskyAccount(
+      handle: post.handle,
+      name: post.authorName,
+      avatarUrl: post.avatarUrl,
+      did: post.did.isEmpty ? null : post.did,
+    ),
+  );
 
   Widget _body(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (post.text.isNotEmpty) ...[
-        const SizedBox(height: 6),
+        const SizedBox(height: kInkTextGap),
         BlueskyRichText(
           text: post.text,
           facets: post.facets,
-          style: Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35),
+          style: tweetBodyStyle(context),
           onFacetTap: (facet) => _onFacet(context, facet),
         ),
       ],
@@ -228,39 +222,22 @@ class BlueskyPostCard extends StatelessWidget {
         : null,
   );
 
-  Widget _repostBanner(BuildContext context) {
-    final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
-    final name = post.repostedByName ?? post.repostedByHandle ?? '';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 60),
-      child: InkWell(
-        onTap: () => _openReposter(context),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Row(
-            children: [
-              Icon(Icons.repeat, size: 14, color: muted),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  L10n.of(context).plugin_bluesky_reposted(name),
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall!.copyWith(color: muted),
-                ),
-              ),
-            ],
-          ),
-        ),
+  Widget _repostLine(BuildContext context) {
+    final reposter = post.reposterActor;
+    return TweetContextRow(
+      icon: Icons.repeat,
+      label: Text(
+        L10n.of(context).plugin_bluesky_reposted(post.repostedByName ?? post.repostedByHandle ?? ''),
+        overflow: TextOverflow.ellipsis,
       ),
+      onTap: reposter == null || reposter.isEmpty ? null : () => _openReposter(context),
     );
   }
 
   Widget _avatar(BuildContext context) {
     final theme = Theme.of(context);
     final avatar = post.avatarUrl;
-    const size = kBlueskyAvatarSize;
+    const size = kTweetAvatarSize;
 
     return ClipOval(
       child: avatar == null
@@ -277,64 +254,6 @@ class BlueskyPostCard extends StatelessWidget {
               fit: BoxFit.cover,
               cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
             ),
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final date = post.publishedAt;
-    final muted = theme.colorScheme.onSurfaceVariant;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        PluginNameMetaRow(
-          name: Text(
-            post.authorName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
-          ),
-          meta: [if (date != null) createRelativeDate(date)],
-        ),
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                '@${post.handle}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(color: muted),
-              ),
-            ),
-            _followButton(context),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _followButton(BuildContext context) {
-    final accounts = context.read<BlueskyAccountsStore>();
-    return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
-      store: accounts,
-      distinct: (_) => accounts.follows(post.handle),
-      onState: (context, _) {
-        if (accounts.follows(post.handle)) {
-          return const SizedBox.shrink();
-        }
-        return TextButton(
-          onPressed: () => accounts.add(
-            BlueskyAccount(
-              handle: post.handle,
-              name: post.authorName,
-              avatarUrl: post.avatarUrl,
-              did: post.did.isEmpty ? null : post.did,
-            ),
-          ),
-          child: Text(L10n.of(context).plugin_bluesky_follow),
-        );
-      },
     );
   }
 }

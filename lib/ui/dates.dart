@@ -40,7 +40,17 @@ class Timestamp extends StatefulWidget {
   /// wording. Tapping still toggles to the absolute date either way.
   final bool compact;
 
-  const Timestamp({super.key, required this.timestamp, this.absoluteTimestamp = false, this.compact = false});
+  /// Said after the time, as Mastodon's "Edited": where the line is short, it
+  /// is what gets cut.
+  final String? suffix;
+
+  const Timestamp({
+    super.key,
+    required this.timestamp,
+    this.absoluteTimestamp = false,
+    this.compact = false,
+    this.suffix,
+  });
 
   @override
   State<Timestamp> createState() => _TimestampState(useRelativeTimestamp: !absoluteTimestamp);
@@ -56,17 +66,25 @@ class _TimestampState extends State<Timestamp> {
   String _relative(DateTime timestamp) =>
       widget.compact ? createCompactDate(timestamp) : createRelativeDate(timestamp);
 
+  String _format(DateTime timestamp) =>
+      _useRelativeTimestamp ? _relative(timestamp) : absoluteDateFormat().format(timestamp.toLocal());
+
   @override
   void initState() {
     super.initState();
 
     var timestamp = widget.timestamp;
-    if (timestamp != null) {
-      if (_useRelativeTimestamp) {
-        formattedTime = _relative(timestamp);
-      } else {
-        formattedTime = absoluteDateFormat().format(timestamp.toLocal());
-      }
+    if (timestamp != null) formattedTime = _format(timestamp);
+  }
+
+  @override
+  void didUpdateWidget(Timestamp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A list hands this to another post as it scrolls: it says that post's time, the way it starts out.
+    final timestamp = widget.timestamp;
+    if (timestamp != oldWidget.timestamp) _useRelativeTimestamp = !widget.absoluteTimestamp;
+    if (timestamp != oldWidget.timestamp || widget.compact != oldWidget.compact) {
+      formattedTime = timestamp == null ? '' : _format(timestamp);
     }
   }
 
@@ -77,16 +95,15 @@ class _TimestampState extends State<Timestamp> {
       return Container();
     }
 
+    final suffix = widget.suffix;
     return GestureDetector(
-      child: Text(formattedTime),
+      child: Text(suffix == null ? formattedTime : '$formattedTime · $suffix'),
       onTap: () {
         // Flip first, then format the mode being flipped to — formatting the
         // mode being left is why the first tap appeared to do nothing.
         setState(() {
           _useRelativeTimestamp = !_useRelativeTimestamp;
-          formattedTime = _useRelativeTimestamp
-              ? _relative(timestamp)
-              : absoluteDateFormat().format(timestamp.toLocal());
+          formattedTime = _format(timestamp);
         });
       },
     );

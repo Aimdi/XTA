@@ -11,8 +11,9 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_poll.dart';
 import 'package:xta/plugins/mastodon/mastodon_activity.dart';
 import 'package:xta/plugins/mastodon/mastodon_bookmark.dart';
-import 'package:xta/plugins/plugin_card_row.dart';
+import 'package:xta/plugins/plugin_ink_post.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_text.dart';
@@ -20,18 +21,17 @@ import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/tweet/tweet_header.dart';
+import 'package:xta/tweet/tweet_ink_layout.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
-import 'package:xta/ui/provenance_accent.dart';
-
-/// Avatar size matching X / Reddit cards so Fediverse posts don't look smaller.
-const double kMastodonAvatarSize = 48;
 
 /// Tallest a single attached image is allowed to paint relative to its width.
 const double kMastodonMediaMaxAspectRatio = 16 / 9;
 
-/// A Mastodon status as a timeline card — tweet-sized layout, counts, link preview.
+/// A Mastodon status as a timeline card, laid out as an X post is
+/// (docs/specs/feed-ink-networks.md): counts, link preview, content warnings.
 class MastodonPostCard extends StatelessWidget {
   final MastodonPost post;
   final bool showSourceBadge;
@@ -86,64 +86,39 @@ class MastodonPostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return RepaintBoundary(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          tweetFlatCard(
-            color: theme.cardColor,
-            child: InkWell(
-              onTap: openOnTap ? () => _open(context) : null,
-              onLongPress: () => showMastodonPostActions(context, post),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (post.boosted) _boostBanner(context),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () => _openAuthor(context),
-                          child: ProvenanceAvatarBadge(
-                            pluginId: pluginIdMastodon,
-                            show: showSourceBadge,
-                            child: _avatar(context),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () => _openAuthor(context),
-                            behavior: HitTestBehavior.opaque,
-                            child: _header(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    if (post.replyToAcct != null) _replyLine(context),
-                    _SpoilerBody(
-                      key: ValueKey((post.url, post.id, post.spoilerText, post.sensitive)),
-                      post: post,
-                      media: _media(context),
-                      linkPreview: _linkPreview(context),
-                    ),
-                    _MastodonEngagementRow(
-                      post: post,
-                      onOpen: () => _open(context),
-                      onOpenBrowser: () => _openBrowser(context),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          tweetHairlineDivider(context),
-        ],
+    return PluginInkPost(
+      pluginId: pluginIdMastodon,
+      showSourceBadge: showSourceBadge,
+      color: Theme.of(context).cardColor,
+      onTap: openOnTap ? () => _open(context) : null,
+      onLongPress: () => showMastodonPostActions(context, post),
+      contextLines: [
+        if (post.boosted) _boostLine(context),
+        if (pinned) TweetContextRow(icon: Icons.push_pin, label: Text(L10n.of(context).plugin_mastodon_pinned)),
+      ],
+      avatar: _avatar(context),
+      authorName: post.authorName,
+      onOpenAuthor: () => _openAuthor(context),
+      authorLine: TweetAuthorLine(
+        displayName: post.authorName,
+        handle: post.acct,
+        verified: false,
+        timestamp: _time(context),
+        handleSpan: (style) => mastodonHandleSpan(post.acct, style),
+      ),
+      body: [
+        if (post.replyToAcct case final acct?) PluginReplyingTo(name: acct),
+        _SpoilerBody(
+          key: ValueKey((post.url, post.id, post.spoilerText, post.sensitive)),
+          post: post,
+          media: _media(context),
+          linkPreview: _linkPreview(context),
+        ),
+      ],
+      actions: _MastodonEngagementRow(
+        post: post,
+        onOpen: () => _open(context),
+        onOpenBrowser: () => _openBrowser(context),
       ),
     );
   }
@@ -151,7 +126,7 @@ class MastodonPostCard extends StatelessWidget {
   Widget _avatar(BuildContext context) {
     final theme = Theme.of(context);
     final avatar = post.avatarUrl;
-    const size = kMastodonAvatarSize;
+    const size = kTweetAvatarSize;
 
     return ClipOval(
       child: avatar == null
@@ -166,93 +141,26 @@ class MastodonPostCard extends StatelessWidget {
     );
   }
 
-  Widget _boostBanner(BuildContext context) {
-    final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
-    final name = post.boostedBy ?? post.authorName;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 4),
-      child: InkWell(
-        onTap: post.boostedByAcct?.isNotEmpty == true
-            ? () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: post.boostedByAcct!)),
-              )
-            : null,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Row(
-            children: [
-              Icon(Icons.repeat, size: 14, color: muted),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  L10n.of(context).plugin_mastodon_boosted(name),
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall!.copyWith(color: muted),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _replyLine(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 2),
-      child: Text(
-        '${L10n.of(context).replying_to} @${post.replyToAcct}',
-        maxLines: 1,
+  Widget _boostLine(BuildContext context) {
+    final booster = post.boostedByAcct;
+    return TweetContextRow(
+      icon: Icons.repeat,
+      label: Text(
+        L10n.of(context).plugin_mastodon_boosted(post.boostedBy ?? post.authorName),
         overflow: TextOverflow.ellipsis,
-        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
       ),
+      onTap: booster == null || booster.isEmpty
+          ? null
+          : () => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: booster))),
     );
   }
 
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = L10n.of(context);
+  /// The short time, and "Edited" after it when the author changed the post.
+  Widget? _time(BuildContext context) {
     final date = post.publishedAt;
-    final muted = theme.colorScheme.onSurfaceVariant;
-    final large = MediaQuery.textScalerOf(context).scale(14) > 21;
-    final name = Text(
-      post.authorName,
-      maxLines: large ? 2 : 1,
-      overflow: TextOverflow.ellipsis,
-      style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
-    );
-    final meta = [if (date != null) createRelativeDate(date), if (post.edited) l10n.plugin_mastodon_edited];
-    final badges = [if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned)];
-    if (large) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          name,
-          Text(
-            '@${post.acct}',
-            textDirection: TextDirection.ltr,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall!.copyWith(color: muted),
-          ),
-          if (meta.isNotEmpty) Text(meta.join(' · '), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
-          if (badges.isNotEmpty) Wrap(spacing: 6, runSpacing: 4, children: badges),
-        ],
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        PluginNameMetaRow(name: name, meta: meta),
-        PluginHandleBadgeRow(
-          handle: _MastodonHandle(acct: post.acct, muted: muted),
-          badges: badges,
-        ),
-      ],
-    );
+    final edited = post.edited ? L10n.of(context).plugin_mastodon_edited : null;
+    if (date == null) return edited == null ? null : Text(edited);
+    return Timestamp(timestamp: date, compact: true, suffix: edited);
   }
 
   Widget? _linkPreview(BuildContext context) {
@@ -298,37 +206,18 @@ class MastodonPostCard extends StatelessWidget {
 /// Which server someone posts from is half of who they are on the Fediverse,
 /// so the card never drops it — but it is the part that gets shortened when
 /// the handle will not fit, because the name is what a reader recognises.
-class _MastodonHandle extends StatelessWidget {
-  final String acct;
-  final Color muted;
-
-  const _MastodonHandle({required this.acct, required this.muted});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final style = theme.textTheme.bodySmall!.copyWith(color: muted);
-    final at = acct.indexOf('@');
-
-    if (at <= 0) {
-      return Text('@$acct', maxLines: 1, overflow: TextOverflow.ellipsis, style: style);
-    }
-
-    return Text.rich(
+InlineSpan mastodonHandleSpan(String acct, TextStyle style) {
+  final at = acct.indexOf('@');
+  if (at <= 0) return TextSpan(text: '@$acct');
+  return TextSpan(
+    children: [
+      TextSpan(text: '@${acct.substring(0, at)}'),
       TextSpan(
-        children: [
-          TextSpan(text: '@${acct.substring(0, at)}'),
-          TextSpan(
-            text: acct.substring(at),
-            style: style.copyWith(color: muted.withValues(alpha: 0.7)),
-          ),
-        ],
+        text: acct.substring(at),
+        style: style.copyWith(color: style.color?.withValues(alpha: 0.7)),
       ),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: style,
-    );
-  }
+    ],
+  );
 }
 
 /// Read-only replies / boosts / favourites — body opens in-app; the icon leaves.
@@ -459,17 +348,16 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
 
   Widget _visible(BuildContext context, bool open) {
     final post = widget.post;
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (post.hasSpoiler) _MastodonContentWarning(text: post.spoilerText, open: true, onHide: _store.hide),
         if (post.text.isNotEmpty) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: kInkTextGap),
           MastodonRichText(
             text: post.text,
             mentionAccts: post.mentionAccts,
-            style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+            style: tweetBodyStyle(context),
             onMentionTap: (acct) =>
                 Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: acct))),
             onTagTap: (tag) => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag))),
