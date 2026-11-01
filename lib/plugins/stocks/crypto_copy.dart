@@ -6,10 +6,13 @@ import 'package:xta/ui/action_feedback.dart';
 
 /// Copies a token's full contract address — the thing a reader pastes into a
 /// wallet or explorer — and says so, since a long-press gives no other sign.
-Future<void> copyCryptoAddress(BuildContext context, CryptoAsset asset) async {
+Future<void> copyCryptoAddress(BuildContext context, CryptoAsset asset) => copyContractAddress(context, asset.address);
+
+/// Copies [address] whole, wherever it is shown cut, and says so.
+Future<void> copyContractAddress(BuildContext context, String address) async {
   final messenger = ScaffoldMessenger.maybeOf(context);
   final message = L10n.of(context).plugin_stocks_crypto_address_copied;
   selectionHaptic(context);
-  await Clipboard.setData(ClipboardData(text: asset.address));
+  await Clipboard.setData(ClipboardData(text: address));
   messenger?.showSnackBar(SnackBar(content: Text(message)));
 }

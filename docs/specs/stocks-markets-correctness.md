@@ -111,10 +111,14 @@ shown, nothing is traded.
 
 - **A token's chip has no network line**, like a cashtag's: its label over its
   price and move. Its network and address stay on its row and page.
-- **A contract address in a post** shows cut in the middle (`0x23a2…fe51`) in
-  the link colour, on one line; tapping copies the whole address.
+- **A contract address in a post**, wherever posts are shown, reads cut in the
+  middle (`0x23a2…fe51`, a Solana mint `EKpQ…zcjm`) in the link colour, on one
+  line; tapping copies the whole address. A long word without a digit stays a
+  word.
 - **The quote chips under a post** are compact and share rows: symbol, price
-  and move in a small outlined chip, as many to a line as fit.
+  and move in a small outlined chip, as many to a line as fit (at 360 dp two of
+  three share the first line, where all three stacked). Only the move is green
+  or red; each chip keeps a 48 dp target.
 - **Posts with a Telegram link and three or more cashtags go to the end** of
   each loaded page of Tweets and Trend, in their order; nothing is hidden.
 
