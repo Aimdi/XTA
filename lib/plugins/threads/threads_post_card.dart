@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_ink_post.dart';
-import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/plugins/threads/threads_archive.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
@@ -16,6 +15,7 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_rich_text.dart';
+import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/threads/threads_media.dart';
 import 'package:xta/plugins/threads/threads_quote.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
@@ -342,7 +342,8 @@ class ThreadsTopicTag extends StatelessWidget {
     final theme = Theme.of(context);
     final color = theme.colorScheme.onSurfaceVariant;
     return InkWell(
-      onTap: () => openLink(context, threadsTagSearchUrl(tag)),
+      onTap: () =>
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsSearchScreen(query: tag, tag: true))),
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),

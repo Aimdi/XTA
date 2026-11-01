@@ -11,6 +11,7 @@ import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
+import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/plugins/plugin_url.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
@@ -88,6 +89,17 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
     );
   }
 
+  void _openSearch(String query, {bool tag = false, String? profile}) {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            ThreadsSearchScreen(query: query, tag: tag, profile: profile),
+      ),
+    );
+  }
+
   Future<void> _remember(String query) async {
     final prefs = PrefService.of(context);
     await rememberPluginSearch(prefs, optionPluginThreadsSearchHistory, query);
@@ -107,13 +119,28 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
       return;
     }
 
+    // A #tag opens the posts filed under it.
+    if (query.startsWith('#') && query.length > 1) {
+      await _remember(query);
+      if (mounted) _openSearch(query.substring(1), tag: true);
+      return;
+    }
+
     final handle = normaliseThreadsHandle(query);
     final direct = context.read<ThreadsDirectClient>();
     if (!_canSearchUsers) {
-      if (handle != null) {
+      // An @handle or a profile link opens the profile; other words search
+      // posts, with the profile they may also spell on top.
+      final named =
+          query.startsWith('@') ||
+          (Uri.tryParse(query)?.host.contains('threads.') ?? false);
+      if (named && handle != null) {
         await _remember(handle);
         await _openProfile(handle);
+        return;
       }
+      await _remember(query);
+      if (mounted) _openSearch(query, profile: handle);
       return;
     }
 
@@ -180,7 +207,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
                 autofocus: (widget.initialQuery ?? '').trim().isEmpty,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: l10n.plugin_threads_search_hint,
+                  hintText: l10n.plugin_threads_search_posts_hint,
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.arrow_forward),
@@ -196,7 +223,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(
-                  l10n.plugin_threads_search_guest_hint,
+                  l10n.plugin_threads_search_guest_posts_hint,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -282,15 +309,32 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
         ],
       );
     }
+    final searchPosts = ListTile(
+      leading: const Icon(Icons.article_outlined),
+      title: Text(l10n.plugin_threads_search_posts),
+      onTap: () => _openSearch(_controller.text.trim()),
+    );
     if (_results.isEmpty) {
-      return Center(child: Text(l10n.plugin_threads_no_results));
+      return ListView(
+        children: [
+          searchPosts,
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l10n.plugin_threads_no_results,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
     }
     final accounts = context.read<ThreadsAccountsStore>();
     return ListView.separated(
-      itemCount: _results.length,
+      itemCount: _results.length + 1,
       separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (context, index) {
-        final profile = _results[index];
+        if (index == 0) return searchPosts;
+        final profile = _results[index - 1];
         return ListTile(
           leading: _avatar(context, profile),
           title: Text(

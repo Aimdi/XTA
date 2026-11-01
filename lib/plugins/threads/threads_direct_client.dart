@@ -716,6 +716,21 @@ class ThreadsDirectClient {
     return parseThreadsSsrReplies(body, key);
   }
 
+  /// What Threads' public search finds for [query], as a logged-out browser
+  /// sees it: the top posts, or the most recent with [recent]; with [tag],
+  /// the posts filed under that topic. One page: it names no cursor a guest
+  /// can follow.
+  Future<List<ThreadsPost>> searchGuestPosts(
+    String query, {
+    bool tag = false,
+    bool recent = false,
+  }) async {
+    final body = await _guestHtml(
+      threadsSearchUri(query, tag: tag, recent: recent),
+    );
+    return threadsSearchResults(body, query, tag: tag);
+  }
+
   Future<String> _fetchProfileHtml(String handle) {
     final key = handle.trim().toLowerCase();
     return _profileHtmlInFlight.putIfAbsent(key, () async {

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -11,6 +9,8 @@ import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_thread_store.dart';
 
+import 'support/threads_pages.dart';
+
 ThreadsPost _post(String id, {String handle = 'zuck'}) => ThreadsPost(
   id: id,
   handle: handle,
@@ -18,29 +18,6 @@ ThreadsPost _post(String id, {String handle = 'zuck'}) => ThreadsPost(
   text: 'post $id',
   url: 'https://www.threads.com/@$handle/post/C$id',
 );
-
-Map<String, Object?> _json(String id, {String user = 'zuck'}) => {
-  'pk': id,
-  'code': 'C$id',
-  'caption': {'text': 'post $id'},
-  'user': {'username': user},
-};
-
-String _page(List<List<Map<String, Object?>>> chains) {
-  final blob = jsonEncode({
-    'edges': [
-      for (final chain in chains)
-        {
-          'node': {
-            'thread_items': [
-              for (final post in chain) {'post': post},
-            ],
-          },
-        },
-    ],
-  });
-  return '<html><script data-sjs>$blob</script></html>';
-}
 
 ThreadsDirectClient _client(http.Client http) => ThreadsDirectClient(
   PrefServiceCache(cache: {optionPluginThreadsDirectCooldownUntil: '', optionPluginThreadsUserIds: '{}'}),
@@ -162,9 +139,9 @@ void main() {
           expect(request.url.host, 'www.threads.com');
           expect(request.url.query, isEmpty);
           return http.Response(
-            _page([
-              [_json('1')],
-              [_json('2', user: 'a')],
+            threadsPage([
+              [threadsPostJson('1')],
+              [threadsPostJson('2', user: 'a')],
             ]),
             200,
           );
