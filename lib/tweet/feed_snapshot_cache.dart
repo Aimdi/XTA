@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'package:xta/plugins/plugin_link_post.dart';
+import 'package:xta/plugins/feed_snapshot_posts.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/utils/local_json_store.dart';
 
@@ -18,7 +18,7 @@ class FeedSnapshotCache {
     final items = <InterleavedItem>[];
     for (final row in (raw['posts'] as List).take(100)) {
       if (row is! Map) continue;
-      final post = PluginLinkPost.fromArchive(row['snapshot']);
+      final post = feedSnapshotPost(row['snapshot']);
       final date = DateTime.tryParse('${row['date']}');
       if (post == null || date == null) continue;
       items.add(
@@ -27,8 +27,8 @@ class FeedSnapshotCache {
           id: row['id'] is String ? row['id'] as String : null,
           source: post.source,
           linkUrl: row['link'] is String ? row['link'] as String : null,
-          snapshot: post.archive.content,
-          build: (_) => PluginLinkPostCard(post: post),
+          snapshot: post.content,
+          build: post.build,
         ),
       );
     }

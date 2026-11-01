@@ -32,6 +32,7 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
+import 'package:xta/ui/desktop_navigation.dart';
 
 /// What a failed Threads read should say, in the reader's terms.
 String threadsErrorMessage(L10n l10n, Object error) {
@@ -180,11 +181,14 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                   onSelected: _shell.select,
                   index: tab,
                   children: [
-                    (_) => _HomePane(
-                      scrollController: widget.scrollController,
-                      onAddAccount: _addAccount,
-                      onLookUpProfile: _lookUpProfile,
+                    (_) => DesktopRefreshKeys(
                       onRefresh: () => _loadHome(force: true),
+                      child: _HomePane(
+                        scrollController: widget.scrollController,
+                        onAddAccount: _addAccount,
+                        onLookUpProfile: _lookUpProfile,
+                        onRefresh: () => _loadHome(force: true),
+                      ),
                     ),
                     (_) =>
                         _LikedPane(scrollController: _likedScrollController, likes: context.read<ThreadsLikesStore>()),

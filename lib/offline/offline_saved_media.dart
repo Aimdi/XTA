@@ -5,6 +5,13 @@ import 'package:xta/saved/saved_content_index.dart';
 List<OfflineMediaSource> offlineMediaOf(SavedContent content) {
   final mastodon = content.mastodon;
   if (mastodon != null) return mastodon.images.map(OfflineMediaSource.new).toList();
+  final threads = content.threads;
+  if (threads != null) {
+    return [
+      for (final item in threads.mediaItems)
+        item.isPlayable ? OfflineMediaSource(item.videoUrl!, video: true) : OfflineMediaSource(item.url),
+    ];
+  }
   final reddit = content.reddit;
   if (reddit != null) {
     if (reddit.videoFallbackUrl != null) return [OfflineMediaSource(reddit.videoFallbackUrl!, video: true)];
@@ -50,13 +57,23 @@ bool offlineSavedSensitive(SavedContent content) =>
     content.reddit?.spoiler == true;
 
 String offlineSavedTitle(SavedContent content) {
-  final title = content.reddit?.title ?? content.mastodon?.text ?? content.tweet?.fullText ?? content.tweet?.text ?? '';
+  final title =
+      content.reddit?.title ??
+      content.mastodon?.text ??
+      content.threads?.text ??
+      content.tweet?.fullText ??
+      content.tweet?.text ??
+      '';
   final plain = html.parseFragment(title).text ?? '';
   return plain.length > 300 ? '${plain.substring(0, 300)}…' : plain;
 }
 
 String offlineSavedSource(SavedContent content) =>
-    content.mastodon?.acct ?? content.reddit?.subreddit ?? content.tweet?.user?.screenName ?? '';
+    content.mastodon?.acct ??
+    content.reddit?.subreddit ??
+    content.threads?.handle ??
+    content.tweet?.user?.screenName ??
+    '';
 
 String? offlineSavedUrl(SavedContent content) {
   if (content.mastodon != null) return content.mastodon!.url;
