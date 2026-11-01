@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/library_on_device.dart';
+import 'package:xta/saved/saved_header.dart';
 import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/ui/empty_pane.dart';
 
@@ -64,32 +65,33 @@ void main() {
     expect(find.textContaining('this device'), findsOneWidget);
   });
 
-  testWidgets('the notice names likes or saves by which chip is open', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(const SavedLibraryOnDeviceNotice(filter: savedTabFavorites)),
-    );
-    await tester.pumpAndSettle();
-    expect(
-      find.text('Likes stay on this device. Nothing is sent anywhere.'),
-      findsOneWidget,
-    );
+  testWidgets('the lock beside the title says what stays on this device, by which chip is open', (tester) async {
+    Future<void> lockFor(String filter) async {
+      await tester.pumpWidget(
+        _wrap(
+          Builder(
+            builder: (context) => SavedTitleRow(
+              title: 'Saved',
+              notice: savedOnDeviceNotice(L10n.of(context), filter),
+              menu: const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
 
-    await tester.pumpWidget(
-      _wrap(const SavedLibraryOnDeviceNotice(filter: savedTabAll)),
-    );
-    await tester.pumpAndSettle();
-    expect(
-      find.text('Saves stay on this device. Nothing is sent anywhere.'),
-      findsOneWidget,
-    );
+    await lockFor(savedTabFavorites);
+    expect(find.byTooltip('Likes stay on this device. Nothing is sent anywhere.'), findsOneWidget);
+    await lockFor(savedTabAll);
+    expect(find.byTooltip('Saves stay on this device. Nothing is sent anywhere.'), findsOneWidget);
+    await lockFor(savedTabNotes);
+    final notes = find.byWidgetPredicate((w) => w is Tooltip && (w.message ?? '').contains('Backup and Nextcloud'));
+    expect(notes, findsOneWidget);
 
-    await tester.pumpWidget(
-      _wrap(const SavedLibraryOnDeviceNotice(filter: savedTabNotes)),
-    );
-    await tester.pumpAndSettle();
-    expect(find.textContaining('Backup and Nextcloud'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.lock_outline));
+    await tester.pump();
+    expect(find.descendant(of: find.byType(SnackBar), matching: find.textContaining('Backup and Nextcloud')), findsOneWidget);
   });
 
   testWidgets('notes empty state offers a way to write', (tester) async {

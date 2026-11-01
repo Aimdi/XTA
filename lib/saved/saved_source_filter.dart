@@ -5,7 +5,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/saved/saved_content_index.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/reader_swipe_navigation.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 enum SavedSource { all, x, reddit, mastodon, bluesky, threads, other }
 
@@ -98,20 +100,45 @@ class SavedSourceButton extends StatelessWidget {
               child: _SourceRow(source: source, selected: source == selected),
             ),
         ],
+        borderRadius: BorderRadius.circular(8),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                savedSourceMark(selected, size: 18),
-                const SizedBox(width: 8),
-                Text(selected == SavedSource.all ? l10n.home_networks : savedSourceLabel(l10n, selected)),
-                const Icon(Icons.expand_more, size: 16),
-              ],
+          child: Center(widthFactor: 1, child: _SourceChip(selected: selected)),
+        ),
+      ),
+    );
+  }
+}
+
+/// The picker as the Archive draws it: a filled chip with the network's mark,
+/// its name ("All networks" until one is chosen) and a chevron.
+class _SourceChip extends StatelessWidget {
+  final SavedSource selected;
+  const _SourceChip({required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    final colour = tweetPrimaryColor(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: xLookInsetSurfaceOf(context),
+        border: Border.all(color: tweetDividerColor(context)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            savedSourceMark(selected, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              savedSourceLabel(L10n.of(context), selected),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: colour),
             ),
-          ),
+            const SizedBox(width: 2),
+            Icon(Icons.expand_more, size: 14, color: colour),
+          ],
         ),
       ),
     );

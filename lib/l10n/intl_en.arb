@@ -6418,5 +6418,17 @@
   "plugin_reddit_continue_thread": "Continue thread",
   "@plugin_reddit_continue_thread": {
     "description": "Button where Reddit held back the rest of a discussion: opens it on its own page."
+  },
+  "saved_search_hint": "Search saved",
+  "@saved_search_hint": {
+    "description": "Hint in the search field at the top of the Saved screen (the Archive), which searches the posts, likes and notes kept on this device. Use the same word as the screen's title."
+  },
+  "saved_filter_and_sort": "Filter and sort",
+  "@saved_filter_and_sort": {
+    "description": "Button at the end of the Saved screen's search field that opens a menu: sort order, media only, and select."
+  },
+  "saved_media_only": "Media only",
+  "@saved_media_only": {
+    "description": "Menu option on the Saved screen: show only the saved posts that have pictures or videos, as a grid."
   }
 }
