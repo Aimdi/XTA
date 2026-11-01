@@ -1,24 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
+import 'package:xta/plugins/threads/threads_search_query.dart';
 import 'package:xta/plugins/threads/threads_search_store.dart';
+import 'package:xta/plugins/threads/threads_thread_screen.dart';
+import 'package:xta/search/search_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/urls.dart';
 
+/// The page [query] opens: the post, the profile, or the posts a tag or words find.
+Widget threadsQueryPage(ThreadsQuery query) => switch (query) {
+  ThreadsPostQuery(:final link) => ThreadsThreadScreen(post: ThreadsPost.linkStub(link.url, handle: link.handle)),
+  ThreadsProfileQuery(:final handle) => ThreadsProfileScreen(username: handle),
+  ThreadsTagQuery(:final tag) => ThreadsSearchScreen(query: tag, tag: true),
+  ThreadsWordsQuery(:final words, :final profile) => ThreadsSearchScreen(query: words, profile: profile),
+};
+
 /// Posts Threads' public search finds for words, or files under a tag, top or most recent, as a guest sees them
 /// (docs/specs/threads-x-parity.md, Search). One page each: Threads names no cursor a guest can follow.
 ///
-/// [profile] is a handle the words also spell: a row on top opens it, so typing a handle without its @ still gets
-/// there in one tap.
+/// The title is a search field holding the query, as on X: another query searches again here, or opens the post
+/// or profile it names (docs/specs/threads-x-parity-3.md). [profile] is a handle the words also spell: a row on top
+/// opens it, so typing a handle without its @ still gets there in one tap.
 class ThreadsSearchScreen extends StatefulWidget {
   final String query;
   final bool tag;
@@ -32,26 +46,108 @@ class ThreadsSearchScreen extends StatefulWidget {
 
 class _ThreadsSearchScreenState extends State<ThreadsSearchScreen> {
   final _order = PluginViewStore(ThreadsSearchOrder.top);
-  late final Map<ThreadsSearchOrder, ThreadsSearchStore> _results;
-
-  String get _query => widget.tag ? widget.query.replaceFirst(RegExp('^#'), '') : widget.query;
+  final _focus = FocusNode();
+  late final PluginViewStore<ThreadsSearchTerms> _terms;
+  late final TextEditingController _field;
 
   @override
   void initState() {
     super.initState();
-    final direct = context.read<ThreadsDirectClient>();
-    _results = {
-      for (final order in ThreadsSearchOrder.values)
-        order: ThreadsSearchStore(direct, query: _query, tag: widget.tag, order: order),
-    };
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _results[ThreadsSearchOrder.top]!.load();
-    });
+    final query = widget.tag ? widget.query.replaceFirst(RegExp('^#'), '') : widget.query;
+    final terms = (query: query, tag: widget.tag, profile: widget.profile);
+    _terms = PluginViewStore(terms);
+    _field = TextEditingController(text: threadsSearchText(terms));
   }
 
   @override
   void dispose() {
     _order.destroy();
+    _terms.destroy();
+    _field.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit(String text) async {
+    final query = threadsQueryOf(text);
+    if (query == null) return;
+    if (query.remembered case final kept?) {
+      await rememberPluginSearch(PrefService.of(context, listen: false), optionPluginThreadsSearchHistory, kept);
+    }
+    if (!mounted) return;
+    if (query.terms case final terms?) {
+      _terms.select(terms);
+      return;
+    }
+    await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => threadsQueryPage(query)));
+  }
+
+  void _clear() {
+    _field.clear();
+    _focus.requestFocus();
+  }
+
+  void _openInBrowser() {
+    final terms = _terms.state;
+    final recent = _order.state == ThreadsSearchOrder.recent;
+    openUri(context, threadsSearchUri(terms.query, tag: terms.tag, recent: recent).toString());
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      toolbarHeight: searchFieldToolbarHeight(context),
+      titleSpacing: 0,
+      title: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _field,
+        builder: (context, _, _) =>
+            XtaSearchField(controller: _field, focusNode: _focus, onSubmitted: _submit, onClear: _clear),
+      ),
+      actions: [
+        IconButton(
+          tooltip: L10n.of(context).open_in_browser,
+          icon: const Icon(Icons.open_in_new),
+          onPressed: _openInBrowser,
+        ),
+      ],
+    ),
+    body: ScopedBuilder<PluginViewStore<ThreadsSearchTerms>, ThreadsSearchTerms>(
+      store: _terms,
+      onState: (context, terms) => _ThreadsSearchBody(key: ValueKey(terms), terms: terms, order: _order),
+    ),
+  );
+}
+
+/// One search's results, top and most recent, each read when first shown.
+class _ThreadsSearchBody extends StatefulWidget {
+  final ThreadsSearchTerms terms;
+  final PluginViewStore<ThreadsSearchOrder> order;
+
+  const _ThreadsSearchBody({super.key, required this.terms, required this.order});
+
+  @override
+  State<_ThreadsSearchBody> createState() => _ThreadsSearchBodyState();
+}
+
+class _ThreadsSearchBodyState extends State<_ThreadsSearchBody> {
+  late final Map<ThreadsSearchOrder, ThreadsSearchStore> _results;
+
+  @override
+  void initState() {
+    super.initState();
+    final direct = context.read<ThreadsDirectClient>();
+    final terms = widget.terms;
+    _results = {
+      for (final order in ThreadsSearchOrder.values)
+        order: ThreadsSearchStore(direct, query: terms.query, tag: terms.tag, order: order),
+    };
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _results[widget.order.state]!.load();
+    });
+  }
+
+  @override
+  void dispose() {
     for (final store in _results.values) {
       store.destroy();
     }
@@ -59,7 +155,7 @@ class _ThreadsSearchScreenState extends State<ThreadsSearchScreen> {
   }
 
   void _select(ThreadsSearchOrder order) {
-    _order.select(order);
+    widget.order.select(order);
     final store = _results[order]!;
     if (store.state == null && !store.isLoading) store.load();
   }
@@ -67,44 +163,29 @@ class _ThreadsSearchScreenState extends State<ThreadsSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_query, maxLines: 1, overflow: TextOverflow.ellipsis),
-        actions: [
-          IconButton(
-            tooltip: l10n.open_in_browser,
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () => openUri(
-              context,
-              threadsSearchUri(_query, tag: widget.tag, recent: _order.state == ThreadsSearchOrder.recent).toString(),
+    return ScopedBuilder<PluginViewStore<ThreadsSearchOrder>, ThreadsSearchOrder>(
+      store: widget.order,
+      onState: (context, order) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Wrap(
+              spacing: 8,
+              children: [
+                for (final (option, label) in [
+                  (ThreadsSearchOrder.top, l10n.sort_top),
+                  (ThreadsSearchOrder.recent, l10n.recent),
+                ])
+                  ChoiceChip(label: Text(label), selected: order == option, onSelected: (_) => _select(option)),
+              ],
             ),
           ),
+          if (widget.terms.profile case final handle?) _ProfileRow(handle: handle),
+          Expanded(
+            child: _ThreadsSearchResults(key: ValueKey(order), store: _results[order]!),
+          ),
         ],
-      ),
-      body: ScopedBuilder<PluginViewStore<ThreadsSearchOrder>, ThreadsSearchOrder>(
-        store: _order,
-        onState: (context, order) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Wrap(
-                spacing: 8,
-                children: [
-                  for (final (option, label) in [
-                    (ThreadsSearchOrder.top, l10n.sort_top),
-                    (ThreadsSearchOrder.recent, l10n.recent),
-                  ])
-                    ChoiceChip(label: Text(label), selected: order == option, onSelected: (_) => _select(option)),
-                ],
-              ),
-            ),
-            if (widget.profile case final handle?) _ProfileRow(handle: handle),
-            Expanded(
-              child: _ThreadsSearchResults(key: ValueKey(order), store: _results[order]!),
-            ),
-          ],
-        ),
       ),
     );
   }

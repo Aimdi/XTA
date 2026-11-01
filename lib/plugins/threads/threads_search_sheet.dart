@@ -11,9 +11,8 @@ import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
+import 'package:xta/plugins/threads/threads_search_query.dart';
 import 'package:xta/plugins/threads/threads_search_screen.dart';
-import 'package:xta/plugins/threads/threads_thread_screen.dart';
-import 'package:xta/plugins/plugin_url.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 String _threadsSearchError(L10n l10n, Object error) {
@@ -80,24 +79,13 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
     super.dispose();
   }
 
-  Future<void> _openProfile(String handle) async {
-    if (!mounted) return;
+  void _open(Widget page) {
     Navigator.pop(context);
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)),
-    );
+    Navigator.push(context, MaterialPageRoute<void>(builder: (_) => page));
   }
 
-  void _openSearch(String query, {bool tag = false, String? profile}) {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            ThreadsSearchScreen(query: query, tag: tag, profile: profile),
-      ),
-    );
+  Future<void> _openProfile(String handle) async {
+    if (mounted) _open(ThreadsProfileScreen(username: handle));
   }
 
   Future<void> _remember(String query) async {
@@ -106,44 +94,24 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
   }
 
   Future<void> _search() async {
-    final query = _controller.text.trim();
-    if (query.isEmpty) return;
+    final text = _controller.text.trim();
+    final query = threadsQueryOf(text);
+    if (query == null) return;
 
-    // A pasted post link opens that post, as tapping it anywhere would.
-    if (parseThreadsLink(query) case ThreadsPostLink(:final url, :final handle)) {
-      Navigator.pop(context);
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: ThreadsPost.linkStub(url, handle: handle))),
-      );
+    // With a session, an @handle or words list the accounts they find; any
+    // other query opens what it names, by the rules of the results page.
+    if (_canSearchUsers &&
+        (query is ThreadsProfileQuery || query is ThreadsWordsQuery)) {
+      await _searchUsers(text);
       return;
     }
+    if (query.remembered case final kept?) await _remember(kept);
+    if (mounted) _open(threadsQueryPage(query));
+  }
 
-    // A #tag opens the posts filed under it.
-    if (query.startsWith('#') && query.length > 1) {
-      await _remember(query);
-      if (mounted) _openSearch(query.substring(1), tag: true);
-      return;
-    }
-
+  Future<void> _searchUsers(String query) async {
     final handle = normaliseThreadsHandle(query);
     final direct = context.read<ThreadsDirectClient>();
-    if (!_canSearchUsers) {
-      // An @handle or a profile link opens the profile; other words search
-      // posts, with the profile they may also spell on top.
-      final named =
-          query.startsWith('@') ||
-          (Uri.tryParse(query)?.host.contains('threads.') ?? false);
-      if (named && handle != null) {
-        await _remember(handle);
-        await _openProfile(handle);
-        return;
-      }
-      await _remember(query);
-      if (mounted) _openSearch(query, profile: handle);
-      return;
-    }
-
     setState(() {
       _loading = true;
       _error = null;
@@ -312,7 +280,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
     final searchPosts = ListTile(
       leading: const Icon(Icons.article_outlined),
       title: Text(l10n.plugin_threads_search_posts),
-      onTap: () => _openSearch(_controller.text.trim()),
+      onTap: () => _open(ThreadsSearchScreen(query: _controller.text.trim())),
     );
     if (_results.isEmpty) {
       return ListView(

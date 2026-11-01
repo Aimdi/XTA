@@ -57,29 +57,36 @@ Map<AdvancedSearchInclusion, String> advancedInclusionLabels(L10n l10n, Advanced
         AdvancedSearchInclusion.exclude: l10n.search_hide_links,
       };
 
+/// The height of [XtaSearchField]: taller when the reader enlarged the text.
+double searchFieldHeight(BuildContext context) =>
+    MediaQuery.textScalerOf(context).scale(1) >= 1.3 ? kSearchLargeTextFieldHeight : kSearchFieldHeight;
+
+/// The height of a toolbar that holds [XtaSearchField] as its title.
+double searchFieldToolbarHeight(BuildContext context) => searchFieldHeight(context) + 2 * kTweetSpace2;
+
 class XtaSearchField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final int activeFilterCount;
   final ValueChanged<String> onSubmitted;
   final VoidCallback onClear;
-  final VoidCallback onAdvanced;
+
+  /// Opens the advanced search; without it the field has no such button, as for a network with no filters.
+  final VoidCallback? onAdvanced;
 
   const XtaSearchField({
     super.key,
     required this.controller,
     required this.focusNode,
-    required this.activeFilterCount,
+    this.activeFilterCount = 0,
     required this.onSubmitted,
     required this.onClear,
-    required this.onAdvanced,
+    this.onAdvanced,
   });
 
   @override
   Widget build(BuildContext context) {
-    final fieldHeight = MediaQuery.textScalerOf(context).scale(1) >= 1.3
-        ? kSearchLargeTextFieldHeight
-        : kSearchFieldHeight;
+    final fieldHeight = searchFieldHeight(context);
     final tokens = XLookTokens.maybeOf(context);
     final background = tokens == null
         ? Color.alphaBlend(
@@ -109,7 +116,7 @@ class XtaSearchField extends StatelessWidget {
               icon: const Icon(Icons.close),
               onPressed: onClear,
             ),
-          _AdvancedSearchButton(count: activeFilterCount, onPressed: onAdvanced),
+          if (onAdvanced case final onAdvanced?) _AdvancedSearchButton(count: activeFilterCount, onPressed: onAdvanced),
         ],
       ),
     );
