@@ -51,25 +51,43 @@ Threads serves a logged-out browser (api-canary run 41291398417).
 ### Profiles
 
 - A guest profile no longer says "0 Following": Meta does not tell a guest,
-  so the count is left out. Nor does it link to itself.
+  so the count is left out. Nor does it link to itself (the bar already
+  opens the profile in the browser). A profile pieced together from its
+  posts, when the page could not be read, shows no count at all, where it
+  said 0 for each.
 - The bio's @mentions and links work.
 
 ### Following
 
 - **Pull to refresh reaches every followed account.** A pull asks at most 20
   accounts (6 with a session); it asked the same first 20 each time, so the
-  rest never refreshed. It now asks the ones answered longest ago first.
+  rest never refreshed. It now asks the ones never asked first, then those
+  asked longest ago, the rotation Discover already samples its members with.
 
 ### Reliability
 
-- In a mixed timeline, a Threads failure retries by what Meta said: a
-  throttle waits for its cooldown rather than retrying in seconds; a
-  missing setup or a lost session waits for the reader.
+- In a mixed timeline, a Threads failure retries by what Meta said, where
+  every failure was retried after 2, 5, 15, 30 and 60 seconds:
+  - a throttle waits for its cooldown: the 30 minutes a session's throttle
+    parks it for, and for a guest one, which parks nothing, the 15 minutes
+    the app waits for any limit without a stated reset; then it retries
+    once;
+  - a missing setup, a refused session or a lost one (`login_required`)
+    waits for the reader;
+  - a host that did not answer keeps the usual backoff.
+- What a failure says on screen is unchanged. The shared failure taxonomy
+  does not learn Meta's errors: a failure can say how it may be retried
+  (`ReadRetryAdvice`), and the Threads one does.
 
 ### Conversations
 
-- **Replies can be sorted**, Top, Newest or Oldest, as Bluesky's and
-  Mastodon's can.
+- **Replies can be sorted**: Relevant (Meta's own order), Recent or Oldest,
+  as Bluesky's and Mastodon's can. Each reply thread moves whole, placed by
+  its first reply. The choice holds for the session, shared with the other
+  networks; an order Threads does not offer (Most liked, chosen on Bluesky)
+  shows Meta's.
+- The replies header, the author filter and the order share one line,
+  which wraps on a narrow phone.
 
 ## Not in this pass
 
@@ -85,10 +103,14 @@ Threads serves a logged-out browser (api-canary run 41291398417).
 - `lib/plugins/threads/threads_direct_client.dart`, `threads_parse.dart`,
   `threads_search_screen.dart` (new), `threads_search_sheet.dart`: search
   and tags.
-- `threads_parse.dart`, `threads_profile_screen.dart`: profiles.
+- `threads_models.dart`, `threads_parse.dart`, `threads_profile_screen.dart`:
+  profiles.
 - `threads_store.dart`: the refresh order.
-- `lib/ui/read_failure_kind.dart`: retrying by what Meta said.
-- `threads_thread_store.dart`, `threads_thread_screen.dart`: reply order.
+- `lib/ui/read_failure_kind.dart` (`ReadRetryAdvice`),
+  `lib/ui/rate_limit_retry.dart`, `threads_client.dart`,
+  `threads_direct_client.dart`: retrying by what Meta said.
+- `lib/ui/conversation_sort.dart`, `threads_thread_store.dart`,
+  `threads_thread_screen.dart`: reply order.
 
 ## Tests
 
@@ -97,8 +119,17 @@ Threads serves a logged-out browser (api-canary run 41291398417).
   right pages; a tag asks the tag page; a non-handle query searches posts.
 - Saving: the archive round-trips a post; an old link save and a new save
   share the id; Saved shows a Threads card and files it under Threads.
-- Profiles: a guest profile shows no following count and no self link.
-- Refresh order: successive pulls reach every account.
-- Retry: a throttled Threads read waits; a session error waits for the
-  reader.
-- Replies: each order sorts as named.
+- Profiles (`test/threads_profile_card_test.dart`): a guest profile shows
+  no following count and no self link; one from posts shows no count; the
+  bio's mention and link can be tapped.
+- Refresh order (`test/threads_refresh_order_test.dart`): two pulls with 25
+  accounts reach all 25, the unreached five first.
+- Retry (`test/threads_retry_test.dart`, `test/read_recovery_backoff_test.dart`):
+  a session throttle and the cooldown after it wait for its end, a guest
+  throttle for 15 minutes; a lost session, no setup or a refused session
+  wait for the reader; an unreachable host keeps the backoff; on screen a
+  throttle retries once at its end and not in seconds.
+- Replies (`test/threads_conversation_test.dart`,
+  `test/threads_reader_widget_test.dart`): each order sorts as named and
+  keeps reply threads whole; the choice is shared for the session; the
+  header fits 320 dp in German.
