@@ -91,11 +91,22 @@ follows stay on the device.
   opened post, opening at the tapped post, the card route.
 - `lib/plugins/threads/threads_interleaved.dart`: ten per account; the archive
   as the snapshot.
-- `lib/tweet/feed_snapshot_cache.dart`: a snapshot reads back as the post it
-  is, through the readers plugins give it.
+- `lib/plugins/feed_snapshot_posts.dart`, `lib/tweet/feed_snapshot_cache.dart`:
+  a snapshot reads back as the post it is, a Threads card or a link post.
+- `lib/tweet/focal_post.dart`: the date line can start with a text column.
 - `lib/plugins/threads/threads_store.dart`: accounts kept current.
 - `lib/offline/offline_saved_media.dart`: Threads media.
 - `lib/plugins/threads/threads_screen.dart`: refresh keys.
+
+## As built
+
+- Reply and repost both open the post (Meta lists neither apart), so both are
+  named "Open post", the name X gives its reply button.
+- The ⋯ sits at the end of the author line, Follow before it, as on X.
+- The topic tag's row is 48 dp tall, which adds a little space under it.
+- The opened post's date line starts with its text, not at the page margin.
+- A post opened from a pasted link (the search sheet, a link from another
+  app) still opens as a page.
 
 ## Tests
 
