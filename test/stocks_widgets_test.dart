@@ -634,6 +634,7 @@ void main() {
     };
 
     TickerClient client(List<String> asked) => TickerClient(
+      coinSources: const [],
       httpClient: MockClient((request) async {
         final symbol = request.url.pathSegments.last;
         asked.add(symbol);
@@ -740,6 +741,7 @@ void main() {
         final store = TickerDetailStore(
           symbol: 'AAPL',
           client: TickerClient(
+            coinSources: const [],
             httpClient: MockClient((request) async => http.Response(jsonEncode(_chart('AAPL')), 200)),
           ),
         );
@@ -769,6 +771,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'ETH',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             asked.add(request.url.pathSegments.last);
             return http.Response(jsonEncode(_chart(request.url.pathSegments.last)), 200);
@@ -794,6 +797,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'AAPL',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async => next?.future ?? http.Response(jsonEncode(_chart('AAPL')), 200)),
         ),
       );
@@ -832,6 +836,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'AAPL',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             requests.add(request.url.queryParameters['range'] ?? '');
             return next?.future ?? http.Response(jsonEncode(_chart('AAPL')), 200);
@@ -857,6 +862,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'AAPL',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient(
             (request) async => busy ? http.Response('busy', 503) : http.Response(jsonEncode(_chart('AAPL')), 200),
           ),
@@ -884,7 +890,7 @@ void main() {
     testWidgets('a failed price load offers a retry instead of a blank', (tester) async {
       final store = TickerDetailStore(
         symbol: 'AAPL',
-        client: TickerClient(httpClient: MockClient((_) async => http.Response('busy', 503))),
+        client: TickerClient(coinSources: const [], httpClient: MockClient((_) async => http.Response('busy', 503))),
       );
       addTearDown(store.destroy);
       await store.load();
@@ -963,7 +969,7 @@ void main() {
           ),
         ),
       );
-      final ticker = TickerClient(httpClient: MockClient((_) async => http.Response('{}', 200)));
+      final ticker = TickerClient(coinSources: const [], httpClient: MockClient((_) async => http.Response('{}', 200)));
       await _pump(tester, StocksAddSheet(client: ticker, cryptoClient: crypto), scale: 1.5);
 
       await tester.enterText(find.byType(TextField), _pepe.toUpperCase().replaceFirst('0X', '0x'));

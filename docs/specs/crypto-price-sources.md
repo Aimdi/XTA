@@ -23,6 +23,12 @@ Read-only as before: public price endpoints, no key, no account.
   **Yahoo Finance**. The first that answers gives the chart; its bars are
   the line, the last close the price, and the move is measured the same way
   as before (24 hours for a row, the chart's span on the coin's page).
+- An exchange's chart is drawn as Yahoo draws a coin's: the day from
+  midnight UTC against the close before it, a longer chart over its span.
+  The day's open, high and low are since midnight UTC. One venue's volume is
+  not the market's, and a year's range needs a year of bars, so with an
+  exchange answering the coin's page shows a dash for volume and the 52-week
+  high and low, as the grid does for any figure a source did not send.
 - Each exchange is asked for the bars that fit the chart: the day in
   5-minute bars, five days in 30-minute (Coinbase: hourly) bars, months in
   daily bars, five years in weekly bars. An exchange that cannot cover a

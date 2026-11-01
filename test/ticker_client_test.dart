@@ -51,6 +51,7 @@ void main() {
       () async {
         final asked = <String>[];
         final client = TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             asked.add(request.url.pathSegments.last);
             if (request.url.path.endsWith('SHIB-USD')) {
@@ -70,6 +71,7 @@ void main() {
     test('a network failure is not retried under other names', () async {
       var calls = 0;
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((_) async {
           calls++;
           throw http.ClientException('no route');
@@ -91,6 +93,7 @@ void main() {
 
     test('a name nothing answers for reports not-found', () async {
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((_) async => http.Response('no', 404)),
       );
 
@@ -117,6 +120,7 @@ void main() {
     test('an index that does not answer never becomes a pair', () async {
       final asked = <String>[];
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((request) async {
           asked.add(request.url.pathSegments.last);
           return request.url.path.endsWith('-USD')
@@ -156,6 +160,7 @@ void main() {
 
     test('trending symbols are the ones the host listed', () async {
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient(
           (_) async => http.Response(
             jsonEncode({

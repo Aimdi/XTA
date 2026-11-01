@@ -1,22 +1,12 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:xta/plugins/plugin_repairs.dart';
+import 'package:xta/tweet/ticker/coin_sources.dart';
+import 'package:xta/tweet/ticker/price_http.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_search.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
 
-enum TickerErrorKind { notFound, unavailable, badResponse }
-
-class TickerException implements Exception {
-  final TickerErrorKind kind;
-  final String message;
-
-  TickerException(this.kind, this.message);
-
-  @override
-  String toString() => 'TickerException{$kind: $message}';
-}
+export 'package:xta/tweet/ticker/price_http.dart' show TickerErrorKind, TickerException;
 
 /// Price history, search, trending, and headlines for a symbol.
 ///
@@ -25,11 +15,24 @@ class TickerException implements Exception {
 /// X's, they are undocumented, so parsers treat every field as optional and
 /// this class turns a refusal into a typed error rather than letting a screen
 /// show a stack trace.
+///
+/// A coin (`BTC-USD`) is asked of the exchanges in [CoinSourceChain] first and
+/// of this host last, so the stocks keep its budget; [coinSources] replaces
+/// the exchanges, and an empty list leaves coins to this host alone.
 class TickerClient {
   final http.Client httpClient;
+  late final CoinSourceChain _coins;
 
-  TickerClient({http.Client? httpClient})
-    : httpClient = httpClient ?? http.Client();
+  TickerClient({http.Client? httpClient, List<CoinSource>? coinSources, PriceSourceHealth? health})
+    : httpClient = httpClient ?? http.Client() {
+    _coins = CoinSourceChain(coinSources ?? _exchanges(), health: health);
+  }
+
+  List<CoinSource> _exchanges() => [
+    CoinbaseSource(httpClient, userAgent: userAgent),
+    KrakenSource(httpClient, userAgent: userAgent),
+    BinanceSource(httpClient, userAgent: userAgent),
+  ];
 
   static const _host = 'query1.finance.yahoo.com';
   static const _timeout = Duration(seconds: 15);
@@ -47,38 +50,21 @@ class TickerClient {
   /// Encoding it by hand before handing it to [Uri.https] sent `%255ENDX`,
   /// which names no symbol, so every index failed and fell through to a
   /// `-USD` token of the same letters.
-  static Uri chartUri(
-    String symbol, {
-    String range = '1mo',
-    String interval = '1d',
-    bool includePrePost = false,
-  }) {
+  static Uri chartUri(String symbol, {String range = '1mo', String interval = '1d', bool includePrePost = false}) {
     return Uri(
       scheme: 'https',
       host: _host,
       pathSegments: ['v8', 'finance', 'chart', symbol.toUpperCase()],
-      queryParameters: {
-        'range': range,
-        'interval': interval,
-        if (includePrePost) 'includePrePost': 'true',
-      },
+      queryParameters: {'range': range, 'interval': interval, if (includePrePost) 'includePrePost': 'true'},
     );
   }
 
   static Uri searchUri(String query, {int quotes = 8, int news = 0}) {
-    return Uri.https(_host, '/v1/finance/search', {
-      'q': query,
-      'quotesCount': '$quotes',
-      'newsCount': '$news',
-    });
+    return Uri.https(_host, '/v1/finance/search', {'q': query, 'quotesCount': '$quotes', 'newsCount': '$news'});
   }
 
   static Uri trendingUri({String region = 'US'}) {
-    return Uri(
-      scheme: 'https',
-      host: _host,
-      pathSegments: ['v1', 'finance', 'trending', region],
-    );
+    return Uri(scheme: 'https', host: _host, pathSegments: ['v1', 'finance', 'trending', region]);
   }
 
   /// The first name that answers with a price history.
@@ -97,13 +83,11 @@ class TickerClient {
 
     for (final candidate in tickerCandidates(symbol, prefer: prefer)) {
       try {
-        final uri = chartUri(
-          candidate,
-          range: range,
-          interval: interval,
-          includePrePost: includePrePost,
-        );
-        return await _fetchOne(candidate, uri);
+        final uri = chartUri(candidate, range: range, interval: interval, includePrePost: includePrePost);
+        final window = CoinSourceChain.isCoinPair(candidate) ? ChartWindow.parse(range, interval) : null;
+        return window == null
+            ? await _fetchOne(candidate, uri)
+            : await _coins.chart(candidate, window, yahoo: () => _fetchOne(candidate, uri));
       } on TickerException catch (e) {
         last = e;
         if (e.kind == TickerErrorKind.unavailable) {
@@ -112,8 +96,7 @@ class TickerClient {
       }
     }
 
-    throw last ??
-        TickerException(TickerErrorKind.notFound, 'No such symbol: $symbol');
+    throw last ?? TickerException(TickerErrorKind.notFound, 'No such symbol: $symbol');
   }
 
   Future<List<TickerSearchHit>> searchSymbols(String query) async {
@@ -135,47 +118,10 @@ class TickerClient {
     final decoded = await _getJson(uri);
     final quote = TickerQuote.fromChartJson(decoded, symbol: symbol);
     if (quote == null) {
-      throw TickerException(
-        TickerErrorKind.badResponse,
-        'No price history in the response for $symbol',
-      );
+      throw TickerException(TickerErrorKind.badResponse, 'No price history in the response for $symbol');
     }
     return quote;
   }
 
-  Future<Object?> _getJson(Uri uri) async {
-    late http.Response response;
-    try {
-      response = await httpClient
-          .get(uri, headers: {'User-Agent': userAgent})
-          .timeout(_timeout);
-    } catch (e) {
-      throw TickerException(
-        TickerErrorKind.unavailable,
-        'Could not reach the price service: $e',
-      );
-    }
-
-    if (response.statusCode == 404) {
-      throw TickerException(
-        TickerErrorKind.notFound,
-        'No such symbol: ${uri.path}',
-      );
-    }
-    if (response.statusCode != 200) {
-      throw TickerException(
-        TickerErrorKind.unavailable,
-        'HTTP ${response.statusCode} for ${uri.path}',
-      );
-    }
-
-    try {
-      return jsonDecode(response.body);
-    } catch (e) {
-      throw TickerException(
-        TickerErrorKind.badResponse,
-        'Response was not JSON: $e',
-      );
-    }
-  }
+  Future<Object?> _getJson(Uri uri) => fetchPriceJson(httpClient, uri, userAgent: userAgent, timeout: _timeout);
 }

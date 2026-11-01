@@ -342,6 +342,7 @@ void main() {
 
     test('an unknown symbol is reported as not found', () async {
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((_) async => http.Response('{}', 404)),
       );
 
@@ -359,6 +360,7 @@ void main() {
 
     test('a refusal is unavailable, not a broken response', () async {
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((_) async => http.Response('', 429)),
       );
 
@@ -376,6 +378,7 @@ void main() {
 
     test('a 200 that is not JSON is a bad response', () async {
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((_) async => http.Response('<html>', 200)),
       );
 
@@ -394,6 +397,7 @@ void main() {
     test('a good response becomes a quote, and carries an agent', () async {
       late http.Request sent;
       final client = TickerClient(
+        coinSources: const [],
         httpClient: MockClient((request) async {
           sent = request;
           return http.Response(jsonEncode(_chart()), 200);
