@@ -338,6 +338,8 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   final GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
   FeedRefreshController? _refreshController;
   bool _firstLoadStarted = false;
+  // The controller's resets this list has started the first page again after.
+  int _resetsSeen = 0;
   bool _pendingInitialLoad = false;
   // Local to the view: dismissing the stale banner hides the explanation, never
   // the cached posts under it.
@@ -359,6 +361,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     // can't trigger the first page itself — we rebuild to swap it in once items
     // arrive, so listen for that.
     _controller.addListener(_onControllerChanged);
+    _resetsSeen = pagingResets(_controller);
   }
 
   @override
@@ -391,6 +394,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       _controller.addListener(_onControllerChanged);
       // A fresh feed may need its first page kicked off again from the preview.
       _firstLoadStarted = false;
+      _resetsSeen = pagingResets(_controller);
     }
   }
 
@@ -405,6 +409,13 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   void _onControllerChanged() {
     if (!mounted) return;
+    // A reset empties the feed without asking for anything: a new search, sort or set of members would
+    // otherwise leave the placeholders up for good.
+    final resets = pagingResets(_controller);
+    if (resets != _resetsSeen) {
+      _resetsSeen = resets;
+      _firstLoadStarted = false;
+    }
     if (_hadPreview || _showingPreview) {
       _hadPreview = _showingPreview;
       _view.update(_view.state + 1);

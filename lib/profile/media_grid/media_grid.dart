@@ -120,11 +120,14 @@ class _MediaGridState extends State<MediaGrid>
 
   late final GifPlaybackGate _gifGate;
   bool _firstLoadStarted = false;
+  // The controller's resets this grid has started the first page again after.
+  int _resetsSeen = 0;
 
   @override
   void initState() {
     super.initState();
     _gifGate = GifPlaybackGate.sizedToPool(context);
+    _resetsSeen = pagingResets(widget.controller);
   }
 
   @override
@@ -132,6 +135,7 @@ class _MediaGridState extends State<MediaGrid>
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.controller, widget.controller)) {
       _firstLoadStarted = false;
+      _resetsSeen = pagingResets(widget.controller);
     }
   }
 
@@ -142,6 +146,13 @@ class _MediaGridState extends State<MediaGrid>
   }
 
   void _maybeStartFirstLoad() {
+    // A reset (pull to refresh, a new query) empties the grid without asking
+    // for anything, which left its placeholders up for good.
+    final resets = pagingResets(widget.controller);
+    if (resets != _resetsSeen) {
+      _resetsSeen = resets;
+      _firstLoadStarted = false;
+    }
     scheduleFirstPageFetch(
       widget.controller,
       alreadyStarted: _firstLoadStarted,
@@ -153,7 +164,6 @@ class _MediaGridState extends State<MediaGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    _maybeStartFirstLoad();
 
     final config = widget.broadcastsOnly
         ? (
@@ -175,6 +185,8 @@ class _MediaGridState extends State<MediaGrid>
           builder: (context, state, fetchNextPage) {
             late final Widget child;
             if (pagingAwaitingFirstPage(state)) {
+              // Here rather than in build: a reset rebuilds only this.
+              _maybeStartFirstLoad();
               child = KeyedSubtree(
                 key: const ValueKey('media-grid-loading'),
                 child: pagingFill(child: MediaGridSkeleton(config: config)),

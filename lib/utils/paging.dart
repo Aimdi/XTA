@@ -26,6 +26,13 @@ PagingError? pagingErrorOf(PagingState state) {
 /// True while the first page has not arrived and has not failed.
 bool pagingAwaitingFirstPage(PagingState state) => state.items == null && state.error == null;
 
+/// How many times [controller] has been emptied by [PagingController.refresh]. The package's own list asks for
+/// the first page again after that; a list that draws its own placeholders instead has to start it itself, and
+/// counts resets rather than reading the state, because a read cancelled while its feed was hidden leaves the
+/// same empty state and must not be started again until the feed is seen.
+int pagingResets(PagingController<dynamic, dynamic> controller) =>
+    controller is _CursorPageController ? controller.resets : 0;
+
 /// PagedListView fetches page 0 when it mounts. Kick that ourselves when the
 /// list is not mounted yet — a skeleton, or a TabBarView first-page slot.
 void scheduleFirstPageFetch<PageKeyType, ItemType>(
@@ -200,6 +207,7 @@ class CursorPagingController<C, T> {
 /// Invalidate cursors as well as items when the package cancels a request.
 class _CursorPageController<T> extends PagingController<int, T> {
   int generation = 0;
+  int resets = 0;
   final reads = ReadRequestScope();
   bool _replacing = false;
 
@@ -222,6 +230,7 @@ class _CursorPageController<T> extends PagingController<int, T> {
   void refresh() {
     _replacing = false;
     generation++;
+    resets++;
     reads.cancel();
     super.refresh();
   }
