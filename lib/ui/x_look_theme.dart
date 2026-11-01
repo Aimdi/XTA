@@ -221,6 +221,15 @@ Color xLookFloatingSurface(XLookTokens tokens) =>
     ? _xLookLiftedSurface(tokens, 0.10)
     : tokens.card;
 
+/// [xLookFloatingSurface] of the current theme, or Material's raised surface
+/// where the X look is not installed.
+Color xLookFloatingSurfaceOf(BuildContext context) {
+  final tokens = XLookTokens.maybeOf(context);
+  return tokens == null
+      ? Theme.of(context).colorScheme.surfaceContainerHigh
+      : xLookFloatingSurface(tokens);
+}
+
 /// Placeholder fill that remains visible without borrowing the much brighter
 /// divider colour as a solid surface in Lights Out.
 Color xLookSkeletonSurface(XLookTokens tokens) =>

@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -355,21 +354,22 @@ void main() {
     expect(find.textContaining('very long location'), findsOneWidget);
   });
 
-  testWidgets('profile filter shows every choice and marks the selected one without color alone', (
+  testWidgets('profile filter shows every choice as an icon and marks the selected one without color alone', (
     tester,
   ) async {
     final semantics = tester.ensureSemantics();
     String? picked;
+    final theme = xLookLightTheme(null);
     await tester.pumpWidget(
       MaterialApp(
-        theme: xLookLightTheme(null),
+        theme: theme,
         home: Scaffold(
           body: ProfileFilterBar<String>(
             selected: 'photos',
             options: const [
-              ProfileFilterOption(value: 'all', label: 'All'),
-              ProfileFilterOption(value: 'photos', label: 'Photos'),
-              ProfileFilterOption(value: 'videos', label: 'Videos'),
+              ProfileFilterOption(value: 'all', icon: Icons.layers_outlined, label: 'All'),
+              ProfileFilterOption(value: 'photos', icon: Icons.image_outlined, label: 'Photos'),
+              ProfileFilterOption(value: 'videos', icon: Icons.videocam_outlined, label: 'Videos'),
             ],
             onSelected: (value) => picked = value,
           ),
@@ -377,28 +377,35 @@ void main() {
       ),
     );
 
-    FontWeight? weight(String label) =>
-        tester.renderObject<RenderParagraph>(find.text(label)).text.style?.fontWeight;
-    expect(weight('Photos'), FontWeight.w700);
-    expect(weight('All'), FontWeight.w500);
-    expect(weight('Videos'), FontWeight.w500);
-    expect(find.byType(Icon), findsNothing, reason: 'words only: no icon, check or pill');
+    const icons = {'All': Icons.layers_outlined, 'Photos': Icons.image_outlined, 'Videos': Icons.videocam_outlined};
+    final pill = xLookFloatingSurface(theme.extension<XLookTokens>()!);
+    expect(find.byType(Text), findsNothing, reason: 'icons only: the names are tooltips and semantics');
     expect(find.byType(ChoiceChip), findsNothing);
-    expect(
-      tester.getSemantics(find.text('Photos')),
-      isSemantics(isSelected: true, isButton: true, hasSelectedState: true),
-    );
-    expect(
-      tester.getSemantics(find.text('All')),
-      isSemantics(isSelected: false, isButton: true, hasSelectedState: true),
-    );
-    for (final label in ['All', 'Photos', 'Videos']) {
-      final target = find.ancestor(of: find.text(label), matching: find.byType(TextButton));
-      expect(tester.getSize(target).height, greaterThanOrEqualTo(kTweetTouchTarget));
+    for (final MapEntry(key: label, value: icon) in icons.entries) {
+      final selected = label == 'Photos';
+      expect(find.byTooltip(label), findsOneWidget);
+      expect(
+        tester.getSemantics(find.byIcon(icon)),
+        isSemantics(
+          label: label,
+          isButton: true,
+          hasSelectedState: true,
+          isSelected: selected,
+          isInMutuallyExclusiveGroup: true,
+          hasTapAction: true,
+        ),
+      );
+      final fill = tester.widget<Material>(find.ancestor(of: find.byIcon(icon), matching: find.byType(Material)).first);
+      expect(fill.color, selected ? pill : Colors.transparent, reason: 'only the selected choice sits on the pill');
+      final target = tester.getSize(find.ancestor(of: find.byIcon(icon), matching: find.byType(InkWell)));
+      expect(target.height, greaterThanOrEqualTo(kTweetTouchTarget));
+      expect(target.width, greaterThanOrEqualTo(52));
     }
 
-    await tester.tap(find.text('All'));
+    await tester.tap(find.byIcon(Icons.layers_outlined));
     expect(picked, 'all');
+    tester.semantics.tap(find.semantics.byLabel('Videos'));
+    expect(picked, 'videos', reason: 'a screen reader can activate a choice');
     semantics.dispose();
   });
 

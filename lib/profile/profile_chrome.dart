@@ -683,14 +683,18 @@ class ProfileFollowFace extends StatelessWidget {
 @immutable
 class ProfileFilterOption<T> {
   final T value;
+  final IconData icon;
+
+  /// What the icon stands for: its tooltip and the name a screen reader hears.
   final String label;
 
-  const ProfileFilterOption({required this.value, required this.label});
+  const ProfileFilterOption({required this.value, required this.icon, required this.label});
 }
 
-/// One filter convention for Posts, Media and the local Archive: every choice is a word in a row directly above
-/// the content it filters, one tap away. The selected word is bold as well as in the text colour, so colour is never
-/// the only sign of it, and a screen reader says it is selected.
+/// One filter convention for Posts, Media and the local Archive: every choice is an icon in a row directly above the
+/// content it filters, one tap away. The selected one sits on a quiet pill with its icon in the text colour, so colour
+/// is never the only sign of it; each keeps its name as a tooltip, and a screen reader hears the name and whether it is
+/// selected.
 class ProfileFilterBar<T> extends StatelessWidget {
   final T selected;
   final List<ProfileFilterOption<T>> options;
@@ -705,36 +709,47 @@ class ProfileFilterBar<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: kTweetTouchTarget,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding - kTweetSpace3),
-        child: Row(children: [for (final option in options) _option(context, option)]),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding - kTweetSpace1, vertical: kTweetSpace2),
+      child: Row(
+        spacing: 6,
+        children: [for (final option in options) _option(context, option)],
       ),
     );
   }
 
   Widget _option(BuildContext context, ProfileFilterOption<T> option) {
     final isSelected = option.value == selected;
-    // Merged, or the selected state would sit on a node of its own beside
-    // the button a screen reader reads.
-    return MergeSemantics(
-      child: Semantics(
-        selected: isSelected,
-        inMutuallyExclusiveGroup: true,
-        child: TextButton(
-          onPressed: () => onSelected(option.value),
-          style: TextButton.styleFrom(
-            minimumSize: const Size(kTweetTouchTarget, kTweetTouchTarget),
-            padding: const EdgeInsets.symmetric(horizontal: kTweetSpace3),
-            foregroundColor: isSelected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kProfileControlRadius)),
-          ),
-          child: Text(
-            option.label,
-            maxLines: 1,
-            style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500),
+    // The name is the label; read again as a tooltip it would be heard twice.
+    // Merged, so the button's tap stays on the node a screen reader activates.
+    return Tooltip(
+      message: option.label,
+      excludeFromSemantics: true,
+      child: MergeSemantics(
+        child: Semantics(
+          button: true,
+          selected: isSelected,
+          inMutuallyExclusiveGroup: true,
+          label: option.label,
+          child: Material(
+            color: isSelected ? xLookFloatingSurfaceOf(context) : Colors.transparent,
+            shape: const StadiumBorder(),
+            child: InkWell(
+              customBorder: const StadiumBorder(),
+              onTap: () => onSelected(option.value),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 52, minHeight: kTweetTouchTarget),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Icon(
+                    option.icon,
+                    size: 22,
+                    color: isSelected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),

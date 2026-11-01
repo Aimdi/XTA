@@ -628,28 +628,32 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       ProfileTabs.posts => ProfileFilterBar<PostsFilter>(
         selected: view.postsFilter,
         options: [
-          ProfileFilterOption(value: PostsFilter.all, label: l10n.all),
-          ProfileFilterOption(value: PostsFilter.posts, label: l10n.tweets),
-          ProfileFilterOption(value: PostsFilter.retweets, label: l10n.retweets),
+          ProfileFilterOption(value: PostsFilter.all, icon: Icons.layers_outlined, label: l10n.all),
+          ProfileFilterOption(value: PostsFilter.posts, icon: Icons.chat_bubble_outline, label: l10n.tweets),
+          ProfileFilterOption(value: PostsFilter.retweets, icon: Icons.repeat, label: l10n.retweets),
         ],
         onSelected: _selectPostsFilter,
       ),
       ProfileTabs.media => ProfileFilterBar<MediaFilter>(
         selected: view.mediaFilter,
         options: [
-          ProfileFilterOption(value: MediaFilter.all, label: l10n.all),
-          ProfileFilterOption(value: MediaFilter.photos, label: l10n.photos),
-          ProfileFilterOption(value: MediaFilter.videos, label: l10n.videos),
-          ProfileFilterOption(value: MediaFilter.broadcasts, label: l10n.broadcasts),
+          ProfileFilterOption(value: MediaFilter.all, icon: Icons.layers_outlined, label: l10n.all),
+          ProfileFilterOption(value: MediaFilter.photos, icon: Icons.image_outlined, label: l10n.photos),
+          ProfileFilterOption(value: MediaFilter.videos, icon: Icons.videocam_outlined, label: l10n.videos),
+          ProfileFilterOption(value: MediaFilter.broadcasts, icon: Icons.sensors, label: l10n.broadcasts),
         ],
         onSelected: _selectMediaFilter,
       ),
       ProfileTabs.saved => ProfileFilterBar<ArchiveFilter>(
         selected: view.archiveFilter,
         options: [
-          ProfileFilterOption(value: ArchiveFilter.all, label: l10n.all),
-          ProfileFilterOption(value: ArchiveFilter.likes, label: l10n.favorites),
-          ProfileFilterOption(value: ArchiveFilter.bookmarks, label: l10n.plugin_category_bookmarks),
+          ProfileFilterOption(value: ArchiveFilter.all, icon: Icons.layers_outlined, label: l10n.all),
+          ProfileFilterOption(value: ArchiveFilter.likes, icon: Icons.favorite_border, label: l10n.favorites),
+          ProfileFilterOption(
+            value: ArchiveFilter.bookmarks,
+            icon: Icons.bookmark_border,
+            label: l10n.plugin_category_bookmarks,
+          ),
         ],
         onSelected: _selectArchiveFilter,
       ),

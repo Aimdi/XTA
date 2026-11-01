@@ -52,7 +52,8 @@ sits in a pill, a ring or a box any more.
   secondary colour, and a screen reader says which is selected. Every choice
   stays: Posts has All, Posts and Retweets; Media has All, Photos, Videos and
   Broadcasts; Saved has All, Likes and Bookmarks. The row scrolls when the
-  words do not fit.
+  words do not fit. *Superseded by `profile-filter-icons.md`: the choices are
+  now icons, named by tooltips and to a screen reader.*
 - Touch targets stay 48 dp, Android's minimum, where the canvas drew 44.
 
 What each control does is unchanged, and so are the top bar (back, search,

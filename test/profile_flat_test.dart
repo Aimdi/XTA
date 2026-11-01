@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/posts_filter.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/profile/profile_note.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -188,7 +189,9 @@ void main() {
   });
 
   group('tabs and filters', () {
-    testWidgets('are names only, share the width, and the second says Replies', (tester) async {
+    testWidgets('tabs are names that share the width, the second says Replies, and filters are named icons', (
+      tester,
+    ) async {
       await pumpXProfile(tester);
       final tabBar = tester.widget<TabBar>(find.byType(TabBar));
       expect(tabBar.isScrollable, isFalse);
@@ -200,13 +203,13 @@ void main() {
           reason: name,
         );
       }
-      for (final word in ['All', 'Posts', 'Retweets']) {
-        expect(
-          find.descendant(of: find.byType(TextButton), matching: find.text(word)),
-          findsWidgets,
-          reason: word,
-        );
+      final filters = find.byType(ProfileFilterBar<PostsFilter>);
+      final named = {'All': Icons.layers_outlined, 'Posts': Icons.chat_bubble_outline, 'Retweets': Icons.repeat};
+      for (final MapEntry(key: name, value: icon) in named.entries) {
+        expect(find.descendant(of: filters, matching: find.byIcon(icon)), findsOneWidget, reason: name);
+        expect(find.descendant(of: filters, matching: find.byTooltip(name)), findsOneWidget, reason: name);
       }
+      expect(find.descendant(of: filters, matching: find.byType(Text)), findsNothing);
       expect(find.byType(ChoiceChip), findsNothing);
       await settleProfile(tester);
     });

@@ -39,6 +39,8 @@ built.
 - `lib/profile/profile_chrome.dart`: `ProfileFilterOption` gains its icon;
   `ProfileFilterBar` draws icon pills.
 - `lib/profile/profile.dart`: the icon for each choice.
+- `lib/ui/x_look_theme.dart`: `xLookFloatingSurfaceOf`, the floating surface
+  of the current theme, shared with the reorder lift.
 
 ## Tests
 
@@ -46,4 +48,4 @@ built.
   selected one marked selected and on the pill, the others not.
 - Tapping a choice selects it.
 - Renders of the profile in German and English at 390 dp and German at
-  320 dp ×2.
+  320 dp ×2, and of the Media and Saved rows in English.
