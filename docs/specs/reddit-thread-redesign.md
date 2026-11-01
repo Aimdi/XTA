@@ -109,21 +109,31 @@ and this app's rule; the comment header and action rows grow to match.
 
 ## Code
 
-- `lib/plugins/reddit/reddit_thread_screen.dart`: the screen — app bar, post,
-  actions, comments header, rows and the jump button.
+- `lib/plugins/reddit/reddit_thread_screen.dart`: the screen — app bar, the
+  list of post, comments header and rows, and the jump button; loading,
+  sorting, folding and held-back comments as before.
+- `lib/plugins/reddit/reddit_thread_post.dart`: the post, its link card, its
+  action row and the save button.
 - `lib/plugins/reddit/reddit_thread_comment.dart`: a comment row, its thread
-  lines, header, action row and menu, and the held-back row.
-- `lib/plugins/reddit/reddit_thread_post.dart`: the post, its link card and
-  its action row.
+  lines, header, upvote and menu, the removed wording, and the held-back row.
+- `lib/plugins/reddit/reddit_thread_navigation.dart`: the comments header
+  (count, sort, collapse all) and the jump to the next top-level comment.
+- `lib/plugins/reddit/reddit_thread_chrome.dart`: the line and upvote colours,
+  chips, pills and the on-device upvote button the post and comments share.
 - `lib/plugins/reddit/reddit_thread_visits.dart`: when each thread was last
-  opened.
+  opened, in a preference, the 200 most recent.
 - `lib/plugins/reddit/reddit_comments.dart`, `reddit_comments_json.dart`: a
-  comment's author flair.
-- `lib/plugins/reddit/reddit_avatar.dart`: a round avatar.
+  comment's author flair and how many replies it holds.
+- `lib/plugins/reddit/reddit_avatar.dart`: a round avatar;
+  `reddit_votes_store.dart`: a comment's upvote is kept under `t1_<id>`, apart
+  from posts'.
 - `lib/plugins/reddit/reddit_post_media.dart`: the link card can be
   replaced, so the thread draws its own.
+- `lib/ui/x_look_theme.dart`: `xLookInsetSurfaceOf`, the quiet fill of the
+  pills.
 - `lib/plugins/plugin_comment_bubble.dart` is no longer used by Reddit; Hacker
   News and Pixiv keep it.
+- Ages are the compact form ("21m", "1h"), as on the timeline.
 
 ## Tests
 

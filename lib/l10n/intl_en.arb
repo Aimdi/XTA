@@ -3117,8 +3117,6 @@
   "@plugin_reddit_in_home_feed_description": {},
   "plugin_reddit_load_more": "Load more",
   "@plugin_reddit_load_more": {},
-  "plugin_reddit_more_replies": "More replies",
-  "@plugin_reddit_more_replies": {},
   "plugin_reddit_not_configured": "Add your Reddit client ID first",
   "@plugin_reddit_not_configured": {},
   "plugin_reddit_nsfw": "NSFW",
@@ -6349,5 +6347,76 @@
   "plugin_stocks_two_readings": "Two matches, choose the source",
   "@plugin_stocks_two_readings": {
     "description": "Second line of a watchlist row whose symbol names two different things ($NDX is both the Nasdaq-100 index and a crypto token): the reader picks which one the row shows from the two choices under it."
+  },
+  "plugin_reddit_comment_count": "{count, plural, one{{count} comment} other{{count} comments}}",
+  "@plugin_reddit_comment_count": {
+    "description": "Heading above a Reddit post's comments: how many it has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collapse_all": "Collapse all",
+  "@collapse_all": {
+    "description": "Button that folds every top-level comment of a thread, leaving only their headers."
+  },
+  "expand_all": "Expand all",
+  "@expand_all": {
+    "description": "Button that unfolds every comment of a thread again."
+  },
+  "plugin_reddit_upvote": "Upvote",
+  "@plugin_reddit_upvote": {
+    "description": "Name of the up-arrow button on a Reddit post or comment. The upvote is kept on this device only; nothing is sent to Reddit."
+  },
+  "plugin_reddit_jump_next_comment": "Jump to next top-level comment",
+  "@plugin_reddit_jump_next_comment": {
+    "description": "Round button at the bottom of a Reddit thread that scrolls to the next comment that answers the post directly."
+  },
+  "plugin_reddit_folded_replies": "{count, plural, one{+{count} reply} other{+{count} replies}}",
+  "@plugin_reddit_folded_replies": {
+    "description": "Small label on a folded Reddit comment: how many replies the fold is hiding.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_reddit_op": "OP",
+  "@plugin_reddit_op": {
+    "description": "Short label beside a commenter's name when they wrote the post (Original Poster), as Reddit shows it."
+  },
+  "plugin_reddit_comment_new": "{age}, new",
+  "@plugin_reddit_comment_new": {
+    "description": "Beside a comment written since the reader last opened the thread. age is how long ago it was written, like 21m.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_reddit_comment_deleted": "Comment deleted",
+  "@plugin_reddit_comment_deleted": {
+    "description": "Shown in place of a Reddit comment whose text is gone."
+  },
+  "plugin_reddit_comment_removed": "Comment removed by moderators",
+  "@plugin_reddit_comment_removed": {
+    "description": "Shown in place of a Reddit comment the subreddit's moderators removed."
+  },
+  "plugin_reddit_comment_removed_by_reddit": "Comment removed by Reddit",
+  "@plugin_reddit_comment_removed_by_reddit": {
+    "description": "Shown in place of a Reddit comment that Reddit itself removed."
+  },
+  "plugin_reddit_comment_unavailable": "Comment unavailable",
+  "@plugin_reddit_comment_unavailable": {
+    "description": "Shown in place of a Reddit comment Reddit no longer shows."
+  },
+  "plugin_reddit_load_more_comments": "Load more comments",
+  "@plugin_reddit_load_more_comments": {
+    "description": "Button at the end of a Reddit thread's first page that loads the next top-level comments into it."
+  },
+  "plugin_reddit_continue_thread": "Continue thread",
+  "@plugin_reddit_continue_thread": {
+    "description": "Button where Reddit held back the rest of a discussion: opens it on its own page."
   }
 }

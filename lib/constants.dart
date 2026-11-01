@@ -218,6 +218,10 @@ const optionPluginRedditShowSpoilers = 'plugin.reddit.show_spoilers';
 /// JSON snapshots of locally saved Reddit posts.
 const optionPluginRedditSavedPosts = 'plugin.reddit.saved_posts';
 
+/// JSON map of thread permalink to when it was last opened (milliseconds since
+/// the epoch), so comments written since read as new.
+const optionPluginRedditThreadVisits = 'plugin.reddit.thread_visits';
+
 const pluginIdStocks = 'stocks';
 const optionPluginStocksEnabled = 'plugin.stocks.enabled';
 const optionPluginStocksShowTab = 'plugin.stocks.show_tab';

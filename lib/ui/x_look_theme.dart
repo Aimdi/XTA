@@ -211,6 +211,15 @@ Color xLookInsetSurface(XLookTokens tokens) =>
     ? _xLookLiftedSurface(tokens, 0.06)
     : tokens.card;
 
+/// [xLookInsetSurface] of the current theme, or Material's quiet container
+/// where the X look is not installed.
+Color xLookInsetSurfaceOf(BuildContext context) {
+  final tokens = XLookTokens.maybeOf(context);
+  return tokens == null
+      ? Theme.of(context).colorScheme.surfaceContainer
+      : xLookInsetSurface(tokens);
+}
+
 /// The fill for a surface that floats above the page — a menu, a dialog, a
 /// sheet, a snackbar, or the home nav pill.
 ///

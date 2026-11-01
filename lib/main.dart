@@ -629,6 +629,7 @@ Future<void> main() async {
       optionPluginRedditNsfwMode: redditNsfwModeTap,
       optionPluginRedditShowSpoilers: false,
       optionPluginRedditSavedPosts: '[]',
+      optionPluginRedditThreadVisits: '{}',
       optionPluginRedditSource: redditSourceAuto,
       optionPluginRedditSubreddits: '[]',
       optionPluginRedditRefreshToken: '',

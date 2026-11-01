@@ -59,6 +59,7 @@ RedditComment? commentFromChild(Json child, {String? parentPermalink}) {
             isUtc: true,
           ).toLocal(),
     isSubmitter: data['is_submitter'].boolean ?? false,
+    authorFlair: _flair(data['author_flair_text'].string),
     mediaUrls: media.urls,
     replies: _repliesFromJson(
       data['replies'],
@@ -66,6 +67,11 @@ RedditComment? commentFromChild(Json child, {String? parentPermalink}) {
     ),
     permalink: data['permalink'].string,
   );
+}
+
+String? _flair(String? text) {
+  final trimmed = text?.trim();
+  return trimmed == null || trimmed.isEmpty ? null : trimmed;
 }
 
 /// The held-back replies live on their parent's own page — without that

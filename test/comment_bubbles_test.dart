@@ -8,61 +8,8 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_story_screen.dart';
 import 'package:xta/plugins/plugin_comment_bubble.dart';
-import 'package:xta/plugins/reddit/reddit_client.dart';
-import 'package:xta/plugins/reddit/reddit_comments.dart';
-import 'package:xta/plugins/reddit/reddit_store.dart';
-import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
-import 'package:xta/plugins/reddit/reddit_thread_screen.dart';
-import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_look_theme.dart';
-
-const _post = RedditPost(
-  id: 'abc123',
-  title: 'Which app do you use for long threads?',
-  subreddit: 'androidapps',
-  permalink: '/r/androidapps/comments/abc123/thread/',
-  author: 'op_writer',
-  isSelf: true,
-);
-
-const _reddit = [
-  RedditComment(
-    id: 'c1',
-    author: 'first_reader',
-    body: 'Top level body',
-    score: 412,
-    replies: [
-      RedditComment(
-        id: 'c1a',
-        author: 'op_writer',
-        isSubmitter: true,
-        body: 'Reply body',
-        score: 118,
-        replies: [
-          RedditComment(id: 'c1a1', author: 'third', body: 'Nested body', score: 4),
-          RedditComment(id: 'more', body: '', permalink: '/r/androidapps/comments/abc123/thread/c1a/', moreCount: 7),
-        ],
-      ),
-    ],
-  ),
-  RedditComment(id: 'c2', author: 'second_reader', body: 'Sibling body', score: 9),
-];
-
-final _deepReddit = [_redditChain(0, 9)];
-
-RedditComment _redditChain(int depth, int max) => RedditComment(
-  id: 'deep$depth',
-  author: 'a_really_long_reddit_username_that_keeps_going_$depth',
-  body: 'Depth $depth says something long enough to wrap over several lines at a large text size.',
-  score: 123456,
-  createdAt: DateTime(2026, 1, 1),
-  replies: [
-    if (depth < max) _redditChain(depth + 1, max),
-    if (depth == max)
-      RedditComment(id: 'stub$depth', body: '', permalink: '/r/x/comments/y/z/$depth/', moreCount: 1234),
-  ],
-);
 
 const _story = HnStory(id: 1, title: 'Show HN: A reader', author: 'maker', score: 10);
 
@@ -89,45 +36,6 @@ HnComment _hnChain(int depth, int max) => HnComment(
   children: [if (depth < max) _hnChain(depth + 1, max)],
 );
 
-class _Reddit extends RedditClient {
-  final List<RedditComment> comments;
-  final RedditPost? filled;
-  final List<RedditComment> more;
-  _Reddit(this.comments, {this.filled, this.more = const []});
-
-  @override
-  Future<RedditPost?> fetchPost(
-    String permalink, {
-    required String clientId,
-    String? userToken,
-    bool preferPublic = false,
-  }) async => filled;
-
-  @override
-  Future<List<RedditComment>> fetchMoreComments(RedditComment stub) async => more;
-
-  @override
-  Future<({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages})> fetchComments(
-    String permalink, {
-    String? sort,
-    required String clientId,
-    String? userToken,
-    bool preferPublic = false,
-  }) async => (comments: comments, selfText: null, postUrl: null, postImages: const <String>[]);
-}
-
-class _Icons extends RedditIcons {
-  _Icons(super.client);
-
-  @override
-  Future<String?> iconFor(
-    String subreddit, {
-    String clientId = '',
-    String? userToken,
-    bool preferPublic = false,
-  }) async => null;
-}
-
 class _Hn extends HackerNewsClient {
   final List<HnComment> comments;
   _Hn(this.comments);
@@ -138,24 +46,16 @@ class _Hn extends HackerNewsClient {
 
 Widget _app(
   Widget home, {
-  List<RedditComment> reddit = _reddit,
-  RedditPost? filled,
-  List<RedditComment> more = const [],
   List<HnComment> hn = _hn,
   ThemeData? theme,
   double scale = 1,
   TextDirection direction = TextDirection.ltr,
 }) {
   final prefs = PrefServiceCache();
-  final client = _Reddit(reddit, filled: filled, more: more);
   return PrefService(
     service: prefs,
     child: MultiProvider(
       providers: [
-        Provider<RedditClient>.value(value: client),
-        Provider<RedditIcons>.value(value: _Icons(client)),
-        Provider<RedditVotesStore>.value(value: RedditVotesStore()),
-        Provider<RedditSavedStore>.value(value: RedditSavedStore(prefs)),
         Provider<HackerNewsClient>.value(value: _Hn(hn)),
       ],
       child: MaterialApp(
@@ -224,104 +124,6 @@ void main() {
     });
   });
 
-  group('Reddit thread', () {
-    testWidgets('every comment sits in its own tinted bubble', (tester) async {
-      await _pump(tester, _app(const RedditThreadScreen(post: _post)));
-
-      for (final body in ['Top level body', 'Reply body', 'Nested body', 'Sibling body']) {
-        expect(_bubbleOf(body), findsOneWidget, reason: body);
-      }
-      expect(find.byType(CommentBubble), findsNWidgets(5));
-      expect(_fillOf(tester, 'Top level body'), isNot(_fillOf(tester, 'Reply body')));
-      expect(_fillOf(tester, 'Top level body'), _fillOf(tester, 'Sibling body'));
-      final material = tester.widget<Material>(
-        find.descendant(of: _bubbleOf('Top level body'), matching: find.byType(Material)).first,
-      );
-      expect(material.clipBehavior, Clip.antiAlias);
-      expect(material.shape, isA<RoundedRectangleBorder>());
-    });
-
-    testWidgets('OP keeps its accent colour', (tester) async {
-      await _pump(tester, _app(const RedditThreadScreen(post: _post)));
-
-      final op = tester.widget<Text>(find.descendant(of: _bubbleOf('Reply body'), matching: find.text('u/op_writer')));
-      final other = tester.widget<Text>(find.text('u/first_reader'));
-      expect(op.style?.color, isNot(other.style?.color));
-    });
-
-    testWidgets('folding hides the body and shows how much it holds', (tester) async {
-      await _pump(tester, _app(const RedditThreadScreen(post: _post)));
-
-      await tester.tap(find.text('Top level body'));
-      await tester.pumpAndSettle();
-      expect(find.text('Top level body'), findsNothing);
-      expect(find.text('Reply body'), findsNothing);
-      expect(find.text('+4'), findsOneWidget);
-      expect(tester.getSize(_bubbleOf('first_reader')).height, greaterThanOrEqualTo(48));
-
-      await tester.tap(find.text('+4'));
-      await tester.pumpAndSettle();
-      expect(find.text('Top level body'), findsOneWidget);
-      expect(find.text('Reply body'), findsOneWidget);
-    });
-
-    testWidgets('the more-replies stub is an outlined, tappable pill', (tester) async {
-      await _pump(tester, _app(const RedditThreadScreen(post: _post)));
-
-      final stub = find.textContaining('More replies');
-      final bubble = tester.widget<CommentBubble>(_bubbleOf('More replies'));
-      expect(bubble.outlined, isTrue);
-      final ink = find.ancestor(of: stub, matching: find.byType(InkWell)).first;
-      expect(tester.widget<InkWell>(ink).onTap, isNotNull);
-      expect(tester.getSize(ink).height, greaterThanOrEqualTo(48));
-
-      await tester.tap(stub);
-      await tester.pumpAndSettle();
-      expect(find.byType(RedditThreadScreen, skipOffstage: false), findsNWidgets(2));
-    });
-
-    testWidgets('a post that arrived bare shows the words Reddit serves for it', (tester) async {
-      const filled = RedditPost(
-        id: 'abc123',
-        title: 'Which app do you use for long threads?',
-        subreddit: 'androidapps',
-        permalink: '/r/androidapps/comments/abc123/thread/',
-        author: 'op_writer',
-        isSelf: true,
-        selfText: 'The words search left out',
-        score: 77,
-      );
-      await _pump(tester, _app(const RedditThreadScreen(post: _post), filled: filled));
-
-      expect(find.text('The words search left out'), findsOneWidget);
-    });
-
-    testWidgets('comments held back at the top load into the thread', (tester) async {
-      final app = _app(
-        const RedditThreadScreen(post: _post),
-        reddit: const [
-          RedditComment(id: 'c1', author: 'first_reader', body: 'Top level body', score: 3),
-          RedditComment(
-            id: 'more-root',
-            body: '',
-            permalink: '/r/androidapps/comments/abc123/thread/',
-            moreCount: -1,
-            nextPage: (path: '/svc/shreddit/more-comments/androidapps/t3_abc123?top-level=1', cursor: 'c'),
-          ),
-        ],
-        more: const [RedditComment(id: 'c11', author: 'eleventh', body: 'The eleventh comment', score: 1)],
-      );
-      await _pump(tester, app);
-
-      await tester.tap(find.textContaining('More replies'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('The eleventh comment'), findsOneWidget);
-      expect(find.textContaining('More replies'), findsNothing, reason: 'Reddit held nothing more back');
-      expect(find.byType(RedditThreadScreen), findsOneWidget, reason: 'it stays in this thread');
-    });
-  });
-
   group('Hacker News thread', () {
     testWidgets('every comment sits in its own tinted bubble', (tester) async {
       await _pump(tester, _app(const HnStoryScreen(story: _story)));
@@ -352,20 +154,6 @@ void main() {
   group('narrow screens and large text', () {
     for (final (name, direction) in [('ltr', TextDirection.ltr), ('rtl', TextDirection.rtl)]) {
       for (final MapEntry(key: theme, value: data) in _themes.entries) {
-        testWidgets('Reddit at 320dp, 2x text, $name, $theme', (tester) async {
-          final app = _app(
-            const RedditThreadScreen(post: _post),
-            reddit: _deepReddit,
-            theme: data,
-            scale: 2,
-            direction: direction,
-          );
-          await _pump(tester, app, size: const Size(320, 12000));
-          expect(tester.takeException(), isNull);
-          expect(find.textContaining('Depth 9 '), findsOneWidget);
-          expect(find.textContaining('More replies'), findsOneWidget);
-        });
-
         testWidgets('Hacker News at 320dp, 2x text, $name, $theme', (tester) async {
           final app = _app(
             const HnStoryScreen(story: _story),
