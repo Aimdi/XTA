@@ -61,7 +61,11 @@ class CheckApkContentsTest(unittest.TestCase):
         reference = os.environ.get("XTA_REFERENCE_APK")
         if not reference:
             self.skipTest("Set XTA_REFERENCE_APK to a published release APK")
-        self.assertEqual(contents.unloaded_libraries(Path(reference)), ["libsherpa-onnx-cxx-api.so", "libsqlite3.so"])
+        # aimdi175 still carried the voice engine, which now downloads with the first voice.
+        self.assertEqual(
+            contents.unloaded_libraries(Path(reference)),
+            ["libonnxruntime.so", "libsherpa-onnx-c-api.so", "libsherpa-onnx-cxx-api.so", "libsqlite3.so"],
+        )
         self.assertEqual(contents.compressed_libraries(Path(reference)), [])
 
 
