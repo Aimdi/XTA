@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Wykres giełdowy",
   "@ticker_chart": {},
-  "ticker_chart_description": "Pokazywany po otwarciu tickera. XTA sam pobiera notowania z publicznej usługi bez konta; po wyłączeniu nie wysyła żadnego zapytania, a wpisy zostają.",
+  "ticker_chart_description": "Pokazywany po otwarciu tickera. XTA sam pobiera notowania z publicznych usług bez konta; po wyłączeniu nie wysyła żadnego zapytania, a wpisy zostają.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1d",
   "@ticker_range_day": {},

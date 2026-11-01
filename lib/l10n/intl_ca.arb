@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Gràfic borsari",
   "@ticker_chart": {},
-  "ticker_chart_description": "Es mostra en obrir un tíquer. XTA obté els preus d'un servei públic sense compte; desactivat no fa cap petició i les publicacions es mantenen.",
+  "ticker_chart_description": "Es mostra en obrir un tíquer. XTA obté els preus de serveis públics sense compte; desactivat no fa cap petició i les publicacions es mantenen.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1d",
   "@ticker_range_day": {},

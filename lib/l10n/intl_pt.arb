@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Gráfico de bolsa",
   "@ticker_chart": {},
-  "ticker_chart_description": "Mostrado ao abrir um ticker. O XTA obtém as cotações de um serviço público sem conta; desligado não faz qualquer pedido e ficam as publicações.",
+  "ticker_chart_description": "Mostrado ao abrir um ticker. O XTA obtém as cotações de serviços públicos sem conta; desligado não faz qualquer pedido e ficam as publicações.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1d",
   "@ticker_range_day": {},

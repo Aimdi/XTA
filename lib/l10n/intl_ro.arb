@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Grafic bursier",
   "@ticker_chart": {},
-  "ticker_chart_description": "Apare când deschizi un ticker. XTA ia singur cotațiile de la un serviciu public fără cont; dezactivat nu face nicio cerere și rămân postările.",
+  "ticker_chart_description": "Apare când deschizi un ticker. XTA ia singur cotațiile de la servicii publice fără cont; dezactivat nu face nicio cerere și rămân postările.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1z",
   "@ticker_range_day": {},

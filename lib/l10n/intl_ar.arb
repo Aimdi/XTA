@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "مخطط السهم",
   "@ticker_chart": {},
-  "ticker_chart_description": "يُعرض عند فتح رمز سهم. يجلب XTA بيانات السعر بنفسه من خدمة عامة لا تتطلب حسابًا؛ عند إيقافه لا يُرسل أي طلب وتبقى المنشورات.",
+  "ticker_chart_description": "يُعرض عند فتح رمز سهم. يجلب XTA بيانات السعر بنفسه من خدمات عامة لا تتطلب حسابًا؛ عند إيقافه لا يُرسل أي طلب وتبقى المنشورات.",
   "@ticker_chart_description": {},
   "ticker_range_day": "ي",
   "@ticker_range_day": {},

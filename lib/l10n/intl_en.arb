@@ -4276,7 +4276,7 @@
   "@thumbnail": {},
   "ticker_chart": "Stock chart",
   "@ticker_chart": {},
-  "ticker_chart_description": "Shown when you open a ticker. XTA fetches the prices itself from a public service that needs no account; with it off no request is made and the posts remain.",
+  "ticker_chart_description": "Shown when you open a ticker. XTA fetches the prices itself from public services that need no account; with it off no request is made and the posts remain.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1D",
   "@ticker_range_day": {},

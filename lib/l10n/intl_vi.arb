@@ -4066,7 +4066,7 @@
   "@thumbnail": {},
   "ticker_chart": "Biểu đồ cổ phiếu",
   "@ticker_chart": {},
-  "ticker_chart_description": "Hiển thị khi bạn mở một mã cổ phiếu. XTA tự lấy giá từ một dịch vụ công khai không cần tài khoản; tắt đi thì không gửi yêu cầu nào và vẫn còn các bài viết.",
+  "ticker_chart_description": "Hiển thị khi bạn mở một mã cổ phiếu. XTA tự lấy giá từ các dịch vụ công khai không cần tài khoản; tắt đi thì không gửi yêu cầu nào và vẫn còn các bài viết.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1N",
   "@ticker_range_day": {},

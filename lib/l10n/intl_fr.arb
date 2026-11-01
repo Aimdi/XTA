@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Graphique boursier",
   "@ticker_chart": {},
-  "ticker_chart_description": "Affiché à l'ouverture d'un ticker. XTA récupère lui-même les cours auprès d'un service public sans compte ; désactivé, aucune requête n'est faite et les posts restent.",
+  "ticker_chart_description": "Affiché à l'ouverture d'un ticker. XTA récupère lui-même les cours auprès de services publics sans compte ; désactivé, aucune requête n'est faite et les posts restent.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1J",
   "@ticker_range_day": {},

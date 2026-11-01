@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Aandelengrafiek",
   "@ticker_chart": {},
-  "ticker_chart_description": "Verschijnt wanneer je een ticker opent. XTA haalt de koersen zelf op bij een openbare dienst zonder account; uitgeschakeld gaat er niets uit en blijven de berichten over.",
+  "ticker_chart_description": "Verschijnt wanneer je een ticker opent. XTA haalt de koersen zelf op bij openbare diensten zonder account; uitgeschakeld gaat er niets uit en blijven de berichten over.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1d",
   "@ticker_range_day": {},

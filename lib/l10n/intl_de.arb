@@ -4069,7 +4069,7 @@
   "@thumbnail": {},
   "ticker_chart": "Aktienchart",
   "@ticker_chart": {},
-  "ticker_chart_description": "Wird beim Öffnen eines Tickers gezeigt. XTA holt die Kurse selbst von einem öffentlichen Dienst ohne Konto; ausgeschaltet wird nichts angefragt und die Beiträge bleiben.",
+  "ticker_chart_description": "Wird beim Öffnen eines Tickers gezeigt. XTA holt die Kurse selbst von öffentlichen Diensten ohne Konto; ausgeschaltet wird nichts angefragt und die Beiträge bleiben.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1T",
   "@ticker_range_day": {},
