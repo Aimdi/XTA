@@ -112,11 +112,14 @@ jobs:
         with:
           flutter-version-file: .fvmrc
           cache: true
-      - name: Generate sources
+      - name: Generate sources and icons
         run: |
           flutter pub get
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
+          python3 -m pip install -r requirements.txt
+          python3 generate_icons.py
+          dart run flutter_launcher_icons
       - name: Serve the engine and a voice to the emulator
         run: |
           set -euo pipefail
