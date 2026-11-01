@@ -520,6 +520,30 @@ String? parseSelfText(String body) {
   return text == null || text.isEmpty ? null : text;
 }
 
+/// [incoming] without the threads [shown] already holds at the top level,
+/// replies and all. A page of held-back comments can repeat one the thread
+/// loaded before, and each top-level comment is shown once.
+List<FlatComment> withoutShownThreads(
+  List<FlatComment> shown,
+  List<FlatComment> incoming,
+) {
+  final ids = {
+    for (final entry in shown)
+      if (entry.depth == 0) entry.comment.id,
+  };
+  final kept = <FlatComment>[];
+  var repeated = false;
+  for (final entry in incoming) {
+    if (entry.depth == 0) {
+      repeated = ids.contains(entry.comment.id);
+    }
+    if (!repeated) {
+      kept.add(entry);
+    }
+  }
+  return kept;
+}
+
 /// One row of a thread: the comment, and how many replies its fold is holding.
 typedef VisibleComment = ({FlatComment entry, int hidden});
 

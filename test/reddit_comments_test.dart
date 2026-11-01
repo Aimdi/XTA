@@ -795,6 +795,20 @@ void main() {
     );
   });
 
+  group('comments loaded in place', () {
+    test('a repeated top-level thread is dropped with its replies, new ones kept', () {
+      final shown = flattenComments(const [RedditComment(id: 'a', body: 'Shown')]);
+      final incoming = flattenComments(const [
+        RedditComment(id: 'a', body: 'Shown again', replies: [RedditComment(id: 'a1', body: 'Its reply')]),
+        RedditComment(id: 'b', body: 'New', replies: [RedditComment(id: 'b1', body: 'New reply')]),
+      ]);
+      expect(
+        [for (final entry in withoutShownThreads(shown, incoming)) entry.comment.id],
+        ['b', 'b1'],
+      );
+    });
+  });
+
   group('folding a thread', () {
     List<FlatComment> flat() => [
       (comment: RedditComment(id: 'a', body: 'top'), depth: 0),

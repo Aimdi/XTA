@@ -126,7 +126,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     try {
       final more = await context.read<RedditClient>().fetchMoreComments(stub);
       if (!mounted) return;
-      setState(() => _comments = _replacing(stub, flattenComments(more)));
+      setState(() => _comments = _replacing(stub, withoutShownThreads(_comments ?? const [], flattenComments(more))));
     } on RedditException {
       if (!mounted) return;
       setState(() => _moreRefused = true);
