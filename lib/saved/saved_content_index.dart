@@ -16,6 +16,8 @@ import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_archive.dart';
+import 'package:xta/plugins/threads/threads_archive.dart';
+import 'package:xta/plugins/threads/threads_models.dart';
 
 /// One stored post, parsed: the model its tile renders and the lowercased text
 /// the saved-screen search matches against.
@@ -28,11 +30,20 @@ class SavedContent {
   final RedditPost? reddit;
   final MastodonPost? mastodon;
   final BlueskyPost? bluesky;
+  final ThreadsPost? threads;
   final PluginLinkPost? plugin;
 
   final String haystack;
 
-  const SavedContent({this.tweet, this.reddit, this.mastodon, this.bluesky, this.plugin, required this.haystack});
+  const SavedContent({
+    this.tweet,
+    this.reddit,
+    this.mastodon,
+    this.bluesky,
+    this.threads,
+    this.plugin,
+    required this.haystack,
+  });
 
   static const empty = SavedContent(haystack: '');
 
@@ -61,6 +72,9 @@ SavedContent parseSavedContent(String? blob) {
     final bluesky = blueskyPostFromArchive(decoded);
     if (bluesky != null) return SavedContent(bluesky: bluesky, haystack: blueskyArchiveHaystack(bluesky));
     if (decoded is Map && decoded['xtaPlugin'] == 'bluesky') return SavedContent.empty;
+    final threads = threadsPostFromArchive(decoded);
+    if (threads != null) return SavedContent(threads: threads, haystack: threadsArchiveHaystack(threads));
+    if (decoded is Map && decoded['xtaPlugin'] == 'threads') return SavedContent.empty;
     final mastodon = mastodonPostFromArchive(decoded);
     if (mastodon != null) return SavedContent(mastodon: mastodon, haystack: mastodonArchiveHaystack(mastodon));
     if (decoded is Map && decoded['xtaPlugin'] == 'mastodon') return SavedContent.empty;

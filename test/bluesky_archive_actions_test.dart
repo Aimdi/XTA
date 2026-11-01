@@ -51,8 +51,8 @@ void main() {
 
   test('Other plugin notes retain a portable source link and local text', () {
     const post = PluginLinkPost(
-      source: 'threads',
-      url: 'https://threads.net/@alice/post/1',
+      source: 'substack',
+      url: 'https://alice.substack.com/p/remember-this',
       author: 'Alice',
       text: 'Remember this',
     );

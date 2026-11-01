@@ -1,7 +1,7 @@
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
-import 'package:xta/plugins/plugin_link_post.dart';
+import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_ink_post.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
+import 'package:xta/plugins/threads/threads_archive.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
@@ -127,14 +128,11 @@ class ThreadsPostCard extends StatelessWidget {
       showSourceBadge: showSourceBadge,
       color: tweetCardColor(context),
       onTap: openOnTap ? () => _open(context) : null,
-      onLongPress: () => showPluginLinkPostActions(
+      onLongPress: () => showPluginPostActions(
         context,
-        source: 'threads',
-        onGroup: () => addThreadsAccountToGroup(context, _account),
+        post: threadsArchive(post),
         url: post.url ?? post.id,
-        author: post.handle,
-        text: post.text,
-        images: post.images,
+        onGroup: () => addThreadsAccountToGroup(context, _account),
       ),
       contextLines: [if (post.isRepost) _repostLine(context)],
       avatar: _avatar(context),
@@ -315,6 +313,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
               );
             },
           ),
+          PluginPostBookmark(post: threadsArchive(post)),
           const Spacer(),
           if (post.url != null)
             tweetFooterIconButton(

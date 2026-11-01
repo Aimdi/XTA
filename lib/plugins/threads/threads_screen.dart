@@ -1,6 +1,8 @@
 import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_bookmarks.dart';
+import 'package:xta/saved/saved_source_filter.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -159,12 +161,14 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                   PluginHomeMenu(
                     onSelected: (value) {
                       if (value == 'add') _addAccount();
+                      if (value == 'saved') openPluginBookmarks(context, SavedSource.threads);
                       if (value == 'settings') {
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const ThreadsSettingsScreen()));
                       }
                     },
                     itemBuilder: (_) => [
                       PopupMenuItem(value: 'add', child: Text(l10n.plugin_threads_add_account)),
+                      PopupMenuItem(value: 'saved', child: Text(l10n.saved)),
                       PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
                     ],
                   ),

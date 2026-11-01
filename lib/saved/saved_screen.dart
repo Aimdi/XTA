@@ -35,6 +35,7 @@ import 'package:xta/saved/saved_view_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
+import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:xta/saved/local_post_compose.dart';
 import 'package:xta/saved/local_post_logic.dart';
@@ -1120,6 +1121,7 @@ class SavedTweetTile extends StatelessWidget {
     final stored = parseSavedContent(content);
     if (stored.plugin case final pluginPost?) return _withBelow(PluginLinkPostCard(post: pluginPost));
     if (stored.bluesky case final blueskyPost?) return _withBelow(BlueskyPostCard(post: blueskyPost));
+    if (stored.threads case final threadsPost?) return _withBelow(ThreadsPostCard(post: threadsPost));
     final mastodonPost = mastodon ?? stored.mastodon;
     if (mastodonPost != null) return _withBelow(MastodonPostCard(post: mastodonPost));
     final redditPost = reddit ?? stored.reddit;
