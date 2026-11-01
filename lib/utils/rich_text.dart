@@ -13,7 +13,6 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/_entities.dart';
-import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/stocks/crypto_address.dart';
@@ -462,9 +461,7 @@ List<Entity> _parseEntities(
       );
     }
 
-    // A ticker opens its own screen: the chart, and the posts about it. The
-    // first few distinct cashtags are followed by their move.
-    final moving = <String>{};
+    // A ticker opens its own screen: the chart, and the posts about it.
     for (final symbol in parsed.symbols ?? const []) {
       final String? text = symbol.text;
       if (text == null || text.isEmpty) {
@@ -480,9 +477,6 @@ List<Entity> _parseEntities(
             arguments: TickerScreenArguments(symbol: text),
           ),
           onLongPress: () => _showCashtagSheet(context, text),
-          showMove:
-              moving.length < kCashtagMovesPerPost &&
-              moving.add(text.toUpperCase()),
         ),
       );
     }

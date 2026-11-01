@@ -16,6 +16,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/_card.dart';
+import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/avatar_follow_badge.dart';
@@ -908,6 +909,9 @@ class TweetTileState extends State<TweetTile> {
       if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
       birdwatchQuoted,
       article,
+      // The prices of the tickers it names, at the foot of the post: a quote
+      // inside another post leaves them to its own page.
+      if (!isQuotedTweet) CashtagStrip(symbols: tweetCashtags(tweet)),
       if (isFocal)
         TweetFocalMetaLine(
           createdAt: createdAt,

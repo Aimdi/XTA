@@ -14,6 +14,9 @@ import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_signal_banner.dart';
 import 'package:xta/plugins/stocks/stocks_signal_posts.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
+import 'package:xta/plugins/stocks/stocks_quote_row.dart';
+import 'package:xta/tweet/cashtag_quotes.dart';
+import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/ui/contrast.dart';
@@ -43,6 +46,12 @@ TextSpan? _spanShowing(List<RichTextPart> parts, String text) =>
 class _Quotes extends TickerQuoteCache {
   @override
   Future<void> ensure(Iterable<String> symbols) async {}
+
+  /// As a lookup that found nothing would leave it.
+  void failFor(String symbol) {
+    recordFailure(symbol);
+    update(state, force: true);
+  }
 }
 
 /// A watchlist of tokens, without a database.
@@ -179,7 +188,12 @@ void main() {
       ],
     });
 
-    Future<List<RichTextPart>> pumpPost(WidgetTester tester, TickerQuoteCache cache) async {
+    testWidgets('reads as a plain link, without its move', (tester) async {
+      final cache = _Quotes();
+      addTearDown(cache.destroy);
+      for (final symbol in symbols) {
+        cache.remember(symbol, quote(symbol, 105));
+      }
       late List<RichTextPart> parts;
       await tester.pumpWidget(
         _app(
@@ -194,73 +208,169 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
-      return parts;
-    }
 
-    testWidgets('is followed by its move, the first four of a post', (tester) async {
-      final cache = _Quotes();
-      addTearDown(cache.destroy);
-      for (final symbol in symbols) {
-        cache.remember(symbol, quote(symbol, symbol == 'NVDA' ? 95 : 105));
-      }
-      final parts = await pumpPost(tester, cache);
-
-      expect(find.text(r'$AAPL +5.00%'), findsOneWidget);
-      expect(find.text(r'$NVDA −5.00%'), findsOneWidget);
-      expect(find.text(r'$MSFT +5.00%'), findsOneWidget);
-      expect(find.text(r'$AMZN'), findsOneWidget, reason: 'the fifth goes without');
-      final aapl = tester.widget<Text>(find.text(r'$AAPL +5.00%')).textSpan! as TextSpan;
-      final context = tester.element(find.byType(Scaffold));
-      expect(aapl.children!.single.style!.color, stockTrendColour(context, 5), reason: 'only the move in green');
-      expect(find.byType(ActionChip), findsNothing, reason: 'no chips under the post');
+      expect(find.text(r'$AAPL'), findsOneWidget);
+      expect(find.textContaining('%', findRichText: true), findsNothing, reason: 'the strip carries the moves');
       disposeRichTextParts(parts);
     });
 
     testWidgets('is drawn at the size of the words around it, at any text size', (tester) async {
-      final cache = _Quotes();
-      addTearDown(cache.destroy);
       late List<RichTextPart> parts;
       await tester.pumpWidget(
         _app(
           Builder(
             builder: (context) => MediaQuery(
               data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.3)),
+              child: Builder(
+                builder: (context) {
+                  parts = buildRichText(context, text, entities);
+                  return Column(
+                    children: [
+                      Text.rich(TextSpan(children: displayRichText(parts))),
+                      const Text('AAPL'),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final words = tester.getRect(find.text('AAPL')).height;
+      expect(tester.getRect(find.text(r'$AAPL')).height, closeTo(words, words * 0.1), reason: 'not scaled twice');
+      disposeRichTextParts(parts);
+    });
+  });
+
+  group('the price strip', () {
+    final now = DateTime.now();
+    TickerQuote live(String symbol, double price) => TickerQuote(
+      symbol: symbol,
+      currency: 'USD',
+      price: price,
+      previousClose: 100,
+      regularPeriod: TickerTradingPeriod(
+        start: now.subtract(const Duration(hours: 2)),
+        end: now.add(const Duration(hours: 2)),
+      ),
+      points: [
+        for (var i = 0; i < 6; i++)
+          TickerPoint(at: now.subtract(Duration(minutes: 60 - i * 10)), close: 100 + (price - 100) * i / 5),
+      ],
+    );
+    TickerQuote closed(String symbol, double price) => TickerQuote(
+      symbol: symbol,
+      currency: 'USD',
+      price: price,
+      previousClose: 100,
+      regularMarketTime: now.subtract(const Duration(days: 1)),
+      regularPeriod: TickerTradingPeriod(
+        start: now.subtract(const Duration(hours: 30)),
+        end: now.subtract(const Duration(hours: 24)),
+      ),
+      points: const [],
+    );
+
+    Future<void> pumpStrip(WidgetTester tester, TickerQuoteCache cache, List<String> symbols, {double scale = 1}) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        _app(
+          Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
               child: Provider<TickerQuoteCache>.value(
                 value: cache,
-                child: Builder(
-                  builder: (context) {
-                    parts = buildRichText(context, text, entities);
-                    return Column(
-                      children: [
-                        Text.rich(TextSpan(children: displayRichText(parts))),
-                        const Text('AAPL'),
-                      ],
-                    );
-                  },
-                ),
+                child: Align(alignment: Alignment.topCenter, child: CashtagStrip(symbols: symbols)),
               ),
             ),
           ),
         ),
       );
       await tester.pump();
+    }
 
-      final words = tester.getRect(find.text('AAPL')).height;
-      expect(tester.getRect(find.text(r'$AAPL')).height, closeTo(words, words * 0.1), reason: 'not scaled twice');
-      disposeRichTextParts(parts);
-    });
-
-    testWidgets('follows as its price arrives', (tester) async {
+    testWidgets('lists the first four cashtags in order, each with its price and move', (tester) async {
       final cache = _Quotes();
       addTearDown(cache.destroy);
-      final parts = await pumpPost(tester, cache);
-      expect(find.text(r'$AAPL'), findsOneWidget);
+      for (final symbol in ['AAPL', 'NVDA', 'TSLA', 'MSFT', 'AMZN']) {
+        cache.remember(symbol, live(symbol, symbol == 'NVDA' ? 95 : 105));
+      }
+      await pumpStrip(tester, cache, ['AAPL', 'NVDA', 'TSLA', 'MSFT', 'AMZN']);
 
-      cache.remember('AAPL', quote('AAPL', 105));
+      final xs = [for (final symbol in ['AAPL', 'NVDA', 'TSLA', 'MSFT']) tester.getTopLeft(find.text(symbol)).dx];
+      expect(xs, orderedEquals([...xs]..sort()), reason: 'in the order the post names them');
+      expect(find.text('AMZN'), findsNothing, reason: 'four at most');
+      expect(find.text('+5.00%'), findsNWidgets(3));
+      expect(find.text('−5.00%'), findsOneWidget);
+      final context = tester.element(find.byType(CashtagStrip));
+      expect(tester.widget<Text>(find.text('−5.00%')).style!.color, stockTrendColour(context, -5));
+      expect(find.bySemanticsLabel(RegExp(r'^\$AAPL, ')), findsOneWidget);
+    });
+
+    testWidgets('a grey bar while loading, No price without one, a closed market in grey', (tester) async {
+      final cache = _Quotes();
+      addTearDown(cache.destroy);
+      cache
+        ..remember('MSFT', closed('MSFT', 105))
+        ..failFor('NVDA');
+      await pumpStrip(tester, cache, ['TSLA', 'NVDA', 'MSFT']);
+
+      expect(find.byType(StocksFiguresSkeleton), findsOneWidget, reason: r'$TSLA loads');
+      expect(find.text('No price'), findsOneWidget, reason: r'$NVDA has none');
+      final muted = Theme.of(tester.element(find.byType(CashtagStrip))).colorScheme.onSurfaceVariant;
+      expect(tester.widget<Text>(find.text('+5.00%')).style!.color, muted, reason: 'a closed market is not news');
+      expect(find.byType(StocksSparkline), findsNothing, reason: 'no line for a closed market');
+    });
+
+    testWidgets('a tap opens the ticker page', (tester) async {
+      final cache = _Quotes();
+      addTearDown(cache.destroy);
+      cache.remember('AAPL', live('AAPL', 105));
+      final opened = <Object?>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          onGenerateRoute: (settings) {
+            if (settings.name == routeTicker) opened.add((settings.arguments as TickerScreenArguments).symbol);
+            return MaterialPageRoute(builder: (_) => const SizedBox.shrink(), settings: settings);
+          },
+          home: Scaffold(
+            body: Provider<TickerQuoteCache>.value(value: cache, child: const CashtagStrip(symbols: ['AAPL'])),
+          ),
+        ),
+      );
       await tester.pump();
-      expect(find.text(r'$AAPL +5.00%'), findsOneWidget);
-      disposeRichTextParts(parts);
+
+      await tester.tap(find.text('AAPL'));
+      await tester.pumpAndSettle();
+      expect(opened, ['AAPL']);
+    });
+
+    testWidgets('fits 320 dp at 1.3x text, scrolling sideways', (tester) async {
+      final cache = _Quotes();
+      addTearDown(cache.destroy);
+      for (final symbol in ['GOOGL', 'NVDA', 'TSLA', 'MSFT']) {
+        cache.remember(symbol, live(symbol, 1234.56));
+      }
+      await pumpStrip(tester, cache, ['GOOGL', 'NVDA', 'TSLA', 'MSFT'], scale: 1.3);
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(CashtagStrip)).height, greaterThanOrEqualTo(48));
+    });
+
+    testWidgets('a post without cashtags has none', (tester) async {
+      final cache = _Quotes();
+      addTearDown(cache.destroy);
+      await pumpStrip(tester, cache, const []);
+
+      expect(find.byType(SingleChildScrollView), findsNothing);
     });
   });
 

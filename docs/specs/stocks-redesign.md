@@ -79,6 +79,9 @@ One row widget for Märkte and the watchlist, 56 dp (60 with a sparkline):
 
 ### Posts
 
+Superseded for cashtags by `stocks-post-strip.md`: the owner chose concept C,
+a price strip at the foot of the post, over the move after each cashtag.
+
 - A cashtag in a post is followed by its move (13 sp, medium, green or red),
   `$DOT +3,98%`, for the first four cashtags of a post, as their prices arrive.
   The chips under the post go.

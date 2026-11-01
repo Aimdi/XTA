@@ -19,6 +19,7 @@ import 'package:xta/plugins/stocks/stocks_signal_banner.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_list.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_reel.dart';
+import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
@@ -215,37 +216,50 @@ Widget _post(String name, String handle, String text, List<String> cashtags) => 
     });
     final parts = buildRichText(context, text, entities);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CircleAvatar(radius: 20, backgroundColor: theme.colorScheme.surfaceContainerHighest),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text.rich(
-                  TextSpan(
+                CircleAvatar(radius: 20, backgroundColor: theme.colorScheme.surfaceContainerHighest),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: name,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: name,
+                              style: const TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            TextSpan(
+                              text: '  $handle · 2h',
+                              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                            ),
+                          ],
+                        ),
                       ),
-                      TextSpan(
-                        text: '  $handle · 2h',
-                        style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(height: 2),
+                      DefaultTextStyle.merge(
+                        style: const TextStyle(fontSize: 15),
+                        child: Text.rich(TextSpan(children: displayRichText(parts))),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                DefaultTextStyle.merge(
-                  style: const TextStyle(fontSize: 15),
-                  child: Text.rich(TextSpan(children: displayRichText(parts))),
-                ),
               ],
             ),
+          ),
+          // As the post lays it out: from the text's start to the card's edge.
+          Padding(
+            padding: const EdgeInsetsDirectional.only(start: 52),
+            child: CashtagStrip(symbols: cashtags.map((tag) => tag.toUpperCase()).toList()),
           ),
         ],
       ),

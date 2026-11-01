@@ -1,7 +1,6 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/utils/urls.dart';
 
 /// What an entity needs to become a span: the link colour of the theme it will
@@ -68,15 +67,11 @@ class SymbolEntity extends Entity {
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
-  /// Whether its move follows it, as for the first cashtags of a post.
-  final bool showMove;
-
   SymbolEntity({
     required this.text,
     required List<int>? indices,
     required this.onTap,
     this.onLongPress,
-    this.showMove = false,
   }) : super(indices);
 
   @override
@@ -87,10 +82,11 @@ class SymbolEntity extends Entity {
       child: GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
-        child: CashtagText(
-          symbol: text,
+        // Scaled by the paragraph already, like a hashtag.
+        child: Text(
+          '\$$text',
           style: context.linkStyle,
-          showMove: showMove,
+          textScaler: TextScaler.noScaling,
         ),
       ),
     );

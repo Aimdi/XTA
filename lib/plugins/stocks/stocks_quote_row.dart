@@ -373,11 +373,13 @@ class _StocksFiguresSkeletonState extends State<StocksFiguresSkeleton> with Sing
 }
 
 /// The day's line at thumbnail size, with the previous close as a faint
-/// baseline — above it is green, below it red, as on the row's chip.
+/// baseline — above it is green, below it red, as on the row's chip. Too small
+/// for a guide ([showBaseline] off), it is the line alone.
 class StocksSparkline extends StatelessWidget {
   final TickerQuote quote;
+  final bool showBaseline;
 
-  const StocksSparkline({super.key, required this.quote});
+  const StocksSparkline({super.key, required this.quote, this.showBaseline = true});
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +388,7 @@ class StocksSparkline extends StatelessWidget {
         child: CustomPaint(
           painter: _SparklinePainter(
             closes: [for (final point in quote.points) point.close],
-            baseline: quote.previousClose,
+            baseline: showBaseline ? quote.previousClose : null,
             line: stockTrendColour(context, quote.changePercent),
             guide: Theme.of(context).colorScheme.outlineVariant,
           ),
