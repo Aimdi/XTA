@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,7 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
+import 'package:xta/tweet/_photo.dart';
 import 'package:xta/ui/conversation_sort.dart';
 
 Widget _app(PrefServiceCache prefs, List<Provider> providers, Widget child, {Locale locale = const Locale('en')}) =>
@@ -229,5 +231,74 @@ void main() {
     expect(find.text(L10n.current.plugin_threads_author_replies), findsOneWidget);
     expect(tester.getSize(find.byKey(const ValueKey('threads-thread-sort'))).height, greaterThanOrEqualTo(48));
     expect(tester.takeException(), isNull);
+  });
+
+  group('media, as X lays it out', () {
+    Future<void> pumpCard(WidgetTester tester, ThreadsPost post) async {
+      tester.view.physicalSize = const Size(390, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final prefs = PrefServiceCache();
+      final accounts = ThreadsAccountsStore();
+      final likes = ThreadsLikesStore(prefs);
+      addTearDown(() {
+        accounts.destroy();
+        likes.destroy();
+      });
+      await tester.pumpWidget(
+        _app(
+          prefs,
+          [Provider<ThreadsAccountsStore>.value(value: accounts), Provider<ThreadsLikesStore>.value(value: likes)],
+          Scaffold(
+            body: SingleChildScrollView(child: ThreadsPostCard(post: post)),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    ThreadsPost pictures(int count) => ThreadsPost(
+      id: 'pictures-$count',
+      handle: 'zuck',
+      authorName: 'Mark',
+      text: 'pictures',
+      publishedAt: DateTime.now(),
+      images: [for (var i = 0; i < count; i++) 'https://cdn.example/$i.jpg'],
+      imageAspects: [for (var i = 0; i < count; i++) i.isEven ? 0.8 : 1.5],
+    );
+
+    testWidgets('several pictures lie along one row at one height, the next one in view', (tester) async {
+      await pumpCard(tester, pictures(3));
+
+      final strip = find.byKey(const ValueKey('plugin-media-strip'));
+      expect(strip, findsOneWidget);
+      final cards = find.descendant(
+        of: strip,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is SizedBox && widget.width != null && widget.child is ClipRRect,
+        ),
+      );
+      final sizes = [for (var i = 0; i < 2; i++) tester.getSize(cards.at(i))];
+      expect(sizes[0].height, sizes[1].height);
+      expect(sizes[0].width, lessThan(sizes[1].width), reason: 'each as wide as its shape at that height');
+      expect(
+        tester.getTopLeft(cards.at(1)).dx,
+        lessThan(tester.getBottomRight(strip).dx),
+        reason: 'an edge of the next',
+      );
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets("one picture keeps its own shape, and opens in X's viewer", (tester) async {
+      await pumpCard(tester, pictures(1));
+      expect(find.byKey(const ValueKey('plugin-media-strip')), findsNothing);
+
+      await tester.tap(find.ancestor(of: find.byType(ExtendedImage), matching: find.byType(InkWell)).first);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(find.byWidgetPredicate((widget) => widget is TweetPhoto && widget.inPageView), findsOneWidget);
+      expect(find.byType(InteractiveViewer), findsNothing, reason: 'not the pinch-only fallback');
+    });
   });
 }
