@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/database/repository.dart';
@@ -17,10 +18,14 @@ import 'package:xta/plugins/stocks/crypto_asset_screen.dart';
 import 'package:xta/plugins/stocks/crypto_client.dart';
 import 'package:xta/plugins/stocks/crypto_detail_store.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
+import 'package:xta/plugins/stocks/stocks_format.dart';
+import 'package:xta/plugins/stocks/stocks_markets.dart';
 import 'package:xta/plugins/stocks/stocks_quote_row.dart';
+import 'package:xta/plugins/stocks/stocks_row_state.dart';
 import 'package:xta/plugins/stocks/stocks_screen.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_list.dart';
+import 'package:xta/plugins/stocks/stocks_watchlist_reel.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 import 'package:xta/tweet/ticker/ticker_detail_store.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
@@ -50,6 +55,7 @@ Map<String, Object?> _chart(String symbol) => {
         'meta': {
           'symbol': symbol,
           'currency': 'USD',
+          'instrumentType': 'EQUITY',
           'shortName': 'Apple Inc. Common Stock With A Long Name',
           'regularMarketPrice': 200.0,
           'chartPreviousClose': 190.0,
@@ -80,17 +86,60 @@ Map<String, Object?> _chart(String symbol) => {
 
 final TickerQuote _quote = TickerQuote.fromChartJson(_chart('AAPL'), symbol: 'AAPL')!;
 
-Future<void> _pump(WidgetTester tester, Widget child, {double scale = 1, ThemeData? theme}) async {
+const _pepeMarket = CryptoMarket(asset: _asset, price: 0.0000123, changePercent: -4.2);
+
+/// When the Nasdaq-100 last closed: three days ago, 16:00 New York.
+final _lastClose = _now - 3 * 86400;
+
+/// The Nasdaq-100 with its exchange shut: the last close, no bars, and
+/// today's periods all over.
+final TickerQuote _closedIndex = TickerQuote.fromChartJson({
+  'chart': {
+    'result': [
+      {
+        'meta': {
+          'symbol': '^NDX',
+          'currency': 'USD',
+          'instrumentType': 'INDEX',
+          'regularMarketPrice': 24172.03,
+          'chartPreviousClose': 24063.4,
+          'regularMarketTime': _lastClose,
+          'currentTradingPeriod': {
+            'pre': {'start': _lastClose - 41400, 'end': _lastClose - 23400},
+            'regular': {'start': _lastClose - 23400, 'end': _lastClose},
+            'post': {'start': _lastClose, 'end': _lastClose + 14400},
+          },
+        },
+      },
+    ],
+  },
+}, symbol: '^NDX')!;
+
+String _closeTag(String locale, String word) =>
+    '$word ${DateFormat.E(locale).format(DateTime.fromMillisecondsSinceEpoch(_lastClose * 1000))}';
+
+/// [settle] waits for every animation to end, which a loading shimmer never
+/// does: rows that load are pumped a few frames instead.
+Future<void> _pump(
+  WidgetTester tester,
+  Widget child, {
+  double scale = 1,
+  ThemeData? theme,
+  Locale? locale,
+  bool settle = true,
+}) async {
   tester.view.physicalSize = const Size(320, 640);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
       theme: theme,
+      locale: locale,
       localizationsDelegates: const [
         L10n.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: L10n.delegate.supportedLocales,
       builder: (context, app) => MediaQuery(
@@ -100,7 +149,7 @@ Future<void> _pump(WidgetTester tester, Widget child, {double scale = 1, ThemeDa
       home: Scaffold(body: child),
     ),
   );
-  await tester.pumpAndSettle();
+  settle ? await tester.pumpAndSettle() : await tester.pump(const Duration(milliseconds: 100));
 }
 
 /// Read once from the database, then left alone by the screen.
@@ -156,7 +205,9 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(StocksQuoteRow), findsNWidgets(2));
     expect(find.text('+5.26%'), findsOneWidget);
-    expect(find.text('Ethereum · 0x6982…1933'), findsOneWidget);
+    expect(find.text('Stock'), findsOneWidget);
+    expect(find.text('Crypto · Ethereum'), findsOneWidget, reason: 'a token is badged with its network');
+    expect(find.textContaining('Pepe'), findsOneWidget, reason: 'and named, not addressed');
     await tester.pumpWidget(const SizedBox());
     await watchlist.destroy();
     await quotes.destroy();
@@ -170,8 +221,28 @@ void main() {
             tester,
             Column(
               children: [
-                StocksQuoteRow(title: r'$AAPL', subtitle: _quote.shortName, quote: _quote, onTap: () {}),
-                StocksQuoteRow(title: r'$PEPE', subtitle: _asset.subtitle, quote: null, onTap: () {}),
+                StocksQuoteRow(
+                  title: r'$AAPL',
+                  subtitle: _quote.shortName,
+                  badge: 'Stock',
+                  quote: _quote,
+                  onTap: () {},
+                ),
+                StocksQuoteRow(
+                  title: r'$PEPE',
+                  subtitle: 'Pepe',
+                  badge: 'Crypto · Ethereum',
+                  quote: _pepeMarket.quote,
+                  onTap: () {},
+                ),
+                StocksQuoteRow(
+                  title: r'$NDX',
+                  subtitle: 'Nasdaq-100',
+                  badge: 'Index',
+                  quote: _closedIndex,
+                  onTap: () {},
+                ),
+                StocksQuoteRow(title: r'$POD', badge: 'Stock', quote: null, failed: true, onTap: () {}, onRetry: () {}),
               ],
             ),
             scale: scale,
@@ -182,7 +253,9 @@ void main() {
           expect(find.text(r'$AAPL'), findsOneWidget);
           expect(find.text('200.00'), findsOneWidget);
           expect(find.text('+5.26%'), findsOneWidget);
-          expect(find.text('Ethereum · 0x6982…1933'), findsOneWidget);
+          expect(find.text('0.0₄1230'), findsOneWidget);
+          expect(find.text('Crypto · Ethereum'), findsOneWidget);
+          expect(find.text('No data · Tap to retry'), findsOneWidget);
           expect(find.byType(StocksSparkline), scale == 1 ? findsOneWidget : findsNothing);
           for (final row in find.byType(StocksQuoteRow).evaluate()) {
             expect(row.size!.height, greaterThanOrEqualTo(48), reason: 'a row is a touch target');
@@ -203,7 +276,7 @@ void main() {
         tester,
         StocksWatchlistList(
           symbols: [_asset.id, 'AAPL'],
-          quotes: {'AAPL': _quote},
+          quotes: {'AAPL': _quote, _asset.id: _pepeMarket.quote},
           assets: {_asset.id: _asset},
           onOpen: (_) {},
           onRefresh: () async {},
@@ -214,6 +287,159 @@ void main() {
 
       expect(copied, [_pepe]);
       expect(find.text('Contract address copied'), findsOneWidget);
+    });
+  });
+
+  group('what a row shows where its figures go', () {
+    final now = DateTime.now();
+
+    test('nothing yet is loading; a failed lookup, or a quote without a price, is no data', () {
+      expect(stockRowState(null, failed: false, now: now), StockRowState.loading);
+      expect(stockRowState(null, failed: true, now: now), StockRowState.noData);
+      expect(stockRowState(const CryptoMarket(asset: _asset).quote, failed: false, now: now), StockRowState.noData);
+      expect(stockRowState(_quote, failed: true, now: now), StockRowState.live, reason: 'an answer beats a failure');
+    });
+
+    test('outside every session the market is closed; a coin never is', () {
+      expect(stockRowState(_closedIndex, failed: false, now: now), StockRowState.closed);
+      expect(stockRowState(_quote, failed: false, now: now), StockRowState.live);
+      expect(stockRowState(_pepeMarket.quote, failed: false, now: now), StockRowState.live);
+    });
+
+    testWidgets('loading: a shimmer where the figures go, the row already named and badged', (tester) async {
+      await _pump(
+        tester,
+        StocksQuoteRow(title: r'$NDX', subtitle: 'Nasdaq-100', badge: 'Index', quote: null, onTap: () {}),
+        settle: false,
+      );
+
+      expect(find.byType(StocksFiguresSkeleton), findsOneWidget);
+      expect(find.text(kStockPlaceholder), findsNothing, reason: 'no dash');
+      expect(find.byType(StocksChangeChip), findsNothing);
+      expect(find.text('Index'), findsOneWidget);
+      expect(find.textContaining('Nasdaq-100'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Loading price')), findsOneWidget);
+    });
+
+    testWidgets('market closed: the last close, the day of it and a muted move', (tester) async {
+      await _pump(
+        tester,
+        StocksQuoteRow(title: r'$NDX', subtitle: 'Nasdaq-100', badge: 'Index', quote: _closedIndex, onTap: () {}),
+      );
+
+      expect(find.text('24,172.03'), findsOneWidget);
+      expect(find.text(_closeTag('en', 'Close')), findsOneWidget);
+      expect(find.text('+0.45%'), findsOneWidget);
+      expect(tester.widget<StocksChangeChip>(find.byType(StocksChangeChip)).muted, isTrue);
+      expect(find.text('1D'), findsNothing, reason: 'the tag already says what the move is');
+    });
+
+    testWidgets('no data: one line, no pill, and tapping it asks again', (tester) async {
+      var retried = 0;
+      var opened = 0;
+      await _pump(
+        tester,
+        StocksQuoteRow(
+          title: r'$POD',
+          badge: 'Stock',
+          quote: null,
+          failed: true,
+          onTap: () => opened++,
+          onRetry: () => retried++,
+        ),
+      );
+
+      expect(find.byType(StocksChangeChip), findsNothing, reason: 'no empty pill');
+      expect(find.byType(StocksFiguresSkeleton), findsNothing);
+      await tester.tap(find.text('No data · Tap to retry'));
+      expect((retried, opened), (1, 0));
+      await tester.tap(find.text(r'$POD'));
+      expect((retried, opened), (1, 1), reason: 'the rest of the row still opens the page');
+    });
+
+    testWidgets('each move says what it is measured over', (tester) async {
+      await _pump(
+        tester,
+        Column(
+          children: [
+            StocksQuoteRow(title: r'$AAPL', quote: _quote, onTap: () {}),
+            StocksQuoteRow(title: r'$PEPE', quote: _pepeMarket.quote, onTap: () {}),
+          ],
+        ),
+      );
+
+      expect(find.text('1D'), findsOneWidget, reason: 'a share against the previous close');
+      expect(find.text('24h'), findsOneWidget, reason: 'a token over the last 24 hours');
+    });
+
+    for (final entry in _themes.entries) {
+      testWidgets('German fits 320dp at 1.3x text in ${entry.key}', (tester) async {
+        await _pump(
+          tester,
+          Column(
+            children: [
+              StocksQuoteRow(title: r'$NDX', subtitle: 'Nasdaq-100', badge: 'Index', quote: _closedIndex, onTap: () {}),
+              StocksQuoteRow(title: r'$AAPL', subtitle: _quote.shortName, badge: 'Aktie', quote: _quote, onTap: () {}),
+              StocksQuoteRow(
+                title: r'$PEPE',
+                subtitle: 'Pepe',
+                badge: 'Krypto · Ethereum',
+                quote: _pepeMarket.quote,
+                onTap: () {},
+              ),
+              StocksQuoteRow(title: r'$POD', badge: 'Aktie', quote: null, failed: true, onTap: () {}, onRetry: () {}),
+            ],
+          ),
+          scale: 1.3,
+          theme: entry.value,
+          locale: const Locale('de'),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('24.172,03'), findsOneWidget);
+        expect(find.text(_closeTag('de', 'Schluss')), findsOneWidget);
+        expect(find.text('1T'), findsOneWidget);
+        expect(find.text('0,0₄1230'), findsOneWidget);
+        expect(find.text('Keine Daten · Tippen zum Wiederholen'), findsOneWidget);
+      });
+    }
+
+    testWidgets('Markets names and badges every row before any price, and retries the one without data', (
+      tester,
+    ) async {
+      final retried = <String>[];
+      await _pump(
+        tester,
+        StocksMarketsList(quotes: const {}, failed: const {'SPX'}, onRetry: retried.add),
+        settle: false,
+      );
+
+      expect(find.textContaining('S&P 500'), findsOneWidget);
+      expect(find.textContaining('Nasdaq-100'), findsOneWidget);
+      expect(find.text('Index'), findsWidgets);
+      expect(find.text(kStockPlaceholder), findsNothing);
+      expect(find.byType(StocksFiguresSkeleton), findsWidgets);
+      await tester.tap(find.text('No data · Tap to retry'));
+      expect(retried, ['SPX']);
+    });
+
+    testWidgets('the watchlist strip shows the same states', (tester) async {
+      await _pump(
+        tester,
+        StocksWatchlistReel(
+          symbols: const ['AAPL', 'POD', 'ETH', 'NDX'],
+          quotes: {'AAPL': _quote, 'NDX': _closedIndex},
+          failed: const {'POD'},
+          onSelected: (_) {},
+        ),
+        settle: false,
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(StocksFiguresSkeleton, skipOffstage: false), findsOneWidget, reason: r'$ETH loads');
+      expect(find.text('No data', skipOffstage: false), findsOneWidget, reason: r'$POD has none');
+      final chips = tester.widgetList<StocksChangeChip>(find.byType(StocksChangeChip, skipOffstage: false));
+      expect([for (final chip in chips) chip.muted], [false, true], reason: r'$NDX is closed');
     });
   });
 
@@ -411,7 +637,8 @@ void main() {
 
         expect(tester.takeException(), isNull);
         expect(find.text('Ethereum · 0x6982…1933'), findsOneWidget);
-        expect(find.text('0.0000123'), findsOneWidget);
+        expect(find.text('0.0₄1230'), findsOneWidget);
+        expect(find.bySemanticsLabel('0.00001230'), findsOneWidget, reason: 'read with its zeros');
         expect(find.text('−4.20%'), findsOneWidget);
         expect(find.text('Market cap'), findsOneWidget);
         expect(find.text(r'$4.9B'), findsOneWidget);

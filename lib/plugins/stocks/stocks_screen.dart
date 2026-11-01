@@ -295,39 +295,67 @@ class _StocksScreenState extends State<StocksScreen> {
         onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, symbols) => ScopedBuilder<CryptoQuoteStore, Map<String, CryptoMarket>>(
           store: _cryptoQuotes,
-          onState: (_, crypto) =>
-              _tabHome(symbols, {...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote}, l10n),
+          onState: (_, crypto) => _tabHome(
+            symbols,
+            {...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote},
+            {..._cache.failed, ..._cryptoQuotes.failed},
+            l10n,
+          ),
         ),
       ),
     );
   }
 
-  Widget _tabHome(List<String> symbols, Map<String, TickerQuote> quotes, L10n l10n) {
+  Widget _tabHome(List<String> symbols, Map<String, TickerQuote> quotes, Set<String> failed, L10n l10n) {
     final controller = pluginInnerScrollController(context, widget.scrollController);
     if (_tab == 3) {
-      return StocksMarketsList(quotes: quotes, controller: controller, onRefresh: _pullToRefresh);
+      return StocksMarketsList(
+        quotes: quotes,
+        failed: failed,
+        controller: controller,
+        onRefresh: _pullToRefresh,
+        onRetry: _retry,
+      );
     }
     if (_tab == 2) {
       if (_view.state.loading && _trending.isEmpty) return const PluginFeedSkeleton();
-      return _feedHome(symbols: _trending, quotes: quotes, empty: _empty(context, l10n, trending: true));
+      return _feedHome(
+        symbols: _trending,
+        quotes: quotes,
+        failed: failed,
+        empty: _empty(context, l10n, trending: true),
+      );
     }
     if (symbols.isEmpty) {
       return _empty(context, l10n, trending: false);
     }
     if (_tab == 1) {
-      return _feedHome(symbols: symbols, quotes: quotes, empty: _empty(context, l10n, trending: false));
+      return _feedHome(symbols: symbols, quotes: quotes, failed: failed, empty: _empty(context, l10n, trending: false));
     }
     return StocksWatchlistList(
       symbols: symbols,
       quotes: quotes,
+      failed: failed,
       assets: _watchlist.cryptoAssets,
       onOpen: _openAsset,
+      onRetry: _retry,
       onRefresh: _pullToRefresh,
       controller: controller,
     );
   }
 
-  Widget _feedHome({required List<String> symbols, required Map<String, TickerQuote> quotes, required Widget empty}) {
+  /// A row with no data asks again for its own quote.
+  void _retry(String symbol) {
+    final asset = _watchlist.assetFor(symbol);
+    unawaited(asset == null ? _cache.refresh([symbol]) : _cryptoQuotes.ensure([asset], force: true));
+  }
+
+  Widget _feedHome({
+    required List<String> symbols,
+    required Map<String, TickerQuote> quotes,
+    required Set<String> failed,
+    required Widget empty,
+  }) {
     if (symbols.isEmpty) {
       return empty;
     }
@@ -341,6 +369,7 @@ class _StocksScreenState extends State<StocksScreen> {
         StocksWatchlistReel(
           symbols: symbols,
           quotes: quotes,
+          failed: failed,
           selected: _filterSymbol,
           onSelected: _onChipSelected,
           assets: _watchlist.cryptoAssets,

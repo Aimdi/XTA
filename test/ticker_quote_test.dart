@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
+import 'package:xta/tweet/ticker/ticker_symbol.dart';
 
 Map<String, dynamic> _chart({
   List<Object?>? timestamps,
@@ -158,23 +159,26 @@ void main() {
       },
     );
 
-    test('a pre-market print is reported beside, not instead of, the price', () {
-      final quote = TickerQuote.fromChartJson(
-        _chart(
-          meta: {
-            'regularMarketPrice': 100.0,
-            'marketState': 'PRE',
-            'preMarketPrice': 101.5,
-          },
-        ),
-        symbol: 'AAPL',
-      )!;
+    test(
+      'a pre-market print is reported beside, not instead of, the price',
+      () {
+        final quote = TickerQuote.fromChartJson(
+          _chart(
+            meta: {
+              'regularMarketPrice': 100.0,
+              'marketState': 'PRE',
+              'preMarketPrice': 101.5,
+            },
+          ),
+          symbol: 'AAPL',
+        )!;
 
-      expect(quote.displayPrice, closeTo(100, 0.001));
-      expect(quote.extendedPrint?.price, closeTo(101.5, 0.001));
-      expect(quote.extendedChangePercent, closeTo(1.5, 0.001));
-      expect(quote.isPreMarket, isTrue);
-    });
+        expect(quote.displayPrice, closeTo(100, 0.001));
+        expect(quote.extendedPrint?.price, closeTo(101.5, 0.001));
+        expect(quote.extendedChangePercent, closeTo(1.5, 0.001));
+        expect(quote.isPreMarket, isTrue);
+      },
+    );
 
     test('a symbol quoted without them still charts', () {
       final quote = TickerQuote.fromChartJson(
@@ -186,6 +190,97 @@ void main() {
       expect(quote.yearHigh, isNull);
       expect(quote.yearLow, isNull);
       expect(quote.points, hasLength(3));
+    });
+  });
+
+  group('a day without a session', () {
+    // A weekend asks for one day of bars and gets none, but the host still
+    // quotes the last price and the close before it.
+    Map<String, dynamic> weekend(Map<String, Object?> meta) =>
+        _chart(timestamps: const [], closes: const [], meta: meta);
+
+    test('a price without bars is still a quote, with its move', () {
+      final quote = TickerQuote.fromChartJson(
+        weekend(const {
+          'symbol': '^NDX',
+          'instrumentType': 'INDEX',
+          'regularMarketPrice': 24172.03,
+          'chartPreviousClose': 24063.4,
+          'regularMarketTime': 1761940800,
+        }),
+        symbol: '^NDX',
+      )!;
+
+      expect(quote.points, isEmpty);
+      expect(quote.displayPrice, closeTo(24172.03, 1e-9));
+      expect(quote.changePercent, closeTo(108.63 / 24063.4 * 100, 1e-9));
+      expect(quote.kind, TickerKind.marketIndex);
+      expect(
+        quote.regularMarketTime,
+        DateTime.fromMillisecondsSinceEpoch(1761940800 * 1000),
+      );
+    });
+
+    test('neither a price nor bars is no quote', () {
+      expect(
+        TickerQuote.fromChartJson(
+          weekend(const {'symbol': '^NDX'}),
+          symbol: '^NDX',
+        ),
+        isNull,
+      );
+    });
+
+    test('the badge reads the host\'s word for the instrument', () {
+      TickerKind? kindOf(String? type) => TickerQuote.fromChartJson(
+        _chart(meta: {'instrumentType': ?type}),
+        symbol: 'X',
+      )!.kind;
+
+      expect(kindOf('EQUITY'), TickerKind.stock);
+      expect(kindOf('ETF'), TickerKind.etf);
+      expect(kindOf('CRYPTOCURRENCY'), TickerKind.crypto);
+      expect(kindOf('MUTUALFUND'), TickerKind.fund);
+      expect(kindOf('FUTURE'), TickerKind.future);
+      expect(kindOf('CURRENCY'), TickerKind.currency);
+      expect(kindOf(null), isNull);
+    });
+  });
+
+  group('a coin over the last 24 hours', () {
+    const start = 1767225600;
+    const halfHour = 1800;
+
+    TickerQuote coin({required int bars}) => TickerQuote.fromChartJson(
+      _chart(
+        timestamps: [for (var i = 0; i < bars; i++) start + i * halfHour],
+        closes: [for (var i = 0; i < bars; i++) 100.0 + i],
+        meta: const {
+          'symbol': 'BTC-USD',
+          'instrumentType': 'CRYPTOCURRENCY',
+          'chartPreviousClose': 1.0,
+        },
+      ),
+      symbol: 'BTC-USD',
+    )!;
+
+    test('is measured against the bar a day before the last', () {
+      final day = coin(bars: 97).rolling24h();
+
+      expect(day.changeWindow, TickerChangeWindow.rolling24h);
+      expect(day.previousClose, 148, reason: '48 half hours before 196');
+      expect(day.displayPrice, 196);
+      expect(day.changePercent, closeTo(48 / 148 * 100, 1e-9));
+      expect(day.points, hasLength(49));
+      expect(day.points.first.close, 148);
+      expect(day.kind, TickerKind.crypto);
+    });
+
+    test('bars that do not reach back a day leave the quote as it was', () {
+      final short = coin(bars: 24);
+
+      expect(identical(short.rolling24h(), short), isTrue);
+      expect(short.changeWindow, TickerChangeWindow.previousClose);
     });
   });
 

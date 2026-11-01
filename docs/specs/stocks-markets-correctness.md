@@ -12,12 +12,16 @@ shown, nothing is traded.
 - **`$NDX` showed Indexed Finance at 0.00181.** `tickerCandidates('NDX')` tries
   `NDX`, then `^NDX`, then `NDX-USD`, and `NDX-USD` is a crypto token. An index
   falls through to it whenever the first two do not answer with a price.
-- **Why they do not answer on a weekend.** The tape asks the chart host for one
-  day of five-minute bars. On a day without a session there are none, and
-  `TickerQuote.fromChartJson` returns null when there are no bars, even though
-  the host still sends the last price and the close before it. Null counts as
-  "no such symbol", so the next candidate is tried: the dashes in 8 of 10 rows
-  of Markets, and Indexed Finance for `$NDX`.
+- **Why `^NDX` never answered.** `TickerClient.chartUri` encoded the symbol
+  itself and then handed it to `Uri.https`, which encodes the path again:
+  `^NDX` went out as `%255ENDX`, a symbol nobody has. Every index failed, every
+  day: the dashes in 8 of 10 rows of Markets (the two coins have no `^`), and
+  Indexed Finance for `$NDX`. Found while testing this pass; no test had
+  looked at the URL of an index.
+- **A day without bars was no quote.** `TickerQuote.fromChartJson` returned
+  null when a chart had no bars, even when the host sent the last price and
+  the close before it. Null counts as "no such symbol", which sends the lookup
+  on to the next candidate.
 - **"—" means three things.** A row that is loading, one whose fetch failed and
   one whose market is closed look the same: dashes and an empty pill. The quote
   cache swallows failures, so a row cannot tell them apart.
@@ -50,10 +54,10 @@ shown, nothing is traded.
 
 ### Data
 
-- **An index symbol only ever asks for its index.** `SPX`, `NDX`, `DJI`, `RUT`,
-  `VIX`, `DAX`, `FTSE`, `N225` (and the other names `kTickerAliases` maps) ask
-  for `^GSPC`, `^NDX`, … and nothing else. If the index does not answer, the
-  row says so; it never shows another instrument.
+- **An index symbol only ever asks for its index**, encoded once (`%5ENDX`).
+  `SPX`, `NDX`, `DJI`, `RUT`, `VIX`, `DAX`, `FTSE`, `N225` (and the other names
+  `kTickerAliases` maps) ask for `^GSPC`, `^NDX`, … and nothing else. If the
+  index does not answer, the row says so; it never shows another instrument.
 - **A day without bars is still a quote.** When the host sends a price and the
   close before it but no bars, the quote has the price, the change against that
   close and no sparkline.
@@ -75,11 +79,14 @@ shown, nothing is traded.
 - **Each change says its window**, in a caption by the pill: "24h" for a
   rolling 24-hour change, "1D" ("1T" in German) for a change against the
   previous close. Coins on the chart host (BTC, ETH, …) are now measured over
-  the last 24 hours (two days of quarter-hour bars, against the bar 24 hours
-  before the last), so they are labelled "24h"; DEX tokens already are.
+  the last 24 hours (the week chart's half-hour bars, against the bar 24 hours
+  before the last), so they are labelled "24h"; DEX tokens already are. A
+  coin's one-day chart from the ticker page, which starts at midnight, no
+  longer replaces its row's quote.
 - **Prices under 1 keep four significant digits**: `0,1234`, `0,01234`,
   `0,001810`; from three zeros after the decimal comma on, the zeros are
-  counted: `0,0₃1234`. A screen reader hears the plain number.
+  counted: `0,0₃1234`. A screen reader hears the plain number, on the rows,
+  the chips, the ticker page and the token page.
 - **A token is named by its symbol, else its name, else its address cut in the
   middle** (`0x23a2…fe51`), the same everywhere; its row's second line is its
   name when known, else that address.
@@ -98,8 +105,8 @@ shown, nothing is traded.
 
 ### Tweets and Trend
 
-- **A token's chip is one line**, like a cashtag's: its label, price and move.
-  Its network and address stay on its row and page.
+- **A token's chip has no network line**, like a cashtag's: its label over its
+  price and move. Its network and address stay on its row and page.
 - **A contract address in a post** shows cut in the middle (`0x23a2…fe51`) in
   the link colour, on one line; tapping copies the whole address.
 - **The quote chips under a post** are compact and share rows: symbol, price
@@ -109,7 +116,9 @@ shown, nothing is traded.
 
 ## Not in this pass
 
-- The ticker page and the token page keep their layout.
+- The ticker page and the token page keep their layout. On a day without a
+  session the ticker page now shows an index's last close and move, over an
+  empty one-day chart; the other ranges draw as before.
 - Other plugins' bars and colours are unchanged, beyond the ⋮ for a bar that is
   only tabs.
 
@@ -118,9 +127,15 @@ shown, nothing is traded.
 - `lib/tweet/ticker/ticker_symbol.dart`: index-only candidates, fixed names.
 - `lib/tweet/ticker/ticker_quote.dart`: quotes without bars, the instrument
   type, the last regular trade time, the change window.
+- `lib/tweet/ticker/ticker_client.dart`: the symbol encoded once.
+- `lib/tweet/ticker/quote_failures.dart` (new): which lookups found nothing,
+  for both quote stores.
 - `lib/tweet/ticker/ticker_quote_cache.dart`: per-symbol failures; coins over
   24 hours.
-- `lib/plugins/stocks/stocks_format.dart`: prices, the row states.
+- `lib/plugins/stocks/crypto_quote_store.dart`: per-token failures.
+- `lib/plugins/stocks/stocks_format.dart`: prices and how they are read aloud.
+- `lib/plugins/stocks/stocks_row_state.dart` (new): the row states, the close
+  tag, the window caption, the badge.
 - `lib/plugins/stocks/stocks_quote_row.dart`, `stocks_markets.dart`,
   `stocks_watchlist_list.dart`, `stocks_watchlist_reel.dart`: rows and chips.
 - `lib/plugins/stocks/crypto_asset.dart`: a token's label.
@@ -133,9 +148,12 @@ shown, nothing is traded.
 
 ## Tests
 
-- `NDX` and the other index names only ever ask for their `^` symbol; a failing
-  index never resolves to a `-USD` pair.
+- `NDX` and the other index names only ever ask for their `^` symbol, encoded
+  once; a failing index never resolves to a `-USD` pair.
 - A chart answer with a price and no bars is a quote; one with neither is not.
+- The quote cache remembers a failed symbol until it is retried or answers; a
+  coin is asked for over the week chart and measured over its last day; the
+  ticker page's day chart of a coin is not taken.
 - Row states: loading shimmer, closed with its day tag and muted pill, no data
   with retry (tapping retries); names and badges before data.
 - The change window: "24h" for coins and tokens, "1D" for the rest; a coin's

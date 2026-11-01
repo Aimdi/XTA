@@ -71,6 +71,9 @@ class TickerStatGrid extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             stat.value ?? kStockPlaceholder,
+            semanticsLabel: stat.value == null
+                ? null
+                : stockSpoken(stat.value!),
             style: theme.textTheme.bodyMedium!.copyWith(
               fontWeight: FontWeight.w600,
               fontFeatures: kStockFigures,

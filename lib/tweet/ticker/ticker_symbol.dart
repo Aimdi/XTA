@@ -101,22 +101,70 @@ bool isAmbiguousTicker(String symbol) =>
     kCoinFirstTickers.contains(symbol.toUpperCase().trim());
 
 /// Every name to try for a cashtag, in order.
+///
+/// An index name asks for its index and nothing else: `$NDX` falling through
+/// to `NDX-USD` charted a crypto token as the Nasdaq-100. If the index does
+/// not answer, the reader is told so instead.
 List<String> tickerCandidates(
   String symbol, {
   TickerInstrument prefer = TickerInstrument.auto,
 }) {
   final upper = symbol.toUpperCase().trim();
   final alias = kTickerAliases[upper];
+  if (alias != null) return [alias];
   final pairable = !upper.contains('-') && !upper.startsWith('^');
   final pair = pairable ? '$upper-USD' : null;
 
   return switch (prefer) {
     TickerInstrument.crypto => [pair ?? upper],
-    TickerInstrument.stock => [upper, ?alias],
+    TickerInstrument.stock => [upper],
     TickerInstrument.auto when kCoinFirstTickers.contains(upper) => [
       ?pair,
       upper,
     ],
-    TickerInstrument.auto => [upper, ?alias, ?pair],
+    TickerInstrument.auto => [upper, ?pair],
   };
 }
+
+/// What a quote is, as a badge on its row says: an index is not a share, and
+/// a coin is not either, even when they spell the same.
+enum TickerKind { marketIndex, stock, etf, crypto, fund, future, currency }
+
+/// The kind a symbol is known to be before anything is asked: an index name,
+/// or a coin the tape files as a `-USD` pair. Null when only the price
+/// service can tell.
+TickerKind? knownTickerKind(String symbol) {
+  final upper = symbol.toUpperCase().trim();
+  if (kTickerAliases.containsKey(upper) || upper.startsWith('^')) {
+    return TickerKind.marketIndex;
+  }
+  if (kCoinFirstTickers.contains(upper) || upper.endsWith('-USD')) {
+    return TickerKind.crypto;
+  }
+  return null;
+}
+
+/// Index and coin names as people say them, for a row to show while its price
+/// loads or when it fails. Proper names, so they are not translated.
+const Map<String, String> kTickerNames = {
+  'SPX': 'S&P 500',
+  'SP500': 'S&P 500',
+  'NDX': 'Nasdaq-100',
+  'DJI': 'Dow Jones',
+  'DOW': 'Dow Jones',
+  'IXIC': 'Nasdaq Composite',
+  'NASDAQ': 'Nasdaq Composite',
+  'RUT': 'Russell 2000',
+  'VIX': 'VIX',
+  'DAX': 'DAX 40',
+  'FTSE': 'FTSE 100',
+  'CAC': 'CAC 40',
+  'N225': 'Nikkei 225',
+  'NIKKEI': 'Nikkei 225',
+  'HSI': 'Hang Seng',
+  'BTC': 'Bitcoin',
+  'ETH': 'Ethereum',
+};
+
+/// The name a row shows for [symbol], from [kTickerNames], or null.
+String? tickerName(String symbol) => kTickerNames[spokenCashtag(symbol)];

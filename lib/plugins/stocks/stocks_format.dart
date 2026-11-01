@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/constants.dart';
@@ -41,16 +39,53 @@ NumberFormat _digits(int digits) =>
 /// `−` rather than `-`: the minus sign lines up with `+` in a column of moves.
 String _signed(String digits, double value) => value > 0 ? '+$digits' : (value < 0 ? '−$digits' : digits);
 
-/// A price in the reader's locale. Two decimals from one unit up, four below
-/// it, and enough significant digits for a token worth a fraction of a cent.
-String stockPrice(double price) {
+const int _significant = 4;
+
+/// From this many zeros after the decimal separator on, they are counted.
+const int _countedZeros = 3;
+
+const String _subscripts = '₀₁₂₃₄₅₆₇₈₉';
+
+/// A price under one unit as its zeros after the separator and its
+/// [_significant] digits, after rounding. Null for zero and from one unit up.
+({int zeros, String digits})? _small(double price) {
   final magnitude = price.abs();
-  if (price == 0 || magnitude >= 1) return _digits(2).format(price);
-  if (magnitude >= 0.01) return _digits(4).format(price);
-  final digits = 2 - (math.log(magnitude) / math.ln10).floor();
-  if (digits > 12) return price.toStringAsExponential(4);
-  return _digits(digits).format(price);
+  if (magnitude == 0 || !magnitude.isFinite || magnitude >= 1) return null;
+  final [mantissa, exponent] = magnitude.toStringAsExponential(_significant - 1).split('e');
+  final power = int.parse(exponent);
+  if (power >= 0) return null;
+  return (zeros: -power - 1, digits: mantissa.replaceFirst('.', ''));
 }
+
+String _subscript(int count) => [for (final digit in '$count'.split('')) _subscripts[int.parse(digit)]].join();
+
+final RegExp _countedZerosPattern = RegExp('0([$_subscripts]+)');
+
+int _subscriptValue(String digits) =>
+    int.parse([for (final digit in digits.split('')) _subscripts.indexOf(digit)].join());
+
+/// A price in the reader's locale. Two decimals from one unit up; below it
+/// four significant digits (`0,1234`, `0,001810`), and from three zeros after
+/// the separator on those zeros counted (`0,0₃1234`), so a token worth a
+/// fraction of a cent stays readable. A screen reader gets [stockSpoken].
+String stockPrice(double price) {
+  final small = _small(price);
+  if (small == null) return _digits(2).format(price);
+  final symbols = _digits(2).symbols;
+  if (small.zeros < _countedZeros || symbols.ZERO_DIGIT != '0') {
+    final decimals = small.zeros + _significant;
+    return decimals > 15 ? price.toStringAsExponential(_significant - 1) : _digits(decimals).format(price);
+  }
+  return '${price < 0 ? '-' : ''}0${symbols.DECIMAL_SEP}0${_subscript(small.zeros)}${small.digits}';
+}
+
+/// [shown] the way it is read aloud: counted zeros written out (`0,0₃1234`
+/// is `0,0001234`), anything else as it is.
+String stockSpoken(String shown) =>
+    shown.replaceAllMapped(_countedZerosPattern, (match) => '0' * _subscriptValue(match[1]!));
+
+/// [stockPrice], read aloud.
+String stockPriceSpoken(double price) => stockSpoken(stockPrice(price));
 
 /// `+1.23%`, `−0.40%`, `0.00%` — signed, locale-grouped, two decimals.
 String stockPercentLabel(double percent) {
