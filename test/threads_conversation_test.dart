@@ -8,6 +8,7 @@ import 'package:xta/plugins/threads/threads_conversation.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_thread_store.dart';
+import 'package:xta/ui/conversation_sort.dart';
 
 import 'support/threads_pages.dart';
 
@@ -127,6 +128,55 @@ void main() {
       final rows = threadsReplyRows(conversation, const ThreadsThreadView(authorOnly: true));
 
       expect(rows.whereType<ThreadsReplyPostRow>().map((r) => r.post.id), ['6', '7']);
+    });
+  });
+
+  group('reply order', () {
+    ThreadsPost on(String id, int day, {String handle = 'a'}) => ThreadsPost(
+      id: id,
+      handle: handle,
+      authorName: handle,
+      text: 'post $id',
+      publishedAt: DateTime.utc(2026, 10, day),
+      likeCount: day,
+    );
+    final conversation = ThreadsConversation(
+      focus: _post('1'),
+      replies: [
+        [on('2', 3), on('3', 9, handle: 'b')],
+        [on('4', 5)],
+        [on('5', 1, handle: 'zuck')],
+      ],
+      loaded: true,
+    );
+    List<String> ids(ThreadsThreadView view) =>
+        threadsReplyRows(conversation, view).whereType<ThreadsReplyPostRow>().map((row) => row.post.id).toList();
+
+    test('Top keeps the order Meta sent', () {
+      expect(ids(const ThreadsThreadView()), ['2', '3', '4', '5']);
+    });
+
+    test('Newest and Oldest move each reply thread whole, by its first reply', () {
+      expect(ids(const ThreadsThreadView(order: ReplySort.recent)), ['4', '2', '3', '5']);
+      expect(ids(const ThreadsThreadView(order: ReplySort.oldest)), ['5', '2', '3', '4']);
+    });
+
+    test('an order Threads does not offer keeps Meta\'s', () {
+      expect(ids(const ThreadsThreadView(order: ReplySort.mostLiked)), ['2', '3', '4', '5']);
+    });
+
+    test('the order applies to the author\'s replies too', () {
+      expect(ids(const ThreadsThreadView(authorOnly: true, order: ReplySort.oldest)), ['5']);
+    });
+
+    test('choosing an order keeps the rest of the view', () {
+      final view = ThreadsThreadViewStore()
+        ..toggleAuthorOnly()
+        ..selectOrder(ReplySort.oldest);
+      addTearDown(view.destroy);
+
+      expect(view.state.authorOnly, isTrue);
+      expect(view.state.order, ReplySort.oldest);
     });
   });
 

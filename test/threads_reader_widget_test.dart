@@ -16,6 +16,7 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
+import 'package:xta/ui/conversation_sort.dart';
 
 Widget _app(PrefServiceCache prefs, List<Provider> providers, Widget child, {Locale locale = const Locale('en')}) =>
     PrefService(
@@ -36,10 +37,10 @@ Widget _app(PrefServiceCache prefs, List<Provider> providers, Widget child, {Loc
       ),
     );
 
-Map<String, Object?> _json(String id, {String user = 'zuck'}) => {
+Map<String, Object?> _json(String id, {String user = 'zuck', int takenAt = 1767225600}) => {
   'pk': id,
   'code': 'C$id',
-  'taken_at': 1767225600,
+  'taken_at': takenAt,
   'caption': {'text': 'post $id by $user'},
   'user': {'username': user, 'full_name': user},
 };
@@ -56,6 +57,44 @@ String _page(List<List<Map<String, Object?>>> chains) =>
           },
       ],
     })}</script></html>';
+
+/// `@zuck/post/C2` opened, its public page carrying [chains]. [sorts] holds the reader's orders for the session.
+Future<void> _pumpConversation(
+  WidgetTester tester,
+  List<List<Map<String, Object?>>> chains, {
+  ConversationSortStore? sorts,
+  Locale locale = const Locale('en'),
+}) async {
+  final prefs = PrefServiceCache(cache: {optionPluginThreadsDirectCooldownUntil: '', optionPluginThreadsUserIds: '{}'});
+  final accounts = ThreadsAccountsStore();
+  final likes = ThreadsLikesStore(prefs);
+  final orders = sorts ?? ConversationSortStore();
+  final direct = ThreadsDirectClient(
+    prefs,
+    minGap: Duration.zero,
+    httpClient: MockClient((_) async => http.Response(_page(chains), 200)),
+  );
+  addTearDown(() {
+    accounts.destroy();
+    likes.destroy();
+    if (sorts == null) orders.destroy();
+  });
+
+  await tester.pumpWidget(
+    _app(
+      prefs,
+      [
+        Provider<ThreadsAccountsStore>.value(value: accounts),
+        Provider<ThreadsLikesStore>.value(value: likes),
+        Provider<ThreadsDirectClient>.value(value: direct),
+        Provider<ConversationSortStore>.value(value: orders),
+      ],
+      ThreadsThreadScreen(post: ThreadsPost.linkStub('https://www.threads.net/@zuck/post/C2?igshid=x')),
+      locale: locale,
+    ),
+  );
+  await tester.pumpAndSettle();
+}
 
 void main() {
   timeago.setLocaleMessages('de', timeago.DeMessages());
@@ -118,38 +157,11 @@ void main() {
   });
 
   testWidgets('the conversation shows context, the author\'s thread and cut reply threads', (tester) async {
-    final prefs = PrefServiceCache(
-      cache: {optionPluginThreadsDirectCooldownUntil: '', optionPluginThreadsUserIds: '{}'},
-    );
-    final accounts = ThreadsAccountsStore();
-    final likes = ThreadsLikesStore(prefs);
-    final direct = ThreadsDirectClient(
-      prefs,
-      minGap: Duration.zero,
-      httpClient: MockClient(
-        (_) async => http.Response(
-          _page([
-            [_json('1', user: 'meta'), _json('2'), _json('3')],
-            [_json('4', user: 'a'), _json('5', user: 'b'), _json('6', user: 'a'), _json('7', user: 'b')],
-            [_json('8', user: 'c'), _json('9')],
-          ]),
-          200,
-        ),
-      ),
-    );
-    addTearDown(() {
-      accounts.destroy();
-      likes.destroy();
-    });
-
-    await tester.pumpWidget(
-      _app(prefs, [
-        Provider<ThreadsAccountsStore>.value(value: accounts),
-        Provider<ThreadsLikesStore>.value(value: likes),
-        Provider<ThreadsDirectClient>.value(value: direct),
-      ], ThreadsThreadScreen(post: ThreadsPost.linkStub('https://www.threads.net/@zuck/post/C2?igshid=x'))),
-    );
-    await tester.pumpAndSettle();
+    await _pumpConversation(tester, [
+      [_json('1', user: 'meta'), _json('2'), _json('3')],
+      [_json('4', user: 'a'), _json('5', user: 'b'), _json('6', user: 'a'), _json('7', user: 'b')],
+      [_json('8', user: 'c'), _json('9')],
+    ]);
 
     expect(find.text('post 1 by meta'), findsOneWidget, reason: 'what the post answers');
     expect(find.text('post 2 by zuck'), findsOneWidget);
@@ -169,6 +181,53 @@ void main() {
     expect(find.text('post 4 by a'), findsNothing, reason: 'only threads the author replied in');
     await tester.scrollUntilVisible(find.text('post 9 by zuck'), 200);
     expect(find.text('post 9 by zuck'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('replies can be sorted, each reply thread moving whole, and the order holds for the session', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final sorts = ConversationSortStore();
+    addTearDown(sorts.destroy);
+    await _pumpConversation(tester, sorts: sorts, [
+      [_json('1', user: 'meta'), _json('2')],
+      [_json('4', user: 'a', takenAt: 1767225600), _json('5', user: 'b', takenAt: 1767400000)],
+      [_json('8', user: 'c', takenAt: 1767300000)],
+    ]);
+    double top(String text) => tester.getTopLeft(find.text(text)).dy;
+
+    // Meta's own order first.
+    expect(top('post 4 by a'), lessThan(top('post 8 by c')));
+    expect(top('post 5 by b'), lessThan(top('post 8 by c')));
+
+    await tester.tap(find.byKey(const ValueKey('threads-thread-sort')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(L10n.current.recent).last);
+    await tester.pumpAndSettle();
+
+    expect(sorts.state.replies, ReplySort.recent);
+    expect(top('post 8 by c'), lessThan(top('post 4 by a')), reason: 'the newer first reply first');
+    expect(top('post 4 by a'), lessThan(top('post 5 by b')), reason: 'a reply thread stays whole');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the replies header, author filter and order fit a narrow phone in German', (tester) async {
+    tester.view.physicalSize = const Size(320, 1400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await _pumpConversation(locale: const Locale('de'), tester, [
+      [_json('2')],
+      [_json('4', user: 'a'), _json('5')],
+    ]);
+
+    expect(find.byKey(const ValueKey('threads-thread-sort')), findsOneWidget);
+    expect(find.text(L10n.current.plugin_threads_author_replies), findsOneWidget);
+    expect(tester.getSize(find.byKey(const ValueKey('threads-thread-sort'))).height, greaterThanOrEqualTo(48));
     expect(tester.takeException(), isNull);
   });
 }

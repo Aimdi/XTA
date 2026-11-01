@@ -18,6 +18,9 @@ const blueskyReplySorts = [ReplySort.relevant, ReplySort.recent, ReplySort.oldes
 /// Mastodon has no ranking: `/context` is the conversation, oldest first.
 const mastodonReplySorts = [ReplySort.oldest, ReplySort.recent, ReplySort.mostLiked];
 
+/// A Threads post's page sends its replies in Meta's own ranking; the rest is sorted on device.
+const threadsReplySorts = [ReplySort.relevant, ReplySort.recent, ReplySort.oldest];
+
 /// X ranks quotes on the server through SearchTimeline's `product`.
 const xQuoteSorts = [QuoteSort.recent, QuoteSort.top];
 

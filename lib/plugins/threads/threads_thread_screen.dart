@@ -10,10 +10,12 @@ import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_thread_store.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
+import 'package:xta/ui/conversation_sort.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/reload_status.dart';
 import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/ui/sort_menu_button.dart';
 import 'package:xta/constants.dart';
 
 /// One Threads post in its conversation — what it answers, the rest of its
@@ -32,7 +34,8 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
     context.read<ThreadsDirectClient>(),
     widget.post,
   );
-  final _view = ThreadsThreadViewStore();
+  late final _sorts = context.read<ConversationSortStore>();
+  late final _view = ThreadsThreadViewStore(_sorts.state.replies);
 
   @override
   void initState() {
@@ -45,6 +48,11 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
     _thread.destroy();
     _view.destroy();
     super.dispose();
+  }
+
+  void _selectOrder(ReplySort order) {
+    _sorts.selectReplies(order);
+    _view.selectOrder(order);
   }
 
   @override
@@ -76,6 +84,7 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
                   error: triple.error,
                   onRetry: () => _thread.load(force: true),
                   onToggleAuthorOnly: _view.toggleAuthorOnly,
+                  onOrder: _selectOrder,
                   onExpand: _view.expand,
                 ),
               ),
@@ -122,6 +131,7 @@ class _ThreadsConversationList extends StatelessWidget {
   final Object? error;
   final Future<void> Function() onRetry;
   final VoidCallback onToggleAuthorOnly;
+  final ValueChanged<ReplySort> onOrder;
   final void Function(List<ThreadsPost> chain) onExpand;
 
   const _ThreadsConversationList({
@@ -131,6 +141,7 @@ class _ThreadsConversationList extends StatelessWidget {
     required this.error,
     required this.onRetry,
     required this.onToggleAuthorOnly,
+    required this.onOrder,
     required this.onExpand,
   });
 
@@ -230,7 +241,9 @@ class _ThreadsConversationList extends StatelessWidget {
       _RepliesHeader(
         authorOnly: view.authorOnly,
         showAuthorFilter: threadsAuthorReplies(conversation).isNotEmpty,
+        order: view.order,
         onToggleAuthorOnly: onToggleAuthorOnly,
+        onOrder: onOrder,
       ),
       for (final row in threadsReplyRows(conversation, view))
         switch (row) {
@@ -278,28 +291,34 @@ class _ThreadsConversationList extends StatelessWidget {
 class _RepliesHeader extends StatelessWidget {
   final bool authorOnly;
   final bool showAuthorFilter;
+  final ReplySort order;
   final VoidCallback onToggleAuthorOnly;
+  final ValueChanged<ReplySort> onOrder;
 
   const _RepliesHeader({
     required this.authorOnly,
     required this.showAuthorFilter,
+    required this.order,
     required this.onToggleAuthorOnly,
+    required this.onOrder,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
+    // One line, as Bluesky's thread controls; a narrow phone or large text
+    // moves what does not fit to the next.
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
         children: [
-          Expanded(
-            child: Text(
-              l10n.plugin_threads_replies,
-              style: theme.textTheme.titleSmall!.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          Text(
+            l10n.plugin_threads_replies,
+            style: theme.textTheme.titleSmall!.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           if (showAuthorFilter)
@@ -308,6 +327,12 @@ class _RepliesHeader extends StatelessWidget {
               selected: authorOnly,
               onSelected: (_) => onToggleAuthorOnly(),
             ),
+          ReplySortButton(
+            key: const ValueKey('threads-thread-sort'),
+            value: order,
+            options: threadsReplySorts,
+            onSelected: onOrder,
+          ),
         ],
       ),
     );

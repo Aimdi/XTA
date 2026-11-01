@@ -2,6 +2,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/threads/threads_conversation.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
+import 'package:xta/ui/conversation_sort.dart';
 
 /// One Threads conversation, read from the post's public page.
 ///
@@ -35,22 +36,33 @@ class ThreadsThreadView {
   /// Reply threads opened past their first few posts, by their first post's id.
   final Set<String> expanded;
 
-  const ThreadsThreadView({this.authorOnly = false, this.expanded = const {}});
+  /// The order of the reply threads, each placed by its first reply.
+  final ReplySort order;
+
+  const ThreadsThreadView({this.authorOnly = false, this.expanded = const {}, this.order = ReplySort.relevant});
+
+  ThreadsThreadView copyWith({bool? authorOnly, Set<String>? expanded, ReplySort? order}) => ThreadsThreadView(
+    authorOnly: authorOnly ?? this.authorOnly,
+    expanded: expanded ?? this.expanded,
+    order: order ?? this.order,
+  );
 
   bool isExpanded(List<ThreadsPost> chain) => chain.isNotEmpty && expanded.contains(chain.first.id);
 }
 
 class ThreadsThreadViewStore extends Store<ThreadsThreadView> {
-  ThreadsThreadViewStore() : super(const ThreadsThreadView());
+  ThreadsThreadViewStore([ReplySort order = ReplySort.relevant]) : super(ThreadsThreadView(order: order));
 
-  void toggleAuthorOnly() => update(ThreadsThreadView(authorOnly: !state.authorOnly, expanded: state.expanded));
+  void toggleAuthorOnly() => update(state.copyWith(authorOnly: !state.authorOnly));
 
   void expand(List<ThreadsPost> chain) {
     if (chain.isEmpty) {
       return;
     }
-    update(ThreadsThreadView(authorOnly: state.authorOnly, expanded: {...state.expanded, chain.first.id}));
+    update(state.copyWith(expanded: {...state.expanded, chain.first.id}));
   }
+
+  void selectOrder(ReplySort order) => update(state.copyWith(order: order));
 }
 
 /// One row of the reply list: a post, where it sits in its reply thread, or
@@ -80,8 +92,17 @@ class ThreadsReplyMoreRow extends ThreadsReplyRow {
 /// the reader opens it.
 List<ThreadsReplyRow> threadsReplyRows(ThreadsConversation conversation, ThreadsThreadView view) {
   final chains = view.authorOnly ? threadsAuthorReplies(conversation) : conversation.replies;
-  return [for (final chain in chains) ..._chainRows(chain, view.isExpanded(chain))];
+  return [for (final chain in _ordered(chains, view.order)) ..._chainRows(chain, view.isExpanded(chain))];
 }
+
+/// Reply threads in [order], each kept whole: it moves with its first reply.
+List<List<ThreadsPost>> _ordered(List<List<ThreadsPost>> chains, ReplySort order) => orderReplies(
+  chains,
+  order,
+  options: threadsReplySorts,
+  postedAt: (chain) => chain.firstOrNull?.publishedAt,
+  likes: (chain) => chain.firstOrNull?.likeCount ?? 0,
+);
 
 List<ThreadsReplyRow> _chainRows(List<ThreadsPost> chain, bool expanded) {
   final shown = expanded ? chain : chain.take(kThreadsReplyChainPreview).toList(growable: false);
