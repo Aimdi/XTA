@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/tweet/paginated_tweet_list.dart';
+import 'package:xta/tweet/tweet.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/reading_column.dart';
+import 'package:xta/ui/x_look_theme.dart';
+
+import 'support/feed_ink_harness.dart';
 
 void main() {
   group('readingColumnPadding', () {
@@ -50,5 +56,60 @@ void main() {
     expect(post.width, kReadingColumnMaxWidth);
     expect(post.center.dx, closeTo(960, 0.5));
     expect(tester.getSize(find.byType(ListView)).width, 1920);
+  });
+
+  // The home header slides away over 180 ms and changes the feed's height on every frame of it. The posts in the
+  // feed do not change, so none of them should be built again.
+  testWidgets('a height change builds none of the posts in a feed again', (tester) async {
+    final feed = TweetFeedController();
+    addTearDown(feed.dispose);
+    Future<TweetPageResult> load(String? cursor) async => (
+      chains: [
+        for (var i = 0; i < 8; i++) TweetChain(id: 'c$i', tweets: [inkXPost()..idStr = 'p$i'], isPinned: false),
+      ],
+      nextCursor: null,
+    );
+    final header = ValueNotifier<double>(48);
+    addTearDown(header.dispose);
+    // Built once, as the feed under the home header is: the slide changes its height, not the widget.
+    final list = PaginatedTweetList(
+      feed: feed,
+      loadPage: load,
+      username: null,
+      firstPageErrorPrefix: 'first',
+      newPageErrorPrefix: 'next',
+      emptyMessage: 'empty',
+    );
+
+    await pumpInk(
+      tester,
+      Scaffold(
+        body: ValueListenableBuilder<double>(
+          valueListenable: header,
+          builder: (_, height, child) => Column(
+            children: [
+              SizedBox(height: height),
+              Expanded(child: child!),
+            ],
+          ),
+          child: list,
+        ),
+      ),
+      theme: xLookLightsOutTheme(null),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(TweetTile), findsWidgets);
+
+    var rebuilt = 0;
+    debugOnRebuildDirtyWidget = (element, _) {
+      if (element.widget is TweetTile) rebuilt++;
+    };
+    addTearDown(() => debugOnRebuildDirtyWidget = null);
+    for (var frame = 1; frame <= 12; frame++) {
+      header.value = 48 - frame * 4;
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    debugOnRebuildDirtyWidget = null;
+    expect(rebuilt, 0);
   });
 }

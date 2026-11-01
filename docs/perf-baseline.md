@@ -415,3 +415,45 @@ Following now writes one preference per load, each site's newest post id
 (`ba615dbd`); the write is not awaited by the feed. A booru link opened from
 a post makes one `id:` search before the viewer opens (`e1f56f6e`), the way
 TikTok links already wait for their video.
+
+## Feed list rebuilds (2026-11-01)
+
+docs/specs/feed-rebuilds.md. Host measurements: `flutter test` runs JIT with
+assertions on, on this environment's Xeon, and the full test suite was
+running alongside every run below, before and after alike. They rank work;
+they are not phone timings.
+
+### Home header slide
+
+A feed whose list widget is built once, as under the home header, while its
+height changes on each of 12 frames (the slide is 180 ms, 11 frames at
+60 Hz). Counted with `debugOnRebuildDirtyWidget`, so the numbers are exact:
+
+| | Posts built again over 12 frames |
+| --- | --- |
+| Before (`LayoutBuilder`) | 72 (6 posts × 12 frames) |
+| After (width-only builder) | 0 |
+
+`fvm flutter test test/reading_column_test.dart`
+
+### One list build with 600 posts loaded
+
+The loading flag flipped and one frame pumped, 40 samples after 3 warm-ups,
+three runs each:
+
+| | Median, ms | p95, ms | Posts built per list build |
+| --- | --- | --- | --- |
+| Before | 161.6, 155.7, 148.7 | 230.0, 274.2, 248.0 | 10 |
+| Memos matching only | 158.2, 143.0, 141.8 | 206.5, 201.4, 221.0 | 10 |
+| Memos and per-post widgets | 6.9, 6.8, 6.7 | 11.8, 9.0, 11.1 | 0 |
+
+The memos alone moved the median within noise in this scenario: building
+the posts again was the cost, and the posts carry one link each, so the
+link grouping the memos now skip was the smaller part. They grow with the
+loaded history and the links in it, which is what the memo is for.
+
+`fvm flutter test test/perf/feed_list_benchmark_test.dart --dart-define=RUN_BENCH=true`
+
+On a phone: fewer janky frames when the header slides and while a large
+group refreshes batch by batch. UNVERIFIED until the scroll scenario runs on
+the same phone before and after.

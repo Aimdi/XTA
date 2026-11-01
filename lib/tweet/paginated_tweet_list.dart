@@ -35,6 +35,19 @@ import 'package:xta/ui/motion.dart';
 typedef TweetPageResult = ({List<TweetChain> chains, String? nextCursor});
 typedef TweetPageLoader = Future<TweetPageResult> Function(String? cursor);
 
+/// Whether [pages], read in order, are the very [chains] already loaded: a state the paging package copied still
+/// holds the chains it was given, and checking them one by one is far cheaper than redoing what was built from them.
+bool holdsSameChains(List<TweetChain> chains, List<List<TweetChain>> pages) {
+  var index = 0;
+  for (final page in pages) {
+    for (final chain in page) {
+      if (index >= chains.length || !identical(chains[index], chain)) return false;
+      index++;
+    }
+  }
+  return index == chains.length;
+}
+
 enum _FailedRead { refresh, repair }
 
 /// Why pagination stopped short of the end of the feed. Both stops are the
@@ -367,6 +380,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final prefs = PrefService.of(context, listen: false);
+    if (!identical(prefs, _prefs)) {
+      _prefs?.removeListener(_onPrefsChanged);
+      _prefs = prefs..addListener(_onPrefsChanged);
+    }
     // Only feeds that support pull-to-refresh expose their refresh to the
     // app-bar button. Outside a GroupFeedShell there is no controller to bind.
     if (widget.onRefresh == null) return;
@@ -400,6 +418,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   @override
   void dispose() {
+    _prefs?.removeListener(_onPrefsChanged);
     _controller.removeListener(_onControllerChanged);
     _refreshController?.unregister(_showRefresh);
     _refreshController?.unregisterSearch(_searchLoaded);
@@ -435,7 +454,31 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   // Keyed by chain id so a prepending refresh shifts elements instead of
   // re-associating every visible tile with a different chain by index.
+  // The widget each post was last built as. A list build that changes none of
+  // its posts (a loading flag, a group's batch arriving, a notice) hands the
+  // same widgets back, so the posts on screen are not built again with every
+  // one; a setting changing builds them all again, as any list build did.
+  final Map<String, ({TweetChain chain, Widget widget})> _chainWidgets = {};
+  Object? _chainWidgetsFor;
+  BasePrefService? _prefs;
+  int _prefsChanges = 0;
+
+  void _onPrefsChanged() => _prefsChanges++;
+
   Widget _buildChain(BuildContext context, TweetChain chain) {
+    final inputs = (widget.username, widget.foldReasons, _prefsChanges);
+    if (inputs != _chainWidgetsFor) {
+      _chainWidgets.clear();
+      _chainWidgetsFor = inputs;
+    }
+    final built = _chainWidgets[chain.id];
+    if (built != null && identical(built.chain, chain)) return built.widget;
+    final post = _chainWidget(chain);
+    _chainWidgets[chain.id] = (chain: chain, widget: post);
+    return post;
+  }
+
+  Widget _chainWidget(TweetChain chain) {
     final reason = widget.foldReasons[chain.id];
     if (reason != null) {
       return FoldedChain(key: ValueKey('fold-${chain.id}'), chain: chain, reason: reason, username: widget.username);
@@ -475,6 +518,22 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   // history), and the list builder runs on every paging notification — so they
   // are remembered per items-list identity rather than recomputed each build.
   List<TweetChain>? _placementItems;
+
+  // The package copies every page into a new list for each state it makes, and
+  // `items` flattens them into another on each read, so the memos above and
+  // below, keyed on the list, compared copies and never matched. The same
+  // chains, one by one, hand back the list they know.
+  List<TweetChain> _loaded = const [];
+
+  List<TweetChain> _loadedOf(PagingState<int, TweetChain> state) {
+    final pages = state.pages ?? const <List<TweetChain>>[];
+    if (holdsSameChains(_loaded, pages)) return _loaded;
+    _loaded = [for (final page in pages) ...page];
+    final loaded = {for (final chain in _loaded) chain.id: chain};
+    _chainWidgets.removeWhere((id, built) => !identical(loaded[id], built.chain));
+    return _loaded;
+  }
+
   List<InterleavedItem>? _placementInterleaved;
   (int?, List<List<InterleavedItem>>) _placement = (null, const []);
   FeedLinkGrouping? _linkGrouping;
@@ -710,18 +769,19 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       builder: (context, state, fetchNextPage) {
         // Recomputed per build from the loaded items, so the boundary shows
         // up even when the first seen chain only arrives on a later page.
-        final loaded = state.items ?? const <TweetChain>[];
+        final loaded = _loadedOf(state);
+        final chains = state.pages == null ? null : loaded;
         final collapseBoosts = PrefService.of(context, listen: false).get<bool>(optionFeedCollapseBoosts) != false;
         final (boundary, buckets) = _placementFor(loaded);
         final endCard = _buildEndCard(loaded);
-        if (onlyInterleavedToShow(chains: state.items, items: widget.interleaved)) {
+        if (onlyInterleavedToShow(chains: chains, items: widget.interleaved)) {
           _afterPlaceholders.shownOther();
           return _interleavedOnlyList(context, buckets.last, endCard);
         }
         // X's first page failed and there is no cached tweet list to fall
         // back on. The plugin cards are still worth showing — a rate-limited
         // search must not hide the subreddit that is actually in this group.
-        if (showInterleavedOnXFailure(chains: state.items, items: widget.interleaved) &&
+        if (showInterleavedOnXFailure(chains: chains, items: widget.interleaved) &&
             (pagingErrorOf(state)?.error ?? state.error) != null) {
           _afterPlaceholders.shownOther();
           return _pluginPostsWithXError(
@@ -735,7 +795,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         // client. PagedListView already is one; a skeleton, empty list, or
         // error scroll view in its indicator slot is a second — freeze, then
         // "XTA has stopped" on For you (HomeTimeline) and cold Following.
-        if (state.items == null && state.error == null) {
+        if (chains == null && state.error == null) {
           _maybeStartFirstLoad();
           if (widget.interleaved.isNotEmpty) {
             // X's posts are on their way: a line over the plugin posts says so,
@@ -745,7 +805,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           }
           return _afterPlaceholders.placeholders(const TweetFeedSkeleton());
         }
-        if (state.items == null) {
+        if (chains == null) {
           return ListView(
             children: [
               ReaderFailureNotice(
