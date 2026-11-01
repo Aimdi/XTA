@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_rich_text.dart';
 
 void main() {
@@ -11,6 +12,18 @@ void main() {
       expect(hits[0].value, 'Alice');
       expect(hits[1].isMention, isFalse);
       expect(hits[1].value, 'https://example.com/x');
+    });
+
+    test('finds #tags in plain text, not inside a link or a word', () {
+      final hits = hitsInThreadsCaption('Glaze day #Keramik #töpfern, see https://example.com/a#notes and C#7');
+      final tags = [
+        for (final hit in hits)
+          if (hit.kind == ThreadsFragmentKind.tag) hit.value,
+      ];
+      expect(tags, ['Keramik', 'töpfern']);
+
+      final runs = threadsCaptionRuns('see https://example.com/a#notes', const []);
+      expect(runs.where((run) => run.kind == ThreadsFragmentKind.tag), isEmpty, reason: 'the # is part of the link');
     });
 
     test('ignores email-shaped text as a mention', () {

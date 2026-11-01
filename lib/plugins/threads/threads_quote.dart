@@ -52,6 +52,10 @@ class ThreadsQuotedPost extends StatelessWidget {
                   const SizedBox(height: 8),
                   ThreadsPostMedia(post: quote, onOpenPost: () => _open(context)),
                 ],
+                if (quote.linkCard != null) ...[
+                  const SizedBox(height: 8),
+                  threadsLinkPreview(context, quote, openPost: () => _open(context)),
+                ],
               ],
             ),
           ),

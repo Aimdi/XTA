@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,11 +11,14 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/constants.dart';
+import 'package:xta/links/link_preview_card.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
+import 'package:xta/plugins/threads/threads_quote.dart';
+import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/tweet/_photo.dart';
@@ -311,11 +315,11 @@ void main() {
   group('the card and the opened post, as on X', () {
     final postedAt = DateTime.utc(2026, 10, 9, 16, 12);
 
-    ThreadsPost post({String? topic, int thread = 0}) => ThreadsPost(
+    ThreadsPost post({String? topic, int thread = 0, String text = 'a post'}) => ThreadsPost(
       id: 'card',
       handle: 'zuck',
       authorName: 'Mark',
-      text: 'a post',
+      text: text,
       url: 'https://www.threads.com/@zuck/post/Ccard',
       publishedAt: postedAt,
       topicTag: topic,
@@ -323,7 +327,12 @@ void main() {
     );
 
     /// [child] with everything a card and the conversation it opens need.
-    Future<void> pumpWith(WidgetTester tester, Widget child, {Map<String, Object?> prefs = const {}}) async {
+    Future<void> pumpWith(
+      WidgetTester tester,
+      Widget child, {
+      Map<String, Object?> prefs = const {},
+      ThreadsLikesStore? likedHere,
+    }) async {
       final service = PrefServiceCache(
         cache: {
           optionPluginThreadsDirectCooldownUntil: '',
@@ -333,7 +342,7 @@ void main() {
         },
       );
       final accounts = ThreadsAccountsStore();
-      final likes = ThreadsLikesStore(service);
+      final likes = likedHere ?? ThreadsLikesStore(service);
       final sorts = ConversationSortStore();
       final direct = ThreadsDirectClient(
         service,
@@ -424,5 +433,101 @@ void main() {
       expect(tester.getSize(showThread).height, greaterThanOrEqualTo(48));
       semantics.dispose();
     });
+
+    testWidgets('a quoted post shows its link card, as the post itself does', (tester) async {
+      final quoting = ThreadsPost(
+        id: 'quoting',
+        handle: 'zuck',
+        authorName: 'Mark',
+        text: 'read this',
+        url: 'https://www.threads.com/@zuck/post/Cquoting',
+        publishedAt: postedAt,
+        quoted: const ThreadsPost(
+          id: 'quoted',
+          handle: 'maya',
+          authorName: 'Maya',
+          text: 'my essay is out',
+          url: 'https://www.threads.com/@maya/post/Cquoted',
+          linkCard: ThreadsLinkCard(url: 'https://example.com/essay', title: 'On kilns'),
+        ),
+      );
+      await pumpWith(tester, inList(ThreadsPostCard(post: quoting)));
+
+      expect(
+        find.descendant(of: find.byType(ThreadsQuotedPost), matching: find.byType(LinkPreviewCard)),
+        findsOneWidget,
+      );
+      expect(find.text('On kilns'), findsOneWidget);
+    });
+
+    testWidgets('a #tag in a caption Meta sent as plain text opens the posts under it', (tester) async {
+      await pumpWith(tester, inList(ThreadsPostCard(post: post(text: 'glaze day #Keramik'))));
+
+      await tester.tapOnText(find.textRange.ofSubstring('#Keramik'));
+      await tester.pumpAndSettle();
+
+      final search = tester.widget<ThreadsSearchScreen>(find.byType(ThreadsSearchScreen));
+      expect((search.query, search.tag), ('Keramik', true));
+    });
+
+    testWidgets('with the gesture on, a double-tap likes the post here and a tap still opens it', (tester) async {
+      final likes = _LikedHere();
+      await pumpWith(
+        tester,
+        inList(ThreadsPostCard(post: post())),
+        prefs: {optionGestureDoubleTapLike: true},
+        likedHere: likes,
+      );
+
+      await tester.tap(find.text('a post'));
+      await tester.pump(kDoubleTapMinTime);
+      await tester.tap(find.text('a post'));
+      await tester.pumpAndSettle();
+      expect(likes.ids, {'card'});
+      expect(find.byType(ThreadsThreadScreen), findsNothing, reason: 'the taps liked the post');
+      expect(find.text(L10n.current.likes_stay_on_device_notice), findsOneWidget);
+
+      await tester.tap(find.text('a post'));
+      await tester.pump(kDoubleTapTimeout);
+      await tester.pumpAndSettle();
+      expect(find.byType(ThreadsThreadScreen), findsOneWidget);
+      expect(likes.ids, {'card'}, reason: 'a single tap leaves the like as it was');
+    });
+
+    testWidgets('with the gesture off, a double-tap likes nothing and a tap opens the post at once', (tester) async {
+      final likes = _LikedHere();
+      await pumpWith(tester, inList(ThreadsPostCard(post: post(), openOnTap: false)), likedHere: likes);
+
+      await tester.tap(find.text('a post'));
+      await tester.pump(kDoubleTapMinTime);
+      await tester.tap(find.text('a post'));
+      await tester.pumpAndSettle();
+      expect(likes.ids, isEmpty);
+
+      await pumpWith(tester, inList(ThreadsPostCard(post: post())), likedHere: _LikedHere());
+      await tester.tap(find.text('a post'));
+      await tester.pump();
+      expect(
+        find.byType(ThreadsThreadScreen, skipOffstage: false),
+        findsOneWidget,
+        reason: 'pushed on the first frame, with no wait for a second tap',
+      );
+      await tester.pumpAndSettle();
+    });
   });
+}
+
+/// Likes kept in memory, as this device's would be.
+class _LikedHere extends ThreadsLikesStore {
+  _LikedHere() : super(PrefServiceCache());
+
+  final ids = <String>{};
+
+  @override
+  bool isLiked(String id) => ids.contains(id);
+
+  @override
+  Future<void> toggle(ThreadsPost post) async {
+    if (!ids.remove(post.id)) ids.add(post.id);
+  }
 }

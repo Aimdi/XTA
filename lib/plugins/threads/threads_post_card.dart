@@ -131,7 +131,12 @@ class ThreadsPostCard extends StatelessWidget {
     return ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
       store: accounts,
       distinct: (_) => accounts.follows(post.handle),
-      onState: (context, _) => _post(context, following: accounts.follows(post.handle)),
+      onState: (context, _) => withDoubleTapToLike(
+        context,
+        isLiked: () => context.read<ThreadsLikesStore>().isLiked(post.id),
+        like: () => context.read<ThreadsLikesStore>().toggle(post),
+        child: _post(context, following: accounts.follows(post.handle)),
+      ),
     );
   }
 
@@ -217,37 +222,15 @@ class ThreadsPostCard extends StatelessWidget {
         const SizedBox(height: 10),
         ThreadsPostMedia(post: post, onOpenPost: openOnTap ? () => _open(context) : null),
       ],
-      if (post.linkCard != null) ...[const SizedBox(height: 10), _linkPreview(context, post.linkCard!)],
+      if (post.linkCard != null) ...[
+        const SizedBox(height: 10),
+        threadsLinkPreview(context, post, openPost: openOnTap ? () => _open(context) : null),
+      ],
       if (post.quoted != null) ...[const SizedBox(height: 10), ThreadsQuotedPost(quote: post.quoted!)],
       if (post.selfThreadCount > 0 && openOnTap)
         _ShowThreadButton(count: post.selfThreadCount, onPressed: () => _open(context)),
       if (focal) TweetFocalMetaLine(createdAt: post.publishedAt, views: null, start: 0),
     ],
-  );
-
-  Widget _linkPreview(BuildContext context, ThreadsLinkCard card) => LinkPreviewCard(
-    url: card.url,
-    title: card.title,
-    description: card.description,
-    imageUrl: card.imageUrl,
-    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
-    imageBuilder: (_, url, cacheWidth) => ThreadsNetworkImage(url, fit: BoxFit.cover, cacheWidth: cacheWidth),
-    onTap: () => openPostLink(context, card.url, title: card.title, post: _linkContext(context)),
-  );
-
-  LinkPostContext _linkContext(BuildContext context) => LinkPostContext(
-    sourceId: pluginIdThreads,
-    author: post.authorName,
-    avatarUrl: post.avatarUrl,
-    replies: post.replyCount,
-    reposts: post.repostCount,
-    likes: post.likeCount,
-    postUrl: post.url,
-    openPost: openOnTap
-        ? () {
-            if (context.mounted) _open(context);
-          }
-        : null,
   );
 
   Widget _repostLine(BuildContext context) {
@@ -432,3 +415,36 @@ class _ShowThreadButton extends StatelessWidget {
 /// opens.
 void openThreadsPost(BuildContext context, ThreadsPost post) =>
     Navigator.push(context, XtaCardPageRoute<void>(builder: (_) => ThreadsThreadScreen(post: post)));
+
+/// [post]'s link card. The link opens with the post it came from beside it;
+/// [openPost] opens that post, where there is one to open.
+Widget threadsLinkPreview(BuildContext context, ThreadsPost post, {VoidCallback? openPost}) {
+  final card = post.linkCard!;
+  return LinkPreviewCard(
+    url: card.url,
+    title: card.title,
+    description: card.description,
+    imageUrl: card.imageUrl,
+    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
+    imageBuilder: (_, url, cacheWidth) => ThreadsNetworkImage(url, fit: BoxFit.cover, cacheWidth: cacheWidth),
+    onTap: () => openPostLink(
+      context,
+      card.url,
+      title: card.title,
+      post: LinkPostContext(
+        sourceId: pluginIdThreads,
+        author: post.authorName,
+        avatarUrl: post.avatarUrl,
+        replies: post.replyCount,
+        reposts: post.repostCount,
+        likes: post.likeCount,
+        postUrl: post.url,
+        openPost: openPost == null
+            ? null
+            : () {
+                if (context.mounted) openPost();
+              },
+      ),
+    ),
+  );
+}
