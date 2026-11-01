@@ -221,7 +221,7 @@ class ThreadsPostCard extends StatelessWidget {
       if (post.quoted != null) ...[const SizedBox(height: 10), ThreadsQuotedPost(quote: post.quoted!)],
       if (post.selfThreadCount > 0 && openOnTap)
         _ShowThreadButton(count: post.selfThreadCount, onPressed: () => _open(context)),
-      if (focal) TweetFocalMetaLine(createdAt: post.publishedAt, views: null),
+      if (focal) TweetFocalMetaLine(createdAt: post.publishedAt, views: null, start: 0),
     ],
   );
 
