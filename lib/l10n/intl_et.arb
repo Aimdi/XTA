@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtreeri ja sorteeri",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Ainult meedia",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Kontod, mida sa jälgid",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Kõik teised",
+  "@plugin_stocks_posts_others": {}
 }

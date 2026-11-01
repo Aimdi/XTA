@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtrează și sortează",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Doar media",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Conturi pe care le urmărești",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Toți ceilalți",
+  "@plugin_stocks_posts_others": {}
 }

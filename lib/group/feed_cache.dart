@@ -191,3 +191,22 @@ Future<CachedChains> readAllCachedChains(Database repository) async {
     cachedAt: newestChunkTimestamp(storedChunks),
   );
 }
+
+/// The cached chains in the newest [limit] feed pages whose stored answer
+/// matches any of [patterns] (SQL `LIKE`): a post looked for without asking X.
+Future<List<TweetChain>> cachedFeedChainsMatching(
+  List<String> patterns, {
+  int limit = 60,
+}) async {
+  if (patterns.isEmpty) return const [];
+  final repository = await Repository.readOnly();
+  final storedChunks = await repository.query(
+    tableFeedGroupChunk,
+    columns: ['response'],
+    where: List.filled(patterns.length, 'response LIKE ?').join(' OR '),
+    whereArgs: patterns,
+    orderBy: 'created_at DESC',
+    limit: limit,
+  );
+  return dedupeChainsById(await chainsFromStoredChunksAsync(storedChunks));
+}

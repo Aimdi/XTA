@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtr i sartavannie",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Tolki medyja",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Akaŭnty, na jakija vy padpisany",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Usie astatnija",
+  "@plugin_stocks_posts_others": {}
 }

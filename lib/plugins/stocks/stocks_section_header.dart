@@ -23,13 +23,13 @@ class StocksSectionHeader extends StatelessWidget {
       header: true,
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 8),
-        // The title keeps what it needs, up to three fifths; the state takes
-        // the rest, its dot beside it at the end of the line.
+        // The title keeps what it needs, up to three fifths beside a state,
+        // which takes the rest, its dot beside it at the end of the line.
         child: LayoutBuilder(
           builder: (context, constraints) => Row(
             children: [
               ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.6),
+                constraints: BoxConstraints(maxWidth: constraints.maxWidth * (status == null ? 1 : 0.6)),
                 child: Text(
                   title,
                   maxLines: 1,

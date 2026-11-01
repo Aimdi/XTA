@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtrovat a řadit",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Jen média",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Účty, které sledujete",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Všichni ostatní",
+  "@plugin_stocks_posts_others": {}
 }

@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "फ़िल्टर और क्रम",
   "@saved_filter_and_sort": {},
   "saved_media_only": "केवल मीडिया",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "खाते जिन्हें आप फ़ॉलो करते हैं",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "बाकी सभी",
+  "@plugin_stocks_posts_others": {}
 }

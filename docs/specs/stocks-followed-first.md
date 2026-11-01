@@ -14,7 +14,8 @@ Every posts list about **one** ticker:
 - a ticker's page (`$NVDA` opened from a post, a row or the reel);
 - a token's page.
 
-The whole-watchlist feed, with no ticker picked, stays as it is.
+The whole-watchlist feed, with no ticker picked, stays as it is; a watchlist
+of one ticker is that ticker's feed.
 
 ## What the reader sees
 

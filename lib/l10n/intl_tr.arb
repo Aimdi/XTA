@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtrele ve sırala",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Yalnızca medya",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Takip ettiğiniz hesaplar",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Diğer herkes",
+  "@plugin_stocks_posts_others": {}
 }

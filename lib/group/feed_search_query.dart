@@ -24,8 +24,15 @@ List<String> _filters({required bool includeReplies, required bool includeRetwee
 ];
 
 /// One chunk's query: its members' [terms] in one bracket, so the reply and
-/// repost filters after it cover every member and not only the last.
-String buildFeedSearchQuery(Iterable<String> terms, {required bool includeReplies, required bool includeRetweets}) => [
+/// repost filters after it cover every member and not only the last. With
+/// [within], the chunk narrows that search: `$NVDA (from:a OR from:b) …`.
+String buildFeedSearchQuery(
+  Iterable<String> terms, {
+  required bool includeReplies,
+  required bool includeRetweets,
+  String? within,
+}) => [
+  ?within,
   if (terms.isNotEmpty) '(${terms.join(' OR ')})',
   ..._filters(includeReplies: includeReplies, includeRetweets: includeRetweets),
 ].join(' ');
@@ -34,15 +41,19 @@ String buildFeedSearchQuery(Iterable<String> terms, {required bool includeReplie
 /// [feedSearchQueryLimit]: short screen names share a search, so a group asks
 /// X fewer times. Walking in order means a new member, which comes last, never
 /// moves anyone into another chunk. A member too long to share a query gets a
-/// chunk of its own.
+/// chunk of its own. [within] is the search the chunks narrow, if any.
 List<List<T>> packFeedChunks<T>(
   List<T> members,
   String Function(T member) termOf, {
   required bool includeReplies,
   required bool includeRetweets,
+  String? within,
 }) {
-  // The brackets and the space before the filters.
-  final overhead = _filters(includeReplies: includeReplies, includeRetweets: includeRetweets).join(' ').length + 3;
+  // The brackets and the space before the filters, and the search narrowed.
+  final overhead =
+      _filters(includeReplies: includeReplies, includeRetweets: includeRetweets).join(' ').length +
+      3 +
+      (within == null ? 0 : within.length + 1);
   const separator = ' OR ';
   final chunks = <List<T>>[];
   var termsLength = 0;

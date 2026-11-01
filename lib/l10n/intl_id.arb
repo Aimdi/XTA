@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filter dan urutkan",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Hanya media",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Akun yang Anda ikuti",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Akun lainnya",
+  "@plugin_stocks_posts_others": {}
 }

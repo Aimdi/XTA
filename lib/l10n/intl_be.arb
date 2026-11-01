@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Фільтр і сартаванне",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Толькі медыя",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Акаўнты, на якія вы падпісаны",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Усе астатнія",
+  "@plugin_stocks_posts_others": {}
 }

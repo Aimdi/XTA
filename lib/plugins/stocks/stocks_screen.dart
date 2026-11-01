@@ -471,6 +471,8 @@ class _StocksScreenState extends State<StocksScreen> {
           child: StocksPostsFeed(
             key: ValueKey(query),
             query: query,
+            // One ticker's feed, also when the watchlist holds only that one.
+            followedFirst: _filterSymbol != null || symbols.length == 1,
             onRefreshQuotes: () async {
               await _refreshQuotes(force: true);
               if (_tab == 2) {

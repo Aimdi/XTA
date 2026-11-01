@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtruj i sortuj",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Tylko multimedia",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Konta, które obserwujesz",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Wszyscy pozostali",
+  "@plugin_stocks_posts_others": {}
 }

@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtrer og sorter",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Bare medier",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Kontoer du følger",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Alle andre",
+  "@plugin_stocks_posts_others": {}
 }

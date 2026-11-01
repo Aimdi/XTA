@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "필터 및 정렬",
   "@saved_filter_and_sort": {},
   "saved_media_only": "미디어만",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "팔로우 중인 계정",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "다른 계정",
+  "@plugin_stocks_posts_others": {}
 }

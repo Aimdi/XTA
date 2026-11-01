@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Filtri kaj ordigi",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Nur plurmedio",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Kontoj, kiujn vi sekvas",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Ĉiuj aliaj",
+  "@plugin_stocks_posts_others": {}
 }

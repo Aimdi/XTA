@@ -11,6 +11,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
+import 'package:xta/plugins/stocks/stocks_followed_section.dart';
 import 'package:xta/plugins/stocks/stocks_header.dart';
 import 'package:xta/plugins/stocks/stocks_instruments.dart';
 import 'package:xta/plugins/stocks/stocks_markets.dart';
@@ -311,6 +312,26 @@ final _boards = <String, Widget Function()>{
               'NVDA',
               'SOL',
             ]),
+            const Divider(height: 1),
+          ],
+        ),
+      ),
+    ],
+  ),
+  'followed': () => Column(
+    children: [
+      _header(1),
+      _strip(selected: 'AAPL'),
+      Expanded(
+        child: ListView(
+          children: [
+            const FollowedPartLabel(part: FollowedPart.followed),
+            _post('Ben Okafor', '@benok', 'Trimmed \$AAPL into the print, keeping the core.', ['AAPL']),
+            const Divider(height: 1),
+            _post('Ana Ruiz', '@anaruiz', 'Services margin is the \$AAPL story nobody prices in.', ['AAPL']),
+            const Divider(height: 1),
+            const FollowedPartLabel(part: FollowedPart.others),
+            _post('Market Wire', '@marketwire', '\$AAPL up 3.1% after record iPhone revenue.', ['AAPL']),
             const Divider(height: 1),
           ],
         ),

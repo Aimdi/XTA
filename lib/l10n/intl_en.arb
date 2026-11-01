@@ -6430,5 +6430,13 @@
   "saved_media_only": "Media only",
   "@saved_media_only": {
     "description": "Menu option on the Saved screen: show only the saved posts that have pictures or videos, as a grid."
+  },
+  "plugin_stocks_posts_followed": "Accounts you follow",
+  "@plugin_stocks_posts_followed": {
+    "description": "Label above the posts by X accounts the reader follows, shown first in one ticker's posts on Stocks."
+  },
+  "plugin_stocks_posts_others": "Everyone else",
+  "@plugin_stocks_posts_others": {
+    "description": "Label above the rest of one ticker's posts on Stocks, after those by accounts the reader follows."
   }
 }

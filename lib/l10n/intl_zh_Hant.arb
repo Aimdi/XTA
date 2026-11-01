@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "篩選與排序",
   "@saved_filter_and_sort": {},
   "saved_media_only": "僅媒體",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "你追蹤的帳號",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "其他帳號",
+  "@plugin_stocks_posts_others": {}
 }

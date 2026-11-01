@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "Iragazi eta ordenatu",
   "@saved_filter_and_sort": {},
   "saved_media_only": "Multimedia soilik",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "Jarraitzen dituzun kontuak",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "Beste guztiak",
+  "@plugin_stocks_posts_others": {}
 }

@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "筛选和排序",
   "@saved_filter_and_sort": {},
   "saved_media_only": "仅媒体",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "你关注的账号",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "其他账号",
+  "@plugin_stocks_posts_others": {}
 }

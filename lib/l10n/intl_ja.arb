@@ -5786,5 +5786,9 @@
   "saved_filter_and_sort": "絞り込みと並べ替え",
   "@saved_filter_and_sort": {},
   "saved_media_only": "メディアのみ",
-  "@saved_media_only": {}
+  "@saved_media_only": {},
+  "plugin_stocks_posts_followed": "フォロー中のアカウント",
+  "@plugin_stocks_posts_followed": {},
+  "plugin_stocks_posts_others": "その他のアカウント",
+  "@plugin_stocks_posts_others": {}
 }
