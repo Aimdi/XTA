@@ -24,7 +24,9 @@ shown, nothing is traded.
   on to the next candidate.
 - **"—" means three things.** A row that is loading, one whose fetch failed and
   one whose market is closed look the same: dashes and an empty pill. The quote
-  cache swallows failures, so a row cannot tell them apart.
+  cache swallows failures, so a row cannot tell them apart. The pill was as
+  wide as the figures column: its Container was aligned, which makes a
+  Container take all the width it is offered.
 - **Index rows have no name** until the host answers, and none when it fails.
 - **The change has two meanings in one list.** A coin's is not measured against
   a previous close the way an index's is, and nothing says which is which.
@@ -70,7 +72,9 @@ shown, nothing is traded.
   - *market closed* (no session now: night, weekend, holiday): the last close,
     a small "Close Fri" tag (the day of that close) and a muted pill;
   - *no data* (the fetch failed): one line, "No data · Tap to retry", and no
-    pill; tapping retries that row.
+    pill; tapping retries that row. Where the line does not fit beside the
+    name (German on a 393 dp phone) it breaks at the dot, never mid-phrase,
+    and the name keeps the room it needs.
   The same rows serve Markets and the Watchlist, and the watchlist strip on the
   Tweets tab shows the same three states.
 - **Rows have names without data**: S&P 500, Nasdaq-100, Dow Jones, Russell

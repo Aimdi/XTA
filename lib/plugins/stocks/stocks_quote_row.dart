@@ -52,13 +52,15 @@ class StocksQuoteRow extends StatelessWidget {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         if (state != StockRowState.noData) return _tappable(context, state, now, width);
+        // The name takes what it needs, the message the rest, so in German
+        // too it is one line on a phone.
         return Row(
           children: [
-            Expanded(child: _tappable(context, state, now, width)),
             ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: width * 0.55),
-              child: StocksNoDataLine(onRetry: onRetry),
+              constraints: BoxConstraints(maxWidth: width * 0.45),
+              child: _tappable(context, state, now, width),
             ),
+            Expanded(child: StocksNoDataLine(onRetry: onRetry)),
           ],
         );
       },
@@ -214,7 +216,7 @@ class _Figures extends StatelessWidget {
 }
 
 /// "No data · Tap to retry" where a row's figures would be; without
-/// [onRetry] only "No data".
+/// [onRetry] only "No data". One line where it fits, else broken at the dot.
 class StocksNoDataLine extends StatelessWidget {
   final VoidCallback? onRetry;
 
@@ -224,6 +226,10 @@ class StocksNoDataLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
+    final style = theme.textTheme.labelSmall!.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+      fontWeight: FontWeight.w600,
+    );
     final line = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 64),
       child: Padding(
@@ -231,12 +237,17 @@ class StocksNoDataLine extends StatelessWidget {
         child: Align(
           alignment: AlignmentDirectional.centerEnd,
           widthFactor: 1,
-          child: Text(
-            onRetry == null ? l10n.plugin_stocks_no_data : l10n.plugin_stocks_no_data_retry,
-            textAlign: TextAlign.end,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          child: Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 4,
+            children: [
+              Text(
+                onRetry == null ? l10n.plugin_stocks_no_data : '${l10n.plugin_stocks_no_data} ·',
+                textAlign: TextAlign.end,
+                style: style,
+              ),
+              if (onRetry != null) Text(l10n.plugin_stocks_tap_to_retry, textAlign: TextAlign.end, style: style),
+            ],
           ),
         ),
       ),
@@ -350,20 +361,27 @@ class StocksChangeChip extends StatelessWidget {
         ? theme.colorScheme.surfaceContainerHighest
         : Color.alphaBlend(tint.withValues(alpha: 0.14), surface);
 
+    // Sized to its figure, at least 68 wide so a column of moves lines up.
+    // An aligned Container takes all the width it is offered: the pill
+    // stretched across the figures column, an empty bar where it had none.
     return Container(
       constraints: const BoxConstraints(minWidth: 68),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: fill, borderRadius: BorderRadius.circular(6)),
-      alignment: Alignment.centerRight,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          percent == null ? kStockPlaceholder : stockPercentLabel(percent!),
-          maxLines: 1,
-          style: theme.textTheme.labelMedium!.copyWith(
-            fontWeight: FontWeight.w800,
-            fontFeatures: kStockFigures,
-            color: ensureContrast(tint, fill),
+      child: Align(
+        alignment: Alignment.centerRight,
+        widthFactor: 1,
+        heightFactor: 1,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            percent == null ? kStockPlaceholder : stockPercentLabel(percent!),
+            maxLines: 1,
+            style: theme.textTheme.labelMedium!.copyWith(
+              fontWeight: FontWeight.w800,
+              fontFeatures: kStockFigures,
+              color: ensureContrast(tint, fill),
+            ),
           ),
         ),
       ),

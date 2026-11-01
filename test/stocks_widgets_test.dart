@@ -364,7 +364,7 @@ void main() {
           expect(find.text('+5.26%'), findsOneWidget);
           expect(find.text('0.0₄1230'), findsOneWidget);
           expect(find.text('Crypto · Ethereum'), findsOneWidget);
-          expect(find.text('No data · Tap to retry'), findsOneWidget);
+          expect(find.text('Tap to retry'), findsOneWidget);
           expect(find.byType(StocksSparkline), scale == 1 ? findsOneWidget : findsNothing);
           for (final row in find.byType(StocksQuoteRow).evaluate()) {
             expect(row.size!.height, greaterThanOrEqualTo(48), reason: 'a row is a touch target');
@@ -460,7 +460,7 @@ void main() {
 
       expect(find.byType(StocksChangeChip), findsNothing, reason: 'no empty pill');
       expect(find.byType(StocksFiguresSkeleton), findsNothing);
-      await tester.tap(find.text('No data · Tap to retry'));
+      await tester.tap(find.text('Tap to retry'));
       expect((retried, opened), (1, 0));
       await tester.tap(find.text(r'$POD'));
       expect((retried, opened), (1, 1), reason: 'the rest of the row still opens the page');
@@ -509,7 +509,7 @@ void main() {
         expect(find.text(_closeTag('de', 'Schluss')), findsOneWidget);
         expect(find.text('1T'), findsOneWidget);
         expect(find.text('0,0₄1230'), findsOneWidget);
-        expect(find.text('Keine Daten · Tippen zum Wiederholen'), findsOneWidget);
+        expect(find.text('Tippen zum Wiederholen'), findsOneWidget);
       });
     }
 
@@ -528,7 +528,7 @@ void main() {
       expect(find.text('Index'), findsWidgets);
       expect(find.text(kStockPlaceholder), findsNothing);
       expect(find.byType(StocksFiguresSkeleton), findsWidgets);
-      await tester.tap(find.text('No data · Tap to retry'));
+      await tester.tap(find.text('Tap to retry'));
       expect(retried, ['SPX']);
     });
 

@@ -6244,9 +6244,9 @@
   "@plugin_stocks_no_data": {
     "description": "Shown instead of a price when the quote lookup found nothing."
   },
-  "plugin_stocks_no_data_retry": "No data · Tap to retry",
-  "@plugin_stocks_no_data_retry": {
-    "description": "Shown instead of a price when the quote lookup found nothing; tapping it asks again."
+  "plugin_stocks_tap_to_retry": "Tap to retry",
+  "@plugin_stocks_tap_to_retry": {
+    "description": "Shown after \"No data\" on a quote row whose lookup found nothing; tapping it asks again."
   },
   "plugin_stocks_loading_price": "Loading price",
   "@plugin_stocks_loading_price": {
