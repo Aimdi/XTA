@@ -1,25 +1,42 @@
 ## XTA — aimdi189
 
-### Stocks: right numbers, honest rows
+### Stocks, redesigned
 
-- **Indices work.** Every index (`$SPX`, `$NDX`, `$DAX`, …) asked the price service for a symbol it had encoded twice, so it always failed: the dashes in Markets, and `$NDX` showing a crypto token called Indexed Finance. An index name now asks for its index and nothing else, and on a weekend an index shows Friday's close.
-- **A row says what it is doing.** Loading shimmers; a closed market shows its last close with "Close Fri" and a muted move; a symbol with no data says "No data · Tap to retry", and tapping retries it. The watchlist and its strip above Tweets show the same.
-- **Every row says what it is**: Index, Stock, ETF, Crypto (with the network for a token, "Crypto · Base"), and indices and coins have their names before any price arrives.
-- **Each move says what it is measured over**: "24h" for coins and tokens, "1D" against the previous close. Bitcoin and Ether are now measured over the last 24 hours.
+- **A new look, after the owner's design.** Two rows on top: Stocks with **+** and the sliders (Manage watchlist, Stock chart, Fold signal-group posts), then the tabs as text: Watchlist · Tweets · Trending · Markets. A row is the name over `$SPX · Index`, and the price over the move in green or red with what it is measured over ("24h", "1D", or the last close for a closed market); a small line of the day while the market is live. Green and red only ever mean a price went up or down.
+- **Prices in posts, as a strip.** A post with cashtags ends in one line of entries: the symbol, a small line of its day, the price and the move. Tapping one opens the ticker. Cashtags in the text stay plain links.
+- **Crypto prices from several sources.** Coins ask Coinbase, Kraken and Binance before Yahoo Finance; a source that refuses rests while the next one answers, so one refusal no longer empties every coin row. Tokens ask DexScreener, then GeckoTerminal.
+- **On a ticker, people you follow first.** Picking a ticker, or opening its page, shows up to ten posts from the last week by accounts you follow under "Accounts you follow", then everyone else.
+- **Indices work.** Every index (`$SPX`, `$NDX`, `$DAX`, …) asked the price service for a symbol it had encoded twice, so it always failed. An index now asks for its index and nothing else, and on a weekend shows Friday's close.
+- **A row says what it is doing**: grey bars while it loads, a closed market's figures in grey, and when the source has no price the row says so, with a retry button.
+- **One symbol, two things.** When a watchlist symbol is both a listing and a coin (`$NDX`: the Nasdaq-100 or Indexed Finance), its row asks which and keeps the pick, for the row, posts and the ticker's page.
+- **The watchlist** ends in **+ Add ticker**, and a long press lifts a row to drag it; the order is kept.
 - **Prices under one** keep four significant digits, and from three zeros on the zeros are counted (`0,0₃1234`). A screen reader hears the number.
-- **A token is named** by its symbol, else its name, else its address cut in the middle (`0x23a2…fe51`), never the whole address.
-- **The bar holds the tabs and a ⋮ menu** with "Manage watchlist"; adding a symbol is a round button over Watchlist and Tweets. The candlestick is in the text colour and the selected tab in the app's accent: green and red only mean a price went up or down.
-- **In Home**, a plugin whose bar is only tabs (Stocks, Hacker News, RSS) opens its menu from ⋮ instead of the sliders, and the menu no longer repeats the tabs.
-- **Posts**: a contract address in any post reads `0x23a2…fe51` and a tap copies all of it; the price chips under a post are small and share a line; posts with a Telegram invite and three or more cashtags go to the end of each page of Tweets and Trend (nothing is hidden).
+- **Tokens and addresses**: a token is named by its symbol, else its name, else its address cut in the middle (`0x23a2…fe51`). An address in a post reads the same way, with its network for a watched token, and a tap copies all of it.
+- **Trending**: a likely signal-group post (a Telegram invite and three or more cashtags) carries an amber banner with **Hide**, which folds it, and "Fold signal-group posts" folds them all. They still go to the end of each page.
 
 ### Threads, read as well as X
 
-- Search Threads posts, and open tags in the app.
-- Save a whole Threads post, with a bookmark on it and its own filter in Saved.
-- A guest profile shows only what Meta reported: no made-up counts, no link to itself, and links in the bio open.
-- Pull to refresh reaches every followed account, the ones answered longest ago first.
-- When Meta says "not now", XTA waits as long as it was told before trying again.
-- Replies can be sorted: Top, Newest, Oldest.
+- **Search** posts by words or a tag. The results page's title is a search field: other words or a #tag search again there, and an @handle or a post link opens that page.
+- **Pictures open in X's viewer** (pull down to close, double-tap to zoom), and several lie along one row, as on X. **Videos** offer every quality Meta sends ("720p"), and the video quality setting picks among them.
+- **The opened post** says its time and date under it, as X's does, and its text can be selected. A conversation opens at the post you tapped, and replies can be sorted: Top, Newest, Oldest.
+- **Every post has a ⋯ button** for its actions, and opens as the card you drag back to the feed.
+- **#tags** in any caption open their posts, and **a quoted post shows its link card**.
+- **Double-tap to like** works on Threads posts too when it is on in Settings → Gestures. Likes stay on this device.
+- **Feeds**: in Following and groups each followed account brings up to ten posts, so one busy account no longer crowds out the rest. A feed opened offline shows Threads posts as Threads cards. Pull to refresh reaches every followed account, the ones answered longest ago first, and followed accounts keep their current name and picture.
+- **Saving**: save a whole Threads post, with a bookmark on it and its own filter in Saved, and keep its pictures and videos offline.
+- **Profiles** show only what Meta reported (no made-up counts, no link to itself), and links in the bio open.
+- When Meta says "not now", XTA waits as long as it was told before trying again. On the desktop, F5 and Ctrl+R refresh the Threads tab.
+
+### Reddit: the thread view, redesigned
+
+- One quiet column: the post with its author, title, media and text; a row of actions (upvote on this device, comments, share, save); "N comments" with the sort; and comments hanging off thin coloured thread lines instead of tinted bubbles.
+- A comment's header folds it ("+N replies" while folded), and its ⋮ holds the author's posts, copy, share and open in browser. The post's author is marked **OP**, comments written since your last visit are marked new, and a removed comment says what happened to it.
+- A round button jumps to the next top-level comment. "Load more comments" no longer repeats a thread already shown.
+
+### Profile and Archive
+
+- **A profile's filters are icons** (all, posts, reposts; photos, videos, broadcasts; likes, bookmarks), each with its name as a tooltip and for screen readers.
+- **The Archive's top, search first**: the title with a lock that says saves stay on this device, a search field that is always there with **Filter and sort** beside it, and one row with the network picker, the folders and a **+** for a new folder. Sorting and selecting in the Archive are now translated in every language.
 
 ### A smaller app: the voice engine downloads with the first voice
 
@@ -28,6 +45,7 @@ The engine that reads downloaded voices aloud was about a third of the phone APK
 ### Also
 
 - Mastodon, Bluesky and Threads posts take the Ink layout in the feed.
+- In Home, a plugin whose bar is only tabs (Hacker News, RSS) opens its menu from ⋮ instead of the sliders, and the menu no longer repeats the tabs.
 - A feed, search tab or media grid that was reset loads again instead of staying empty.
 - Posts that did not change are no longer built again while you scroll.
 
