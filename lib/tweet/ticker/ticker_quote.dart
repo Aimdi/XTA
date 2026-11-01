@@ -5,6 +5,7 @@
 /// fits yields null rather than throwing inside a screen.
 library;
 
+import 'package:xta/tweet/ticker/ticker_symbol.dart';
 import 'package:xta/utils/json.dart';
 
 class TickerPoint {
@@ -44,6 +45,11 @@ DateTime _epoch(int seconds) =>
 /// A print outside regular hours, and which session it belongs to.
 typedef TickerExtendedPrint = ({TickerSession session, double price});
 
+/// What a quote's change is measured against: the previous session's close
+/// (shares, indices), or the price 24 hours earlier (coins and tokens, which
+/// have no close).
+enum TickerChangeWindow { previousClose, rolling24h }
+
 class TickerQuote {
   final String symbol;
   final String? currency;
@@ -80,6 +86,16 @@ class TickerQuote {
   /// Coins trade around the clock, so they are never "closed".
   final bool tradesAroundTheClock;
 
+  /// The host's word for the instrument: `EQUITY`, `INDEX`, `ETF`, … Null
+  /// when it did not say.
+  final String? instrumentType;
+
+  /// When the latest regular-session price was set: the close a closed market
+  /// shows, and the day it is from.
+  final DateTime? regularMarketTime;
+
+  final TickerChangeWindow changeWindow;
+
   final List<TickerPoint> points;
 
   const TickerQuote({
@@ -102,7 +118,56 @@ class TickerQuote {
     this.regularPeriod,
     this.postPeriod,
     this.tradesAroundTheClock = false,
+    this.instrumentType,
+    this.regularMarketTime,
+    this.changeWindow = TickerChangeWindow.previousClose,
   });
+
+  /// What the instrument is, from [instrumentType]. Null for a type the badge
+  /// has no word for.
+  TickerKind? get kind => switch (instrumentType) {
+    'INDEX' => TickerKind.marketIndex,
+    'EQUITY' => TickerKind.stock,
+    'ETF' => TickerKind.etf,
+    'CRYPTOCURRENCY' => TickerKind.crypto,
+    'MUTUALFUND' => TickerKind.fund,
+    'FUTURE' => TickerKind.future,
+    'CURRENCY' => TickerKind.currency,
+    _ => tradesAroundTheClock ? TickerKind.crypto : null,
+  };
+
+  /// This quote measured over the last 24 hours of its bars rather than
+  /// against [previousClose]: the price, the bars of the last day, and the
+  /// close of the bar 24 hours before the last as the reference. Itself when
+  /// the bars do not reach back that far.
+  TickerQuote rolling24h() {
+    final last = points.lastOrNull;
+    if (last == null) return this;
+    final cutoff = last.at.subtract(const Duration(hours: 24));
+    final before = points.lastWhere(
+      (point) => !point.at.isAfter(cutoff),
+      orElse: () => last,
+    );
+    if (identical(before, last)) return this;
+    return TickerQuote(
+      symbol: symbol,
+      currency: currency,
+      price: price ?? last.close,
+      previousClose: before.close,
+      points: [
+        for (final point in points)
+          if (!point.at.isBefore(before.at)) point,
+      ],
+      volume: volume,
+      yearHigh: yearHigh,
+      yearLow: yearLow,
+      shortName: shortName,
+      tradesAroundTheClock: tradesAroundTheClock,
+      instrumentType: instrumentType,
+      regularMarketTime: regularMarketTime,
+      changeWindow: TickerChangeWindow.rolling24h,
+    );
+  }
 
   double? get change {
     final now = price ?? points.lastOrNull?.close;
@@ -209,11 +274,15 @@ class TickerQuote {
   /// timestamp — so points are only kept where both halves are present. The
   /// stepping is [Json], which cannot throw: a payload that no longer fits
   /// simply reads as nothing and yields null at the end.
+  ///
+  /// A day without a session has no bars, but the host still quotes the last
+  /// price and the close before it: that is a quote, without a sparkline.
+  /// Reading it as no quote at all sent the lookup on to the next candidate.
   static TickerQuote? fromChartJson(Object? json, {required String symbol}) {
     final result = Json(json)['chart']['result'][0];
     final meta = result['meta'];
     final points = _pointsFrom(result);
-    if (points.isEmpty) {
+    if (points.isEmpty && meta['regularMarketPrice'].number == null) {
       return null;
     }
     final periods = meta['currentTradingPeriod'];
@@ -240,6 +309,11 @@ class TickerQuote {
       regularPeriod: regular,
       postPeriod: TickerTradingPeriod.fromJson(periods['post']),
       tradesAroundTheClock: meta['instrumentType'].string == 'CRYPTOCURRENCY',
+      instrumentType: meta['instrumentType'].string,
+      regularMarketTime: switch (meta['regularMarketTime'].integer) {
+        final seconds? => _epoch(seconds),
+        null => null,
+      },
     );
   }
 

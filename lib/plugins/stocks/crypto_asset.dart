@@ -26,7 +26,21 @@ class CryptoAsset {
   });
 
   String get id => 'crypto:${chain.toLowerCase()}:${canonicalAddress(address)}';
-  String get label => '\$$symbol';
+
+  /// [fromJson] fills in the address for a symbol or name the token lacks.
+  bool get _hasSymbol => symbol != address;
+  bool get _hasName => name != address;
+
+  /// `$PEPE`; a token without a symbol goes by its name, else by its address
+  /// cut in the middle, never by the whole address cut at the end.
+  String get label => _hasSymbol ? '\$$symbol' : nameOrAddress;
+
+  /// The token's name, else its address cut in the middle.
+  String get nameOrAddress => _hasName ? name : shortAddress;
+
+  /// [label] with the name beside it when that adds something: `$PEPE · Pepe`.
+  String get fullLabel => _hasSymbol && _hasName ? '$label · $name' : label;
+
   String get chainName => cryptoChainName(chain);
   String get shortAddress => shortCryptoAddress(address);
   String get subtitle => '$chainName · $shortAddress';
@@ -128,6 +142,7 @@ class CryptoMarket {
     volume: volume24h,
     points: const [],
     tradesAroundTheClock: true,
+    changeWindow: TickerChangeWindow.rolling24h,
   );
 }
 

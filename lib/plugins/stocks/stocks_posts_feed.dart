@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_session.dart';
+import 'package:xta/plugins/stocks/stocks_signal_posts.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 
 /// Posts about the watchlist (or one filtered ticker), owned as its own feed
-/// so changing the query remounts a fresh [TweetFeedController].
+/// so changing the query remounts a fresh [TweetFeedController]. Each page
+/// puts signal-group posts last ([signalGroupPostsLast]).
 class StocksPostsFeed extends StatefulWidget {
   final String query;
   final Future<void> Function() onRefreshQuotes;
@@ -36,7 +38,7 @@ class StocksPostsFeedState extends State<StocksPostsFeed> {
 
   Future<TweetPageResult> _loadPage(String? cursor) async {
     final result = await Twitter.searchTweets(widget.query, true, cursor: cursor);
-    return (chains: result.chains, nextCursor: result.cursorBottom);
+    return (chains: signalGroupPostsLast(result.chains), nextCursor: result.cursorBottom);
   }
 
   @override

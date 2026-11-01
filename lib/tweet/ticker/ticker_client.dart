@@ -42,16 +42,22 @@ class TickerClient {
 
   /// [includePrePost] adds the pre-market and after-hours bars, which is how
   /// an extended-hours print reaches a tape that only has the chart host.
+  ///
+  /// The symbol is a path segment, encoded once: `^NDX` goes out as `%5ENDX`.
+  /// Encoding it by hand before handing it to [Uri.https] sent `%255ENDX`,
+  /// which names no symbol, so every index failed and fell through to a
+  /// `-USD` token of the same letters.
   static Uri chartUri(
     String symbol, {
     String range = '1mo',
     String interval = '1d',
     bool includePrePost = false,
   }) {
-    return Uri.https(
-      _host,
-      '/v8/finance/chart/${Uri.encodeComponent(symbol.toUpperCase())}',
-      {
+    return Uri(
+      scheme: 'https',
+      host: _host,
+      pathSegments: ['v8', 'finance', 'chart', symbol.toUpperCase()],
+      queryParameters: {
         'range': range,
         'interval': interval,
         if (includePrePost) 'includePrePost': 'true',
@@ -68,9 +74,10 @@ class TickerClient {
   }
 
   static Uri trendingUri({String region = 'US'}) {
-    return Uri.https(
-      _host,
-      '/v1/finance/trending/${Uri.encodeComponent(region)}',
+    return Uri(
+      scheme: 'https',
+      host: _host,
+      pathSegments: ['v1', 'finance', 'trending', region],
     );
   }
 

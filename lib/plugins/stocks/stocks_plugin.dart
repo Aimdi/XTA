@@ -33,6 +33,10 @@ class StocksPlugin extends XtaPlugin {
   @override
   Color get brandColor => const Color(0xFF00C805);
 
+  /// Green on these pages means a price went up, never "selected".
+  @override
+  bool get brandsChrome => false;
+
   @override
   String? get homeTabPrefKey => optionPluginStocksShowTab;
 

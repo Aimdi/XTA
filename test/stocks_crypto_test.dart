@@ -10,6 +10,7 @@ import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_search_store.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_query.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
+import 'package:xta/utils/json.dart';
 
 const _addressA = '0x1111111111111111111111111111111111111111';
 const _addressB = '0x2222222222222222222222222222222222222222';
@@ -113,9 +114,22 @@ void main() {
     expect(CryptoClient.searchUri(r'$PEPE').queryParameters['q'], 'PEPE');
   });
 
+  test('a token is named by its symbol, else its name, else its address cut in the middle', () {
+    const address = '0x23a2b8f3c1d4e5f60718293a4b5c6d7e8f90fe51';
+    CryptoAsset asset(Map<String, String> fields) =>
+        CryptoAsset.fromJson(Json({'chain': 'base', 'address': address, ...fields}))!;
+
+    expect(asset({}).label, '0x23a2…fe51', reason: 'never the whole address cut at the end');
+    expect(asset({}).nameOrAddress, '0x23a2…fe51');
+    expect(asset({'name': 'Lumen'}).label, 'Lumen');
+    expect(asset({'symbol': 'LUM', 'name': 'Lumen'}).label, r'$LUM');
+    expect(asset({'symbol': 'LUM', 'name': 'Lumen'}).fullLabel, r'$LUM · Lumen');
+    expect(asset({}).fullLabel, '0x23a2…fe51');
+  });
+
   test('tiny token prices remain nonzero and useful', () {
-    expect(stockPrice(0.0000000123), contains('123'));
-    expect(stockPrice(0.000000000000123), contains('e-13'));
+    expect(stockPrice(0.0000000123), '0.0₇1230');
+    expect(stockPrice(0.000000000000123), '0.0₁₂1230');
     expect(stockPrice(0), '0.00');
   });
 

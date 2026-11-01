@@ -15,7 +15,8 @@ import 'package:xta/speech/voice_download_store.dart';
 OfflineSpeechEngine createOfflineSpeechEngine(VoiceDownloadStore voices, BasePrefService prefs) => OfflineSpeechEngine(
   voiceFor: voices.installedFor,
   enabled: () => prefs.get<bool>(optionTtsOfflineVoice) ?? true,
-  load: (installed) async => SherpaVoiceSynthesizer.load(installed, clips: await _freshClipFolder()),
+  load: (installed) async =>
+      SherpaVoiceSynthesizer.load(installed, clips: await _freshClipFolder(), engine: voices.engine.loadFrom),
   player: ContinuityClipPlayer(),
   discard: _deleteQuietly,
   appLanguage: () => Intl.shortLocale(Intl.getCurrentLocale()),

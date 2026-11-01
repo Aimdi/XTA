@@ -50,8 +50,11 @@ class PluginCompactHeader extends StatelessWidget {
               constraints.maxWidth - reserved - (showPrimary ? 48 : 0),
             );
             final background = Theme.of(context).scaffoldBackgroundColor;
-            final color = ensureContrast(plugin.brandColor, background);
+            final color = plugin.brandsChrome ? ensureContrast(plugin.brandColor, background) : null;
             final markColor = ensureContrast(pluginMarkTint(context, plugin), background);
+            // A bar that is only tabs opens a menu, not filters, and its sheet
+            // leaves out the tabs the bar already shows.
+            final tabsOnly = tabs.isNotEmpty && reading == null && following == null && navigation?.leading == null;
             return IconButtonTheme(
               data: const IconButtonThemeData(style: pluginActionButtonStyle),
               child: Padding(
@@ -96,6 +99,8 @@ class PluginCompactHeader extends StatelessWidget {
                       services: services,
                       includeActions: true,
                       includeSearch: true,
+                      showSections: !tabsOnly,
+                      overflow: tabsOnly,
                       pinnable: true,
                       attention: [navigation, reading, following].any((content) => content?.attention ?? false),
                     ),

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:archive/archive.dart';
-import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -12,35 +10,7 @@ import 'package:xta/speech/offline_voice_catalog.dart';
 import 'package:xta/speech/voice_archive.dart';
 import 'package:xta/speech/voice_download_store.dart';
 
-const _root = 'vits-test-voice';
-
-/// A voice archive shaped like k2-fsa's: one folder holding the model, the
-/// tokens and espeak-ng data.
-List<int> voiceArchive({Map<String, String>? files}) {
-  final archive = Archive()..add(ArchiveFile.directory('$_root/'));
-  final contents = files ?? {'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'};
-  for (final entry in contents.entries) {
-    archive.add(ArchiveFile.string(entry.key, entry.value));
-  }
-  return BZip2Encoder().encodeBytes(TarEncoder().encodeBytes(archive));
-}
-
-Map<String, String> under(Map<String, String> files) => {
-  for (final entry in files.entries) '$_root/${entry.key}': entry.value,
-};
-
-OfflineVoice testVoice(List<int> archive, {String? checksum}) => OfflineVoice(
-  id: 'xx-test',
-  name: 'Test',
-  locale: 'de_DE',
-  url: Uri.https('github.com', '/k2-fsa/test.tar.bz2'),
-  archiveBytes: archive.length,
-  sha256: checksum ?? sha256.convert(archive).toString(),
-  licence: 'CC0-1.0',
-  kind: VoiceModelKind.vits,
-  archiveRoot: _root,
-  model: 'voice.onnx',
-);
+import 'support/voice_fixtures.dart';
 
 void main() {
   late Directory temp;
@@ -139,7 +109,7 @@ void main() {
     final archive = voiceArchive(
       files: {
         ...under({'voice.onnx': 'model', 'tokens.txt': 'a 1', 'espeak-ng-data/phontab': 'phonemes'}),
-        '$_root/../../escaped.txt': 'gotcha',
+        '$testVoiceRoot/../../escaped.txt': 'gotcha',
       },
     );
     final voice = testVoice(archive);
@@ -166,7 +136,7 @@ void main() {
       sha256: null,
       licence: 'CC0-1.0',
       kind: VoiceModelKind.vits,
-      archiveRoot: _root,
+      archiveRoot: testVoiceRoot,
       model: 'voice.onnx',
     );
     installVoiceArchive(file.path, unchecked, voices.path);

@@ -159,11 +159,6 @@ class _TokenHit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final asset = market.asset;
-    return StocksQuoteRow(
-      title: '${asset.label} · ${asset.name}',
-      subtitle: asset.subtitle,
-      quote: market.quote,
-      onTap: onTap,
-    );
+    return StocksQuoteRow(title: asset.fullLabel, subtitle: asset.subtitle, quote: market.quote, onTap: onTap);
   }
 }

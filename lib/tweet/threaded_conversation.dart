@@ -209,16 +209,12 @@ class ThreadIndent extends StatelessWidget {
   final bool connectBottom;
   final Widget child;
 
-  /// Where [child] draws its avatar, for the rail to run through it.
-  final ThreadRailGeometry geometry;
-
   const ThreadIndent({
     super.key,
     required this.depth,
     required this.child,
     this.connectTop = false,
     this.connectBottom = false,
-    this.geometry = kPostRailGeometry,
   });
 
   @override
@@ -235,9 +231,7 @@ class ThreadIndent extends StatelessWidget {
           // Positioned for the same reason as the feed's thread rail: left
           // unpositioned it is the only thing sizing the Stack, and in a list
           // that means infinitely tall.
-          Positioned.fill(
-            child: ThreadRailLines(connectTop: connectTop, connectBottom: connectBottom, geometry: geometry),
-          ),
+          Positioned.fill(child: ThreadRailLines(connectTop: connectTop, connectBottom: connectBottom)),
           child,
         ],
       ),

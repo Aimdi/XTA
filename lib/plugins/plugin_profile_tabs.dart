@@ -71,7 +71,7 @@ class PluginProfileTabBar extends StatelessWidget {
   }
 }
 
-/// “Replying to @handle” chrome official clients put above a reply.
+/// “Replying to @handle” under a reply's author line, as on X.
 class PluginReplyingTo extends StatelessWidget {
   const PluginReplyingTo({super.key, required this.name});
 
@@ -84,7 +84,7 @@ class PluginReplyingTo extends StatelessWidget {
     }
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(top: 4),
       child: Text(
         L10n.of(context).plugin_replying_to(name),
         maxLines: 1,

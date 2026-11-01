@@ -10,6 +10,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/errors.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/read_recovery.dart';
@@ -185,6 +186,37 @@ void main() {
     expect(surface.retries, 1);
     expect(lookups, 2);
     await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('a Threads throttle waits for its cooldown, not seconds', (tester) async {
+    ThreadsException throttled() =>
+        ThreadsException(ThreadsErrorKind.throttled, '429', retryAt: DateTime.now().add(const Duration(seconds: 90)));
+    final surface = _Surface(throttled(), outcome: throttled);
+    addTearDown(surface.dispose);
+    await _show(tester, _app(surface.recovery()));
+    await tester.pump(const Duration(seconds: 88));
+    expect(surface.retries, 0);
+    await tester.pump(const Duration(seconds: 4));
+    expect(surface.retries, 1);
+    await tester.pump(const Duration(minutes: 30));
+    expect(surface.retries, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('a Threads read without a setup or a session waits for the reader', (tester) async {
+    for (final kind in [
+      ThreadsErrorKind.notConfigured,
+      ThreadsErrorKind.unauthorized,
+      ThreadsErrorKind.sessionSuspended,
+      ThreadsErrorKind.throttled,
+    ]) {
+      final surface = _Surface(ThreadsException(kind, 'no'));
+      await _show(tester, _app(surface.recovery()));
+      await tester.pump(const Duration(minutes: 10));
+      expect(surface.retries, 0, reason: '$kind');
+      await tester.pumpWidget(const SizedBox.shrink());
+      await surface.dispose();
+    }
   });
 
   testWidgets('a rate limit without a known reset stays manual', (tester) async {

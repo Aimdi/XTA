@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -7,10 +9,13 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_ui.dart';
 import 'package:xta/speech/offline_voice_catalog.dart';
 import 'package:xta/speech/voice_download_store.dart';
+import 'package:xta/speech/voice_engine.dart';
+import 'package:xta/speech/voice_engine_store.dart';
 import 'package:xta/utils/native_locale_names.dart';
 
 /// "Downloaded voices" in the read-aloud settings: the catalog, what is on
-/// the device, and the switch that lets reading aloud use them.
+/// the device, the engine that runs the voices where it is downloaded, and the
+/// switch that lets reading aloud use them.
 class OfflineVoicesSection extends StatelessWidget {
   final VoiceDownloadStore store;
 
@@ -19,13 +24,15 @@ class OfflineVoicesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final theme = Theme.of(context);
+    final engine = store.engine;
+    // What is already on the device, read once: local files only.
+    unawaited(store.ensureLoaded());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Text(l10n.tts_offline_voices, style: theme.textTheme.labelLarge),
+          child: Text(l10n.tts_offline_voices, style: Theme.of(context).textTheme.labelLarge),
         ),
         LabeledPref(
           child: PrefSwitch(
@@ -34,23 +41,30 @@ class OfflineVoicesSection extends StatelessWidget {
             subtitle: Text(l10n.tts_offline_voices_use_description),
           ),
         ),
-        ScopedBuilder<VoiceDownloadStore, Map<String, VoiceInstall>>(
-          store: store,
-          onState: (context, _) => Column(
-            children: [
-              for (final voice in store.catalog)
-                OfflineVoiceTile(voice: voice, install: store.installOf(voice.id), store: store),
-            ],
+        ScopedBuilder<VoiceEngineStore, VoiceInstall>(
+          store: engine,
+          onState: (context, install) => ScopedBuilder<VoiceDownloadStore, Map<String, VoiceInstall>>(
+            store: store,
+            onState: (context, _) => Column(
+              children: [
+                if (!engine.bundled) VoiceEngineTile(engine: engine, install: install),
+                for (final voice in store.catalog)
+                  OfflineVoiceTile(voice: voice, install: store.installOf(voice.id), store: store),
+              ],
+            ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-          child: Text(
-            l10n.tts_offline_voices_note,
-            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-        ),
+        _note(context, l10n.tts_offline_voices_note),
+        if (!engine.bundled) _note(context, l10n.tts_offline_engine_note),
       ],
+    );
+  }
+
+  Widget _note(BuildContext context, String text) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      child: Text(text, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
     );
   }
 }
@@ -65,19 +79,114 @@ class OfflineVoiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final engine = store.engine;
+    return OfflineDownloadTile(
+      title: voice.name,
+      details: [
+        nativeLocaleNameOf(voice.locale) ?? voice.locale,
+        offlineBytes(context, voice.archiveBytes),
+        l10n.tts_offline_voice_licence(voice.licence),
+      ].join(' · '),
+      install: install,
+      expectedBytes: voice.archiveBytes,
+      note: install is VoiceReady && !engine.usable ? l10n.tts_offline_voice_needs_engine : null,
+      archiveFailure: l10n.tts_offline_voice_failed_archive,
+      deleteQuestion: l10n.tts_offline_voice_delete_question(voice.name),
+      deleteDescription: l10n.tts_offline_voice_delete_description,
+      onDownload: engine.available ? () => store.download(voice) : null,
+      onCancel: () => store.cancel(voice.id),
+      onDelete: () => store.delete(voice),
+    );
+  }
+}
+
+/// The engine that runs the voices, where it is downloaded rather than in the
+/// app (docs/specs/downloadable-voice-engine.md).
+class VoiceEngineTile extends StatelessWidget {
+  final VoiceEngineStore engine;
+  final VoiceInstall install;
+
+  const VoiceEngineTile({super.key, required this.engine, required this.install});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final package = engine.package;
+    return OfflineDownloadTile(
+      title: l10n.tts_offline_engine,
+      details: [
+        'sherpa-onnx $voiceEngineVersion',
+        if (package != null) offlineBytes(context, package.archiveBytes),
+        l10n.tts_offline_voice_licence(voiceEngineLicences),
+      ].join(' · '),
+      install: install,
+      expectedBytes: package?.archiveBytes ?? 0,
+      note: engine.available ? null : l10n.tts_offline_engine_unavailable,
+      archiveFailure: l10n.tts_offline_engine_failed_archive,
+      deleteQuestion: l10n.tts_offline_engine_delete_question,
+      deleteDescription: l10n.tts_offline_engine_delete_description,
+      onDownload: engine.available ? () => engine.download() : null,
+      onCancel: engine.cancel,
+      onDelete: engine.delete,
+    );
+  }
+}
+
+/// A download for reading aloud, a voice or the engine, with its details, where
+/// it stands and what can be done with it right now.
+class OfflineDownloadTile extends StatelessWidget {
+  final String title;
+  final String details;
+  final VoiceInstall install;
+
+  /// The download's size, for progress while the server has not said.
+  final int expectedBytes;
+
+  /// A line under where it stands, when it cannot be used as it is.
+  final String? note;
+
+  final String archiveFailure;
+  final String deleteQuestion;
+  final String deleteDescription;
+
+  /// Null when it cannot be downloaded on this device.
+  final VoidCallback? onDownload;
+  final VoidCallback onCancel;
+  final Future<void> Function() onDelete;
+
+  const OfflineDownloadTile({
+    super.key,
+    required this.title,
+    required this.details,
+    required this.install,
+    required this.expectedBytes,
+    required this.archiveFailure,
+    required this.deleteQuestion,
+    required this.deleteDescription,
+    required this.onDownload,
+    required this.onCancel,
+    required this.onDelete,
+    this.note,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final status = _status(context);
+    final note = this.note;
     final progress = switch (install) {
       VoiceDownloading(:final fraction) => fraction,
       _ => null,
     };
     return ListTile(
-      title: Text(voice.name),
+      title: Text(title),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(_details(context)),
+          Text(details),
           if (status != null) Text(status),
+          if (note != null) Text(note),
           if (install is VoiceDownloading)
             Padding(
               padding: const EdgeInsets.only(top: 6),
@@ -89,25 +198,19 @@ class OfflineVoiceTile extends StatelessWidget {
     );
   }
 
-  String _details(BuildContext context) => [
-    nativeLocaleNameOf(voice.locale) ?? voice.locale,
-    offlineBytes(context, voice.archiveBytes),
-    L10n.of(context).tts_offline_voice_licence(voice.licence),
-  ].join(' · ');
-
   String? _status(BuildContext context) {
     final l10n = L10n.of(context);
     return switch (install) {
       VoiceAbsent() => null,
       VoiceDownloading(:final received, :final total) => l10n.downloads_progress(
         offlineBytes(context, received),
-        offlineBytes(context, total ?? voice.archiveBytes),
+        offlineBytes(context, total ?? expectedBytes),
       ),
       VoiceInstalling() => l10n.tts_offline_voice_installing,
       VoiceReady(:final bytes) => l10n.tts_offline_voice_ready(offlineBytes(context, bytes)),
       VoiceFailed(reason: VoiceFailure.network) => l10n.tts_offline_voice_failed_network,
       VoiceFailed(reason: VoiceFailure.checksum) => l10n.tts_offline_voice_failed_checksum,
-      VoiceFailed(reason: VoiceFailure.archive) => l10n.tts_offline_voice_failed_archive,
+      VoiceFailed(reason: VoiceFailure.archive) => archiveFailure,
     };
   }
 
@@ -117,18 +220,10 @@ class OfflineVoiceTile extends StatelessWidget {
       VoiceAbsent() => IconButton(
         tooltip: l10n.download,
         icon: const Icon(Icons.download_outlined),
-        onPressed: () => store.download(voice),
+        onPressed: onDownload,
       ),
-      VoiceFailed() => IconButton(
-        tooltip: l10n.retry,
-        icon: const Icon(Icons.refresh),
-        onPressed: () => store.download(voice),
-      ),
-      VoiceDownloading() => IconButton(
-        tooltip: l10n.cancel,
-        icon: const Icon(Icons.close),
-        onPressed: () => store.cancel(voice.id),
-      ),
+      VoiceFailed() => IconButton(tooltip: l10n.retry, icon: const Icon(Icons.refresh), onPressed: onDownload),
+      VoiceDownloading() => IconButton(tooltip: l10n.cancel, icon: const Icon(Icons.close), onPressed: onCancel),
       VoiceInstalling() => const SizedBox.square(
         dimension: 48,
         child: Center(child: SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2))),
@@ -146,14 +241,14 @@ class OfflineVoiceTile extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.tts_offline_voice_delete_question(voice.name)),
-        content: Text(l10n.tts_offline_voice_delete_description),
+        title: Text(deleteQuestion),
+        content: Text(deleteDescription),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
           TextButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.delete)),
         ],
       ),
     );
-    if (confirmed == true) await store.delete(voice);
+    if (confirmed == true) await onDelete();
   }
 }

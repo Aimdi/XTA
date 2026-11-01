@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -54,14 +55,17 @@ class SherpaVoiceSynthesizer implements VoiceSynthesizer {
   }
 
   /// Starts the isolate and loads [installed]; throws when it cannot.
-  static Future<VoiceSynthesizer> load(InstalledVoice installed, {required Directory clips}) async {
+  ///
+  /// [engine] is the folder the engine was downloaded to, or null to load the
+  /// one that came with the app (docs/specs/downloadable-voice-engine.md).
+  static Future<VoiceSynthesizer> load(InstalledVoice installed, {required Directory clips, String? engine}) async {
     await clips.create(recursive: true);
     final port = ReceivePort();
     final replies = StreamIterator<Object?>(port);
     try {
       final isolate = await Isolate.spawn(
         _worker,
-        (port.sendPort, installed),
+        (port.sendPort, installed, engine),
         onExit: port.sendPort,
         debugName: 'offline-voice',
       );
@@ -122,11 +126,11 @@ class SherpaVoiceSynthesizer implements VoiceSynthesizer {
 
 /// The isolate: loads the model, then answers synthesis requests until told
 /// to stop with a null message.
-Future<void> _worker((SendPort, InstalledVoice) setup) async {
-  final (replies, installed) = setup;
+Future<void> _worker((SendPort, InstalledVoice, String?) setup) async {
+  final (replies, installed, engine) = setup;
   final sherpa.OfflineTts tts;
   try {
-    sherpa.initBindings();
+    loadVoiceEngine(engine);
     tts = sherpa.OfflineTts(sherpaConfigFor(installed));
   } catch (error) {
     replies.send('$error');
@@ -140,6 +144,17 @@ Future<void> _worker((SendPort, InstalledVoice) setup) async {
   }
   tts.free();
   requests.close();
+}
+
+/// Loads the engine from [folder], where it was downloaded, or the one that
+/// came with the app when [folder] is null.
+///
+/// onnxruntime first: sherpa-onnx needs it, and Android's linker looks for it
+/// among the libraries already loaded before the app's own folder, where a
+/// downloaded engine is not.
+void loadVoiceEngine(String? folder) {
+  if (folder != null) DynamicLibrary.open(p.join(folder, 'libonnxruntime.so'));
+  sherpa.initBindings(folder);
 }
 
 String? _speak(sherpa.OfflineTts tts, OfflineVoice voice, (int, String, double, String) request) {

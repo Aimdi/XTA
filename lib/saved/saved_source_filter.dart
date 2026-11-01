@@ -7,9 +7,13 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/saved/saved_content_index.dart';
 import 'package:xta/ui/reader_swipe_navigation.dart';
 
-enum SavedSource { all, x, reddit, mastodon, bluesky, other }
+enum SavedSource { all, x, reddit, mastodon, bluesky, threads, other }
 
-SavedSource savedSourceOf(SavedContent? content) => content?.plugin != null
+/// A Threads post saved as a link, before Threads posts were saved whole, is still a Threads post.
+SavedSource savedSourceOf(SavedContent? content) =>
+    content?.threads != null || content?.plugin?.source == pluginIdThreads
+    ? SavedSource.threads
+    : content?.plugin != null
     ? SavedSource.other
     : content?.bluesky != null
     ? SavedSource.bluesky
@@ -25,6 +29,7 @@ bool matchesSavedSource(SavedContent? content, SavedSource source) =>
 bool savedContentHasMedia(SavedContent? content) =>
     (content?.plugin?.images.isNotEmpty ?? false) ||
     content?.bluesky?.hasMedia == true ||
+    content?.threads?.hasMedia == true ||
     content?.mastodon?.hasMedia == true ||
     content?.reddit?.hasVisualMedia == true ||
     (content?.tweet?.extendedEntities?.media?.isNotEmpty ?? false) ||
@@ -42,6 +47,7 @@ Widget savedSourceMark(SavedSource source, {double size = 20}) => switch (source
   SavedSource.reddit => _pluginMarkOr(pluginIdReddit, size),
   SavedSource.mastodon => _pluginMarkOr(pluginIdMastodon, size),
   SavedSource.bluesky => _pluginMarkOr(pluginIdBluesky, size),
+  SavedSource.threads => _pluginMarkOr(pluginIdThreads, size),
   SavedSource.other => markIcon(Icons.extension_outlined, size: size),
 };
 
@@ -56,6 +62,7 @@ String savedSourceLabel(L10n l10n, SavedSource source) => switch (source) {
   SavedSource.reddit => l10n.plugin_reddit_title,
   SavedSource.other => l10n.plugin_post_other_sources,
   SavedSource.bluesky => l10n.plugin_bluesky_title,
+  SavedSource.threads => l10n.plugin_threads_title,
   SavedSource.mastodon => l10n.plugin_mastodon_title,
 };
 

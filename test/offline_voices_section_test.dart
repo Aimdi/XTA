@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi' show Abi;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,12 +12,20 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/speech/offline_voice_catalog.dart';
 import 'package:xta/speech/offline_voices_section.dart';
 import 'package:xta/speech/voice_download_store.dart';
+import 'package:xta/speech/voice_engine.dart';
+import 'package:xta/speech/voice_engine_store.dart';
+
+import 'support/voice_engine_fixtures.dart';
 
 final german = offlineVoiceById('de-thorsten-emotional')!;
 final english = offlineVoiceById('en-libritts-r')!;
 
-/// A store whose downloads wait until the test lets them finish.
+/// A store whose downloads wait until the test lets them finish. [engine] is
+/// the voice engine as the device has it; by default it came with the app.
 class Harness {
+  final VoiceEngineStore? engine;
+  Harness({this.engine});
+
   final requested = <Uri>[];
   final cancelled = <String>[];
   final deleted = <String>[];
@@ -32,6 +41,7 @@ class Harness {
       await transferDone.future;
       throw const DownloadCancelled();
     },
+    engine: engine ?? VoiceEngineStore(bundled: true),
   );
 }
 
@@ -169,5 +179,101 @@ void main() {
       expect(box.size.width, greaterThanOrEqualTo(48));
       expect(box.localToGlobal(box.size.bottomRight(Offset.zero)).dx, lessThanOrEqualTo(320));
     }
+  });
+
+  group('where the engine is downloaded (docs/specs/downloadable-voice-engine.md)', () {
+    late Directory engineRoot;
+
+    setUp(() => engineRoot = Directory.systemTemp.createTempSync('voice-engine-'));
+    tearDown(() => engineRoot.deleteSync(recursive: true));
+
+    Finder engineTile() => find.byType(VoiceEngineTile);
+
+    Harness android({bool published = true, VoiceEnginePackage? package}) => harness = Harness(
+      engine: VoiceEngineStore(
+        package: published ? package ?? voiceEngineForAbi(Abi.androidArm64) : null,
+        root: () async => engineRoot,
+      ),
+    );
+
+    testWidgets('the engine has its own row, and the note says where it comes from', (tester) async {
+      await pump(tester, android().store);
+
+      expect(find.descendant(of: engineTile(), matching: find.text('Voice engine')), findsOne);
+      expect(find.text('sherpa-onnx 1.13.8 · 5.7 MiB · License: Apache-2.0, MIT, GPL-3.0'), findsOneWidget);
+      expect(find.textContaining("XTA's releases on GitHub"), findsOneWidget);
+      expect(find.byTooltip('Download'), findsNWidgets(3));
+      expect(harness.requested, isEmpty, reason: 'nothing until a tap');
+    });
+
+    testWidgets('a voice on the device without the engine says it needs it', (tester) async {
+      final store = android().store..update({german.id: VoiceReady('/x', 40 << 20)});
+      await pump(tester, store);
+
+      expect(inTile(german, find.text('Needs the voice engine to read aloud')), findsOne);
+      expect(inTile(english, find.text('Needs the voice engine to read aloud')), findsNothing);
+
+      store.engine.update(VoiceReady(engineRoot.path, 26 << 20));
+      await tester.pump();
+
+      expect(find.text('Needs the voice engine to read aloud'), findsNothing);
+      expect(find.descendant(of: engineTile(), matching: find.text('On this device · 26 MiB')), findsOne);
+    });
+
+    testWidgets('deleting the engine asks first and says what it means for the voices', (tester) async {
+      final store = android().store;
+      final folder = Directory(voiceEngineDirectory(engineRoot.path, store.engine.package!))
+        ..createSync(recursive: true);
+      store.engine.update(VoiceReady(folder.path, 26 << 20));
+      await pump(tester, store);
+
+      await tester.tap(find.descendant(of: engineTile(), matching: find.byTooltip('Delete')));
+      await tester.pumpAndSettle();
+      expect(find.text('Delete the voice engine?'), findsOneWidget);
+      expect(find.text("Downloaded voices can't read aloud until you download it again."), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+      await tester.pumpAndSettle();
+      await settleFiles(tester);
+
+      expect(store.engine.state, isA<VoiceAbsent>());
+      expect(folder.existsSync(), isFalse);
+    });
+
+    testWidgets('a voice and the engine already on the device show as such when the settings open', (tester) async {
+      final package = fakeEnginePackage();
+      final store = android(package: package).store;
+      final folder = Directory(voiceEngineDirectory(engineRoot.path, package))..createSync(recursive: true);
+      for (final MapEntry(key: name, value: bytes) in fakeEngineFiles.entries) {
+        File('${folder.path}/$name').writeAsBytesSync(bytes);
+      }
+      await pump(tester, store);
+      await settleFiles(tester);
+
+      expect(store.engine.state, isA<VoiceReady>());
+      expect(find.descendant(of: engineTile(), matching: find.byTooltip('Delete')), findsOne);
+    });
+
+    testWidgets('where no engine is published, nothing can be downloaded', (tester) async {
+      await pump(tester, android(published: false).store);
+
+      expect(find.descendant(of: engineTile(), matching: find.text('Not available on this device')), findsOne);
+      final downloads = find.byTooltip('Download');
+      expect(downloads, findsNWidgets(3));
+      for (final element in downloads.evaluate()) {
+        final button = find.ancestor(of: find.byWidget(element.widget), matching: find.byType(IconButton)).first;
+        expect(tester.widget<IconButton>(button).onPressed, isNull);
+      }
+    });
+
+    testWidgets('the engine row fits 320 dp at large text', (tester) async {
+      final store = android().store;
+      store.engine.update(const VoiceDownloading(2 << 20, 6023748));
+      await pump(tester, store, scale: 2);
+
+      expect(tester.takeException(), isNull);
+      expect(find.descendant(of: engineTile(), matching: find.byTooltip('Cancel')), findsOne);
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    });
   });
 }

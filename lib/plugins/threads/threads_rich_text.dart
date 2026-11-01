@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
+import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';
 
 final _threadsMention = RegExp(r'(?<![A-Za-z0-9_])@([A-Za-z0-9._]{1,30})');
@@ -83,17 +84,15 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
       case ThreadsFragmentKind.link:
         openLink(context, target);
       case ThreadsFragmentKind.tag:
-        openLink(context, threadsTagSearchUrl(target));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => ThreadsSearchScreen(query: target, tag: true)),
+        );
       case ThreadsFragmentKind.text:
         break;
     }
   }
 }
-
-/// Where Threads lists the posts filed under [tag].
-String threadsTagSearchUrl(String tag) => Uri.parse(
-  'https://www.threads.com/search',
-).replace(queryParameters: {'q': tag, 'serp_type': 'tags'}).toString();
 
 /// The caption as runs to draw: Meta's fragments when it sent them, else plain
 /// text with the @handles and URLs a pattern can find.

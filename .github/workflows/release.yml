@@ -118,6 +118,17 @@ jobs:
             python3 scripts/check_apk_contents.py build/app/outputs/release
           fi
 
+      - name: Make the voice engine archives
+        id: engine
+        # The engine leaves the APKs and downloads with the first voice
+        # (docs/specs/downloadable-voice-engine.md). A tag cut before that
+        # carries it in its APKs and publishes none.
+        run: |
+          if [ -f scripts/voice_engine_archives.py ]; then
+            python3 scripts/voice_engine_archives.py build/app/outputs/release
+            echo "files=build/app/outputs/release/xta-voice-engine-*.tar.xz" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify release APKs and record provenance
         env:
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
@@ -140,6 +151,7 @@ jobs:
             build/app/outputs/release/release-build.json
             build/app/outputs/release/SHA256SUMS
             build/app/outputs/release/xta-*-debug-symbols.zip
+            ${{ steps.engine.outputs.files }}
           fail_on_unmatched_files: true
 
       - name: Publish the release

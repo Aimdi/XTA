@@ -161,6 +161,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   bool _retryingBatches = false;
   String? _batchCursor;
   bool _resumeWhenVisible = false;
+  bool _chunkRefreshWhenVisible = false;
   bool _screenVisible = true;
 
   void _suspendReads() {
@@ -177,6 +178,12 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   void _resumeReads() {
     _screenVisible = true;
+    if (_chunkRefreshWhenVisible) {
+      _chunkRefreshWhenVisible = false;
+      _resumeWhenVisible = false;
+      _applyChunkRefresh();
+      return;
+    }
     if (!_resumeWhenVisible) return;
     _resumeWhenVisible = false;
     if (widget.mediaOnly) {
@@ -583,10 +590,15 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   }
 
   void _applyChunkRefresh() {
+    // Reset, the list asks for its first page again, which a hidden feed refuses: the refresh waits until the
+    // feed is seen.
+    if (!_screenVisible) {
+      _chunkRefreshWhenVisible = true;
+      return;
+    }
     _cancelBatches();
     _batches.reset();
     _batchCursor = null;
-    if (!_screenVisible) _resumeWhenVisible = true;
     _progressivePreview = [];
     _feedController.controller.refresh();
     _mediaPaging?.pagingController.refresh();

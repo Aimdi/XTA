@@ -21,6 +21,12 @@ abstract class XtaPlugin {
   /// service, not a logo asset.
   Color get brandColor;
 
+  /// Whether [brandColor] marks the plugin's chrome: its mark and the tab
+  /// selected in Home's bar. Off where the colour already means something on
+  /// the plugin's own pages, as Stocks' green means a rising price; the mark
+  /// then follows the text colour and the selection the app's accent.
+  bool get brandsChrome => true;
+
   /// When true, the public catalogue never offers this plugin; the store only
   /// surfaces it after “Show private plugins” or once it is already installed.
   bool get isPrivate => false;

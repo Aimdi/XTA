@@ -106,6 +106,38 @@ void main() {
       );
     });
 
+    test('an index symbol is encoded once', () {
+      final uri = TickerClient.chartUri('^ndx', range: '1d', interval: '5m');
+
+      expect(uri.toString(), startsWith('https://query1.finance.yahoo.com'));
+      expect(uri.path, '/v8/finance/chart/%5ENDX', reason: 'not %255ENDX');
+      expect(uri.pathSegments.last, '^NDX');
+    });
+
+    test('an index that does not answer never becomes a pair', () async {
+      final asked = <String>[];
+      final client = TickerClient(
+        httpClient: MockClient((request) async {
+          asked.add(request.url.pathSegments.last);
+          return request.url.path.endsWith('-USD')
+              ? http.Response(_chart('NDX-USD'), 200)
+              : http.Response('no', 404);
+        }),
+      );
+
+      await expectLater(
+        client.fetchQuote('NDX'),
+        throwsA(
+          isA<TickerException>().having(
+            (e) => e.kind,
+            'kind',
+            TickerErrorKind.notFound,
+          ),
+        ),
+      );
+      expect(asked, ['^NDX'], reason: 'NDX-USD is a token, not the index');
+    });
+
     test('the range and interval reach the request', () {
       final uri = TickerClient.chartUri('AAPL', range: '5d', interval: '30m');
 

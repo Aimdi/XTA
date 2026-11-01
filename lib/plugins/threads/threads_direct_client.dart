@@ -218,6 +218,7 @@ class ThreadsDirectClient {
         throw ThreadsException(
           ThreadsErrorKind.sessionSuspended,
           'cooling down until $until',
+          retryAt: until,
         );
       }
     }
@@ -264,7 +265,7 @@ class ThreadsDirectClient {
   /// Written to preferences as well as held here: a cooldown that only lives in
   /// memory ends the moment the reader force-quits, and coming straight back
   /// for more is exactly what turns a throttle into a ban.
-  void _armCooldown([Duration length = const Duration(minutes: 30)]) {
+  DateTime _armCooldown([Duration length = const Duration(minutes: 30)]) {
     final until = DateTime.now().add(length);
     _cooldownUntil = until;
     // `set` is a FutureOr, and this is called from a synchronous throw path.
@@ -276,6 +277,7 @@ class ThreadsDirectClient {
         ),
       ),
     );
+    return until;
   }
 
   Future<http.Response> _get(
@@ -315,8 +317,11 @@ class ThreadsDirectClient {
         body.contains('login_required') || body.contains('logout_reason');
     if (response.statusCode == 429 ||
         body.contains('Please wait a few minutes')) {
-      _armCooldown();
-      throw ThreadsException(ThreadsErrorKind.throttled, '$uri: rate limited');
+      throw ThreadsException(
+        ThreadsErrorKind.throttled,
+        '$uri: rate limited',
+        retryAt: _armCooldown(),
+      );
     }
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
@@ -716,6 +721,21 @@ class ThreadsDirectClient {
     return parseThreadsSsrReplies(body, key);
   }
 
+  /// What Threads' public search finds for [query], as a logged-out browser
+  /// sees it: the top posts, or the most recent with [recent]; with [tag],
+  /// the posts filed under that topic. One page: it names no cursor a guest
+  /// can follow.
+  Future<List<ThreadsPost>> searchGuestPosts(
+    String query, {
+    bool tag = false,
+    bool recent = false,
+  }) async {
+    final body = await _guestHtml(
+      threadsSearchUri(query, tag: tag, recent: recent),
+    );
+    return threadsSearchResults(body, query, tag: tag);
+  }
+
   Future<String> _fetchProfileHtml(String handle) {
     final key = handle.trim().toLowerCase();
     return _profileHtmlInFlight.putIfAbsent(key, () async {
@@ -739,13 +759,21 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.noSuchFeed, '$uri: 404');
     }
     if (response.statusCode == 429) {
-      throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
+      throw _guestThrottled(uri);
     }
     if (response.statusCode != 200) {
       throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: ${response.statusCode}');
     }
     return utf8.decode(response.bodyBytes, allowMalformed: true);
   }
+
+  /// A guest read Meta refused for now. It has no session to park, so it
+  /// waits as long as any limit without a stated reset does.
+  ThreadsException _guestThrottled(Uri uri) => ThreadsException(
+    ThreadsErrorKind.throttled,
+    '$uri: 429',
+    retryAt: DateTime.now().add(rateLimitFallback),
+  );
 
   Future<List<ThreadsPost>> _fetchGuestGraphqlThreads({
     required String handle,
@@ -782,7 +810,7 @@ class ThreadsDirectClient {
     );
 
     if (response.statusCode == 429) {
-      throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
+      throw _guestThrottled(uri);
     }
     if (response.statusCode != 200) {
       throw ThreadsException(

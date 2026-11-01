@@ -12,6 +12,7 @@ import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
+import 'package:xta/plugins/threads/threads_rich_text.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
@@ -254,6 +255,15 @@ class ThreadsProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
+    // Only the counts Meta told: a guest is not told whom a profile follows.
+    final counts = [
+      for (final (count, label) in [
+        (profile.followerCount, l10n.followers),
+        (profile.followingCount, l10n.following),
+        (profile.mediaCount, l10n.tweets),
+      ])
+        if (count != null) _count(context, compactCount(count), label),
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +335,10 @@ class ThreadsProfileCard extends StatelessWidget {
         ),
         if (profile.biography.trim().isNotEmpty) ...[
           const SizedBox(height: 14),
-          Text(profile.biography.trim(), style: theme.textTheme.bodyMedium),
+          ThreadsCaption(
+            text: profile.biography.trim(),
+            style: theme.textTheme.bodyMedium!,
+          ),
         ],
         if (profile.externalUrl != null) ...[
           const SizedBox(height: 8),
@@ -351,24 +364,10 @@ class ThreadsProfileCard extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 14),
-        Wrap(
-          spacing: 18,
-          runSpacing: 6,
-          children: [
-            _count(
-              context,
-              compactCount(profile.followerCount),
-              l10n.followers,
-            ),
-            _count(
-              context,
-              compactCount(profile.followingCount),
-              l10n.following,
-            ),
-            _count(context, compactCount(profile.mediaCount), l10n.tweets),
-          ],
-        ),
+        if (counts.isNotEmpty) ...[
+          const SizedBox(height: 14),
+          Wrap(spacing: 18, runSpacing: 6, children: counts),
+        ],
         if (onFollow != null) ...[
           const SizedBox(height: 18),
           SizedBox(

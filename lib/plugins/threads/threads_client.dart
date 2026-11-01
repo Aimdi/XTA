@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
 import 'package:xta/plugins/threads/threads_models.dart';
+import 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/utils/json.dart';
 
 /// Why a Threads read could not be served, in the terms the screen explains it.
@@ -28,11 +29,26 @@ enum ThreadsErrorKind {
   sessionSuspended,
 }
 
-class ThreadsException implements Exception {
+class ThreadsException implements Exception, ReadRetryAdvice {
   final ThreadsErrorKind kind;
   final String message;
 
-  ThreadsException(this.kind, this.message);
+  /// When Meta said to come back: the end of the cooldown a throttle armed.
+  @override
+  final DateTime? retryAt;
+
+  ThreadsException(this.kind, this.message, {this.retryAt});
+
+  /// A throttle waits for its cooldown, and without one for the reader: asking
+  /// again within seconds is how a throttle becomes a ban. A missing setup or a
+  /// lost session waits for the reader; a host that did not answer is tried
+  /// again on the usual backoff.
+  @override
+  ReadRetry get readRetry => switch (kind) {
+    ThreadsErrorKind.unreachable || ThreadsErrorKind.noSuchFeed => ReadRetry.backoff,
+    _ when retryAt != null => ReadRetry.atReset,
+    _ => ReadRetry.manual,
+  };
 
   @override
   String toString() => 'ThreadsException{$kind: $message}';

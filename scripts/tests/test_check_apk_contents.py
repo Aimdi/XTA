@@ -21,8 +21,13 @@ def write_apk(directory, name, entries, compressed=()):
 class CheckApkContentsTest(unittest.TestCase):
     def test_apks_without_unloaded_libraries_pass(self):
         with tempfile.TemporaryDirectory() as directory:
-            write_apk(directory, "xta.apk", ["lib/arm64-v8a/libapp.so", "lib/arm64-v8a/libsherpa-onnx-c-api.so"])
+            write_apk(directory, "xta.apk", ["lib/arm64-v8a/libapp.so", "lib/arm64-v8a/libmpv.so"])
             self.assertEqual(contents.check(directory), [])
+
+    def test_the_downloaded_voice_engine_is_reported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            write_apk(directory, "xta.apk", ["lib/arm64-v8a/libonnxruntime.so", "lib/arm64-v8a/libsherpa-onnx-c-api.so"])
+            self.assertEqual(contents.check(directory), ["xta.apk carries libonnxruntime.so, libsherpa-onnx-c-api.so"])
 
     def test_each_unloaded_library_is_reported_by_apk(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -56,7 +61,11 @@ class CheckApkContentsTest(unittest.TestCase):
         reference = os.environ.get("XTA_REFERENCE_APK")
         if not reference:
             self.skipTest("Set XTA_REFERENCE_APK to a published release APK")
-        self.assertEqual(contents.unloaded_libraries(Path(reference)), ["libsherpa-onnx-cxx-api.so", "libsqlite3.so"])
+        # aimdi175 still carried the voice engine, which now downloads with the first voice.
+        self.assertEqual(
+            contents.unloaded_libraries(Path(reference)),
+            ["libonnxruntime.so", "libsherpa-onnx-c-api.so", "libsherpa-onnx-cxx-api.so", "libsqlite3.so"],
+        )
         self.assertEqual(contents.compressed_libraries(Path(reference)), [])
 
 

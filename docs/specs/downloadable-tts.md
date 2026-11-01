@@ -4,7 +4,8 @@ Status: **implemented** (branch `offline-voice`) with `sherpa_onnx` 1.13.8 and
 two Piper voices. The maintainer accepted the GPL-3.0 espeak-ng in the APK
 ("Fine with GPL and you have the option inside the app to download it").
 Section 7 describes what was built; section 8 lists what still needs an APK
-build or a phone.
+build or a phone. The engine has since left the APK and downloads with the
+first voice: `docs/specs/downloadable-voice-engine.md`.
 
 Reader request: "TTS in Substack doesn't work. Can't I just download a good TTS
 into XTA and it just uses this one?"

@@ -114,6 +114,7 @@ class _QuoteHeader extends StatelessWidget {
       children: [
         Text(
           price == null ? kStockPlaceholder : stockPrice(price),
+          semanticsLabel: price == null ? null : stockPriceSpoken(price),
           style: theme.textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800, fontFeatures: kStockFigures),
         ),
         if (quote.currency != null)
@@ -184,6 +185,7 @@ class _ExtendedLine extends StatelessWidget {
           Text(label, style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
           Text(
             stockPrice(extended.price),
+            semanticsLabel: stockPriceSpoken(extended.price),
             style: theme.textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w700, fontFeatures: kStockFigures),
           ),
           if (percent != null)

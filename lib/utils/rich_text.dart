@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:flutter/gestures.dart';
@@ -13,6 +15,8 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/_entities.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/plugins/stocks/crypto_address.dart';
+import 'package:xta/plugins/stocks/crypto_copy.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/utils/urls.dart';
 
@@ -37,8 +41,12 @@ class RichTextPart {
 }
 
 // Compiled once: this runs per text segment of every tweet scrolled in, and
-// Dart does not cache RegExp construction.
-final _mentionOrHashtag = RegExp(r'(#|(?<=\W|^)@)\w+');
+// Dart does not cache RegExp construction. Group 1 is a mention's or a
+// hashtag's sign; group 2 a word shaped like a contract address, which no
+// entity marks.
+final _mentionHashtagOrAddress = RegExp(
+  r'(#|(?<=\W|^)@)\w+|(?<!\w)(0x[0-9a-fA-F]{40}|[1-9A-HJ-NP-Za-km-z]{32,44})(?!\w)',
+);
 final _unescape = HtmlUnescape();
 
 /// Text as it reads, not as X sends it: `&gt;`, `&lt;` and `&amp;` come back
@@ -292,10 +300,15 @@ void _addTextRuns(
   }
 
   text.splitMapJoin(
-    _mentionOrHashtag,
+    _mentionHashtagOrAddress,
     onMatch: (match) {
       final full = match.group(0);
       final kind = match.group(1);
+      final address = match.group(2);
+      if (address != null) {
+        parts.add(_addressPart(context, spanContext, address));
+        return address;
+      }
       if (kind == null || full == null) {
         return '';
       }
@@ -348,6 +361,29 @@ void _addTextRuns(
       }
       return piece;
     },
+  );
+}
+
+/// A contract address in a post: 42 characters that took two lines, shown
+/// cut in the middle as a link that copies the whole of it. A long word that
+/// only looks like one (no digit in it) stays text.
+RichTextPart _addressPart(
+  BuildContext context,
+  EntitySpanContext spanContext,
+  String word,
+) {
+  if (detectCryptoAddress(word) == null) {
+    return RichTextPart(null, word);
+  }
+  return RichTextPart(
+    TextSpan(
+      text: shortCryptoAddress(word),
+      style: spanContext.linkStyle,
+      recognizer: spanContext.recognizer(
+        () => unawaited(copyContractAddress(context, word)),
+      ),
+    ),
+    null,
   );
 }
 

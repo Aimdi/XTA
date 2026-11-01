@@ -75,10 +75,19 @@ enum ReadRetry {
   manual,
 }
 
+/// A failure that says how it may be retried, for a network whose errors this file does not know.
+abstract interface class ReadRetryAdvice {
+  ReadRetry get readRetry;
+
+  /// With [ReadRetry.atReset], when the network said to come back; null when it did not say.
+  DateTime? get retryAt;
+}
+
 /// X's own answers that a retry cannot change: private, missing, suspended, forbidden.
 const _definitiveTwitterErrors = [-1, 22, 34, 50, 63, 200];
 
 ReadRetry readRetryOf(Object? error) => switch (readFailureKind(error)) {
+  _ when error is ReadRetryAdvice => error.readRetry,
   ReadFailureKind.session || ReadFailureKind.endpointRefused => ReadRetry.manual,
   ReadFailureKind.rateLimited => ReadRetry.atReset,
   _ when error is TwitterError && _definitiveTwitterErrors.contains(error.code) => ReadRetry.manual,

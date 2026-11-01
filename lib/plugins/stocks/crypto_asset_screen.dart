@@ -252,6 +252,7 @@ class _CryptoPrice extends StatelessWidget {
           children: [
             Text(
               price == null ? kStockPlaceholder : stockPrice(price),
+              semanticsLabel: price == null ? null : stockPriceSpoken(price),
               style: theme.textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800, fontFeatures: kStockFigures),
             ),
             Padding(

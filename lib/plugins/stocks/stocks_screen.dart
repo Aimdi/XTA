@@ -164,11 +164,12 @@ class _StocksScreenState extends State<StocksScreen> {
   }
 
   Future<void> _manageWatchlist() async {
+    // The sheet's route sits outside this screen; it takes the store along.
+    final store = _watchlist;
     await showModalBottomSheet(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) {
-        final store = sheetContext.read<StocksWatchlistStore>();
         return SafeArea(
           child: ScopedBuilder<StocksWatchlistStore, List<String>>(
             store: store,
@@ -176,7 +177,7 @@ class _StocksScreenState extends State<StocksScreen> {
               shrinkWrap: true,
               children: [
                 ListTile(
-                  title: Text(L10n.of(sheetContext).plugin_stocks_watchlist),
+                  title: Text(L10n.of(sheetContext).plugin_stocks_manage_watchlist),
                   subtitle: Text(L10n.of(sheetContext).plugin_stocks_feed_hint),
                 ),
                 for (final symbol in symbols)
@@ -219,6 +220,7 @@ class _StocksScreenState extends State<StocksScreen> {
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
+      floatingActionButton: _addButton(),
       body: ScopedBuilder<PluginViewStore<_StocksViewState>, _StocksViewState>(
         store: _view,
         onState: (_, _) => Column(
@@ -226,7 +228,6 @@ class _StocksScreenState extends State<StocksScreen> {
             PluginHomeChrome(
               title: l10n.plugin_stocks_title,
               mark: pluginMark(StocksPlugin(), size: 24),
-              accent: StocksPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_stocks_watchlist,
@@ -253,14 +254,7 @@ class _StocksScreenState extends State<StocksScreen> {
                   onTap: () => _selectTab(3),
                 ),
               ],
-              actions: [
-                IconButton(tooltip: l10n.plugin_stocks_add, icon: const Icon(Icons.add), onPressed: _addSymbol),
-                PluginHomeSecondaryAction(
-                  label: l10n.plugin_stocks_watchlist,
-                  icon: const Icon(Icons.list),
-                  onPressed: _manageWatchlist,
-                ),
-              ],
+              actions: [_moreMenu(l10n)],
             ),
             const Divider(height: 1),
             Expanded(
@@ -281,6 +275,41 @@ class _StocksScreenState extends State<StocksScreen> {
     );
   }
 
+  /// The bar holds only the tabs and this menu.
+  Widget _moreMenu(L10n l10n) => PluginHomeMenu(
+    key: const ValueKey('stocks-more'),
+    style: pluginActionButtonStyle,
+    tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+    onSelected: (value) {
+      if (value == 'manage-watchlist') _manageWatchlist();
+    },
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        key: const ValueKey('stocks-manage-watchlist'),
+        value: 'manage-watchlist',
+        child: Text(L10n.of(context).plugin_stocks_manage_watchlist),
+      ),
+    ],
+  );
+
+  /// Adding a symbol floats over the lists it adds to, the watchlist and its
+  /// posts. An empty watchlist has its own button instead.
+  Widget _addButton() => ScopedBuilder<PluginViewStore<_StocksViewState>, _StocksViewState>(
+    store: _view,
+    onState: (context, view) => ScopedBuilder<StocksWatchlistStore, List<String>>(
+      store: _watchlist,
+      onState: (context, symbols) => view.tab > 1 || symbols.isEmpty
+          ? const SizedBox.shrink()
+          : FloatingActionButton(
+              key: const ValueKey('stocks-add'),
+              heroTag: 'stocks-add',
+              tooltip: L10n.of(context).plugin_stocks_add,
+              onPressed: _addSymbol,
+              child: const Icon(Icons.add),
+            ),
+    ),
+  );
+
   Widget _body(L10n l10n) {
     return ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
       store: _cache,
@@ -295,39 +324,67 @@ class _StocksScreenState extends State<StocksScreen> {
         onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, symbols) => ScopedBuilder<CryptoQuoteStore, Map<String, CryptoMarket>>(
           store: _cryptoQuotes,
-          onState: (_, crypto) =>
-              _tabHome(symbols, {...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote}, l10n),
+          onState: (_, crypto) => _tabHome(
+            symbols,
+            {...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote},
+            {..._cache.failed, ..._cryptoQuotes.failed},
+            l10n,
+          ),
         ),
       ),
     );
   }
 
-  Widget _tabHome(List<String> symbols, Map<String, TickerQuote> quotes, L10n l10n) {
+  Widget _tabHome(List<String> symbols, Map<String, TickerQuote> quotes, Set<String> failed, L10n l10n) {
     final controller = pluginInnerScrollController(context, widget.scrollController);
     if (_tab == 3) {
-      return StocksMarketsList(quotes: quotes, controller: controller, onRefresh: _pullToRefresh);
+      return StocksMarketsList(
+        quotes: quotes,
+        failed: failed,
+        controller: controller,
+        onRefresh: _pullToRefresh,
+        onRetry: _retry,
+      );
     }
     if (_tab == 2) {
       if (_view.state.loading && _trending.isEmpty) return const PluginFeedSkeleton();
-      return _feedHome(symbols: _trending, quotes: quotes, empty: _empty(context, l10n, trending: true));
+      return _feedHome(
+        symbols: _trending,
+        quotes: quotes,
+        failed: failed,
+        empty: _empty(context, l10n, trending: true),
+      );
     }
     if (symbols.isEmpty) {
       return _empty(context, l10n, trending: false);
     }
     if (_tab == 1) {
-      return _feedHome(symbols: symbols, quotes: quotes, empty: _empty(context, l10n, trending: false));
+      return _feedHome(symbols: symbols, quotes: quotes, failed: failed, empty: _empty(context, l10n, trending: false));
     }
     return StocksWatchlistList(
       symbols: symbols,
       quotes: quotes,
+      failed: failed,
       assets: _watchlist.cryptoAssets,
       onOpen: _openAsset,
+      onRetry: _retry,
       onRefresh: _pullToRefresh,
       controller: controller,
     );
   }
 
-  Widget _feedHome({required List<String> symbols, required Map<String, TickerQuote> quotes, required Widget empty}) {
+  /// A row with no data asks again for its own quote.
+  void _retry(String symbol) {
+    final asset = _watchlist.assetFor(symbol);
+    unawaited(asset == null ? _cache.refresh([symbol]) : _cryptoQuotes.ensure([asset], force: true));
+  }
+
+  Widget _feedHome({
+    required List<String> symbols,
+    required Map<String, TickerQuote> quotes,
+    required Set<String> failed,
+    required Widget empty,
+  }) {
     if (symbols.isEmpty) {
       return empty;
     }
@@ -341,6 +398,7 @@ class _StocksScreenState extends State<StocksScreen> {
         StocksWatchlistReel(
           symbols: symbols,
           quotes: quotes,
+          failed: failed,
           selected: _filterSymbol,
           onSelected: _onChipSelected,
           assets: _watchlist.cryptoAssets,

@@ -1,42 +1,42 @@
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
-import 'package:xta/plugins/plugin_link_post.dart';
+import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/plugin_card_row.dart';
-import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/plugins/plugin_ink_post.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
+import 'package:xta/plugins/threads/threads_archive.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_rich_text.dart';
+import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/threads/threads_media.dart';
 import 'package:xta/plugins/threads/threads_quote.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_like_button.dart';
+import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/tweet/tweet_header.dart';
+import 'package:xta/tweet/tweet_ink_layout.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/links/link_opening.dart';
 import 'package:xta/links/link_post_context.dart';
 import 'package:xta/links/link_preview_card.dart';
-import 'package:xta/ui/provenance_accent.dart';
-
-/// Avatar size matching X / Reddit / Mastodon cards.
-const double kThreadsAvatarSize = 48;
 
 /// A Threads post as a timeline card.
 ///
-/// Shaped like the posts around it. Meta feeds can carry likes, replies,
+/// Laid out as an X post is (docs/specs/feed-ink-networks.md). Meta feeds can carry likes, replies,
 /// reposts and a link preview; RSSHub cannot — counts stay blank rather than
 /// inventing zeroes, but the engagement icons stay so the card still feels
 /// like the Threads app.
@@ -58,6 +58,11 @@ class ThreadsPostCard extends StatelessWidget {
   /// External browser affordance in the engagement row.
   final VoidCallback? onOpenBrowser;
 
+  /// In a conversation: the rail to the post above and to the one below,
+  /// through the avatar, as an X thread draws it.
+  final bool threadConnectTop;
+  final bool threadConnectBottom;
+
   const ThreadsPostCard({
     super.key,
     required this.post,
@@ -66,6 +71,8 @@ class ThreadsPostCard extends StatelessWidget {
     this.onOpen,
     this.onAuthorTap,
     this.onOpenBrowser,
+    this.threadConnectTop = false,
+    this.threadConnectBottom = false,
   });
 
   void _open(BuildContext context) {
@@ -105,95 +112,88 @@ class ThreadsPostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return RepaintBoundary(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          tweetFlatCard(
-            color: tweetCardColor(context),
-            child: InkWell(
-              onTap: openOnTap ? () => _open(context) : null,
-              onLongPress: () => showPluginLinkPostActions(
-                context,
-                source: 'threads',
-                onGroup: () => addThreadsAccountToGroup(
-                  context,
-                  ThreadsAccount(handle: post.handle, name: post.authorName, avatarUrl: post.avatarUrl),
-                ),
-                url: post.url ?? post.id,
-                author: post.handle,
-                text: post.text,
-                images: post.images,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (post.isRepost) _repostLine(context),
-                    if (post.replyToHandle != null && post.replyToHandle!.isNotEmpty)
-                      PluginReplyingTo(name: post.replyToHandle!),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () => _openAuthor(context),
-                          child: ProvenanceAvatarBadge(pluginId: pluginIdThreads, show: showSourceBadge, child: _avatar(context)),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              GestureDetector(
-                                onTap: () => _openAuthor(context),
-                                behavior: HitTestBehavior.opaque,
-                                child: _header(context),
-                              ),
-                              if (post.text.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                ThreadsCaption(
-                                  text: post.text,
-                                  fragments: post.fragments,
-                                  style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
-                                ),
-                              ],
-                              if (post.hasMedia) ...[
-                                const SizedBox(height: 10),
-                                ThreadsPostMedia(post: post, onOpenPost: openOnTap ? () => _open(context) : null),
-                              ],
-                              if (post.linkCard != null) ...[
-                                const SizedBox(height: 10),
-                                _linkPreview(context, post.linkCard!),
-                              ],
-                              if (post.quoted != null) ...[
-                                const SizedBox(height: 10),
-                                ThreadsQuotedPost(quote: post.quoted!),
-                              ],
-                              if (post.selfThreadCount > 0 && openOnTap)
-                                _ShowThreadButton(count: post.selfThreadCount, onPressed: () => _open(context)),
-                              _ThreadsEngagementRow(
-                                post: post,
-                                onOpen: () => _open(context),
-                                onOpenBrowser: () => _openBrowser(context),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          tweetHairlineDivider(context),
-        ],
-      ),
+    final accounts = context.read<ThreadsAccountsStore>();
+    return ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
+      store: accounts,
+      distinct: (_) => accounts.follows(post.handle),
+      onState: (context, _) => _post(context, following: accounts.follows(post.handle)),
     );
   }
+
+  Widget _post(BuildContext context, {required bool following}) {
+    final date = post.publishedAt;
+    final replyTo = post.replyToHandle;
+    return PluginInkPost(
+      pluginId: pluginIdThreads,
+      showSourceBadge: showSourceBadge,
+      color: tweetCardColor(context),
+      onTap: openOnTap ? () => _open(context) : null,
+      onLongPress: () => showPluginPostActions(
+        context,
+        post: threadsArchive(post),
+        url: post.url ?? post.id,
+        onGroup: () => addThreadsAccountToGroup(context, _account),
+      ),
+      contextLines: [if (post.isRepost) _repostLine(context)],
+      avatar: _avatar(context),
+      authorName: post.authorName,
+      onOpenAuthor: () => _openAuthor(context),
+      authorLine: TweetAuthorLine(
+        displayName: post.authorName,
+        handle: post.handle,
+        verified: post.isVerified,
+        timestamp: date == null ? null : Timestamp(timestamp: date, compact: true),
+      ),
+      trailing: [
+        if (!following)
+          pluginInkFollowButton(
+            context,
+            tooltip: L10n.of(context).plugin_threads_follow,
+            onPressed: () => context.read<ThreadsAccountsStore>().add(_account),
+          ),
+      ],
+      body: [
+        if (post.topicTag case final tag?)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: ThreadsTopicTag(tag: tag),
+          ),
+        if (replyTo != null && replyTo.isNotEmpty) PluginReplyingTo(name: replyTo),
+        _content(context),
+      ],
+      actions: _ThreadsEngagementRow(
+        post: post,
+        onOpen: () => _open(context),
+        onOpenBrowser: () => _openBrowser(context),
+      ),
+      // Inside the card, so the card's colour does not cover it.
+      rail: threadConnectTop || threadConnectBottom
+          ? ThreadRailLines(connectTop: threadConnectTop, connectBottom: threadConnectBottom)
+          : null,
+      divider: !threadConnectBottom,
+    );
+  }
+
+  ThreadsAccount get _account => ThreadsAccount(handle: post.handle, name: post.authorName, avatarUrl: post.avatarUrl);
+
+  /// The text, media, link card, quote and "Show thread", in that order.
+  Widget _content(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (post.text.isNotEmpty) ...[
+        const SizedBox(height: kInkTextGap),
+        ThreadsCaption(text: post.text, fragments: post.fragments, style: tweetBodyStyle(context)),
+      ],
+      if (post.hasMedia) ...[
+        const SizedBox(height: 10),
+        ThreadsPostMedia(post: post, onOpenPost: openOnTap ? () => _open(context) : null),
+      ],
+      if (post.linkCard != null) ...[const SizedBox(height: 10), _linkPreview(context, post.linkCard!)],
+      if (post.quoted != null) ...[const SizedBox(height: 10), ThreadsQuotedPost(quote: post.quoted!)],
+      if (post.selfThreadCount > 0 && openOnTap)
+        _ShowThreadButton(count: post.selfThreadCount, onPressed: () => _open(context)),
+    ],
+  );
 
   Widget _linkPreview(BuildContext context, ThreadsLinkCard card) => LinkPreviewCard(
     url: card.url,
@@ -221,35 +221,18 @@ class ThreadsPostCard extends StatelessWidget {
   );
 
   Widget _repostLine(BuildContext context) {
-    final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 60, bottom: 6),
-      child: GestureDetector(
-        onTap: () => _openReposter(context),
-        behavior: HitTestBehavior.opaque,
-        child: Row(
-          children: [
-            Icon(Icons.repeat, size: 14, color: muted),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                L10n.of(context).plugin_threads_reposted(post.reposterDisplayName),
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelMedium!.copyWith(color: muted),
-              ),
-            ),
-          ],
-        ),
-      ),
+    final reposter = post.repostedByHandle;
+    return TweetContextRow(
+      icon: Icons.repeat,
+      label: Text(L10n.of(context).plugin_threads_reposted(post.reposterDisplayName), overflow: TextOverflow.ellipsis),
+      onTap: reposter == null || reposter.isEmpty ? null : () => _openReposter(context),
     );
   }
 
   Widget _avatar(BuildContext context) {
     final theme = Theme.of(context);
     final avatar = post.avatarUrl;
-    const size = kThreadsAvatarSize;
+    const size = kTweetAvatarSize;
 
     return ClipOval(
       child: avatar == null
@@ -266,66 +249,6 @@ class ThreadsPostCard extends StatelessWidget {
               fit: BoxFit.cover,
               cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
             ),
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final date = post.publishedAt;
-    final metaStyle = theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Flexible(
-              child: PluginNameMetaRow(
-                name: Text(
-                  post.authorName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
-                ),
-                meta: [if (date != null) createCompactDate(date)],
-                metaStyle: metaStyle,
-              ),
-            ),
-            if (post.isVerified) ...[
-              const SizedBox(width: 4),
-              Icon(Icons.verified, size: 16, color: theme.colorScheme.primary),
-            ],
-            _followButton(context),
-          ],
-        ),
-        // The source badge rides with the handle, as it does on the Reddit and
-        // Mastodon cards — the name line already carries the follow button, and
-        // in German the two together were wider than a 320dp phone.
-        PluginHandleBadgeRow(
-          handle: Text('@${post.handle}', maxLines: 1, overflow: TextOverflow.ellipsis, style: metaStyle),
-          badges: [
-            if (post.topicTag case final tag?) ThreadsTopicTag(tag: tag),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _followButton(BuildContext context) {
-    final accounts = context.read<ThreadsAccountsStore>();
-    return ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
-      store: accounts,
-      distinct: (_) => accounts.follows(post.handle),
-      onState: (context, _) {
-        if (accounts.follows(post.handle)) {
-          return const SizedBox.shrink();
-        }
-        return TextButton(
-          onPressed: () =>
-              accounts.add(ThreadsAccount(handle: post.handle, name: post.authorName, avatarUrl: post.avatarUrl)),
-          child: Text(L10n.of(context).plugin_threads_follow),
-        );
-      },
     );
   }
 }
@@ -390,6 +313,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
               );
             },
           ),
+          PluginPostBookmark(post: threadsArchive(post)),
           const Spacer(),
           if (post.url != null)
             tweetFooterIconButton(
@@ -418,7 +342,8 @@ class ThreadsTopicTag extends StatelessWidget {
     final theme = Theme.of(context);
     final color = theme.colorScheme.onSurfaceVariant;
     return InkWell(
-      onTap: () => openLink(context, threadsTagSearchUrl(tag)),
+      onTap: () =>
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsSearchScreen(query: tag, tag: true))),
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/crypto_copy.dart';
 import 'package:xta/plugins/stocks/stocks_quote_row.dart';
+import 'package:xta/plugins/stocks/stocks_row_state.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
 
@@ -11,8 +13,12 @@ import 'package:xta/tweet/ticker/ticker_symbol.dart';
 class StocksWatchlistList extends StatelessWidget {
   final List<String> symbols;
   final Map<String, TickerQuote> quotes;
+
+  /// Symbols and token ids whose last lookup found nothing.
+  final Set<String> failed;
   final Map<String, CryptoAsset> assets;
   final ValueChanged<String> onOpen;
+  final ValueChanged<String>? onRetry;
   final Future<void> Function() onRefresh;
   final ScrollController? controller;
 
@@ -22,7 +28,9 @@ class StocksWatchlistList extends StatelessWidget {
     required this.quotes,
     required this.onOpen,
     required this.onRefresh,
+    this.failed = const {},
     this.assets = const {},
+    this.onRetry,
     this.controller,
   });
 
@@ -33,7 +41,8 @@ class StocksWatchlistList extends StatelessWidget {
       child: ListView.separated(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: pluginFeedPadding(context),
+        // The last row scrolls clear of the add button floating over it.
+        padding: pluginFeedPadding(context, extra: const EdgeInsets.only(bottom: 72)),
         itemCount: symbols.length,
         separatorBuilder: (_, _) => const Divider(height: 1, indent: 16, endIndent: 16),
         itemBuilder: (context, index) => _row(context, symbols[index]),
@@ -44,12 +53,18 @@ class StocksWatchlistList extends StatelessWidget {
   Widget _row(BuildContext context, String symbol) {
     final asset = assets[symbol];
     final quote = quotes[symbol];
+    final l10n = L10n.of(context);
     return StocksQuoteRow(
       title: asset?.label ?? '\$${spokenCashtag(symbol)}',
-      subtitle: asset?.subtitle ?? quote?.shortName,
+      subtitle: asset?.nameOrAddress ?? tickerName(symbol) ?? quote?.shortName,
+      badge: asset == null
+          ? stockBadge(l10n, stockKindOf(symbol, quote))
+          : stockBadge(l10n, TickerKind.crypto, network: asset.chainName),
       quote: quote,
+      failed: failed.contains(symbol),
       onTap: () => onOpen(symbol),
       onLongPress: asset == null ? null : () => copyCryptoAddress(context, asset),
+      onRetry: onRetry == null ? null : () => onRetry!(symbol),
     );
   }
 }

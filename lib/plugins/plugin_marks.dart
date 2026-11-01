@@ -59,10 +59,11 @@ class PluginBrandMark extends StatelessWidget {
   }
 }
 
-/// X's mark is monochrome and follows the text colour, as X draws it;
-/// every other mark uses its brand colour.
+/// X's mark is monochrome and follows the text colour, as X draws it, and so
+/// does the mark of a plugin whose colour is not its chrome's
+/// ([XtaPlugin.brandsChrome]); every other mark uses its brand colour.
 Color pluginMarkTint(BuildContext context, XtaPlugin plugin) =>
-    plugin.id == pluginIdX
+    plugin.id == pluginIdX || !plugin.brandsChrome
     ? Theme.of(context).colorScheme.onSurface
     : plugin.brandColor;
 

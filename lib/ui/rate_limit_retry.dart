@@ -7,6 +7,7 @@ import 'package:xta/client/accounts.dart';
 import 'package:xta/client/account_fetch_gate.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/utils/reader_value_store.dart';
 
 DateTime? knownRateLimitReset(Object? error, List<Map<String, DateTime>> accounts, DateTime now) {
@@ -39,6 +40,7 @@ DateTime? knownRateLimitReset(Object? error, List<Map<String, DateTime>> account
 String formatRetryCountdown(int seconds) => '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
 
 Future<DateTime?> readRateLimitReset(Object? error) async {
+  if (error is ReadRetryAdvice) return error.retryAt;
   final now = DateTime.now();
   if (error is HttpException) return knownRateLimitReset(error, const [], now);
   var accounts = await getAccounts();

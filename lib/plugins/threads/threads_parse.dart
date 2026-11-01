@@ -175,16 +175,15 @@ ThreadsProfile? threadsProfileFromGuestHtml(String html, String handle) {
     profilePicUrl: image,
     biography: desc.biography,
     followerCount: desc.followers,
-    followingCount: 0,
     mediaCount: desc.posts,
-    externalUrl: '$threadsWebBase/@$key',
   );
 }
 
-/// `5.7M Followers • 380 Threads • Bio text` → its three parts.
-({int followers, int posts, String biography}) _guestDescription(String desc) {
-  var followers = 0;
-  var posts = 0;
+/// `5.7M Followers • 380 Threads • Bio text` → its three parts; a count the
+/// page leaves out is null.
+({int? followers, int? posts, String biography}) _guestDescription(String desc) {
+  int? followers;
+  int? posts;
   var biography = '';
   for (final part in desc.split(RegExp(r'\s*[•·]\s*')).map((e) => e.trim())) {
     final count = RegExp(r'^([\d.,]+[KMB]?)\s+(Followers?|Threads?)$', caseSensitive: false).firstMatch(part);
@@ -534,6 +533,23 @@ List<ThreadsPost> parseThreadsSsrHtml(String body, String handle) => [
 /// Every post embedded in a Threads post page (root + replies), flattened.
 List<ThreadsPost> parseThreadsSsrThread(String body) =>
     threadsSsrChains(body).expand((chain) => chain).toList(growable: false);
+
+/// Threads' public search page for [query]: its top posts, the most recent with [recent], and with [tag] the posts
+/// filed under that topic. A logged-out browser is shown the posts.
+Uri threadsSearchUri(String query, {bool tag = false, bool recent = false}) => Uri.https('www.threads.com', '/search', {
+  'q': query,
+  'serp_type': tag ? 'tags' : 'default',
+  if (recent) 'filter': 'recent',
+});
+
+/// A search page's results: in each chain it carries, the post the page found it for (the one whose text holds
+/// [query], or with [tag] the one filed under it), else the chain's first.
+List<ThreadsPost> threadsSearchResults(String body, String query, {bool tag = false}) {
+  final needle = query.trim().replaceFirst(RegExp('^#'), '').toLowerCase();
+  bool found(ThreadsPost post) =>
+      tag ? post.topicTag?.toLowerCase() == needle : post.text.toLowerCase().contains(needle);
+  return [for (final chain in threadsSsrChains(body)) chain.firstWhere(found, orElse: () => chain.first)];
+}
 
 /// A profile's replies page: each of [handle]'s replies, without the posts
 /// from other people the page shows them under.
