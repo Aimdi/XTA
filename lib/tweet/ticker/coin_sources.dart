@@ -260,43 +260,6 @@ class BinanceSource implements CoinSource {
   }
 }
 
-/// Which price sources are resting after a refusal, and which coins a source
-/// does not list. Shared by every client, so a host one screen found refusing
-/// is left alone by the others too.
-class PriceSourceHealth {
-  final DateTime Function() _now;
-  final _restUntil = <String, DateTime>{};
-  final _refusals = <String, int>{};
-  final _unlisted = <String>{};
-
-  PriceSourceHealth({DateTime Function()? now}) : _now = now ?? DateTime.now;
-
-  static final shared = PriceSourceHealth();
-
-  static const firstRest = Duration(minutes: 2);
-  static const longestRest = Duration(minutes: 30);
-
-  bool resting(String source) => _restUntil[source]?.isAfter(_now()) ?? false;
-
-  /// Rests [source] for [firstRest], twice as long after each refusal in a
-  /// row, at most [longestRest].
-  void refused(String source) {
-    final refusals = (_refusals[source] ?? 0) + 1;
-    _refusals[source] = refusals;
-    final minutes = math.min(firstRest.inMinutes * math.pow(2, refusals - 1), longestRest.inMinutes).toInt();
-    _restUntil[source] = _now().add(Duration(minutes: minutes));
-  }
-
-  void answered(String source) {
-    _refusals.remove(source);
-    _restUntil.remove(source);
-  }
-
-  bool lists(String source, String coin) => !_unlisted.contains('$source/$coin');
-
-  void unlisted(String source, String coin) => _unlisted.add('$source/$coin');
-}
-
 /// Asks [sources] in order for a coin's chart, then [yahoo] — the host the
 /// stocks need, kept last and never rested. The first answer wins.
 ///

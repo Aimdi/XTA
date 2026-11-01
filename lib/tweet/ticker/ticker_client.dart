@@ -6,7 +6,7 @@ import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_search.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
 
-export 'package:xta/tweet/ticker/price_http.dart' show TickerErrorKind, TickerException;
+export 'package:xta/tweet/ticker/price_http.dart' show PriceSourceHealth, TickerErrorKind, TickerException;
 
 /// Price history, search, trending, and headlines for a symbol.
 ///

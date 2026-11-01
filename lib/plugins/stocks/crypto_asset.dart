@@ -149,7 +149,9 @@ class CryptoMarket {
   );
 }
 
-double? _finite(double? value, {double? atLeast}) =>
+/// [value] when it is a real figure (and at least [atLeast]); price hosts
+/// send infinities, negatives and missing fields alike.
+double? finiteFigure(double? value, {double? atLeast}) =>
     value != null && value.isFinite && (atLeast == null || value >= atLeast) ? value : null;
 
 List<Json> _pairsIn(Object? payload) => payload is List ? Json(payload).list : Json(payload)['pairs'].list;
@@ -170,14 +172,14 @@ CryptoMarket? _marketFor(Json pair, Json token, {required bool priced}) {
   return CryptoMarket(
     asset: asset,
     pairAddress: pair['pairAddress'].string,
-    price: _finite(stats['priceUsd'].number, atLeast: 0),
-    changePercent: _finite(stats['priceChange']['h24'].number),
-    change1h: _finite(stats['priceChange']['h1'].number),
-    change6h: _finite(stats['priceChange']['h6'].number),
-    liquidity: _finite(pair['liquidity']['usd'].number) ?? 0,
-    volume24h: _finite(stats['volume']['h24'].number, atLeast: 0),
-    marketCap: _finite(stats['marketCap'].number, atLeast: 0),
-    fdv: _finite(stats['fdv'].number, atLeast: 0),
+    price: finiteFigure(stats['priceUsd'].number, atLeast: 0),
+    changePercent: finiteFigure(stats['priceChange']['h24'].number),
+    change1h: finiteFigure(stats['priceChange']['h1'].number),
+    change6h: finiteFigure(stats['priceChange']['h6'].number),
+    liquidity: finiteFigure(pair['liquidity']['usd'].number) ?? 0,
+    volume24h: finiteFigure(stats['volume']['h24'].number, atLeast: 0),
+    marketCap: finiteFigure(stats['marketCap'].number, atLeast: 0),
+    fdv: finiteFigure(stats['fdv'].number, atLeast: 0),
   );
 }
 

@@ -53,23 +53,31 @@ Read-only as before: public price endpoints, no key, no account.
 - DexScreener first, **GeckoTerminal** second, with the same resting: the
   token's best pool where it is the base token gives the price, the moves
   over 1, 6 and 24 hours, liquidity, volume, market cap and FDV.
+- GeckoTerminal is asked when DexScreener refuses, rests or has no market
+  for the token. A 404 there says it has no such token and rests nothing.
+  Only when both failed to answer is the price a failure; when either
+  answered without a market, the row says there is no market.
+- GeckoTerminal goes by its own network ids where they differ (`eth`,
+  `polygon_pos`, `avax`, …).
 
 ## Not in this pass
 
 - CoinGecko: its keyless API allows a handful of calls a minute.
+- Finding tokens by name stays DexScreener's search; only pricing a known
+  token falls back.
 - Spreading coins across sources by turns: a coin keeps the source that
   answers it, so its price does not jump between venues.
 
 ## Code
 
 - `lib/tweet/ticker/price_http.dart`: one GET for every price host, mapping
-  answers to the existing error kinds.
+  answers to the existing error kinds, and the resting every host shares.
 - `lib/tweet/ticker/coin_sources.dart`: the chart window, the exchanges'
-  URIs, names and parsers, the resting, and the chain that tries them.
+  URIs, names and parsers, and the chain that tries them.
 - `lib/tweet/ticker/ticker_client.dart`: a coin pair goes through the chain;
   everything else to Yahoo as before.
-- `lib/plugins/stocks/crypto_client.dart`, `crypto_asset.dart`:
-  GeckoTerminal behind DexScreener.
+- `lib/plugins/stocks/gecko_terminal.dart`: GeckoTerminal's network ids,
+  pools URI and parser; `crypto_client.dart` asks it behind DexScreener.
 
 ## Tests
 
