@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Fail when a release APK carries a native library nothing on Android loads,
-or stores one compressed.
+"""Fail when a release APK carries a native library nothing on Android loads
+from it, or stores one compressed.
 
-android/app/build.gradle leaves the unloaded ones out of the APK; this catches
-a plugin update or a Gradle change that brings one back. A compressed library
-is unpacked at install, so it makes the installed app bigger than the APK.
+android/app/build.gradle leaves those out of the APK: the ones nothing loads,
+and the voice engine, which downloads with the first voice instead
+(docs/specs/downloadable-voice-engine.md). This catches a plugin update or a
+Gradle change that brings one back. A compressed library is unpacked at
+install, so it makes the installed app bigger than the APK.
 
 Usage: scripts/check_apk_contents.py <directory with APKs>
 """
@@ -15,6 +17,7 @@ import zipfile
 
 
 UNLOADED_LIBRARIES = {"libsqlite3.so", "libsherpa-onnx-cxx-api.so"}
+DOWNLOADED_LIBRARIES = {"libonnxruntime.so", "libsherpa-onnx-c-api.so"}
 
 
 def native_libraries(archive):
@@ -24,7 +27,7 @@ def native_libraries(archive):
 def unloaded_libraries(apk):
     with zipfile.ZipFile(apk) as archive:
         native = {Path(info.filename).name for info in native_libraries(archive)}
-    return sorted(native & UNLOADED_LIBRARIES)
+    return sorted(native & (UNLOADED_LIBRARIES | DOWNLOADED_LIBRARIES))
 
 
 def compressed_libraries(apk):

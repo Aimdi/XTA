@@ -35,6 +35,20 @@ class ReleaseWorkflowTest(unittest.TestCase):
                         self.assertIn("release-build.json", step["with"]["files"])
                         self.assertIn("SHA256SUMS", step["with"]["files"])
 
+    def test_every_publisher_ships_the_voice_engine_archives(self):
+        for name in PUBLISHERS:
+            with self.subTest(workflow=name):
+                steps = workflow_steps(name)
+                engine_index = next(index for index, step in enumerate(steps) if step.get("id") == "engine")
+                upload_index = next(index for index, step in enumerate(steps) if "action-gh-release@" in step.get("uses", ""))
+                self.assertLess(engine_index, upload_index)
+                self.assertIn("voice_engine_archives.py", steps[engine_index]["run"])
+                self.assertIn("${{ steps.engine.outputs.files }}", steps[upload_index]["with"]["files"])
+        ci = workflow_steps("ci.yml")
+        self.assertTrue(any("voice_engine_archives.py" in step.get("run", "") for step in ci))
+        artifact = next(step for step in ci if "upload-artifact@" in step.get("uses", ""))
+        self.assertIn("xta-voice-engine-*.tar.xz", artifact["with"]["path"])
+
     def test_every_release_upload_has_a_preceding_artifact_verification(self):
         for name in PUBLISHERS:
             with self.subTest(workflow=name):

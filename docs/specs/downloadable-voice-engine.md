@@ -123,6 +123,8 @@ runs a downloaded voice. Without a voice they are never loaded.
 - The settings row in each state, and a voice that needs the engine.
 - `scripts/tests`: the archives match the pins; every publisher ships them;
   an APK carrying the engine fails the content check.
-- On the CI emulator (Android 14, x86_64), `integration_test/voice_engine_test.dart`:
-  the APK has no engine, the engine downloads from a local server, installs,
-  loads from app storage and reads a sentence with a downloaded voice.
+- On the CI emulator (Android 14, x86_64),
+  `integration_test/voice_engine_test.dart`, run by the voice-engine job of
+  `.github/workflows/emulator-qa.yml`: the APK has no engine, the engine
+  downloads from a local server, installs, loads from app storage and reads
+  a sentence with a downloaded voice.

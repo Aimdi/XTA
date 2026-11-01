@@ -105,6 +105,10 @@ jobs:
       - name: Check APK contents
         run: python3 scripts/check_apk_contents.py build/app/outputs/release
 
+      - name: Make the voice engine archives
+        # Published beside the APKs (docs/specs/downloadable-voice-engine.md).
+        run: python3 scripts/voice_engine_archives.py build/app/outputs/release
+
       - name: Record APK provenance
         env:
           RELEASE_TAG: ${{ steps.stamp.outputs.tag }}
@@ -119,6 +123,7 @@ jobs:
             build/app/outputs/release/release-build.json
             build/app/outputs/release/SHA256SUMS
             build/app/outputs/release/xta-*-debug-symbols.zip
+            build/app/outputs/release/xta-voice-engine-*.tar.xz
           if-no-files-found: error
           # The publish workflow downloads this within minutes; keeping
           # artifacts around any longer just eats the account storage quota.

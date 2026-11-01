@@ -243,9 +243,11 @@ version alone does not identify an XTA release.
 [Historical upstream changelog](changelog.md) ·
 [MIT license](LICENSE)
 
-XTA's source is MIT-licensed. The APK also bundles
-[sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache-2.0) for the
-downloadable voices, whose native library statically links
-[espeak-ng](https://github.com/espeak-ng/espeak-ng) (GPL-3.0-or-later), so the
-APK as a whole is distributed under the GPL-3.0's terms. The in-app licence
-page lists both.
+XTA's source is MIT-licensed. The downloadable voices run on
+[sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) (Apache-2.0) and
+onnxruntime (MIT), whose native library statically links
+[espeak-ng](https://github.com/espeak-ng/espeak-ng) (GPL-3.0-or-later). On
+Android that engine is not in the APK: it downloads with the first voice,
+from this repository's releases, and is distributed under the GPL-3.0's terms,
+as are the Linux packages, which bundle it. The in-app licence page lists
+them.

@@ -59,6 +59,16 @@ jobs:
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
         run: python3 "$RUNNER_TEMP/xta-release-integrity.py" verify build/app/outputs/release --tag "$RELEASE_TAG" --run "$RUNNER_TEMP/xta-artifact-run.json" --certificate "$RUNNER_TEMP/xta-release-certificate.txt"
 
+      - name: Check the voice engine archives
+        id: engine
+        # Made by ci.yml beside the APKs (docs/specs/downloadable-voice-engine.md);
+        # an artifact from before that has none.
+        run: |
+          if ls build/app/outputs/release/xta-voice-engine-*.tar.xz >/dev/null 2>&1; then
+            python3 scripts/voice_engine_archives.py --check build/app/outputs/release
+            echo "files=build/app/outputs/release/xta-voice-engine-*.tar.xz" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create release with APKs
         uses: softprops/action-gh-release@v1
         with:
@@ -71,4 +81,5 @@ jobs:
             build/app/outputs/release/release-build.json
             build/app/outputs/release/SHA256SUMS
             build/app/outputs/release/xta-*-debug-symbols.zip
+            ${{ steps.engine.outputs.files }}
           fail_on_unmatched_files: true

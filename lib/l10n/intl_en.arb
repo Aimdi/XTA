@@ -4939,6 +4939,34 @@
   "@tts_offline_voice_delete_description": {
     "description": "Dialog text before deleting a downloaded voice."
   },
+  "tts_offline_engine": "Voice engine",
+  "@tts_offline_engine": {
+    "description": "Title of the row in the read-aloud settings for the software that runs downloaded voices on the device (a noun: the engine, not the act of speaking)."
+  },
+  "tts_offline_engine_unavailable": "Not available on this device",
+  "@tts_offline_engine_unavailable": {
+    "description": "Status on the voice engine row when no engine is published for the phone's processor, so voices cannot be downloaded."
+  },
+  "tts_offline_engine_failed_archive": "The downloaded engine could not be unpacked.",
+  "@tts_offline_engine_failed_archive": {
+    "description": "Status after the downloaded voice engine archive turned out damaged or incomplete."
+  },
+  "tts_offline_engine_delete_question": "Delete the voice engine?",
+  "@tts_offline_engine_delete_question": {
+    "description": "Dialog title before deleting the downloaded voice engine."
+  },
+  "tts_offline_engine_delete_description": "Downloaded voices can't read aloud until you download it again.",
+  "@tts_offline_engine_delete_description": {
+    "description": "Dialog text before deleting the voice engine; 'it' is the engine."
+  },
+  "tts_offline_voice_needs_engine": "Needs the voice engine to read aloud",
+  "@tts_offline_voice_needs_engine": {
+    "description": "Status on a downloaded voice while the voice engine is not on the device, so the voice cannot read."
+  },
+  "tts_offline_engine_note": "The voice engine downloads with your first voice, from XTA's releases on GitHub.",
+  "@tts_offline_engine_note": {
+    "description": "Note under the downloadable voices. XTA and GitHub are names; keep them as is."
+  },
   "open_on_web_archive": "Open on web.archive.org",
   "@open_on_web_archive": {
     "description": "Button under a post X no longer shows (deleted, private or suspended), opening the Wayback Machine's saved copies of it. web.archive.org is the site's address and stays as is."
