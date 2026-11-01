@@ -7,16 +7,20 @@ import 'package:xta/plugins/plugin_links.dart';
 
 final _threadsMention = RegExp(r'(?<![A-Za-z0-9_])@([A-Za-z0-9._]{1,30})');
 final _threadsUrl = RegExp(r'https?://[^\s<>]+', caseSensitive: false);
+final _threadsTag = RegExp(r'(?<![\p{L}\p{N}_&/#])#([\p{L}\p{N}_]{1,50})', unicode: true);
 
 /// Caption text with tappable mentions, links and tags.
 ///
 /// Meta's own `text_fragments` decide what is tappable when the post carried
-/// them; otherwise @handles and http(s) URLs are found by pattern.
+/// them; otherwise @handles, http(s) URLs and #tags are found by pattern.
 class ThreadsCaption extends StatefulWidget {
   final String text;
   final TextStyle style;
   final List<ThreadsTextFragment> fragments;
   final int? maxLines;
+
+  /// The opened post's text, which can be selected and copied as X's can.
+  final bool selectable;
 
   const ThreadsCaption({
     super.key,
@@ -24,6 +28,7 @@ class ThreadsCaption extends StatefulWidget {
     required this.style,
     this.fragments = const [],
     this.maxLines,
+    this.selectable = false,
   });
 
   @override
@@ -57,8 +62,16 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
     _clearRecognizers();
     final linkStyle = widget.style.copyWith(color: Theme.of(context).colorScheme.primary);
     final runs = threadsCaptionRuns(widget.text, widget.fragments);
+    final span = TextSpan(style: widget.style, children: [for (final run in runs) _spanFor(context, run, linkStyle)]);
+    if (widget.selectable) {
+      return SelectableText.rich(
+        span,
+        scrollPhysics: const NeverScrollableScrollPhysics(),
+        maxLines: widget.maxLines,
+      );
+    }
     return Text.rich(
-      TextSpan(style: widget.style, children: [for (final run in runs) _spanFor(context, run, linkStyle)]),
+      span,
       maxLines: widget.maxLines,
       overflow: widget.maxLines == null ? null : TextOverflow.ellipsis,
     );
@@ -95,7 +108,7 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
 }
 
 /// The caption as runs to draw: Meta's fragments when it sent them, else plain
-/// text with the @handles and URLs a pattern can find.
+/// text with the @handles, URLs and #tags a pattern can find.
 List<ThreadsTextFragment> threadsCaptionRuns(String text, List<ThreadsTextFragment> fragments) {
   if (fragments.isNotEmpty) {
     return fragments;
@@ -109,8 +122,7 @@ List<ThreadsTextFragment> threadsCaptionRuns(String text, List<ThreadsTextFragme
     if (hit.start > cursor) {
       runs.add(ThreadsTextFragment(ThreadsFragmentKind.text, text.substring(cursor, hit.start)));
     }
-    final kind = hit.isMention ? ThreadsFragmentKind.mention : ThreadsFragmentKind.link;
-    runs.add(ThreadsTextFragment(kind, text.substring(hit.start, hit.end), hit.value));
+    runs.add(ThreadsTextFragment(hit.kind, text.substring(hit.start, hit.end), hit.value));
     cursor = hit.end;
   }
   if (cursor < text.length) {
@@ -124,39 +136,43 @@ class ThreadsCaptionHit {
   final int start;
   final int end;
   final String value;
-  final bool isMention;
+  final ThreadsFragmentKind kind;
 
   const ThreadsCaptionHit({
     required this.start,
     required this.end,
     required this.value,
-    required this.isMention,
+    required this.kind,
   });
+
+  bool get isMention => kind == ThreadsFragmentKind.mention;
 }
 
-/// Pure split of [text] into mention / URL hits, left-to-right, no overlaps kept.
+/// Pure split of [text] into mention / URL / #tag hits, left-to-right; a hit
+/// inside an earlier one (a `#` in a link) is dropped by the caller.
 List<ThreadsCaptionHit> hitsInThreadsCaption(String text) {
-  final hits = <ThreadsCaptionHit>[];
-  for (final match in _threadsMention.allMatches(text)) {
-    hits.add(ThreadsCaptionHit(
-      start: match.start,
-      end: match.end,
-      value: match.group(1)!,
-      isMention: true,
-    ));
-  }
-  for (final match in _threadsUrl.allMatches(text)) {
-    final trimmed = trimThreadsCaptionUrl(match.group(0)!);
-    hits.add(ThreadsCaptionHit(
-      start: match.start,
-      end: match.start + trimmed.length,
-      value: trimmed,
-      isMention: false,
-    ));
-  }
-  hits.sort((a, b) => a.start.compareTo(b.start));
+  final hits = [
+    for (final match in _threadsMention.allMatches(text))
+      ThreadsCaptionHit(
+        start: match.start,
+        end: match.end,
+        value: match.group(1)!,
+        kind: ThreadsFragmentKind.mention,
+      ),
+    for (final match in _threadsUrl.allMatches(text)) _linkHit(match.start, trimThreadsCaptionUrl(match.group(0)!)),
+    for (final match in _threadsTag.allMatches(text))
+      ThreadsCaptionHit(
+        start: match.start,
+        end: match.end,
+        value: match.group(1)!,
+        kind: ThreadsFragmentKind.tag,
+      ),
+  ]..sort((a, b) => a.start.compareTo(b.start));
   return hits;
 }
+
+ThreadsCaptionHit _linkHit(int start, String url) =>
+    ThreadsCaptionHit(start: start, end: start + url.length, value: url, kind: ThreadsFragmentKind.link);
 
 String trimThreadsCaptionUrl(String raw) {
   var url = raw;

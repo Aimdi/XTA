@@ -9,10 +9,7 @@ const double kReorderLiftRadius = 12;
 
 /// The surface a lifted row takes: the one menus and sheets float on, which
 /// stands clear of a true black page too.
-Color reorderLiftSurface(BuildContext context) {
-  final tokens = XLookTokens.maybeOf(context);
-  return tokens == null ? Theme.of(context).colorScheme.surfaceContainerHigh : xLookFloatingSurface(tokens);
-}
+Color reorderLiftSurface(BuildContext context) => xLookFloatingSurfaceOf(context);
 
 /// A dragged row lifting as X's do: it grows a little, rises on a shadow and
 /// takes the raised surface colour and rounded corners, and dropping it

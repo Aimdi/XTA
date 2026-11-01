@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -6,14 +7,18 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
+import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
+import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 import 'support/feed_ink_harness.dart';
+import 'support/opened_pages.dart';
 import 'support/threads_pages.dart';
 
 ThreadsDirectClient _client(http.Client http) => ThreadsDirectClient(
@@ -89,7 +94,12 @@ void main() {
       await likes.destroy();
     });
 
-    Future<List<Uri>> pump(WidgetTester tester, http.Response Function(Uri url) answer, {String? profile}) async {
+    Future<List<Uri>> pump(
+      WidgetTester tester,
+      http.Response Function(Uri url) answer, {
+      String? profile,
+      List<NavigatorObserver> observers = const [],
+    }) async {
       final asked = <Uri>[];
       final client = _client(
         MockClient((request) async {
@@ -108,9 +118,24 @@ void main() {
           child: ThreadsSearchScreen(query: 'flutter', profile: profile),
         ),
         theme: xLookLightsOutTheme(null),
+        observers: observers,
       );
       await tester.pumpAndSettle();
       return asked;
+    }
+
+    /// Types [text] into the page's search field and presses Search, building no frame after it.
+    Future<void> search(WidgetTester tester, String text) async {
+      await tester.enterText(find.byType(TextField), text);
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.idle();
+    }
+
+    /// Builds the new results and lets their search leave: guest requests keep a gap, with jitter, between them.
+    Future<void> settle(WidgetTester tester) async {
+      await tester.pump();
+      await tester.pump(threadsGuestMinGap + const Duration(milliseconds: 450));
+      await tester.pumpAndSettle();
     }
 
     http.Response page(Uri url) => http.Response(
@@ -151,6 +176,48 @@ void main() {
       await pump(tester, page, profile: 'flutter');
 
       expect(find.text(L10n.current.plugin_threads_open_handle('flutter')), findsOneWidget);
+    });
+
+    testWidgets('the title holds the query, and other words search again on the page, in the order chosen', (
+      tester,
+    ) async {
+      final asked = await pump(tester, page);
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, 'flutter');
+      await tester.tap(find.text(L10n.current.recent));
+      await tester.pumpAndSettle();
+
+      await search(tester, 'glaze recipes');
+      await settle(tester);
+
+      expect(asked.last.queryParameters, {'q': 'glaze recipes', 'serp_type': 'default', 'filter': 'recent'});
+      expect(find.byType(ThreadsPostCard), findsOneWidget);
+      final context = tester.element(find.byType(ThreadsSearchScreen));
+      expect(
+        readPluginSearchHistory(PrefService.of(context, listen: false), optionPluginThreadsSearchHistory),
+        ['glaze recipes'],
+      );
+    });
+
+    testWidgets('a #tag searches its posts on the page; an @handle or a post link opens its page', (tester) async {
+      final opened = OpenedPages();
+      final asked = await pump(tester, page, observers: [opened]);
+
+      await search(tester, '#Keramik');
+      await settle(tester);
+      expect(asked.last.queryParameters, {'q': 'Keramik', 'serp_type': 'tags'});
+      expect(find.text(L10n.current.plugin_threads_open_handle('flutter')), findsNothing);
+
+      await search(tester, '@Maya.Makes');
+      expect(opened.take(), isA<ThreadsProfileScreen>().having((screen) => screen.username, 'username', 'maya.makes'));
+      await tester.pump();
+
+      await search(tester, 'https://www.threads.com/@maya.makes/post/DAbc123');
+      expect(
+        opened.take(),
+        isA<ThreadsThreadScreen>().having((screen) => screen.post.handle, 'handle', 'maya.makes'),
+      );
+      await tester.pump();
+      expect(asked, hasLength(2), reason: 'opening a page searched nothing');
     });
   });
 }

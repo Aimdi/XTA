@@ -249,6 +249,36 @@ void maybeShowLikeToast(BuildContext context) {
   );
 }
 
+/// [child], liking its post on this device at a double-tap when the reader
+/// asked for that (Settings → Gestures), whatever network the post is from.
+///
+/// [child] is returned untouched while the gesture is off, which is the point
+/// of the setting: a double-tap recogniser makes every single tap wait to see
+/// whether a second one follows, and that delay would otherwise be paid by
+/// everyone opening a post.
+Widget withDoubleTapToLike(
+  BuildContext context, {
+  required bool Function() isLiked,
+  required Future<void> Function() like,
+  required Widget child,
+}) {
+  if (PrefService.of(context, listen: false).get<bool>(optionGestureDoubleTapLike) != true) {
+    return child;
+  }
+  return GestureDetector(
+    onDoubleTap: () async {
+      if (isLiked()) {
+        return;
+      }
+      await like();
+      if (context.mounted) {
+        maybeShowLikeToast(context);
+      }
+    },
+    child: child,
+  );
+}
+
 /// [tooltip] doubles as the button's accessibility label: an icon-only button
 /// without one is announced as an unnamed "button", which is what a screen
 /// reader used to get for every share, save and translate control in a feed.

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,8 +11,13 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:pref/pref.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/tweet/ticker/ticker_symbol.dart';
+import 'package:xta/plugins/stocks/stocks_instruments.dart';
+import 'package:xta/plugins/stocks/stocks_header.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/crypto_asset_screen.dart';
@@ -19,9 +25,9 @@ import 'package:xta/plugins/stocks/crypto_client.dart';
 import 'package:xta/plugins/stocks/crypto_detail_store.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
-import 'package:xta/plugins/plugin_compact_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/stocks/stocks_markets.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_quote_row.dart';
@@ -36,8 +42,6 @@ import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_quote_panel.dart';
 import 'package:xta/tweet/ticker/ticker_range.dart';
-import 'package:xta/tweet/tweet_chrome.dart';
-import 'package:xta/ui/contrast.dart';
 
 const _pepe = '0x6982508145454ce325ddbe47a25d4ec3d2311933';
 const _asset = CryptoAsset(chain: 'ethereum', address: _pepe, symbol: 'PEPE', name: 'Pepe');
@@ -130,33 +134,42 @@ Future<void> _pump(
   WidgetTester tester,
   Widget child, {
   double scale = 1,
+  double width = 320,
   ThemeData? theme,
   Locale? locale,
+  BasePrefService? prefs,
   bool settle = true,
 }) async {
-  tester.view.physicalSize = const Size(320, 640);
+  tester.view.physicalSize = Size(width, 640);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
-    MaterialApp(
-      theme: theme,
-      locale: locale,
-      localizationsDelegates: const [
-        L10n.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: L10n.delegate.supportedLocales,
-      builder: (context, app) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
-        child: app!,
+    PrefService(
+      service: prefs ?? _prefs(),
+      child: MaterialApp(
+        theme: theme,
+        locale: locale,
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.delegate.supportedLocales,
+        builder: (context, app) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+          child: app!,
+        ),
+        home: Scaffold(body: child),
       ),
-      home: Scaffold(body: child),
     ),
   );
   settle ? await tester.pumpAndSettle() : await tester.pump(const Duration(milliseconds: 100));
 }
+
+/// The settings the Stocks screen reads, as a fresh install has them.
+PrefServiceCache _prefs() =>
+    PrefServiceCache(cache: {optionTickerChart: true, optionPluginStocksFoldSignalPosts: false});
 
 /// Read once from the database, then left alone by the screen.
 class _Watchlist extends StocksWatchlistStore {
@@ -182,7 +195,7 @@ void main() {
     await Repository().migrate();
   });
 
-  testWidgets('the Stocks home leads with the watchlist as quote rows', (tester) async {
+  testWidgets('the Stocks home leads with the watchlist under its title and count', (tester) async {
     final watchlist = _Watchlist();
     final quotes = _Quotes()..remember('AAPL', _quote);
     await tester.runAsync(() async {
@@ -209,178 +222,196 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+    expect(find.text('My watchlist'), findsOneWidget);
+    expect(find.text('2 tickers'), findsOneWidget);
     expect(find.byType(StocksQuoteRow), findsNWidgets(2));
+    expect(find.text('Apple Inc. Common Stock With A Long Name'), findsOneWidget, reason: 'the name leads');
+    expect(find.text(r'$AAPL · Stock'), findsOneWidget, reason: 'over the cashtag and what it is');
     expect(find.text('+5.26%'), findsOneWidget);
-    expect(find.text('Stock'), findsOneWidget);
-    expect(find.text('Crypto · Ethereum'), findsOneWidget, reason: 'a token is badged with its network');
-    expect(find.textContaining('Pepe'), findsOneWidget, reason: 'and named, not addressed');
+    expect(find.text('PEPE'), findsOneWidget, reason: 'a token goes by its symbol');
+    expect(find.text('Ethereum'), findsOneWidget, reason: 'beside its network');
+    final token = tester.widget<StocksQuoteRow>(find.ancestor(of: find.text('PEPE'), matching: find.byType(StocksQuoteRow)));
+    expect(token.subtitle, '0x6982…1933', reason: 'over its address cut in the middle');
+    expect(find.byType(FloatingActionButton), findsNothing, reason: 'adding is in the header and under the list');
     await tester.pumpWidget(const SizedBox());
     await watchlist.destroy();
     await quotes.destroy();
   });
 
-  testWidgets('the Stocks bar holds only its tabs and a menu; adding floats over the lists it adds to', (tester) async {
-    final watchlist = _Watchlist();
-    final quotes = _Quotes()..remember('AAPL', _quote);
-    await tester.runAsync(() async {
-      final database = await Repository.writable();
-      await database.delete(tableStockSubscription);
-      await watchlist.add('AAPL');
-      await watchlist.preload();
-    });
-    final scroll = ScrollController();
-    addTearDown(scroll.dispose);
-    await _pump(
-      tester,
-      MultiProvider(
-        providers: [
-          Provider<StocksWatchlistStore>.value(value: watchlist),
-          Provider<TickerQuoteCache>.value(value: quotes),
-        ],
-        child: StocksScreen(scrollController: scroll),
-      ),
+  group('the header', () {
+    Future<(_Watchlist, _Quotes)> watching(WidgetTester tester) async {
+      final watchlist = _Watchlist();
+      final quotes = _Quotes()..remember('AAPL', _quote);
+      await tester.runAsync(() async {
+        final database = await Repository.writable();
+        await database.delete(tableStockSubscription);
+        await watchlist.add('AAPL');
+        await watchlist.preload();
+      });
+      addTearDown(() async {
+        await watchlist.destroy();
+        await quotes.destroy();
+      });
+      return (watchlist, quotes);
+    }
+
+    Widget screen(_Watchlist watchlist, _Quotes quotes, ScrollController scroll, {Widget? child}) => MultiProvider(
+      providers: [
+        Provider<StocksWatchlistStore>.value(value: watchlist),
+        Provider<TickerQuoteCache>.value(value: quotes),
+      ],
+      child: child ?? StocksScreen(scrollController: scroll),
     );
 
-    for (final tab in ['Watchlist', 'Posts', 'Trending', 'Markets']) {
-      expect(find.byTooltip(tab), findsOneWidget, reason: tab);
-    }
-    expect(find.byKey(const ValueKey('stocks-more')), findsOneWidget);
-    expect(find.widgetWithIcon(IconButton, Icons.add), findsNothing, reason: 'adding left the bar');
-    expect(find.byKey(const ValueKey('stocks-add')), findsOneWidget);
+    testWidgets('is the title, + and the settings over the four tabs as text', (tester) async {
+      final (watchlist, quotes) = await watching(tester);
+      final prefs = _prefs();
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      await _pump(tester, screen(watchlist, quotes, scroll), width: 640, prefs: prefs);
 
-    final context = tester.element(find.byType(StocksScreen));
-    final selected = tester.widget<Icon>(find.byIcon(Icons.star_outline));
-    final accent = ensureContrast(tweetReadableAccentColor(context), Theme.of(context).scaffoldBackgroundColor);
-    expect(selected.color, accent, reason: 'selection is the app accent');
-    expect(selected.color, isNot(StocksPlugin().brandColor));
-    expect(pluginMarkTint(context, StocksPlugin()), Theme.of(context).colorScheme.onSurface, reason: 'a neutral mark');
+      expect(find.text('Stocks'), findsOneWidget);
+      expect(find.byKey(const ValueKey('stocks-add')), findsOneWidget);
+      expect(find.byTooltip('Stocks settings'), findsOneWidget);
+      expect(find.byType(FloatingActionButton), findsNothing);
+      expect(find.byType(PluginSectionPicker), findsNothing, reason: 'the labels fit');
+      final context = tester.element(find.byType(StocksScreen));
+      expect(stocksAccent(context), isNot(StocksPlugin().brandColor), reason: 'selection is the app accent');
+      expect(pluginMarkTint(context, StocksPlugin()), Theme.of(context).colorScheme.onSurface, reason: 'a neutral mark');
+      for (final tab in ['Watchlist', 'Posts', 'Trending', 'Markets']) {
+        expect(
+          tester.widget<Text>(find.text(tab)).style!.color,
+          tab == 'Watchlist' ? stocksAccent(context) : Theme.of(context).colorScheme.onSurfaceVariant,
+          reason: '$tab: only the selected tab is in the accent',
+        );
+      }
 
-    await tester.tap(find.byKey(const ValueKey('stocks-more')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Manage watchlist'));
-    await tester.pumpAndSettle();
-    expect(find.text('Manage watchlist'), findsOneWidget, reason: 'the sheet it opens');
-    Navigator.pop(tester.element(find.text('Manage watchlist')));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byTooltip('Markets'));
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(find.byKey(const ValueKey('stocks-add')), findsNothing, reason: 'nothing to add to on Markets');
-    await tester.pumpWidget(const SizedBox());
-    await watchlist.destroy();
-    await quotes.destroy();
-  });
-
-  testWidgets('in Home the Stocks bar is its tabs and a ⋮, whose sheet does not repeat them', (tester) async {
-    final watchlist = _Watchlist();
-    final quotes = _Quotes()..remember('AAPL', _quote);
-    final dock = PluginHomeDockStore();
-    await tester.runAsync(() async {
-      final database = await Repository.writable();
-      await database.delete(tableStockSubscription);
-      await watchlist.add('AAPL');
-      await watchlist.preload();
+      await tester.tap(find.byTooltip('Stocks settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Manage watchlist'), findsOneWidget);
+      expect(find.text('Stock chart'), findsOneWidget);
+      await tester.tap(find.text('Fold signal-group posts'));
+      await tester.pumpAndSettle();
+      expect(prefs.get<bool>(optionPluginStocksFoldSignalPosts), isTrue);
+      await tester.pumpWidget(const SizedBox());
     });
-    final scroll = ScrollController();
-    addTearDown(scroll.dispose);
-    await _pump(
-      tester,
-      MultiProvider(
-        providers: [
-          Provider<StocksWatchlistStore>.value(value: watchlist),
-          Provider<TickerQuoteCache>.value(value: quotes),
-        ],
-        child: PluginHomeDockScope(
-          store: dock,
-          source: StocksPlugin().id,
-          enabled: true,
-          compact: true,
-          openClientLabel: '',
-          onOpenClient: null,
-          child: Column(
-            children: [
-              PluginCompactHeader(plugin: StocksPlugin(), store: dock),
-              Expanded(child: StocksScreen(scrollController: scroll)),
-            ],
+
+    testWidgets('becomes the labelled section picker when the tabs do not fit', (tester) async {
+      final (watchlist, quotes) = await watching(tester);
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      await _pump(tester, screen(watchlist, quotes, scroll), scale: 1.3, locale: const Locale('de'));
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(PluginSectionPicker), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+
+    testWidgets("in Home: the title opens the sources, the sliders Home's sheet for Stocks", (tester) async {
+      final (watchlist, quotes) = await watching(tester);
+      final dock = PluginHomeDockStore();
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      var picked = 0;
+      await _pump(
+        tester,
+        screen(
+          watchlist,
+          quotes,
+          scroll,
+          child: PluginHomeDockScope(
+            store: dock,
+            source: pluginIdStocks,
+            enabled: true,
+            compact: true,
+            openClientLabel: '',
+            onOpenClient: null,
+            child: Column(
+              children: [
+                StocksHomeHeader(store: dock, onPickSource: () => picked++),
+                Expanded(child: StocksScreen(scrollController: scroll)),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+        width: 640,
+      );
 
-    final options = find.byKey(const ValueKey('home-plugin-options'));
-    expect(find.descendant(of: options, matching: find.byIcon(Icons.more_vert)), findsOneWidget);
-    expect(find.descendant(of: options, matching: find.byIcon(Icons.tune)), findsNothing);
-    expect(find.widgetWithIcon(IconButton, Icons.add), findsNothing, reason: 'adding floats over the list instead');
-    await tester.tap(options);
-    await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('home-section-0')), findsNothing);
-    expect(find.text('Manage watchlist'), findsOneWidget);
-    expect(find.text('Watchlist'), findsNothing, reason: 'the tab is not listed again under its own name');
-    await tester.pumpWidget(const SizedBox());
-    await dock.destroy();
-    await watchlist.destroy();
-    await quotes.destroy();
+      expect(find.text('Stocks'), findsOneWidget, reason: 'one header, not two');
+      await tester.tap(find.byKey(const ValueKey('plugin-source-picker-stocks')));
+      expect(picked, 1);
+      expect(find.byKey(const ValueKey('stocks-add')), findsOneWidget);
+      expect(find.text('Watchlist'), findsOneWidget, reason: 'the tabs as text');
+
+      await tester.tap(find.byTooltip('Stocks settings'));
+      await tester.pumpAndSettle();
+      expect(find.text('Manage watchlist'), findsOneWidget);
+      expect(find.byKey(const ValueKey('home-section-0')), findsNothing, reason: 'the tabs are not listed again');
+      await tester.pumpWidget(const SizedBox());
+      await dock.destroy();
+    });
   });
 
   group('a watchlist row', () {
+    List<Widget> rows({String stock = 'Stock', String index = 'Index'}) => [
+      StocksQuoteRow(title: 'Apple Inc.', subtitle: '\$AAPL · $stock', quote: _quote, onTap: () {}),
+      StocksQuoteRow(
+        title: 'PEPE',
+        network: 'Ethereum',
+        subtitle: '0x6982…1933',
+        quote: _pepeMarket.quote,
+        onTap: () {},
+      ),
+      StocksQuoteRow(title: 'Nasdaq-100', subtitle: '\$NDX · $index', quote: _closedIndex, onTap: () {}),
+      StocksQuoteRow(title: 'POD', subtitle: stock, quote: null, failed: true, onTap: () {}, onRetry: () {}),
+    ];
+
     for (final entry in _themes.entries) {
       for (final scale in [1.0, 2.0]) {
         testWidgets('fits 320dp at ${scale}x text in ${entry.key}', (tester) async {
-          await _pump(
-            tester,
-            Column(
-              children: [
-                StocksQuoteRow(
-                  title: r'$AAPL',
-                  subtitle: _quote.shortName,
-                  badge: 'Stock',
-                  quote: _quote,
-                  onTap: () {},
-                ),
-                StocksQuoteRow(
-                  title: r'$PEPE',
-                  subtitle: 'Pepe',
-                  badge: 'Crypto · Ethereum',
-                  quote: _pepeMarket.quote,
-                  onTap: () {},
-                ),
-                StocksQuoteRow(
-                  title: r'$NDX',
-                  subtitle: 'Nasdaq-100',
-                  badge: 'Index',
-                  quote: _closedIndex,
-                  onTap: () {},
-                ),
-                StocksQuoteRow(title: r'$POD', badge: 'Stock', quote: null, failed: true, onTap: () {}, onRetry: () {}),
-              ],
-            ),
-            scale: scale,
-            theme: entry.value,
-          );
+          await _pump(tester, Column(children: rows()), scale: scale, theme: entry.value);
 
           expect(tester.takeException(), isNull);
-          expect(find.text(r'$AAPL'), findsOneWidget);
           expect(find.text('200.00'), findsOneWidget);
           expect(find.text('+5.26%'), findsOneWidget);
           expect(find.text('0.0₄1230'), findsOneWidget);
-          expect(find.text('Crypto · Ethereum'), findsOneWidget);
-          expect(find.text('Tap to retry'), findsOneWidget);
-          expect(find.byType(StocksSparkline), scale == 1 ? findsOneWidget : findsNothing);
+          expect(find.text('The data source returns no price'), findsOneWidget);
+          expect(scale == 1 ? find.text('Retry') : find.byTooltip('Retry'), findsOneWidget, reason: 'the words fit');
+          expect(find.byType(StocksSparkline), scale == 1 ? findsOneWidget : findsNothing, reason: 'room to spare');
           for (final row in find.byType(StocksQuoteRow).evaluate()) {
-            expect(row.size!.height, greaterThanOrEqualTo(48), reason: 'a row is a touch target');
+            expect(row.size!.height, greaterThanOrEqualTo(56), reason: 'a row is a touch target');
           }
         });
       }
+
+      testWidgets('German fits 320dp at 1.3x text in ${entry.key}', (tester) async {
+        await _pump(
+          tester,
+          Column(children: rows(stock: 'Aktie')),
+          scale: 1.3,
+          theme: entry.value,
+          locale: const Locale('de'),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('24.172,03'), findsOneWidget);
+        expect(find.text(_closeTag('de', 'Schluss')), findsOneWidget);
+        expect(find.text('1T'), findsOneWidget);
+        expect(find.text('24 h'), findsOneWidget);
+        expect(find.text('0,0₄1230'), findsOneWidget);
+        expect(find.text('Datenquelle liefert keinen Kurs'), findsOneWidget);
+        expect(find.byTooltip('Erneut versuchen'), findsOneWidget, reason: 'the arrow alone where the words crowd the row');
+      });
     }
 
-    testWidgets('long-pressing a token copies its full contract address', (tester) async {
+    testWidgets('a long press lifts a row to move it, and copies nothing', (tester) async {
       final copied = <String>[];
       tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
         if (call.method == 'Clipboard.setData') copied.add((call.arguments as Map)['text'] as String);
         return null;
       });
       addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
-
+      final moves = <(int, int)>[];
       await _pump(
         tester,
         StocksWatchlistList(
@@ -389,13 +420,50 @@ void main() {
           assets: {_asset.id: _asset},
           onOpen: (_) {},
           onRefresh: () async {},
+          onReorder: (from, to) => moves.add((from, to)),
         ),
       );
-      await tester.longPress(find.text(r'$PEPE'));
-      await tester.pump();
+      expect(find.text('Press and hold to reorder'), findsOneWidget);
 
-      expect(copied, [_pepe]);
-      expect(find.text('Contract address copied'), findsOneWidget);
+      final drag = await tester.startGesture(tester.getCenter(find.text('PEPE')));
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 100));
+      await drag.moveBy(const Offset(0, 90));
+      await tester.pump();
+      await drag.moveBy(const Offset(0, 30));
+      await tester.pump();
+      await drag.up();
+      await tester.pumpAndSettle();
+
+      expect(moves, [(0, 1)], reason: 'PEPE ends up second');
+      expect(copied, isEmpty, reason: 'the token page still has Copy contract');
+    });
+  });
+
+  group('the watchlist order', () {
+    test('keeps the order it was dragged into, and files anything new after it', () {
+      expect(stocksOrdered(['AAPL', 'MSFT', 'NVDA', 'TSLA'], ['NVDA', 'GONE', 'AAPL']), ['NVDA', 'AAPL', 'MSFT', 'TSLA']);
+      expect(stocksOrdered(['AAPL', 'MSFT'], null), ['AAPL', 'MSFT']);
+    });
+
+    test('a row dropped elsewhere is still there after a reload', () async {
+      final prefs = _prefs();
+      final first = StocksWatchlistStore(prefs: prefs);
+      final database = await Repository.writable();
+      await database.delete(tableStockSubscription);
+      for (final symbol in ['AAPL', 'MSFT', 'NVDA']) {
+        await first.add(symbol);
+      }
+      await first.load();
+      expect(first.state, ['AAPL', 'MSFT', 'NVDA']);
+
+      await first.reorder(0, 2);
+      expect(first.state, ['MSFT', 'NVDA', 'AAPL']);
+
+      final again = StocksWatchlistStore(prefs: prefs);
+      await again.load();
+      expect(again.state, ['MSFT', 'NVDA', 'AAPL']);
+      await first.destroy();
+      await again.destroy();
     });
   });
 
@@ -415,42 +483,41 @@ void main() {
       expect(stockRowState(_pepeMarket.quote, failed: false, now: now), StockRowState.live);
     });
 
-    testWidgets('loading: a shimmer where the figures go, the row already named and badged', (tester) async {
+    testWidgets('loading: grey bars where the figures go, the row already named', (tester) async {
       await _pump(
         tester,
-        StocksQuoteRow(title: r'$NDX', subtitle: 'Nasdaq-100', badge: 'Index', quote: null, onTap: () {}),
+        StocksQuoteRow(title: 'Nasdaq-100', subtitle: r'$NDX · Index', quote: null, onTap: () {}),
         settle: false,
       );
 
       expect(find.byType(StocksFiguresSkeleton), findsOneWidget);
       expect(find.text(kStockPlaceholder), findsNothing, reason: 'no dash');
-      expect(find.byType(StocksChangeChip), findsNothing);
-      expect(find.text('Index'), findsOneWidget);
-      expect(find.textContaining('Nasdaq-100'), findsOneWidget);
+      expect(find.text(r'$NDX · Index'), findsOneWidget);
       expect(find.bySemanticsLabel(RegExp('Loading price')), findsOneWidget);
     });
 
-    testWidgets('market closed: the last close, the day of it and a muted move', (tester) async {
+    testWidgets('market closed: the close and its day, price and move in the secondary colour', (tester) async {
       await _pump(
         tester,
-        StocksQuoteRow(title: r'$NDX', subtitle: 'Nasdaq-100', badge: 'Index', quote: _closedIndex, onTap: () {}),
+        StocksQuoteRow(title: 'Nasdaq-100', subtitle: r'$NDX · Index', quote: _closedIndex, onTap: () {}),
       );
 
-      expect(find.text('24,172.03'), findsOneWidget);
+      final muted = Theme.of(tester.element(find.byType(StocksQuoteRow))).colorScheme.onSurfaceVariant;
+      expect(tester.widget<Text>(find.text('24,172.03')).style!.color, muted);
+      expect(tester.widget<Text>(find.text('+0.45%')).style!.color, muted, reason: 'no green for a stale move');
       expect(find.text(_closeTag('en', 'Close')), findsOneWidget);
-      expect(find.text('+0.45%'), findsOneWidget);
-      expect(tester.widget<StocksChangeChip>(find.byType(StocksChangeChip)).muted, isTrue);
-      expect(find.text('1D'), findsNothing, reason: 'the tag already says what the move is');
+      expect(find.text('1D'), findsNothing, reason: 'the day of the close already says what the move is');
+      expect(find.byType(StocksSparkline), findsNothing, reason: 'only a live row draws its day');
     });
 
-    testWidgets('no data: one line, no pill, and tapping it asks again', (tester) async {
+    testWidgets('no data: the reason, no figures, and a retry button', (tester) async {
       var retried = 0;
       var opened = 0;
       await _pump(
         tester,
         StocksQuoteRow(
-          title: r'$POD',
-          badge: 'Stock',
+          title: 'POD',
+          subtitle: 'Stock',
           quote: null,
           failed: true,
           onTap: () => opened++,
@@ -458,98 +525,214 @@ void main() {
         ),
       );
 
-      expect(find.byType(StocksChangeChip), findsNothing, reason: 'no empty pill');
+      expect(find.text('The data source returns no price'), findsOneWidget);
       expect(find.byType(StocksFiguresSkeleton), findsNothing);
-      await tester.tap(find.text('Tap to retry'));
+      await tester.tap(find.text('Retry'));
       expect((retried, opened), (1, 0));
-      await tester.tap(find.text(r'$POD'));
+      await tester.tap(find.text('POD'));
       expect((retried, opened), (1, 1), reason: 'the rest of the row still opens the page');
     });
 
-    testWidgets('each move says what it is measured over', (tester) async {
+    testWidgets('a live move is coloured and says what it is measured over', (tester) async {
       await _pump(
         tester,
         Column(
           children: [
-            StocksQuoteRow(title: r'$AAPL', quote: _quote, onTap: () {}),
-            StocksQuoteRow(title: r'$PEPE', quote: _pepeMarket.quote, onTap: () {}),
+            StocksQuoteRow(title: 'Apple Inc.', quote: _quote, onTap: () {}),
+            StocksQuoteRow(title: 'PEPE', quote: _pepeMarket.quote, onTap: () {}),
           ],
         ),
       );
 
+      final context = tester.element(find.byType(Column).first);
+      expect(tester.widget<Text>(find.text('+5.26%')).style!.color, stockTrendColour(context, 5.26));
       expect(find.text('1D'), findsOneWidget, reason: 'a share against the previous close');
       expect(find.text('24h'), findsOneWidget, reason: 'a token over the last 24 hours');
     });
 
-    for (final entry in _themes.entries) {
-      testWidgets('German fits 320dp at 1.3x text in ${entry.key}', (tester) async {
-        await _pump(
-          tester,
-          Column(
-            children: [
-              StocksQuoteRow(title: r'$NDX', subtitle: 'Nasdaq-100', badge: 'Index', quote: _closedIndex, onTap: () {}),
-              StocksQuoteRow(title: r'$AAPL', subtitle: _quote.shortName, badge: 'Aktie', quote: _quote, onTap: () {}),
-              StocksQuoteRow(
-                title: r'$PEPE',
-                subtitle: 'Pepe',
-                badge: 'Krypto · Ethereum',
-                quote: _pepeMarket.quote,
-                onTap: () {},
-              ),
-              StocksQuoteRow(title: r'$POD', badge: 'Aktie', quote: null, failed: true, onTap: () {}, onRetry: () {}),
+    testWidgets('two readings: the amber line and both choices, the one shown in the accent', (tester) async {
+      final chosen = <TickerInstrument>[];
+      await _pump(
+        tester,
+        StocksQuoteRow(
+          title: 'Solana',
+          subtitle: r'$SOL · Crypto',
+          quote: _pepeMarket.quote,
+          warning: 'Two matches, choose the source',
+          choices: StocksReadingChoices(
+            readings: const [
+              (instrument: TickerInstrument.crypto, name: 'Solana', kind: TickerKind.crypto),
+              (instrument: TickerInstrument.stock, name: 'Emeren Group Ltd', kind: TickerKind.stock),
             ],
+            shown: TickerInstrument.crypto,
+            onChoose: chosen.add,
           ),
-          scale: 1.3,
-          theme: entry.value,
-          locale: const Locale('de'),
-        );
+          onTap: () {},
+        ),
+      );
 
-        expect(tester.takeException(), isNull);
-        expect(find.text('24.172,03'), findsOneWidget);
-        expect(find.text(_closeTag('de', 'Schluss')), findsOneWidget);
-        expect(find.text('1T'), findsOneWidget);
-        expect(find.text('0,0₄1230'), findsOneWidget);
-        expect(find.text('Tippen zum Wiederholen'), findsOneWidget);
-      });
+      final context = tester.element(find.byType(StocksQuoteRow));
+      expect(tester.takeException(), isNull);
+      expect(tester.widget<Text>(find.text('Two matches, choose the source')).style!.color, stockWarningColour(context));
+      expect(find.text(r'$SOL · Crypto'), findsNothing, reason: 'the caution takes the second line');
+      expect(find.text('Emeren Group Ltd'), findsOneWidget);
+      expect(find.text('Stock'), findsOneWidget);
+      BorderSide side(TickerInstrument instrument) => tester
+          .widget<OutlinedButton>(find.byKey(ValueKey('stocks-reading-${instrument.name}')))
+          .style!
+          .side!
+          .resolve({})!;
+      expect(side(TickerInstrument.crypto).color, stocksAccent(context));
+      expect(side(TickerInstrument.stock).color, isNot(stocksAccent(context)));
+
+      await tester.tap(find.text('Emeren Group Ltd'));
+      expect(chosen, [TickerInstrument.stock]);
+    });
+  });
+
+  group('the quote cache and two readings', () {
+    Map<String, Object?> listing(String symbol) => {
+      'chart': {
+        'result': [
+          {
+            'meta': {
+              'symbol': symbol,
+              'currency': 'USD',
+              'instrumentType': 'EQUITY',
+              'shortName': 'Emeren Group Ltd',
+              'regularMarketPrice': 1.9,
+              'chartPreviousClose': 2.0,
+            },
+            'timestamp': [_now - 60],
+            'indicators': {
+              'quote': [
+                {
+                  'close': [1.9],
+                },
+              ],
+            },
+          },
+        ],
+      },
+    };
+    Map<String, Object?> coin(String symbol) => {
+      'chart': {
+        'result': [
+          {
+            'meta': {'symbol': symbol, 'currency': 'USD', 'instrumentType': 'CRYPTOCURRENCY', 'regularMarketPrice': 180.0},
+            'timestamp': [_now - 60],
+            'indicators': {
+              'quote': [
+                {
+                  'close': [180.0],
+                },
+              ],
+            },
+          },
+        ],
+      },
+    };
+
+    TickerClient client(List<String> asked) => TickerClient(
+      coinSources: const [],
+      httpClient: MockClient((request) async {
+        final symbol = request.url.pathSegments.last;
+        asked.add(symbol);
+        return http.Response(jsonEncode(symbol.endsWith('-USD') ? coin(symbol) : listing(symbol)), 200);
+      }),
+    );
+
+    test('a coin-first cashtag on the watchlist finds its listing, once', () async {
+      final asked = <String>[];
+      final cache = TickerQuoteCache(client: client(asked), prefs: _prefs());
+      await cache.ensureReadings(['SOL', 'AAPL']);
+      await cache.ensureReadings(['SOL']);
+
+      expect(asked, ['SOL'], reason: r'$AAPL names one thing; $SOL is asked for once');
+      expect(cache.listingFor('sol')?.shortName, 'Emeren Group Ltd');
+      expect(stocksReadings(cache, 'SOL')?.map((reading) => reading.instrument), [
+        TickerInstrument.crypto,
+        TickerInstrument.stock,
+      ]);
+      await cache.destroy();
+    });
+
+    test('the pick is kept, and decides what the symbol is asked for as', () async {
+      final asked = <String>[];
+      final prefs = _prefs();
+      final cache = TickerQuoteCache(client: client(asked), prefs: prefs);
+      await cache.ensureReadings(['SOL']);
+      await cache.choose('SOL', TickerInstrument.stock);
+
+      expect(prefs.getStringList(optionTickerInstruments), ['SOL=stock']);
+      expect(cache.peek('SOL')?.kind, TickerKind.stock);
+      expect(stocksReadings(cache, 'SOL'), isNull, reason: 'nothing left to choose');
+
+      asked.clear();
+      final later = TickerQuoteCache(client: client(asked), prefs: prefs);
+      expect(later.instrumentFor('sol'), TickerInstrument.stock);
+      await later.ensure(['SOL']);
+      expect(asked, ['SOL'], reason: 'not SOL-USD');
+      expect(stockRowName('SOL', later.peek('SOL'), reading: later.instrumentFor('SOL')), 'Emeren Group Ltd');
+      await cache.destroy();
+      await later.destroy();
+    });
+  });
+
+  testWidgets('Markets: Indices and Crypto, each saying its state, and the row without data retries', (tester) async {
+    final retried = <String>[];
+    await _pump(
+      tester,
+      StocksMarketsList(
+        quotes: {'NDX': _closedIndex, 'BTC': _pepeMarket.quote},
+        failed: const {'SPX'},
+        onRetry: retried.add,
+      ),
+      settle: false,
+    );
+
+    expect(find.text('Indices'), findsOneWidget);
+    expect(find.text('Crypto', skipOffstage: false), findsOneWidget);
+    final close = DateTime.fromMillisecondsSinceEpoch(_lastClose * 1000);
+    expect(find.textContaining('Closed, last close ${DateFormat.MEd('en').format(close)}'), findsOneWidget);
+    expect(find.textContaining('Live, 24h change', skipOffstage: false), findsOneWidget);
+    expect(find.text('S&P 500'), findsOneWidget, reason: 'named before any price');
+    expect(find.text(r'$NDX · Index'), findsOneWidget);
+    expect(find.text('The data source returns no price'), findsOneWidget, reason: r'$SPX has none');
+    expect(find.text(_closeTag('en', 'Close')), findsNothing, reason: 'the section says it once');
+    expect(find.text(kStockPlaceholder), findsNothing);
+    expect(find.byType(StocksFiguresSkeleton), findsWidgets);
+    await tester.tap(find.text('Retry'));
+    expect(retried, ['SPX']);
+  });
+
+  testWidgets('the strip is flat: symbol over figures, No price, a bar while loading, the filter in the accent', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      StocksWatchlistReel(
+        symbols: const ['AAPL', 'POD', 'ETH', 'NDX'],
+        quotes: {'AAPL': _quote, 'NDX': _closedIndex},
+        failed: const {'POD'},
+        selected: 'AAPL',
+        onSelected: (_) {},
+      ),
+      settle: false,
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(Chip), findsNothing);
+    expect(find.byType(StocksFiguresSkeleton, skipOffstage: false), findsOneWidget, reason: r'$ETH loads');
+    expect(find.text('No price', skipOffstage: false), findsOneWidget, reason: r'$POD has none');
+    final context = tester.element(find.byType(StocksWatchlistReel));
+    Color? labelColour(String label) {
+      final text = tester.widget<Text>(find.text(label, skipOffstage: false));
+      return ((text.textSpan! as TextSpan).children!.first as TextSpan).style!.color;
     }
 
-    testWidgets('Markets names and badges every row before any price, and retries the one without data', (
-      tester,
-    ) async {
-      final retried = <String>[];
-      await _pump(
-        tester,
-        StocksMarketsList(quotes: const {}, failed: const {'SPX'}, onRetry: retried.add),
-        settle: false,
-      );
-
-      expect(find.textContaining('S&P 500'), findsOneWidget);
-      expect(find.textContaining('Nasdaq-100'), findsOneWidget);
-      expect(find.text('Index'), findsWidgets);
-      expect(find.text(kStockPlaceholder), findsNothing);
-      expect(find.byType(StocksFiguresSkeleton), findsWidgets);
-      await tester.tap(find.text('Tap to retry'));
-      expect(retried, ['SPX']);
-    });
-
-    testWidgets('the watchlist strip shows the same states', (tester) async {
-      await _pump(
-        tester,
-        StocksWatchlistReel(
-          symbols: const ['AAPL', 'POD', 'ETH', 'NDX'],
-          quotes: {'AAPL': _quote, 'NDX': _closedIndex},
-          failed: const {'POD'},
-          onSelected: (_) {},
-        ),
-        settle: false,
-      );
-
-      expect(tester.takeException(), isNull);
-      expect(find.byType(StocksFiguresSkeleton, skipOffstage: false), findsOneWidget, reason: r'$ETH loads');
-      expect(find.text('No data', skipOffstage: false), findsOneWidget, reason: r'$POD has none');
-      final chips = tester.widgetList<StocksChangeChip>(find.byType(StocksChangeChip, skipOffstage: false));
-      expect([for (final chip in chips) chip.muted], [false, true], reason: r'$NDX is closed');
-    });
+    expect(labelColour('AAPL'), stocksAccent(context), reason: 'the filter');
+    expect(labelColour('POD'), isNull, reason: 'the others in the text colour');
   });
 
   group('the ticker page', () {
@@ -558,6 +741,7 @@ void main() {
         final store = TickerDetailStore(
           symbol: 'AAPL',
           client: TickerClient(
+            coinSources: const [],
             httpClient: MockClient((request) async => http.Response(jsonEncode(_chart('AAPL')), 200)),
           ),
         );
@@ -587,6 +771,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'ETH',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             asked.add(request.url.pathSegments.last);
             return http.Response(jsonEncode(_chart(request.url.pathSegments.last)), 200);
@@ -612,6 +797,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'AAPL',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async => next?.future ?? http.Response(jsonEncode(_chart('AAPL')), 200)),
         ),
       );
@@ -650,6 +836,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'AAPL',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             requests.add(request.url.queryParameters['range'] ?? '');
             return next?.future ?? http.Response(jsonEncode(_chart('AAPL')), 200);
@@ -675,6 +862,7 @@ void main() {
       final store = TickerDetailStore(
         symbol: 'AAPL',
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient(
             (request) async => busy ? http.Response('busy', 503) : http.Response(jsonEncode(_chart('AAPL')), 200),
           ),
@@ -702,7 +890,7 @@ void main() {
     testWidgets('a failed price load offers a retry instead of a blank', (tester) async {
       final store = TickerDetailStore(
         symbol: 'AAPL',
-        client: TickerClient(httpClient: MockClient((_) async => http.Response('busy', 503))),
+        client: TickerClient(coinSources: const [], httpClient: MockClient((_) async => http.Response('busy', 503))),
       );
       addTearDown(store.destroy);
       await store.load();
@@ -781,7 +969,7 @@ void main() {
           ),
         ),
       );
-      final ticker = TickerClient(httpClient: MockClient((_) async => http.Response('{}', 200)));
+      final ticker = TickerClient(coinSources: const [], httpClient: MockClient((_) async => http.Response('{}', 200)));
       await _pump(tester, StocksAddSheet(client: ticker, cryptoClient: crypto), scale: 1.5);
 
       await tester.enterText(find.byType(TextField), _pepe.toUpperCase().replaceFirst('0X', '0x'));

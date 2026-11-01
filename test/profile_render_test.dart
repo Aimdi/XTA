@@ -29,4 +29,21 @@ void main() {
       await settleProfile(tester);
     });
   }
+
+  for (final tab in const ['Media', 'Saved']) {
+    final name = 'profile-filters-en-390-${tab.toLowerCase()}';
+    testWidgets(name, skip: !_render, (tester) async {
+      await pumpXProfile(tester);
+      await tester.tap(find.text(tab));
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(tester.takeException(), isNull);
+      await expectLater(
+        find.byKey(const ValueKey('profile-shot')),
+        matchesGoldenFile('../review-artifacts/renders/$name.png'),
+      );
+      await settleProfile(tester);
+    });
+  }
 }

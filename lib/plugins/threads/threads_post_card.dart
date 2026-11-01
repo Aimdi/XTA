@@ -22,11 +22,14 @@ import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/thread_rail.dart';
+import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/tweet/tweet.dart' show tweetCardColor;
+import 'package:xta/tweet/tweet_action_style.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/tweet/tweet_header.dart';
 import 'package:xta/tweet/tweet_ink_layout.dart';
+import 'package:xta/ui/card_page_route.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
@@ -63,6 +66,10 @@ class ThreadsPostCard extends StatelessWidget {
   final bool threadConnectTop;
   final bool threadConnectBottom;
 
+  /// The post a conversation was opened on: its time and date on a line under
+  /// it rather than in its header, its text selectable, as X's opened post.
+  final bool focal;
+
   const ThreadsPostCard({
     super.key,
     required this.post,
@@ -73,6 +80,7 @@ class ThreadsPostCard extends StatelessWidget {
     this.onOpenBrowser,
     this.threadConnectTop = false,
     this.threadConnectBottom = false,
+    this.focal = false,
   });
 
   void _open(BuildContext context) {
@@ -80,8 +88,15 @@ class ThreadsPostCard extends StatelessWidget {
       onOpen!();
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)));
+    openThreadsPost(context, post);
   }
+
+  void _showActions(BuildContext context) => showPluginPostActions(
+    context,
+    post: threadsArchive(post),
+    url: post.url ?? post.id,
+    onGroup: () => addThreadsAccountToGroup(context, _account),
+  );
 
   void _openAuthor(BuildContext context) {
     if (onAuthorTap != null) {
@@ -116,7 +131,12 @@ class ThreadsPostCard extends StatelessWidget {
     return ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
       store: accounts,
       distinct: (_) => accounts.follows(post.handle),
-      onState: (context, _) => _post(context, following: accounts.follows(post.handle)),
+      onState: (context, _) => withDoubleTapToLike(
+        context,
+        isLiked: () => context.read<ThreadsLikesStore>().isLiked(post.id),
+        like: () => context.read<ThreadsLikesStore>().toggle(post),
+        child: _post(context, following: accounts.follows(post.handle)),
+      ),
     );
   }
 
@@ -128,12 +148,7 @@ class ThreadsPostCard extends StatelessWidget {
       showSourceBadge: showSourceBadge,
       color: tweetCardColor(context),
       onTap: openOnTap ? () => _open(context) : null,
-      onLongPress: () => showPluginPostActions(
-        context,
-        post: threadsArchive(post),
-        url: post.url ?? post.id,
-        onGroup: () => addThreadsAccountToGroup(context, _account),
-      ),
+      onLongPress: () => _showActions(context),
       contextLines: [if (post.isRepost) _repostLine(context)],
       avatar: _avatar(context),
       authorName: post.authorName,
@@ -142,7 +157,13 @@ class ThreadsPostCard extends StatelessWidget {
         displayName: post.authorName,
         handle: post.handle,
         verified: post.isVerified,
-        timestamp: date == null ? null : Timestamp(timestamp: date, compact: true),
+        timestamp: date == null || focal
+            ? null
+            : Timestamp(
+                timestamp: date,
+                absoluteTimestamp: PrefService.of(context, listen: false).get<bool>(optionUseAbsoluteTimestamp) ?? false,
+                compact: true,
+              ),
       ),
       trailing: [
         if (!following)
@@ -151,6 +172,14 @@ class ThreadsPostCard extends StatelessWidget {
             tooltip: L10n.of(context).plugin_threads_follow,
             onPressed: () => context.read<ThreadsAccountsStore>().add(_account),
           ),
+        tweetActionIconButton(
+          context,
+          icon: Icons.more_horiz,
+          color: tweetFooterButtonsColorOf(context),
+          style: tweetActionButtonStyle(tweetActionGlyphPadding(alignTop: true)),
+          tooltip: L10n.of(context).more_info,
+          onPressed: () => _showActions(context),
+        ),
       ],
       body: [
         if (post.topicTag case final tag?)
@@ -182,42 +211,26 @@ class ThreadsPostCard extends StatelessWidget {
     children: [
       if (post.text.isNotEmpty) ...[
         const SizedBox(height: kInkTextGap),
-        ThreadsCaption(text: post.text, fragments: post.fragments, style: tweetBodyStyle(context)),
+        ThreadsCaption(
+          text: post.text,
+          fragments: post.fragments,
+          style: tweetBodyStyle(context),
+          selectable: focal,
+        ),
       ],
       if (post.hasMedia) ...[
         const SizedBox(height: 10),
         ThreadsPostMedia(post: post, onOpenPost: openOnTap ? () => _open(context) : null),
       ],
-      if (post.linkCard != null) ...[const SizedBox(height: 10), _linkPreview(context, post.linkCard!)],
+      if (post.linkCard != null) ...[
+        const SizedBox(height: 10),
+        threadsLinkPreview(context, post, openPost: openOnTap ? () => _open(context) : null),
+      ],
       if (post.quoted != null) ...[const SizedBox(height: 10), ThreadsQuotedPost(quote: post.quoted!)],
       if (post.selfThreadCount > 0 && openOnTap)
         _ShowThreadButton(count: post.selfThreadCount, onPressed: () => _open(context)),
+      if (focal) TweetFocalMetaLine(createdAt: post.publishedAt, views: null, start: 0),
     ],
-  );
-
-  Widget _linkPreview(BuildContext context, ThreadsLinkCard card) => LinkPreviewCard(
-    url: card.url,
-    title: card.title,
-    description: card.description,
-    imageUrl: card.imageUrl,
-    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
-    imageBuilder: (_, url, cacheWidth) => ThreadsNetworkImage(url, fit: BoxFit.cover, cacheWidth: cacheWidth),
-    onTap: () => openPostLink(context, card.url, title: card.title, post: _linkContext(context)),
-  );
-
-  LinkPostContext _linkContext(BuildContext context) => LinkPostContext(
-    sourceId: pluginIdThreads,
-    author: post.authorName,
-    avatarUrl: post.avatarUrl,
-    replies: post.replyCount,
-    reposts: post.repostCount,
-    likes: post.likeCount,
-    postUrl: post.url,
-    openPost: openOnTap
-        ? () {
-            if (context.mounted) _open(context);
-          }
-        : null,
   );
 
   Widget _repostLine(BuildContext context) {
@@ -280,17 +293,22 @@ class _ThreadsEngagementRow extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2),
       child: Row(
         children: [
-          TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: onOpen,
-            icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(metaLabel(post.replyCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+          // Both open the post: Meta lists neither replies nor reposts apart.
+          tweetFooterTextButton(
+            Icons.mode_comment_outlined,
+            metaLabel(post.replyCount),
+            muted,
+            onOpen,
+            L10n.of(context).open_post,
+            post.replyCount,
           ),
-          TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: onOpen,
-            icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(metaLabel(post.repostCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+          tweetFooterTextButton(
+            Icons.repeat,
+            metaLabel(post.repostCount),
+            muted,
+            onOpen,
+            L10n.of(context).open_post,
+            post.repostCount,
           ),
           ScopedBuilder<ThreadsLikesStore, List<ThreadsPost>>(
             store: likes,
@@ -303,6 +321,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
                 isLiked: isLiked,
                 label: likeLabel,
                 color: isLiked ? theme.colorScheme.primary : muted,
+                tooltip: isLiked ? L10n.of(context).unlike_on_this_device : L10n.of(context).like_on_this_device,
                 onPressed: () async {
                   final wasLiked = isLiked;
                   await likes.toggle(post);
@@ -345,8 +364,8 @@ class ThreadsTopicTag extends StatelessWidget {
       onTap: () =>
           Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsSearchScreen(query: tag, tag: true))),
       borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -359,6 +378,7 @@ class ThreadsTopicTag extends StatelessWidget {
                 style: theme.textTheme.labelMedium!.copyWith(color: color, fontWeight: FontWeight.w600),
               ),
             ),
+            const SizedBox(width: 2),
           ],
         ),
       ),
@@ -379,11 +399,52 @@ class _ShowThreadButton extends StatelessWidget {
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: TextButton.icon(
-        style: TextButton.styleFrom(minimumSize: const Size(48, 40), padding: const EdgeInsets.symmetric(horizontal: 4)),
+        style: TextButton.styleFrom(
+          minimumSize: const Size(kTweetTouchTarget, kTweetTouchTarget),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+        ),
         onPressed: onPressed,
         icon: const Icon(Icons.forum_outlined, size: 18),
         label: Text(L10n.of(context).plugin_threads_show_thread(count)),
       ),
     );
   }
+}
+
+/// Opens [post]'s conversation as the card that is dragged back, as an X post
+/// opens.
+void openThreadsPost(BuildContext context, ThreadsPost post) =>
+    Navigator.push(context, XtaCardPageRoute<void>(builder: (_) => ThreadsThreadScreen(post: post)));
+
+/// [post]'s link card. The link opens with the post it came from beside it;
+/// [openPost] opens that post, where there is one to open.
+Widget threadsLinkPreview(BuildContext context, ThreadsPost post, {VoidCallback? openPost}) {
+  final card = post.linkCard!;
+  return LinkPreviewCard(
+    url: card.url,
+    title: card.title,
+    description: card.description,
+    imageUrl: card.imageUrl,
+    layout: linkPreviewLayoutFor(card.url, hasImage: card.hasImage),
+    imageBuilder: (_, url, cacheWidth) => ThreadsNetworkImage(url, fit: BoxFit.cover, cacheWidth: cacheWidth),
+    onTap: () => openPostLink(
+      context,
+      card.url,
+      title: card.title,
+      post: LinkPostContext(
+        sourceId: pluginIdThreads,
+        author: post.authorName,
+        avatarUrl: post.avatarUrl,
+        replies: post.replyCount,
+        reposts: post.repostCount,
+        likes: post.likeCount,
+        postUrl: post.url,
+        openPost: openPost == null
+            ? null
+            : () {
+                if (context.mounted) openPost();
+              },
+      ),
+    ),
+  );
 }

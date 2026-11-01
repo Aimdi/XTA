@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/stocks/stocks_followed_section.dart';
+import 'package:xta/plugins/stocks/stocks_followed_source.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
@@ -58,11 +60,15 @@ class _TickerScreen extends StatefulWidget {
 
 class _TickerScreenState extends State<_TickerScreen> {
   final TweetFeedController _feed = TweetFeedController();
+  final FollowedSectionStore _section = FollowedSectionStore();
   final TickerClient _client = TickerClient();
   late final TickerDetailStore _detail = TickerDetailStore(
     symbol: widget.symbol,
     client: _client,
     onDayQuote: _share,
+    instrument: _quotes?.instrumentFor(widget.symbol) ?? TickerInstrument.auto,
+    onInstrument: (instrument) =>
+        unawaited(_quotes?.choose(widget.symbol, instrument)),
   );
   Timer? _ticker;
   bool _started = false;
@@ -89,6 +95,7 @@ class _TickerScreenState extends State<_TickerScreen> {
     _detail.destroy();
     _client.httpClient.close();
     _feed.dispose();
+    _section.destroy();
     super.dispose();
   }
 
@@ -103,26 +110,46 @@ class _TickerScreenState extends State<_TickerScreen> {
     }
   }
 
+  /// The quotes the watchlist and cashtags in the timeline show. Tests and a
+  /// missing provider still show the page.
+  TickerQuoteCache? get _quotes {
+    try {
+      return context.read<TickerQuoteCache>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
   /// Today's quote also feeds the watchlist and cashtags in the timeline.
   void _share(TickerQuote quote) {
     if (!mounted) return;
-    try {
-      context.read<TickerQuoteCache>().remember(widget.symbol, quote);
-    } on ProviderNotFoundException {
-      // Tests and a missing provider still show the page.
-    }
+    _quotes?.remember(widget.symbol, quote);
   }
 
   /// Posts use the cashtag people write — `$SPX`, `$BTC` — not the name the
   /// price host files the symbol under.
-  Future<TweetPageResult> _loadPage(String? cursor) async {
+  String get _postsQuery => '\$${spokenCashtag(widget.symbol)}';
+
+  /// The posts of accounts the reader follows come first.
+  Future<TweetPageResult> _loadPage(String? cursor) => followedFirstPage(
+    cursor,
+    query: _postsQuery,
+    follows: mounted ? followedXAccounts(context) : const [],
+    section: _section,
+    page: _page,
+  );
+
+  Future<TweetPageResult> _page(String? cursor) async {
     final result = await Twitter.searchTweets(
-      '\$${spokenCashtag(widget.symbol)}',
+      _postsQuery,
       true,
       cursor: cursor,
     );
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
+
+  Widget _wrapChain(TweetChain chain, Widget post) =>
+      followedSectionChain(_section, chain, post);
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +184,7 @@ class _TickerScreenState extends State<_TickerScreen> {
               firstPageErrorPrefix: l10n.unable_to_load_the_tweets,
               newPageErrorPrefix: l10n.unable_to_load_the_next_page_of_tweets,
               emptyMessage: l10n.no_posts_match_your_search,
+              wrapChain: _wrapChain,
             ),
           ),
         ),

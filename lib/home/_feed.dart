@@ -1,5 +1,6 @@
 import 'package:xta/plugins/plugin_compact_header.dart';
 import 'package:xta/plugins/substack/substack_compact_header.dart';
+import 'package:xta/plugins/stocks/stocks_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_home_reading_controls.dart';
 import 'dart:async';
@@ -550,7 +551,11 @@ class _FeedScreenState extends State<FeedScreen> {
         flatAppBar: true,
         fixedHeader: true,
         headerFrame: (context, header) => HomeHidingHeader(child: header),
-        toolbarHeight: barLayout == null ? pluginToolbarHeight(context) : homeFollowingBarHeight(barLayout),
+        toolbarHeight: barLayout != null
+            ? homeFollowingBarHeight(barLayout)
+            : tab.id == pluginIdStocks
+            ? stocksHeaderHeight(context)
+            : pluginToolbarHeight(context),
         toolbarBuilder: (context) => GroupUnreadScope(
           builder: (context, unreadIds) {
             final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
@@ -583,6 +588,14 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               ],
             );
+            if (tab.id == pluginIdStocks) {
+              return StocksHomeHeader(
+                store: _dock,
+                unread: unread,
+                onPickSource: () => _pickSource(context),
+                services: services,
+              );
+            }
             if (tab.id == 'substack') {
               return SubstackCompactHeader(
                 store: _dock,

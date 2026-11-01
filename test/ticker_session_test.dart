@@ -179,6 +179,7 @@ void main() {
       final asked = <Uri>[];
       final cache = TickerQuoteCache(
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             asked.add(request.url);
             final symbol = request.url.pathSegments.last;
@@ -207,6 +208,7 @@ void main() {
       var podAnswers = false;
       final cache = TickerQuoteCache(
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             final symbol = request.url.pathSegments.last;
             if (symbol.startsWith('POD') && !podAnswers) return http.Response('no', 404);
@@ -235,6 +237,7 @@ void main() {
       final asked = <Uri>[];
       final cache = TickerQuoteCache(
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             asked.add(request.url);
             return http.Response(jsonEncode(_coinChart(request.url.pathSegments.last)), 200);
@@ -255,6 +258,7 @@ void main() {
       final asked = <String>[];
       final cache = TickerQuoteCache(
         client: TickerClient(
+          coinSources: const [],
           httpClient: MockClient((request) async {
             final symbol = request.url.pathSegments.last;
             asked.add('$symbol ${request.url.queryParameters['range']}');
@@ -272,7 +276,7 @@ void main() {
     });
 
     test('the ticker page shares a share\'s day chart, not a coin\'s', () async {
-      final cache = TickerQuoteCache(client: TickerClient(httpClient: MockClient((_) async => http.Response('', 500))));
+      final cache = TickerQuoteCache(client: TickerClient(coinSources: const [], httpClient: MockClient((_) async => http.Response('', 500))));
       final share = TickerQuote.fromChartJson(
         _dayChart(timestamps: [_open, _open + 300], closes: [1, 2]),
         symbol: 'AAPL',

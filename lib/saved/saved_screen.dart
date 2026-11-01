@@ -19,6 +19,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/saved/folder_picker.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_chrome.dart';
+import 'package:xta/saved/saved_header.dart';
 import 'package:xta/saved/saved_cleanup.dart';
 import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
@@ -71,7 +72,6 @@ class _SavedScreenState extends State<SavedScreen>
   final _view = SavedViewStore();
   List<String> _visibleSavedIds = const [];
   bool _mediaOnly = false;
-  bool _searching = false;
 
   /// Lowercased and trimmed, so filtering compares without re-allocating.
   String _query = '';
@@ -88,12 +88,10 @@ class _SavedScreenState extends State<SavedScreen>
   List<SubscriptionGroupMember> _groupMembers = const [];
   List<SubscriptionGroup> _groups = const [];
 
-  /// Focused when the search button opens the field, rather than by `autofocus`.
-  ///
-  /// This screen is kept alive, so the field's subtree is re-inserted whenever
-  /// the folder strip or a filter chip rebuilds — with `autofocus` that raised
-  /// the keyboard again each time, unasked.
+  /// The search field is always there; it takes focus only when tapped, and
+  /// gives it up on a tap elsewhere.
   final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   bool get wantKeepAlive => true;
@@ -126,6 +124,7 @@ class _SavedScreenState extends State<SavedScreen>
     _source.destroy();
     _view.destroy();
     _searchFocusNode.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -212,18 +211,25 @@ class _SavedScreenState extends State<SavedScreen>
     });
   }
 
-  Widget _buildSearchField() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: TextField(
-        focusNode: _searchFocusNode,
-        decoration: InputDecoration(
-          hintText: L10n.of(context).clip_note_search_hint,
-          prefixIcon: const Icon(Icons.search),
-          isDense: true,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
-        ),
-        onChanged: _onQueryChanged,
+  void _clearQuery() {
+    _searchDebounce?.cancel();
+    _searchController.clear();
+    setState(() => _query = '');
+  }
+
+  Widget _buildSearchRow(SavedViewState view) {
+    final sortable = _filter != savedTabFavorites && _filter != savedTabNotes;
+    return SavedSearchRow(
+      controller: _searchController,
+      focusNode: _searchFocusNode,
+      onChanged: _onQueryChanged,
+      onClear: _clearQuery,
+      filter: SavedFilterButton(
+        sort: view.sort,
+        sortable: sortable,
+        showMedia: _filter != savedTabNotes,
+        mediaOnly: _mediaOnly,
+        onSelected: _handleLibraryAction,
       ),
     );
   }
@@ -337,7 +343,6 @@ class _SavedScreenState extends State<SavedScreen>
                 SavedFolderOption(
                   value: savedTabAll,
                   label: L10n.of(context).all,
-                  icon: Icons.bookmarks_outlined,
                 ),
               );
           } else if (token == savedTabUnfiled) {
@@ -347,7 +352,6 @@ class _SavedScreenState extends State<SavedScreen>
                 SavedFolderOption(
                   value: savedTabUnfiled,
                   label: L10n.of(context).unfiled,
-                  icon: Icons.folder_off_outlined,
                 ),
               );
             }
@@ -357,7 +361,6 @@ class _SavedScreenState extends State<SavedScreen>
                 SavedFolderOption(
                   value: savedTabFavorites,
                   label: L10n.of(context).favorites,
-                  icon: Icons.favorite_outline,
                 ),
               );
           } else if (token == savedTabNotes) {
@@ -365,7 +368,6 @@ class _SavedScreenState extends State<SavedScreen>
               SavedFolderOption(
                 value: savedTabNotes,
                 label: L10n.of(context).local_notes_tab,
-                icon: Icons.edit_note_outlined,
               ),
             );
           } else {
@@ -375,20 +377,17 @@ class _SavedScreenState extends State<SavedScreen>
                 SavedFolderOption(
                   value: token,
                   label: matches.first.name,
-                  icon: Icons.folder_outlined,
                   editable: true,
                 ),
               );
           }
         }
 
-        return SavedControlBar(
+        return SavedChipRow(
           selectedFolder: _filter,
-          mediaOnly: _mediaOnly,
           likesByGroup: _likesByGroup,
           folders: options,
-          showMedia: _filter != savedTabNotes,
-          sourceFilter: _filter == savedTabNotes ? null : SavedSourceButton(selected: _source.state, onSelected: _source.select),
+          networkPicker: _filter == savedTabNotes ? null : SavedSourceButton(selected: _source.state, onSelected: _source.select),
           onFolderSelected: (value) => setState(() {
             if (value == savedTabFavorites && _filter == savedTabFavorites) {
               _likesByGroup = !_likesByGroup;
@@ -399,7 +398,7 @@ class _SavedScreenState extends State<SavedScreen>
           }),
           onFolderLongPress: (option) =>
               _showFolderMenu(option.value, option.label),
-          onMediaToggle: () => setState(() => _mediaOnly = !_mediaOnly),
+          onNewFolder: () => _handleOverflow(SavedOverflowAction.createFolder),
         );
       },
     );
@@ -473,6 +472,9 @@ class _SavedScreenState extends State<SavedScreen>
         return;
       case SavedLibraryAction.sortOldest:
         _view.setSort(SavedSort.oldest);
+        return;
+      case SavedLibraryAction.mediaOnly:
+        setState(() => _mediaOnly = !_mediaOnly);
         return;
       case SavedLibraryAction.select:
         if (_mediaOnly) setState(() => _mediaOnly = false);
@@ -551,6 +553,9 @@ class _SavedScreenState extends State<SavedScreen>
 
   Future<void> _handleOverflow(SavedOverflowAction action) async {
     switch (action) {
+      case SavedOverflowAction.searchLibrary:
+        await Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const ReaderSearchScreen()));
+        return;
       case SavedOverflowAction.createFolder:
         await showCreateFolderDialog(
           context,
@@ -847,6 +852,60 @@ class _SavedScreenState extends State<SavedScreen>
     );
   }
 
+  /// The title row: the title, the lock that says what stays on the device,
+  /// and the Archive's menu.
+  Widget _titleBar() {
+    return SliverAppBar(
+      pinned: true,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      titleSpacing: 0,
+      toolbarHeight: savedTitleRowHeight(context),
+      title: SavedTitleRow(
+        title: L10n.current.saved,
+        notice: savedOnDeviceNotice(L10n.of(context), _filter),
+        menu: SavedOverflowButton(onSelected: _handleOverflow),
+      ),
+    );
+  }
+
+  bool _allVisibleSelected(SavedViewState view) =>
+      view.selectedIds.length == _visibleSavedIds.length && _visibleSavedIds.isNotEmpty;
+
+  /// While selecting: close, the count, select all, move and delete.
+  Widget _selectionBar(SavedViewState view) {
+    final l10n = L10n.of(context);
+    final all = _allVisibleSelected(view);
+    return SliverAppBar(
+      pinned: true,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      titleSpacing: kTweetHorizontalPadding,
+      leading: IconButton(tooltip: l10n.close, onPressed: _view.finishSelection, icon: const Icon(Icons.close)),
+      title: Text(l10n.library_selected_count(view.selectedIds.length)),
+      actions: [
+        IconButton(
+          key: const ValueKey('saved-select-all'),
+          tooltip: all ? l10n.library_clear_selection : l10n.library_select_all,
+          onPressed: () => _view.selectVisible(all ? const <String>[] : _visibleSavedIds),
+          icon: Icon(all ? Icons.deselect : Icons.select_all),
+        ),
+        IconButton(
+          key: const ValueKey('saved-move-selected'),
+          tooltip: l10n.library_move_selected,
+          onPressed: view.selectedIds.isEmpty ? null : _moveSelected,
+          icon: const Icon(Icons.drive_file_move_outline),
+        ),
+        IconButton(
+          key: const ValueKey('saved-delete-selected'),
+          tooltip: l10n.delete,
+          onPressed: view.selectedIds.isEmpty ? null : _deleteSelected,
+          icon: const Icon(Icons.delete_outline),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -871,109 +930,12 @@ class _SavedScreenState extends State<SavedScreen>
               ),
         body: NestedScrollView(
           controller: widget.scrollController,
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              if (widget.showTitle != false)
-                SliverAppBar(
-                  pinned: true,
-                  surfaceTintColor: Colors.transparent,
-                  scrolledUnderElevation: 0,
-                  titleSpacing: kTweetHorizontalPadding,
-                  leading: view.selecting
-                      ? IconButton(
-                          tooltip: L10n.of(context).close,
-                          onPressed: _view.finishSelection,
-                          icon: const Icon(Icons.close),
-                        )
-                      : null,
-                  title: Text(
-                    view.selecting
-                        ? L10n.of(context).library_selected_count(
-                            view.selectedIds.length,
-                          )
-                        : L10n.current.saved,
-                  ),
-                  actions: view.selecting
-                      ? [
-                          IconButton(
-                            key: const ValueKey('saved-select-all'),
-                            tooltip:
-                                view.selectedIds.length == _visibleSavedIds.length &&
-                                    _visibleSavedIds.isNotEmpty
-                                ? L10n.of(context).library_clear_selection
-                                : L10n.of(context).library_select_all,
-                            onPressed: () {
-                              if (view.selectedIds.length ==
-                                      _visibleSavedIds.length &&
-                                  _visibleSavedIds.isNotEmpty) {
-                                _view.selectVisible(const <String>[]);
-                              } else {
-                                _view.selectVisible(_visibleSavedIds);
-                              }
-                            },
-                            icon: Icon(
-                              view.selectedIds.length == _visibleSavedIds.length &&
-                                      _visibleSavedIds.isNotEmpty
-                                  ? Icons.deselect
-                                  : Icons.select_all,
-                            ),
-                          ),
-                          IconButton(
-                            key: const ValueKey('saved-move-selected'),
-                            tooltip: L10n.of(context).library_move_selected,
-                            onPressed: view.selectedIds.isEmpty
-                                ? null
-                                : _moveSelected,
-                            icon: const Icon(Icons.drive_file_move_outline),
-                          ),
-                          IconButton(
-                            key: const ValueKey('saved-delete-selected'),
-                            tooltip: L10n.of(context).delete,
-                            onPressed: view.selectedIds.isEmpty
-                                ? null
-                                : _deleteSelected,
-                            icon: const Icon(Icons.delete_outline),
-                          ),
-                        ]
-                      : [
-                          IconButton(
-                            icon: const Icon(Icons.manage_search),
-                            tooltip: L10n.of(context).reader_search_all,
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (_) => const ReaderSearchScreen(),
-                              ),
-                            ),
-                          ),
-                          if (_filter != savedTabFavorites &&
-                              _filter != savedTabNotes)
-                            SavedLibraryActionButton(
-                              sort: view.sort,
-                              onSelected: _handleLibraryAction,
-                            ),
-                          IconButton(
-                            isSelected: _searching,
-                            icon: const Icon(Icons.search),
-                            tooltip: L10n.current.search_saved_posts,
-                            onPressed: () => setState(() {
-                              _searching = !_searching;
-                              if (_searching) {
-                                WidgetsBinding.instance.addPostFrameCallback(
-                                  (_) => _searchFocusNode.requestFocus(),
-                                );
-                              } else {
-                                _searchDebounce?.cancel();
-                                _query = '';
-                                _searchFocusNode.unfocus();
-                              }
-                            }),
-                          ),
-                          SavedOverflowButton(onSelected: _handleOverflow),
-                        ],
-                ),
-            ];
-          },
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            if (view.selecting)
+              _selectionBar(view)
+            else if (widget.showTitle != false)
+              _titleBar(),
+          ],
           body: MultiProvider(
             providers: [
               ChangeNotifierProvider<TweetContextState>(
@@ -982,9 +944,7 @@ class _SavedScreenState extends State<SavedScreen>
             ],
             child: Column(
               children: [
-                if (!view.selecting) _buildFolderStrip(),
-                SavedLibraryOnDeviceNotice(filter: _filter),
-                if (_searching && !view.selecting) _buildSearchField(),
+                if (!view.selecting) ...[_buildSearchRow(view), _buildFolderStrip()],
                 Expanded(
                   child: _filter == savedTabFavorites
                       ? _buildFavoritesBody()

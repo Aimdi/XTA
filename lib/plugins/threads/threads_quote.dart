@@ -3,7 +3,7 @@ import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_media.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_rich_text.dart';
-import 'package:xta/plugins/threads/threads_thread_screen.dart';
+import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/dates.dart';
@@ -15,8 +15,7 @@ class ThreadsQuotedPost extends StatelessWidget {
 
   const ThreadsQuotedPost({super.key, required this.quote});
 
-  void _open(BuildContext context) =>
-      Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: quote)));
+  void _open(BuildContext context) => openThreadsPost(context, quote);
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +51,10 @@ class ThreadsQuotedPost extends StatelessWidget {
                 if (quote.hasMedia) ...[
                   const SizedBox(height: 8),
                   ThreadsPostMedia(post: quote, onOpenPost: () => _open(context)),
+                ],
+                if (quote.linkCard != null) ...[
+                  const SizedBox(height: 8),
+                  threadsLinkPreview(context, quote, openPost: () => _open(context)),
                 ],
               ],
             ),

@@ -41,6 +41,7 @@ Map<String, dynamic> _t1({
   int score = 42,
   double created = 1769000000,
   bool isSubmitter = false,
+  String? flair,
   String? permalink,
   Object? replies = '',
 }) => {
@@ -52,6 +53,7 @@ Map<String, dynamic> _t1({
     'score': score,
     'created_utc': created,
     'is_submitter': isSubmitter,
+    'author_flair_text': flair,
     'permalink': permalink ?? '/r/dartlang/comments/abc/$id/',
     'replies': replies,
   },
@@ -64,6 +66,26 @@ Map<String, dynamic> _listing(List<Map<String, dynamic>> children) => {
 
 void main() {
   group('JSON comment tree', () {
+    test("the author's flair comes with the comment, an empty one not at all", () {
+      final comments = commentsFromListing(
+        Json(_listing([_t1(id: 'a', flair: ' Mod team '), _t1(id: 'b', flair: ''), _t1(id: 'c')])),
+      );
+      expect([for (final comment in comments) comment.authorFlair], ['Mod team', null, null]);
+    });
+
+    test('a comment counts the replies under it, not rows that stand for more', () {
+      const comment = RedditComment(
+        id: 'a',
+        body: 'Top',
+        replies: [
+          RedditComment(id: 'b', body: 'Reply', replies: [RedditComment(id: 'c', body: 'Nested')]),
+          RedditComment(id: 'more', body: '', permalink: '/r/x/comments/y/z/a/', moreCount: 40),
+        ],
+      );
+      expect(comment.replyCount, 2);
+      expect(comment.replies.first.replyCount, 1);
+    });
+
     test("an author's paragraphs survive", () {
       final comment = commentsFromListing(
         Json(_listing([_t1(id: 'a', body: 'One.\n\nTwo,\nthree.')])),
@@ -469,6 +491,19 @@ void main() {
 
       expect(parseComments(_page(op)).single.isSubmitter, isTrue);
     });
+
+    test("the author's flair is read off the tagline", () {
+      const flaired = '''
+<div class="thing comment" data-fullname="t1_f" data-author="mod">
+  <div class="entry"><p class="tagline"><a class="author">mod</a>
+  <span class="flair flair-team" title="Mod team">Mod team</span></p>
+  <div class="usertext-body"><div class="md">Rule 3</div></div></div>
+</div>
+''';
+
+      expect(parseComments(_page(flaired)).single.authorFlair, 'Mod team');
+      expect(parseComments(_page(_comment('a', 'x', 'No flair'))).single.authorFlair, isNull);
+    });
   });
 
   group('rows that are not comments', () {
@@ -758,6 +793,20 @@ void main() {
         expect(flattenComments(parseComments(page)), hasLength(1));
       },
     );
+  });
+
+  group('comments loaded in place', () {
+    test('a repeated top-level thread is dropped with its replies, new ones kept', () {
+      final shown = flattenComments(const [RedditComment(id: 'a', body: 'Shown')]);
+      final incoming = flattenComments(const [
+        RedditComment(id: 'a', body: 'Shown again', replies: [RedditComment(id: 'a1', body: 'Its reply')]),
+        RedditComment(id: 'b', body: 'New', replies: [RedditComment(id: 'b1', body: 'New reply')]),
+      ]);
+      expect(
+        [for (final entry in withoutShownThreads(shown, incoming)) entry.comment.id],
+        ['b', 'b1'],
+      );
+    });
   });
 
   group('folding a thread', () {

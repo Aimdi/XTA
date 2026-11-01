@@ -11,6 +11,7 @@ import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/plugins/stocks/stocks_header.dart';
 import 'package:xta/plugins/stocks/stocks_screen.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
@@ -189,8 +190,11 @@ void main() {
       await tester.pumpAndSettle();
       await tester.dragFrom(const Offset(500, 400), const Offset(-140, 0));
       await tester.pumpAndSettle();
-      final chrome = tester.widget<PluginHomeChrome>(find.byType(PluginHomeChrome));
-      expect(chrome.tabs[embedded ? 0 : 1].selected, isTrue);
+      // On its own route Stocks draws its own header; in Home the host does.
+      final tabs = embedded
+          ? tester.widget<PluginHomeChrome>(find.byType(PluginHomeChrome)).tabs
+          : tester.widget<StocksHeader>(find.byType(StocksHeader)).tabs;
+      expect(tabs[embedded ? 0 : 1].selected, isTrue);
       expect(homeChanges, embedded ? [1] : isEmpty);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());

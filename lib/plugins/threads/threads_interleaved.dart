@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/feed_post_kinds.dart';
+import 'package:xta/plugins/threads/threads_archive.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
@@ -61,15 +62,16 @@ Future<List<InterleavedItem>> loadThreadsInterleaved(
 /// timeline shows where the card came from. One with no date is dropped rather
 /// than guessed at: there is nowhere in a chronological feed to put it.
 ///
-/// Filtered by [kinds] before [limit] is applied, so hidden replies and reposts
-/// do not use up the page.
+/// Filtered by [kinds] before each account's [limit] is applied, so hidden
+/// replies and reposts do not use up the page. The whole post is kept as the
+/// snapshot, so a feed read offline shows it as the Threads card it was.
 List<InterleavedItem> threadsInterleavedItems(
   Iterable<ThreadsPost> posts, {
   int limit = kThreadsInterleavedPageSize,
   FeedPostKinds kinds = allFeedPostKinds,
 }) =>
     [
-      for (final post in posts.where((post) => threadsFeedTakes(kinds, post)).take(limit))
+      for (final post in threadsPerAccount(posts.where((post) => threadsFeedTakes(kinds, post)), limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
             avatarBadge: true,
@@ -77,17 +79,23 @@ List<InterleavedItem> threadsInterleavedItems(
             pluginId: pluginIdThreads,
             id: '$pluginIdThreads:${post.id}',
             linkUrl: post.linkCard?.url,
-            snapshot: {
-                    'xtaPlugin': 'link',
-                    'source': pluginIdThreads,
-                    'url': post.url ?? '',
-                    'author': post.authorName,
-                    'text': post.text,
-                    'images': post.images,
-                  },
+            snapshot: threadsArchiveBlob(post),
             build: (_) => ThreadsPostCard(post: post, showSourceBadge: true),
           ),
     ];
+
+/// [posts] in their order, at most [limit] from each followed account: a
+/// repost counts for the account that reposted it.
+List<ThreadsPost> threadsPerAccount(Iterable<ThreadsPost> posts, int limit) {
+  final counts = <String, int>{};
+  return [
+    for (final post in posts)
+      if (_countIn(counts, post.isRepost ? post.repostedByHandle ?? post.handle : post.handle) <= limit) post,
+  ];
+}
+
+int _countIn(Map<String, int> counts, String account) =>
+    counts[account] = (counts[account] ?? 0) + 1;
 
 /// Whether [post] belongs in a feed taking [kinds].
 bool threadsFeedTakes(FeedPostKinds kinds, ThreadsPost post) =>

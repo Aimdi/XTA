@@ -1,33 +1,26 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/database/entities.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/plugin_comment_bubble.dart';
-import 'package:xta/plugins/reddit/reddit_archive.dart';
-import 'package:xta/plugins/reddit/reddit_avatar.dart';
-import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
-import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
-import 'package:xta/plugins/reddit/reddit_post_media.dart';
-import 'package:xta/plugins/reddit/reddit_post_sheet.dart' show redditPostUrl;
+import 'package:xta/plugins/reddit/reddit_post_sheet.dart';
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
-import 'package:xta/plugins/reddit/reddit_store.dart';
-import 'package:xta/plugins/reddit/reddit_votes_store.dart';
-import 'package:xta/saved/saved_tweet_model.dart';
-import 'package:xta/plugins/reddit/reddit_text.dart';
-import 'package:xta/tweet/tweet_footer.dart';
-import 'package:xta/ui/dates.dart';
-import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/reddit/reddit_thread_comment.dart';
+import 'package:xta/plugins/reddit/reddit_thread_navigation.dart';
+import 'package:xta/plugins/reddit/reddit_thread_post.dart';
+import 'package:xta/plugins/reddit/reddit_thread_visits.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_failure.dart';
-import 'package:xta/constants.dart';
+import 'package:xta/utils/urls.dart';
 
 /// A post and its comments.
 class RedditThreadScreen extends StatefulWidget {
@@ -56,11 +49,38 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
   /// are read on Reddit itself.
   bool _moreRefused = false;
 
+  /// When the reader last opened this thread before now: comments written
+  /// since then say they are new.
+  late final DateTime? _lastVisit;
+
+  final _scroll = ScrollController();
+  final _commentsKey = GlobalKey();
+
+  /// Each top-level comment's row, for the jump button to find.
+  final _topLevelKeys = <String, GlobalKey>{};
+
   @override
   void initState() {
     super.initState();
     _selfText = widget.post.selfText;
+    _visit();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  /// Reads the last visit, and notes this one once the first frame is built:
+  /// the preferences tell their listeners, which may not rebuild mid-build.
+  void _visit() {
+    final prefs = PrefService.of(context, listen: false);
+    final permalink = widget.post.permalink;
+    final now = DateTime.now();
+    _lastVisit = redditLastThreadVisit(prefs, permalink);
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(redditRecordThreadVisit(prefs, permalink, now)));
   }
 
   Future<void> _load() async {
@@ -72,11 +92,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       if (_post.arrivedBare) {
         unawaited(_fillPost(session, client));
       }
-      final result = await session.fetchComments(
-        client,
-        _post.permalink,
-        sort: _sort,
-      );
+      final result = await session.fetchComments(client, _post.permalink, sort: _sort);
       if (!mounted) return;
       setState(() {
         _comments = flattenComments(result.comments);
@@ -110,7 +126,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     try {
       final more = await context.read<RedditClient>().fetchMoreComments(stub);
       if (!mounted) return;
-      setState(() => _comments = _replacing(stub, flattenComments(more)));
+      setState(() => _comments = _replacing(stub, withoutShownThreads(_comments ?? const [], flattenComments(more))));
     } on RedditException {
       if (!mounted) return;
       setState(() => _moreRefused = true);
@@ -123,8 +139,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
   }
 
   /// The thread with [stub]'s row swapped for [rows].
-  List<FlatComment>? _replacing(RedditComment stub, List<FlatComment> rows) =>
-      _comments == null
+  List<FlatComment>? _replacing(RedditComment stub, List<FlatComment> rows) => _comments == null
       ? null
       : [
           for (final entry in _comments!)
@@ -161,14 +176,9 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     );
   }
 
-  static String _trimSlash(String path) =>
-      path.endsWith('/') ? path.substring(0, path.length - 1) : path;
-
   bool _isOwnPermalink(String url) {
     final uri = Uri.tryParse(url);
-    return uri != null &&
-        uri.host.endsWith('reddit.com') &&
-        uri.path.contains('/comments/');
+    return uri != null && uri.host.endsWith('reddit.com') && uri.path.contains('/comments/');
   }
 
   /// Folding every top-level argument turns a thousand-comment page into the
@@ -193,100 +203,112 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     });
   }
 
+  void _resort(String? sort) {
+    setState(() {
+      _sort = sort;
+      _comments = null;
+      _collapsed.clear();
+    });
+    _load();
+  }
+
+  /// Reddit's count, or what has loaded when that is more: a post from search
+  /// arrives without one.
+  int get _commentCount {
+    final loaded = _comments?.where((entry) => !entry.comment.isStub).length ?? 0;
+    return math.max(_post.commentCount, loaded);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     final comments = _comments;
-
+    // Walked once per build pass — inside itemBuilder this O(n) walk ran again
+    // for every row, ~n² work on a long thread's frame.
+    final rows = comments == null ? const <VisibleComment>[] : visibleComments(comments, _collapsed);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('r/${widget.post.subreddit}'),
-        actions: [
-          if (comments != null && foldableTopLevelIds(comments).isNotEmpty)
-            IconButton(
-              icon: Icon(_allFolded ? Icons.unfold_more : Icons.unfold_less),
-              tooltip: _allFolded
-                  ? l10n.plugin_reddit_expand_all
-                  : l10n.plugin_reddit_collapse_all,
-              onPressed: _toggleFoldAll,
-            ),
-          _ThreadSaveButton(post: _post),
-          PopupMenuButton<String>(
-            tooltip: l10n.plugin_reddit_sort,
-            icon: const Icon(Icons.sort),
-            initialValue: _sort ?? '',
-            onSelected: (value) {
-              setState(() {
-                _sort = value.isEmpty ? null : value;
-                _comments = null;
-                _collapsed.clear();
-              });
-              _load();
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: '',
-                child: Text(l10n.plugin_reddit_sort_best),
-              ),
-              PopupMenuItem(
-                value: 'top',
-                child: Text(l10n.plugin_reddit_sort_top),
-              ),
-              PopupMenuItem(
-                value: 'new',
-                child: Text(l10n.plugin_reddit_sort_new),
-              ),
-              PopupMenuItem(
-                value: 'controversial',
-                child: Text(l10n.plugin_reddit_sort_controversial),
-              ),
-              PopupMenuItem(
-                value: 'old',
-                child: Text(l10n.plugin_reddit_sort_old),
-              ),
-              PopupMenuItem(
-                value: 'qa',
-                child: Text(l10n.plugin_reddit_sort_qa),
-              ),
-            ],
-          ),
-        ],
-      ),
+      appBar: _appBar(context),
+      floatingActionButton: _jumpButton(context, rows),
       body: RefreshIndicator(
         onRefresh: _load,
-        child: Builder(
-          builder: (context) {
-            // Walked once per build pass — inside itemBuilder this O(n) walk
-            // ran again for every row, ~n² work on a long thread's frame.
-            final rows = comments == null
-                ? const <VisibleComment>[]
-                : visibleComments(comments, _collapsed);
-            return FeedListView(
-              // One header plus the flattened tree: nesting the widgets
-              // instead would build every reply of every collapsed branch
-              // up front.
-              itemCount: 1 + (comments == null ? 1 : rows.length),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _header(context);
-                }
-                if (comments == null) {
-                  return _pending(context, l10n);
-                }
-                final visible = rows[index - 1];
-                if (visible.entry.comment.isStub) {
-                  return _stubRow(context, visible.entry);
-                }
-                return _commentRow(
-                  context,
-                  visible.entry,
-                  hidden: visible.hidden,
-                );
-              },
-            );
+        child: FeedListView(
+          controller: _scroll,
+          padding: const EdgeInsets.only(bottom: 96),
+          // The post, the comments header, then the flattened tree: nesting
+          // the widgets instead would build every reply of every collapsed
+          // branch up front.
+          itemCount: 2 + (comments == null ? 1 : rows.length),
+          itemBuilder: (context, index) => switch (index) {
+            0 => _postItem(context),
+            1 => _commentsHeader(context),
+            _ when comments == null => _pending(context, L10n.of(context)),
+            _ => _row(context, rows, index - 2),
           },
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget _appBar(BuildContext context) {
+    return AppBar(
+      title: Text('r/${widget.post.subreddit}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+      shape: Border(bottom: BorderSide(color: tweetDividerColor(context))),
+      actions: [
+        IconButton(
+          tooltip: MaterialLocalizations.of(context).moreButtonTooltip,
+          icon: const Icon(Icons.more_vert),
+          onPressed: () => openRedditPostSheet(context, _post),
+        ),
+      ],
+    );
+  }
+
+  Widget _postItem(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        RedditThreadPost(post: _post, selfText: _visibleSelfText(_post)),
+        RedditThreadPostActions(post: _post, commentCount: _commentCount, onComments: _scrollToComments),
+      ],
+    );
+  }
+
+  Widget _commentsHeader(BuildContext context) {
+    final comments = _comments;
+    final foldable = comments != null && foldableTopLevelIds(comments).isNotEmpty;
+    return RedditCommentsHeader(
+      key: _commentsKey,
+      count: _commentCount,
+      sort: _sort,
+      onSort: _resort,
+      allFolded: foldable ? _allFolded : null,
+      onToggleAll: _toggleFoldAll,
+    );
+  }
+
+  void _scrollToComments() {
+    final header = _commentsKey.currentContext;
+    if (header == null) return;
+    Scrollable.ensureVisible(
+      header,
+      duration: xtaReduceMotion(context) ? Duration.zero : const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  /// The top-level comments in their order, for the jump button.
+  List<String> _topLevelIds(List<VisibleComment> rows) => [
+    for (final row in rows)
+      if (row.entry.depth == 0 && !row.entry.comment.isStub) row.entry.comment.id,
+  ];
+
+  GlobalKey _keyOf(String id) => _topLevelKeys.putIfAbsent(id, GlobalKey.new);
+
+  Widget? _jumpButton(BuildContext context, List<VisibleComment> rows) {
+    final ids = _topLevelIds(rows);
+    if (ids.length < 2) return null;
+    return RedditJumpButton(
+      onPressed: () =>
+          redditJumpToNext(_scroll, [for (final id in ids) _keyOf(id)], reduceMotion: xtaReduceMotion(context)),
     );
   }
 
@@ -308,62 +330,6 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     );
   }
 
-  Widget _header(BuildContext context) {
-    final theme = Theme.of(context);
-    final post = _post;
-    final date = post.createdAt;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (post.showsTitle) ...[
-            Text(
-              post.displayTitle,
-              style: theme.textTheme.titleLarge!.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-          ],
-          DefaultTextStyle.merge(
-            style: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            child: Row(
-              children: [
-                RedditSubredditAvatar(subreddit: post.subreddit, size: 22),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 2,
-                    children: [
-                      if (post.author != null) Text('u/${post.author}'),
-                      if (date != null) Text(createRelativeDate(date)),
-                    ],
-                  ),
-                ),
-                _ThreadUpvoteButton(post: post),
-                const SizedBox(width: 8),
-                Text('${post.commentCount}'),
-              ],
-            ),
-          ),
-          // The same block the feed card uses, so a picture post opens on its
-          // picture rather than on a link to one.
-          RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
-          if (_visibleSelfText(post) case final selfText?) ...[
-            const SizedBox(height: 10),
-            RedditRichText(text: selfText, style: theme.textTheme.bodyMedium),
-          ],
-          const Divider(height: 24),
-        ],
-      ),
-    );
-  }
-
   /// Selftext worth printing under the media. CDN URLs that the picture
   /// already shows are stripped first, so a leftover empty string is dropped.
   String? _visibleSelfText(RedditPost post) {
@@ -378,316 +344,69 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     return text;
   }
 
-  void _toggleFold(String id) => setState(
-    () => _collapsed.contains(id) ? _collapsed.remove(id) : _collapsed.add(id),
-  );
+  void _toggleFold(String id) => setState(() => _collapsed.contains(id) ? _collapsed.remove(id) : _collapsed.add(id));
 
-  /// A comment in its depth's bubble; tapping it folds the subtree. [hidden]
-  /// is how many replies the fold is holding, shown as a chip so a collapsed
-  /// argument says how big it was.
-  Widget _commentRow(
-    BuildContext context,
-    FlatComment entry, {
-    int hidden = 0,
-  }) {
-    final theme = Theme.of(context);
+  /// A comment, or the row standing for replies Reddit held back. A top-level
+  /// comment keeps its key so the jump button can find it.
+  Widget _row(BuildContext context, List<VisibleComment> rows, int index) {
+    final entry = rows[index].entry;
     final comment = entry.comment;
-    final folded = _collapsed.contains(comment.id);
-
-    return CommentBubble(
+    if (comment.isStub) {
+      return _heldBack(context, entry);
+    }
+    final row = RedditCommentRow(
+      comment: comment,
       depth: entry.depth,
-      outlined: comment.isRemoved,
-      onTap: () => _toggleFold(comment.id),
-      builder: (context, colors) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _CommentHeader(
-            comment: comment,
-            colors: colors,
-            foldedCount: folded ? hidden + 1 : null,
-          ),
-          if (!folded) ...[
-            if (comment.body.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: RedditRichText(
-                  text: comment.body,
-                  style: theme.textTheme.bodyMedium!.copyWith(
-                    color: colors.text,
-                  ),
-                ),
-              ),
-            RedditCommentImages(urls: comment.mediaUrls),
-          ],
-        ],
-      ),
+      folded: _collapsed.contains(comment.id),
+      divided: entry.depth == 0 && index > 0,
+      isNew: redditCommentIsNew(comment, _lastVisit),
+      onToggle: () => _toggleFold(comment.id),
+    );
+    return entry.depth == 0 ? KeyedSubtree(key: _keyOf(comment.id), child: row) : row;
+  }
+
+  /// Replies Reddit held back. Rather than the thread ending mid-air with no
+  /// sign anything is missing, the row loads them in place when Reddit said
+  /// where they are, and otherwise continues on their own page or on Reddit.
+  Widget _heldBack(BuildContext context, FlatComment entry) {
+    final l10n = L10n.of(context);
+    final stub = entry.comment;
+    final inPlace = _loadsInPlace(stub);
+    return RedditHeldBackRow(
+      depth: entry.depth,
+      label: inPlace ? l10n.plugin_reddit_load_more_comments : l10n.plugin_reddit_continue_thread,
+      trailing: inPlace ? null : (_isRoot(stub) ? Icons.open_in_new : Icons.chevron_right),
+      loading: _loadingMore.contains(stub.id),
+      onTap: _stubTap(context, stub),
     );
   }
 
-  /// Replies Reddit held back. The row says how many and opens the subtree's
-  /// own page, rather than the thread ending mid-air with no sign anything is
-  /// missing — which is what silently dropping these rows did. Outlined, not
-  /// filled: it is a way onward, not a comment.
-  Widget _stubRow(BuildContext context, FlatComment entry) {
-    final theme = Theme.of(context);
-    final comment = entry.comment;
-    final count = (comment.moreCount ?? -1) > 0
-        ? ' · ${comment.moreCount}'
-        : '';
-
-    final loading = _loadingMore.contains(comment.id);
-
-    return CommentBubble(
-      depth: entry.depth,
-      outlined: true,
-      shrinkWrap: true,
-      onTap: loading ? null : _stubTap(context, comment),
-      builder: (context, colors) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (loading)
-            SizedBox.square(
-              dimension: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: colors.accent,
-              ),
-            )
-          else
-            Icon(
-              Icons.subdirectory_arrow_right,
-              size: 16,
-              color: colors.accent,
-            ),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              '${L10n.of(context).plugin_reddit_more_replies}$count',
-              style: theme.textTheme.bodySmall!.copyWith(
-                color: colors.accent,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  bool _isRoot(RedditComment stub) {
+    final permalink = stub.permalink;
+    return permalink != null && redditThreadKey(permalink) == redditThreadKey(_post.permalink);
   }
 
-  /// The subtree's page has the held-back replies. A root-level stub loads
-  /// the next comments into this thread when Reddit said where they are, and
-  /// otherwise — or once Reddit has refused — continues on Reddit itself.
+  bool _loadsInPlace(RedditComment stub) => _isRoot(stub) && stub.nextPage != null && !_moreRefused;
+
+  /// What tapping a held-back row does: load the next comments in place, open
+  /// the thread on Reddit once it will not hand them over here, or open the
+  /// subtree's own page.
   VoidCallback? _stubTap(BuildContext context, RedditComment stub) {
     final permalink = stub.permalink;
     if (permalink == null) {
       return null;
     }
-    if (_trimSlash(permalink) == _trimSlash(_post.permalink)) {
-      return stub.nextPage == null || _moreRefused
-          ? () => openUri(context, redditPostUrl(_post))
-          : () => _loadMore(stub);
+    if (_loadsInPlace(stub)) {
+      return () => _loadMore(stub);
+    }
+    if (_isRoot(stub)) {
+      return () => openUri(context, redditPostUrl(_post));
     }
     return () => Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            RedditThreadScreen(post: _post.copyWith(permalink: permalink)),
+        builder: (_) => RedditThreadScreen(post: _post.copyWith(permalink: permalink)),
       ),
-    );
-  }
-}
-
-/// Who wrote a comment, its score and age, and — when folded — how many
-/// comments the fold is holding. Wraps rather than overflowing when a long
-/// name meets large text deep in a thread.
-class _CommentHeader extends StatelessWidget {
-  final RedditComment comment;
-  final CommentBubbleColors colors;
-  final int? foldedCount;
-
-  const _CommentHeader({
-    required this.comment,
-    required this.colors,
-    this.foldedCount,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final author = comment.author;
-    final count = foldedCount;
-
-    return DefaultTextStyle.merge(
-      style: theme.textTheme.bodySmall!.copyWith(color: colors.muted),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 2,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          GestureDetector(
-            // A name in a thread is a way to the rest of what they posted, the
-            // same as it is on the card.
-            onTap: author == null
-                ? null
-                : () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RedditListingScreen.user(author),
-                    ),
-                  ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RedditAvatar(name: author, size: 20),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    author == null ? '' : 'u/$author',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: comment.isSubmitter ? colors.accent : colors.text,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (comment.score != null) Text('${comment.score}'),
-          if (comment.createdAt != null)
-            Text(createRelativeDate(comment.createdAt!)),
-          if (count != null) _FoldCount(count: count, colors: colors),
-        ],
-      ),
-    );
-  }
-}
-
-class _FoldCount extends StatelessWidget {
-  final int count;
-  final CommentBubbleColors colors;
-
-  const _FoldCount({required this.count, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        border: Border.all(color: colors.border),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        '+$count',
-        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-          color: colors.text,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
-class _ThreadUpvoteButton extends StatelessWidget {
-  final RedditPost post;
-
-  const _ThreadUpvoteButton({required this.post});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final muted = theme.colorScheme.onSurfaceVariant;
-    final votes = context.read<RedditVotesStore>();
-
-    return ScopedBuilder<RedditVotesStore, Set<String>>(
-      store: votes,
-      distinct: (_) => votes.isUpvoted(post.id),
-      onState: (context, state) {
-        final upvoted = state.contains(post.id);
-        final color = upvoted ? theme.colorScheme.primary : muted;
-        return TextButton.icon(
-          style: footerButtonStyle,
-          onPressed: () async {
-            await votes.toggle(post.id);
-            if (!context.mounted) {
-              return;
-            }
-            await syncRedditLikeToArchive(
-              context,
-              post,
-              upvoted: votes.isUpvoted(post.id),
-            );
-          },
-          icon: Icon(
-            upvoted ? Icons.arrow_circle_up : Icons.arrow_upward,
-            size: 18,
-            color: color,
-          ),
-          label: Text(
-            '${post.score + (upvoted ? 1 : 0)}',
-            style: theme.textTheme.bodySmall!.copyWith(
-              color: color,
-              fontWeight: upvoted ? FontWeight.w700 : null,
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _ThreadSaveButton extends StatelessWidget {
-  final RedditPost post;
-
-  const _ThreadSaveButton({required this.post});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    SavedTweetModel? archive;
-    try {
-      archive = context.read<SavedTweetModel>();
-    } on ProviderNotFoundException {
-      archive = null;
-    }
-    if (archive != null) {
-      return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
-        store: archive,
-        distinct: (_) => archive!.isSaved(redditArchiveId(post.id)),
-        onState: (context, _) {
-          final isSaved = archive!.isSaved(redditArchiveId(post.id));
-          return GestureDetector(
-            onLongPress: () => pickRedditPostFolder(context, post),
-            child: IconButton(
-              tooltip: isSaved
-                  ? l10n.unsave_from_this_device
-                  : l10n.save_on_this_device,
-              icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
-              onPressed: () async {
-                if (isSaved) {
-                  await unfileRedditPost(context, post);
-                } else {
-                  await fileRedditPost(context, post);
-                }
-              },
-            ),
-          );
-        },
-      );
-    }
-
-    final saved = context.read<RedditSavedStore>();
-    return ScopedBuilder<RedditSavedStore, List<RedditPost>>(
-      store: saved,
-      onState: (context, posts) {
-        final isSaved = saved.isSaved(post);
-        return IconButton(
-          tooltip: isSaved ? l10n.action_unsave_post : l10n.action_save_post,
-          icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
-          onPressed: () => saved.toggle(post),
-        );
-      },
     );
   }
 }

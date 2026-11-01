@@ -16,6 +16,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_ExpandableTweetText.dart';
 import 'package:xta/tweet/_card.dart';
+import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/avatar_follow_badge.dart';
@@ -31,7 +32,6 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
 import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/tweet/broadcasts.dart';
-import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/article/article.dart';
 import 'package:xta/ui/dates.dart';
@@ -895,8 +895,6 @@ class TweetTileState extends State<TweetTile> {
     final bodyChildren = <Widget>[
       replyToTile,
       if (tweet.article == null) content,
-      if (tweet.article == null)
-        CashtagQuotesBar(symbols: tweetCashtags(tweet)),
       if (tweet.isSubscriberPreview)
         _SubscriberPreviewLine(screenName: tweet.user?.screenName),
       if (articleLink != null)
@@ -911,6 +909,9 @@ class TweetTileState extends State<TweetTile> {
       if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
       birdwatchQuoted,
       article,
+      // The prices of the tickers it names, at the foot of the post: a quote
+      // inside another post leaves them to its own page.
+      if (!isQuotedTweet) CashtagStrip(symbols: tweetCashtags(tweet)),
       if (isFocal)
         TweetFocalMetaLine(
           createdAt: createdAt,
@@ -1095,12 +1096,8 @@ class TweetHasNoContentException {
   }
 }
 
-/// Wraps a post so a double-tap likes it, when the reader has asked for that.
-///
-/// Returns [child] untouched while the gesture is off, which is the point of
-/// the setting: a double-tap recogniser makes every single tap wait to see
-/// whether a second one follows, and that delay would otherwise be paid by
-/// everyone opening a post.
+/// Wraps a post so a double-tap likes it, when the reader has asked for that
+/// (see [withDoubleTapToLike]).
 ///
 /// Deliberately not a swipe. A horizontal drag on a post would win the gesture
 /// arena against the page view underneath it, and swiping between tabs would
@@ -1110,28 +1107,18 @@ Widget _withDoubleTapToLike(
   TweetWithCard tweet,
   Widget child,
 ) {
-  final enabled =
-      PrefService.of(
-        context,
-        listen: false,
-      ).get<bool>(optionGestureDoubleTapLike) ==
-      true;
   final id = tweet.idStr;
-  if (!enabled || id == null) {
+  if (id == null) {
     return child;
   }
-
-  return GestureDetector(
-    onDoubleTap: () async {
-      final model = context.read<LikedTweetModel>();
-      if (model.isLiked(id)) {
-        return;
-      }
-      await model.likeTweet(id, tweet.user?.idStr, tweet.toJson());
-      if (context.mounted) {
-        maybeShowLikeToast(context);
-      }
-    },
+  return withDoubleTapToLike(
+    context,
+    isLiked: () => context.read<LikedTweetModel>().isLiked(id),
+    like: () => context.read<LikedTweetModel>().likeTweet(
+      id,
+      tweet.user?.idStr,
+      tweet.toJson(),
+    ),
     child: child,
   );
 }

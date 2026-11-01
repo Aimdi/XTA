@@ -211,6 +211,15 @@ Color xLookInsetSurface(XLookTokens tokens) =>
     ? _xLookLiftedSurface(tokens, 0.06)
     : tokens.card;
 
+/// [xLookInsetSurface] of the current theme, or Material's quiet container
+/// where the X look is not installed.
+Color xLookInsetSurfaceOf(BuildContext context) {
+  final tokens = XLookTokens.maybeOf(context);
+  return tokens == null
+      ? Theme.of(context).colorScheme.surfaceContainer
+      : xLookInsetSurface(tokens);
+}
+
 /// The fill for a surface that floats above the page — a menu, a dialog, a
 /// sheet, a snackbar, or the home nav pill.
 ///
@@ -220,6 +229,15 @@ Color xLookFloatingSurface(XLookTokens tokens) =>
     tokens.card == tokens.background
     ? _xLookLiftedSurface(tokens, 0.10)
     : tokens.card;
+
+/// [xLookFloatingSurface] of the current theme, or Material's raised surface
+/// where the X look is not installed.
+Color xLookFloatingSurfaceOf(BuildContext context) {
+  final tokens = XLookTokens.maybeOf(context);
+  return tokens == null
+      ? Theme.of(context).colorScheme.surfaceContainerHigh
+      : xLookFloatingSurface(tokens);
+}
 
 /// Placeholder fill that remains visible without borrowing the much brighter
 /// divider colour as a solid surface in Lights Out.

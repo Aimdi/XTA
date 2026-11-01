@@ -1,12 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_quote_row.dart';
+import 'package:xta/plugins/stocks/stocks_row_state.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
-import 'package:xta/ui/motion.dart';
 
 /// Cashtags X attached to a post, uppercased and de-duplicated.
 List<String> tweetCashtags(TweetWithCard tweet) {
@@ -22,113 +25,207 @@ List<String> tweetCashtags(TweetWithCard tweet) {
   ];
 }
 
-/// Mini tape under a post that mentions tickers — getquin / StockTwits's
-/// "the prices for what this is about", not another search.
+/// How many of a post's cashtags the strip shows. A post listing twenty
+/// tickers is an advert, and would ask for twenty prices.
+const kCashtagStripLimit = 4;
+
+/// The price strip at the foot of a post that names tickers: each of its
+/// first cashtags with the day's line, the price and the move, one line that
+/// scrolls sideways from the text's start to the card's edge.
 ///
-/// Quotes come from [TickerQuoteCache]. Missing cache (tests, a build that
-/// forgot the provider) is a no-op, never an error.
-class CashtagQuotesBar extends StatelessWidget {
+/// Quotes come from [TickerQuoteCache]. Without one (tests, a build that
+/// forgot the provider) there is no strip, never an error.
+class CashtagStrip extends StatelessWidget {
   final List<String> symbols;
 
-  const CashtagQuotesBar({super.key, required this.symbols});
+  const CashtagStrip({super.key, required this.symbols});
 
   @override
   Widget build(BuildContext context) {
-    if (symbols.isEmpty) {
+    final shown = symbols.take(kCashtagStripLimit).toList();
+    final cache = shown.isEmpty ? null : _cacheOf(context);
+    if (cache == null) {
       return const SizedBox.shrink();
     }
-
-    late final TickerQuoteCache cache;
-    try {
-      cache = context.read<TickerQuoteCache>();
-    } on ProviderNotFoundException {
-      return const SizedBox.shrink();
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      cache.ensure(symbols.take(3));
+      unawaited(cache.ensure(shown));
     });
+    return ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
+      store: cache,
+      distinct: (quotes) => [
+        for (final symbol in shown) quotes[symbol],
+        for (final symbol in shown) cache.failed.contains(symbol),
+      ],
+      onState: (context, quotes) => _strip(context, [
+        for (final (index, symbol) in shown.indexed)
+          _StripEntry(
+            symbol: symbol,
+            quote: quotes[symbol],
+            failed: cache.failed.contains(symbol),
+            first: index == 0,
+          ),
+      ]),
+    );
+  }
 
-    // The prices often land while the post is on screen: the row grows in
-    // rather than pushing the media and footer down at once.
-    return XtaAnimatedSize(
-      child: ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
-        store: cache,
-        onState: (_, quotes) {
-          final chips = [
-            for (final symbol in symbols.take(4))
-              if (quotes[symbol] != null)
-                _QuoteChip(symbol: symbol, quote: quotes[symbol]!),
-          ];
-          if (chips.isEmpty) {
-            return const SizedBox(width: double.infinity);
-          }
-          return XtaFadeIn(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-              child: Wrap(spacing: 6, children: chips),
+  Widget _strip(BuildContext context, List<Widget> entries) {
+    final colour = Theme.of(context).dividerColor;
+    final line = BorderSide(color: colour);
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 16, top: 8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: line, bottom: line),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                for (final (index, entry) in entries.indexed) ...[
+                  if (index > 0)
+                    VerticalDivider(
+                      width: 1,
+                      indent: 14,
+                      endIndent: 14,
+                      color: colour,
+                    ),
+                  entry,
+                ],
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 }
 
-/// `$AAPL 200.00 +5.26%` in a small outlined chip, as many to a line as fit:
-/// the symbol in the text colour, and only the move in green or red.
-class _QuoteChip extends StatelessWidget {
-  final String symbol;
-  final TickerQuote quote;
+TickerQuoteCache? _cacheOf(BuildContext context) {
+  try {
+    return context.read<TickerQuoteCache>();
+  } on ProviderNotFoundException {
+    return null;
+  }
+}
 
-  const _QuoteChip({required this.symbol, required this.quote});
+/// `AAPL ⌇ 344.63 −1.23%`: the symbol, the day's line, the price and the
+/// move; a grey bar while it loads, "No price" when there is none, and a
+/// closed market in the secondary colour.
+class _StripEntry extends StatelessWidget {
+  final String symbol;
+  final TickerQuote? quote;
+  final bool failed;
+
+  /// The first entry starts where the text does.
+  final bool first;
+
+  const _StripEntry({
+    required this.symbol,
+    required this.quote,
+    required this.failed,
+    this.first = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final percent = quote.changePercent;
-    final price = quote.displayPrice;
-
-    return ActionChip(
-      // Narrow, not short: vertical density would shrink the 48 dp target.
-      visualDensity: const VisualDensity(horizontal: -4, vertical: 0),
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      labelPadding: EdgeInsets.zero,
-      backgroundColor: Colors.transparent,
-      side: BorderSide(color: theme.colorScheme.outlineVariant),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      label: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: '\$$symbol',
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            if (price != null) TextSpan(text: ' ${stockPrice(price)}'),
-            if (percent != null)
-              TextSpan(
-                text: ' ${stockPercentLabel(percent)}',
-                style: TextStyle(
-                  color: stockTrendColour(context, percent),
-                  fontWeight: FontWeight.w700,
+    final state = stockRowState(quote, failed: failed, now: DateTime.now());
+    return Semantics(
+      button: true,
+      label: _label(L10n.of(context), state),
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () => openTicker(context, symbol),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: EdgeInsetsDirectional.only(start: first ? 0 : 12, end: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  symbol,
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-          ],
-        ),
-        semanticsLabel: [
-          '\$$symbol',
-          if (price != null) stockPriceSpoken(price),
-          if (percent != null) stockPercentLabel(percent),
-        ].join(', '),
-        style: theme.textTheme.labelMedium!.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-          fontFeatures: kStockFigures,
+                const SizedBox(width: 6),
+                ..._figures(context, state),
+              ],
+            ),
+          ),
         ),
       ),
-      onPressed: () => openTicker(context, symbol),
     );
+  }
+
+  List<Widget> _figures(BuildContext context, StockRowState state) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    final quote = this.quote;
+    if (state == StockRowState.loading) {
+      return const [StocksFiguresSkeleton(inline: true)];
+    }
+    if (state == StockRowState.noData || quote == null) {
+      return [
+        Text(
+          L10n.of(context).plugin_stocks_no_price,
+          style: theme.textTheme.bodySmall!.copyWith(
+            fontSize: 13,
+            color: muted,
+          ),
+        ),
+      ];
+    }
+    final closed = state == StockRowState.closed;
+    final percent = quote.changePercent;
+    return [
+      if (!closed && quote.points.length >= 2) ...[
+        SizedBox(
+          width: 32,
+          height: 14,
+          child: StocksSparkline(quote: quote, showBaseline: false),
+        ),
+        const SizedBox(width: 6),
+      ],
+      Text(
+        stockPrice(quote.displayPrice!),
+        style: theme.textTheme.bodyMedium!.copyWith(
+          fontSize: 14,
+          fontFeatures: kStockFigures,
+          color: closed ? muted : theme.colorScheme.onSurface,
+        ),
+      ),
+      if (percent != null) ...[
+        const SizedBox(width: 6),
+        Text(
+          stockPercentLabel(percent),
+          style: theme.textTheme.bodySmall!.copyWith(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            fontFeatures: kStockFigures,
+            color: closed ? muted : stockTrendColour(context, percent),
+          ),
+        ),
+      ],
+    ];
+  }
+
+  String _label(L10n l10n, StockRowState state) {
+    final quote = this.quote;
+    final percent = quote?.changePercent;
+    return [
+      '\$$symbol',
+      ...switch (state) {
+        StockRowState.loading => [l10n.plugin_stocks_loading_price],
+        StockRowState.noData => [l10n.plugin_stocks_no_price],
+        StockRowState.closed || StockRowState.live => [
+          stockPriceSpoken(quote!.displayPrice!),
+          if (percent != null) stockPercentLabel(percent),
+        ],
+      },
+    ].join(', ');
   }
 }

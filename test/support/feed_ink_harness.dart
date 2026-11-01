@@ -188,6 +188,12 @@ Future<void> pumpInk(
             optionZenMode: false,
             optionCalmMode: false,
             optionDisableAnimations: true,
+            // As the app sets them at start, for a post whose video is built.
+            optionMediaDefaultMute: true,
+            optionMediaDefaultLoop: false,
+            optionMediaDefaultAutoPlay: false,
+            optionMediaBackgroundPlayback: true,
+            optionMediaAllowBackgroundPlayOtherApps: false,
           },
         ),
         child: MaterialApp(

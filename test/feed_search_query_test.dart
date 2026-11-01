@@ -69,6 +69,27 @@ void main() {
       });
     }
 
+    test('a search narrowing another counts its length, and fills it as far as X reads', () {
+      const within = r'("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" OR $WETH)';
+      final chunks = packFeedChunks(
+        terms,
+        (term) => term,
+        includeReplies: true,
+        includeRetweets: false,
+        within: within,
+      );
+      for (final (index, chunk) in chunks.indexed) {
+        final query = buildFeedSearchQuery(chunk, includeReplies: true, includeRetweets: false, within: within);
+        expect(query, startsWith('$within (${chunk.first} OR '));
+        expect(query.length, lessThanOrEqualTo(feedSearchQueryLimit));
+        if (index < chunks.length - 1) {
+          final withNext = [...chunk, chunks[index + 1].first];
+          final longer = buildFeedSearchQuery(withNext, includeReplies: true, includeRetweets: false, within: within);
+          expect(longer.length, greaterThan(feedSearchQueryLimit));
+        }
+      }
+    });
+
     test('puts more typical accounts in one search than the old 16', () {
       expect(_pack(terms).first.length, greaterThan(16));
     });

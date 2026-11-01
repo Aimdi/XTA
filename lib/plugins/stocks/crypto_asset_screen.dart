@@ -89,6 +89,7 @@ class _CryptoAssetScreenState extends State<CryptoAssetScreen> {
             body: StocksPostsFeed(
               key: ValueKey(asset.searchQuery),
               query: asset.searchQuery,
+              followedFirst: true,
               onRefreshQuotes: _loadQuote,
             ),
           );

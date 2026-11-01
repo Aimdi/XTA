@@ -1,6 +1,5 @@
 import 'package:dart_twitter_api/twitter_api.dart' show Url, UserEntities, UserEntityUrl;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +15,8 @@ import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart' show UserWithExtra;
+
+import 'review_fonts.dart';
 
 /// Three short paragraphs a blank line apart, two of them with a link.
 const profileFixtureBio =
@@ -49,14 +50,8 @@ UserWithExtra profileFixtureUser() => UserWithExtra.fromArguments(
   createdAt: DateTime.utc(2024, 8, 3),
 );
 
-/// Inter and Material's icons, so text measures and draws as on a phone; the
-/// test font draws every glyph 1 em wide.
-Future<void> loadProfileFonts() async {
-  for (final weight in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
-    await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-$weight.ttf'))).load();
-  }
-  await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-}
+/// Inter and Material's icons, as the profile renders are drawn in.
+Future<void> loadProfileFonts() => loadReviewFonts();
 
 class _People extends SubscriptionsModel {
   _People(super.prefs, super.groupModel, {required bool subscribed, required bool inFeed}) {

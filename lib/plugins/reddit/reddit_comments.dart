@@ -28,6 +28,10 @@ class RedditComment {
   /// Marked by Reddit as the submitter of the post.
   final bool isSubmitter;
 
+  /// The label the author wears in this subreddit, when Reddit's answer
+  /// names it.
+  final String? authorFlair;
+
   /// Pictures and GIFs linked from the body, in the order they appear.
   ///
   /// Reddit has no comment-image markup on the old site — an image comment is a
@@ -59,6 +63,7 @@ class RedditComment {
     this.score,
     this.createdAt,
     this.isSubmitter = false,
+    this.authorFlair,
     this.mediaUrls = const [],
     this.replies = const [],
     this.permalink,
@@ -88,6 +93,13 @@ class RedditComment {
   /// This comment and everything under it, which is what a flat list needs.
   int get totalCount =>
       1 + replies.fold<int>(0, (sum, reply) => sum + reply.totalCount);
+
+  /// The comments under this one, at any depth. A row standing for replies
+  /// Reddit held back is not one of them.
+  int get replyCount => replies.fold<int>(
+    0,
+    (sum, reply) => reply.isStub ? sum : sum + 1 + reply.replyCount,
+  );
 }
 
 /// The next comments at the top of a thread on www.reddit.com: the piece that
@@ -131,6 +143,12 @@ int? _score(Element entry) {
   return digits == null ? null : int.tryParse(digits.group(0)!);
 }
 
+/// The author's flair in the tagline, as old.reddit prints it.
+String? _flair(Element entry) {
+  final text = entry.querySelector('.tagline .flair')?.text.trim();
+  return text == null || text.isEmpty ? null : text;
+}
+
 DateTime? _createdAt(Element entry) {
   final raw = entry.querySelector('time')?.attributes['datetime'];
   return raw == null ? null : DateTime.tryParse(raw)?.toLocal();
@@ -171,6 +189,7 @@ RedditComment? _commentFrom(Element thing) {
     score: _score(entry),
     createdAt: _createdAt(entry),
     isSubmitter: entry.querySelector('.author.submitter') != null,
+    authorFlair: _flair(entry),
     mediaUrls: content.mediaUrls,
     replies: _repliesOf(thing),
     permalink: thing.attributes['data-permalink'],
@@ -499,6 +518,30 @@ String? parseSelfText(String body) {
       document.querySelector('#siteTable .usertext-body .md')?.text.trim();
 
   return text == null || text.isEmpty ? null : text;
+}
+
+/// [incoming] without the threads [shown] already holds at the top level,
+/// replies and all. A page of held-back comments can repeat one the thread
+/// loaded before, and each top-level comment is shown once.
+List<FlatComment> withoutShownThreads(
+  List<FlatComment> shown,
+  List<FlatComment> incoming,
+) {
+  final ids = {
+    for (final entry in shown)
+      if (entry.depth == 0) entry.comment.id,
+  };
+  final kept = <FlatComment>[];
+  var repeated = false;
+  for (final entry in incoming) {
+    if (entry.depth == 0) {
+      repeated = ids.contains(entry.comment.id);
+    }
+    if (!repeated) {
+      kept.add(entry);
+    }
+  }
+  return kept;
 }
 
 /// One row of a thread: the comment, and how many replies its fold is holding.

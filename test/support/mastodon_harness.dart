@@ -186,6 +186,7 @@ class MastodonHarness {
     double scale = 1,
     bool rtl = false,
     bool reducedMotion = true,
+    Locale? locale,
   }) => PrefService(
     service: prefs,
     child: MultiProvider(
@@ -202,6 +203,7 @@ class MastodonHarness {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
+        locale: locale,
         localizationsDelegates: const [
           L10n.delegate,
           GlobalMaterialLocalizations.delegate,

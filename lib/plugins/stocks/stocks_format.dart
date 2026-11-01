@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/tweet/ticker_screen.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/contrast.dart';
 import 'package:xta/utils/formatting_locale.dart';
 
@@ -11,8 +12,33 @@ import 'package:xta/utils/formatting_locale.dart';
 const Color kStockUpColour = Color(0xFF00BA7C);
 const Color kStockDownColour = Color(0xFFF4212E);
 
+/// X's amber: a caution about a row or a post, never a price move.
+const Color kStockWarningColour = Color(0xFFFFAD1F);
+
 /// A move this small prints as 0.00% and is drawn as flat, not as a gain.
 const double _flatPercent = 0.005;
+
+/// The app's accent as Stocks draws selection with it (the tab, the strip
+/// entry, the reading shown), readable on the scaffold.
+Color stocksAccent(BuildContext context) =>
+    ensureContrast(tweetReadableAccentColor(context), Theme.of(context).scaffoldBackgroundColor);
+
+/// How wide [text] is drawn in [style] at the reader's text size, on one line.
+double stocksTextWidth(BuildContext context, String text, TextStyle style) {
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+    maxLines: 1,
+  )..layout();
+  final width = painter.width;
+  painter.dispose();
+  return width;
+}
+
+/// [kStockWarningColour], readable on [background] (the scaffold by default).
+Color stockWarningColour(BuildContext context, {Color? background}) =>
+    ensureContrast(kStockWarningColour, background ?? Theme.of(context).scaffoldBackgroundColor);
 
 /// Green for a gain, red for a loss, readable on [background] (the scaffold by
 /// default). Unknown or flat is neutral: green for "no data" would claim good

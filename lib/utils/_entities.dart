@@ -46,7 +46,13 @@ class HashtagEntity extends Entity {
       child: GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
-        child: Text('#${hashtag.text}', style: context.linkStyle),
+        // The paragraph already scales a widget in it by the reader's text
+        // size; scaled again, the tag stood out at large text.
+        child: Text(
+          '#${hashtag.text}',
+          style: context.linkStyle,
+          textScaler: TextScaler.noScaling,
+        ),
       ),
     );
   }
@@ -76,7 +82,12 @@ class SymbolEntity extends Entity {
       child: GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
-        child: Text('\$$text', style: context.linkStyle),
+        // Scaled by the paragraph already, like a hashtag.
+        child: Text(
+          '\$$text',
+          style: context.linkStyle,
+          textScaler: TextScaler.noScaling,
+        ),
       ),
     );
   }

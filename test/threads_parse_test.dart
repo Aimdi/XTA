@@ -64,11 +64,38 @@ void main() {
 
       expect(post.images, ['https://cdn/poster.jpg']);
       expect(post.videoUrls, ['https://cdn/large.mp4']);
+      expect([for (final rendition in post.renditionsAt(0)) rendition.url], [
+        'https://cdn/large.mp4',
+        'https://cdn/small.mp4',
+      ]);
       expect(post.hasVideo, isTrue);
       final item = post.mediaItems.single;
       expect(item.isVideo, isTrue);
       expect(item.videoUrl, 'https://cdn/large.mp4');
       expect(item.aspectRatio, closeTo(720 / 1280, 0.001));
+    });
+
+    test('every rendition is kept, largest first, one file and one quality each', () {
+      final renditions = threadsVideoRenditionsOf(
+        Json({
+          'video_versions': [
+            {'url': 'https://cdn/640.mp4', 'width': 360, 'height': 640, 'type': 101},
+            {'url': 'https://cdn/1280.mp4', 'width': 720, 'height': 1280, 'type': 102},
+            {'url': 'https://cdn/1280.mp4', 'width': 720, 'height': 1280, 'type': 103},
+            {'url': 'https://cdn/1280-lighter.mp4', 'width': 720, 'height': 1280},
+            {'url': 'https://cdn/unsized.mp4'},
+            {'url': ''},
+          ],
+        }),
+      );
+
+      expect([for (final rendition in renditions) (rendition.url, rendition.lines)], [
+        ('https://cdn/1280.mp4', 720),
+        ('https://cdn/640.mp4', 360),
+        ('https://cdn/unsized.mp4', null),
+      ]);
+      expect(const ThreadsVideoRendition('https://cdn/l.mp4', width: 1920, height: 1080).lines, 1080);
+      expect(const ThreadsVideoRendition('https://cdn/h.mp4', height: 480).lines, 480);
     });
 
     test('a carousel mixes stills and videos, each with its description', () {
@@ -367,6 +394,12 @@ void main() {
         imageAspects: [0.5],
         imageAlts: ['alt'],
         videoUrls: ['https://cdn/v.mp4'],
+        videoRenditions: [
+          [
+            ThreadsVideoRendition('https://cdn/v.mp4', width: 720, height: 1280),
+            ThreadsVideoRendition('https://cdn/v-480.mp4', width: 480, height: 854),
+          ],
+        ],
         url: 'https://www.threads.com/@zuck/post/ABC',
         quoteCount: 3,
         topicTag: 'Books',
@@ -388,6 +421,10 @@ void main() {
 
       expect(back.imageAlts, ['alt']);
       expect(back.videoUrls, ['https://cdn/v.mp4']);
+      expect([for (final rendition in back.renditionsAt(0)) (rendition.url, rendition.lines)], [
+        ('https://cdn/v.mp4', 720),
+        ('https://cdn/v-480.mp4', 480),
+      ]);
       expect(back.hasVideo, isTrue);
       expect(back.quoteCount, 3);
       expect(back.topicTag, 'Books');
@@ -407,6 +444,7 @@ void main() {
       });
 
       expect(back.videoUrls, isEmpty);
+      expect(back.renditionsAt(0), isEmpty);
       expect(back.mediaItems.single.isVideo, isFalse);
       expect(back.fragments, isEmpty);
       expect(back.selfThreadCount, 0);

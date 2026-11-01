@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
@@ -12,9 +13,13 @@ import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_discovery_api.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
+import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/crypto_client.dart';
+import 'package:xta/plugins/stocks/gecko_terminal.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/tweet/ticker/coin_sources.dart';
+import 'package:xta/tweet/ticker/price_http.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 
 /// Live reads of every source that needs no account. Opt in with:
@@ -258,6 +263,43 @@ void main() {
           'Stocks: AAPL ${quote.price}, ${hits.length} hits, ${trending.length} trending, ${news.length} news, '
           '${coins.length} coins',
         );
+      },
+      timeout: timeout,
+      skip: skip,
+    );
+
+    test(
+      'each coin exchange prices Bitcoin, and GeckoTerminal a token',
+      () async {
+        final client = http.Client();
+        final week = ChartWindow.parse('5d', '30m')!;
+        final lines = <String>[];
+        for (final source in <CoinSource>[
+          CoinbaseSource(client, userAgent: TickerClient.userAgent),
+          KrakenSource(client, userAgent: TickerClient.userAgent),
+          BinanceSource(client, userAgent: TickerClient.userAgent),
+        ]) {
+          try {
+            final quote = await source.chart('BTC', week);
+            expect(quote.price, greaterThan(0));
+            lines.add('${source.name} ${quote.price}');
+          } on TickerException catch (error) {
+            // Binance refuses some countries by law (451), US runners among them.
+            if (source is! BinanceSource || !error.message.contains('HTTP 451')) rethrow;
+            lines.add('${source.name} refused this runner by location');
+          }
+        }
+        const weth = CryptoAsset(
+          chain: 'ethereum',
+          address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+          symbol: 'WETH',
+          name: 'Wrapped Ether',
+        );
+        final pools = await fetchPriceJson(client, geckoTerminalPoolsUri(weth), userAgent: TickerClient.userAgent);
+        final market = geckoTerminalMarket(pools, weth);
+        expect(market?.price, greaterThan(0));
+        client.close();
+        report('Stocks: ${lines.join(', ')}; GeckoTerminal WETH ${market!.price}');
       },
       timeout: timeout,
       skip: skip,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/utils/json.dart';
@@ -42,6 +43,37 @@ class ThreadsLinkCard {
     );
   }
 }
+
+/// One file Meta offers for a video, with its size when Meta gave it.
+class ThreadsVideoRendition {
+  final String url;
+  final int? width;
+  final int? height;
+
+  const ThreadsVideoRendition(this.url, {this.width, this.height});
+
+  /// The lines a quality is named by: the shorter side, so a 720×1280 video
+  /// is "720p" as a 1280×720 one is; the height when Meta gave no width.
+  int? get lines => switch ((width, height)) {
+    (final width?, final height?) => math.min(width, height),
+    (null, final height?) => height,
+    _ => null,
+  };
+
+  int get area => (width ?? 0) * (height ?? 0);
+
+  Map<String, dynamic> toJson() => {'url': url, 'width': width, 'height': height};
+
+  /// The rendition [raw] kept, or null when it kept no file.
+  static ThreadsVideoRendition? fromSnapshot(Object? raw) {
+    if (raw is! Map) return null;
+    final url = raw['url'];
+    if (url is! String || url.isEmpty) return null;
+    return ThreadsVideoRendition(url, width: _snapshotSize(raw['width']), height: _snapshotSize(raw['height']));
+  }
+}
+
+int? _snapshotSize(Object? raw) => raw is int && raw > 0 ? raw : null;
 
 /// What one run of a caption is, as Meta's `text_fragments` split it.
 enum ThreadsFragmentKind { text, mention, link, tag }
@@ -104,6 +136,10 @@ class ThreadsPost {
 
   /// The playable file behind each entry of [images] — null for a still.
   final List<String?> videoUrls;
+
+  /// Every file Meta offers for each entry of [images], largest first: empty
+  /// for a still, and for a post kept before they were.
+  final List<List<ThreadsVideoRendition>> videoRenditions;
   final DateTime? publishedAt;
 
   /// Where the post lives on Threads, for opening it there.
@@ -147,6 +183,7 @@ class ThreadsPost {
     this.imageAspects = const [],
     this.imageAlts = const [],
     this.videoUrls = const [],
+    this.videoRenditions = const [],
     this.publishedAt,
     this.url,
     this.likeCount,
@@ -173,6 +210,11 @@ class ThreadsPost {
   bool get hasMedia => images.isNotEmpty;
 
   bool get hasVideo => videoUrls.any((url) => url != null && url.isNotEmpty);
+
+  /// The files of the video at [index], largest first; none for a post kept
+  /// before they were, which plays its [videoUrls] entry alone.
+  List<ThreadsVideoRendition> renditionsAt(int index) =>
+      index < videoRenditions.length ? videoRenditions[index] : const [];
 
   List<PluginMediaItem> get mediaItems => [
     for (var i = 0; i < images.length; i++)
@@ -240,6 +282,7 @@ class ThreadsPost {
     imageAspects: imageAspects,
     imageAlts: imageAlts,
     videoUrls: videoUrls,
+    videoRenditions: videoRenditions,
     publishedAt: publishedAt ?? this.publishedAt,
     url: url,
     likeCount: likeCount,
@@ -268,6 +311,10 @@ class ThreadsPost {
     'imageAspects': imageAspects,
     'imageAlts': imageAlts,
     'videoUrls': videoUrls,
+    'videoRenditions': [
+      for (final renditions in videoRenditions)
+        [for (final rendition in renditions) rendition.toJson()],
+    ],
     'publishedAt': publishedAt?.toIso8601String(),
     'url': url,
     'likeCount': likeCount,
@@ -323,6 +370,7 @@ class ThreadsPost {
       ],
       imageAlts: _snapshotStrings(json['imageAlts']),
       videoUrls: _snapshotStrings(json['videoUrls']),
+      videoRenditions: _snapshotRenditions(json['videoRenditions']),
       publishedAt: DateTime.tryParse(
         json['publishedAt'] as String? ?? '',
       )?.toLocal(),
@@ -367,6 +415,14 @@ class ThreadsPost {
   static String listToPrefs(List<ThreadsPost> posts) =>
       jsonEncode(posts.map((e) => e.toJson()).toList());
 }
+
+List<List<ThreadsVideoRendition>> _snapshotRenditions(Object? raw) => [
+  for (final video in raw is List ? raw : const [])
+    [
+      for (final item in video is List ? video : const [])
+        ?ThreadsVideoRendition.fromSnapshot(item),
+    ],
+];
 
 List<String?> _snapshotStrings(Object? value) => [
   for (final item in (value is List ? value : const []))

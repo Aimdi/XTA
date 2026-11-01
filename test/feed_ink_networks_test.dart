@@ -27,6 +27,7 @@ import 'package:xta/ui/x_look_theme.dart';
 
 import 'support/bluesky_reading_images.dart';
 import 'support/feed_ink_harness.dart';
+import 'support/opened_pages.dart';
 
 /// Follows kept in memory: the real stores write to the database.
 class _BlueskyFollows extends BlueskyAccountsStore {
@@ -41,22 +42,6 @@ class _ThreadsFollows extends ThreadsAccountsStore {
 
 /// What a tap opened, taken off again before it is built: the profile screens
 /// want clients these cards do not.
-class _Opened extends NavigatorObserver {
-  final _routes = <MaterialPageRoute<dynamic>>[];
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    if (previousRoute != null && route is MaterialPageRoute) _routes.add(route);
-  }
-
-  Widget take() {
-    final route = _routes.removeLast();
-    final page = route.builder(route.navigator!.context);
-    route.navigator!.removeRoute(route);
-    return page;
-  }
-}
-
 final _published = DateTime.now().subtract(const Duration(minutes: 15));
 const _text = 'Field notes from the studio: the light was right at seven, and the kiln held.';
 
@@ -268,7 +253,7 @@ void main() {
     testWidgets('a boost and a pinned post have their context lines at 68 dp; the boost opens the booster', (
       tester,
     ) async {
-      final opened = _Opened();
+      final opened = OpenedPages();
       await pump(
         tester,
         MastodonPostCard(post: _toot(boosted: true), pinned: true, showSourceBadge: false),
@@ -315,7 +300,7 @@ void main() {
     });
 
     testWidgets('a repost has its context line at 68 dp and it opens the reposter', (tester) async {
-      final opened = _Opened();
+      final opened = OpenedPages();
       await pump(tester, BlueskyPostCard(post: _skeet(repost: true), showSourceBadge: false), observers: [opened]);
 
       expect(tester.getTopLeft(contextLineIcon(Icons.repeat)).dx, kInkColumnStart);
@@ -343,11 +328,12 @@ void main() {
       expect(tester.getRect(check).center.dy, closeTo(tester.getRect(find.text('Maya Chen')).center.dy, 2));
     });
 
-    testWidgets('offers Follow as a 48 dp icon until followed', (tester) async {
+    testWidgets('offers Follow as a 48 dp icon until followed, before the ⋯ at the end', (tester) async {
       await pump(tester, ThreadsPostCard(post: _thread(), showSourceBadge: false));
 
       final follow = find.byTooltip(L10n.current.plugin_threads_follow);
-      expect(tester.getRect(follow), const Rect.fromLTWH(390 - 48, kInkColumnTop, 48, 48));
+      expect(tester.getRect(follow), const Rect.fromLTWH(390 - 96, kInkColumnTop, 48, 48));
+      expect(tester.getRect(find.byTooltip(L10n.current.more_info)), const Rect.fromLTWH(390 - 48, kInkColumnTop, 48, 48));
       await tester.tap(follow);
       await tester.pump();
       expect(threadsFollows.follows('maya'), isTrue);
@@ -355,7 +341,7 @@ void main() {
     });
 
     testWidgets('a repost has its context line at 68 dp and it opens the reposter', (tester) async {
-      final opened = _Opened();
+      final opened = OpenedPages();
       await pump(tester, ThreadsPostCard(post: _thread(repost: true), showSourceBadge: false), observers: [opened]);
 
       expect(tester.getTopLeft(contextLineIcon(Icons.repeat)).dx, kInkColumnStart);

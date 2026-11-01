@@ -61,7 +61,17 @@ class TweetFocalMetaLine extends StatefulWidget {
   /// The views of the copy the post was opened from: the count rolls from it.
   final int? fromViews;
 
-  const TweetFocalMetaLine({super.key, required this.createdAt, required this.views, this.fromViews});
+  /// Where the line starts: X's opened post spans the page; a card that keeps
+  /// its text column starts the line with the text.
+  final double start;
+
+  const TweetFocalMetaLine({
+    super.key,
+    required this.createdAt,
+    required this.views,
+    this.fromViews,
+    this.start = kTweetHorizontalPadding,
+  });
 
   @override
   State<TweetFocalMetaLine> createState() => _TweetFocalMetaLineState();
@@ -99,8 +109,8 @@ class _TweetFocalMetaLineState extends State<TweetFocalMetaLine> {
     }
     final line = Text.rich(TextSpan(style: style, children: spans));
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        kTweetHorizontalPadding,
+      padding: EdgeInsetsDirectional.fromSTEB(
+        widget.start,
         kTweetSpace3,
         kTweetHorizontalPadding,
         kTweetSpace1,

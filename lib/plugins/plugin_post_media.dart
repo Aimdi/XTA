@@ -11,6 +11,7 @@ import 'package:xta/downloads/download_entry.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/media_strip.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/desktop_pager.dart';
 import 'package:xta/ui/errors.dart';
@@ -152,6 +153,7 @@ class PluginPostMedia extends StatelessWidget {
     this.sourceName = 'xta',
     this.onOpenPost,
     this.videoBuilder,
+    this.strip = false,
   });
 
   final List<PluginMediaItem> items;
@@ -161,6 +163,10 @@ class PluginPostMedia extends StatelessWidget {
 
   /// Plays a video entry in place instead of showing its poster.
   final PluginMediaVideoBuilder? videoBuilder;
+
+  /// Several items along one row at one height, as X lays them out, instead
+  /// of one at a time.
+  final bool strip;
 
   @override
   Widget build(BuildContext context) {
@@ -178,12 +184,80 @@ class PluginPostMedia extends StatelessWidget {
         onOpenPost: onOpenPost,
       );
     }
+    if (strip) {
+      return _PluginMediaStrip(
+        items: items,
+        imageBuilder: imageBuilder,
+        videoBuilder: videoBuilder,
+        sourceName: sourceName,
+        onOpenPost: onOpenPost,
+      );
+    }
     return _PluginMediaPager(
       items: items,
       imageBuilder: imageBuilder,
       videoBuilder: videoBuilder,
       sourceName: sourceName,
       onOpenPost: onOpenPost,
+    );
+  }
+}
+
+/// Several items along a row at one height, each as wide as its shape there
+/// and the next one's edge in view ([mediaStripLayout]); the row scrolls
+/// sideways.
+class _PluginMediaStrip extends StatelessWidget {
+  const _PluginMediaStrip({
+    required this.items,
+    required this.sourceName,
+    this.imageBuilder,
+    this.videoBuilder,
+    this.onOpenPost,
+  });
+
+  final List<PluginMediaItem> items;
+  final PluginMediaImageBuilder? imageBuilder;
+  final PluginMediaVideoBuilder? videoBuilder;
+  final String sourceName;
+  final VoidCallback? onOpenPost;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(tweetMediaRadiusOf(context));
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final layout = mediaStripLayout(
+          width: constraints.maxWidth,
+          aspects: [
+            for (final item in items) clampPluginMediaAspect(item.aspectRatio),
+          ],
+        );
+        return SizedBox(
+          height: layout.height,
+          child: ListView.separated(
+            key: const ValueKey('plugin-media-strip'),
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            separatorBuilder: (_, _) => const SizedBox(width: kMediaCardGap),
+            itemBuilder: (context, i) => SizedBox(
+              width: layout.widths[i],
+              child: ClipRRect(
+                borderRadius: radius,
+                child: _PluginMediaTile(
+                  item: items[i],
+                  index: i,
+                  items: items,
+                  imageBuilder: imageBuilder,
+                  videoBuilder: videoBuilder,
+                  sourceName: sourceName,
+                  onOpenPost: onOpenPost,
+                  fill: true,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -32,10 +32,15 @@ class RedditPostMedia extends StatelessWidget {
   /// screen edge and needs the gutter here; a thread screen already has one.
   final EdgeInsets padding;
 
+  /// Draws a link post's card in place of the feed's own: the thread shows
+  /// its link differently.
+  final Widget Function(RedditPost post, String url)? linkCard;
+
   const RedditPostMedia({
     super.key,
     required this.post,
     this.padding = const EdgeInsets.fromLTRB(16, 10, 16, 0),
+    this.linkCard,
   });
 
   @override
@@ -95,7 +100,8 @@ class RedditPostMedia extends StatelessWidget {
 
     final link = post.url;
     if (link != null && !post.isSelf) {
-      final card = _RedditLinkCard(post: post, url: link);
+      final card =
+          linkCard?.call(post, link) ?? _RedditLinkCard(post: post, url: link);
       // A gallery scraped off old.reddit arrives as this link and nothing else:
       // its pictures are in the post's own JSON, not in that page. Fetch them
       // and show the album; keep the link until they arrive, or for good when

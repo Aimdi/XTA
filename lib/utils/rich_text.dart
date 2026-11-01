@@ -365,8 +365,10 @@ void _addTextRuns(
 }
 
 /// A contract address in a post: 42 characters that took two lines, shown
-/// cut in the middle as a link that copies the whole of it. A long word that
-/// only looks like one (no digit in it) stays text.
+/// cut in the middle, in the secondary colour, copying the whole of it when
+/// tapped. A watched token's address leads with its network, which names it
+/// better than its first letters do. A long word that only looks like an
+/// address (no digit in it) stays text.
 RichTextPart _addressPart(
   BuildContext context,
   EntitySpanContext spanContext,
@@ -375,16 +377,32 @@ RichTextPart _addressPart(
   if (detectCryptoAddress(word) == null) {
     return RichTextPart(null, word);
   }
+  final network = _watchedNetwork(context, word);
+  // One unit on the line: no break after the cut, nor around the dot.
+  final short = shortCryptoAddress(word).replaceFirst('…', '…\u2060');
   return RichTextPart(
     TextSpan(
-      text: shortCryptoAddress(word),
-      style: spanContext.linkStyle,
+      text: network == null ? short : '$network\u00a0·\u00a0$short',
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
       recognizer: spanContext.recognizer(
         () => unawaited(copyContractAddress(context, word)),
       ),
     ),
     null,
   );
+}
+
+String? _watchedNetwork(BuildContext context, String address) {
+  final StocksWatchlistStore store;
+  try {
+    store = context.read<StocksWatchlistStore>();
+  } on ProviderNotFoundException {
+    return null;
+  }
+  return store.cryptoAssets.values
+      .where((asset) => sameCryptoAddress(asset.address, address))
+      .firstOrNull
+      ?.chainName;
 }
 
 String? _runesToText(List<int> runes, int start, [int? end]) {

@@ -19,7 +19,7 @@ void main() {
     for (var i = 0; i < 6; i++) TweetChain(id: 'c$i', tweets: [inkXPost()..idStr = 'p$i'], isPinned: false),
   ];
 
-  Future<void> pumpFeed(WidgetTester tester) async {
+  Future<void> pumpFeed(WidgetTester tester, {Widget Function(TweetChain chain, Widget post)? wrapChain}) async {
     feed = TweetFeedController();
     addTearDown(feed.dispose);
     page = posts();
@@ -33,6 +33,7 @@ void main() {
           firstPageErrorPrefix: 'first',
           newPageErrorPrefix: 'next',
           emptyMessage: 'empty',
+          wrapChain: wrapChain,
         ),
       ),
       theme: xLookLightsOutTheme(null),
@@ -61,6 +62,12 @@ void main() {
     expect(await rebuiltBy(tester, flipLoading), 0);
   });
 
+  testWidgets('a feed can wrap its posts, and the same wrapper builds none of them again', (tester) async {
+    await pumpFeed(tester, wrapChain: _labelled);
+    expect(find.byKey(const ValueKey('wrapped-c0')), findsOneWidget);
+    expect(await rebuiltBy(tester, flipLoading), 0);
+  });
+
   testWidgets('a setting changing builds the posts on screen again', (tester) async {
     await pumpFeed(tester);
     final prefs = PrefService.of(tester.element(find.byType(PaginatedTweetList)), listen: false);
@@ -82,3 +89,10 @@ void main() {
     expect(feed.items!.first, same(page.first));
   });
 }
+
+/// A banner over every post, as the Stocks feed puts one over signal-group posts.
+Widget _labelled(TweetChain chain, Widget post) => Column(
+  key: ValueKey('wrapped-${chain.id}'),
+  mainAxisSize: MainAxisSize.min,
+  children: [const Text('banner'), post],
+);

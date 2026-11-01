@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_twitter_api/twitter_api.dart' show Entities, QuotedStatusPermalink, User;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,12 +49,14 @@ Future<void> _pumpTile(
   Map<String, WidgetBuilder> routes = const {},
   TweetWithCard? openedFrom,
   bool settle = true,
+  bool doubleTapLike = false,
+  LikedTweetModel? likedHere,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = Size(width, 900);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
-  final likes = LikedTweetModel();
+  final likes = likedHere ?? LikedTweetModel();
   final saves = SavedTweetModel();
   addTearDown(likes.destroy);
   addTearDown(saves.destroy);
@@ -81,7 +84,7 @@ Future<void> _pumpTile(
             optionTweetsShowSubscribeBadge: false,
             optionUseAbsoluteTimestamp: false,
             alwaysShowFullTweetContents: true,
-            optionGestureDoubleTapLike: false,
+            optionGestureDoubleTapLike: doubleTapLike,
             optionThemeTrueBlack: false,
             optionThemeTrueBlackTweetCards: false,
             optionZenMode: false,
@@ -315,6 +318,32 @@ void main() {
     });
   });
 
+  group('double-tap to like', () {
+    final text = find.textContaining('Привет', findRichText: true);
+
+    testWidgets('likes the post on this device when the reader asked for it', (tester) async {
+      final likes = _LikedHere();
+      await _pumpTile(tester, _post(), doubleTapLike: true, likedHere: likes);
+
+      await tester.tap(text.first);
+      await tester.pump(kDoubleTapMinTime);
+      await tester.tap(text.first);
+      await tester.pumpAndSettle();
+
+      expect(likes.ids, {'1'});
+      expect(find.text(L10n.current.likes_stay_on_device_notice), findsOneWidget);
+    });
+
+    testWidgets('leaves taps alone while the setting is off', (tester) async {
+      await _pumpTile(tester, _post());
+
+      expect(
+        find.byWidgetPredicate((widget) => widget is GestureDetector && widget.onDoubleTap != null),
+        findsNothing,
+      );
+    });
+  });
+
   group('opened post', () {
     testWidgets('states time, date and views on one line instead of in the footer', (tester) async {
       await _pumpTile(tester, _post(), focalId: '1');
@@ -412,4 +441,15 @@ void main() {
       expect(viewsPluralCount(77123), 1000);
     });
   });
+}
+
+/// Likes kept in memory, as this device's would be.
+class _LikedHere extends LikedTweetModel {
+  final ids = <String>{};
+
+  @override
+  bool isLiked(String id) => ids.contains(id);
+
+  @override
+  Future<void> likeTweet(String id, String? user, Map<String, dynamic> content) async => ids.add(id);
 }

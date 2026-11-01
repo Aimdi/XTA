@@ -271,7 +271,10 @@ class PluginHomeMenu extends StatelessWidget {
   final PopupMenuItemSelected<String>? onSelected;
   final ButtonStyle? style;
   final String? tooltip;
-  const PluginHomeMenu({super.key, required this.itemBuilder, this.onSelected, this.style, this.tooltip});
+
+  /// The button's icon, ⋮ when null.
+  final Widget? icon;
+  const PluginHomeMenu({super.key, required this.itemBuilder, this.onSelected, this.style, this.tooltip, this.icon});
 
   void select(BuildContext context, String value) {
     final scope = PluginHomeDockScope.maybeOf(context);
@@ -314,6 +317,7 @@ class PluginHomeMenu extends StatelessWidget {
     return PopupMenuButton<String>(
       style: style,
       tooltip: tooltip,
+      icon: icon,
       onOpened: () => scope?.store.controls.reveal(),
       onSelected: (value) {
         if (!context.mounted || scope?.source != PluginHomeDockScope.maybeOf(context)?.source) return;
@@ -359,6 +363,9 @@ class PluginDockOptionsButton extends StatelessWidget {
   /// The sheet holds no filters, only actions: an overflow menu's ⋮ says so
   /// where the sliders would promise filters.
   final bool overflow;
+
+  /// What the button is called, where the plugin names its sheet itself.
+  final String? tooltip;
   const PluginDockOptionsButton({
     super.key,
     required this.store,
@@ -370,13 +377,14 @@ class PluginDockOptionsButton extends StatelessWidget {
     this.attention = false,
     this.pinnable = false,
     this.overflow = false,
+    this.tooltip,
   });
 
   @override
   Widget build(BuildContext context) => IconButton(
     key: const ValueKey('home-plugin-options'),
     style: pluginActionButtonStyle,
-    tooltip: includeActions ? MaterialLocalizations.of(context).showMenuTooltip : L10n.of(context).filters,
+    tooltip: tooltip ?? (includeActions ? MaterialLocalizations.of(context).showMenuTooltip : L10n.of(context).filters),
     icon: Badge(isLabelVisible: attention, child: Icon(overflow ? Icons.more_vert : Icons.tune)),
     onPressed: () => _open(context),
   );

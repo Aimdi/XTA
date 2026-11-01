@@ -182,6 +182,7 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginRedditNsfwMode, redditNsfwModeTap);
     await prefs.set(optionPluginRedditShowSpoilers, false);
     await prefs.set(optionPluginRedditSavedPosts, '[]');
+    await prefs.set(optionPluginRedditThreadVisits, '{}');
     await prefs.set(optionPluginRedditInHomeFeed, false);
   }
 

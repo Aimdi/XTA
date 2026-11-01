@@ -207,7 +207,13 @@ class RedditAvatar extends StatelessWidget {
   final String? name;
   final double size;
 
-  const RedditAvatar({super.key, required this.name, this.size = 28});
+  /// A disc rather than the rounded square: how a thread marks the person who
+  /// wrote the post.
+  final bool round;
+
+  const RedditAvatar({super.key, required this.name, this.size = 28, this.round = false});
+
+  BorderRadius get _border => round ? BorderRadius.circular(size / 2) : redditAvatarBorder(size);
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +226,7 @@ class RedditAvatar extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: redditAvatarBorder(size),
+          borderRadius: _border,
         ),
       );
     }
@@ -228,7 +234,7 @@ class RedditAvatar extends StatelessWidget {
     final avatar = redditAvatarFor(value);
 
     return ClipRRect(
-      borderRadius: redditAvatarBorder(size),
+      borderRadius: _border,
       child: SizedBox(
         width: size,
         height: size,

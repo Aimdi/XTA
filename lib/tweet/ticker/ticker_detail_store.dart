@@ -65,10 +65,25 @@ class TickerDetailStore extends Store<TickerDetailState> {
 
   /// Hands a fresh one-day quote to whoever shares them (the quote cache).
   final void Function(TickerQuote quote)? onDayQuote;
+
+  /// Keeps the reader's pick between a coin and the listed security of the
+  /// same letters, for every place the symbol shows.
+  final void Function(TickerInstrument instrument)? onInstrument;
   int _generation = 0;
   bool _closed = false;
 
-  TickerDetailStore({required this.symbol, required this.client, this.onDayQuote}) : super(const TickerDetailState());
+  /// The reading the shared quotes are of: a day quote is handed on only
+  /// while the page shows that one.
+  TickerInstrument _shared;
+
+  TickerDetailStore({
+    required this.symbol,
+    required this.client,
+    this.onDayQuote,
+    this.onInstrument,
+    TickerInstrument instrument = TickerInstrument.auto,
+  }) : _shared = instrument,
+       super(TickerDetailState(instrument: instrument));
 
   bool _stale(int generation) => _closed || generation != _generation;
 
@@ -86,7 +101,7 @@ class TickerDetailStore extends Store<TickerDetailState> {
       final day = range == TickerRange.day ? quote : state.dayQuote ?? await _dayOrNull(instrument);
       if (_stale(generation)) return;
       update(state.copyWith(quote: quote, dayQuote: day, loading: false));
-      if (range == TickerRange.day && instrument == TickerInstrument.auto) {
+      if (range == TickerRange.day && instrument == _shared) {
         onDayQuote?.call(quote);
       }
     } on TickerException {
@@ -127,6 +142,11 @@ class TickerDetailStore extends Store<TickerDetailState> {
   /// instrument altogether, so today's figures go too.
   Future<void> selectInstrument(TickerInstrument instrument) async {
     if (instrument == state.instrument) return;
+    final keep = onInstrument;
+    if (keep != null) {
+      keep(instrument);
+      _shared = instrument;
+    }
     update(state.copyWith(instrument: instrument, quote: null, dayQuote: null, scrubbed: null));
     await load();
   }

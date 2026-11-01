@@ -1,8 +1,11 @@
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:xta/utils/pref_lists.dart';
 
 /// The tickers the reader watches, kept in the database.
 ///
@@ -10,7 +13,11 @@ import 'package:sqflite/sqflite.dart';
 /// use network/contract ids and versioned metadata in the existing symbol
 /// column, so the standard backup format preserves exact project identities.
 class StocksWatchlistStore extends Store<List<String>> {
-  StocksWatchlistStore() : super(const []);
+  /// [prefs] keeps the order the reader drags the rows into; without it the
+  /// order lasts until the list is read again.
+  StocksWatchlistStore({this.prefs}) : super(const []);
+
+  final BasePrefService? prefs;
 
   Map<String, CryptoAsset> _assets = const {};
   Map<String, CryptoAsset> get cryptoAssets => _assets;
@@ -38,7 +45,18 @@ class StocksWatchlistStore extends Store<List<String>> {
     }
     _assets = Map.unmodifiable(assets);
     symbols.sort((a, b) => labelFor(a).compareTo(labelFor(b)));
-    return symbols;
+    final prefs = this.prefs;
+    return stocksOrdered(symbols, prefs == null ? null : stringListPref(prefs, optionPluginStocksWatchlistOrder));
+  }
+
+  /// Moves the row at [from] so it ends up at [to], and keeps the new order.
+  Future<void> reorder(int from, int to) async {
+    if (from < 0 || from >= state.length) return;
+    final next = [...state];
+    final moved = next.removeAt(from);
+    next.insert(to.clamp(0, next.length), moved);
+    update(next);
+    await prefs?.set(optionPluginStocksWatchlistOrder, next);
   }
 
   Future<void> _write(String symbol) async {
@@ -115,3 +133,14 @@ class StocksWatchlistStore extends Store<List<String>> {
 }
 
 final RegExp _tickerPattern = RegExp(r'^[A-Za-z0-9.^-]{1,10}$');
+
+/// [symbols] in the reader's [order], those it does not name after them in
+/// the order they came: an id that left the watchlist is skipped, a new one
+/// joins at the end.
+List<String> stocksOrdered(List<String> symbols, List<String>? order) {
+  if (order == null || order.isEmpty) return symbols;
+  final present = symbols.toSet();
+  final arranged = [for (final id in order) if (present.contains(id)) id];
+  final placed = arranged.toSet();
+  return [...arranged, for (final id in symbols) if (!placed.contains(id)) id];
+}

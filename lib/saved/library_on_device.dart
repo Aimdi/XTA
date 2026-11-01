@@ -25,32 +25,6 @@ SavedLibraryEmptyKind savedLibraryEmptyKind({
   return SavedLibraryEmptyKind.folder;
 }
 
-/// Quiet reminder that this library never writes back to X.
-class SavedLibraryOnDeviceNotice extends StatelessWidget {
-  final String filter;
-
-  const SavedLibraryOnDeviceNotice({super.key, required this.filter});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    final message = filter == savedTabFavorites
-        ? l10n.likes_stay_on_device_notice
-        : filter == savedTabNotes
-        ? l10n.local_note_device_notice
-        : l10n.saves_stay_on_device_notice;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Text(
-        message,
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
-      ),
-    );
-  }
-}
-
 /// Empty Saved / Likes / folder / search / notes, with an icon instead of a lone line.
 class SavedLibraryEmpty extends StatelessWidget {
   final SavedLibraryEmptyKind kind;

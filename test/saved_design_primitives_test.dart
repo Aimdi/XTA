@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/saved_chrome.dart';
+import 'package:xta/saved/saved_header.dart';
 import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/saved/saved_view_store.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -63,57 +64,92 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Saved controls expose folder and media state in one compact row',
-    (tester) async {
-      String? selected;
-      var mediaToggles = 0;
+  testWidgets('the chip row holds the network picker, plain folder chips and a dashed +', (tester) async {
+    final semantics = tester.ensureSemantics();
+    String? selected;
+    SavedFolderOption? pressed;
+    var created = 0;
+    await tester.pumpWidget(
+      _app(
+        SavedChipRow(
+          networkPicker: const Text('Networks'),
+          selectedFolder: 'reading',
+          likesByGroup: false,
+          folders: const [
+            SavedFolderOption(value: savedTabAll, label: 'All'),
+            SavedFolderOption(value: 'reading', label: 'Long-form reading', editable: true),
+          ],
+          onFolderSelected: (value) => selected = value,
+          onFolderLongPress: (option) => pressed = option,
+          onNewFolder: () => created++,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(find.byType(SavedChipRow)).height, kTweetTouchTarget);
+    final chip = find.widgetWithText(SavedFolderChip, 'Long-form reading');
+    expect(tester.widget<SavedFolderChip>(chip).selected, isTrue);
+    expect(tester.widget<SavedFolderChip>(find.widgetWithText(SavedFolderChip, 'All')).selected, isFalse);
+    expect(find.byType(Icon), findsOneWidget, reason: 'only the + carries an icon');
+    expect(tester.getSemantics(find.text('Long-form reading')), isSemantics(isSelected: true, isButton: true));
+
+    await tester.tap(find.text('All'));
+    expect(selected, savedTabAll);
+    await tester.longPress(find.text('Long-form reading'));
+    expect(pressed?.value, 'reading');
+    await tester.tap(find.byTooltip('Create new folder'));
+    expect(created, 1);
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    semantics.dispose();
+  });
+
+  testWidgets('Filter and sort offers what applies to the open chip', (tester) async {
+    SavedLibraryAction? action;
+    Future<void> open({required bool sortable, required bool showMedia}) async {
       await tester.pumpWidget(
         _app(
-          SavedControlBar(
-            selectedFolder: 'reading',
+          SavedFilterButton(
+            sort: SavedSort.newest,
+            sortable: sortable,
+            showMedia: showMedia,
             mediaOnly: true,
-            likesByGroup: false,
-            folders: const [
-              SavedFolderOption(
-                value: savedTabAll,
-                label: 'All',
-                icon: Icons.bookmarks_outlined,
-              ),
-              SavedFolderOption(
-                value: 'reading',
-                label: 'Long-form reading',
-                icon: Icons.folder_outlined,
-                editable: true,
-              ),
-            ],
-            onFolderSelected: (value) => selected = value,
-            onFolderLongPress: (_) {},
-            onMediaToggle: () => mediaToggles++,
+            onSelected: (value) => action = value,
           ),
         ),
       );
       await tester.pumpAndSettle();
+    }
 
-      expect(
-        tester.getSize(find.byType(SavedControlBar)).height,
-        kSavedControlBarHeight,
-      );
-      expect(find.text('Long-form reading'), findsOneWidget);
-      expect(find.text('Media'), findsOneWidget);
-      expect(
-        tester
-            .getSize(find.widgetWithText(SavedChoiceChip, 'Long-form reading'))
-            .height,
-        greaterThanOrEqualTo(kTweetTouchTarget),
-      );
+    await open(sortable: true, showMedia: true);
+    expect(find.byTooltip('Filter and sort'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('saved-library-actions')));
+    await tester.pumpAndSettle();
+    for (final label in ['Newest saved first', 'Oldest saved first', 'Media only', 'Select']) {
+      expect(find.text(label), findsOneWidget, reason: label);
+    }
+    final media = tester.widget<CheckedPopupMenuItem<SavedLibraryAction>>(
+      find.widgetWithText(CheckedPopupMenuItem<SavedLibraryAction>, 'Media only'),
+    );
+    expect(media.checked, isTrue);
+    await tester.tap(find.text('Select'));
+    await tester.pumpAndSettle();
+    expect(action, SavedLibraryAction.select);
 
-      await tester.tap(find.text('All'));
-      await tester.tap(find.text('Media'));
-      expect(selected, savedTabAll);
-      expect(mediaToggles, 1);
-    },
-  );
+    await open(sortable: false, showMedia: true);
+    await tester.tap(find.byKey(const ValueKey('saved-library-actions')));
+    await tester.pumpAndSettle();
+    expect(find.text('Newest saved first'), findsNothing, reason: 'likes keep their own order');
+    await tester.tap(find.widgetWithText(CheckedPopupMenuItem<SavedLibraryAction>, 'Media only'));
+    await tester.pumpAndSettle();
+    expect(action, SavedLibraryAction.mediaOnly);
+
+    await open(sortable: false, showMedia: false);
+    final button = tester.widget<PopupMenuButton<SavedLibraryAction>>(
+      find.byKey(const ValueKey('saved-library-actions')),
+    );
+    expect(button.enabled, isFalse, reason: 'notes have nothing to filter or sort');
+  });
 
   test('saved sorting preserves newest order and reverses for oldest', () {
     const items = ['new', 'middle', 'old'];
@@ -122,29 +158,6 @@ void main() {
       applySavedSort(items, SavedSort.oldest),
       ['old', 'middle', 'new'],
     );
-  });
-
-  testWidgets('library actions expose sort and selection controls', (
-    tester,
-  ) async {
-    SavedLibraryAction? action;
-    await tester.pumpWidget(
-      _app(
-        SavedLibraryActionButton(
-          sort: SavedSort.newest,
-          onSelected: (value) => action = value,
-        ),
-      ),
-    );
-
-    await tester.tap(find.byKey(const ValueKey('saved-library-actions')));
-    await tester.pumpAndSettle();
-    expect(find.text('Newest saved first'), findsOneWidget);
-    expect(find.text('Oldest saved first'), findsOneWidget);
-    expect(find.text('Select'), findsOneWidget);
-
-    await tester.tap(find.text('Select'));
-    expect(action, SavedLibraryAction.select);
   });
 
   testWidgets('selection bar disables destructive actions with no selection', (
@@ -197,45 +210,55 @@ void main() {
     expect(store.state.folder, 'folder');
   });
 
-  testWidgets('Saved search grows for large translated text', (tester) async {
+  Future<TextEditingController> pumpSearch(WidgetTester tester, {double scale = 1, VoidCallback? onClear}) async {
+    final controller = TextEditingController();
     final focusNode = FocusNode();
+    addTearDown(controller.dispose);
     addTearDown(focusNode.dispose);
     await tester.pumpWidget(
       _app(
         MediaQuery(
-          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-          child: SavedSearchField(
+          data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+          child: SavedSearchRow(
+            controller: controller,
             focusNode: focusNode,
             onChanged: (_) {},
-            onClose: () {},
+            onClear: onClear ?? controller.clear,
+            filter: const SizedBox(width: kTweetTouchTarget, height: kTweetTouchTarget),
           ),
         ),
       ),
     );
+    return controller;
+  }
 
-    expect(tester.takeException(), isNull);
-    expect(
-      tester.getSize(find.byType(TextField)).height,
-      kSavedLargeTextSearchHeight,
+  testWidgets('the search field is round, on the shared inset surface, and says what it searches', (tester) async {
+    await pumpSearch(tester);
+    final context = tester.element(find.byType(TextField));
+    final box = tester.widget<DecoratedBox>(
+      find.ancestor(of: find.byType(TextField), matching: find.byType(DecoratedBox)).first,
     );
+    final decoration = box.decoration as ShapeDecoration;
+    expect(decoration.color, xLookInsetSurface(XLookTokens.of(context)));
+    expect(decoration.shape, isA<StadiumBorder>());
+    expect(find.text('Search saved'), findsOneWidget);
+    expect(tester.getSize(find.byType(SavedSearchRow)).height, greaterThanOrEqualTo(44 + 2 * kTweetSpace1));
   });
 
-  testWidgets('Saved search uses the shared inset surface', (tester) async {
-    final focusNode = FocusNode();
-    addTearDown(focusNode.dispose);
-    await tester.pumpWidget(
-      _app(
-        SavedSearchField(
-          focusNode: focusNode,
-          onChanged: (_) {},
-          onClose: () {},
-        ),
-      ),
-    );
+  testWidgets('a clear button appears once something is typed', (tester) async {
+    var cleared = 0;
+    final controller = await pumpSearch(tester, onClear: () => cleared++);
+    expect(find.byTooltip('Clear text'), findsNothing);
+    await tester.enterText(find.byType(TextField), 'cats');
+    await tester.pump();
+    expect(controller.text, 'cats');
+    await tester.tap(find.byTooltip('Clear text'));
+    expect(cleared, 1);
+  });
 
-    final context = tester.element(find.byType(TextField));
-    final tokens = XLookTokens.of(context);
-    final field = tester.widget<TextField>(find.byType(TextField));
-    expect(field.decoration?.fillColor, xLookInsetSurface(tokens));
+  testWidgets('the search field grows for large translated text', (tester) async {
+    await pumpSearch(tester, scale: 2);
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byType(SavedSearchRow)).height, greaterThan(44 + 2 * kTweetSpace1));
   });
 }

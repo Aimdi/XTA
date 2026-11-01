@@ -59,6 +59,27 @@ class ThreadsAccountsStore extends Store<List<ThreadsAccount>> {
     return state.any((e) => e.handle.toLowerCase() == key);
   }
 
+  /// Followed accounts as their posts show them now: a new name, or a new
+  /// picture link (Meta's expire), is written back, as X subscriptions are.
+  Future<void> keepCurrent(Iterable<ThreadsPost> posts) async {
+    final changed = threadsAccountsChangedBy(state, posts);
+    if (changed.isEmpty) return;
+    try {
+      final database = await Repository.writable();
+      for (final account in changed) {
+        await database.update(
+          tableThreadsSubscription,
+          {'name': account.name, 'avatar_url': account.avatarUrl},
+          where: 'id = ?',
+          whereArgs: [account.handle],
+        );
+      }
+      update(await _read());
+    } catch (_) {
+      // The accounts stay as they were; the next posts try again.
+    }
+  }
+
   Future<void> remove(String handle) async {
     await execute(() async {
       final database = await Repository.writable();
@@ -92,6 +113,31 @@ ThreadsAccount accountOf(ThreadsSubscription subscription) => ThreadsAccount(
   name: subscription.name,
   avatarUrl: subscription.avatarUrl,
 );
+
+/// The followed [accounts] whose first post in [posts] shows another name or
+/// picture than the one kept, as that post shows them.
+List<ThreadsAccount> threadsAccountsChangedBy(
+  List<ThreadsAccount> accounts,
+  Iterable<ThreadsPost> posts,
+) {
+  final shown = <String, ThreadsPost>{};
+  for (final post in posts) {
+    shown.putIfAbsent(post.handle.toLowerCase(), () => post);
+  }
+  return [
+    for (final account in accounts)
+      if (shown[account.handle.toLowerCase()] case final post?)
+        if (_shownOtherwise(account, post))
+          account.copyWith(
+            name: post.authorName.trim().isEmpty ? null : post.authorName,
+            avatarUrl: post.avatarUrl,
+          ),
+  ];
+}
+
+bool _shownOtherwise(ThreadsAccount account, ThreadsPost post) =>
+    (post.authorName.trim().isNotEmpty && post.authorName != account.name) ||
+    (post.avatarUrl != null && post.avatarUrl != account.avatarUrl);
 
 /// The merged timeline of every followed account, newest first — or the Meta
 /// Following feed when a Bearer session is pasted.
@@ -227,7 +273,7 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
     _forgetOnCredentialChange();
     // The accounts asked longest ago go first: a read is capped, and in the
     // same order every time it asked the same ones and never reached the rest.
-    return _posts.merge(
+    final posts = await _posts.merge(
       _posts.prioritize(handles),
       _fetcher(),
       forceRefresh: forceRefresh,
@@ -236,6 +282,8 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
           ? threadsSessionMaxAccountsPerLoad
           : threadsMaxAccountsPerLoad,
     );
+    await accounts.keepCurrent(posts);
+    return posts;
   }
 
   /// Which route answers, given what the reader has configured.

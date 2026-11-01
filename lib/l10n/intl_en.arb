@@ -3117,8 +3117,6 @@
   "@plugin_reddit_in_home_feed_description": {},
   "plugin_reddit_load_more": "Load more",
   "@plugin_reddit_load_more": {},
-  "plugin_reddit_more_replies": "More replies",
-  "@plugin_reddit_more_replies": {},
   "plugin_reddit_not_configured": "Add your Reddit client ID first",
   "@plugin_reddit_not_configured": {},
   "plugin_reddit_nsfw": "NSFW",
@@ -4278,7 +4276,7 @@
   "@thumbnail": {},
   "ticker_chart": "Stock chart",
   "@ticker_chart": {},
-  "ticker_chart_description": "Shown when you open a ticker. XTA fetches the prices itself from a public service that needs no account; with it off no request is made and the posts remain.",
+  "ticker_chart_description": "Shown when you open a ticker. XTA fetches the prices itself from public services that need no account; with it off no request is made and the posts remain.",
   "@ticker_chart_description": {},
   "ticker_range_day": "1D",
   "@ticker_range_day": {},
@@ -6240,14 +6238,6 @@
       }
     }
   },
-  "plugin_stocks_no_data": "No data",
-  "@plugin_stocks_no_data": {
-    "description": "Shown instead of a price when the quote lookup found nothing."
-  },
-  "plugin_stocks_tap_to_retry": "Tap to retry",
-  "@plugin_stocks_tap_to_retry": {
-    "description": "Shown after \"No data\" on a quote row whose lookup found nothing; tapping it asks again."
-  },
   "plugin_stocks_loading_price": "Loading price",
   "@plugin_stocks_loading_price": {
     "description": "Screen-reader text for a quote row whose price is still loading."
@@ -6287,5 +6277,166 @@
   "plugin_stocks_manage_watchlist": "Manage watchlist",
   "@plugin_stocks_manage_watchlist": {
     "description": "Menu item: opens the sheet that lists, opens and removes the watched tickers."
+  },
+  "plugin_stocks_settings": "Stocks settings",
+  "@plugin_stocks_settings": {
+    "description": "Tooltip of the sliders button in the Stocks header, and title of the menu it opens: the settings of the Stocks plugin (manage the watchlist, price charts, folding signal-group posts)."
+  },
+  "plugin_stocks_section_indices": "Indices",
+  "@plugin_stocks_section_indices": {
+    "description": "Section title in Stocks > Markets above the stock market indices (S&P 500, DAX). The other section is plugin_stocks_crypto."
+  },
+  "plugin_stocks_status_closed": "Closed, last close {date}",
+  "@plugin_stocks_status_closed": {
+    "description": "State beside the Indices section title while no index trades: the market is closed and the prices are the last close, from {date}, a short weekday and date ('Fri, 10/30').",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Fri, 10/30"
+      }
+    }
+  },
+  "plugin_stocks_status_live_day": "Live, change on the day",
+  "@plugin_stocks_status_live_day": {
+    "description": "State beside a Markets section title while its markets trade: the prices are live and each move is measured against the previous day's close."
+  },
+  "plugin_stocks_status_live_24h": "Live, 24h change",
+  "@plugin_stocks_status_live_24h": {
+    "description": "State beside the Crypto section title: coins trade around the clock, the prices are live and each move is measured over the last 24 hours."
+  },
+  "plugin_stocks_my_watchlist": "My watchlist",
+  "@plugin_stocks_my_watchlist": {
+    "description": "Title above the list of the reader's watched tickers in Stocks > Watchlist."
+  },
+  "plugin_stocks_ticker_count": "{count, plural, one{{count} ticker} other{{count} tickers}}",
+  "@plugin_stocks_ticker_count": {
+    "description": "Count beside the watchlist title: how many tickers (stock symbols or coins) the reader watches.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "plugin_stocks_no_price_reason": "The data source returns no price",
+  "@plugin_stocks_no_price_reason": {
+    "description": "Second line of a quote row whose lookup found no price: the price service answered but has no price for the symbol. A Retry button sits beside it."
+  },
+  "plugin_stocks_no_price": "No price",
+  "@plugin_stocks_no_price": {
+    "description": "Shown instead of the price in the ticker strip above Tweets and Trend when there is no price for that symbol. Keep it short."
+  },
+  "plugin_stocks_reorder_hint": "Press and hold to reorder",
+  "@plugin_stocks_reorder_hint": {
+    "description": "Hint under the watchlist: pressing a row for a moment lifts it, and dragging then moves it to a new place in the list."
+  },
+  "plugin_stocks_fold_signal_posts": "Fold signal-group posts",
+  "@plugin_stocks_fold_signal_posts": {
+    "description": "Switch in the Stocks settings menu: when on, posts that look like a pump or 'signal group' advert (a Telegram invite link and three or more cashtags) arrive folded behind a one-line notice instead of shown in full."
+  },
+  "plugin_stocks_signal_group": "{count, plural, one{Possible signal group: Telegram invite and {count} cashtag} other{Possible signal group: Telegram invite and {count} cashtags}}",
+  "@plugin_stocks_signal_group": {
+    "description": "Notice over a post in Stocks > Trend that looks like a pump or 'signal group' advert: it carries a Telegram invite link and {count} cashtags ($SYMBOL tags). {count} is 3 or more. Beside it a Hide button folds the post.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "plugin_stocks_two_readings": "Two matches, choose the source",
+  "@plugin_stocks_two_readings": {
+    "description": "Second line of a watchlist row whose symbol names two different things ($NDX is both the Nasdaq-100 index and a crypto token): the reader picks which one the row shows from the two choices under it."
+  },
+  "plugin_reddit_comment_count": "{count, plural, one{{count} comment} other{{count} comments}}",
+  "@plugin_reddit_comment_count": {
+    "description": "Heading above a Reddit post's comments: how many it has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "collapse_all": "Collapse all",
+  "@collapse_all": {
+    "description": "Button that folds every top-level comment of a thread, leaving only their headers."
+  },
+  "expand_all": "Expand all",
+  "@expand_all": {
+    "description": "Button that unfolds every comment of a thread again."
+  },
+  "plugin_reddit_upvote": "Upvote",
+  "@plugin_reddit_upvote": {
+    "description": "Name of the up-arrow button on a Reddit post or comment. The upvote is kept on this device only; nothing is sent to Reddit."
+  },
+  "plugin_reddit_jump_next_comment": "Jump to next top-level comment",
+  "@plugin_reddit_jump_next_comment": {
+    "description": "Round button at the bottom of a Reddit thread that scrolls to the next comment that answers the post directly."
+  },
+  "plugin_reddit_folded_replies": "{count, plural, one{+{count} reply} other{+{count} replies}}",
+  "@plugin_reddit_folded_replies": {
+    "description": "Small label on a folded Reddit comment: how many replies the fold is hiding.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_reddit_op": "OP",
+  "@plugin_reddit_op": {
+    "description": "Short label beside a commenter's name when they wrote the post (Original Poster), as Reddit shows it."
+  },
+  "plugin_reddit_comment_new": "{age}, new",
+  "@plugin_reddit_comment_new": {
+    "description": "Beside a comment written since the reader last opened the thread. age is how long ago it was written, like 21m.",
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_reddit_comment_deleted": "Comment deleted",
+  "@plugin_reddit_comment_deleted": {
+    "description": "Shown in place of a Reddit comment whose text is gone."
+  },
+  "plugin_reddit_comment_removed": "Comment removed by moderators",
+  "@plugin_reddit_comment_removed": {
+    "description": "Shown in place of a Reddit comment the subreddit's moderators removed."
+  },
+  "plugin_reddit_comment_removed_by_reddit": "Comment removed by Reddit",
+  "@plugin_reddit_comment_removed_by_reddit": {
+    "description": "Shown in place of a Reddit comment that Reddit itself removed."
+  },
+  "plugin_reddit_comment_unavailable": "Comment unavailable",
+  "@plugin_reddit_comment_unavailable": {
+    "description": "Shown in place of a Reddit comment Reddit no longer shows."
+  },
+  "plugin_reddit_load_more_comments": "Load more comments",
+  "@plugin_reddit_load_more_comments": {
+    "description": "Button at the end of a Reddit thread's first page that loads the next top-level comments into it."
+  },
+  "plugin_reddit_continue_thread": "Continue thread",
+  "@plugin_reddit_continue_thread": {
+    "description": "Button where Reddit held back the rest of a discussion: opens it on its own page."
+  },
+  "saved_search_hint": "Search saved",
+  "@saved_search_hint": {
+    "description": "Hint in the search field at the top of the Saved screen (the Archive), which searches the posts, likes and notes kept on this device. Use the same word as the screen's title."
+  },
+  "saved_filter_and_sort": "Filter and sort",
+  "@saved_filter_and_sort": {
+    "description": "Button at the end of the Saved screen's search field that opens a menu: sort order, media only, and select."
+  },
+  "saved_media_only": "Media only",
+  "@saved_media_only": {
+    "description": "Menu option on the Saved screen: show only the saved posts that have pictures or videos, as a grid."
+  },
+  "plugin_stocks_posts_followed": "Accounts you follow",
+  "@plugin_stocks_posts_followed": {
+    "description": "Label above the posts by X accounts the reader follows, shown first in one ticker's posts on Stocks."
+  },
+  "plugin_stocks_posts_others": "Everyone else",
+  "@plugin_stocks_posts_others": {
+    "description": "Label above the rest of one ticker's posts on Stocks, after those by accounts the reader follows."
   }
 }
