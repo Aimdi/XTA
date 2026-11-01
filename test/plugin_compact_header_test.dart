@@ -82,16 +82,62 @@ void main() {
       await tester.tap(find.byTooltip('Feeds'));
       await tester.tap(find.byTooltip('Add feed'));
       expect(calls, ['source', 'feeds', 'add']);
-      await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+      final options = find.byKey(const ValueKey('home-plugin-options'));
+      expect(find.descendant(of: options, matching: find.byIcon(Icons.more_vert)), findsOneWidget);
+      await tester.tap(options);
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const ValueKey('home-section-0')));
-      await tester.pumpAndSettle();
-      expect(calls.last, 'home');
+      expect(find.byKey(const ValueKey('home-section-0')), findsNothing, reason: 'the bar already shows them');
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await store.destroy();
     });
   }
+
+  testWidgets('a bar with filters keeps the sliders and a sheet with its sections', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final store = PluginHomeDockStore();
+    final calls = <String>[];
+    store
+      ..publish(
+        'rss',
+        'navigation',
+        Object(),
+        PluginDockContent(
+          tabs: [
+            PluginHomeTab(icon: Icons.home_outlined, label: 'Home', selected: true, onTap: () => calls.add('home')),
+            PluginHomeTab(icon: Icons.rss_feed, label: 'Feeds', selected: false, onTap: () => calls.add('feeds')),
+          ],
+        ),
+      )
+      ..publish('rss', 'reading', Object(), const PluginDockContent(leading: Text('Unread only')));
+    await tester.pumpWidget(
+      _app(
+        PluginHomeDockScope(
+          store: store,
+          source: 'rss',
+          enabled: true,
+          compact: true,
+          openClientLabel: '',
+          onOpenClient: null,
+          child: PluginCompactHeader(plugin: RssPlugin(), store: store),
+        ),
+      ),
+    );
+
+    final options = find.byKey(const ValueKey('home-plugin-options'));
+    expect(find.descendant(of: options, matching: find.byIcon(Icons.tune)), findsOneWidget);
+    await tester.tap(options);
+    await tester.pumpAndSettle();
+    expect(find.text('Unread only'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('home-section-1')));
+    await tester.pumpAndSettle();
+    expect(calls, ['feeds']);
+    await tester.pumpWidget(const SizedBox());
+    await store.destroy();
+  });
 
   for (final (width, scale) in <(double, double)>[(320, 1), (320, 2), (840, 2)]) {
     testWidgets('crowded standalone navigation leaves room for posts and every section at $width/$scale', (

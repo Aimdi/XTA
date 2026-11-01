@@ -23,6 +23,7 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_screen.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
@@ -167,10 +168,12 @@ void main() {
     expect(find.byTooltip('Home feed accounts'), findsNothing);
     final picker = find.byKey(const ValueKey('home-plugin-options'));
     expect(picker, findsOneWidget);
-    await tester.tap(picker);
+    // A bar that is only sections keeps them in the bar; its sheet does not repeat them.
+    expect(find.descendant(of: picker, matching: find.byIcon(Icons.more_vert)), findsOneWidget);
+    await tester.tap(find.byType(PluginSectionPicker));
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top], reason: 'Opening sections must not fetch.');
-    await tester.tap(find.byKey(const ValueKey('home-section-1')));
+    await tester.tap(find.text('New').last);
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top, HnFeed.newest]);
     final hnList = find.descendant(of: find.byType(HnScreen), matching: find.byType(Scrollable)).last;

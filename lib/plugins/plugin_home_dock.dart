@@ -355,6 +355,10 @@ class PluginDockOptionsButton extends StatelessWidget {
 
   /// The bar this opens from shows pinned entries, so offer to pin them.
   final bool pinnable;
+
+  /// The sheet holds no filters, only actions: an overflow menu's ⋮ says so
+  /// where the sliders would promise filters.
+  final bool overflow;
   const PluginDockOptionsButton({
     super.key,
     required this.store,
@@ -365,6 +369,7 @@ class PluginDockOptionsButton extends StatelessWidget {
     this.showSections = true,
     this.attention = false,
     this.pinnable = false,
+    this.overflow = false,
   });
 
   @override
@@ -372,7 +377,7 @@ class PluginDockOptionsButton extends StatelessWidget {
     key: const ValueKey('home-plugin-options'),
     style: pluginActionButtonStyle,
     tooltip: includeActions ? MaterialLocalizations.of(context).showMenuTooltip : L10n.of(context).filters,
-    icon: Badge(isLabelVisible: attention, child: const Icon(Icons.tune)),
+    icon: Badge(isLabelVisible: attention, child: Icon(overflow ? Icons.more_vert : Icons.tune)),
     onPressed: () => _open(context),
   );
 

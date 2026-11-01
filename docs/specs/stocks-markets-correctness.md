@@ -94,12 +94,16 @@ shown, nothing is traded.
 ### Navigation and colour
 
 - **The bar holds only the tabs** and a ⋮ menu. Adding a symbol is a button
-  floating over the Watchlist and Tweets tabs. The menu holds "Manage
-  watchlist" (renamed from "Watchlist", which is the tab).
-- **In Home**, a plugin whose bar is only its tabs gets the ⋮ instead of the
-  sliders, and its sheet no longer repeats the tabs. Plugins with filters keep
-  the sliders and their sheet as they are.
-- **The mark is neutral**, in the text colour, as X's is.
+  floating over the Watchlist and Tweets tabs (an empty watchlist keeps its own
+  add button instead). The menu holds "Manage watchlist" (renamed from
+  "Watchlist", which is the tab), and so does the sheet it opens.
+- **In Home**, a bar with tabs and no filters (no reading or following
+  controls of its own: Stocks, and so Hacker News and RSS too) gets the ⋮
+  instead of the sliders, and its sheet no longer repeats the tabs, which stay
+  in the bar. Plugins with filters keep the sliders and their sheet as they
+  are.
+- **The mark is neutral**, in the text colour, as X's is: a plugin can say its
+  colour is not its chrome's (`XtaPlugin.brandsChrome`), and Stocks does.
 - **Selection is the app's accent** (purple by default) on Stocks' tabs, chips
   and sheets; green and red only ever mean a price went up or down.
 
@@ -142,6 +146,7 @@ shown, nothing is traded.
 - `lib/plugins/stocks/stocks_screen.dart`: the button, the menu.
 - `lib/plugins/plugin.dart`, `plugin_marks.dart`, `plugin_compact_header.dart`,
   `plugin_home_dock.dart`: neutral mark, accent selection, ⋮ for a tabs-only bar.
+  `stocks_plugin.dart` opts out of brand chrome.
 - `lib/utils/rich_text.dart`: addresses in posts.
 - `lib/tweet/cashtag_quotes.dart`: compact chips.
 - `lib/plugins/stocks/stocks_posts_feed.dart`: signal-group posts last.

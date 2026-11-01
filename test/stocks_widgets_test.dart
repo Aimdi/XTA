@@ -19,7 +19,11 @@ import 'package:xta/plugins/stocks/crypto_client.dart';
 import 'package:xta/plugins/stocks/crypto_detail_store.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
+import 'package:xta/plugins/plugin_compact_header.dart';
+import 'package:xta/plugins/plugin_home_dock.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/stocks/stocks_markets.dart';
+import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_quote_row.dart';
 import 'package:xta/plugins/stocks/stocks_row_state.dart';
 import 'package:xta/plugins/stocks/stocks_screen.dart';
@@ -32,6 +36,8 @@ import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_quote_panel.dart';
 import 'package:xta/tweet/ticker/ticker_range.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/contrast.dart';
 
 const _pepe = '0x6982508145454ce325ddbe47a25d4ec3d2311933';
 const _asset = CryptoAsset(chain: 'ethereum', address: _pepe, symbol: 'PEPE', name: 'Pepe');
@@ -209,6 +215,109 @@ void main() {
     expect(find.text('Crypto · Ethereum'), findsOneWidget, reason: 'a token is badged with its network');
     expect(find.textContaining('Pepe'), findsOneWidget, reason: 'and named, not addressed');
     await tester.pumpWidget(const SizedBox());
+    await watchlist.destroy();
+    await quotes.destroy();
+  });
+
+  testWidgets('the Stocks bar holds only its tabs and a menu; adding floats over the lists it adds to', (tester) async {
+    final watchlist = _Watchlist();
+    final quotes = _Quotes()..remember('AAPL', _quote);
+    await tester.runAsync(() async {
+      final database = await Repository.writable();
+      await database.delete(tableStockSubscription);
+      await watchlist.add('AAPL');
+      await watchlist.preload();
+    });
+    final scroll = ScrollController();
+    addTearDown(scroll.dispose);
+    await _pump(
+      tester,
+      MultiProvider(
+        providers: [
+          Provider<StocksWatchlistStore>.value(value: watchlist),
+          Provider<TickerQuoteCache>.value(value: quotes),
+        ],
+        child: StocksScreen(scrollController: scroll),
+      ),
+    );
+
+    for (final tab in ['Watchlist', 'Posts', 'Trending', 'Markets']) {
+      expect(find.byTooltip(tab), findsOneWidget, reason: tab);
+    }
+    expect(find.byKey(const ValueKey('stocks-more')), findsOneWidget);
+    expect(find.widgetWithIcon(IconButton, Icons.add), findsNothing, reason: 'adding left the bar');
+    expect(find.byKey(const ValueKey('stocks-add')), findsOneWidget);
+
+    final context = tester.element(find.byType(StocksScreen));
+    final selected = tester.widget<Icon>(find.byIcon(Icons.star_outline));
+    final accent = ensureContrast(tweetReadableAccentColor(context), Theme.of(context).scaffoldBackgroundColor);
+    expect(selected.color, accent, reason: 'selection is the app accent');
+    expect(selected.color, isNot(StocksPlugin().brandColor));
+    expect(pluginMarkTint(context, StocksPlugin()), Theme.of(context).colorScheme.onSurface, reason: 'a neutral mark');
+
+    await tester.tap(find.byKey(const ValueKey('stocks-more')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Manage watchlist'));
+    await tester.pumpAndSettle();
+    expect(find.text('Manage watchlist'), findsOneWidget, reason: 'the sheet it opens');
+    Navigator.pop(tester.element(find.text('Manage watchlist')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Markets'));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(const ValueKey('stocks-add')), findsNothing, reason: 'nothing to add to on Markets');
+    await tester.pumpWidget(const SizedBox());
+    await watchlist.destroy();
+    await quotes.destroy();
+  });
+
+  testWidgets('in Home the Stocks bar is its tabs and a ⋮, whose sheet does not repeat them', (tester) async {
+    final watchlist = _Watchlist();
+    final quotes = _Quotes()..remember('AAPL', _quote);
+    final dock = PluginHomeDockStore();
+    await tester.runAsync(() async {
+      final database = await Repository.writable();
+      await database.delete(tableStockSubscription);
+      await watchlist.add('AAPL');
+      await watchlist.preload();
+    });
+    final scroll = ScrollController();
+    addTearDown(scroll.dispose);
+    await _pump(
+      tester,
+      MultiProvider(
+        providers: [
+          Provider<StocksWatchlistStore>.value(value: watchlist),
+          Provider<TickerQuoteCache>.value(value: quotes),
+        ],
+        child: PluginHomeDockScope(
+          store: dock,
+          source: StocksPlugin().id,
+          enabled: true,
+          compact: true,
+          openClientLabel: '',
+          onOpenClient: null,
+          child: Column(
+            children: [
+              PluginCompactHeader(plugin: StocksPlugin(), store: dock),
+              Expanded(child: StocksScreen(scrollController: scroll)),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final options = find.byKey(const ValueKey('home-plugin-options'));
+    expect(find.descendant(of: options, matching: find.byIcon(Icons.more_vert)), findsOneWidget);
+    expect(find.descendant(of: options, matching: find.byIcon(Icons.tune)), findsNothing);
+    expect(find.widgetWithIcon(IconButton, Icons.add), findsNothing, reason: 'adding floats over the list instead');
+    await tester.tap(options);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('home-section-0')), findsNothing);
+    expect(find.text('Manage watchlist'), findsOneWidget);
+    expect(find.text('Watchlist'), findsNothing, reason: 'the tab is not listed again under its own name');
+    await tester.pumpWidget(const SizedBox());
+    await dock.destroy();
     await watchlist.destroy();
     await quotes.destroy();
   });

@@ -41,7 +41,8 @@ class StocksWatchlistList extends StatelessWidget {
       child: ListView.separated(
         controller: controller,
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: pluginFeedPadding(context),
+        // The last row scrolls clear of the add button floating over it.
+        padding: pluginFeedPadding(context, extra: const EdgeInsets.only(bottom: 72)),
         itemCount: symbols.length,
         separatorBuilder: (_, _) => const Divider(height: 1, indent: 16, endIndent: 16),
         itemBuilder: (context, index) => _row(context, symbols[index]),
