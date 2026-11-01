@@ -518,6 +518,7 @@ Future<void> main() async {
       optionSwipeBackAnywhere: true,
       optionSwipeBackTilt: true,
       optionTickerChart: true,
+      optionPluginStocksFoldSignalPosts: false,
       optionTextScaleFactor: 1.0,
       optionDisableScreenshots: false,
       ...downloadPrefDefaults,
@@ -896,8 +897,8 @@ Future<void> main() async {
       prefService,
       auth: redditAuth,
     );
-    final stocksWatchlist = StocksWatchlistStore();
-    final tickerQuotes = TickerQuoteCache();
+    final stocksWatchlist = StocksWatchlistStore(prefs: prefService);
+    final tickerQuotes = TickerQuoteCache(prefs: prefService);
     final voices = VoiceDownloadStore();
     final speech = SpeechStore(
       preferred: [createOfflineSpeechEngine(voices, prefService)],

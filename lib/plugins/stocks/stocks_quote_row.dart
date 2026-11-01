@@ -4,33 +4,45 @@ import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_row_state.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
-import 'package:xta/ui/contrast.dart';
 
 /// Digits that line up down a column of prices.
 const List<FontFeature> kStockFigures = [FontFeature.tabularFigures()];
 
-/// One dense watchlist line, the shape Apple Stocks, Robinhood and Yahoo
-/// Finance agree on: symbol over badge and name on the left, the day's
-/// sparkline, then the price over a signed green/red move on the right.
+/// One quote line: the name over `$SPX · Index` on the left, the price over
+/// its move on the right, the day's line between them while the market
+/// trades. The move is coloured text, no pill, and grey with the price while
+/// the market is closed.
 ///
-/// The right side says which [StockRowState] the row is in: a shimmer while
-/// it loads, the close with its day and a muted move while the market is
-/// closed, and one line that asks again when there is no data.
+/// What the right side shows follows [StockRowState]: grey bars while the row
+/// loads, the close and its day while the market is closed, and a retry button
+/// beside the reason when there is no data.
 class StocksQuoteRow extends StatelessWidget {
+  /// The name, or the symbol when no name is known.
   final String title;
+
+  /// `$SPX · Index`, or a token's address cut in the middle.
   final String? subtitle;
 
-  /// What the instrument is ("Index", "Crypto · Base"), before the name.
-  final String? badge;
+  /// A token's network, as a chip beside [title].
+  final String? network;
   final TickerQuote? quote;
 
   /// Whether the last lookup found nothing.
   final bool failed;
-  final VoidCallback onTap;
-  final VoidCallback? onLongPress;
 
-  /// Asks again for a row with no data.
+  /// Whether a live move says what it is measured over (`24 h`, `1T`), and a
+  /// closed one the day of its close. Märkte's sections say it once instead.
+  final bool showWindow;
+  final bool showCloseDay;
+  final VoidCallback onTap;
   final VoidCallback? onRetry;
+
+  /// Two readings of the symbol to choose from, shown under the row.
+  final Widget? choices;
+
+  /// A caution in amber in place of the second line, as "Two matches, choose
+  /// the source" over [choices].
+  final String? warning;
 
   const StocksQuoteRow({
     super.key,
@@ -38,50 +50,53 @@ class StocksQuoteRow extends StatelessWidget {
     required this.quote,
     required this.onTap,
     this.subtitle,
-    this.badge,
+    this.network,
     this.failed = false,
-    this.onLongPress,
+    this.showWindow = true,
+    this.showCloseDay = true,
     this.onRetry,
+    this.choices,
+    this.warning,
   });
 
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final state = stockRowState(quote, failed: failed, now: now);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        if (state != StockRowState.noData) return _tappable(context, state, now, width);
-        // The name takes what it needs, the message the rest, so in German
-        // too it is one line on a phone.
-        return Row(
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: width * 0.45),
-              child: _tappable(context, state, now, width),
+    final retry = state == StockRowState.noData ? onRetry : null;
+    final tappable = _tappable(context, state, now);
+    final row = retry == null
+        ? tappable
+        : LayoutBuilder(
+            builder: (context, constraints) => Row(
+              children: [
+                Expanded(child: tappable),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 8),
+                  child: StocksRetryButton(
+                    onPressed: retry,
+                    compact: !StocksRetryButton.fits(context, constraints.maxWidth / 2),
+                  ),
+                ),
+              ],
             ),
-            Expanded(child: StocksNoDataLine(onRetry: onRetry)),
-          ],
-        );
-      },
-    );
+          );
+    if (choices == null) return row;
+    return Column(mainAxisSize: MainAxisSize.min, children: [row, choices!]);
   }
 
-  /// What opens the row's page: all of it, but a no-data row's retry line.
-  Widget _tappable(BuildContext context, StockRowState state, DateTime now, double width) {
-    final noData = state == StockRowState.noData;
+  Widget _tappable(BuildContext context, StockRowState state, DateTime now) {
     return Semantics(
       button: true,
       label: _label(context, state, now),
       excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
-        onLongPress: onLongPress,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 64),
+          constraints: const BoxConstraints(minHeight: 56),
           child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(16, 10, noData ? 8 : 16, 10),
-            child: noData ? _identity(context) : _row(context, state, now, width - 32),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: LayoutBuilder(builder: (context, constraints) => _row(context, state, now, constraints.maxWidth)),
           ),
         ),
       ),
@@ -96,8 +111,8 @@ class StocksQuoteRow extends StatelessWidget {
     final shown = state == StockRowState.live || state == StockRowState.closed;
     return [
       title,
-      ?badge,
-      ?subtitle,
+      ?network,
+      if (warning != null) warning! else if (state == StockRowState.noData) l10n.plugin_stocks_no_price_reason else ?subtitle,
       if (state == StockRowState.loading) l10n.plugin_stocks_loading_price,
       if (shown && price != null) stockPriceSpoken(price),
       if (state == StockRowState.closed) stockClosedTag(context, quote!, now: now),
@@ -109,73 +124,99 @@ class StocksQuoteRow extends StatelessWidget {
   Widget _row(BuildContext context, StockRowState state, DateTime now, double width) {
     final points = quote?.points ?? const <TickerPoint>[];
     final roomy = width >= 280 && MediaQuery.textScalerOf(context).scale(14) <= 18;
+    final sparkline = roomy && warning == null && state == StockRowState.live && points.length >= 2;
     return Row(
       children: [
-        Expanded(child: _identity(context)),
-        if (roomy) ...[
+        Expanded(child: _identity(context, state)),
+        if (sparkline) ...[
           const SizedBox(width: 12),
-          SizedBox(width: 56, height: 28, child: points.length < 2 ? null : StocksSparkline(quote: quote!)),
+          SizedBox(width: 64, height: 24, child: StocksSparkline(quote: quote!)),
         ],
-        const SizedBox(width: 12),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: width * 0.45),
-          child: state == StockRowState.loading
-              ? const StocksFiguresSkeleton()
-              : _Figures(quote: quote!, closed: state == StockRowState.closed, now: now),
-        ),
+        if (state != StockRowState.noData) ...[
+          const SizedBox(width: 12),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: width * 0.45),
+            child: state == StockRowState.loading
+                ? const StocksFiguresSkeleton()
+                : _Figures(
+                    quote: quote!,
+                    closed: state == StockRowState.closed,
+                    caption: state == StockRowState.closed ? showCloseDay : showWindow,
+                    now: now,
+                  ),
+          ),
+        ],
       ],
     );
   }
 
-  Widget _identity(BuildContext context) {
+  Widget _identity(BuildContext context, StockRowState state) {
     final theme = Theme.of(context);
+    final second = warning ?? (state == StockRowState.noData ? L10n.of(context).plugin_stocks_no_price_reason : subtitle);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
-        ),
-        if (badge != null || subtitle != null)
-          Text.rich(
-            TextSpan(
-              children: [
-                if (badge != null) ...[
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
-                    child: StocksKindBadge(label: badge!),
-                  ),
-                  const WidgetSpan(child: SizedBox(width: 6)),
-                ],
-                if (subtitle != null) TextSpan(text: subtitle),
-              ],
+        Row(
+          children: [
+            // A token's symbol and network share the line; at large text each
+            // gives way, the network first.
+            Flexible(
+              flex: 3,
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.w500, height: 1.3),
+              ),
             ),
-            maxLines: 1,
+            if (network != null) ...[
+              const SizedBox(width: 8),
+              Flexible(flex: 2, child: StocksNetworkChip(label: network!)),
+            ],
+          ],
+        ),
+        if (second != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            second,
+            // A reason or a caution is read whole; a subtitle is a label.
+            maxLines: second == subtitle ? 1 : 2,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall!.copyWith(
+              fontSize: 13,
+              color: warning != null ? stockWarningColour(context) : theme.colorScheme.onSurfaceVariant,
+            ),
           ),
+        ],
       ],
     );
   }
 }
 
-/// The price over its move, with what the move is measured over beside it,
-/// or for a closed market the day of the close and a muted move.
+/// The price over its move, and beside the move what it is measured over or,
+/// for a closed market, the day of the close. Grey while the market is closed.
 class _Figures extends StatelessWidget {
   final TickerQuote quote;
   final bool closed;
+  final bool caption;
   final DateTime now;
 
-  const _Figures({required this.quote, required this.closed, required this.now});
+  const _Figures({required this.quote, required this.closed, required this.caption, required this.now});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
     final percent = quote.changePercent;
+    final note = !caption
+        ? null
+        : closed
+        ? stockClosedTag(context, quote, now: now)
+        : percent == null
+        ? null
+        : stockWindowLabel(L10n.of(context), quote.changeWindow);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -185,28 +226,34 @@ class _Figures extends StatelessWidget {
           child: Text(
             stockPrice(quote.displayPrice!),
             maxLines: 1,
-            style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, fontFeatures: kStockFigures),
+            style: theme.textTheme.bodyLarge!.copyWith(
+              fontSize: 15,
+              fontWeight: closed ? FontWeight.w400 : FontWeight.w500,
+              fontFeatures: kStockFigures,
+              color: closed ? muted : theme.colorScheme.onSurface,
+            ),
           ),
         ),
-        if (closed || percent != null) ...[
-          const SizedBox(height: 4),
+        if (note != null || percent != null) ...[
+          const SizedBox(height: 2),
           Wrap(
             alignment: WrapAlignment.end,
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: 6,
-            runSpacing: 2,
             children: [
-              Text(
-                closed
-                    ? stockClosedTag(context, quote, now: now)
-                    : stockWindowLabel(L10n.of(context), quote.changeWindow),
-                maxLines: 1,
-                style: theme.textTheme.labelSmall!.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
+              if (note != null)
+                Text(note, maxLines: 1, style: theme.textTheme.labelSmall!.copyWith(fontSize: 11, color: muted)),
+              if (percent != null)
+                Text(
+                  stockPercentLabel(percent),
+                  maxLines: 1,
+                  style: theme.textTheme.labelMedium!.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    fontFeatures: kStockFigures,
+                    color: closed ? muted : stockTrendColour(context, percent),
+                  ),
                 ),
-              ),
-              if (percent != null) StocksChangeChip(percent: percent, muted: closed),
             ],
           ),
         ],
@@ -215,82 +262,66 @@ class _Figures extends StatelessWidget {
   }
 }
 
-/// "No data · Tap to retry" where a row's figures would be; without
-/// [onRetry] only "No data". One line where it fits, else broken at the dot.
-class StocksNoDataLine extends StatelessWidget {
-  final VoidCallback? onRetry;
+/// A token's network beside its symbol: `DOT [Base]`.
+class StocksNetworkChip extends StatelessWidget {
+  final String label;
 
-  const StocksNoDataLine({super.key, this.onRetry});
+  const StocksNetworkChip({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = L10n.of(context);
-    final style = theme.textTheme.labelSmall!.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-      fontWeight: FontWeight.w600,
-    );
-    final line = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 64),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(4),
+      ),
       child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(8, 10, 16, 10),
-        child: Align(
-          alignment: AlignmentDirectional.centerEnd,
-          widthFactor: 1,
-          child: Wrap(
-            alignment: WrapAlignment.end,
-            spacing: 4,
-            children: [
-              Text(
-                onRetry == null ? l10n.plugin_stocks_no_data : '${l10n.plugin_stocks_no_data} ·',
-                textAlign: TextAlign.end,
-                style: style,
-              ),
-              if (onRetry != null) Text(l10n.plugin_stocks_tap_to_retry, textAlign: TextAlign.end, style: style),
-            ],
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall!.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
         ),
       ),
     );
-    if (onRetry == null) return line;
-    return Semantics(
-      button: true,
-      child: InkWell(onTap: onRetry, child: line),
-    );
   }
 }
 
-/// What an instrument is, as a small outlined label, so an index and a token
-/// spelled alike are told apart at a glance. Neutral: colour on a row means
-/// a price went up or down.
-class StocksKindBadge extends StatelessWidget {
-  final String label;
+/// "↻ Erneut versuchen" beside a row that has no data, or the arrow alone,
+/// with the words as its tooltip, where they would crowd the row out.
+class StocksRetryButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final bool compact;
 
-  const StocksKindBadge({super.key, required this.label});
+  const StocksRetryButton({super.key, required this.onPressed, this.compact = false});
+
+  /// Whether the words and the arrow fit in [width].
+  static bool fits(BuildContext context, double width) =>
+      stocksTextWidth(context, L10n.of(context).retry, Theme.of(context).textTheme.labelLarge!) + 18 + 8 + 24 <= width;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        style: theme.textTheme.labelSmall!.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+    final label = L10n.of(context).retry;
+    if (compact) {
+      return IconButton(onPressed: onPressed, tooltip: label, icon: const Icon(Icons.refresh, size: 20));
+    }
+    return TextButton.icon(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(minimumSize: const Size(48, 48), padding: const EdgeInsets.symmetric(horizontal: 12)),
+      icon: const Icon(Icons.refresh, size: 18),
+      label: Text(label),
     );
   }
 }
 
-/// The shimmer where a loading row's price and move will be: stacked for a
-/// row, side by side for a chip ([inline]).
+/// The grey bars where a loading row's price and move will be: stacked for a
+/// row, side by side for an entry of the strip ([inline]).
 class StocksFiguresSkeleton extends StatefulWidget {
   final bool inline;
 
@@ -324,65 +355,17 @@ class _StocksFiguresSkeletonState extends State<StocksFiguresSkeleton> with Sing
           animation: _pulse,
           builder: (context, _) {
             final color = skeletonBoneColor(context, _pulse.value);
-            final price = Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: SkeletonBone(width: 56, height: scale.scale(16), color: color),
+            if (widget.inline) return SkeletonBone(width: 72, height: scale.scale(12), color: color);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SkeletonBone(width: 76, height: scale.scale(14), color: color),
+                const SizedBox(height: 6),
+                SkeletonBone(width: 52, height: scale.scale(12) + 6, radius: 6, color: color),
+              ],
             );
-            final move = SkeletonBone(width: 56, height: scale.scale(16) + 6, radius: 6, color: color);
-            return widget.inline
-                ? Row(mainAxisSize: MainAxisSize.min, children: [price, const SizedBox(width: 6), move])
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [price, const SizedBox(height: 4), move],
-                  );
           },
-        ),
-      ),
-    );
-  }
-}
-
-/// The move as a tinted pill: signed, so it reads without colour too. A
-/// [muted] pill, for a closed market's move, keeps the colour of its figure
-/// on a plain fill.
-class StocksChangeChip extends StatelessWidget {
-  final double? percent;
-  final bool muted;
-
-  const StocksChangeChip({super.key, required this.percent, this.muted = false});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final surface = theme.scaffoldBackgroundColor;
-    final tint = stockTrendColour(context, percent);
-    final fill = percent == null || muted
-        ? theme.colorScheme.surfaceContainerHighest
-        : Color.alphaBlend(tint.withValues(alpha: 0.14), surface);
-
-    // Sized to its figure, at least 68 wide so a column of moves lines up.
-    // An aligned Container takes all the width it is offered: the pill
-    // stretched across the figures column, an empty bar where it had none.
-    return Container(
-      constraints: const BoxConstraints(minWidth: 68),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: fill, borderRadius: BorderRadius.circular(6)),
-      child: Align(
-        alignment: Alignment.centerRight,
-        widthFactor: 1,
-        heightFactor: 1,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            percent == null ? kStockPlaceholder : stockPercentLabel(percent!),
-            maxLines: 1,
-            style: theme.textTheme.labelMedium!.copyWith(
-              fontWeight: FontWeight.w800,
-              fontFeatures: kStockFigures,
-              color: ensureContrast(tint, fill),
-            ),
-          ),
         ),
       ),
     );

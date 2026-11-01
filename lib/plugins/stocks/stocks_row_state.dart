@@ -50,21 +50,78 @@ String stockWindowLabel(L10n l10n, TickerChangeWindow window) => switch (window)
 };
 
 /// What [symbol]'s row says it is: the quote's own word when it has one,
-/// else what the symbol is known to be before anything is asked.
-TickerKind? stockKindOf(String symbol, TickerQuote? quote) => quote?.kind ?? knownTickerKind(symbol);
+/// else what the symbol is known to be before anything is asked, unless the
+/// reader picked the listed security behind a coin's letters ([reading]).
+TickerKind? stockKindOf(String symbol, TickerQuote? quote, {TickerInstrument reading = TickerInstrument.auto}) =>
+    quote?.kind ?? (reading == TickerInstrument.stock ? TickerKind.stock : knownTickerKind(symbol));
 
-/// A row's badge: what the instrument is and, for a token, its network
-/// ("Crypto · Base"). Null when nothing says.
-String? stockBadge(L10n l10n, TickerKind? kind, {String? network}) {
-  if (kind == null) return null;
-  final word = switch (kind) {
-    TickerKind.marketIndex => l10n.plugin_stocks_type_index,
-    TickerKind.stock => l10n.plugin_stocks_type_stock,
-    TickerKind.etf => l10n.plugin_stocks_type_etf,
-    TickerKind.crypto => l10n.plugin_stocks_type_crypto,
-    TickerKind.fund => l10n.plugin_stocks_type_fund,
-    TickerKind.future => l10n.plugin_stocks_type_future,
-    TickerKind.currency => l10n.plugin_stocks_type_currency,
+/// The name over [symbol]'s row: an index's or a coin's own name, else the
+/// quote's. A picked listing ([reading]) goes by the quote's alone: `$BTC`
+/// read as the listed fund is not "Bitcoin".
+String? stockRowName(String symbol, TickerQuote? quote, {TickerInstrument reading = TickerInstrument.auto}) =>
+    reading == TickerInstrument.stock ? quote?.shortName : tickerName(symbol) ?? quote?.shortName;
+
+/// The word for what an instrument is: Index, Aktie, Krypto, …
+String? stockKindWord(L10n l10n, TickerKind? kind) => switch (kind) {
+  null => null,
+  TickerKind.marketIndex => l10n.plugin_stocks_type_index,
+  TickerKind.stock => l10n.plugin_stocks_type_stock,
+  TickerKind.etf => l10n.plugin_stocks_type_etf,
+  TickerKind.crypto => l10n.plugin_stocks_type_crypto,
+  TickerKind.fund => l10n.plugin_stocks_type_fund,
+  TickerKind.future => l10n.plugin_stocks_type_future,
+  TickerKind.currency => l10n.plugin_stocks_type_currency,
+};
+
+/// A row's second line under its name: `$SPX · Index`. A row titled by its
+/// symbol already shows the cashtag, so only the kind follows.
+String? stockSubtitle(L10n l10n, String symbol, TickerKind? kind, {required bool named}) {
+  final parts = [if (named) '\$${spokenCashtag(symbol)}', ?stockKindWord(l10n, kind)];
+  return parts.isEmpty ? null : parts.join(' · ');
+}
+
+/// What a Märkte section says about the markets in it.
+enum StocksSectionKind {
+  /// Nothing has answered yet.
+  unknown,
+
+  /// Coins: trading now, moves over 24 hours.
+  live24h,
+
+  /// At least one exchange in the section trades now.
+  liveDay,
+
+  /// None trades now: the rows show their last closes.
+  closed,
+}
+
+/// The state of a section showing [quotes] at [now], and for a closed one the
+/// time of its newest close.
+({StocksSectionKind kind, DateTime? lastClose}) stocksSectionState(
+  Iterable<TickerQuote?> quotes, {
+  required DateTime now,
+}) {
+  final known = [for (final quote in quotes) if (quote?.displayPrice != null) quote!];
+  if (known.isEmpty) return (kind: StocksSectionKind.unknown, lastClose: null);
+  if (known.every((quote) => quote.tradesAroundTheClock)) return (kind: StocksSectionKind.live24h, lastClose: null);
+  if (known.any((quote) => quote.sessionAt(now) != TickerSession.closed)) {
+    return (kind: StocksSectionKind.liveDay, lastClose: null);
+  }
+  final closes = [for (final quote in known) ?quote.regularMarketTime];
+  final newest = closes.isEmpty ? null : closes.reduce((a, b) => a.isAfter(b) ? a : b);
+  return (kind: StocksSectionKind.closed, lastClose: newest);
+}
+
+/// A section's state as its header says it, or null while nothing answered.
+String? stocksSectionStatus(BuildContext context, ({StocksSectionKind kind, DateTime? lastClose}) section) {
+  final l10n = L10n.of(context);
+  return switch (section) {
+    (kind: StocksSectionKind.unknown, lastClose: _) => null,
+    (kind: StocksSectionKind.live24h, lastClose: _) => l10n.plugin_stocks_status_live_24h,
+    (kind: StocksSectionKind.liveDay, lastClose: _) => l10n.plugin_stocks_status_live_day,
+    (kind: StocksSectionKind.closed, lastClose: final close?) => l10n.plugin_stocks_status_closed(
+      DateFormat.MEd(formattingLocale(context)).format(close),
+    ),
+    (kind: StocksSectionKind.closed, lastClose: null) => l10n.plugin_stocks_market_closed,
   };
-  return network == null ? word : '$word · $network';
 }

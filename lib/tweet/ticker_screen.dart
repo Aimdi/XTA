@@ -63,6 +63,9 @@ class _TickerScreenState extends State<_TickerScreen> {
     symbol: widget.symbol,
     client: _client,
     onDayQuote: _share,
+    instrument: _quotes?.instrumentFor(widget.symbol) ?? TickerInstrument.auto,
+    onInstrument: (instrument) =>
+        unawaited(_quotes?.choose(widget.symbol, instrument)),
   );
   Timer? _ticker;
   bool _started = false;
@@ -103,14 +106,20 @@ class _TickerScreenState extends State<_TickerScreen> {
     }
   }
 
+  /// The quotes the watchlist and cashtags in the timeline show. Tests and a
+  /// missing provider still show the page.
+  TickerQuoteCache? get _quotes {
+    try {
+      return context.read<TickerQuoteCache>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
   /// Today's quote also feeds the watchlist and cashtags in the timeline.
   void _share(TickerQuote quote) {
     if (!mounted) return;
-    try {
-      context.read<TickerQuoteCache>().remember(widget.symbol, quote);
-    } on ProviderNotFoundException {
-      // Tests and a missing provider still show the page.
-    }
+    _quotes?.remember(widget.symbol, quote);
   }
 
   /// Posts use the cashtag people write — `$SPX`, `$BTC` — not the name the

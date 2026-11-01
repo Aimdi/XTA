@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
@@ -13,6 +15,8 @@ import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
+import 'package:xta/plugins/stocks/stocks_header.dart';
+import 'package:xta/plugins/stocks/stocks_instruments.dart';
 import 'package:xta/plugins/stocks/stocks_markets.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
@@ -112,6 +116,7 @@ class _StocksScreenState extends State<StocksScreen> {
     final stocks = _tabSymbols.where((symbol) => CryptoAsset.contractForId(symbol) == null);
     await Future.wait([
       force ? _cache.refresh(stocks) : _cache.ensure(stocks),
+      if (_tab == 0) _cache.ensureReadings(stocks),
       if (_tab <= 1) _cryptoQuotes.ensure(_watchlist.cryptoAssets.values, force: force),
     ]);
   }
@@ -217,46 +222,26 @@ class _StocksScreenState extends State<StocksScreen> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     _view.restore(context, 'stocks');
+    final docked = PluginHomeDockScope.maybeOf(context) != null;
+    final embedded = docked || PluginEmbedded.maybeOf(context);
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      floatingActionButton: _addButton(),
       body: ScopedBuilder<PluginViewStore<_StocksViewState>, _StocksViewState>(
         store: _view,
         onState: (_, _) => Column(
           children: [
-            PluginHomeChrome(
-              title: l10n.plugin_stocks_title,
-              mark: pluginMark(StocksPlugin(), size: 24),
-              tabs: [
-                PluginHomeTab(
-                  label: l10n.plugin_stocks_watchlist,
-                  icon: Icons.star_outline,
-                  selected: _tab == 0,
-                  onTap: () => _selectTab(0),
-                ),
-                PluginHomeTab(
-                  label: l10n.tweets,
-                  icon: Icons.forum_outlined,
-                  selected: _tab == 1,
-                  onTap: () => _selectTab(1),
-                ),
-                PluginHomeTab(
-                  label: l10n.plugin_stocks_trending,
-                  icon: Icons.trending_up,
-                  selected: _tab == 2,
-                  onTap: () => _selectTab(2),
-                ),
-                PluginHomeTab(
-                  label: l10n.plugin_stocks_markets,
-                  icon: Icons.public_outlined,
-                  selected: _tab == 3,
-                  onTap: () => _selectTab(3),
-                ),
-              ],
-              actions: [_moreMenu(l10n)],
-            ),
-            const Divider(height: 1),
+            if (embedded)
+              PluginHomeChrome(
+                title: l10n.plugin_stocks_title,
+                mark: pluginMark(StocksPlugin(), size: 24),
+                tabs: _tabs(l10n),
+                actions: _actions(l10n),
+              )
+            else
+              StocksHeader(title: l10n.plugin_stocks_title, tabs: _tabs(l10n), actions: _actions(l10n)),
+            // Home draws Stocks' header with its own line under it.
+            if (embedded && !docked) const Divider(height: 1),
             Expanded(
               child: ReaderSwipeNavigation(
                 index: _tab,
@@ -275,40 +260,85 @@ class _StocksScreenState extends State<StocksScreen> {
     );
   }
 
-  /// The bar holds only the tabs and this menu.
-  Widget _moreMenu(L10n l10n) => PluginHomeMenu(
-    key: const ValueKey('stocks-more'),
+  List<PluginHomeTab> _tabs(L10n l10n) => [
+    PluginHomeTab(
+      label: l10n.plugin_stocks_watchlist,
+      icon: Icons.star_outline,
+      selected: _tab == 0,
+      onTap: () => _selectTab(0),
+    ),
+    PluginHomeTab(label: l10n.tweets, icon: Icons.forum_outlined, selected: _tab == 1, onTap: () => _selectTab(1)),
+    PluginHomeTab(
+      label: l10n.plugin_stocks_trending,
+      icon: Icons.trending_up,
+      selected: _tab == 2,
+      onTap: () => _selectTab(2),
+    ),
+    PluginHomeTab(
+      label: l10n.plugin_stocks_markets,
+      icon: Icons.public_outlined,
+      selected: _tab == 3,
+      onTap: () => _selectTab(3),
+    ),
+  ];
+
+  /// + and the settings, beside the title.
+  List<Widget> _actions(L10n l10n) => [
+    IconButton(
+      key: const ValueKey('stocks-add'),
+      tooltip: l10n.plugin_stocks_add,
+      icon: const Icon(Icons.add),
+      onPressed: _addSymbol,
+    ),
+    _settingsMenu(l10n),
+  ];
+
+  /// The sliders: the watchlist itself, and how Stocks shows things.
+  Widget _settingsMenu(L10n l10n) => PluginHomeMenu(
+    key: const ValueKey('stocks-settings'),
     style: pluginActionButtonStyle,
-    tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-    onSelected: (value) {
-      if (value == 'manage-watchlist') _manageWatchlist();
+    icon: const Icon(Icons.tune),
+    tooltip: l10n.plugin_stocks_settings,
+    onSelected: _onSetting,
+    itemBuilder: (context) {
+      final l10n = L10n.of(context);
+      final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+      return [
+        PopupMenuItem(
+          key: const ValueKey('stocks-manage-watchlist'),
+          value: 'manage-watchlist',
+          child: Text(l10n.plugin_stocks_manage_watchlist),
+        ),
+        if (prefs != null) ...[
+          CheckedPopupMenuItem(
+            key: const ValueKey('stocks-charts'),
+            value: 'charts',
+            checked: prefs.get<bool>(optionTickerChart) ?? true,
+            child: Text(l10n.ticker_chart),
+          ),
+          CheckedPopupMenuItem(
+            key: const ValueKey('stocks-fold-signals'),
+            value: 'fold-signals',
+            checked: prefs.get<bool>(optionPluginStocksFoldSignalPosts) ?? false,
+            child: Text(l10n.plugin_stocks_fold_signal_posts),
+          ),
+        ],
+      ];
     },
-    itemBuilder: (context) => [
-      PopupMenuItem(
-        key: const ValueKey('stocks-manage-watchlist'),
-        value: 'manage-watchlist',
-        child: Text(L10n.of(context).plugin_stocks_manage_watchlist),
-      ),
-    ],
   );
 
-  /// Adding a symbol floats over the lists it adds to, the watchlist and its
-  /// posts. An empty watchlist has its own button instead.
-  Widget _addButton() => ScopedBuilder<PluginViewStore<_StocksViewState>, _StocksViewState>(
-    store: _view,
-    onState: (context, view) => ScopedBuilder<StocksWatchlistStore, List<String>>(
-      store: _watchlist,
-      onState: (context, symbols) => view.tab > 1 || symbols.isEmpty
-          ? const SizedBox.shrink()
-          : FloatingActionButton(
-              key: const ValueKey('stocks-add'),
-              heroTag: 'stocks-add',
-              tooltip: L10n.of(context).plugin_stocks_add,
-              onPressed: _addSymbol,
-              child: const Icon(Icons.add),
-            ),
-    ),
-  );
+  void _onSetting(String value) {
+    final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+    bool flipped(String key, {required bool fallback}) => !(prefs?.get<bool>(key) ?? fallback);
+    switch (value) {
+      case 'manage-watchlist':
+        unawaited(_manageWatchlist());
+      case 'charts':
+        prefs?.set(optionTickerChart, flipped(optionTickerChart, fallback: true));
+      case 'fold-signals':
+        prefs?.set(optionPluginStocksFoldSignalPosts, flipped(optionPluginStocksFoldSignalPosts, fallback: false));
+    }
+  }
 
   Widget _body(L10n l10n) {
     return ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
@@ -368,8 +398,23 @@ class _StocksScreenState extends State<StocksScreen> {
       assets: _watchlist.cryptoAssets,
       onOpen: _openAsset,
       onRetry: _retry,
+      onAdd: _addSymbol,
+      onReorder: (from, to) => unawaited(_watchlist.reorder(from, to)),
       onRefresh: _pullToRefresh,
       controller: controller,
+      choicesFor: _readingChoices,
+      readingOf: _cache.instrumentFor,
+    );
+  }
+
+  /// The two readings of a symbol the reader has not settled, to pick from.
+  Widget? _readingChoices(String symbol) {
+    final readings = stocksReadings(_cache, symbol);
+    if (readings == null) return null;
+    return StocksReadingChoices(
+      readings: readings,
+      shown: TickerInstrument.crypto,
+      onChoose: (instrument) => unawaited(_cache.choose(symbol, instrument)),
     );
   }
 

@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_session.dart';
+import 'package:xta/plugins/stocks/stocks_signal_banner.dart';
 import 'package:xta/plugins/stocks/stocks_signal_posts.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 
 /// Posts about the watchlist (or one filtered ticker), owned as its own feed
 /// so changing the query remounts a fresh [TweetFeedController]. Each page
-/// puts signal-group posts last ([signalGroupPostsLast]).
+/// puts signal-group posts last ([signalGroupPostsLast]), under a banner that
+/// folds them ([stocksSignalChain]).
 class StocksPostsFeed extends StatefulWidget {
   final String query;
   final Future<void> Function() onRefreshQuotes;
@@ -22,12 +24,16 @@ class StocksPostsFeed extends StatefulWidget {
 class StocksPostsFeedState extends State<StocksPostsFeed> {
   late final PluginSessionLease _session;
   late final TweetFeedController _feed;
+  late final StocksSignalFolds _folds;
 
   @override
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'stocks-posts');
     _feed = _session.obtain(widget.query, TweetFeedController.new, dispose: (feed) => feed.dispose());
+    // One for every query: a post folded under one ticker stays folded under
+    // the next that finds it.
+    _folds = _session.obtain('signal-folds', StocksSignalFolds.new, dispose: (folds) => folds.destroy());
   }
 
   @override
@@ -35,6 +41,8 @@ class StocksPostsFeedState extends State<StocksPostsFeed> {
     _session.dispose();
     super.dispose();
   }
+
+  Widget _wrapChain(TweetChain chain, Widget post) => stocksSignalChain(_folds, chain, post);
 
   Future<TweetPageResult> _loadPage(String? cursor) async {
     final result = await Twitter.searchTweets(widget.query, true, cursor: cursor);
@@ -54,6 +62,7 @@ class StocksPostsFeedState extends State<StocksPostsFeed> {
         firstPageErrorPrefix: l10n.unable_to_load_the_tweets,
         newPageErrorPrefix: l10n.unable_to_load_the_next_page_of_tweets,
         emptyMessage: l10n.no_posts_match_your_search,
+        wrapChain: _wrapChain,
       ),
     );
   }

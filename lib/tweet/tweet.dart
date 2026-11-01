@@ -31,7 +31,6 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
 import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/tweet/broadcasts.dart';
-import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/article/article.dart';
 import 'package:xta/ui/dates.dart';
@@ -895,8 +894,6 @@ class TweetTileState extends State<TweetTile> {
     final bodyChildren = <Widget>[
       replyToTile,
       if (tweet.article == null) content,
-      if (tweet.article == null)
-        CashtagQuotesBar(symbols: tweetCashtags(tweet)),
       if (tweet.isSubscriberPreview)
         _SubscriberPreviewLine(screenName: tweet.user?.screenName),
       if (articleLink != null)

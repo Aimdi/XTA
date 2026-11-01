@@ -324,6 +324,11 @@ class PaginatedTweetList extends StatefulWidget {
   /// Chain ids that should render folded behind a one-line reason.
   final Map<String, String> foldReasons;
 
+  /// Wraps the widget a chain is built as, as a feed's banner over some of its
+  /// posts. Keep it the same function from build to build (a method, not a
+  /// closure): a new one builds every post again.
+  final Widget Function(TweetChain chain, Widget post)? wrapChain;
+
   const PaginatedTweetList({
     super.key,
     required this.feed,
@@ -341,6 +346,7 @@ class PaginatedTweetList extends StatefulWidget {
     this.caughtUpDividerKey,
     this.interleaved = const [],
     this.foldReasons = const {},
+    this.wrapChain,
   });
 
   @override
@@ -466,7 +472,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   void _onPrefsChanged() => _prefsChanges++;
 
   Widget _buildChain(BuildContext context, TweetChain chain) {
-    final inputs = (widget.username, widget.foldReasons, _prefsChanges);
+    final inputs = (widget.username, widget.foldReasons, widget.wrapChain, _prefsChanges);
     if (inputs != _chainWidgetsFor) {
       _chainWidgets.clear();
       _chainWidgetsFor = inputs;
@@ -483,13 +489,14 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     if (reason != null) {
       return FoldedChain(key: ValueKey('fold-${chain.id}'), chain: chain, reason: reason, username: widget.username);
     }
-    return TweetConversation(
+    final post = TweetConversation(
       key: ValueKey(chain.id),
       id: chain.id,
       tweets: chain.tweets,
       username: widget.username,
       isPinned: chain.isPinned,
     );
+    return widget.wrapChain?.call(chain, post) ?? post;
   }
 
   Widget _buildChainAt(BuildContext context, List<TweetChain> loaded, int index, {required bool collapseBoosts}) {

@@ -38,6 +38,9 @@ class CryptoAsset {
   /// The token's name, else its address cut in the middle.
   String get nameOrAddress => _hasName ? name : shortAddress;
 
+  /// [label] without the cashtag's `$`: `PEPE`, as a row or strip titles it.
+  String get bareLabel => _hasSymbol ? symbol : nameOrAddress;
+
   /// [label] with the name beside it when that adds something: `$PEPE · Pepe`.
   String get fullLabel => _hasSymbol && _hasName ? '$label · $name' : label;
 

@@ -111,6 +111,10 @@ One row widget for Märkte and the watchlist, 56 dp (60 with a sparkline):
 - `lib/plugins/stocks/stocks_watchlist_reel.dart`: the flat strip.
 - `lib/plugins/stocks/stocks_instruments.dart` (new) and
   `lib/tweet/ticker/ticker_quote_cache.dart`: two readings and the pick.
+- `lib/plugins/stocks/stocks_section_header.dart` (new): a list's title and
+  its state or count.
+- `lib/plugins/stocks/stocks_signal_banner.dart` (new): the banner and the
+  folds the reader chose.
 - `lib/utils/_entities.dart`, `lib/utils/rich_text.dart`,
   `lib/tweet/cashtag_quotes.dart`, `lib/tweet/tweet.dart`: moves after
   cashtags, addresses, no chips under posts.
@@ -134,3 +138,38 @@ One row widget for Märkte and the watchlist, 56 dp (60 with a sparkline):
 - Trend: the banner over a signal post, Ausblenden folds it, the setting folds
   them all.
 - Renders of the five boards beside the design.
+
+## As built
+
+Where the build differs from the boards, and why:
+
+- **Two readings** are offered for the cashtags that are coins first
+  (`$SOL`, `$LINK`, `$ETH`, …) once a listed security of the same letters
+  answers; the board's `$NDX` cannot have two any more, since an index name
+  only ever asks for its index. The listing is looked up once per symbol, and
+  only for the watchlist. The pick is kept in prefs
+  (`other.ticker_instruments`), and the ticker page's own Crypto/Stocks
+  choice keeps it too.
+- **The signal banner** is over signal-group posts in Tweets as well as
+  Trend: both are the same feed. What the reader folded or opened is kept for
+  the session, so a post folded and scrolled away is still folded on the way
+  back.
+- **Crowded rows** at large text: the token's network chip gives way before
+  the name; the retry button becomes the arrow alone, with the words as its
+  tooltip, when the words would take more than half the row; a reason or a
+  caution may take two lines; a row with a caution draws no sparkline.
+- **The tabs** fall back to the labelled section picker when a label does not
+  fit its quarter of the row less 8 dp (German at 320 dp ×1.3).
+- **Posts**: a cashtag and its move, and a hashtag, were scaled twice by the
+  reader's text size (once by the paragraph, once by their own text); they are
+  drawn at the size of the words around them now. A cut address is one unit
+  on the line, with the network of a watched token.
+- **A loading row** shows its symbol where the name will be, rather than a
+  grey bar over it: the symbol is known before anything is asked, and says
+  more than a bar.
+- The German tab keeps the existing translation, **Im Trend**.
+
+Renders of the five boards (black in German, light in English, German at
+320 dp ×1.3): `flutter test test/stocks_render_test.dart
+--dart-define=RENDER_STOCKS=true`, written to `review-artifacts/renders/`.
+

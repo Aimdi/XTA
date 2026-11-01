@@ -23,3 +23,10 @@ List<TweetChain> signalGroupPostsLast(List<TweetChain> chains) {
   bool signal(TweetChain chain) => chain.tweets.any(isSignalGroupPost);
   return [...chains.where((chain) => !signal(chain)), ...chains.where(signal)];
 }
+
+/// How many cashtags [chain]'s signal-group post carries, or null when the
+/// chain has no such post.
+int? signalGroupCashtags(TweetChain chain) {
+  final post = chain.tweets.where(isSignalGroupPost).firstOrNull;
+  return post == null ? null : tweetCashtags(post).length;
+}

@@ -222,6 +222,12 @@ const pluginIdStocks = 'stocks';
 const optionPluginStocksEnabled = 'plugin.stocks.enabled';
 const optionPluginStocksShowTab = 'plugin.stocks.show_tab';
 
+/// The watchlist's ids in the order the reader arranged them. Unset: by label.
+const optionPluginStocksWatchlistOrder = 'plugin.stocks.watchlist_order';
+
+/// When true, posts shaped like a trading-signal group's arrive folded.
+const optionPluginStocksFoldSignalPosts = 'plugin.stocks.fold_signal_posts';
+
 const pluginIdSubstack = 'substack';
 
 /// Reading aloud: which engine, which voice, how fast. Shared rather than
@@ -718,6 +724,10 @@ const optionSwipeBackTilt = 'gestures.swipe_back_tilt';
 // from outside X, so it is named plainly and can be switched off; the posts
 // about the ticker do not depend on it.
 const optionTickerChart = 'other.ticker_chart';
+
+/// The reading kept per cashtag that names both a coin and a listed security,
+/// as `SYMBOL=stock` or `SYMBOL=crypto` entries.
+const optionTickerInstruments = 'other.ticker_instruments';
 
 const optionZenMode = 'other.zen_mode';
 const optionZenModePageCap = 'other.zen_mode_page_cap';
