@@ -60,6 +60,50 @@ Recorded on this VM after a clean debug build (see Phase 0 gate):
 | `app-debug.apk` | 222344320 (~212 MiB) | debug build 2026-07-23 on this branch after icons + Inter |
 | `--analyze-size` summary | TBD — device / local | prefer release / profile for fair comparison |
 
+
+## What the app is made of (2026-11-01)
+
+Measured for docs/specs/downloadable-voice-engine.md and the question of
+making plugins downloadable.
+
+### The released arm64 APK (aimdi188, 84,456,571 bytes)
+
+`unzip -lv xta-aimdi188_arm64-v8a.apk`, native libraries (stored, so these
+are the APK bytes):
+
+| Library | Bytes | What |
+| --- | --- | --- |
+| `libapp.so` | 28,246,928 | all Dart code |
+| `libonnxruntime.so` | 22,249,552 | voice engine |
+| `libmpv.so` | 12,369,680 | video |
+| `libflutter.so` | 11,580,816 | Flutter engine |
+| `libsherpa-onnx-c-api.so` | 4,499,112 | voice engine |
+
+The rest (fonts, icons, resources, `classes.dex`) is about 5 MB. The voice
+engine has since left the APK (about 58 MB for arm64 without it).
+
+### The Dart code by part (Linux x64 release)
+
+`fvm flutter build linux --release --analyze-size --target-platform linux-x64`
+on this branch (c392d4c2); the JSON lands in `~/.flutter-devtools/`. No
+Android SDK is installed here, so this is the desktop build's AOT code
+(`libapp.so` 35,661,168 bytes summed over its parts, symbols included); the
+parts' shares should be close on arm64, whose `libapp.so` is 28.2 MB. The
+arm64 column scales by that share and is an estimate, not a measurement.
+
+| Part | x64 bytes | Share of `libapp.so` | arm64, estimated |
+| --- | --- | --- | --- |
+| `lib/generated` (translations, 29 languages) | 10,970,083 | 30.8 % | 8.7 MB |
+| `lib/plugins` (all plugins and their shared code) | 5,041,317 | 14.1 % | 4.0 MB |
+| the rest of `package:xta` | 4,111,227 | 11.5 % | 3.3 MB |
+| Flutter, Dart and other packages | 15,538,541 | 43.6 % | 12.3 MB |
+
+The plugins, in x64 bytes: Pixiv 1,143,652; Substack 640,105; Bluesky
+430,822; Booru 424,581; Reddit 406,652; Mastodon 346,396; Threads 297,260;
+EhViewer 234,351; TikTok 141,012; web sources 140,928; Instagram 135,310;
+RSS 114,840; Stocks 110,563; Hacker News 91,013; Immich 32,840; Deepmarks
+28,333; Karakeep 18,945; the shared plugin code the rest.
+
 ## Prior hot-path work already on mainline
 
 These landed before this baseline doc and are **not** double-counted as Phase 2 wins:
