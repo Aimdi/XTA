@@ -1,0 +1,151 @@
+# Stocks: right numbers, honest states, plain navigation
+
+A review of the Stocks plugin (Watchlist, Tweets, Trend, Markets) found its
+biggest problems in data correctness and state handling, then navigation, then
+polish. This pass fixes them in that order. Read-only as before: quotes are
+shown, nothing is traded.
+
+## Found
+
+### Data
+
+- **`$NDX` showed Indexed Finance at 0.00181.** `tickerCandidates('NDX')` tries
+  `NDX`, then `^NDX`, then `NDX-USD`, and `NDX-USD` is a crypto token. An index
+  falls through to it whenever the first two do not answer with a price.
+- **Why they do not answer on a weekend.** The tape asks the chart host for one
+  day of five-minute bars. On a day without a session there are none, and
+  `TickerQuote.fromChartJson` returns null when there are no bars, even though
+  the host still sends the last price and the close before it. Null counts as
+  "no such symbol", so the next candidate is tried: the dashes in 8 of 10 rows
+  of Markets, and Indexed Finance for `$NDX`.
+- **"—" means three things.** A row that is loading, one whose fetch failed and
+  one whose market is closed look the same: dashes and an empty pill. The quote
+  cache swallows failures, so a row cannot tell them apart.
+- **Index rows have no name** until the host answers, and none when it fails.
+- **The change has two meanings in one list.** A coin's is not measured against
+  a previous close the way an index's is, and nothing says which is which.
+- **Sub-cent prices** show three significant digits (`0,00181`).
+- **A token without a known symbol** is labelled by its whole contract address,
+  cut at the end (`0x23a2...fe...`), while its chip shows `0x23a2…fe51`.
+
+### Navigation and colour
+
+- In Home, the Stocks bar holds the four tabs, `+` and the dock's options
+  button (the sliders). Its sheet repeats the four tabs and lists "Watchlist"
+  twice: the tab, and the action that manages the list, under the tab's name.
+- The candlestick mark wears the plugin's green, so it reads as selected beside
+  the tab that is. The selected tab is green too, the same green as a rising
+  price, while the sheet and cashtags use the app's purple.
+
+### Tweets and Trend
+
+- A token's chip in the watchlist strip has a second line with its network and
+  address; a cashtag's has one.
+- A contract address in a post is a 42-character word that takes two lines.
+- The quote chips under a post repeat its cashtags at full size and stack.
+- Signal-group posts (a Telegram invite, several cashtags, leverage screenshots)
+  lead Trend.
+
+## After
+
+### Data
+
+- **An index symbol only ever asks for its index.** `SPX`, `NDX`, `DJI`, `RUT`,
+  `VIX`, `DAX`, `FTSE`, `N225` (and the other names `kTickerAliases` maps) ask
+  for `^GSPC`, `^NDX`, … and nothing else. If the index does not answer, the
+  row says so; it never shows another instrument.
+- **A day without bars is still a quote.** When the host sends a price and the
+  close before it but no bars, the quote has the price, the change against that
+  close and no sparkline.
+- **Every row says what it is**, with a small badge: Index, Stock, ETF, Crypto
+  (with its network for a token: "Crypto · Base"), Fund, Future, Currency, as
+  the host types the instrument. A symbol known to be an index or a coin shows
+  its badge before any data arrives.
+- **Three states instead of "—":**
+  - *loading*: a shimmer where the price and pill will be;
+  - *market closed* (no session now: night, weekend, holiday): the last close,
+    a small "Close Fri" tag (the day of that close) and a muted pill;
+  - *no data* (the fetch failed): one line, "No data · Tap to retry", and no
+    pill; tapping retries that row.
+  The same rows serve Markets and the Watchlist, and the watchlist strip on the
+  Tweets tab shows the same three states.
+- **Rows have names without data**: S&P 500, Nasdaq-100, Dow Jones, Russell
+  2000, VIX, DAX 40, FTSE 100, Nikkei 225, Bitcoin and Ethereum come from a
+  fixed map, before and instead of the host's spelling.
+- **Each change says its window**, in a caption by the pill: "24h" for a
+  rolling 24-hour change, "1D" ("1T" in German) for a change against the
+  previous close. Coins on the chart host (BTC, ETH, …) are now measured over
+  the last 24 hours (two days of quarter-hour bars, against the bar 24 hours
+  before the last), so they are labelled "24h"; DEX tokens already are.
+- **Prices under 1 keep four significant digits**: `0,1234`, `0,01234`,
+  `0,001810`; from three zeros after the decimal comma on, the zeros are
+  counted: `0,0₃1234`. A screen reader hears the plain number.
+- **A token is named by its symbol, else its name, else its address cut in the
+  middle** (`0x23a2…fe51`), the same everywhere; its row's second line is its
+  name when known, else that address.
+
+### Navigation and colour
+
+- **The bar holds only the tabs** and a ⋮ menu. Adding a symbol is a button
+  floating over the Watchlist and Tweets tabs. The menu holds "Manage
+  watchlist" (renamed from "Watchlist", which is the tab).
+- **In Home**, a plugin whose bar is only its tabs gets the ⋮ instead of the
+  sliders, and its sheet no longer repeats the tabs. Plugins with filters keep
+  the sliders and their sheet as they are.
+- **The mark is neutral**, in the text colour, as X's is.
+- **Selection is the app's accent** (purple by default) on Stocks' tabs, chips
+  and sheets; green and red only ever mean a price went up or down.
+
+### Tweets and Trend
+
+- **A token's chip is one line**, like a cashtag's: its label, price and move.
+  Its network and address stay on its row and page.
+- **A contract address in a post** shows cut in the middle (`0x23a2…fe51`) in
+  the link colour, on one line; tapping copies the whole address.
+- **The quote chips under a post** are compact and share rows: symbol, price
+  and move in a small outlined chip, as many to a line as fit.
+- **Posts with a Telegram link and three or more cashtags go to the end** of
+  each loaded page of Tweets and Trend, in their order; nothing is hidden.
+
+## Not in this pass
+
+- The ticker page and the token page keep their layout.
+- Other plugins' bars and colours are unchanged, beyond the ⋮ for a bar that is
+  only tabs.
+
+## Code
+
+- `lib/tweet/ticker/ticker_symbol.dart`: index-only candidates, fixed names.
+- `lib/tweet/ticker/ticker_quote.dart`: quotes without bars, the instrument
+  type, the last regular trade time, the change window.
+- `lib/tweet/ticker/ticker_quote_cache.dart`: per-symbol failures; coins over
+  24 hours.
+- `lib/plugins/stocks/stocks_format.dart`: prices, the row states.
+- `lib/plugins/stocks/stocks_quote_row.dart`, `stocks_markets.dart`,
+  `stocks_watchlist_list.dart`, `stocks_watchlist_reel.dart`: rows and chips.
+- `lib/plugins/stocks/crypto_asset.dart`: a token's label.
+- `lib/plugins/stocks/stocks_screen.dart`: the button, the menu.
+- `lib/plugins/plugin.dart`, `plugin_marks.dart`, `plugin_compact_header.dart`,
+  `plugin_home_dock.dart`: neutral mark, accent selection, ⋮ for a tabs-only bar.
+- `lib/utils/rich_text.dart`: addresses in posts.
+- `lib/tweet/cashtag_quotes.dart`: compact chips.
+- `lib/plugins/stocks/stocks_posts_feed.dart`: signal-group posts last.
+
+## Tests
+
+- `NDX` and the other index names only ever ask for their `^` symbol; a failing
+  index never resolves to a `-USD` pair.
+- A chart answer with a price and no bars is a quote; one with neither is not.
+- Row states: loading shimmer, closed with its day tag and muted pill, no data
+  with retry (tapping retries); names and badges before data.
+- The change window: "24h" for coins and tokens, "1D" for the rest; a coin's
+  24-hour change from two days of bars.
+- Prices: four significant digits, subscript zeros, the spoken form.
+- Token labels: symbol, else name, else a middle-cut address.
+- The bar: tabs and ⋮ only, the floating add button, "Manage watchlist";
+  in Home the ⋮ and a sheet without the tabs; the neutral mark; the accent on
+  the selected tab.
+- A contract address in a post is cut in the middle and copies on tap.
+- Compact chips share a row at 360 dp.
+- Signal-group posts move to the end of their page, others keep their order.
+- German at 320 dp ×1.3 fits.
