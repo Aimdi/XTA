@@ -225,8 +225,10 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
     }
 
     _forgetOnCredentialChange();
+    // The accounts asked longest ago go first: a read is capped, and in the
+    // same order every time it asked the same ones and never reached the rest.
     return _posts.merge(
-      handles,
+      _posts.prioritize(handles),
       _fetcher(),
       forceRefresh: forceRefresh,
       onPartial: onPartial,
