@@ -18,12 +18,16 @@ class ThreadsCaption extends StatefulWidget {
   final List<ThreadsTextFragment> fragments;
   final int? maxLines;
 
+  /// The opened post's text, which can be selected and copied as X's can.
+  final bool selectable;
+
   const ThreadsCaption({
     super.key,
     required this.text,
     required this.style,
     this.fragments = const [],
     this.maxLines,
+    this.selectable = false,
   });
 
   @override
@@ -57,8 +61,16 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
     _clearRecognizers();
     final linkStyle = widget.style.copyWith(color: Theme.of(context).colorScheme.primary);
     final runs = threadsCaptionRuns(widget.text, widget.fragments);
+    final span = TextSpan(style: widget.style, children: [for (final run in runs) _spanFor(context, run, linkStyle)]);
+    if (widget.selectable) {
+      return SelectableText.rich(
+        span,
+        scrollPhysics: const NeverScrollableScrollPhysics(),
+        maxLines: widget.maxLines,
+      );
+    }
     return Text.rich(
-      TextSpan(style: widget.style, children: [for (final run in runs) _spanFor(context, run, linkStyle)]),
+      span,
       maxLines: widget.maxLines,
       overflow: widget.maxLines == null ? null : TextOverflow.ellipsis,
     );

@@ -36,18 +36,34 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
   );
   late final _sorts = context.read<ConversationSortStore>();
   late final _view = ThreadsThreadViewStore(_sorts.state.replies);
+  final _focusKey = GlobalKey();
+  late final Disposer _stopLanding;
+  bool _landed = false;
 
   @override
   void initState() {
     super.initState();
+    _stopLanding = _thread.observer(onState: _landOnFocus);
     _thread.load();
   }
 
   @override
   void dispose() {
+    _stopLanding();
     _thread.destroy();
     _view.destroy();
     super.dispose();
+  }
+
+  /// With posts above it, the opened post is brought to the top once, as X
+  /// opens a reply: what it answers stays a scroll up.
+  void _landOnFocus(ThreadsConversation conversation) {
+    if (_landed || conversation.ancestors.isEmpty) return;
+    _landed = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final focus = _focusKey.currentContext;
+      if (focus != null && focus.mounted) Scrollable.ensureVisible(focus);
+    });
   }
 
   void _selectOrder(ReplySort order) {
@@ -78,6 +94,7 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
               ScopedBuilder<ThreadsThreadViewStore, ThreadsThreadView>(
                 store: _view,
                 onState: (context, view) => _ThreadsConversationList(
+                  focusKey: _focusKey,
                   conversation: triple.state,
                   view: view,
                   loading: triple.isLoading,
@@ -125,6 +142,7 @@ class _ThreadActions extends StatelessWidget {
 }
 
 class _ThreadsConversationList extends StatelessWidget {
+  final GlobalKey focusKey;
   final ThreadsConversation conversation;
   final ThreadsThreadView view;
   final bool loading;
@@ -135,6 +153,7 @@ class _ThreadsConversationList extends StatelessWidget {
   final void Function(List<ThreadsPost> chain) onExpand;
 
   const _ThreadsConversationList({
+    required this.focusKey,
     required this.conversation,
     required this.view,
     required this.loading,
@@ -182,13 +201,17 @@ class _ThreadsConversationList extends StatelessWidget {
     return [
       for (final (index, post) in chain.indexed)
         if (identical(post, focus))
-          ThreadsPostCard(
-            key: ValueKey('chain-${post.id}'),
-            post: post,
-            showSourceBadge: false,
-            openOnTap: false,
-            threadConnectTop: index > 0,
-            threadConnectBottom: index < chain.length - 1,
+          KeyedSubtree(
+            key: focusKey,
+            child: ThreadsPostCard(
+              key: ValueKey('chain-${post.id}'),
+              post: post,
+              showSourceBadge: false,
+              openOnTap: false,
+              focal: true,
+              threadConnectTop: index > 0,
+              threadConnectBottom: index < chain.length - 1,
+            ),
           )
         else
           _card(
@@ -275,10 +298,7 @@ class _ThreadsConversationList extends StatelessWidget {
     showSourceBadge: false,
     threadConnectTop: connectTop,
     threadConnectBottom: connectBottom,
-    onOpen: () => Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)),
-    ),
+    onOpen: () => openThreadsPost(context, post),
     onAuthorTap: () => Navigator.push(
       context,
       MaterialPageRoute(

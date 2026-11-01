@@ -343,11 +343,12 @@ void main() {
       expect(tester.getRect(check).center.dy, closeTo(tester.getRect(find.text('Maya Chen')).center.dy, 2));
     });
 
-    testWidgets('offers Follow as a 48 dp icon until followed', (tester) async {
+    testWidgets('offers Follow as a 48 dp icon until followed, before the ⋯ at the end', (tester) async {
       await pump(tester, ThreadsPostCard(post: _thread(), showSourceBadge: false));
 
       final follow = find.byTooltip(L10n.current.plugin_threads_follow);
-      expect(tester.getRect(follow), const Rect.fromLTWH(390 - 48, kInkColumnTop, 48, 48));
+      expect(tester.getRect(follow), const Rect.fromLTWH(390 - 96, kInkColumnTop, 48, 48));
+      expect(tester.getRect(find.byTooltip(L10n.current.more_info)), const Rect.fromLTWH(390 - 48, kInkColumnTop, 48, 48));
       await tester.tap(follow);
       await tester.pump();
       expect(threadsFollows.follows('maya'), isTrue);
