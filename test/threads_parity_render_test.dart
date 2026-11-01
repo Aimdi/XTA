@@ -12,8 +12,9 @@ import 'support/bluesky_reading_images.dart';
 import 'support/feed_ink_harness.dart';
 import 'support/review_fonts.dart';
 
-/// Renders Threads as the second parity pass draws it — pictures along a row,
-/// the opened post with its date line — for review beside X:
+/// Renders Threads as the parity passes draw it — pictures along a row, a quoted
+/// article, a caption's #tag, the opened post with its date line — for review
+/// beside X:
 ///   fvm flutter test test/threads_parity_render_test.dart --dart-define=RENDER_THREADS=true
 const _render = bool.fromEnvironment('RENDER_THREADS');
 
@@ -32,6 +33,32 @@ ThreadsPost _post({required String id, required String text, int pictures = 0, S
   topicTag: topic,
   images: [for (var i = 0; i < pictures; i++) 'https://cdn.example/$id-$i.jpg'],
   imageAspects: [for (var i = 0; i < pictures; i++) i == 1 ? 1.5 : 0.8],
+);
+
+/// A post quoting an article, with a #tag Meta sent as plain text (the third pass).
+ThreadsPost _quoting() => ThreadsPost(
+  id: '3',
+  handle: 'ola.berg',
+  authorName: 'Ola Berg',
+  text: 'Read this before your next firing #Keramik',
+  url: 'https://www.threads.com/@ola.berg/post/C3',
+  publishedAt: _postedAt,
+  likeCount: 52,
+  replyCount: 4,
+  repostCount: 1,
+  quoted: ThreadsPost(
+    id: '4',
+    handle: 'maya.makes',
+    authorName: 'Maya Chen',
+    text: 'Everything the kiln taught me this year.',
+    url: 'https://www.threads.com/@maya.makes/post/C4',
+    publishedAt: _postedAt,
+    linkCard: const ThreadsLinkCard(
+      url: 'https://studio.example/kiln-notes',
+      title: 'Kiln notes: a year of firings',
+      description: 'Cone 6, three glazes and what went wrong.',
+    ),
+  ),
 );
 
 void main() {
@@ -66,6 +93,7 @@ void main() {
                   post: _post(id: '1', text: 'Three glazes from the same kiln, three moods.', pictures: 3),
                   showSourceBadge: false,
                 ),
+                ThreadsPostCard(post: _quoting(), showSourceBadge: false),
                 ThreadsPostCard(
                   post: _post(id: '2', text: 'The light was right at seven, and the kiln held.', topic: 'Ceramics'),
                   showSourceBadge: false,
