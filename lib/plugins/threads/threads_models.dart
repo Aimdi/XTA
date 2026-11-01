@@ -416,10 +416,6 @@ ThreadsProfile? threadsProfileFromPosts(
     isPrivate: false,
     profilePicUrl: sample.avatarUrl ?? '',
     biography: '',
-    followerCount: 0,
-    followingCount: 0,
-    mediaCount: 0,
-    externalUrl: 'https://www.threads.com/@$key',
   );
 }
 
@@ -487,6 +483,9 @@ ThreadsLinkCard? threadsLinkCardOf(Json post) {
 /// a field that stops being sent should leave a blank on the card rather than
 /// take the screen down. Only [externalUrl] is documented as nullable, but none
 /// of them are trusted to be there.
+///
+/// A count is null when Meta did not say: a guest is not told whom a profile
+/// follows, and a profile pieced together from its posts knows no count.
 class ThreadsProfile {
   final String pk;
   final String id;
@@ -496,9 +495,9 @@ class ThreadsProfile {
   final bool isPrivate;
   final String profilePicUrl;
   final String biography;
-  final int followerCount;
-  final int followingCount;
-  final int mediaCount;
+  final int? followerCount;
+  final int? followingCount;
+  final int? mediaCount;
   final String? externalUrl;
 
   const ThreadsProfile({
@@ -510,9 +509,9 @@ class ThreadsProfile {
     required this.isPrivate,
     required this.profilePicUrl,
     required this.biography,
-    required this.followerCount,
-    required this.followingCount,
-    required this.mediaCount,
+    this.followerCount,
+    this.followingCount,
+    this.mediaCount,
     this.externalUrl,
   });
 

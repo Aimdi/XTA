@@ -175,16 +175,15 @@ ThreadsProfile? threadsProfileFromGuestHtml(String html, String handle) {
     profilePicUrl: image,
     biography: desc.biography,
     followerCount: desc.followers,
-    followingCount: 0,
     mediaCount: desc.posts,
-    externalUrl: '$threadsWebBase/@$key',
   );
 }
 
-/// `5.7M Followers • 380 Threads • Bio text` → its three parts.
-({int followers, int posts, String biography}) _guestDescription(String desc) {
-  var followers = 0;
-  var posts = 0;
+/// `5.7M Followers • 380 Threads • Bio text` → its three parts; a count the
+/// page leaves out is null.
+({int? followers, int? posts, String biography}) _guestDescription(String desc) {
+  int? followers;
+  int? posts;
   var biography = '';
   for (final part in desc.split(RegExp(r'\s*[•·]\s*')).map((e) => e.trim())) {
     final count = RegExp(r'^([\d.,]+[KMB]?)\s+(Followers?|Threads?)$', caseSensitive: false).firstMatch(part);
