@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/video_quality.dart';
 
 /// A Threads post's pictures and videos, videos playing in place, several
 /// along one row as the Threads app and X lay them out.
@@ -30,11 +31,19 @@ class ThreadsPostMedia extends StatelessWidget {
 }
 
 /// The player for one video of [post], or null when Meta sent no file for it.
+///
+/// Every file Meta offers is a quality, named by its lines ("720p"), so the
+/// video quality setting and the player's menu choose among them; a post kept
+/// before they were plays its one file.
 Widget? threadsVideoPlayer(ThreadsPost post, PluginMediaItem item, int index) {
   final stream = item.videoUrl?.trim();
   if (stream == null || stream.isEmpty) {
     return null;
   }
+  final qualities = [
+    for (final rendition in post.renditionsAt(index))
+      if (rendition.lines case final lines?) TweetVideoQuality(rendition.url, '${lines}p'),
+  ];
   return TweetVideo(
     key: ValueKey('threads-video-${post.id}-$index'),
     username: post.handle,
@@ -44,7 +53,7 @@ Widget? threadsVideoPlayer(ThreadsPost post, PluginMediaItem item, int index) {
     metadata: TweetVideoMetadata(
       clampPluginMediaAspect(item.aspectRatio),
       item.url,
-      () async => TweetVideoUrls(stream, stream),
+      () async => TweetVideoUrls(stream, stream, qualities: qualities),
     ),
   );
 }

@@ -268,10 +268,11 @@ ThreadsPost? _threadsOriginalFromApi(Json post, {bool withQuote = true}) {
     authorName: _authorNameOf(user, handle),
     avatarUrl: user['profile_pic_url'].string ?? user['hd_profile_pic_url_info']['url'].string,
     text: text,
-    images: [for (final item in media) item.url],
-    imageAspects: [for (final item in media) item.aspectRatio],
-    imageAlts: [for (final item in media) item.alt],
-    videoUrls: [for (final item in media) item.videoUrl],
+    images: [for (final entry in media) entry.item.url],
+    imageAspects: [for (final entry in media) entry.item.aspectRatio],
+    imageAlts: [for (final entry in media) entry.item.alt],
+    videoUrls: [for (final entry in media) entry.item.videoUrl],
+    videoRenditions: [for (final entry in media) entry.renditions],
     publishedAt: _takenAt(post),
     url: code == null ? null : '$threadsWebBase/@$handle/post/$code',
     likeCount: post['like_count'].integer,
@@ -400,27 +401,41 @@ bool _threadsIsReply(Json post) {
   return (url: best, aspect: aspect);
 }
 
-/// The largest video rendition, or the first when none says how big it is.
-String? _bestVideo(Json media) {
-  String? best;
-  var bestArea = -1;
-  for (final version in media['video_versions'].list) {
-    final url = version['url'].string;
-    if (url == null || url.isEmpty) {
-      continue;
-    }
-    final area = (version['width'].integer ?? 0) * (version['height'].integer ?? 0);
-    if (area > bestArea) {
-      bestArea = area;
-      best = url;
-    }
-  }
-  return best;
+/// Every file Meta offers for a video, largest first (in Meta's order where
+/// sizes tie or are missing); one per quality, so a quality menu never names
+/// the same one twice.
+List<ThreadsVideoRendition> threadsVideoRenditionsOf(Json media) {
+  final offered = [
+    for (final (index, version) in media['video_versions'].list.indexed)
+      if (version['url'].string case final url? when url.isNotEmpty)
+        (
+          index: index,
+          rendition: ThreadsVideoRendition(
+            url,
+            width: _positive(version['width'].integer),
+            height: _positive(version['height'].integer),
+          ),
+        ),
+  ]..sort((a, b) {
+    final larger = b.rendition.area.compareTo(a.rendition.area);
+    return larger != 0 ? larger : a.index.compareTo(b.index);
+  });
+  final urls = <String>{};
+  final qualities = <int>{};
+  return [
+    for (final (:rendition, index: _) in offered)
+      if (urls.add(rendition.url) && (rendition.lines == null || qualities.add(rendition.lines!))) rendition,
+  ];
 }
 
+int? _positive(int? value) => value != null && value > 0 ? value : null;
+
+/// A picture or video of a post, with every file Meta offers for a video.
+typedef ThreadsMedia = ({PluginMediaItem item, List<ThreadsVideoRendition> renditions});
+
 /// Every picture or video a post shows, posters standing in for videos.
-List<PluginMediaItem> threadsMediaOf(Json post) {
-  final items = <PluginMediaItem>[];
+List<ThreadsMedia> threadsMediaOf(Json post) {
+  final items = <ThreadsMedia>[];
   final seen = <String>{};
 
   void add(Json media) {
@@ -434,16 +449,18 @@ List<PluginMediaItem> threadsMediaOf(Json post) {
       'height': media['original_height'].integer ?? post['original_height'].integer,
     });
     final alt = media['accessibility_caption'].string?.trim();
-    final video = _bestVideo(media);
-    items.add(
-      PluginMediaItem(
+    final renditions = threadsVideoRenditionsOf(media);
+    final video = renditions.firstOrNull?.url;
+    items.add((
+      item: PluginMediaItem(
         url: url,
         aspectRatio: picked.aspect ?? fallback,
         alt: alt == null || alt.isEmpty ? null : alt,
         isVideo: video != null,
         videoUrl: video,
       ),
-    );
+      renditions: renditions,
+    ));
   }
 
   final carousel = post['carousel_media'].list;

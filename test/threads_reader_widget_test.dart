@@ -15,6 +15,7 @@ import 'package:xta/links/link_preview_card.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
+import 'package:xta/plugins/threads/threads_media.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_quote.dart';
@@ -22,6 +23,7 @@ import 'package:xta/plugins/threads/threads_search_screen.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/tweet/_photo.dart';
+import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/focal_post.dart';
 import 'package:xta/ui/card_page_route.dart';
 import 'package:xta/ui/dates.dart';
@@ -266,6 +268,36 @@ void main() {
       );
       await tester.pump();
     }
+
+    test('every file Meta offers is a quality named by its lines; a post kept before plays its one file', () async {
+      const post = ThreadsPost(
+        id: 'video',
+        handle: 'zuck',
+        authorName: 'Mark',
+        text: 'a video',
+        images: ['https://cdn.example/poster.jpg'],
+        videoUrls: ['https://cdn.example/720.mp4'],
+        videoRenditions: [
+          [
+            ThreadsVideoRendition('https://cdn.example/720.mp4', width: 720, height: 1280),
+            ThreadsVideoRendition('https://cdn.example/480.mp4', width: 480, height: 854),
+          ],
+        ],
+      );
+      Future<TweetVideoUrls> urlsOf(ThreadsPost post) =>
+          (threadsVideoPlayer(post, post.mediaItems.single, 0)! as TweetVideo).metadata.streamUrlsBuilder();
+
+      final urls = await urlsOf(post);
+      expect(urls.streamUrl, 'https://cdn.example/720.mp4');
+      expect([for (final quality in urls.qualities) (quality.label, quality.url)], [
+        ('720p', 'https://cdn.example/720.mp4'),
+        ('480p', 'https://cdn.example/480.mp4'),
+      ]);
+
+      final kept = await urlsOf(ThreadsPost.fromSnapshot(post.toJson()..remove('videoRenditions')));
+      expect(kept.streamUrl, 'https://cdn.example/720.mp4');
+      expect(kept.qualities, isEmpty);
+    });
 
     ThreadsPost pictures(int count) => ThreadsPost(
       id: 'pictures-$count',

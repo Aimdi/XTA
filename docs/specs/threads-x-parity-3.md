@@ -54,6 +54,23 @@ whether to make that code shared first:
 - `lib/plugins/threads/threads_parse.dart`, `threads_models.dart`,
   `threads_media.dart`: renditions kept and offered.
 
+## As built
+
+- Double-tap to like is one helper beside the like toast
+  (`withDoubleTapToLike`, `lib/tweet/tweet_footer.dart`), which X's card
+  now uses too, rather than a second copy of X's.
+- The results page's field is X's own search field (`XtaSearchField`),
+  without its advanced-search button. Words or a #tag search again on the
+  same page, keeping Top or Recent as chosen, and the query goes into the
+  search history as from the sheet.
+- With a session, the search sheet still lists the accounts an @handle or
+  words find; a post link and a #tag open their pages, as before.
+- A quality is named by the video's shorter side, as qualities usually are:
+  "720p" for a 720×1280 video (X names its own by height). Two files of one
+  quality are offered once, the first Meta lists.
+- A #tag in a plain caption is letters, digits and underscores after a `#`;
+  a `#` inside a link or a word (`C#7`, `&#39;`) is left alone.
+
 ## Tests
 
 - What a query names: a post link, a #tag, an @handle or profile link,
