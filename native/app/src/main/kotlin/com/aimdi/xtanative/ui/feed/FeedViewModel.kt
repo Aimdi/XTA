@@ -36,7 +36,10 @@ data class FeedUi(
     val answered: Boolean = false,
 )
 
-class FeedViewModel(private val graph: AppGraph) : ViewModel() {
+/** The Following feed for a null [groupId], else that group's feed. */
+class FeedViewModel(private val graph: AppGraph, private val groupId: String?) : ViewModel() {
+    private val cache = graph.feedCache(groupId)
+
     private val state = MutableStateFlow(FeedUi())
     val ui: StateFlow<FeedUi> = state.asStateFlow()
 
@@ -48,7 +51,7 @@ class FeedViewModel(private val graph: AppGraph) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            val cached = graph.feedCache.read()
+            val cached = cache.read()
             if (cached.isNotEmpty() && state.value.threads.isEmpty()) {
                 graph.posts.remember(cached)
                 state.update { it.copy(threads = cached, fromCache = true) }
@@ -56,7 +59,7 @@ class FeedViewModel(private val graph: AppGraph) : ViewModel() {
         }
         viewModelScope.launch {
             graph.sessions.state.filterNotNull()
-                .map { Shape(it.feedMembers, it.includeReplies, it.includeReposts) }
+                .map { Shape(it.membersOf(groupId), it.includeReplies, it.includeReposts) }
                 .distinctUntilChanged()
                 .collect { shape ->
                     feed = FollowingFeed(shape.members, graph.client.feedReads(), shape.replies, shape.reposts)
@@ -99,7 +102,7 @@ class FeedViewModel(private val graph: AppGraph) : ViewModel() {
                     )
                 }
             }
-            if (page.threads.isNotEmpty()) graph.feedCache.write(page.threads)
+            if (page.threads.isNotEmpty()) cache.write(page.threads)
         }
     }
 

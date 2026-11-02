@@ -95,7 +95,7 @@ fun SettingsScreen(onBack: () -> Unit, onImport: () -> Unit, onCleared: () -> Un
                     confirmClear = false
                     scope.launch {
                         graph.sessions.update { Session() }
-                        graph.feedCache.clear()
+                        graph.clearFeedCaches()
                         graph.signers.clear()
                         onCleared()
                     }

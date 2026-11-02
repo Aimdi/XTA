@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.core.x
 
+import com.aimdi.xtanative.core.x.signing.SignerStore
 import com.aimdi.xtanative.core.x.signing.SigningBootstrap
+import com.aimdi.xtanative.core.x.signing.StoredSigner
 import com.aimdi.xtanative.core.x.signing.TransactionSigner
 import java.io.IOException
 import java.security.MessageDigest
@@ -18,26 +20,28 @@ class XSigners(
     private val clock: () -> Long = System::currentTimeMillis,
     private val lifetimeMillis: Long = 6 * 60 * 60 * 1000L,
     private val cooldownMillis: Long = 30 * 1000L,
+    private val store: SignerStore? = null,
 ) {
-    constructor(bootstrap: SigningBootstrap) : this({ cookie -> bootstrap.derive(cookie) })
+    constructor(bootstrap: SigningBootstrap, store: SignerStore? = null) : this({ cookie -> bootstrap.derive(cookie) }, store = store)
 
-    private class Entry(val signer: TransactionSigner, val derivedAt: Long)
     private class Failure(val error: Throwable, val at: Long)
 
     private val mutex = Mutex()
-    private val signers = HashMap<String, Entry>()
+    private var signers: HashMap<String, StoredSigner>? = null
     private val failures = HashMap<String, Failure>()
 
     suspend fun forSession(cookie: String?): TransactionSigner = mutex.withLock {
         // Only a digest is kept as the key, never the session itself.
         val key = cookie?.let { digest(it) } ?: "anonymous"
         val now = clock()
-        signers[key]?.takeIf { now - it.derivedAt < lifetimeMillis }?.let { return@withLock it.signer }
+        val known = signers ?: HashMap(store?.read().orEmpty()).also { signers = it }
+        known[key]?.takeIf { now - it.derivedAt in 0 until lifetimeMillis }?.let { return@withLock it.signer }
         failures[key]?.takeIf { now - it.at < cooldownMillis }?.let { throw it.error }
         try {
             derive(cookie).also {
-                signers[key] = Entry(it, clock())
+                known[key] = StoredSigner(it, clock())
                 failures.remove(key)
+                store?.write(known.filterValues { stored -> clock() - stored.derivedAt < lifetimeMillis })
             }
         } catch (error: IOException) {
             // A network blip: the next request may try again at once.
@@ -49,7 +53,10 @@ class XSigners(
     }
 
     /** Forgets every signer: X answered as if they were stale. */
-    suspend fun clear() = mutex.withLock { signers.clear() }
+    suspend fun clear() = mutex.withLock {
+        signers = HashMap()
+        store?.write(emptyMap())
+    }
 
     private fun digest(value: String): String =
         MessageDigest.getInstance("SHA-256").digest(value.toByteArray()).joinToString("") { "%02x".format(it) }

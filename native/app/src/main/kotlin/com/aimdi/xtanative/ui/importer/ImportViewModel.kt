@@ -39,7 +39,7 @@ class ImportViewModel(private val graph: AppGraph) : ViewModel() {
     fun use(backup: XtaBackup) {
         viewModelScope.launch {
             graph.sessions.update { it.importing(backup) }
-            graph.feedCache.clear()
+            graph.clearFeedCaches()
             state.value = ImportUi.Done
         }
     }

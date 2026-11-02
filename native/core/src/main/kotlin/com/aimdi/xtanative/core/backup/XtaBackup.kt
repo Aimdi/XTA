@@ -23,8 +23,21 @@ data class FollowedAccount(
     val member: FeedMember get() = FeedMember(id, screenName, followedAt)
 }
 
-/** A group of followed accounts, as XTA's subscription groups keep them. */
-data class FollowGroup(val id: String, val name: String, val memberIds: List<String>)
+/** A group of followed accounts, as XTA's subscription groups keep them; XTA's home shows each as a tab. */
+data class FollowGroup(
+    val id: String,
+    val name: String,
+    val memberIds: List<String>,
+    val emoji: String? = null,
+    val pinned: Boolean = false,
+    val nsfw: Boolean = false,
+) {
+    companion object {
+        /** XTA's order: NSFW groups last, pinned ones first within each part, then by name. */
+        fun ordered(groups: List<FollowGroup>): List<FollowGroup> =
+            groups.sortedWith(compareBy<FollowGroup> { it.nsfw }.thenByDescending { it.pinned }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+    }
+}
 
 /**
  * What XTA Native takes from a file XTA exported (Settings → Data → Export):
@@ -46,13 +59,23 @@ data class XtaBackup(val accounts: List<XAccount>, val following: List<FollowedA
                 accounts = root["accounts"].list.mapNotNull(::account),
                 following = root["subscriptions"].list.mapNotNull(::followed).distinctBy { it.id },
                 groups = root["subscriptionGroups"].list.mapNotNull { row ->
-                    val id = row["id"].string ?: return@mapNotNull null
-                    FollowGroup(id, row["name"].string ?: id, groupMembers[id].orEmpty())
+                    val id = row["id"].string?.takeIf { it != EVERYONE } ?: return@mapNotNull null
+                    FollowGroup(
+                        id = id,
+                        name = row["name"].string ?: id,
+                        memberIds = groupMembers[id].orEmpty(),
+                        emoji = row["emoji"].string?.takeIf { it.isNotBlank() },
+                        pinned = row["pinned"].long == 1L,
+                        nsfw = row["nsfw"].long == 1L,
+                    )
                 },
             )
         }
 
         private val KNOWN_SECTIONS = setOf("accounts", "subscriptions", "subscriptionGroups", "formatVersion")
+
+        /** XTA's own "everyone" row, not a group anyone made. */
+        private const val EVERYONE = "-1"
 
         /** The `auth_header` column holds the headers as a JSON object, itself stored as a string. */
         private fun account(row: J): XAccount? {

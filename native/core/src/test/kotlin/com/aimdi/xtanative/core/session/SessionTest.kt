@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.core.session
 
+import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.backup.XtaBackup
 import com.aimdi.xtanative.core.x.XAccount
@@ -14,6 +15,12 @@ class SessionTest {
             FollowedAccount("1", "nasa", "NASA", "https://pbs.twimg.com/a_normal.jpg", verified = true, inFeed = true, followedAt = 5),
             FollowedAccount("2", "esa", "ESA", null, verified = false, inFeed = false, followedAt = 3),
         ),
+        groups = listOf(
+            FollowGroup("g2", "space", listOf("1", "2"), emoji = "🚀"),
+            FollowGroup("g1", "After dark", listOf("2"), nsfw = true),
+            FollowGroup("g3", "Agencies", listOf("1"), pinned = true),
+            FollowGroup("g4", "Gone", listOf("9")),
+        ),
         includeReplies = false,
     )
 
@@ -25,6 +32,18 @@ class SessionTest {
     @Test
     fun theFeedReadsOnlyTheAccountsXtaShowsInIt() {
         assertEquals(listOf("nasa"), session.feedMembers.map { it.screenName })
+    }
+
+    @Test
+    fun aGroupReadsItsMembersEvenThoseKeptOutOfTheFollowingFeed() {
+        assertEquals(listOf("nasa", "esa"), session.membersOf("g2").map { it.screenName })
+        assertEquals(emptyList(), session.membersOf("nope"))
+        assertEquals(listOf("nasa"), session.membersOf(null).map { it.screenName })
+    }
+
+    @Test
+    fun groupsComeInXtasOrderAndOnlyWithSomeoneToRead() {
+        assertEquals(listOf("Agencies", "space", "After dark"), session.feedGroups.map { it.name })
     }
 
     @Test

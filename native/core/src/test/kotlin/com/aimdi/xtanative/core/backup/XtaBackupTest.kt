@@ -19,7 +19,7 @@ class XtaBackupTest {
             {"id": "2", "screen_name": "esa", "name": "ESA", "profile_image_url_https": null, "verified": 0, "created_at": "2023-01-01T08:00:00.000", "in_feed": 0},
             {"id": "1", "screen_name": "nasa", "name": "NASA again", "verified": 1, "created_at": "2024-03-01 10:00:00", "in_feed": 1}
           ],
-          "subscriptionGroups": [{"id": "g1", "name": "Space", "icon": "rocket"}],
+          "subscriptionGroups": [{"id": "g1", "name": "Space", "icon": "rocket", "emoji": "🚀", "pinned": 1, "nsfw": 0}, {"id": "-1", "name": "Everyone"}],
           "subscriptionGroupMembers": [{"group_id": "g1", "profile_id": "1"}, {"group_id": "g1", "profile_id": "2"}],
           "tweets": [{"id": "5"}]
         }
@@ -40,7 +40,7 @@ class XtaBackupTest {
         assertTrue(!esa.verified && !esa.inFeed)
         assertTrue(esa.followedAt < nasa.followedAt, "both date formats XTA wrote are read")
 
-        assertEquals(listOf(FollowGroup("g1", "Space", listOf("1", "2"))), backup.groups)
+        assertEquals(listOf(FollowGroup("g1", "Space", listOf("1", "2"), emoji = "🚀", pinned = true)), backup.groups, "XTA's own everyone row is no group")
     }
 
     @Test
