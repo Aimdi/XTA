@@ -6,11 +6,15 @@ import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.parse.XParser
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /** An X session XTA stored: its id (the `ct0`), its name and the headers it signs in with. */
 data class XAccount(val id: String, val screenName: String?, val headers: Map<String, String>) {
@@ -49,7 +53,10 @@ class XClient(
 ) {
     private val limitedUntil = ConcurrentHashMap<Pair<String, String>, Long>()
 
-    suspend fun profile(screenName: String): Pair<XUser, List<String>> {
+    /** Reads take turns across the accounts, so no one account reaches X's limits first. */
+    private val turn = AtomicInteger()
+
+    suspend fun profile(screenName: String): Pair<XUser, List<String>> = parsing {
         val body = get(
             XEndpoints.USER_BY_SCREEN_NAME,
             mapOf(
@@ -58,12 +65,12 @@ class XClient(
                 "fieldToggles" to json { put("withPayments", false); put("withAuxiliaryUserLabels", true) },
             ),
         )
-        return XParser.profile(body) ?: throw XRequestException(404, "No such account: $screenName")
+        XParser.profile(body) ?: throw XRequestException(404, "No such account: $screenName")
     }
 
     /** A profile's posts tab: its own posts, newest first. */
-    suspend fun userPosts(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage = XParser.timeline(
-        get(
+    suspend fun userPosts(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage = parsing {
+        XParser.timeline(get(
             XEndpoints.USER_ORIGINALS,
             mapOf(
                 "variables" to json {
@@ -77,12 +84,12 @@ class XClient(
                 "features" to TIMELINE_FEATURES.toString(),
                 "fieldToggles" to json { put("withPayments", false); put("withArticlePlainText", false) },
             ),
-        ),
-    )
+        ))
+    }
 
     /** A post and its conversation: what it answers, then the replies. */
-    suspend fun conversation(postId: String, cursor: String? = null): XTimelinePage = XParser.timeline(
-        get(
+    suspend fun conversation(postId: String, cursor: String? = null): XTimelinePage = parsing {
+        XParser.timeline(get(
             XEndpoints.TWEET_DETAIL,
             mapOf(
                 "variables" to json {
@@ -108,13 +115,13 @@ class XClient(
                     put("withDisallowedReplyControls", false)
                 },
             ),
-        ),
-    )
+        ))
+    }
 
     /** Latest posts for a search, as the Following feed asks for each chunk of accounts. */
     suspend fun search(query: String, cursor: String? = null, count: Int = 20, product: String = "Latest"): XTimelinePage =
-        XParser.timeline(
-            get(
+        parsing {
+            XParser.timeline(get(
                 XEndpoints.SEARCH,
                 mapOf(
                     "variables" to json {
@@ -129,17 +136,19 @@ class XClient(
                     },
                     "features" to TIMELINE_FEATURES.toString(),
                 ),
-            ),
-        )
+            ))
+        }
 
     /** Repairs rotated query ids from XTA's published `endpoints.json`; a failure leaves the shipped ids. */
     suspend fun refreshEndpoints() {
         runCatching {
-            val url = HttpUrl.Builder().scheme("https").host("raw.githubusercontent.com").addPathSegments("Aimdi/XTA/HEAD/endpoints.json").build()
-            val response = http.get(url, emptyMap(), followRedirects = true)
+            val response = http.get(XEndpoints.OVERRIDES_URL.toHttpUrl(), emptyMap(), followRedirects = true)
             if (response.isSuccessful) endpoints.applyOverrides(J.parse(response.body))
         }
     }
+
+    /** X's answers are parsed away from the caller's thread, which may be the UI's. */
+    private suspend fun <T> parsing(block: suspend () -> T): T = withContext(Dispatchers.Default) { block() }
 
     private suspend fun get(endpoint: String, params: Map<String, String>): J {
         val url = endpoints.url(endpoint, params)
@@ -170,8 +179,9 @@ class XClient(
         val path = url.encodedPath
         val now = clock()
         val open = all.filter { (limitedUntil[it.id to path] ?: 0) <= now }
+        val first = if (open.isEmpty()) 0 else Math.floorMod(turn.getAndIncrement(), open.size)
         var refused: XRequestException? = null
-        for (account in open) {
+        for (account in open.drop(first) + open.take(first)) {
             val signer = signers.forSession(account.cookie)
             val headers = BASE_HEADERS + account.headers + ("x-client-transaction-id" to signer.transactionId("GET", path))
             val response = http.get(url, headers, followRedirects = true)
