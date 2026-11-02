@@ -6,6 +6,7 @@ import com.aimdi.xtanative.core.backup.XtaBackup
 import com.aimdi.xtanative.core.feed.FeedMember
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.model.XUser
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -21,6 +22,8 @@ data class Session(
     val includeReposts: Boolean = true,
     /** Videos and GIFs play muted in the feed as they come into view. */
     val autoplay: Boolean = true,
+    /** Reading without an X account was chosen: X is read as a guest. */
+    val guest: Boolean = false,
 ) {
     /** The accounts the Following feed reads, as XTA's home feed picks them. */
     val feedMembers: List<FeedMember> get() = following.filter { it.inFeed }.map { it.member }
@@ -41,6 +44,45 @@ data class Session(
     /** The sessions, follows and groups of [backup]; the switches stay as they were. */
     fun importing(backup: XtaBackup): Session = copy(accounts = backup.accounts, following = backup.following, groups = backup.groups)
 
+    /** [userId] followed here, or null. */
+    fun followed(userId: String): FollowedAccount? = following.firstOrNull { it.id == userId }
+
+    /**
+     * [user] followed here from [at] (epoch milliseconds), in the Following
+     * feed. Nothing is sent to X. An account already followed keeps its place
+     * and switches, with its name and picture brought up to date.
+     */
+    fun follow(user: XUser, at: Long): Session {
+        val known = followed(user.id)
+        val account = FollowedAccount(user.id, user.screenName, user.name, user.avatarUrl, user.verified, known?.inFeed ?: true, known?.followedAt ?: at)
+        return copy(following = if (known == null) following + account else following.map { if (it.id == user.id) account else it })
+    }
+
+    /** [userId] no longer followed here, and out of every group. */
+    fun unfollow(userId: String): Session =
+        copy(following = following.filterNot { it.id == userId }, groups = groups.map { it.without(userId) })
+
+    /** Whether the followed [userId] is read in the Following feed, or only in its groups. */
+    fun withInFeed(userId: String, inFeed: Boolean): Session =
+        copy(following = following.map { if (it.id == userId) it.copy(inFeed = inFeed) else it })
+
+    /** [userId] put in [groupId], or taken out of it. */
+    fun withMembership(groupId: String, userId: String, member: Boolean): Session = copy(
+        groups = groups.map { group ->
+            when {
+                group.id != groupId -> group
+                member -> if (userId in group.memberIds) group else group.copy(memberIds = group.memberIds + userId)
+                else -> group.without(userId)
+            }
+        },
+    )
+
+    /** A new group named [name] (trimmed), holding [memberIds]. */
+    fun withNewGroup(id: String, name: String, memberIds: List<String>): Session =
+        copy(groups = groups + FollowGroup(id, name.trim(), memberIds))
+
+    private fun FollowGroup.without(userId: String) = if (userId in memberIds) copy(memberIds = memberIds - userId) else this
+
     companion object {
         private const val VERSION = 1
 
@@ -49,6 +91,7 @@ data class Session(
             put("includeReplies", session.includeReplies)
             put("includeReposts", session.includeReposts)
             put("autoplay", session.autoplay)
+            put("guest", session.guest)
             put(
                 "accounts",
                 JsonArray(
@@ -131,6 +174,7 @@ data class Session(
                 includeReplies = root["includeReplies"].boolean ?: true,
                 includeReposts = root["includeReposts"].boolean ?: true,
                 autoplay = root["autoplay"].boolean ?: true,
+                guest = root["guest"].boolean ?: false,
             )
         }
     }

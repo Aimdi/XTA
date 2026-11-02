@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.backup.XtaBackup
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.model.XUser
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -28,6 +29,8 @@ class SessionTest {
     @Test
     fun aSessionReadsBackAsItWasWritten() {
         assertEquals(session, Session.decode(Session.encode(session)))
+        val guest = Session(guest = true)
+        assertEquals(guest, Session.decode(Session.encode(guest)))
     }
 
     @Test
@@ -45,6 +48,47 @@ class SessionTest {
     @Test
     fun groupsComeInXtasOrderAndOnlyWithSomeoneToRead() {
         assertEquals(listOf("Agencies", "space", "After dark"), session.feedGroups.map { it.name })
+    }
+
+    @Test
+    fun followingHereAddsTheAccountToTheFollowingFeed() {
+        val followed = session.follow(XUser("7", "jaxa", "JAXA", "https://pbs.twimg.com/j_normal.jpg"), at = 9)
+        assertEquals(FollowedAccount("7", "jaxa", "JAXA", "https://pbs.twimg.com/j_normal.jpg", verified = false, inFeed = true, followedAt = 9), followed.followed("7"))
+        assertEquals(listOf("nasa", "jaxa"), followed.feedMembers.map { it.screenName })
+    }
+
+    @Test
+    fun followingAgainKeepsThePlaceAndSwitchesButTakesTheNewName() {
+        val again = session.follow(XUser("2", "esa", "European Space Agency"), at = 99)
+        assertEquals(FollowedAccount("2", "esa", "European Space Agency", null, verified = false, inFeed = false, followedAt = 3), again.followed("2"))
+        assertEquals(listOf("1", "2"), again.following.map { it.id })
+    }
+
+    @Test
+    fun unfollowingTakesTheAccountOutOfEveryGroup() {
+        val gone = session.unfollow("1")
+        assertNull(gone.followed("1"))
+        assertEquals(listOf("2"), gone.groups.first { it.id == "g2" }.memberIds)
+        assertEquals(emptyList(), gone.groups.first { it.id == "g3" }.memberIds)
+        assertEquals(listOf("space", "After dark"), gone.feedGroups.map { it.name }, "a group with nobody left to read has no tab")
+    }
+
+    @Test
+    fun anAccountCanLeaveTheFollowingFeedAndStayInItsGroups() {
+        val out = session.withInFeed("1", false)
+        assertEquals(emptyList(), out.feedMembers)
+        assertEquals(listOf("nasa", "esa"), out.membersOf("g2").map { it.screenName })
+    }
+
+    @Test
+    fun groupsTakeMembersInAndOutOnce() {
+        val joined = session.withMembership("g1", "1", member = true).withMembership("g1", "1", member = true)
+        assertEquals(listOf("2", "1"), joined.groups.first { it.id == "g1" }.memberIds)
+        val left = joined.withMembership("g2", "2", member = false)
+        assertEquals(listOf("1"), left.groups.first { it.id == "g2" }.memberIds)
+        val made = left.withNewGroup("g5", "  Moon ", listOf("1"))
+        assertEquals(FollowGroup("g5", "Moon", listOf("1")), made.groups.last())
+        assertEquals(made, Session.decode(Session.encode(made)))
     }
 
     @Test

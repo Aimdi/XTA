@@ -87,6 +87,32 @@ class FollowingFeedTest {
     }
 
     @Test
+    fun aFallbackThatAnsweredIsNoFailureWhenNothingIsNewer() = runBlocking {
+        val reads = FakeReads(
+            emptyMap(),
+            failing = mapOf("a" to XRequestException(501, "no search")),
+            profiles = mapOf(a.id to page(post(85, a), post(75, a), next = null)),
+        )
+        val feed = FollowingFeed(listOf(a), reads)
+        assertEquals(listOf(85L, 75), ids(feed.first()))
+        val newer = feed.newer(than = 85)
+        assertTrue(newer.threads.isEmpty())
+        assertTrue(newer.bridged)
+        assertTrue(newer.failures.isEmpty(), "the accounts answered, with nothing new")
+    }
+
+    @Test
+    fun theStateSaysWhetherThereIsMoreToRead() = runBlocking {
+        val open = FollowingFeed(listOf(a, b), FakeReads(original), concurrency = 1)
+        open.first()
+        assertTrue(open.state().hasMore)
+
+        val done = FollowingFeed(listOf(a), FakeReads(mapOf(("a" to null) to page(post(100, a), next = null))))
+        done.first()
+        assertFalse(done.state().hasMore, "every source ran out and everything read was shown")
+    }
+
+    @Test
     fun noConnectionMeansNoFallback() = runBlocking {
         val reads = FakeReads(
             mapOf(("b" to null) to page(post(95, b), next = null)),

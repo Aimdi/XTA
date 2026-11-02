@@ -41,7 +41,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -86,6 +89,8 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
     val graph = LocalGraph.current
     val vm: ProfileViewModel = viewModel { ProfileViewModel(graph, screenName) }
     val state by vm.ui.collectAsStateWithLifecycle()
+    val follow by vm.follow.collectAsStateWithLifecycle()
+    var managing by rememberSaveable { mutableStateOf(false) }
     val tab = state.of(state.tab)
     val list = rememberLazyListState()
     val nearEnd by remember(list) {
@@ -95,6 +100,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
         }
     }
     LaunchedEffect(nearEnd, tab.threads.size, state.tab) { if (nearEnd) vm.loadMore() }
+    LaunchedEffect(follow.followed) { if (!follow.followed) managing = false }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -116,7 +122,11 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
             contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
             modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
         ) {
-            item(key = "header", contentType = "header") { Header(state.user, screenName, state.complete, actions) }
+            item(key = "header", contentType = "header") {
+                Header(state.user, screenName, state.complete, actions) {
+                    FollowButton(follow.followed, onFollow = vm::followHere, onManage = { managing = true })
+                }
+            }
             val problem = state.problem
             when {
                 state.loading && !state.complete -> item(key = "loading") { LoadingRow() }
@@ -143,6 +153,17 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
                 }
             }
         }
+    }
+    if (managing && follow.followed) {
+        FollowSheet(
+            screenName = state.user?.screenName ?: screenName,
+            follow = follow,
+            onInFeed = vm::showInFeed,
+            onGroup = vm::putInGroup,
+            onNewGroup = vm::newGroup,
+            onUnfollow = vm::unfollow,
+            onDismiss = { managing = false },
+        )
     }
 }
 
@@ -228,7 +249,7 @@ private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
 }
 
 @Composable
-private fun Header(user: XUser?, screenName: String, complete: Boolean, actions: PostActions) {
+private fun Header(user: XUser?, screenName: String, complete: Boolean, actions: PostActions, follow: @Composable () -> Unit) {
     val background = MaterialTheme.colorScheme.background
     Column(Modifier.fillMaxWidth()) {
         Box {
@@ -247,7 +268,10 @@ private fun Header(user: XUser?, screenName: String, complete: Boolean, actions:
                     .border(4.dp, background, CircleShape),
             )
         }
-        Spacer(Modifier.height(48.dp))
+        // Beside the avatar's lower half, as X places it.
+        Box(Modifier.fillMaxWidth().height(52.dp).padding(start = 112.dp, end = 16.dp), contentAlignment = Alignment.CenterEnd) {
+            if (user != null) follow()
+        }
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {

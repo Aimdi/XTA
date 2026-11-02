@@ -29,7 +29,7 @@
     <string name="following_count">Following</string>
     <string name="followers_count">Followers</string>
 
-    <string name="feed_nobody_followed">Nobody you follow in XTA is in its Following feed.</string>
+    <string name="feed_nobody_followed">Nobody you follow is in the Following feed yet. Open a profile, for example by searching for @name, and follow it.</string>
     <string name="feed_empty">No posts from the accounts you follow yet.</string>
     <string name="feed_partial">Some accounts couldn\'t be read: %1$s</string>
 
@@ -44,6 +44,7 @@
     <string name="search_top">Top</string>
     <string name="search_latest">Latest</string>
     <string name="search_nothing">No results for “%1$s”.</string>
+    <string name="search_go_to">Go to @%1$s</string>
 
     <string name="import_intro">XTA Native is XTA written for Android alone, to compare with XTA. It reads X with the accounts you already use in XTA.</string>
     <string name="import_steps">In XTA, open Settings → Data → Export, switch on “Export accounts?”, export, then choose that file here.</string>
@@ -52,6 +53,8 @@
     <string name="import_not_a_backup">This file isn\'t a backup XTA exported.</string>
     <string name="import_no_accounts">This backup has no X accounts: export again with “Export accounts?” switched on.</string>
     <string name="import_use">Use this backup</string>
+    <string name="import_without_account">Read without an X account</string>
+    <string name="import_without_account_explained">Profiles and posts open as a guest, and the accounts you follow here make your Following feed. Searching X needs an account.</string>
     <string name="import_privacy">The backup holds your X sessions. XTA Native keeps them on this phone, sends them only to X, and never posts, likes or follows anything there.</string>
     <plurals name="import_found_accounts">
         <item quantity="one">%d X account</item>
@@ -102,4 +105,13 @@
     <string name="profile_replies">Replies</string>
     <string name="profile_media">Media</string>
     <string name="profile_nothing">Nothing here yet.</string>
+    <string name="profile_follow">Follow</string>
+    <string name="profile_following">Following</string>
+    <string name="follow_here_only">Followed in XTA Native only: X isn\'t told.</string>
+    <string name="follow_in_feed">In the Following feed</string>
+    <string name="follow_groups">Groups</string>
+    <string name="follow_new_group">New group</string>
+    <string name="follow_group_name">Group name</string>
+    <string name="follow_create">Create</string>
+    <string name="follow_unfollow">Unfollow</string>
 </resources>

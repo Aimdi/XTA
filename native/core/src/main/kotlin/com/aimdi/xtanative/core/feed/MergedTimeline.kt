@@ -28,7 +28,10 @@ data class NewerPage(val threads: List<XThread>, val bridged: Boolean, val failu
 data class ChunkState(val query: String, val cursor: String?, val exhausted: Boolean, val oldest: Long?, val unread: List<XThread>)
 
 /** Where a whole timeline's reading stands, beside the posts it has shown. */
-data class FeedState(val chunks: List<ChunkState>)
+data class FeedState(val chunks: List<ChunkState>) {
+    /** Some source has more to read, or holds posts not shown yet. */
+    val hasMore: Boolean get() = chunks.any { !it.exhausted || it.unread.isNotEmpty() }
+}
 
 /** One newest-first timeline, read page by page; [key] tells it apart in a saved state. */
 class TimelineSource(val key: String, val read: suspend (cursor: String?) -> XTimelinePage)

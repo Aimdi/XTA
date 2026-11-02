@@ -12,6 +12,9 @@ import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -25,6 +28,9 @@ class AppGraph(context: Context) {
     private val files = context.filesDir
     private val feedCaches = HashMap<String, FeedCache>()
     val posts = PostCache()
+
+    /** Whether the phone has a connection, as it changes: the present state first. */
+    val online: SharedFlow<Boolean> = onlineFlow(context).shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
     private val http =
         if (mock == null) OkHttpXHttp() else OkHttpXHttp(OkHttpXHttp.defaultClient.newBuilder().addInterceptor(MockX.interceptor(mock)).build())

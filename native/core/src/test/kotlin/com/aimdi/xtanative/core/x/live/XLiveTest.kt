@@ -33,5 +33,17 @@ class XLiveTest {
         assertEquals("X", user.screenName)
         assertTrue((user.followers ?: 0) > 1_000_000, "@X has its followers: ${user.followers}")
         println("LIVE @X ${user.name}, ${user.followers} followers, key ${signer.keyBytes.size} bytes")
+
+        // What reading without an account rests on: an account's posts and a conversation.
+        val posts = client.userPosts(user.id)
+        assertTrue(posts.threads.isNotEmpty(), "a guest reads @X's posts")
+        val first = posts.threads.first().posts.first()
+        val conversation = client.conversation(first.id)
+        assertTrue(conversation.threads.any { thread -> thread.posts.any { it.id == first.id } }, "a guest reads a conversation")
+        println("LIVE as a guest: ${posts.threads.size} posts by @X, conversation of ${first.id} with ${conversation.threads.size} threads")
+
+        // Search is expected to need an account; what X says to a guest is kept in the log.
+        val search = runCatching { client.search("from:X") }
+        println("LIVE search as a guest: " + search.fold({ "${it.threads.size} posts" }, { "refused, ${it::class.simpleName}: ${it.message?.take(120)}" }))
     }
 }

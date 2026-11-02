@@ -62,6 +62,7 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
     private data class Shape(val members: List<FeedMember>, val replies: Boolean, val reposts: Boolean)
 
     init {
+        viewModelScope.launch { retryWhenBackOnline() }
         viewModelScope.launch {
             var saved = restoreFromDisk()
             graph.sessions.state.filterNotNull()
@@ -74,9 +75,23 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
                     continuous = savedState != null && next.restore(savedState, state.value.threads.map { it.id })
                     saved = null
                     feed = next
-                    state.update { it.copy(followed = shape.members.size, hasMore = continuous && it.threads.isNotEmpty()) }
+                    state.update { it.copy(followed = shape.members.size, hasMore = continuous && savedState?.hasMore == true) }
                     refresh(byReader = false)
                 }
+        }
+    }
+
+    /**
+     * Reads again when the connection comes back and the feed said there was
+     * none, once the refresh under way has ended: the phone may have come
+     * online while it was failing.
+     */
+    private suspend fun retryWhenBackOnline() {
+        graph.online.collect { online ->
+            if (!online) return@collect
+            refreshJob?.join()
+            val now = state.value
+            if (now.problem == Problem.Offline || now.partial == Problem.Offline) refresh(byReader = false)
         }
     }
 

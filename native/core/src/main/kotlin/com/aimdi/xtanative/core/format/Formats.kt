@@ -24,6 +24,11 @@ object Formats {
         else -> tenths(n / 100_000_000, decimal) + "B"
     }
 
+    private val handle = Regex("^@?([A-Za-z0-9_]{1,15})$")
+
+    /** The X handle [query] names as typed into search, "@nasa" or "nasa"; null when it cannot be one. */
+    fun handleOf(query: String): String? = handle.find(query.trim())?.groupValues?.get(1)
+
     private fun tenths(tenths: Long, decimal: Char): String =
         if (tenths % 10 == 0L) "${tenths / 10}" else "${tenths / 10}$decimal${tenths % 10}"
 

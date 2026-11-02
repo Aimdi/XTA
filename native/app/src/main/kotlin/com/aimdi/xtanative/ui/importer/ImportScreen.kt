@@ -56,7 +56,17 @@ fun ImportScreen(onImported: () -> Unit) {
         Text(stringResource(R.string.import_intro), style = MaterialTheme.typography.bodyLarge)
         Text(stringResource(R.string.import_steps), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         when (val now = state) {
-            ImportUi.Idle, ImportUi.Done -> Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.import_choose)) }
+            ImportUi.Idle, ImportUi.Done -> {
+                Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.import_choose)) }
+                OutlinedButton(onClick = vm::readWithoutAccount, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.import_without_account))
+                }
+                Text(
+                    stringResource(R.string.import_without_account_explained),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             ImportUi.Reading -> LoadingRow()
             ImportUi.NotABackup -> {
                 Text(stringResource(R.string.import_not_a_backup), color = MaterialTheme.colorScheme.error)

@@ -6,13 +6,20 @@
 2. In XTA, open **Settings → Data → Export**, switch on **"Export accounts?"**, and export.
 3. Open XTA Native and choose that file. Your X accounts, the accounts you follow and your groups come with it.
 
-Like XTA, it only reads X: nothing is posted, liked or followed there. Your X sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
+Or choose **Read without an X account**: profiles and posts are then read as a guest, and the accounts you follow in XTA Native make your Following feed. Searching X needs an account.
+
+Like XTA, it only reads X: nothing is posted, liked or followed there. Following an account in XTA Native stays in XTA Native. Your X sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
 
 ### What is in it
 
-- The Following feed and one tab per XTA group, merged in time order, with pull to refresh, endless scrolling, and the last feed shown at once when the app opens
-- Opened posts with what they answer and their replies; profiles with their posts; search (Top and Latest)
+- The Following feed and one tab per group, merged in time order, with pull to refresh and endless scrolling
+- It opens where you left off, on the posts it showed last; new posts go above you, and a pill says how many
+- Videos and GIFs play muted in the feed as they come into view (Settings can turn this off)
+- Profiles with Posts (with what they reposted and the pinned post first), Replies and Media
+- Follow and unfollow on a profile, choose whether an account is in the Following feed, put it in groups or make a new group
+- Opened posts with what they answer and their replies; search (Top and Latest), and "Go to @name" for a handle
 - Photos you can pinch and double-tap to zoom, videos and GIFs
+- When the connection comes back, a feed that had none reads again by itself
 - x.com and twitter.com links open in it (once allowed under the app's "Open by default" settings)
 - Replies and reposts switches; English and German; black when the phone is dark
 
@@ -25,4 +32,4 @@ Everything else XTA does (saved posts, likes, notes, translation, the other netw
 - **Scrolling:** scroll the same feed in both. Developer options → "Profile HWUI rendering" draws a bar per frame; bars above the green line are dropped frames.
 - **Memory:** Settings → Apps → each app → Memory after the same use.
 
-The first few starts of any new install run slower while Android compiles the app in the background; compare after a day of use, or after the phone has been idle on the charger once.
+The first few starts of any new install run slower while Android compiles the app in the background; compare after a day of use, or after the phone has been idle on the charger once. The emulator check in CI measures both apps the same way and puts the numbers in its log.

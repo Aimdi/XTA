@@ -49,7 +49,7 @@ class SearchViewModel(private val graph: AppGraph, initial: String?) : ViewModel
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
-                state.update { it.copy(loading = false, problem = Problem.of(error)) }
+                state.update { it.copy(loading = false, problem = problemOf(error)) }
             }
         }
     }
@@ -75,8 +75,15 @@ class SearchViewModel(private val graph: AppGraph, initial: String?) : ViewModel
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
-                state.update { it.copy(loadingMore = false, moreProblem = Problem.of(error)) }
+                state.update { it.copy(loadingMore = false, moreProblem = problemOf(error)) }
             }
         }
+    }
+
+    /** A guest's search is refused by X: what it needs is an account. */
+    private fun problemOf(error: Throwable): Problem {
+        val problem = Problem.of(error)
+        val noAccount = graph.sessions.state.value?.accounts.isNullOrEmpty()
+        return if (noAccount && problem is Problem.Refused) Problem.NoAccount else problem
     }
 }

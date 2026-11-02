@@ -26,4 +26,14 @@ class FormatsTest {
         val lastYear = Instant.parse("2025-12-31T12:00:00Z")
         assertEquals(Ago.OnDate(lastYear, sameYear = false), Formats.ago(lastYear, now, year))
     }
+
+    @Test
+    fun aSearchThatCouldBeAHandleNamesIt() {
+        assertEquals("nasa", Formats.handleOf(" @nasa "))
+        assertEquals("NASA_JPL", Formats.handleOf("NASA_JPL"))
+        assertEquals(null, Formats.handleOf("nasa rockets"))
+        assertEquals(null, Formats.handleOf("@"))
+        assertEquals(null, Formats.handleOf("sixteen_letters_"))
+        assertEquals(null, Formats.handleOf("#nasa"))
+    }
 }

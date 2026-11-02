@@ -2,17 +2,26 @@ package com.aimdi.xtanative.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.feed.MergedTimeline
 import com.aimdi.xtanative.core.feed.TimelineSource
+import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
+import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -42,6 +51,25 @@ data class ProfileUi(
     fun of(tab: ProfileTab): TabUi = tabs[tab] ?: TabUi()
 }
 
+/** A group, and whether the account is in it. */
+data class GroupChoice(val id: String, val name: String, val emoji: String?, val member: Boolean)
+
+/** How the account is followed here: in XTA Native alone, never on X. */
+data class FollowUi(val followed: Boolean = false, val inFeed: Boolean = true, val groups: List<GroupChoice> = emptyList()) {
+    companion object {
+        fun of(session: Session, userId: String?, screenName: String): FollowUi {
+            val account = userId?.let(session::followed) ?: session.following.firstOrNull { it.screenName.equals(screenName, ignoreCase = true) }
+            return FollowUi(
+                followed = account != null,
+                inFeed = account?.inFeed ?: true,
+                groups = FollowGroup.ordered(session.groups).map { group ->
+                    GroupChoice(group.id, group.name, group.emoji, account != null && account.id in group.memberIds)
+                },
+            )
+        }
+    }
+}
+
 /**
  * A profile: its name and picture at once from the feed, then the rest from X,
  * and three tabs read as they are opened. Posts holds what it posted and what
@@ -50,6 +78,11 @@ data class ProfileUi(
 class ProfileViewModel(private val graph: AppGraph, private val screenName: String) : ViewModel() {
     private val state = MutableStateFlow(ProfileUi(user = graph.posts.user(screenName)))
     val ui: StateFlow<ProfileUi> = state.asStateFlow()
+
+    val follow: StateFlow<FollowUi> =
+        combine(graph.sessions.state.filterNotNull(), state.map { it.user?.id }.distinctUntilChanged()) { session, userId ->
+            FollowUi.of(session, userId, screenName)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FollowUi())
 
     private var posts: MergedTimeline? = null
     private val cursors = HashMap<ProfileTab, String?>()
@@ -157,6 +190,26 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
         cursors[tab] = page.bottomCursor
         val threads = if (tab == ProfileTab.MEDIA) page.threads.flatMap { it.posts }.map { XThread(it.id, listOf(it)) } else page.threads
         return threads to (page.bottomCursor != null && threads.isNotEmpty())
+    }
+
+    fun followHere() = changeFollow { user, session -> session.follow(user, System.currentTimeMillis()) }
+
+    fun unfollow() = changeFollow { user, session -> session.unfollow(user.id) }
+
+    fun showInFeed(shown: Boolean) = changeFollow { user, session -> session.withInFeed(user.id, shown) }
+
+    /** Into [groupId] or out of it; into a group follows the account here first. */
+    fun putInGroup(groupId: String, member: Boolean) = changeFollow { user, session ->
+        (if (member) session.follow(user, System.currentTimeMillis()) else session).withMembership(groupId, user.id, member)
+    }
+
+    fun newGroup(name: String) = changeFollow { user, session ->
+        session.follow(user, System.currentTimeMillis()).withNewGroup(UUID.randomUUID().toString(), name, listOf(user.id))
+    }
+
+    private fun changeFollow(change: (XUser, Session) -> Session) {
+        val user = state.value.user ?: return
+        viewModelScope.launch { graph.sessions.update { change(user, it) } }
     }
 
     private fun setTab(tab: ProfileTab, change: (TabUi) -> TabUi) =
