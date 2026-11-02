@@ -1,0 +1,22 @@
+{
+  "cursor": "next",
+  "feeds": [
+    {
+      "uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot",
+      "cid": "bafyreid",
+      "did": "did:web:discover.bsky.app",
+      "creator": {"did": "did:plc:z72i7hdynmk6r22z27h6tvur", "handle": "bsky.app", "displayName": "Bluesky"},
+      "displayName": "Discover",
+      "description": "Trending content from your personal network ",
+      "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:z72i7hdynmk6r22z27h6tvur/discover@jpeg",
+      "likeCount": 1000,
+      "indexedAt": "2023-05-19T23:19:29.880Z"
+    },
+    {
+      "uri": "at://did:plc:alice/app.bsky.feed.generator/cats",
+      "displayName": "  ",
+      "creator": {"did": "did:plc:alice", "handle": "alice.bsky.social"}
+    },
+    {"uri": "", "displayName": "drop me"}
+  ]
+}
