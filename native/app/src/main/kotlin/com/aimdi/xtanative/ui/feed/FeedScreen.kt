@@ -144,6 +144,7 @@ private const val FOLLOWING = "following"
 private fun tabLabel(group: FollowGroup): String = listOfNotNull(group.emoji, group.name).joinToString(" ")
 
 /** One tab: a feed with its own pull to refresh, place and cache. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues) {
     val graph = LocalGraph.current

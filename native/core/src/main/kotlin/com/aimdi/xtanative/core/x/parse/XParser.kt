@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
@@ -84,6 +85,7 @@ object XParser {
         val text = noteText ?: legacy["full_text"].string.orEmpty()
         val range = legacy["display_text_range"].list.mapNotNull { it.int }
         val media = mediaOf(legacy)
+        val entities = entitiesOf(if (noteText == null) legacy["entities"] else note["entity_set"])
 
         return XPost(
             id = id,
@@ -92,8 +94,9 @@ object XParser {
             text = text,
             displayStart = if (noteText == null) range.getOrNull(0) ?: 0 else 0,
             displayEnd = if (noteText == null) range.getOrNull(1) else null,
-            entities = entitiesOf(if (noteText == null) legacy["entities"] else note["entity_set"]),
+            entities = entities,
             media = media,
+            card = cardOf(result["card"]["legacy"], entities),
             quoted = post(result["quoted_status_result"]["result"]),
             reposted = post(legacy["retweeted_status_result"]["result"]),
             replyCount = legacy["reply_count"].long ?: 0,
@@ -162,6 +165,48 @@ object XParser {
                 shortUrl = item["url"].string,
             )
         }
+    }
+
+    // ---- cards ----
+
+    /** A link preview or a poll, from a card's `binding_values`; null for kinds this reader does not draw. */
+    internal fun cardOf(card: J, entities: List<XEntity>): XCard? {
+        val name = card["name"].string ?: return null
+        val values = card["binding_values"].list.associateBy({ it["key"].string.orEmpty() }, { it["value"] })
+        fun string(key: String) = values[key]?.get("string_value")?.string?.takeIf { it.isNotBlank() }
+        fun image(key: String) = values[key]?.get("image_value")
+        return when {
+            name.contains("poll") && name.contains("choice") ->
+                poll(::string, ::image, final = values["counts_are_final"]?.get("boolean_value")?.boolean ?: false)
+            name == "summary" || name == "summary_large_image" || name == "player" -> {
+                val title = string("title") ?: return null
+                val large = name != "summary"
+                val picture = (if (large) listOf("summary_photo_image_large", "photo_image_full_size_large", "player_image_large", "thumbnail_image_large") else listOf("thumbnail_image_large", "thumbnail_image"))
+                    .firstNotNullOfOrNull { key -> image(key)?.takeIf { it["url"].string != null } }
+                val short = string("card_url") ?: card["url"].string
+                XCard.Link(
+                    url = entities.filterIsInstance<XEntity.Link>().firstOrNull { it.url == short }?.expanded ?: short ?: return null,
+                    title = title,
+                    description = string("description"),
+                    domain = string("vanity_url") ?: string("domain"),
+                    imageUrl = picture?.get("url")?.string,
+                    imageWidth = picture?.get("width")?.int,
+                    imageHeight = picture?.get("height")?.int,
+                    large = large,
+                )
+            }
+            else -> null
+        }
+    }
+
+    private fun poll(string: (String) -> String?, image: (String) -> J?, final: Boolean): XCard.Poll? {
+        val choices = (1..4).mapNotNull { i ->
+            val label = string("choice${i}_label") ?: return@mapNotNull null
+            XCard.Poll.Choice(label, string("choice${i}_count")?.toLongOrNull() ?: 0, image("choice${i}_image_large")?.get("url")?.string)
+        }
+        if (choices.size < 2) return null
+        val ends = string("end_datetime_utc")?.let { runCatching { Instant.parse(it) }.getOrNull() }
+        return XCard.Poll(choices, ends, final)
     }
 
     // ---- timelines ----

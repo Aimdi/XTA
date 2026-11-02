@@ -58,6 +58,28 @@ data class XMedia(
     val mp4s: List<XVideoVariant> get() = variants.filter { it.contentType == "video/mp4" }.sortedByDescending { it.bitrate ?: 0 }
 }
 
+/** What X attaches below a post's text besides media: a link preview or a poll. */
+sealed interface XCard {
+    /** A link preview. [large] draws the picture above the title, as `summary_large_image` and `player` do. */
+    data class Link(
+        val url: String,
+        val title: String,
+        val description: String?,
+        val domain: String?,
+        val imageUrl: String?,
+        val imageWidth: Int?,
+        val imageHeight: Int?,
+        val large: Boolean,
+    ) : XCard
+
+    /** A poll, as counted when the post was read. Read only: XTA Native never votes. */
+    data class Poll(val choices: List<Choice>, val endsAt: Instant?, val final: Boolean) : XCard {
+        data class Choice(val label: String, val votes: Long, val imageUrl: String? = null)
+
+        val total: Long get() = choices.sumOf { it.votes }
+    }
+}
+
 /**
  * A post. A repost is the reposter's post with [reposted] holding the original,
  * as X sends it; [shown] is what a card draws.
@@ -72,6 +94,7 @@ data class XPost(
     val displayEnd: Int? = null,
     val entities: List<XEntity> = emptyList(),
     val media: List<XMedia> = emptyList(),
+    val card: XCard? = null,
     val quoted: XPost? = null,
     val reposted: XPost? = null,
     val replyCount: Long = 0,

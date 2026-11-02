@@ -72,4 +72,23 @@
     <string name="settings_about">Über</string>
     <string name="settings_version">XTA Native %1$s</string>
     <string name="settings_prototype">Ein Prototyp neben XTA, zum Vergleich. Er kann zurückgezogen werden.</string>
+
+    <string name="card_from">Von %1$s</string>
+    <string name="poll_final">Endergebnis</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%d Stimme</item>
+        <item quantity="other">%d Stimmen</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">Noch %d Tag</item>
+        <item quantity="other">Noch %d Tage</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">Noch %d Stunde</item>
+        <item quantity="other">Noch %d Stunden</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">Noch %d Minute</item>
+        <item quantity="other">Noch %d Minuten</item>
+    </plurals>
 </resources>

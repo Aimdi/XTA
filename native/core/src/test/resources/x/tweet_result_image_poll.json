@@ -1,0 +1,414 @@
+{
+  "__typename": "Tweet",
+  "rest_id": "2109301223363064091",
+  "core": {
+    "user_results": {
+      "result": {
+        "__typename": "User",
+        "action_counts": {
+          "favorites_count": 0
+        },
+        "affiliates_highlighted_label": {},
+        "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2095923817080295424/YjqaAMdO_normal.jpg"
+        },
+        "banner": {
+          "image_url": "https://pbs.twimg.com/profile_banners/2095909295913103360/1788542164"
+        },
+        "core": {
+          "created_at": "Fri Sep 04 16:19:42 +0000 2026",
+          "name": "QuaX Tests",
+          "screen_name": "quax_tests"
+        },
+        "follow_request_sent": false,
+        "has_graduated_access": false,
+        "id": "VXNlcjoyMDk1OTA5Mjk1OTEzMTAzMzYw",
+        "is_blue_verified": false,
+        "location": {
+          "location": "India"
+        },
+        "media_permissions": {
+          "can_media_tag": true
+        },
+        "notifications_settings": {
+          "notifications_enabled": false
+        },
+        "parody_commentary_fan_label": "None",
+        "pinned_items": {},
+        "possibly_sensitive": false,
+        "privacy": {
+          "protected": false
+        },
+        "profile_bio": {
+          "description": "🧪 Throwaway account · QuaX parsing fixtures 🇫🇷\n  Nothing real, every post is a test case.\n  https://t.co/XbzZfYVJIK · https://t.co/Akx2T6uckh\n  Ping @jack",
+          "entities": {
+            "description": {
+              "urls": [
+                {
+                  "display_url": "github.com/Teskann/QuaX",
+                  "expanded_url": "http://github.com/Teskann/QuaX",
+                  "indices": [
+                    92,
+                    115
+                  ],
+                  "url": "https://t.co/XbzZfYVJIK"
+                },
+                {
+                  "display_url": "flutter.dev",
+                  "expanded_url": "https://flutter.dev",
+                  "indices": [
+                    118,
+                    141
+                  ],
+                  "url": "https://t.co/Akx2T6uckh"
+                }
+              ]
+            }
+          }
+        },
+        "profile_description_language": "en",
+        "profile_image_shape": "Circle",
+        "profile_metadata": {
+          "profile_interstitial_type": ""
+        },
+        "profile_translation": {
+          "translator_type": "none"
+        },
+        "relationship_counts": {
+          "followers": 0,
+          "following": 0
+        },
+        "relationship_perspectives": {
+          "blocked_by": false,
+          "blocking": false,
+          "followed_by": false,
+          "following": false,
+          "live_following": false,
+          "muting": false
+        },
+        "rest_id": "2095909295913103360",
+        "super_follow_eligible": false,
+        "super_followed_by": false,
+        "super_following": false,
+        "tweet_counts": {
+          "media_tweets": 17,
+          "tweets": 42
+        },
+        "verification": {
+          "verified": false
+        },
+        "website": {
+          "url": ""
+        }
+      }
+    }
+  },
+  "legacy": {
+    "bookmark_count": 0,
+    "bookmarked": false,
+    "conversation_id_str": "2109301223363064091",
+    "created_at": "Sun Oct 11 15:12:55 +0000 2026",
+    "display_text_range": [
+      0,
+      46
+    ],
+    "entities": {
+      "hashtags": [
+        {
+          "indices": [
+            31,
+            46
+          ],
+          "text": "pollwithimages"
+        }
+      ]
+    },
+    "favorite_count": 0,
+    "favorited": false,
+    "full_text": "What is your favorite option ? #pollwithimages",
+    "id_str": "2109301223363064091",
+    "is_quote_status": false,
+    "lang": "en",
+    "quote_count": 0,
+    "reply_count": 0,
+    "retweet_count": 0,
+    "retweeted": false,
+    "user_id_str": "2095909295913103360"
+  },
+  "views": {
+    "state": "Enabled"
+  },
+  "card": {
+    "legacy": {
+      "binding_values": [
+        {
+          "key": "choice1_label",
+          "value": {
+            "string_value": "Option A",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice2_image",
+          "value": {
+            "image_value": {
+              "height": 280,
+              "url": "https://pbs.twimg.com/card_img/2109301103728746498/i9_8MOHY?format=png&name=280x280_2",
+              "width": 280
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice_count",
+          "value": {
+            "string_value": "3",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice2_label",
+          "value": {
+            "string_value": "Option B",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice2_image_original",
+          "value": {
+            "image_value": {
+              "height": 1200,
+              "url": "https://pbs.twimg.com/card_img/2109301103728746498/i9_8MOHY?format=png&name=orig",
+              "width": 1200
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice3_image_x_large",
+          "value": {
+            "image_value": {
+              "height": 1600,
+              "url": "https://pbs.twimg.com/card_img/2109301110791950336/kdDKFBWd?format=png&name=2048x2048_2_exp",
+              "width": 900
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "end_datetime_utc",
+          "value": {
+            "string_value": "2026-10-12T15:12:54Z",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "counts_are_final",
+          "value": {
+            "boolean_value": false,
+            "type": "BOOLEAN"
+          }
+        },
+        {
+          "key": "choice1_image_large",
+          "value": {
+            "image_value": {
+              "height": 420,
+              "url": "https://pbs.twimg.com/card_img/2109301097584025600/dLDzGqc0?format=png&name=420x420_2",
+              "width": 420
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice3_image_large",
+          "value": {
+            "image_value": {
+              "height": 420,
+              "url": "https://pbs.twimg.com/card_img/2109301110791950336/kdDKFBWd?format=png&name=420x420_2",
+              "width": 420
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice3_image_small",
+          "value": {
+            "image_value": {
+              "height": 100,
+              "url": "https://pbs.twimg.com/card_img/2109301110791950336/kdDKFBWd?format=png&name=100x100_2",
+              "width": 100
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice2_count",
+          "value": {
+            "string_value": "0",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice2_image_small",
+          "value": {
+            "image_value": {
+              "height": 100,
+              "url": "https://pbs.twimg.com/card_img/2109301103728746498/i9_8MOHY?format=png&name=100x100_2",
+              "width": 100
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice1_count",
+          "value": {
+            "string_value": "0",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice1_image",
+          "value": {
+            "image_value": {
+              "height": 280,
+              "url": "https://pbs.twimg.com/card_img/2109301097584025600/dLDzGqc0?format=png&name=280x280_2",
+              "width": 280
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice3_image",
+          "value": {
+            "image_value": {
+              "height": 280,
+              "url": "https://pbs.twimg.com/card_img/2109301110791950336/kdDKFBWd?format=png&name=280x280_2",
+              "width": 280
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "last_updated_datetime_utc",
+          "value": {
+            "string_value": "2026-10-11T16:20:02Z",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "duration_minutes",
+          "value": {
+            "string_value": "1440",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice3_image_original",
+          "value": {
+            "image_value": {
+              "height": 1600,
+              "url": "https://pbs.twimg.com/card_img/2109301110791950336/kdDKFBWd?format=png&name=orig",
+              "width": 900
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice3_count",
+          "value": {
+            "string_value": "1",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice4_count",
+          "value": {
+            "string_value": "0",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice1_image_x_large",
+          "value": {
+            "image_value": {
+              "height": 900,
+              "url": "https://pbs.twimg.com/card_img/2109301097584025600/dLDzGqc0?format=png&name=2048x2048_2_exp",
+              "width": 1600
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice3_label",
+          "value": {
+            "string_value": "Option C",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "api",
+          "value": {
+            "string_value": "capi://passthrough/1",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice2_image_x_large",
+          "value": {
+            "image_value": {
+              "height": 1200,
+              "url": "https://pbs.twimg.com/card_img/2109301103728746498/i9_8MOHY?format=png&name=2048x2048_2_exp",
+              "width": 1200
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice1_image_original",
+          "value": {
+            "image_value": {
+              "height": 900,
+              "url": "https://pbs.twimg.com/card_img/2109301097584025600/dLDzGqc0?format=png&name=orig",
+              "width": 1600
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "choice2_image_large",
+          "value": {
+            "image_value": {
+              "height": 420,
+              "url": "https://pbs.twimg.com/card_img/2109301103728746498/i9_8MOHY?format=png&name=420x420_2",
+              "width": 420
+            },
+            "type": "IMAGE"
+          }
+        },
+        {
+          "key": "card_url",
+          "value": {
+            "scribe_key": "card_url",
+            "string_value": "https://twitter.com",
+            "type": "STRING"
+          }
+        },
+        {
+          "key": "choice1_image_small",
+          "value": {
+            "image_value": {
+              "height": 100,
+              "url": "https://pbs.twimg.com/card_img/2109301097584025600/dLDzGqc0?format=png&name=100x100_2",
+              "width": 100
+            },
+            "type": "IMAGE"
+          }
+        }
+      ],
+      "name": "1906814671912599552:poll_choice_images",
+      "url": "card://2109301221492162560"
+    },
+    "rest_id": "card://2109301221492162560"
+  }
+}

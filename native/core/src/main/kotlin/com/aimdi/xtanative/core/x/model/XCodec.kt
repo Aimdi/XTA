@@ -49,6 +49,7 @@ object XCodec {
         post.displayEnd?.let { put("de", it) }
         put("entities", JsonArray(post.entities.map(::entity)))
         put("media", JsonArray(post.media.map(::media)))
+        post.card?.let { put("card", card(it)) }
         post.quoted?.let { put("quoted", post(it)) }
         post.reposted?.let { put("reposted", post(it)) }
         put("replies", post.replyCount)
@@ -73,6 +74,7 @@ object XCodec {
             displayEnd = json["de"].int,
             entities = json["entities"].list.mapNotNull(::entity),
             media = json["media"].list.mapNotNull(::media),
+            card = json["card"].takeIf { it.exists }?.let(::card),
             quoted = json["quoted"].takeIf { it.exists }?.let(::post),
             reposted = json["reposted"].takeIf { it.exists }?.let(::post),
             replyCount = json["replies"].long ?: 0,
@@ -83,6 +85,64 @@ object XCodec {
             viewCount = json["views"].long,
             replyToScreenName = json["replyTo"].string,
             conversationId = json["conversation"].string,
+        )
+    }
+
+    private fun card(card: XCard): JsonObject = when (card) {
+        is XCard.Link -> buildJsonObject {
+            put("k", "link")
+            put("url", card.url)
+            put("title", card.title)
+            card.description?.let { put("description", it) }
+            card.domain?.let { put("domain", it) }
+            card.imageUrl?.let { put("image", it) }
+            card.imageWidth?.let { put("w", it) }
+            card.imageHeight?.let { put("h", it) }
+            put("large", card.large)
+        }
+        is XCard.Poll -> buildJsonObject {
+            put("k", "poll")
+            put(
+                "choices",
+                JsonArray(
+                    card.choices.map { choice ->
+                        buildJsonObject {
+                            put("label", choice.label)
+                            put("votes", choice.votes)
+                            choice.imageUrl?.let { put("image", it) }
+                        }
+                    },
+                ),
+            )
+            card.endsAt?.let { put("ends", it.toEpochMilli()) }
+            put("final", card.final)
+        }
+    }
+
+    private fun card(json: J): XCard? = when (json["k"].string) {
+        "link" -> linkCard(json)
+        "poll" -> XCard.Poll(
+            choices = json["choices"].list.mapNotNull { choice ->
+                XCard.Poll.Choice(choice["label"].string ?: return@mapNotNull null, choice["votes"].long ?: 0, choice["image"].string)
+            },
+            endsAt = json["ends"].long?.let(Instant::ofEpochMilli),
+            final = json["final"].boolean ?: false,
+        )
+        else -> null
+    }
+
+    private fun linkCard(json: J): XCard.Link? {
+        val url = json["url"].string ?: return null
+        val title = json["title"].string ?: return null
+        return XCard.Link(
+            url = url,
+            title = title,
+            description = json["description"].string,
+            domain = json["domain"].string,
+            imageUrl = json["image"].string,
+            imageWidth = json["w"].int,
+            imageHeight = json["h"].int,
+            large = json["large"].boolean ?: false,
         )
     }
 

@@ -78,3 +78,36 @@ class XModelHelpersTest {
         assertTrue(XCodec.decode("garbage").isEmpty())
     }
 }
+
+class XCardTest {
+    private fun fixture(name: String) = J.parse(javaClass.getResource("/x/$name")!!.readText())
+
+    @Test
+    fun linkPreviewsReadTheirTitleSitePictureAndWhereTheyLead() {
+        // The large card is on the pinned post; the small one on a post quoted by another.
+        val cards = XParser.timeline(fixture("community_timeline_cards.json")).threads
+            .flatMap { it.posts }.flatMap { listOfNotNull(it, it.quoted) }
+            .mapNotNull { it.card as? com.aimdi.xtanative.core.x.model.XCard.Link }
+        val large = cards.first { it.large }
+        assertEquals("Ultimate Flutter Roadmap for 2025", large.title)
+        assertEquals("youtube.com", large.domain)
+        assertEquals(800, large.imageWidth)
+        assertTrue(large.imageUrl!!.startsWith("https://pbs.twimg.com/card_img/"))
+        assertEquals("https://youtu.be/a9cJ3FrTokI", large.url, "the card leads where its t.co link does")
+        val small = cards.first { !it.large }
+        assertEquals("glint_mcp | Dart package", small.title)
+        assertEquals("pub.dev", small.domain)
+    }
+
+    @Test
+    fun aPollReadsItsChoicesCountsAndEnd() {
+        val poll = XParser.post(fixture("tweet_result_image_poll.json"))!!.card as com.aimdi.xtanative.core.x.model.XCard.Poll
+        assertEquals(listOf("Option A", "Option B", "Option C"), poll.choices.map { it.label })
+        assertEquals(listOf(0L, 0L, 1L), poll.choices.map { it.votes })
+        assertEquals(1L, poll.total)
+        assertEquals(java.time.Instant.parse("2026-10-12T15:12:54Z"), poll.endsAt)
+        assertEquals(false, poll.final)
+        val back = XCodec.decode(XCodec.encode(listOf(XThread("1", listOf(XParser.post(fixture("tweet_result_image_poll.json"))!!))))).single()
+        assertEquals(poll, back.posts.single().card, "the cache keeps the poll")
+    }
+}

@@ -70,6 +70,7 @@ fun PostCard(post: XPost, actions: PostActions, modifier: Modifier = Modifier, p
                 if (shown.media.isNotEmpty()) {
                     MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = 10.dp))
                 }
+                shown.card?.let { CardView(it, Modifier.padding(top = 10.dp)) }
                 shown.quoted?.let { QuotedPost(it, actions, Modifier.padding(top = 10.dp)) }
                 Counts(shown)
             }
@@ -132,6 +133,7 @@ fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier)
         if (post.media.isNotEmpty()) {
             MediaGrid(post.media, { index -> actions.openMedia(post.id, index) }, Modifier.padding(top = 8.dp))
         }
+        post.card?.let { CardView(it, Modifier.padding(top = 8.dp)) }
     }
 }
 

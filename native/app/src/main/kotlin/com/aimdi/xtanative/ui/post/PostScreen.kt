@@ -145,6 +145,7 @@ private fun FocalPost(post: XPost, actions: PostActions) {
         if (shown.media.isNotEmpty()) {
             MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = 12.dp))
         }
+        shown.card?.let { CardView(it, Modifier.padding(top = 12.dp)) }
         shown.quoted?.let { QuotedPost(it, actions, Modifier.padding(top = 12.dp)) }
         val views = shown.viewCount
         Text(
