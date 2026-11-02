@@ -13,4 +13,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    // Lifecycle 2.9's lint check for LiveData crashes this Android plugin's lint
+    // (IncompatibleClassChangeError); the app has no LiveData to check.
+    lint {
+        disable 'NullSafeMutableLiveData'
+        checkReleaseBuilds = false
+    }
 }

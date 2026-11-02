@@ -25,6 +25,13 @@ android {
         manifestPlaceholders["cleartext"] = mockX.isNotEmpty().toString()
     }
 
+    // Lifecycle 2.9's lint check for LiveData crashes this Android plugin's lint
+    // (IncompatibleClassChangeError); the app has no LiveData to check.
+    lint {
+        disable += "NullSafeMutableLiveData"
+        checkReleaseBuilds = false
+    }
+
     signingConfigs {
         create("release") {
             val path = System.getenv("KEY_PATH")
