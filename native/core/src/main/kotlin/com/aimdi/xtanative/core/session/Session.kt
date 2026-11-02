@@ -19,6 +19,8 @@ data class Session(
     val groups: List<FollowGroup> = emptyList(),
     val includeReplies: Boolean = true,
     val includeReposts: Boolean = true,
+    /** Videos and GIFs play muted in the feed as they come into view. */
+    val autoplay: Boolean = true,
 ) {
     /** The accounts the Following feed reads, as XTA's home feed picks them. */
     val feedMembers: List<FeedMember> get() = following.filter { it.inFeed }.map { it.member }
@@ -46,6 +48,7 @@ data class Session(
             put("v", VERSION)
             put("includeReplies", session.includeReplies)
             put("includeReposts", session.includeReposts)
+            put("autoplay", session.autoplay)
             put(
                 "accounts",
                 JsonArray(
@@ -127,6 +130,7 @@ data class Session(
                 },
                 includeReplies = root["includeReplies"].boolean ?: true,
                 includeReposts = root["includeReposts"].boolean ?: true,
+                autoplay = root["autoplay"].boolean ?: true,
             )
         }
     }

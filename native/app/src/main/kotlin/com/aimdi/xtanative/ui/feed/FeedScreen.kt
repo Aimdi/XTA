@@ -10,9 +10,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -74,7 +76,10 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.problemText
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.media.InlinePlayer
+import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 import com.aimdi.xtanative.ui.post.ThreadRows
+import com.aimdi.xtanative.ui.post.hasVideo
 import kotlinx.coroutines.launch
 
 /** The top of the scroll of one tab, asked for by tapping the title. */
@@ -188,6 +193,13 @@ private fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAct
     }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
     DisposableEffect(Unit) { onDispose { keepPlace() } }
+    val context = LocalContext.current
+    val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val autoplay = session?.autoplay ?: true
+    val inline = remember { InlinePlayer(context) }
+    DisposableEffect(inline) { onDispose { inline.release() } }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline.pause() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline.resume() }
     val atTop by remember(list) { derivedStateOf { list.firstVisibleItemIndex == 0 } }
     LaunchedEffect(atTop) { if (atTop) vm.seenNew() }
 
@@ -199,7 +211,9 @@ private fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAct
             state.threads.isEmpty() && state.answered && !state.refreshing -> Whole { Message(stringResource(R.string.feed_empty)) }
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> Whole { if (!state.refreshing) LoadingRow() }
-            else -> FeedList(state, vm, actions, list, contentPadding)
+            else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { autoplay }) {
+                FeedList(state, vm, actions, list, contentPadding)
+            }
         }
         AnimatedVisibility(
             visible = state.newAbove > 0 && !atTop,
@@ -253,12 +267,23 @@ private fun FeedList(
     LaunchedEffect(nearEnd, state.threads.size, state.hasMore) {
         if (nearEnd) vm.loadMore()
     }
+    // The first row with a video that is mostly on screen plays it.
+    val withVideo = remember(state.threads) { state.threads.filter { it.hasVideo }.mapTo(HashSet()) { it.id } }
+    val playingId by remember(list, withVideo) {
+        derivedStateOf {
+            val info = list.layoutInfo
+            info.visibleItemsInfo.firstOrNull { item ->
+                val shown = minOf(item.offset + item.size, info.viewportEndOffset) - maxOf(item.offset, info.viewportStartOffset)
+                item.key in withVideo && shown >= item.size * 0.6f
+            }?.key
+        }
+    }
     LazyColumn(state = list, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
         state.partial?.let { partial ->
             item(key = "partial", contentType = "notice") { PartialNotice(partial, vm::dismissPartial) }
         }
         items(state.threads, key = { it.id }, contentType = { "thread" }) { thread ->
-            ThreadRows(thread, actions)
+            ThreadRows(thread, actions, playing = thread.id == playingId)
         }
         item(key = "footer", contentType = "footer") {
             val more = state.moreProblem

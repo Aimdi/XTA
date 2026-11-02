@@ -146,6 +146,13 @@ jobs:
           done
           curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
 
+      - name: Fetch XTA to compare with
+        run: |
+          # The latest XTA release's x86_64 build, for the emulator.
+          tag=$(curl -fsSL https://api.github.com/repos/${{ github.repository }}/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
+          curl -fsSL -o "$RUNNER_TEMP/xta.apk" "https://github.com/${{ github.repository }}/releases/download/$tag/xta-${tag}_x86_64.apk"
+          echo "XTA $tag: $(stat -c %s "$RUNNER_TEMP/xta.apk") bytes"
+
       - name: Let the emulator use KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
@@ -161,7 +168,15 @@ jobs:
           target: google_apis
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens
+          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens && bash native/tool/compare.sh native/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/xta.apk" native-screens/compare.txt
+
+      - name: Start, memory and size against XTA
+        if: always()
+        run: |
+          if [ -f native-screens/compare.txt ]; then
+            cat native-screens/compare.txt
+            { echo "### XTA Native against XTA, on the emulator"; echo; echo '```'; cat native-screens/compare.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Keep the stand-in's log
         if: always()

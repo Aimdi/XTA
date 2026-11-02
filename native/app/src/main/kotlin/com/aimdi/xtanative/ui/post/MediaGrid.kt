@@ -20,7 +20,11 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import android.view.TextureView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,43 +38,50 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.photoUrl
+import com.aimdi.xtanative.core.x.model.playableUrl
+import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 
 private val Gap = 2.dp
 
-/** A post's photos and videos as X lays them out: one at its shape, two side by side, three, or four in a square. */
+/**
+ * A post's photos and videos as X lays them out: one at its shape, two side by
+ * side, three, or four in a square. With [playing], its first video or GIF
+ * plays in its tile.
+ */
 @Composable
-fun MediaGrid(media: List<XMedia>, onOpen: (Int) -> Unit, modifier: Modifier = Modifier) {
+fun MediaGrid(media: List<XMedia>, onOpen: (Int) -> Unit, modifier: Modifier = Modifier, playing: Boolean = false) {
     if (media.isEmpty()) return
+    val playIndex = if (playing) media.indexOfFirst { it.kind != XMedia.Kind.PHOTO } else -1
     val shape = RoundedCornerShape(16.dp)
     val frame = modifier.fillMaxWidth().clip(shape).border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
     when (media.size) {
-        1 -> MediaTile(media[0], frame.aspectRatio((media[0].aspectRatio ?: (16f / 9f)).coerceIn(0.8f, 2f))) { onOpen(0) }
+        1 -> MediaTile(media[0], playIndex == 0, frame.aspectRatio((media[0].aspectRatio ?: (16f / 9f)).coerceIn(0.8f, 2f))) { onOpen(0) }
         2 -> Row(frame.aspectRatio(16f / 9f), horizontalArrangement = Arrangement.spacedBy(Gap)) {
-            MediaTile(media[0], Modifier.weight(1f).fillMaxHeight()) { onOpen(0) }
-            MediaTile(media[1], Modifier.weight(1f).fillMaxHeight()) { onOpen(1) }
+            MediaTile(media[0], playIndex == 0, Modifier.weight(1f).fillMaxHeight()) { onOpen(0) }
+            MediaTile(media[1], playIndex == 1, Modifier.weight(1f).fillMaxHeight()) { onOpen(1) }
         }
         3 -> Row(frame.aspectRatio(16f / 9f), horizontalArrangement = Arrangement.spacedBy(Gap)) {
-            MediaTile(media[0], Modifier.weight(1f).fillMaxHeight()) { onOpen(0) }
+            MediaTile(media[0], playIndex == 0, Modifier.weight(1f).fillMaxHeight()) { onOpen(0) }
             Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(Gap)) {
-                MediaTile(media[1], Modifier.weight(1f).fillMaxWidth()) { onOpen(1) }
-                MediaTile(media[2], Modifier.weight(1f).fillMaxWidth()) { onOpen(2) }
+                MediaTile(media[1], playIndex == 1, Modifier.weight(1f).fillMaxWidth()) { onOpen(1) }
+                MediaTile(media[2], playIndex == 2, Modifier.weight(1f).fillMaxWidth()) { onOpen(2) }
             }
         }
         else -> Column(frame.aspectRatio(16f / 9f), verticalArrangement = Arrangement.spacedBy(Gap)) {
             Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Gap)) {
-                MediaTile(media[0], Modifier.weight(1f).fillMaxHeight()) { onOpen(0) }
-                MediaTile(media[1], Modifier.weight(1f).fillMaxHeight()) { onOpen(1) }
+                MediaTile(media[0], playIndex == 0, Modifier.weight(1f).fillMaxHeight()) { onOpen(0) }
+                MediaTile(media[1], playIndex == 1, Modifier.weight(1f).fillMaxHeight()) { onOpen(1) }
             }
             Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Gap)) {
-                MediaTile(media[2], Modifier.weight(1f).fillMaxHeight()) { onOpen(2) }
-                MediaTile(media[3], Modifier.weight(1f).fillMaxHeight()) { onOpen(3) }
+                MediaTile(media[2], playIndex == 2, Modifier.weight(1f).fillMaxHeight()) { onOpen(2) }
+                MediaTile(media[3], playIndex == 3, Modifier.weight(1f).fillMaxHeight()) { onOpen(3) }
             }
         }
     }
 }
 
 @Composable
-private fun MediaTile(media: XMedia, modifier: Modifier, onClick: () -> Unit) {
+private fun MediaTile(media: XMedia, playing: Boolean, modifier: Modifier, onClick: () -> Unit) {
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).clickable(onClick = onClick)) {
         AsyncImage(
             model = photoUrl(media.url, PhotoSize.MEDIUM),
@@ -78,6 +89,7 @@ private fun MediaTile(media: XMedia, modifier: Modifier, onClick: () -> Unit) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
+        if (playing) InlineVideo(media, Modifier.fillMaxSize())
         when (media.kind) {
             XMedia.Kind.PHOTO -> Unit
             XMedia.Kind.VIDEO -> {
@@ -111,6 +123,23 @@ private fun Label(text: String, modifier: Modifier) {
             .clip(RoundedCornerShape(4.dp))
             .background(Color.Black.copy(alpha = 0.7f))
             .padding(horizontal = 4.dp, vertical = 1.dp),
+    )
+}
+
+/** The tile's video playing in place, over its poster until the first frame. */
+@Composable
+private fun InlineVideo(media: XMedia, modifier: Modifier) {
+    val player = LocalInlinePlayer.current ?: return
+    // Lighter than the full player's pick: a tile is small and plays unasked.
+    val url = remember(media) { media.playableUrl(maxBitrate = 1_000_000) } ?: return
+    DisposableEffect(url) {
+        player.play(url)
+        onDispose { player.stop(url) }
+    }
+    AndroidView(
+        factory = { context -> TextureView(context).also(player::attach) },
+        onRelease = player::detach,
+        modifier = modifier,
     )
 }
 

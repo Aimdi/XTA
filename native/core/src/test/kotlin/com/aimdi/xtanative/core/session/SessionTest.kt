@@ -22,6 +22,7 @@ class SessionTest {
             FollowGroup("g4", "Gone", listOf("9")),
         ),
         includeReplies = false,
+        autoplay = false,
     )
 
     @Test

@@ -95,4 +95,5 @@
         <item quantity="one">%d neuer Post</item>
         <item quantity="other">%d neue Posts</item>
     </plurals>
+    <string name="settings_autoplay">Videos im Feed stumm abspielen</string>
 </resources>

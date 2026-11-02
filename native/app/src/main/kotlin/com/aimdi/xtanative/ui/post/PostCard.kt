@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.R
+import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.ui.common.Avatar
@@ -34,21 +35,34 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 
-/** One timeline row, or a thread X groups, with the line under it. */
+/** One timeline row, or a thread X groups, with the line under it. With [playing], its first video plays in place. */
 @Composable
-fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet()) {
+fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {
+    val playingPost = if (playing) thread.posts.firstOrNull { it.hasVideo } else null
     thread.posts.forEachIndexed { index, post ->
-        PostCard(post, actions, pinned = post.id in pinnedIds, continues = index < thread.posts.lastIndex)
+        PostCard(post, actions, pinned = post.id in pinnedIds, continues = index < thread.posts.lastIndex, playing = post === playingPost)
     }
     Hairline()
 }
+
+/** Whether a row has a video or GIF of its own to play in place. */
+val XPost.hasVideo: Boolean get() = shown.media.any { it.kind != XMedia.Kind.PHOTO }
+
+val XThread.hasVideo: Boolean get() = posts.any { it.hasVideo }
 
 /**
  * A post as a feed row. A repost shows the post reposted, under a line naming
  * who reposted it, as X does.
  */
 @Composable
-fun PostCard(post: XPost, actions: PostActions, modifier: Modifier = Modifier, pinned: Boolean = false, continues: Boolean = false) {
+fun PostCard(
+    post: XPost,
+    actions: PostActions,
+    modifier: Modifier = Modifier,
+    pinned: Boolean = false,
+    continues: Boolean = false,
+    playing: Boolean = false,
+) {
     val shown = post.shown
     Column(
         modifier
@@ -68,7 +82,7 @@ fun PostCard(post: XPost, actions: PostActions, modifier: Modifier = Modifier, p
                 ReplyingTo(shown, actions)
                 PostText(shown, actions, Modifier.padding(top = 2.dp))
                 if (shown.media.isNotEmpty()) {
-                    MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = 10.dp))
+                    MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = 10.dp), playing = playing)
                 }
                 shown.card?.let { CardView(it, Modifier.padding(top = 10.dp)) }
                 shown.quoted?.let { QuotedPost(it, actions, Modifier.padding(top = 10.dp)) }

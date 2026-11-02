@@ -70,6 +70,9 @@ fun SettingsScreen(onBack: () -> Unit, onImport: () -> Unit, onCleared: () -> Un
             SwitchRow(stringResource(R.string.settings_reposts), current.includeReposts) { on ->
                 scope.launch { graph.sessions.update { it.copy(includeReposts = on) } }
             }
+            SwitchRow(stringResource(R.string.settings_autoplay), current.autoplay) { on ->
+                scope.launch { graph.sessions.update { it.copy(autoplay = on) } }
+            }
             Hairline()
             Section(stringResource(R.string.settings_accounts))
             current.accounts.forEach { account ->
