@@ -12,6 +12,10 @@ translation, speech text), `:ui` (all screens, Compose Multiplatform),
 
 ## Networks (`lib/plugins/`)
 
+Every network but X is a **downloadable plugin** (`PLUGINS.md`): its reading
+layer is written in `networks/<id>` first, then moves with its screens into
+`plugins/<id>`, built as a signed plugin for Android and Linux.
+
 | XTA | Read | Screens |
 |---|---|---|
 | x (`lib/client`, `plugins/x`) | `core/x` done; trends, communities, lists, quotes, reposters, Spaces, advanced search: `core/x` | feed, post, profile, search done; the rest in the screens wave |
@@ -58,7 +62,7 @@ translation, speech text), `:ui` (all screens, Compose Multiplatform),
 | antenna | `store` (antennas) + `core` (their queries); `ui/antenna` |
 | community | `core/x`; `ui/community` |
 | intro | `ui/intro` |
-| settings | `store` (every setting); `ui/settings` |
+| settings | `store` (every setting); `ui/settings`; the plugin store in `plugin-host` + `ui/plugins` |
 | catcher | crash reports per platform; a switch in settings |
 | utils | `services` and the platform modules |
 | ui | `ui/common` |

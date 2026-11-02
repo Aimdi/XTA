@@ -35,6 +35,7 @@ include(":core")
 include(":networks")
 include(":store")
 include(":services")
+include(":plugin-host")
 
 val androidSdk = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
 if (androidSdk != null || file("local.properties").exists()) {

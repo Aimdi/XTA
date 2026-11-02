@@ -2,9 +2,9 @@ name: Native prototype
 
 # Builds XTA Native, the Android-only prototype in native/, beside the Flutter
 # app. Every push to the prototype's branch builds and tests it; a commit whose
-# message carries [prerelease], or a manual run with "prerelease" ticked, also
-# publishes the APK as a GitHub prerelease, never marked latest, so XTA's own
-# releases are untouched.
+# message carries [prerelease] also publishes the APK as a GitHub prerelease,
+# never marked latest, so XTA's own releases are untouched. (A manual run cannot:
+# runs started through the GitHub integration get no release permission.)
 on:
   push:
     branches: [claude/admiring-mayer-bdfg95]
@@ -12,17 +12,13 @@ on:
       - 'native/**'
       - '.github/workflows/native-prototype.yml'
   workflow_dispatch:
-    inputs:
-      prerelease:
-        description: Publish the APK as a prerelease
-        type: boolean
-        default: false
 
 permissions:
   contents: write
 
+# A prerelease run has a group of its own, so a later push cannot cancel it.
 concurrency:
-  group: native-prototype-${{ github.ref }}
+  group: native-prototype-${{ github.ref }}-${{ contains(github.event.head_commit.message, '[prerelease]') && 'release' || 'build' }}
   cancel-in-progress: true
 
 jobs:
@@ -45,7 +41,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Core tests
-        run: ./gradlew :core:test :networks:test :store:test :services:test --console=plain
+        run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test --console=plain
 
       - name: Signing key
         env:
@@ -214,7 +210,7 @@ jobs:
 
   # Published only when the build and the emulator run both passed.
   prerelease:
-    if: contains(github.event.head_commit.message, '[prerelease]') || inputs.prerelease
+    if: contains(github.event.head_commit.message, '[prerelease]')
     needs: [build, screens]
     runs-on: ubuntu-latest
     env:
