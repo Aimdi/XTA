@@ -2,14 +2,23 @@ package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.model.PhotoSize
+import com.aimdi.xtanative.core.x.model.XAffiliation
+import com.aimdi.xtanative.core.x.model.XArticle
+import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XCodec
+import com.aimdi.xtanative.core.x.model.XCommunityNote
 import com.aimdi.xtanative.core.x.model.XConversation
+import com.aimdi.xtanative.core.x.model.XEntity
+import com.aimdi.xtanative.core.x.model.XGrokShare
+import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.core.x.model.XVerifiedType
 import com.aimdi.xtanative.core.x.model.XVideoVariant
+import com.aimdi.xtanative.core.x.model.XWithheld
 import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.core.x.model.playableUrl
 import kotlin.test.Test
@@ -60,14 +69,36 @@ class XModelHelpersTest {
         assertEquals(3, missing.replies.size)
     }
 
-    /** What a row draws of its author: the disk keeps no profile header. */
-    private fun XUser.slim() = XUser(id, screenName, name, avatarUrl, verified, protected)
-    private fun XPost.slim(): XPost = copy(author = author.slim(), quoted = quoted?.slim(), reposted = reposted?.slim())
+    /** What a row draws of its author: the disk keeps no profile header, nor an article's body. */
+    private fun XUser.slim() = XUser(id, screenName, name, avatarUrl, verified, protected, verifiedType = verifiedType, affiliation = affiliation)
+    private fun XPost.slim(): XPost =
+        copy(author = author.slim(), quoted = quoted?.slim(), reposted = reposted?.slim(), article = article?.copy(content = J(null)))
 
     @Test
     fun postsReadBackFromDiskAreThePostsWritten() {
         val threads = XParser.timeline(J.parse(javaClass.getResource("/x/user_originals_page.json")!!.readText())).threads
         assertTrue(threads.isNotEmpty())
+        val expected = threads.map { thread -> thread.copy(posts = thread.posts.map { it.slim() }) }
+        assertEquals(expected, XCodec.decode(XCodec.encode(threads)))
+    }
+
+    @Test
+    fun everythingARowDrawsIsReadBackFromDisk() {
+        val pages = listOf("community_timeline_cards.json", "user_tweets_subscriber_previews.json", "tweet_detail_subscriber_preview.json")
+            .map { XParser.conversation(J.parse(javaClass.getResource("/x/$it")!!.readText())).threads }
+        val extras = XPost(
+            id = "7",
+            author = XUser("1", "a", "A", verifiedType = XVerifiedType.GOVERNMENT, affiliation = XAffiliation("https://b/badge.png", "Org")),
+            createdAt = null,
+            text = "t",
+            note = XCommunityNote("note", listOf(XEntity.Link(0, 4, "u", "u", "d")), "Readers added context", "https://x.com/i/birdwatch/n/1"),
+            article = XArticle("9", "Title", "Preview", "https://cover"),
+            live = XLive(mediaKey = "28_a", broadcastId = "1a", imageUrl = "https://thumb", aspectRatio = 2f),
+            grokShare = XGrokShare("https://x.com/i/grok/share/1", "q", "a", "grok", "https://grok.png"),
+            quotedWithheld = XWithheld("3", "gone", subscribersOnly = true, screenName = "b"),
+            card = XCard.Link("https://l", "T", null, "l", null, null, null, large = true, media = listOf(XMedia(XMedia.Kind.PHOTO, "https://p.jpg", 1, 1))),
+        )
+        val threads = pages.flatten() + XThread("7", listOf(extras))
         val expected = threads.map { thread -> thread.copy(posts = thread.posts.map { it.slim() }) }
         assertEquals(expected, XCodec.decode(XCodec.encode(threads)))
     }
@@ -87,7 +118,7 @@ class XCardTest {
         // The large card is on the pinned post; the small one on a post quoted by another.
         val cards = XParser.timeline(fixture("community_timeline_cards.json")).threads
             .flatMap { it.posts }.flatMap { listOfNotNull(it, it.quoted) }
-            .mapNotNull { it.card as? com.aimdi.xtanative.core.x.model.XCard.Link }
+            .mapNotNull { it.card as? XCard.Link }
         val large = cards.first { it.large }
         assertEquals("Ultimate Flutter Roadmap for 2025", large.title)
         assertEquals("youtube.com", large.domain)
@@ -101,7 +132,7 @@ class XCardTest {
 
     @Test
     fun aPollReadsItsChoicesCountsAndEnd() {
-        val poll = XParser.post(fixture("tweet_result_image_poll.json"))!!.card as com.aimdi.xtanative.core.x.model.XCard.Poll
+        val poll = XParser.post(fixture("tweet_result_image_poll.json"))!!.card as XCard.Poll
         assertEquals(listOf("Option A", "Option B", "Option C"), poll.choices.map { it.label })
         assertEquals(listOf(0L, 0L, 1L), poll.choices.map { it.votes })
         assertEquals(1L, poll.total)

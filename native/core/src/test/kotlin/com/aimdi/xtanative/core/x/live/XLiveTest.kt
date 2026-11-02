@@ -52,6 +52,12 @@ class XLiveTest {
         probe("media") { client.userMedia(user.id).threads.size }
         probe("conversation") { client.conversation("20").threads.size }
         probe("search") { client.search("from:X").threads.size }
+        probe("following") { client.following(user.id, count = 20).users.size }
+        probe("reposters") { client.reposters("20").users.size }
+        probe("people search") { client.searchUsers("flutter").users.size }
+        probe("community") { client.community("1472249315724771329").rules.size }
+        probe("community posts") { client.communityPosts("1472249315724771329").threads.size }
+        probe("trends") { client.trends(1).trends.size }
     }
 
     private suspend fun probe(what: String, read: suspend () -> Int) {

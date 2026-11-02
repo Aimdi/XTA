@@ -1,14 +1,21 @@
 package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.json.J
-import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.core.x.XAnswerException
+import com.aimdi.xtanative.core.x.model.XAffiliation
+import com.aimdi.xtanative.core.x.model.XArticle
+import com.aimdi.xtanative.core.x.model.XCommunityNote
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
+import com.aimdi.xtanative.core.x.model.XTranslation
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.core.x.model.XUserPage
+import com.aimdi.xtanative.core.x.model.XVerifiedType
 import com.aimdi.xtanative.core.x.model.XVideoVariant
+import com.aimdi.xtanative.core.x.model.XWithheld
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -22,6 +29,7 @@ import java.util.Locale
  */
 object XParser {
     private val createdAtFormat = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)
+    private val postLink = Regex("""^https?://(?:www\.|mobile\.)?(?:x|twitter)\.com/(\w{1,50})/status(?:es)?/(\d+)""", RegexOption.IGNORE_CASE)
 
     // ---- users ----
 
@@ -35,12 +43,13 @@ object XParser {
         val core = result["core"]
         val id = result["rest_id"].string ?: legacy["id_str"].string ?: return null
         val screenName = core["screen_name"].string ?: legacy["screen_name"].string ?: return null
+        val verifiedType = verifiedTypeOf(result)
         return XUser(
             id = id,
             screenName = screenName,
             name = core["name"].string ?: legacy["name"].string ?: screenName,
             avatarUrl = nonEmpty(result["avatar"]["image_url"].string) ?: legacy["profile_image_url_https"].string,
-            verified = result["is_blue_verified"].boolean ?: legacy["verified"].boolean ?: false,
+            verified = verifiedType != XVerifiedType.NONE,
             protected = result["privacy"]["protected"].boolean ?: legacy["protected"].boolean ?: false,
             description = result["profile_bio"]["description"].string ?: legacy["description"].string,
             bannerUrl = nonEmpty(result["banner"]["image_url"].string) ?: legacy["profile_banner_url"].string,
@@ -51,15 +60,52 @@ object XParser {
             posts = result["tweet_counts"]["tweets"].long ?: legacy["statuses_count"].long,
             createdAt = instant(core["created_at"].string ?: legacy["created_at"].string),
             descriptionLinks = linksOf(result["profile_bio"]["entities"]["description"]["urls"].list.ifEmpty { legacy["entities"]["description"]["urls"].list }),
+            verifiedType = verifiedType,
+            affiliation = affiliationOf(result),
+            followedByReader = result["relationship_perspectives"]["following"].boolean ?: legacy["following"].boolean,
+            likes = result["action_counts"]["favorites_count"].long ?: legacy["favourites_count"].long,
+            listed = legacy["listed_count"].long,
+            sensitive = result["possibly_sensitive"].boolean ?: legacy["possibly_sensitive"].boolean ?: false,
         )
     }
+
+    /**
+     * The check X draws, wherever it put the fields (user_verification.dart):
+     * a type of business or government, else blue for any blue flag.
+     */
+    private fun verifiedTypeOf(user: J): XVerifiedType {
+        val type = listOf(user["verification"]["verified_type"], user["legacy"]["verified_type"], user["verified_type"]).firstNotNullOfOrNull { it.string }
+        val blue = listOf(
+            user["is_blue_verified"], user["ext_is_blue_verified"], user["legacy"]["ext_is_blue_verified"],
+            user["verification"]["verified"], user["legacy"]["verified"], user["verified"],
+        ).any { it.boolean == true }
+        return when {
+            type == "Business" -> XVerifiedType.BUSINESS
+            type == "Government" -> XVerifiedType.GOVERNMENT
+            blue -> XVerifiedType.BLUE
+            else -> XVerifiedType.NONE
+        }
+    }
+
+    /** The organisation badge; none without a picture, nor for X's "Automated" label, which is no badge. */
+    private fun affiliationOf(user: J): XAffiliation? =
+        listOf(user["affiliates_highlighted_label"]["label"], user["legacy"]["affiliates_highlighted_label"]["label"]).firstNotNullOfOrNull { label ->
+            val badge = label["badge"]["url"].string
+            val type = label["userLabelType"].string
+            if (badge.isNullOrEmpty() || type == "AutomatedLabel") null else XAffiliation(badge, label["description"].string, label["url"]["url"].string, type)
+        }
 
     /** The profile in a UserByScreenName or UserByRestId answer, with the ids of its pinned posts. */
     fun profile(body: J): Pair<XUser, List<String>>? {
         val result = body["data"]["user"]["result"]
         val user = user(result) ?: return null
-        val pinned = result["legacy"]["pinned_tweet_ids_str"].list.mapNotNull { it.string }
-        return user to pinned
+        return user to pinnedIdsOf(result)
+    }
+
+    /** Pinned post ids: `pinned_items` on current results, `legacy` on older ones. */
+    internal fun pinnedIdsOf(result: J): List<String> {
+        val modern = result["pinned_items"]["tweet_ids_str"]
+        return (if (modern.exists) modern else result["legacy"]["pinned_tweet_ids_str"]).list.mapNotNull { it.string }
     }
 
     private fun websiteOf(legacy: J): String? {
@@ -67,14 +113,40 @@ object XParser {
         return legacy["entities"]["url"]["urls"].list.firstOrNull { it["url"].string == shortUrl }?.get("expanded_url")?.string ?: shortUrl
     }
 
+    /**
+     * A page of accounts from a timeline of users (Following, Followers,
+     * Retweeters, ListMembers, people search): an account per entry, or in a
+     * module of entries, under `user_results` or `userResults`. An entry that
+     * no longer reads as an account is skipped.
+     */
+    fun users(instructions: J): XUserPage {
+        val entries = instructions.list.filter { it["type"].string == "TimelineAddEntries" }.flatMap { it["entries"].list }
+        val cursors = entries.mapNotNull { entry -> cursorOf(entry["content"])?.let { kindOf(entry["entryId"].string.orEmpty(), it) to it.value } }
+        return XUserPage(
+            users = entries.flatMap(::userResultsIn).mapNotNull(::user),
+            bottomCursor = cursors.lastOrNull { it.first == CursorKind.BOTTOM }?.second,
+            topCursor = cursors.lastOrNull { it.first == CursorKind.TOP }?.second,
+        )
+    }
+
+    private fun userResultsIn(entry: J): List<J> {
+        val content = entry["content"]
+        userResultOf(content["itemContent"])?.let { return listOf(it) }
+        return content["items"].list.mapNotNull { item -> userResultOf(item["item"]["itemContent"].takeIf { it.exists } ?: item["itemContent"]) }
+    }
+
+    private fun userResultOf(itemContent: J): J? =
+        (itemContent["user_results"]["result"].takeIf { it.exists } ?: itemContent["userResults"]["result"]).takeIf { it.exists }
+
     // ---- posts ----
 
-    /** A tweet result, unwrapped from the layers X adds; null for one it withholds. */
+    /**
+     * A tweet result, unwrapped from the layers X adds; a subscriber preview
+     * reads as the post it previews. Null for one X withholds: see [withheld].
+     */
     fun post(raw: J): XPost? {
-        var result = raw
-        if (result["__typename"].string == "TweetWithVisibilityResults" || (!result["legacy"].exists && result["tweet"].exists)) {
-            result = result["tweet"]
-        }
+        if (raw["__typename"].string == "TweetPreviewDisplay") return preview(raw["tweet"])
+        val result = if (raw["__typename"].string == "TweetWithVisibilityResults" || (!raw["legacy"].exists && raw["tweet"].exists)) raw["tweet"] else raw
         val legacy = result["legacy"]
         if (!legacy.exists || result["tombstone"].exists) return null
         val author = user(result["core"]["user_results"]["result"]) ?: return null
@@ -82,22 +154,23 @@ object XParser {
 
         val note = result["note_tweet"]["note_tweet_results"]["result"]
         val noteText = note["text"].string
-        val text = noteText ?: legacy["full_text"].string.orEmpty()
         val range = legacy["display_text_range"].list.mapNotNull { it.int }
-        val media = mediaOf(legacy)
         val entities = entitiesOf(if (noteText == null) legacy["entities"] else note["entity_set"])
+        val card = result["card"]["legacy"]
+        val quotedResult = result["quoted_status_result"]["result"]
+        val quoted = post(quotedResult)
 
         return XPost(
             id = id,
             author = author,
             createdAt = instant(legacy["created_at"].string),
-            text = text,
+            text = noteText ?: legacy["full_text"].string.orEmpty(),
             displayStart = if (noteText == null) range.getOrNull(0) ?: 0 else 0,
             displayEnd = if (noteText == null) range.getOrNull(1) else null,
             entities = entities,
-            media = media,
-            card = cardOf(result["card"]["legacy"], entities),
-            quoted = post(result["quoted_status_result"]["result"]),
+            media = mediaOf(legacy),
+            card = XCards.card(card, entities),
+            quoted = quoted,
             reposted = post(legacy["retweeted_status_result"]["result"]),
             replyCount = legacy["reply_count"].long ?: 0,
             repostCount = legacy["retweet_count"].long ?: 0,
@@ -107,6 +180,94 @@ object XParser {
             viewCount = result["views"]["count"].long,
             replyToScreenName = legacy["in_reply_to_screen_name"].string,
             conversationId = legacy["conversation_id_str"].string,
+            lang = legacy["lang"].string,
+            sensitive = legacy["possibly_sensitive"].boolean ?: false,
+            replyToPostId = legacy["in_reply_to_status_id_str"].string,
+            communityId = result["community_results"]["result"].let { it["id_str"].string ?: it["rest_id"].string },
+            note = noteOf(result["birdwatch_pivot"]),
+            article = articleOf(result["article"]),
+            live = XLiveParser.liveOf(legacy, note["entity_set"], card, listOf(legacy["full_text"].string, noteText)),
+            grokShare = XCards.grokShare(card),
+            quotedWithheld = if (quoted == null) quotedWithheld(legacy, quotedResult) else null,
+        )
+    }
+
+    /**
+     * A `TweetPreviewDisplay`: the start of a post its author keeps for paid
+     * subscribers. It has no `legacy`; its text, counts and date sit on it.
+     */
+    private fun preview(tweet: J): XPost? {
+        val id = tweet["rest_id"].string ?: return null
+        val author = user(tweet["core"]["user_results"]["result"]) ?: return null
+        val text = tweet["text"].string.orEmpty()
+        val entities = entitiesOf(tweet["entities"])
+        return XPost(
+            id = id,
+            author = author,
+            createdAt = instant(tweet["created_at"].string),
+            text = text,
+            displayEnd = text.codePointCount(0, text.length),
+            entities = entities,
+            card = XCards.card(tweet["card"]["legacy"], entities),
+            replyCount = tweet["reply_count"].long ?: 0,
+            repostCount = tweet["retweet_count"].long ?: 0,
+            quoteCount = tweet["quote_count"].long ?: 0,
+            likeCount = tweet["favorite_count"].long ?: 0,
+            bookmarkCount = tweet["bookmark_count"].long ?: 0,
+            viewCount = tweet["view_count"]["count"].long,
+            conversationId = id,
+            replyToPostId = tweet["reply_to_results"]["rest_id"].string,
+            subscriberPreview = true,
+        )
+    }
+
+    /**
+     * What a result X would not give says of itself: X's own explanation
+     * without its "Learn more", or that its author keeps it for subscribers.
+     */
+    fun withheld(result: J, id: String): XWithheld {
+        val payload = if (result["tombstone"].exists) result["tombstone"] else result
+        val explanation = payload["richText"]["text"].string ?: payload["text"]["text"].string
+        return XWithheld(id, explanation?.replaceFirst(" Learn more", ""), subscribersOnly = payload["reason"].string == "ExclusiveTweet")
+    }
+
+    /**
+     * The post a quote names when X would not give it: its id, and its author
+     * from the link X keeps, which is what finding it elsewhere takes.
+     */
+    private fun quotedWithheld(legacy: J, quoted: J): XWithheld? {
+        val link = legacy["quoted_status_permalink"]["expanded"].string?.let(postLink::find)
+        val id = legacy["quoted_status_id_str"].string ?: link?.groupValues?.get(2) ?: return null
+        val screenName = link?.groupValues?.get(1)
+        return when {
+            quoted.exists -> withheld(quoted, id).copy(screenName = screenName)
+            legacy["is_quote_status"].boolean == true -> XWithheld(id, null, screenName = screenName)
+            else -> null
+        }
+    }
+
+    /** The community note under a post (`birdwatch_pivot`), its links moved from UTF-16 to code points. */
+    private fun noteOf(pivot: J): XCommunityNote? {
+        val subtitle = pivot["subtitle"]
+        val text = subtitle["text"].string ?: return null
+        val links = subtitle["entities"].list.mapNotNull { entity ->
+            val from = entity["fromIndex"].int ?: return@mapNotNull null
+            val to = entity["toIndex"].int ?: return@mapNotNull null
+            val url = entity["ref"]["url"].string ?: return@mapNotNull null
+            if (from < 0 || to > text.length || from >= to) return@mapNotNull null
+            XEntity.Link(text.codePointCount(0, from), text.codePointCount(0, to), url, url, text.substring(from, to))
+        }
+        return XCommunityNote(text, links, pivot["title"].string ?: pivot["shorttitle"].string, pivot["destinationUrl"].string)
+    }
+
+    private fun articleOf(article: J): XArticle? {
+        val result = article["article_results"]["result"].takeIf { it.exists } ?: article["article"].takeIf { it.exists } ?: return null
+        return XArticle(
+            id = result["rest_id"].string,
+            title = result["title"].string.orEmpty(),
+            previewText = result["preview_text"].string.orEmpty(),
+            coverUrl = result["cover_media"]["media_info"]["original_img_url"].string,
+            content = result,
         )
     }
 
@@ -121,7 +282,8 @@ object XParser {
         XEntity.Link(start, end, short, url["expanded_url"].string ?: short, url["display_url"].string ?: short)
     }
 
-    private fun entitiesOf(entities: J): List<XEntity> {
+    /** A post's (or a translation's) links, mentions, hashtags and cashtags, in text order. */
+    internal fun entitiesOf(entities: J): List<XEntity> {
         val links = linksOf(entities["urls"].list)
         val mentions = entities["user_mentions"].list.mapNotNull { mention ->
             val (start, end) = span(mention) ?: return@mapNotNull null
@@ -138,90 +300,74 @@ object XParser {
         return (links + mentions + hashtags + cashtags).sortedBy { it.start }
     }
 
-    private fun mediaOf(legacy: J): List<XMedia> {
-        val items = legacy["extended_entities"]["media"].list.ifEmpty { legacy["entities"]["media"].list }
-        return items.mapNotNull { item ->
-            val url = item["media_url_https"].string ?: return@mapNotNull null
-            val kind = when (item["type"].string) {
-                "video" -> XMedia.Kind.VIDEO
-                "animated_gif" -> XMedia.Kind.GIF
-                else -> XMedia.Kind.PHOTO
-            }
-            val info = item["video_info"]
-            XMedia(
-                kind = kind,
-                url = url,
-                width = item["original_info"]["width"].int ?: item["sizes"]["large"]["w"].int,
-                height = item["original_info"]["height"].int ?: item["sizes"]["large"]["h"].int,
-                alt = nonEmpty(item["ext_alt_text"].string),
-                variants = info["variants"].list.mapNotNull { variant ->
-                    XVideoVariant(
-                        url = variant["url"].string ?: return@mapNotNull null,
-                        bitrate = variant["bitrate"].int,
-                        contentType = variant["content_type"].string ?: "",
-                    )
-                },
-                durationMs = info["duration_millis"].long,
-                shortUrl = item["url"].string,
-            )
+    private fun mediaOf(legacy: J): List<XMedia> =
+        legacy["extended_entities"]["media"].list.ifEmpty { legacy["entities"]["media"].list }.mapNotNull(::mediaItem)
+
+    /** One photo, video or GIF, from a post's media or a card's media entities. */
+    internal fun mediaItem(item: J): XMedia? {
+        val url = item["media_url_https"].string ?: return null
+        val kind = when (item["type"].string) {
+            "video" -> XMedia.Kind.VIDEO
+            "animated_gif" -> XMedia.Kind.GIF
+            else -> XMedia.Kind.PHOTO
         }
-    }
-
-    // ---- cards ----
-
-    /** A link preview or a poll, from a card's `binding_values`; null for kinds this reader does not draw. */
-    internal fun cardOf(card: J, entities: List<XEntity>): XCard? {
-        val name = card["name"].string ?: return null
-        val values = card["binding_values"].list.associateBy({ it["key"].string.orEmpty() }, { it["value"] })
-        fun string(key: String) = values[key]?.get("string_value")?.string?.takeIf { it.isNotBlank() }
-        fun image(key: String) = values[key]?.get("image_value")
-        return when {
-            name.contains("poll") && name.contains("choice") ->
-                poll(::string, ::image, final = values["counts_are_final"]?.get("boolean_value")?.boolean ?: false)
-            name == "summary" || name == "summary_large_image" || name == "player" -> {
-                val title = string("title") ?: return null
-                val large = name != "summary"
-                val picture = (if (large) listOf("summary_photo_image_large", "photo_image_full_size_large", "player_image_large", "thumbnail_image_large") else listOf("thumbnail_image_large", "thumbnail_image"))
-                    .firstNotNullOfOrNull { key -> image(key)?.takeIf { it["url"].string != null } }
-                val short = string("card_url") ?: card["url"].string
-                XCard.Link(
-                    url = entities.filterIsInstance<XEntity.Link>().firstOrNull { it.url == short }?.expanded ?: short ?: return null,
-                    title = title,
-                    description = string("description"),
-                    domain = string("vanity_url") ?: string("domain"),
-                    imageUrl = picture?.get("url")?.string,
-                    imageWidth = picture?.get("width")?.int,
-                    imageHeight = picture?.get("height")?.int,
-                    large = large,
+        val info = item["video_info"]
+        return XMedia(
+            kind = kind,
+            url = url,
+            width = item["original_info"]["width"].int ?: item["sizes"]["large"]["w"].int,
+            height = item["original_info"]["height"].int ?: item["sizes"]["large"]["h"].int,
+            alt = nonEmpty(item["ext_alt_text"].string),
+            variants = info["variants"].list.mapNotNull { variant ->
+                XVideoVariant(
+                    url = variant["url"].string ?: return@mapNotNull null,
+                    bitrate = variant["bitrate"].int,
+                    contentType = variant["content_type"].string ?: "",
                 )
-            }
-            else -> null
-        }
+            },
+            durationMs = info["duration_millis"].long,
+            shortUrl = item["url"].string,
+        )
     }
 
-    private fun poll(string: (String) -> String?, image: (String) -> J?, final: Boolean): XCard.Poll? {
-        val choices = (1..4).mapNotNull { i ->
-            val label = string("choice${i}_label") ?: return@mapNotNull null
-            XCard.Poll.Choice(label, string("choice${i}_count")?.toLongOrNull() ?: 0, image("choice${i}_image_large")?.get("url")?.string)
-        }
-        if (choices.size < 2) return null
-        val ends = string("end_datetime_utc")?.let { runCatching { Instant.parse(it) }.getOrNull() }
-        return XCard.Poll(choices, ends, final)
+    /** A Grok translation's answer: its `result`'s text and entities; null when it has none. */
+    fun translation(body: J): XTranslation? {
+        val result = body["result"]
+        val text = result["text"].string ?: return null
+        return XTranslation(text, entitiesOf(result["entities"]))
+    }
+
+    /** X's own error, when it answered with one in place of what was asked. */
+    fun error(body: J): XAnswerException? {
+        val first = body["errors"][0]
+        if (!first.exists) return null
+        return XAnswerException(first["code"].int, first["message"].string ?: "X answered with an error")
     }
 
     // ---- timelines ----
 
     /**
      * A timeline page from any of the answers that carry `instructions`: a
-     * profile's posts, a search, a conversation, the home timeline.
+     * profile's posts, a search, a community, the home timeline.
      */
-    fun timeline(body: J): XTimelinePage {
-        val page = TimelineBuilder()
-        for (instruction in instructionsOf(body).list) {
+    fun timeline(body: J): XTimelinePage = timelineOf(instructionsOf(body))
+
+    /**
+     * A conversation (TweetDetail): as [timeline], and a post X withholds
+     * keeps its place in it, as a [XWithheld] in its thread.
+     */
+    fun conversation(body: J): XTimelinePage = timelineOf(instructionsOf(body), keepWithheld = true)
+
+    internal fun timelineOf(instructions: J, keepWithheld: Boolean = false): XTimelinePage {
+        val page = TimelineBuilder(keepWithheld)
+        for (instruction in instructions.list) {
             when (instruction["type"].string) {
                 "TimelineAddEntries" -> instruction["entries"].list.forEach { page.entry(it) }
                 "TimelinePinEntry" -> page.entry(instruction["entry"], isPinned = true)
-                "TimelineReplaceEntry" -> page.entry(instruction["entry"])
+                "TimelineReplaceEntry" -> page.entry(
+                    instruction["entry"].takeIf { it.exists } ?: instruction["replaceEntry"]["entry"],
+                    replacing = instruction["entry_id_to_replace"].string ?: instruction["replaceEntry"]["entryIdToReplace"].string,
+                )
                 "TimelineAddToModule" -> page.moduleItems(instruction["moduleEntryId"].string, instruction["moduleItems"].list)
             }
         }
@@ -229,45 +375,148 @@ object XParser {
     }
 
     /** A page from a bare list of timeline entries. */
-    fun entries(entries: List<J>): XTimelinePage = TimelineBuilder().apply { entries.forEach { entry(it) } }.build()
+    fun entries(entries: List<J>): XTimelinePage = TimelineBuilder(keepWithheld = false).apply { entries.forEach { entry(it) } }.build()
 
-    private class TimelineBuilder {
+    /** A paging cursor, in any of the three shapes X has sent one. */
+    internal data class Cursor(val value: String, val type: String?)
+
+    internal enum class CursorKind { BOTTOM, TOP, SHOW_MORE, OTHER }
+
+    internal fun cursorOf(content: J): Cursor? {
+        val operation = content["operation"]["cursor"]
+        val value = content["value"].string ?: operation["value"].string ?: content["itemContent"]["value"].string ?: return null
+        return Cursor(value, content["cursorType"].string ?: operation["cursorType"].string ?: content["itemContent"]["cursorType"].string)
+    }
+
+    /**
+     * What a cursor pages to. X has spelled the "Show additional replies"
+     * cursor several ways (`cursor-showMore`, `cursor-showmorethreads`,
+     * `…prompt`), so its id is matched in any case.
+     */
+    internal fun kindOf(entryId: String, cursor: Cursor): CursorKind {
+        val id = entryId.lowercase()
+        return when {
+            id.contains("showmore") || cursor.type?.startsWith("ShowMore") == true -> CursorKind.SHOW_MORE
+            cursor.type == "Bottom" || id.contains("cursor-bottom") -> CursorKind.BOTTOM
+            cursor.type == "Top" || id.contains("cursor-top") -> CursorKind.TOP
+            else -> CursorKind.OTHER
+        }
+    }
+
+    private class TimelineBuilder(private val keepWithheld: Boolean) {
         private val threads = ArrayList<XThread>()
-        private val seen = HashSet<String>()
-        private val pinned = HashSet<String>()
+        private val at = HashMap<String, Int>()
+        private val pinned = LinkedHashSet<String>()
         private var bottom: String? = null
         private var top: String? = null
+        private var showMore: String? = null
+        private var moduleBottom: String? = null
+        private var moduleShowMore: String? = null
 
-        fun build() = XTimelinePage(threads, bottom, top, pinned)
+        // A cursor at the top of the page wins over one X nested in a module.
+        fun build() = XTimelinePage(threads, bottom ?: moduleBottom, top, pinned, showMore ?: moduleShowMore)
 
+        /** Adds [thread]; one already on the page takes what it did not have, as a module X adds to. */
         private fun add(thread: XThread) {
-            if (thread.posts.isNotEmpty() && seen.add(thread.id)) threads.add(thread)
+            if (thread.posts.isEmpty() && thread.withheld.isEmpty()) return
+            val index = at[thread.id]
+            if (index == null) {
+                at[thread.id] = threads.size
+                threads += thread
+                return
+            }
+            val known = threads[index]
+            threads[index] = known.copy(
+                posts = known.posts + thread.posts.filter { post -> known.posts.none { it.id == post.id } },
+                withheld = known.withheld + thread.withheld.filter { gap -> known.withheld.none { it.id == gap.id } },
+            )
         }
 
-        fun entry(entry: J, isPinned: Boolean = false) {
-            val entryId = entry["entryId"].string ?: return
+        fun entry(entry: J, isPinned: Boolean = false, replacing: String? = null) {
+            val entryId = entry["entryId"].string ?: replacing ?: return
             val content = entry["content"]
-            val cursor = content["value"].string ?: content["itemContent"]["value"].string
-            val cursorType = content["cursorType"].string ?: content["itemContent"]["cursorType"].string
+            val cursor = cursorOf(content)
+            val results = content["itemContent"]["tweet_results"]
             when {
                 entryId.startsWith("promoted-") || content["itemContent"]["promotedMetadata"].exists -> Unit
-                cursor != null && (cursorType == "Bottom" || entryId.startsWith("cursor-bottom")) -> bottom = cursor
-                cursor != null && (cursorType == "Top" || entryId.startsWith("cursor-top")) -> top = cursor
-                content["itemContent"]["tweet_results"].exists -> {
-                    val post = post(content["itemContent"]["tweet_results"]["result"]) ?: return
-                    if (isPinned) pinned.add(post.id)
+                cursor != null -> when (kindOf(entryId, cursor)) {
+                    CursorKind.BOTTOM -> bottom = cursor.value
+                    CursorKind.TOP -> top = cursor.value
+                    CursorKind.SHOW_MORE -> if (showMore == null) showMore = cursor.value
+                    CursorKind.OTHER -> Unit
+                }
+                results.exists -> item(entryId, results["result"], isPinned)
+                content["items"].exists -> module(entryId, content["items"].list)
+            }
+        }
+
+        private fun item(entryId: String, result: J, isPinned: Boolean) {
+            val post = post(result)
+            when {
+                post != null -> {
+                    if (isPinned) pinned += post.id
                     add(XThread(post.id, listOf(post)))
                 }
-                content["items"].exists -> moduleItems(entryId, content["items"].list)
+                // A conversation keeps the place of a post X withholds; a feed skips it.
+                keepWithheld && result.exists && entryId.startsWith("tweet-") -> {
+                    val id = entryId.removePrefix("tweet-")
+                    add(XThread(id, emptyList(), listOf(withheld(result, id))))
+                }
             }
         }
 
         fun moduleItems(moduleId: String?, items: List<J>) {
-            val posts = items
-                .filterNot { it["item"]["itemContent"]["promotedMetadata"].exists }
-                .mapNotNull { post(it["item"]["itemContent"]["tweet_results"]["result"]) }
-            add(XThread(moduleId ?: posts.firstOrNull()?.id.orEmpty(), posts))
+            val first = items.firstNotNullOfOrNull { it["entryId"].string }.orEmpty()
+            module(moduleId ?: first.substringBefore("-tweet-"), items)
         }
+
+        /**
+         * A module of entries: a media grid is a post per tile; anything else
+         * (a conversation, a profile's thread) one thread, where a post X
+         * withholds keeps its place and a cursor nested in it is kept aside.
+         */
+        private fun module(moduleId: String, items: List<J>) {
+            if (moduleId.contains("-grid-")) {
+                items.mapNotNull { item -> resultOf(item)?.let { post(it) } }.forEach { add(XThread(it.id, listOf(it))) }
+                return
+            }
+            val posts = ArrayList<XPost>()
+            val gaps = ArrayList<XWithheld>()
+            for (item in items) {
+                val itemId = item["entryId"].string.orEmpty()
+                val content = item["item"]["itemContent"]
+                val cursor = cursorOf(content) ?: cursorOf(item["item"]) ?: cursorOf(item["content"])
+                val result = resultOf(item)
+                val type = content["itemType"].string
+                when {
+                    itemId.contains("promoted") || content["promotedMetadata"].exists -> Unit
+                    cursor != null -> moduleCursor(itemId, cursor)
+                    result == null || (type != null && type != "TimelineTweet") -> Unit
+                    else -> {
+                        val post = post(result)
+                        // `conversationthread-1-tweet-2` is post 2's place in thread 1.
+                        if (post != null) posts += post else gaps += withheld(result, itemId.substringAfterLast("-tweet-", ""))
+                    }
+                }
+            }
+            add(XThread(moduleId, posts, gaps))
+        }
+
+        private fun moduleCursor(itemId: String, cursor: Cursor) {
+            val id = itemId.lowercase()
+            when {
+                id.contains("showmore") || cursor.type?.startsWith("ShowMore") == true -> if (moduleShowMore == null) moduleShowMore = cursor.value
+                cursor.type == "Bottom" || id.contains("cursor-bottom") || id.endsWith("-bottom") || id.contains("cursorbottom") ->
+                    if (moduleBottom == null) moduleBottom = cursor.value
+            }
+        }
+
+        /** The tweet result a module item carries, in any of the shapes X has sent one. */
+        private fun resultOf(item: J): J? = listOf(
+            item["item"]["itemContent"]["tweet_results"]["result"],
+            item["item"]["content"]["tweetResult"]["result"],
+            item["item"]["content"]["tweet_results"]["result"],
+        ).firstOrNull { it.exists }
     }
 
     private val instructionPaths = listOf(
@@ -276,6 +525,9 @@ object XParser {
         listOf("data", "search_by_raw_query", "search_timeline", "timeline", "instructions"),
         listOf("data", "threaded_conversation_with_injections_v2", "instructions"),
         listOf("data", "home", "home_timeline_urt", "instructions"),
+        listOf("data", "communityResults", "result", "ranked_community_timeline", "timeline", "instructions"),
+        listOf("data", "retweeters_timeline", "timeline", "instructions"),
+        listOf("data", "list", "members_timeline", "timeline", "instructions"),
     )
 
     /** The `instructions` at a known path, else wherever X has moved them. */

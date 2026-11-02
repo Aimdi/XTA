@@ -73,9 +73,11 @@ class XParserTest {
     }
 
     @Test
-    fun aConversationSkipsWhatXWithholdsAndKeepsItsCursor() {
-        val page = XParser.timeline(fixture("tweet_detail_subscriber_preview.json"))
-        assertTrue(page.threads.isEmpty(), "a subscriber preview and an unavailable reply carry no post")
+    fun aConversationReadsAPreviewAsItsPostAndKeepsTheWithheldReplysPlace() {
+        // As XTA reads it since QuaX #188: a subscriber preview is the post, an exclusive reply a gap.
+        val page = XParser.conversation(fixture("tweet_detail_subscriber_preview.json"))
+        assertEquals(listOf("2105589900078641579"), page.threads.flatMap { it.posts }.map { it.id })
+        assertEquals(listOf("2105590666927513924"), page.threads.flatMap { it.withheld }.map { it.id })
         assertNotNull(page.bottomCursor)
     }
 
