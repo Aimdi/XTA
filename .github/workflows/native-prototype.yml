@@ -139,7 +139,24 @@ jobs:
 
       - name: Keep the stand-in's log
         if: always()
-        run: cp "$RUNNER_TEMP/mock-x.log" native-screens/ 2>/dev/null || true
+        run: |
+          cp "$RUNNER_TEMP/mock-x.log" native-screens/ 2>/dev/null || true
+          tail -40 "$RUNNER_TEMP/mock-x.log" || true
+
+      # The top of each screen, small, in the log itself: readable where the
+      # artifact store is not.
+      - name: Screens for review
+        if: always()
+        run: |
+          command -v convert > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick > /dev/null; }
+          for f in native-screens/*.png; do
+            [ -f "$f" ] || continue
+            name=$(basename "$f" .png)
+            convert "$f" -gravity North -crop 100%x62%+0+0 +repage -resize 360x -quality 60 "$RUNNER_TEMP/$name.jpg"
+            echo "==== $name.jpg"
+            base64 -w 0 "$RUNNER_TEMP/$name.jpg"
+            echo
+          done
 
       - uses: actions/upload-artifact@v4
         if: always()
