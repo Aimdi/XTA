@@ -1,0 +1,6 @@
+[
+  {"id": 1, "post_id": 7104589, "x": 10, "y": 20, "width": 30, "height": 40, "body": "<b>Hello</b> &amp; bye", "is_active": true},
+  {"id": 2, "post_id": 7104589, "x": 1, "y": 1, "width": 1, "height": 1, "body": "old", "is_active": false},
+  {"id": 3, "post_id": 7104589, "x": 1, "y": 1, "width": 1, "height": 1, "body": "  "},
+  {"id": 4, "post_id": 7104589, "x": 1, "body": "no size"}
+]

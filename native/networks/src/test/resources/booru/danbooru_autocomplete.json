@@ -1,0 +1,9 @@
+[
+  {"type": "tag-word", "label": "hatsune miku", "value": "hatsune_miku", "category": 4, "post_count": 148527},
+  {"type": "tag-autocorrect", "label": "blue eyes", "value": "blue_eyes", "category": 0, "post_count": 2524807, "antecedent": "blue_eyse"},
+  {"type": "tag-other-name", "label": "hatsune miku", "value": "hatsune_miku", "category": 4, "post_count": 148527, "antecedent": "初音ミク"},
+  {"type": "tag-alias", "label": "kantai collection", "value": "kantai_collection", "category": 3, "post_count": 548021, "antecedent": "kancolle"},
+  {"type": "tag-word", "label": "same", "value": "same", "antecedent": "same"},
+  {"type": "user", "label": "someone", "value": "someone"},
+  {"type": "tag-word"}
+]
