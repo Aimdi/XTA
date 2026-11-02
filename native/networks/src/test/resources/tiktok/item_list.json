@@ -1,0 +1,54 @@
+{
+  "extra": {"fatal_item_ids": [], "logid": "20231114221320", "now": 1700000000000},
+  "hasMore": false,
+  "hasMorePrevious": true,
+  "itemList": [
+    {
+      "id": "7300000000000000002",
+      "desc": "Second clip #dance",
+      "createTime": 1699990000,
+      "author": {
+        "id": "107955",
+        "uniqueId": "tiktok",
+        "nickname": "TikTok",
+        "avatarThumb": "https://p16-sign-va.tiktokcdn.com/thumb.jpeg",
+        "secUid": "MS4wLjABAAAAv7iSuuXDJGDvJkmH_vz1qkDZYo1apxgzaxdBSeIuPiM",
+        "verified": true
+      },
+      "stats": {"diggCount": 1200, "shareCount": 30, "commentCount": 45, "playCount": 98000},
+      "video": {
+        "id": "7300000000000000002",
+        "height": 1920,
+        "width": 1080,
+        "duration": 8,
+        "cover": "https://p16-sign.tiktokcdn-us.com/obj/second.jpeg",
+        "playAddr": "https://v16-webapp-prime.tiktok.com/video/tos/second.mp4",
+        "downloadAddr": "https://v16-webapp-prime.tiktok.com/video/tos/second_download.mp4",
+        "bitrateInfo": [
+          {"GearName": "adapt_lowest_1080_1", "PlayAddr": {"UrlKey": "v12044gd0000_h264_1080p_2200000", "UrlList": ["https://v16-webapp-prime.tiktok.com/video/tos/second_1080.mp4"]}},
+          {"GearName": "normal_720_0", "PlayAddr": {"UrlKey": "v12044gd0000_h264_720p_1300000", "UrlList": ["https://v16-webapp-prime.tiktok.com/video/tos/second_720.mp4"]}}
+        ]
+      }
+    },
+    {
+      "id": "7300000000000000003",
+      "desc": "Photo mode",
+      "createTime": 1699980000,
+      "author": {"uniqueId": "tiktok", "nickname": "TikTok", "secUid": "MS4wLjABAAAAv7iSuuXDJGDvJkmH_vz1qkDZYo1apxgzaxdBSeIuPiM"},
+      "stats": {"diggCount": 10},
+      "imagePost": {
+        "cover": {"imageURL": {"urlList": ["https://p16-sign.tiktokcdn-us.com/obj/photo_cover.jpeg"]}},
+        "images": [
+          {"imageURL": {"urlList": ["https://p16-sign.tiktokcdn-us.com/obj/photo1.jpeg"]}},
+          {"imageURL": {"urlList": ["https://p16-sign.tiktokcdn-us.com/obj/photo2.jpeg"]}}
+        ],
+        "title": "Photo mode"
+      },
+      "video": {"duration": 0}
+    }
+  ],
+  "log_pb": {"impr_id": "20231114221320"},
+  "statusCode": 0,
+  "status_code": 0,
+  "status_msg": ""
+}

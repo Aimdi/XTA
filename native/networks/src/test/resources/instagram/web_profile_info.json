@@ -1,0 +1,78 @@
+{
+  "data": {
+    "user": {
+      "biography": "Discover what's new on Instagram",
+      "external_url": "https://about.instagram.com/",
+      "edge_followed_by": {"count": 697000000},
+      "edge_follow": {"count": 186},
+      "full_name": "Instagram",
+      "id": "25025320",
+      "is_private": false,
+      "is_verified": true,
+      "profile_pic_url": "https://scontent.cdninstagram.com/v/t51.2885-19/a.jpg",
+      "profile_pic_url_hd": "https://scontent.cdninstagram.com/v/t51.2885-19/hd.jpg",
+      "username": "instagram",
+      "edge_owner_to_timeline_media": {
+        "count": 8213,
+        "page_info": {"has_next_page": true, "end_cursor": "QVFDb3VudGVy"},
+        "edges": [
+          {
+            "node": {
+              "__typename": "GraphImage",
+              "id": "3141592653589793001",
+              "shortcode": "C1aPhoto",
+              "dimensions": {"height": 1350, "width": 1080},
+              "display_url": "https://scontent.cdninstagram.com/v/t51.2885-15/photo.jpg",
+              "edge_media_to_caption": {"edges": [{"node": {"text": "Golden hour in Lisbon #travel @natgeo"}}]},
+              "edge_media_to_comment": {"count": 1520},
+              "taken_at_timestamp": 1700000000,
+              "edge_liked_by": {"count": 250000},
+              "owner": {"id": "25025320", "username": "instagram"},
+              "thumbnail_src": "https://scontent.cdninstagram.com/v/t51.2885-15/photo_thumb.jpg",
+              "is_video": false
+            }
+          },
+          {
+            "node": {
+              "__typename": "GraphSidecar",
+              "id": "3141592653589793002",
+              "shortcode": "C2Carousel",
+              "display_url": "https://scontent.cdninstagram.com/v/t51.2885-15/slide1.jpg",
+              "edge_media_to_caption": {"edges": []},
+              "edge_media_to_comment": {"count": 88},
+              "taken_at_timestamp": 1699990000,
+              "edge_liked_by": {"count": 41000},
+              "owner": {"id": "25025320", "username": "instagram"},
+              "is_video": false,
+              "edge_sidecar_to_children": {
+                "edges": [
+                  {"node": {"__typename": "GraphImage", "id": "1", "display_url": "https://scontent.cdninstagram.com/v/t51.2885-15/slide1.jpg", "is_video": false}},
+                  {"node": {"__typename": "GraphImage", "id": "2", "display_url": "https://scontent.cdninstagram.com/v/t51.2885-15/slide2.jpg", "is_video": false}},
+                  {"node": {"__typename": "GraphVideo", "id": "3", "display_url": "https://scontent.cdninstagram.com/v/t51.2885-15/slide3_poster.jpg", "is_video": true, "video_url": "https://scontent.cdninstagram.com/o1/v/t16/slide3.mp4"}}
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "__typename": "GraphVideo",
+              "id": "3141592653589793003",
+              "shortcode": "C3Reel",
+              "display_url": "https://scontent.cdninstagram.com/v/t51.2885-15/reel_poster.jpg",
+              "video_url": "https://scontent.cdninstagram.com/o1/v/t16/reel.mp4",
+              "video_view_count": 1200000,
+              "edge_media_to_caption": {"edges": [{"node": {"text": "Behind the scenes"}}]},
+              "edge_media_to_comment": {"count": 7},
+              "taken_at_timestamp": 1699980000,
+              "edge_liked_by": {"count": 40},
+              "owner": {"id": "25025320", "username": "instagram"},
+              "product_type": "clips",
+              "is_video": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "status": "ok"
+}
