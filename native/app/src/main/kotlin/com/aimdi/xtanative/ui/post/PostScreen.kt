@@ -154,7 +154,6 @@ private fun FocalPost(post: XPost, actions: PostActions) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
         )
-        Hairline(Modifier.padding(top = 12.dp))
         Stats(shown)
     }
     Hairline()
@@ -169,6 +168,7 @@ private fun Stats(post: XPost) {
         post.bookmarkCount to R.string.stat_bookmarks,
     ).filter { it.first > 0 }
     if (stats.isEmpty()) return
+    Hairline(Modifier.padding(top = 12.dp))
     val strong = MaterialTheme.colorScheme.onSurface
     Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         stats.forEach { (n, label) ->
