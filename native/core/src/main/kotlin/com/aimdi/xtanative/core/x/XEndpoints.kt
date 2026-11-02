@@ -46,6 +46,9 @@ class XEndpoints {
         const val USER_ORIGINALS = "UserOriginalsTimeline"
         const val TWEET_DETAIL = "TweetDetail"
         const val SEARCH = "SearchTimeline"
+        const val USER_REPOSTS = "UserRepostsTimeline"
+        const val USER_REPLIES = "UserTweetsAndReplies"
+        const val USER_MEDIA = "UserMedia"
 
         const val OVERRIDES_URL = "https://raw.githubusercontent.com/Aimdi/XTA/HEAD/endpoints.json"
 
@@ -56,6 +59,10 @@ class XEndpoints {
             XEndpoint(USER_ORIGINALS, "UserOriginalsTimeline", "qtvmQffnepvr0oPe4A8MqQ", "x.com"),
             XEndpoint(TWEET_DETAIL, "TweetDetail", "wjV7NuWEsHgTBFfW3zYKzQ", "x.com"),
             XEndpoint(SEARCH, "SearchTimeline", "BYppgupFFS2yqVmmRNjlsw", "x.com"),
+            // Reposts left the Posts timeline when X split them out.
+            XEndpoint(USER_REPOSTS, "UserRepostsTimeline", "CnNg1YiKG7bRgi-RoIfKsw", "x.com"),
+            XEndpoint(USER_REPLIES, "UserTweetsAndReplies", "M9Tz6NGTHeRzqHOPdj9I7g", "x.com"),
+            XEndpoint(USER_MEDIA, "UserMedia", "9EovraBTXJYGSEQXZqlLmQ", "x.com"),
         ).associateBy { it.name }
     }
 }

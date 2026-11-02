@@ -2,6 +2,8 @@ package com.aimdi.xtanative.ui.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,11 +26,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -46,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -53,7 +60,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.R
+import com.aimdi.xtanative.core.x.model.PhotoSize
+import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -70,12 +80,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) {
     val graph = LocalGraph.current
     val vm: ProfileViewModel = viewModel { ProfileViewModel(graph, screenName) }
     val state by vm.ui.collectAsStateWithLifecycle()
+    val tab = state.of(state.tab)
     val list = rememberLazyListState()
     val nearEnd by remember(list) {
         derivedStateOf {
@@ -83,7 +94,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
             info.totalItemsCount > 0 && (info.visibleItemsInfo.lastOrNull()?.index ?: 0) >= info.totalItemsCount - 5
         }
     }
-    LaunchedEffect(nearEnd, state.posts.size) { if (nearEnd) vm.loadMore() }
+    LaunchedEffect(nearEnd, tab.threads.size, state.tab) { if (nearEnd) vm.loadMore() }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -99,27 +110,119 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
             )
         },
     ) { padding ->
+        // Padding, not content padding: the tab row sticks below the bar, not under it.
         LazyColumn(
             state = list,
-            contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp),
-            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
+            modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
         ) {
             item(key = "header", contentType = "header") { Header(state.user, screenName, state.complete, actions) }
             val problem = state.problem
             when {
-                state.loading && state.posts.isEmpty() -> item(key = "loading") { LoadingRow() }
-                problem != null -> item(key = "problem") { ProblemRow(problem, vm::load) }
+                state.loading && !state.complete -> item(key = "loading") { LoadingRow() }
+                problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
             }
-            items(state.posts, key = { it.id }, contentType = { "thread" }) { thread ->
-                ThreadRows(thread, actions, state.pinnedIds)
-            }
-            item(key = "footer") {
-                val more = state.moreProblem
-                when {
-                    state.loadingMore -> LoadingRow()
-                    more != null -> ProblemRow(more, vm::loadMore)
+            if (state.complete) {
+                stickyHeader(key = "tabs", contentType = "tabs") { Tabs(state.tab, vm::select) }
+                tabContent(state, tab, actions)
+                item(key = "footer-" + state.tab.name) {
+                    val more = tab.moreProblem
+                    val failed = tab.problem
+                    when {
+                        tab.loading || tab.loadingMore -> LoadingRow()
+                        failed != null -> ProblemRow(failed, { vm.select(state.tab) })
+                        more != null -> ProblemRow(more, { vm.loadMore() })
+                        tab.loaded && tab.threads.isEmpty() && (state.tab != ProfileTab.POSTS || state.pinned.isEmpty()) ->
+                            Text(
+                                stringResource(R.string.profile_nothing),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                                textAlign = TextAlign.Center,
+                            )
+                    }
                 }
             }
+        }
+    }
+}
+
+/** Posts (with reposts and the pinned post first), Replies, or the media grid. */
+private fun LazyListScope.tabContent(state: ProfileUi, tab: TabUi, actions: PostActions) {
+    when (state.tab) {
+        ProfileTab.POSTS -> {
+            val pinnedIds = state.pinned.mapTo(HashSet()) { it.id }
+            items(state.pinned, key = { "pinned-" + it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions, pinnedIds) }
+            items(tab.threads.filter { it.id !in pinnedIds }, key = { "post-" + it.id }, contentType = { "thread" }) { thread ->
+                ThreadRows(thread, actions)
+            }
+        }
+        ProfileTab.REPLIES -> items(tab.threads, key = { "reply-" + it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
+        ProfileTab.MEDIA -> {
+            val tiles = tab.threads.flatMap { thread ->
+                thread.posts.flatMap { post -> post.shown.media.mapIndexed { index, media -> MediaTileRef(post.shown.id, index, media) } }
+            }
+            items(tiles.chunked(3), key = { row -> "media-" + row.first().postId + "-" + row.first().index }, contentType = { "media" }) { row ->
+                Row(Modifier.fillMaxWidth().padding(bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                    row.forEach { tile -> MediaThumb(tile, actions, Modifier.weight(1f)) }
+                    repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                }
+            }
+        }
+    }
+}
+
+private data class MediaTileRef(val postId: String, val index: Int, val media: XMedia)
+
+@Composable
+private fun MediaThumb(tile: MediaTileRef, actions: PostActions, modifier: Modifier) {
+    Box(
+        modifier
+            .aspectRatio(1f)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable { actions.openMedia(tile.postId, tile.index) },
+    ) {
+        AsyncImage(
+            model = photoUrl(tile.media.url, PhotoSize.SMALL),
+            contentDescription = tile.media.alt,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        if (tile.media.kind != XMedia.Kind.PHOTO) {
+            Icon(
+                Icons.Filled.PlayArrow,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.align(Alignment.Center).size(32.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
+    TabRow(
+        selectedTabIndex = selected.ordinal,
+        containerColor = MaterialTheme.colorScheme.background,
+        divider = { Hairline() },
+    ) {
+        ProfileTab.entries.forEach { tab ->
+            Tab(
+                selected = tab == selected,
+                onClick = { onSelect(tab) },
+                text = {
+                    Text(
+                        stringResource(
+                            when (tab) {
+                                ProfileTab.POSTS -> R.string.profile_posts
+                                ProfileTab.REPLIES -> R.string.profile_replies
+                                ProfileTab.MEDIA -> R.string.profile_media
+                            },
+                        ),
+                    )
+                },
+                selectedContentColor = MaterialTheme.colorScheme.onBackground,
+                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

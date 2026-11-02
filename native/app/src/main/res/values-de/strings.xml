@@ -96,4 +96,8 @@
         <item quantity="other">%d neue Posts</item>
     </plurals>
     <string name="settings_autoplay">Videos im Feed stumm abspielen</string>
+    <string name="profile_posts">Posts</string>
+    <string name="profile_replies">Antworten</string>
+    <string name="profile_media">Medien</string>
+    <string name="profile_nothing">Hier ist noch nichts.</string>
 </resources>

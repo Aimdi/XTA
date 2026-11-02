@@ -70,23 +70,57 @@ class XClient(
         XParser.profile(body) ?: throw XRequestException(404, "No such account: $screenName")
     }
 
-    /** A profile's posts tab: its own posts, newest first. */
-    suspend fun userPosts(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage = parsing {
+    /** A profile's posts tab: its own posts, newest first, with its pinned post. */
+    suspend fun userPosts(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage =
+        userTimeline(XEndpoints.USER_ORIGINALS, userId, cursor, count)
+
+    /** What a profile reposted, newest first: X keeps these apart from its posts. */
+    suspend fun userReposts(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage =
+        userTimeline(XEndpoints.USER_REPOSTS, userId, cursor, count)
+
+    /** A profile's posts and its replies, as the Replies tab shows them. */
+    suspend fun userReplies(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage =
+        userTimeline(XEndpoints.USER_REPLIES, userId, cursor, count, mapOf("withCommunity" to JsonPrimitive(true)))
+
+    /** A profile's photos and videos: one grid module per page. */
+    suspend fun userMedia(userId: String, cursor: String? = null, count: Int = 20): XTimelinePage = parsing {
+        // XTA sends the toggles under both names, the typo included, as x.com has.
+        val toggles = json { put("withArticlePlainText", false) }
         XParser.timeline(get(
-            XEndpoints.USER_ORIGINALS,
+            XEndpoints.USER_MEDIA,
             mapOf(
-                "variables" to json {
-                    put("userId", userId)
-                    put("count", count)
-                    put("includePromotedContent", true)
-                    put("withQuickPromoteEligibilityTweetFields", true)
-                    put("withVoice", true)
-                    cursor?.let { put("cursor", it) }
-                },
+                "variables" to JsonObject(userVariables(userId, cursor, count)).toString(),
+                "features" to MEDIA_FEATURES.toString(),
+                "fieldToggles" to toggles,
+                "filedToggles" to toggles,
+            ),
+        ))
+    }
+
+    private suspend fun userTimeline(
+        endpoint: String,
+        userId: String,
+        cursor: String?,
+        count: Int,
+        extra: Map<String, JsonPrimitive> = emptyMap(),
+    ): XTimelinePage = parsing {
+        XParser.timeline(get(
+            endpoint,
+            mapOf(
+                "variables" to JsonObject(userVariables(userId, cursor, count) + extra).toString(),
                 "features" to TIMELINE_FEATURES.toString(),
                 "fieldToggles" to json { put("withPayments", false); put("withArticlePlainText", false) },
             ),
         ))
+    }
+
+    private fun userVariables(userId: String, cursor: String?, count: Int): Map<String, JsonPrimitive> = buildMap {
+        put("userId", JsonPrimitive(userId))
+        put("count", JsonPrimitive(count))
+        put("includePromotedContent", JsonPrimitive(true))
+        put("withQuickPromoteEligibilityTweetFields", JsonPrimitive(true))
+        put("withVoice", JsonPrimitive(true))
+        cursor?.let { put("cursor", JsonPrimitive(it)) }
     }
 
     /** A post and its conversation: what it answers, then the replies. */
@@ -288,6 +322,45 @@ class XClient(
             "rweb_tipjar_consumption_enabled" to false,
             "rweb_video_screen_enabled" to false,
             "standardized_nudges_misinfo" to true,
+            "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled" to true,
+            "verified_phone_label_enabled" to false,
+            "view_counts_everywhere_api_enabled" to true,
+        )
+
+        /** UserMedia's switches, as XTA records them (client.dart's _userMediaFeatures). */
+        val MEDIA_FEATURES = flags(
+            "articles_preview_enabled" to true,
+            "c9s_tweet_anatomy_moderator_badge_enabled" to true,
+            "communities_web_enable_tweet_community_results_fetch" to true,
+            "creator_subscriptions_quote_tweet_preview_enabled" to false,
+            "creator_subscriptions_tweet_preview_api_enabled" to true,
+            "freedom_of_speech_not_reach_fetch_enabled" to true,
+            "graphql_is_translatable_rweb_tweet_is_translatable_enabled" to true,
+            "longform_notetweets_consumption_enabled" to true,
+            "longform_notetweets_inline_media_enabled" to true,
+            "longform_notetweets_rich_text_read_enabled" to true,
+            "payments_enabled" to false,
+            "premium_content_api_read_enabled" to false,
+            "profile_label_improvements_pcf_label_in_post_enabled" to true,
+            "responsive_web_edit_tweet_api_enabled" to true,
+            "responsive_web_enhance_cards_enabled" to false,
+            "responsive_web_graphql_skip_user_profile_image_extensions_enabled" to false,
+            "responsive_web_graphql_timeline_navigation_enabled" to true,
+            "responsive_web_grok_analysis_button_from_backend" to true,
+            "responsive_web_grok_analyze_button_fetch_trends_enabled" to false,
+            "responsive_web_grok_analyze_post_followups_enabled" to true,
+            "responsive_web_grok_community_note_auto_translation_is_enabled" to false,
+            "responsive_web_grok_image_annotation_enabled" to true,
+            "responsive_web_grok_imagine_annotation_enabled" to true,
+            "responsive_web_grok_share_attachment_enabled" to true,
+            "responsive_web_grok_show_grok_translated_post" to false,
+            "responsive_web_jetfuel_frame" to true,
+            "responsive_web_profile_redirect_enabled" to false,
+            "responsive_web_twitter_article_tweet_consumption_enabled" to true,
+            "rweb_tipjar_consumption_enabled" to true,
+            "rweb_video_screen_enabled" to false,
+            "standardized_nudges_misinfo" to true,
+            "tweet_awards_web_tipping_enabled" to false,
             "tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled" to true,
             "verified_phone_label_enabled" to false,
             "view_counts_everywhere_api_enabled" to true,

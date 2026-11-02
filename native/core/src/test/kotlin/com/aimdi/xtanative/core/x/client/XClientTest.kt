@@ -118,6 +118,24 @@ class XClientTest {
     }
 
     @Test
+    fun aProfilesTabsAskForTheirOwnOperations() = runBlocking {
+        val page = javaClass.getResource("/x/user_originals_page.json")!!.readText()
+        val x = FakeX { _, _ -> XResponse(200, page) }
+        val reader = client(x, listOf(account("a")))
+        reader.userReposts("42")
+        reader.userReplies("42", cursor = "c1")
+        reader.userMedia("42")
+        val (reposts, replies, media) = x.asked.map { it.first }
+        assertTrue(reposts.encodedPath.endsWith("/UserRepostsTimeline"))
+        assertTrue(replies.encodedPath.endsWith("/UserTweetsAndReplies"))
+        assertTrue(replies.queryParameter("variables")!!.contains("\"withCommunity\":true"))
+        assertTrue(replies.queryParameter("variables")!!.contains("\"cursor\":\"c1\""))
+        assertTrue(media.encodedPath.endsWith("/UserMedia"))
+        assertEquals(media.queryParameter("fieldToggles"), media.queryParameter("filedToggles"))
+        assertTrue(reposts.queryParameter("variables")!!.contains("\"userId\":\"42\""))
+    }
+
+    @Test
     fun aServerErrorIsNotPassedToTheNextAccount() {
         val x = FakeX { _, _ -> XResponse(500, "") }
         val error = assertFailsWith<XRequestException> { runBlocking { client(x, listOf(account("a"), account("b"))).profile("quax_tests") } }

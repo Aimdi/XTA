@@ -98,4 +98,8 @@
         <item quantity="other">%d new posts</item>
     </plurals>
     <string name="settings_autoplay">Play videos in the feed, muted</string>
+    <string name="profile_posts">Posts</string>
+    <string name="profile_replies">Replies</string>
+    <string name="profile_media">Media</string>
+    <string name="profile_nothing">Nothing here yet.</string>
 </resources>
