@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.networks.threads
 
+import com.aimdi.xtanative.networks.NetworkFailure
 import java.io.IOException
 import java.time.Instant
 import kotlin.coroutines.cancellation.CancellationException
@@ -46,11 +47,11 @@ enum class ThreadsRetry {
 class ThreadsException(
     val failure: ThreadsFailure,
     message: String,
-    val code: Int? = null,
-    val retryAt: Instant? = null,
-) : Exception(message) {
+    override val code: Int? = null,
+    override val retryAt: Instant? = null,
+) : Exception(message), NetworkFailure {
     /** Which network failed, so a screen can name it. */
-    val network: String get() = NETWORK
+    override val network: String get() = NETWORK
 
     /**
      * A throttle waits for its cooldown, and without one for the reader; a
