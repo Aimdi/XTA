@@ -1,0 +1,1318 @@
+# XTA's stocks_format.dart number rules run on intl 0.20.3 (XTA's pin): kind, locale, input, output.
+price	ar	1234.5	1,234.50
+spoken	ar	1234.5	1,234.50
+price	ar	0.00181	0.001810
+spoken	ar	0.00181	0.001810
+price	ar	0.0001234	0.0₃1234
+spoken	ar	0.0001234	0.0001234
+price	ar	1234567.891	1,234,567.89
+spoken	ar	1234567.891	1,234,567.89
+price	ar	-1234.5	‎-1,234.50
+spoken	ar	-1234.5	‎-1,234.50
+percent	ar	-0.4	−0.40%
+percent	ar	1234.5678	+1,234.57%
+change	ar	-2.5	−2.50
+compact	ar	0.5	0.5
+compactUsd	ar	0.5	‏0.50 $
+compact	ar	12.0	12
+compactUsd	ar	12.0	‏12.00 $
+compact	ar	999.0	999
+compactUsd	ar	999.0	‏999 $
+compact	ar	1234.0	1.23 ألف
+compactUsd	ar	1234.0	‏1.23 ألف $
+compact	ar	3000.0	3 آلاف
+compactUsd	ar	3000.0	‏3 آلاف $
+compact	ar	3450.0	3.45 ألف
+compactUsd	ar	3450.0	‏3.45 ألف $
+compact	ar	10000.0	10 ألف
+compactUsd	ar	10000.0	‏10 ألف $
+compact	ar	99999.0	100 ألف
+compactUsd	ar	99999.0	‏100 ألف $
+compact	ar	999500.0	1 مليون
+compactUsd	ar	999500.0	‏1 مليون $
+compact	ar	48200000.0	48.2 مليون
+compactUsd	ar	48200000.0	‏48.2 مليون $
+compact	ar	1234567890.0	1.23 مليار
+compactUsd	ar	1234567890.0	‏1.23 مليار $
+compact	ar	1500000000000.0	1.5 ترليون
+compactUsd	ar	1500000000000.0	‏1.5 ترليون $
+price	be	1234.5	1 234,50
+spoken	be	1234.5	1 234,50
+price	be	0.00181	0,001810
+spoken	be	0.00181	0,001810
+price	be	0.0001234	0,0₃1234
+spoken	be	0.0001234	0,0001234
+price	be	1234567.891	1 234 567,89
+spoken	be	1234567.891	1 234 567,89
+price	be	-1234.5	-1 234,50
+spoken	be	-1234.5	-1 234,50
+percent	be	-0.4	−0,40%
+percent	be	1234.5678	+1 234,57%
+change	be	-2.5	−2,50
+compact	be	0.5	0,5
+compactUsd	be	0.5	0,50 $
+compact	be	12.0	12
+compactUsd	be	12.0	12,00 $
+compact	be	999.0	999
+compactUsd	be	999.0	999 $
+compact	be	1234.0	1,23 тыс.
+compactUsd	be	1234.0	1,23 тыс. $
+compact	be	3000.0	3 тыс.
+compactUsd	be	3000.0	3 тыс. $
+compact	be	3450.0	3,45 тыс.
+compactUsd	be	3450.0	3,45 тыс. $
+compact	be	10000.0	10 тыс.
+compactUsd	be	10000.0	10 тыс. $
+compact	be	99999.0	100 тыс.
+compactUsd	be	99999.0	100 тыс. $
+compact	be	999500.0	1 млн
+compactUsd	be	999500.0	1 млн $
+compact	be	48200000.0	48,2 млн
+compactUsd	be	48200000.0	48,2 млн $
+compact	be	1234567890.0	1,23 млрд
+compactUsd	be	1234567890.0	1,23 млрд $
+compact	be	1500000000000.0	1,5 трлн
+compactUsd	be	1500000000000.0	1,5 трлн $
+price	be_Latn	1234.5	1 234,50
+spoken	be_Latn	1234.5	1 234,50
+price	be_Latn	0.00181	0,001810
+spoken	be_Latn	0.00181	0,001810
+price	be_Latn	0.0001234	0,0₃1234
+spoken	be_Latn	0.0001234	0,0001234
+price	be_Latn	1234567.891	1 234 567,89
+spoken	be_Latn	1234567.891	1 234 567,89
+price	be_Latn	-1234.5	-1 234,50
+spoken	be_Latn	-1234.5	-1 234,50
+percent	be_Latn	-0.4	−0,40%
+percent	be_Latn	1234.5678	+1 234,57%
+change	be_Latn	-2.5	−2,50
+compact	be_Latn	0.5	0,5
+compactUsd	be_Latn	0.5	0,50 $
+compact	be_Latn	12.0	12
+compactUsd	be_Latn	12.0	12,00 $
+compact	be_Latn	999.0	999
+compactUsd	be_Latn	999.0	999 $
+compact	be_Latn	1234.0	1,23 тыс.
+compactUsd	be_Latn	1234.0	1,23 тыс. $
+compact	be_Latn	3000.0	3 тыс.
+compactUsd	be_Latn	3000.0	3 тыс. $
+compact	be_Latn	3450.0	3,45 тыс.
+compactUsd	be_Latn	3450.0	3,45 тыс. $
+compact	be_Latn	10000.0	10 тыс.
+compactUsd	be_Latn	10000.0	10 тыс. $
+compact	be_Latn	99999.0	100 тыс.
+compactUsd	be_Latn	99999.0	100 тыс. $
+compact	be_Latn	999500.0	1 млн
+compactUsd	be_Latn	999500.0	1 млн $
+compact	be_Latn	48200000.0	48,2 млн
+compactUsd	be_Latn	48200000.0	48,2 млн $
+compact	be_Latn	1234567890.0	1,23 млрд
+compactUsd	be_Latn	1234567890.0	1,23 млрд $
+compact	be_Latn	1500000000000.0	1,5 трлн
+compactUsd	be_Latn	1500000000000.0	1,5 трлн $
+price	ca	1234.5	1.234,50
+spoken	ca	1234.5	1.234,50
+price	ca	0.00181	0,001810
+spoken	ca	0.00181	0,001810
+price	ca	0.0001234	0,0₃1234
+spoken	ca	0.0001234	0,0001234
+price	ca	1234567.891	1.234.567,89
+spoken	ca	1234567.891	1.234.567,89
+price	ca	-1234.5	-1.234,50
+spoken	ca	-1234.5	-1.234,50
+percent	ca	-0.4	−0,40%
+percent	ca	1234.5678	+1.234,57%
+change	ca	-2.5	−2,50
+compact	ca	0.5	0,5
+compactUsd	ca	0.5	0,50 $
+compact	ca	12.0	12
+compactUsd	ca	12.0	12,00 $
+compact	ca	999.0	999
+compactUsd	ca	999.0	999 $
+compact	ca	1234.0	1,23 k
+compactUsd	ca	1234.0	1,23 k $
+compact	ca	3000.0	3 k
+compactUsd	ca	3000.0	3 k $
+compact	ca	3450.0	3,45 k
+compactUsd	ca	3450.0	3,45 k $
+compact	ca	10000.0	10 k
+compactUsd	ca	10000.0	10 k $
+compact	ca	99999.0	100 k
+compactUsd	ca	99999.0	100 k $
+compact	ca	999500.0	1 M
+compactUsd	ca	999500.0	1 M $
+compact	ca	48200000.0	48,2 M
+compactUsd	ca	48200000.0	48,2 M $
+compact	ca	1234567890.0	1235 M
+compactUsd	ca	1234567890.0	1235 M $
+compact	ca	1500000000000.0	1,5 B
+compactUsd	ca	1500000000000.0	1,5 B $
+price	cs	1234.5	1 234,50
+spoken	cs	1234.5	1 234,50
+price	cs	0.00181	0,001810
+spoken	cs	0.00181	0,001810
+price	cs	0.0001234	0,0₃1234
+spoken	cs	0.0001234	0,0001234
+price	cs	1234567.891	1 234 567,89
+spoken	cs	1234567.891	1 234 567,89
+price	cs	-1234.5	-1 234,50
+spoken	cs	-1234.5	-1 234,50
+percent	cs	-0.4	−0,40%
+percent	cs	1234.5678	+1 234,57%
+change	cs	-2.5	−2,50
+compact	cs	0.5	0,5
+compactUsd	cs	0.5	0,50 $
+compact	cs	12.0	12
+compactUsd	cs	12.0	12,00 $
+compact	cs	999.0	999
+compactUsd	cs	999.0	999 $
+compact	cs	1234.0	1,23 tis.
+compactUsd	cs	1234.0	1,23 tis. $
+compact	cs	3000.0	3 tis.
+compactUsd	cs	3000.0	3 tis. $
+compact	cs	3450.0	3,45 tis.
+compactUsd	cs	3450.0	3,45 tis. $
+compact	cs	10000.0	10 tis.
+compactUsd	cs	10000.0	10 tis. $
+compact	cs	99999.0	100 tis.
+compactUsd	cs	99999.0	100 tis. $
+compact	cs	999500.0	1 mil.
+compactUsd	cs	999500.0	1 mil. $
+compact	cs	48200000.0	48,2 mil.
+compactUsd	cs	48200000.0	48,2 mil. $
+compact	cs	1234567890.0	1,23 mld.
+compactUsd	cs	1234567890.0	1,23 mld. $
+compact	cs	1500000000000.0	1,5 bil.
+compactUsd	cs	1500000000000.0	1,5 bil. $
+price	de	0.0	0,00
+spoken	de	0.0	0,00
+price	de	1.0	1,00
+spoken	de	1.0	1,00
+price	de	1234.5	1.234,50
+spoken	de	1234.5	1.234,50
+price	de	0.35121	0,3512
+spoken	de	0.35121	0,3512
+price	de	0.0000123	0,0₄1230
+spoken	de	0.0000123	0,00001230
+price	de	0.1234	0,1234
+spoken	de	0.1234	0,1234
+price	de	0.01234	0,01234
+spoken	de	0.01234	0,01234
+price	de	0.00181	0,001810
+spoken	de	0.00181	0,001810
+price	de	0.0001234	0,0₃1234
+spoken	de	0.0001234	0,0001234
+price	de	1.23e-13	0,0₁₂1230
+spoken	de	1.23e-13	0,0000000000001230
+price	de	0.099996	0,1000
+spoken	de	0.099996	0,1000
+price	de	0.99996	1,00
+spoken	de	0.99996	1,00
+price	de	1.23e-8	0,0₇1230
+spoken	de	1.23e-8	0,00000001230
+price	de	1234567.891	1.234.567,89
+spoken	de	1234567.891	1.234.567,89
+price	de	999.995	1.000,00
+spoken	de	999.995	1.000,00
+price	de	0.5	0,5000
+spoken	de	0.5	0,5000
+price	de	0.05	0,05000
+spoken	de	0.05	0,05000
+price	de	12.345	12,35
+spoken	de	12.345	12,35
+price	de	12.355	12,36
+spoken	de	12.355	12,36
+price	de	1.005	1,00
+spoken	de	1.005	1,00
+price	de	2.675	2,67
+spoken	de	2.675	2,67
+price	de	100.125	100,13
+spoken	de	100.125	100,13
+price	de	0.00099996	0,001000
+spoken	de	0.00099996	0,001000
+price	de	0.0009999	0,0₃9999
+spoken	de	0.0009999	0,0009999
+price	de	1e-16	0,0₁₅1000
+spoken	de	1e-16	0,0000000000000001000
+price	de	1e-20	0,0₁₉1000
+spoken	de	1e-20	0,00000000000000000001000
+price	de	9.995	9,99
+spoken	de	9.995	9,99
+price	de	123456789.125	123.456.789,13
+spoken	de	123456789.125	123.456.789,13
+price	de	-1234.5	-1.234,50
+spoken	de	-1234.5	-1.234,50
+price	de	-0.0001234	-0,0₃1234
+spoken	de	-0.0001234	-0,0001234
+price	de	-0.01234	-0,01234
+spoken	de	-0.01234	-0,01234
+price	de	1000000000000000.0	1.000.000.000.000.000,00
+spoken	de	1000000000000000.0	1.000.000.000.000.000,00
+price	de	0.000123456	0,0₃1235
+spoken	de	0.000123456	0,0001235
+price	de	24172.03	24.172,03
+spoken	de	24172.03	24.172,03
+price	de	189.33	189,33
+spoken	de	189.33	189,33
+price	de	0.0000123456	0,0₄1235
+spoken	de	0.0000123456	0,00001235
+percent	de	1.234	+1,23%
+percent	de	-0.4	−0,40%
+percent	de	-0.001	0,00%
+percent	de	0.0049	0,00%
+percent	de	0.005	+0,01%
+percent	de	-0.005	−0,01%
+percent	de	25.0	+25,00%
+percent	de	1234.5678	+1.234,57%
+percent	de	-99.999	−100,00%
+percent	de	0.0	0,00%
+percent	de	12.345	+12,35%
+percent	de	0.125	+0,13%
+percent	de	0.4514	+0,45%
+change	de	-2.5	−2,50
+change	de	-0.0001234	−0,0₃1234
+change	de	0.0	0,00
+change	de	3.0	+3,00
+change	de	1234.567	+1.234,57
+change	de	108.63	+108,63
+compact	de	0.0	0
+compactUsd	de	0.0	0,00 $
+compact	de	0.5	0,5
+compactUsd	de	0.5	0,50 $
+compact	de	0.05	0,05
+compactUsd	de	0.05	0,05 $
+compact	de	7.0	7
+compactUsd	de	7.0	7,00 $
+compact	de	12.0	12
+compactUsd	de	12.0	12,00 $
+compact	de	99.5	99,5
+compactUsd	de	99.5	99,50 $
+compact	de	999.0	999
+compactUsd	de	999.0	999 $
+compact	de	1000.0	1000
+compactUsd	de	1000.0	1000 $
+compact	de	1000.5	1001
+compactUsd	de	1000.5	1001 $
+compact	de	1234.0	1234
+compactUsd	de	1234.0	1234 $
+compact	de	1500.0	1500
+compactUsd	de	1500.0	1500 $
+compact	de	3000.0	3000
+compactUsd	de	3000.0	3000 $
+compact	de	3004.0	3004
+compactUsd	de	3004.0	3004 $
+compact	de	3450.0	3450
+compactUsd	de	3450.0	3450 $
+compact	de	5000.0	5000
+compactUsd	de	5000.0	5000 $
+compact	de	9999.0	9999
+compactUsd	de	9999.0	9999 $
+compact	de	9999.6	10000
+compactUsd	de	9999.6	10000 $
+compact	de	10000.0	10000
+compactUsd	de	10000.0	10000 $
+compact	de	10500.0	10500
+compactUsd	de	10500.0	10500 $
+compact	de	11000.0	11000
+compactUsd	de	11000.0	11000 $
+compact	de	12345.0	12345
+compactUsd	de	12345.0	12345 $
+compact	de	99999.0	99999
+compactUsd	de	99999.0	99999 $
+compact	de	110000.0	110000
+compactUsd	de	110000.0	110000 $
+compact	de	123456.0	123456
+compactUsd	de	123456.0	123456 $
+compact	de	999500.0	999500
+compactUsd	de	999500.0	999500 $
+compact	de	999999.0	999999
+compactUsd	de	999999.0	999999 $
+compact	de	1000000.0	1 Mio.
+compactUsd	de	1000000.0	1 Mio. $
+compact	de	48200000.0	48,2 Mio.
+compactUsd	de	48200000.0	48,2 Mio. $
+compact	de	1234567890.0	1,23 Mrd.
+compactUsd	de	1234567890.0	1,23 Mrd. $
+compact	de	4900000000.0	4,9 Mrd.
+compactUsd	de	4900000000.0	4,9 Mrd. $
+compact	de	5100000000.0	5,1 Mrd.
+compactUsd	de	5100000000.0	5,1 Mrd. $
+compact	de	1500000000000.0	1,5 Bio.
+compactUsd	de	1500000000000.0	1,5 Bio. $
+compact	de	999999999999.0	1 Bio.
+compactUsd	de	999999999999.0	1 Bio. $
+compact	de	12345678901234.0	12,3 Bio.
+compactUsd	de	12345678901234.0	12,3 Bio. $
+price	en	0.0	0.00
+spoken	en	0.0	0.00
+price	en	1.0	1.00
+spoken	en	1.0	1.00
+price	en	1234.5	1,234.50
+spoken	en	1234.5	1,234.50
+price	en	0.35121	0.3512
+spoken	en	0.35121	0.3512
+price	en	0.0000123	0.0₄1230
+spoken	en	0.0000123	0.00001230
+price	en	0.1234	0.1234
+spoken	en	0.1234	0.1234
+price	en	0.01234	0.01234
+spoken	en	0.01234	0.01234
+price	en	0.00181	0.001810
+spoken	en	0.00181	0.001810
+price	en	0.0001234	0.0₃1234
+spoken	en	0.0001234	0.0001234
+price	en	1.23e-13	0.0₁₂1230
+spoken	en	1.23e-13	0.0000000000001230
+price	en	0.099996	0.1000
+spoken	en	0.099996	0.1000
+price	en	0.99996	1.00
+spoken	en	0.99996	1.00
+price	en	1.23e-8	0.0₇1230
+spoken	en	1.23e-8	0.00000001230
+price	en	1234567.891	1,234,567.89
+spoken	en	1234567.891	1,234,567.89
+price	en	999.995	1,000.00
+spoken	en	999.995	1,000.00
+price	en	0.5	0.5000
+spoken	en	0.5	0.5000
+price	en	0.05	0.05000
+spoken	en	0.05	0.05000
+price	en	12.345	12.35
+spoken	en	12.345	12.35
+price	en	12.355	12.36
+spoken	en	12.355	12.36
+price	en	1.005	1.00
+spoken	en	1.005	1.00
+price	en	2.675	2.67
+spoken	en	2.675	2.67
+price	en	100.125	100.13
+spoken	en	100.125	100.13
+price	en	0.00099996	0.001000
+spoken	en	0.00099996	0.001000
+price	en	0.0009999	0.0₃9999
+spoken	en	0.0009999	0.0009999
+price	en	1e-16	0.0₁₅1000
+spoken	en	1e-16	0.0000000000000001000
+price	en	1e-20	0.0₁₉1000
+spoken	en	1e-20	0.00000000000000000001000
+price	en	9.995	9.99
+spoken	en	9.995	9.99
+price	en	123456789.125	123,456,789.13
+spoken	en	123456789.125	123,456,789.13
+price	en	-1234.5	-1,234.50
+spoken	en	-1234.5	-1,234.50
+price	en	-0.0001234	-0.0₃1234
+spoken	en	-0.0001234	-0.0001234
+price	en	-0.01234	-0.01234
+spoken	en	-0.01234	-0.01234
+price	en	1000000000000000.0	1,000,000,000,000,000.00
+spoken	en	1000000000000000.0	1,000,000,000,000,000.00
+price	en	0.000123456	0.0₃1235
+spoken	en	0.000123456	0.0001235
+price	en	24172.03	24,172.03
+spoken	en	24172.03	24,172.03
+price	en	189.33	189.33
+spoken	en	189.33	189.33
+price	en	0.0000123456	0.0₄1235
+spoken	en	0.0000123456	0.00001235
+percent	en	1.234	+1.23%
+percent	en	-0.4	−0.40%
+percent	en	-0.001	0.00%
+percent	en	0.0049	0.00%
+percent	en	0.005	+0.01%
+percent	en	-0.005	−0.01%
+percent	en	25.0	+25.00%
+percent	en	1234.5678	+1,234.57%
+percent	en	-99.999	−100.00%
+percent	en	0.0	0.00%
+percent	en	12.345	+12.35%
+percent	en	0.125	+0.13%
+percent	en	0.4514	+0.45%
+change	en	-2.5	−2.50
+change	en	-0.0001234	−0.0₃1234
+change	en	0.0	0.00
+change	en	3.0	+3.00
+change	en	1234.567	+1,234.57
+change	en	108.63	+108.63
+compact	en	0.0	0
+compactUsd	en	0.0	$0.00
+compact	en	0.5	0.5
+compactUsd	en	0.5	$0.50
+compact	en	0.05	0.05
+compactUsd	en	0.05	$0.05
+compact	en	7.0	7
+compactUsd	en	7.0	$7.00
+compact	en	12.0	12
+compactUsd	en	12.0	$12.00
+compact	en	99.5	99.5
+compactUsd	en	99.5	$99.50
+compact	en	999.0	999
+compactUsd	en	999.0	$999
+compact	en	1000.0	1K
+compactUsd	en	1000.0	$1K
+compact	en	1000.5	1K
+compactUsd	en	1000.5	$1K
+compact	en	1234.0	1.23K
+compactUsd	en	1234.0	$1.23K
+compact	en	1500.0	1.5K
+compactUsd	en	1500.0	$1.5K
+compact	en	3000.0	3K
+compactUsd	en	3000.0	$3K
+compact	en	3004.0	3K
+compactUsd	en	3004.0	$3K
+compact	en	3450.0	3.45K
+compactUsd	en	3450.0	$3.45K
+compact	en	5000.0	5K
+compactUsd	en	5000.0	$5K
+compact	en	9999.0	10K
+compactUsd	en	9999.0	$10K
+compact	en	9999.6	10K
+compactUsd	en	9999.6	$10K
+compact	en	10000.0	10K
+compactUsd	en	10000.0	$10K
+compact	en	10500.0	10.5K
+compactUsd	en	10500.0	$10.5K
+compact	en	11000.0	11K
+compactUsd	en	11000.0	$11K
+compact	en	12345.0	12.3K
+compactUsd	en	12345.0	$12.3K
+compact	en	99999.0	100K
+compactUsd	en	99999.0	$100K
+compact	en	110000.0	110K
+compactUsd	en	110000.0	$110K
+compact	en	123456.0	123K
+compactUsd	en	123456.0	$123K
+compact	en	999500.0	1M
+compactUsd	en	999500.0	$1M
+compact	en	999999.0	1M
+compactUsd	en	999999.0	$1M
+compact	en	1000000.0	1M
+compactUsd	en	1000000.0	$1M
+compact	en	48200000.0	48.2M
+compactUsd	en	48200000.0	$48.2M
+compact	en	1234567890.0	1.23B
+compactUsd	en	1234567890.0	$1.23B
+compact	en	4900000000.0	4.9B
+compactUsd	en	4900000000.0	$4.9B
+compact	en	5100000000.0	5.1B
+compactUsd	en	5100000000.0	$5.1B
+compact	en	1500000000000.0	1.5T
+compactUsd	en	1500000000000.0	$1.5T
+compact	en	999999999999.0	1T
+compactUsd	en	999999999999.0	$1T
+compact	en	12345678901234.0	12.3T
+compactUsd	en	12345678901234.0	$12.3T
+price	eo	1234.5	1,234.50
+spoken	eo	1234.5	1,234.50
+price	eo	0.00181	0.001810
+spoken	eo	0.00181	0.001810
+price	eo	0.0001234	0.0₃1234
+spoken	eo	0.0001234	0.0001234
+price	eo	1234567.891	1,234,567.89
+spoken	eo	1234567.891	1,234,567.89
+price	eo	-1234.5	-1,234.50
+spoken	eo	-1234.5	-1,234.50
+percent	eo	-0.4	−0.40%
+percent	eo	1234.5678	+1,234.57%
+change	eo	-2.5	−2.50
+compact	eo	0.5	0.5
+compactUsd	eo	0.5	$0.50
+compact	eo	12.0	12
+compactUsd	eo	12.0	$12.00
+compact	eo	999.0	999
+compactUsd	eo	999.0	$999
+compact	eo	1234.0	1.23K
+compactUsd	eo	1234.0	$1.23K
+compact	eo	3000.0	3K
+compactUsd	eo	3000.0	$3K
+compact	eo	3450.0	3.45K
+compactUsd	eo	3450.0	$3.45K
+compact	eo	10000.0	10K
+compactUsd	eo	10000.0	$10K
+compact	eo	99999.0	100K
+compactUsd	eo	99999.0	$100K
+compact	eo	999500.0	1M
+compactUsd	eo	999500.0	$1M
+compact	eo	48200000.0	48.2M
+compactUsd	eo	48200000.0	$48.2M
+compact	eo	1234567890.0	1.23B
+compactUsd	eo	1234567890.0	$1.23B
+compact	eo	1500000000000.0	1.5T
+compactUsd	eo	1500000000000.0	$1.5T
+price	es	1234.5	1.234,50
+spoken	es	1234.5	1.234,50
+price	es	0.00181	0,001810
+spoken	es	0.00181	0,001810
+price	es	0.0001234	0,0₃1234
+spoken	es	0.0001234	0,0001234
+price	es	1234567.891	1.234.567,89
+spoken	es	1234567.891	1.234.567,89
+price	es	-1234.5	-1.234,50
+spoken	es	-1234.5	-1.234,50
+percent	es	-0.4	−0,40%
+percent	es	1234.5678	+1.234,57%
+change	es	-2.5	−2,50
+compact	es	0.5	0,5
+compactUsd	es	0.5	0,50 $
+compact	es	12.0	12
+compactUsd	es	12.0	12,00 $
+compact	es	999.0	999
+compactUsd	es	999.0	999 $
+compact	es	1234.0	1,23 mil
+compactUsd	es	1234.0	1,23 mil $
+compact	es	3000.0	3 mil
+compactUsd	es	3000.0	3 mil $
+compact	es	3450.0	3,45 mil
+compactUsd	es	3450.0	3,45 mil $
+compact	es	10000.0	10 mil
+compactUsd	es	10000.0	10 mil $
+compact	es	99999.0	100 mil
+compactUsd	es	99999.0	100 mil $
+compact	es	999500.0	1 M
+compactUsd	es	999500.0	1 M $
+compact	es	48200000.0	48,2 M
+compactUsd	es	48200000.0	48,2 M $
+compact	es	1234567890.0	1235 M
+compactUsd	es	1234567890.0	1235 M $
+compact	es	1500000000000.0	1,5 B
+compactUsd	es	1500000000000.0	1,5 B $
+price	et	1234.5	1 234,50
+spoken	et	1234.5	1 234,50
+price	et	0.00181	0,001810
+spoken	et	0.00181	0,001810
+price	et	0.0001234	0,0₃1234
+spoken	et	0.0001234	0,0001234
+price	et	1234567.891	1 234 567,89
+spoken	et	1234567.891	1 234 567,89
+price	et	-1234.5	−1 234,50
+spoken	et	-1234.5	−1 234,50
+percent	et	-0.4	−0,40%
+percent	et	1234.5678	+1 234,57%
+change	et	-2.5	−2,50
+compact	et	0.5	0,5
+compactUsd	et	0.5	0,50 $
+compact	et	12.0	12
+compactUsd	et	12.0	12,00 $
+compact	et	999.0	999
+compactUsd	et	999.0	999 $
+compact	et	1234.0	1,23 tuh
+compactUsd	et	1234.0	1,23 tuh $
+compact	et	3000.0	3 tuh
+compactUsd	et	3000.0	3 tuh $
+compact	et	3450.0	3,45 tuh
+compactUsd	et	3450.0	3,45 tuh $
+compact	et	10000.0	10 tuh
+compactUsd	et	10000.0	10 tuh $
+compact	et	99999.0	100 tuh
+compactUsd	et	99999.0	100 tuh $
+compact	et	999500.0	1 mln
+compactUsd	et	999500.0	1 mln $
+compact	et	48200000.0	48,2 mln
+compactUsd	et	48200000.0	48,2 mln $
+compact	et	1234567890.0	1,23 mld
+compactUsd	et	1234567890.0	1,23 mld $
+compact	et	1500000000000.0	1,5 trln
+compactUsd	et	1500000000000.0	1,5 trln $
+price	eu	1234.5	1.234,50
+spoken	eu	1234.5	1.234,50
+price	eu	0.00181	0,001810
+spoken	eu	0.00181	0,001810
+price	eu	0.0001234	0,0₃1234
+spoken	eu	0.0001234	0,0001234
+price	eu	1234567.891	1.234.567,89
+spoken	eu	1234567.891	1.234.567,89
+price	eu	-1234.5	−1.234,50
+spoken	eu	-1234.5	−1.234,50
+percent	eu	-0.4	−0,40%
+percent	eu	1234.5678	+1.234,57%
+change	eu	-2.5	−2,50
+compact	eu	0.5	0,5
+compactUsd	eu	0.5	0,50 $
+compact	eu	12.0	12
+compactUsd	eu	12.0	12,00 $
+compact	eu	999.0	999
+compactUsd	eu	999.0	999 $
+compact	eu	1234.0	1234
+compactUsd	eu	1234.0	1234 $
+compact	eu	3000.0	3000
+compactUsd	eu	3000.0	3000 $
+compact	eu	3450.0	3450
+compactUsd	eu	3450.0	3450 $
+compact	eu	10000.0	10000
+compactUsd	eu	10000.0	10000 $
+compact	eu	99999.0	99999
+compactUsd	eu	99999.0	99999 $
+compact	eu	999500.0	999500
+compactUsd	eu	999500.0	999500 $
+compact	eu	48200000.0	48,2 M
+compactUsd	eu	48200000.0	48,2 M $
+compact	eu	1234567890.0	1235 M
+compactUsd	eu	1234567890.0	1235 M $
+compact	eu	1500000000000.0	1,5 B
+compactUsd	eu	1500000000000.0	1,5 B $
+price	fr	1234.5	1 234,50
+spoken	fr	1234.5	1 234,50
+price	fr	0.00181	0,001810
+spoken	fr	0.00181	0,001810
+price	fr	0.0001234	0,0₃1234
+spoken	fr	0.0001234	0,0001234
+price	fr	1234567.891	1 234 567,89
+spoken	fr	1234567.891	1 234 567,89
+price	fr	-1234.5	-1 234,50
+spoken	fr	-1234.5	-1 234,50
+percent	fr	-0.4	−0,40%
+percent	fr	1234.5678	+1 234,57%
+change	fr	-2.5	−2,50
+compact	fr	0.5	0,5
+compactUsd	fr	0.5	0,50 $
+compact	fr	12.0	12
+compactUsd	fr	12.0	12,00 $
+compact	fr	999.0	999
+compactUsd	fr	999.0	999 $
+compact	fr	1234.0	1,23 k
+compactUsd	fr	1234.0	1,23 k $
+compact	fr	3000.0	3 k
+compactUsd	fr	3000.0	3 k $
+compact	fr	3450.0	3,45 k
+compactUsd	fr	3450.0	3,45 k $
+compact	fr	10000.0	10 k
+compactUsd	fr	10000.0	10 k $
+compact	fr	99999.0	100 k
+compactUsd	fr	99999.0	100 k $
+compact	fr	999500.0	1 M
+compactUsd	fr	999500.0	1 M $
+compact	fr	48200000.0	48,2 M
+compactUsd	fr	48200000.0	48,2 M $
+compact	fr	1234567890.0	1,23 Md
+compactUsd	fr	1234567890.0	1,23 Md $
+compact	fr	1500000000000.0	1,5 Bn
+compactUsd	fr	1500000000000.0	1,5 Bn $
+price	hi	1234.5	1,234.50
+spoken	hi	1234.5	1,234.50
+price	hi	0.00181	0.001810
+spoken	hi	0.00181	0.001810
+price	hi	0.0001234	0.0₃1234
+spoken	hi	0.0001234	0.0001234
+price	hi	1234567.891	12,34,567.89
+spoken	hi	1234567.891	12,34,567.89
+price	hi	-1234.5	-1,234.50
+spoken	hi	-1234.5	-1,234.50
+percent	hi	-0.4	−0.40%
+percent	hi	1234.5678	+1,234.57%
+change	hi	-2.5	−2.50
+compact	hi	0.5	0.5
+compactUsd	hi	0.5	$0.50
+compact	hi	12.0	12
+compactUsd	hi	12.0	$12.00
+compact	hi	999.0	999
+compactUsd	hi	999.0	$999
+compact	hi	1234.0	1.23 हज़ार
+compactUsd	hi	1234.0	$1.23 हज़ार
+compact	hi	3000.0	3 हज़ार
+compactUsd	hi	3000.0	$3 हज़ार
+compact	hi	3450.0	3.45 हज़ार
+compactUsd	hi	3450.0	$3.45 हज़ार
+compact	hi	10000.0	10 हज़ार
+compactUsd	hi	10000.0	$10 हज़ार
+compact	hi	99999.0	1 लाख
+compactUsd	hi	99999.0	$1 लाख
+compact	hi	999500.0	9.99 लाख
+compactUsd	hi	999500.0	$9.99 लाख
+compact	hi	48200000.0	4.82 क॰
+compactUsd	hi	48200000.0	$4.82 क॰
+compact	hi	1234567890.0	1.23 अ॰
+compactUsd	hi	1234567890.0	$1.23 अ॰
+compact	hi	1500000000000.0	15 ख॰
+compactUsd	hi	1500000000000.0	$15 ख॰
+price	id	1234.5	1.234,50
+spoken	id	1234.5	1.234,50
+price	id	0.00181	0,001810
+spoken	id	0.00181	0,001810
+price	id	0.0001234	0,0₃1234
+spoken	id	0.0001234	0,0001234
+price	id	1234567.891	1.234.567,89
+spoken	id	1234567.891	1.234.567,89
+price	id	-1234.5	-1.234,50
+spoken	id	-1234.5	-1.234,50
+percent	id	-0.4	−0,40%
+percent	id	1234.5678	+1.234,57%
+change	id	-2.5	−2,50
+compact	id	0.5	0,5
+compactUsd	id	0.5	$0,50
+compact	id	12.0	12
+compactUsd	id	12.0	$12,00
+compact	id	999.0	999
+compactUsd	id	999.0	$999
+compact	id	1234.0	1,23 rb
+compactUsd	id	1234.0	$1,23 rb
+compact	id	3000.0	3 rb
+compactUsd	id	3000.0	$3 rb
+compact	id	3450.0	3,45 rb
+compactUsd	id	3450.0	$3,45 rb
+compact	id	10000.0	10 rb
+compactUsd	id	10000.0	$10 rb
+compact	id	99999.0	100 rb
+compactUsd	id	99999.0	$100 rb
+compact	id	999500.0	1 jt
+compactUsd	id	999500.0	$1 jt
+compact	id	48200000.0	48,2 jt
+compactUsd	id	48200000.0	$48,2 jt
+compact	id	1234567890.0	1,23 M
+compactUsd	id	1234567890.0	$1,23 M
+compact	id	1500000000000.0	1,5 T
+compactUsd	id	1500000000000.0	$1,5 T
+price	it	1234.5	1.234,50
+spoken	it	1234.5	1.234,50
+price	it	0.00181	0,001810
+spoken	it	0.00181	0,001810
+price	it	0.0001234	0,0₃1234
+spoken	it	0.0001234	0,0001234
+price	it	1234567.891	1.234.567,89
+spoken	it	1234567.891	1.234.567,89
+price	it	-1234.5	-1.234,50
+spoken	it	-1234.5	-1.234,50
+percent	it	-0.4	−0,40%
+percent	it	1234.5678	+1.234,57%
+change	it	-2.5	−2,50
+compact	it	0.5	0,5
+compactUsd	it	0.5	0,50 $
+compact	it	12.0	12
+compactUsd	it	12.0	12,00 $
+compact	it	999.0	999
+compactUsd	it	999.0	999 $
+compact	it	1234.0	1,23K
+compactUsd	it	1234.0	1,23K $
+compact	it	3000.0	3K
+compactUsd	it	3000.0	3K $
+compact	it	3450.0	3,45K
+compactUsd	it	3450.0	3,45K $
+compact	it	10000.0	10K
+compactUsd	it	10000.0	10K $
+compact	it	99999.0	100K
+compactUsd	it	99999.0	100K $
+compact	it	999500.0	1 Mln
+compactUsd	it	999500.0	1 Mln $
+compact	it	48200000.0	48,2 Mln
+compactUsd	it	48200000.0	48,2 Mln $
+compact	it	1234567890.0	1,23 Mld
+compactUsd	it	1234567890.0	1,23 Mld $
+compact	it	1500000000000.0	1,5 Bln
+compactUsd	it	1500000000000.0	1,5 Bln $
+price	ja	1234.5	1,234.50
+spoken	ja	1234.5	1,234.50
+price	ja	0.00181	0.001810
+spoken	ja	0.00181	0.001810
+price	ja	0.0001234	0.0₃1234
+spoken	ja	0.0001234	0.0001234
+price	ja	1234567.891	1,234,567.89
+spoken	ja	1234567.891	1,234,567.89
+price	ja	-1234.5	-1,234.50
+spoken	ja	-1234.5	-1,234.50
+percent	ja	-0.4	−0.40%
+percent	ja	1234.5678	+1,234.57%
+change	ja	-2.5	−2.50
+compact	ja	0.5	0.5
+compactUsd	ja	0.5	$0.50
+compact	ja	12.0	12
+compactUsd	ja	12.0	$12.00
+compact	ja	999.0	999
+compactUsd	ja	999.0	$999
+compact	ja	1234.0	1234
+compactUsd	ja	1234.0	$1234
+compact	ja	3000.0	3000
+compactUsd	ja	3000.0	$3000
+compact	ja	3450.0	3450
+compactUsd	ja	3450.0	$3450
+compact	ja	10000.0	1万
+compactUsd	ja	10000.0	$1万
+compact	ja	99999.0	10万
+compactUsd	ja	99999.0	$10万
+compact	ja	999500.0	100万
+compactUsd	ja	999500.0	$100万
+compact	ja	48200000.0	4820万
+compactUsd	ja	48200000.0	$4820万
+compact	ja	1234567890.0	12.3億
+compactUsd	ja	1234567890.0	$12.3億
+compact	ja	1500000000000.0	1.5兆
+compactUsd	ja	1500000000000.0	$1.5兆
+price	ko	1234.5	1,234.50
+spoken	ko	1234.5	1,234.50
+price	ko	0.00181	0.001810
+spoken	ko	0.00181	0.001810
+price	ko	0.0001234	0.0₃1234
+spoken	ko	0.0001234	0.0001234
+price	ko	1234567.891	1,234,567.89
+spoken	ko	1234567.891	1,234,567.89
+price	ko	-1234.5	-1,234.50
+spoken	ko	-1234.5	-1,234.50
+percent	ko	-0.4	−0.40%
+percent	ko	1234.5678	+1,234.57%
+change	ko	-2.5	−2.50
+compact	ko	0.5	0.5
+compactUsd	ko	0.5	$0.50
+compact	ko	12.0	12
+compactUsd	ko	12.0	$12.00
+compact	ko	999.0	999
+compactUsd	ko	999.0	$999
+compact	ko	1234.0	1.23천
+compactUsd	ko	1234.0	$1.23천
+compact	ko	3000.0	3천
+compactUsd	ko	3000.0	$3천
+compact	ko	3450.0	3.45천
+compactUsd	ko	3450.0	$3.45천
+compact	ko	10000.0	1만
+compactUsd	ko	10000.0	$1만
+compact	ko	99999.0	10만
+compactUsd	ko	99999.0	$10만
+compact	ko	999500.0	100만
+compactUsd	ko	999500.0	$100만
+compact	ko	48200000.0	4820만
+compactUsd	ko	48200000.0	$4820만
+compact	ko	1234567890.0	12.3억
+compactUsd	ko	1234567890.0	$12.3억
+compact	ko	1500000000000.0	1.5조
+compactUsd	ko	1500000000000.0	$1.5조
+price	nb_NO	1234.5	1 234,50
+spoken	nb_NO	1234.5	1 234,50
+price	nb_NO	0.00181	0,001810
+spoken	nb_NO	0.00181	0,001810
+price	nb_NO	0.0001234	0,0₃1234
+spoken	nb_NO	0.0001234	0,0001234
+price	nb_NO	1234567.891	1 234 567,89
+spoken	nb_NO	1234567.891	1 234 567,89
+price	nb_NO	-1234.5	−1 234,50
+spoken	nb_NO	-1234.5	−1 234,50
+percent	nb_NO	-0.4	−0,40%
+percent	nb_NO	1234.5678	+1 234,57%
+change	nb_NO	-2.5	−2,50
+compact	nb_NO	0.5	0,5
+compactUsd	nb_NO	0.5	0,50 $
+compact	nb_NO	12.0	12
+compactUsd	nb_NO	12.0	12,00 $
+compact	nb_NO	999.0	999
+compactUsd	nb_NO	999.0	999 $
+compact	nb_NO	1234.0	1,23k
+compactUsd	nb_NO	1234.0	1,23k $
+compact	nb_NO	3000.0	3k
+compactUsd	nb_NO	3000.0	3k $
+compact	nb_NO	3450.0	3,45k
+compactUsd	nb_NO	3450.0	3,45k $
+compact	nb_NO	10000.0	10k
+compactUsd	nb_NO	10000.0	10k $
+compact	nb_NO	99999.0	100k
+compactUsd	nb_NO	99999.0	100k $
+compact	nb_NO	999500.0	1 mill.
+compactUsd	nb_NO	999500.0	1 mill. $
+compact	nb_NO	48200000.0	48,2 mill.
+compactUsd	nb_NO	48200000.0	48,2 mill. $
+compact	nb_NO	1234567890.0	1,23 mrd.
+compactUsd	nb_NO	1234567890.0	1,23 mrd. $
+compact	nb_NO	1500000000000.0	1,5 bill.
+compactUsd	nb_NO	1500000000000.0	1,5 bill. $
+price	nl	1234.5	1.234,50
+spoken	nl	1234.5	1.234,50
+price	nl	0.00181	0,001810
+spoken	nl	0.00181	0,001810
+price	nl	0.0001234	0,0₃1234
+spoken	nl	0.0001234	0,0001234
+price	nl	1234567.891	1.234.567,89
+spoken	nl	1234567.891	1.234.567,89
+price	nl	-1234.5	-1.234,50
+spoken	nl	-1234.5	-1.234,50
+percent	nl	-0.4	−0,40%
+percent	nl	1234.5678	+1.234,57%
+change	nl	-2.5	−2,50
+compact	nl	0.5	0,5
+compactUsd	nl	0.5	$ 0,50
+compact	nl	12.0	12
+compactUsd	nl	12.0	$ 12,00
+compact	nl	999.0	999
+compactUsd	nl	999.0	$ 999
+compact	nl	1234.0	1,23K
+compactUsd	nl	1234.0	$ 1,23K
+compact	nl	3000.0	3K
+compactUsd	nl	3000.0	$ 3K
+compact	nl	3450.0	3,45K
+compactUsd	nl	3450.0	$ 3,45K
+compact	nl	10000.0	10K
+compactUsd	nl	10000.0	$ 10K
+compact	nl	99999.0	100K
+compactUsd	nl	99999.0	$ 100K
+compact	nl	999500.0	1 mln.
+compactUsd	nl	999500.0	$ 1 mln.
+compact	nl	48200000.0	48,2 mln.
+compactUsd	nl	48200000.0	$ 48,2 mln.
+compact	nl	1234567890.0	1,23 mld.
+compactUsd	nl	1234567890.0	$ 1,23 mld.
+compact	nl	1500000000000.0	1,5 bln.
+compactUsd	nl	1500000000000.0	$ 1,5 bln.
+price	pl	1234.5	1 234,50
+spoken	pl	1234.5	1 234,50
+price	pl	0.00181	0,001810
+spoken	pl	0.00181	0,001810
+price	pl	0.0001234	0,0₃1234
+spoken	pl	0.0001234	0,0001234
+price	pl	1234567.891	1 234 567,89
+spoken	pl	1234567.891	1 234 567,89
+price	pl	-1234.5	-1 234,50
+spoken	pl	-1234.5	-1 234,50
+percent	pl	-0.4	−0,40%
+percent	pl	1234.5678	+1 234,57%
+change	pl	-2.5	−2,50
+compact	pl	0.5	0,5
+compactUsd	pl	0.5	0,50 $
+compact	pl	12.0	12
+compactUsd	pl	12.0	12,00 $
+compact	pl	999.0	999
+compactUsd	pl	999.0	999 $
+compact	pl	1234.0	1,23 tys.
+compactUsd	pl	1234.0	1,23 tys. $
+compact	pl	3000.0	3 tys.
+compactUsd	pl	3000.0	3 tys. $
+compact	pl	3450.0	3,45 tys.
+compactUsd	pl	3450.0	3,45 tys. $
+compact	pl	10000.0	10 tys.
+compactUsd	pl	10000.0	10 tys. $
+compact	pl	99999.0	100 tys.
+compactUsd	pl	99999.0	100 tys. $
+compact	pl	999500.0	1 mln
+compactUsd	pl	999500.0	1 mln $
+compact	pl	48200000.0	48,2 mln
+compactUsd	pl	48200000.0	48,2 mln $
+compact	pl	1234567890.0	1,23 mld
+compactUsd	pl	1234567890.0	1,23 mld $
+compact	pl	1500000000000.0	1,5 bln
+compactUsd	pl	1500000000000.0	1,5 bln $
+price	pt	1234.5	1.234,50
+spoken	pt	1234.5	1.234,50
+price	pt	0.00181	0,001810
+spoken	pt	0.00181	0,001810
+price	pt	0.0001234	0,0₃1234
+spoken	pt	0.0001234	0,0001234
+price	pt	1234567.891	1.234.567,89
+spoken	pt	1234567.891	1.234.567,89
+price	pt	-1234.5	-1.234,50
+spoken	pt	-1234.5	-1.234,50
+percent	pt	-0.4	−0,40%
+percent	pt	1234.5678	+1.234,57%
+change	pt	-2.5	−2,50
+compact	pt	0.5	0,5
+compactUsd	pt	0.5	$ 0,50
+compact	pt	12.0	12
+compactUsd	pt	12.0	$ 12,00
+compact	pt	999.0	999
+compactUsd	pt	999.0	$ 999
+compact	pt	1234.0	1,23 mil
+compactUsd	pt	1234.0	$ 1,23 mil
+compact	pt	3000.0	3 mil
+compactUsd	pt	3000.0	$ 3 mil
+compact	pt	3450.0	3,45 mil
+compactUsd	pt	3450.0	$ 3,45 mil
+compact	pt	10000.0	10 mil
+compactUsd	pt	10000.0	$ 10 mil
+compact	pt	99999.0	100 mil
+compactUsd	pt	99999.0	$ 100 mil
+compact	pt	999500.0	1 mi
+compactUsd	pt	999500.0	$ 1 mi
+compact	pt	48200000.0	48,2 mi
+compactUsd	pt	48200000.0	$ 48,2 mi
+compact	pt	1234567890.0	1,23 bi
+compactUsd	pt	1234567890.0	$ 1,23 bi
+compact	pt	1500000000000.0	1,5 tri
+compactUsd	pt	1500000000000.0	$ 1,5 tri
+price	pt_BR	1234.5	1.234,50
+spoken	pt_BR	1234.5	1.234,50
+price	pt_BR	0.00181	0,001810
+spoken	pt_BR	0.00181	0,001810
+price	pt_BR	0.0001234	0,0₃1234
+spoken	pt_BR	0.0001234	0,0001234
+price	pt_BR	1234567.891	1.234.567,89
+spoken	pt_BR	1234567.891	1.234.567,89
+price	pt_BR	-1234.5	-1.234,50
+spoken	pt_BR	-1234.5	-1.234,50
+percent	pt_BR	-0.4	−0,40%
+percent	pt_BR	1234.5678	+1.234,57%
+change	pt_BR	-2.5	−2,50
+compact	pt_BR	0.5	0,5
+compactUsd	pt_BR	0.5	$ 0,50
+compact	pt_BR	12.0	12
+compactUsd	pt_BR	12.0	$ 12,00
+compact	pt_BR	999.0	999
+compactUsd	pt_BR	999.0	$ 999
+compact	pt_BR	1234.0	1,23 mil
+compactUsd	pt_BR	1234.0	$ 1,23 mil
+compact	pt_BR	3000.0	3 mil
+compactUsd	pt_BR	3000.0	$ 3 mil
+compact	pt_BR	3450.0	3,45 mil
+compactUsd	pt_BR	3450.0	$ 3,45 mil
+compact	pt_BR	10000.0	10 mil
+compactUsd	pt_BR	10000.0	$ 10 mil
+compact	pt_BR	99999.0	100 mil
+compactUsd	pt_BR	99999.0	$ 100 mil
+compact	pt_BR	999500.0	1 mi
+compactUsd	pt_BR	999500.0	$ 1 mi
+compact	pt_BR	48200000.0	48,2 mi
+compactUsd	pt_BR	48200000.0	$ 48,2 mi
+compact	pt_BR	1234567890.0	1,23 bi
+compactUsd	pt_BR	1234567890.0	$ 1,23 bi
+compact	pt_BR	1500000000000.0	1,5 tri
+compactUsd	pt_BR	1500000000000.0	$ 1,5 tri
+price	ro	1234.5	1.234,50
+spoken	ro	1234.5	1.234,50
+price	ro	0.00181	0,001810
+spoken	ro	0.00181	0,001810
+price	ro	0.0001234	0,0₃1234
+spoken	ro	0.0001234	0,0001234
+price	ro	1234567.891	1.234.567,89
+spoken	ro	1234567.891	1.234.567,89
+price	ro	-1234.5	-1.234,50
+spoken	ro	-1234.5	-1.234,50
+percent	ro	-0.4	−0,40%
+percent	ro	1234.5678	+1.234,57%
+change	ro	-2.5	−2,50
+compact	ro	0.5	0,5
+compactUsd	ro	0.5	0,50 $
+compact	ro	12.0	12
+compactUsd	ro	12.0	12,00 $
+compact	ro	999.0	999
+compactUsd	ro	999.0	999 $
+compact	ro	1234.0	1,23 K
+compactUsd	ro	1234.0	1,23 K $
+compact	ro	3000.0	3 K
+compactUsd	ro	3000.0	3 K $
+compact	ro	3450.0	3,45 K
+compactUsd	ro	3450.0	3,45 K $
+compact	ro	10000.0	10 K
+compactUsd	ro	10000.0	10 K $
+compact	ro	99999.0	100 K
+compactUsd	ro	99999.0	100 K $
+compact	ro	999500.0	1 mil.
+compactUsd	ro	999500.0	1 mil. $
+compact	ro	48200000.0	48,2 mil.
+compactUsd	ro	48200000.0	48,2 mil. $
+compact	ro	1234567890.0	1,23 mld.
+compactUsd	ro	1234567890.0	1,23 mld. $
+compact	ro	1500000000000.0	1,5 tril.
+compactUsd	ro	1500000000000.0	1,5 tril. $
+price	ru	1234.5	1 234,50
+spoken	ru	1234.5	1 234,50
+price	ru	0.00181	0,001810
+spoken	ru	0.00181	0,001810
+price	ru	0.0001234	0,0₃1234
+spoken	ru	0.0001234	0,0001234
+price	ru	1234567.891	1 234 567,89
+spoken	ru	1234567.891	1 234 567,89
+price	ru	-1234.5	-1 234,50
+spoken	ru	-1234.5	-1 234,50
+percent	ru	-0.4	−0,40%
+percent	ru	1234.5678	+1 234,57%
+change	ru	-2.5	−2,50
+compact	ru	0.5	0,5
+compactUsd	ru	0.5	0,50 $
+compact	ru	12.0	12
+compactUsd	ru	12.0	12,00 $
+compact	ru	999.0	999
+compactUsd	ru	999.0	999 $
+compact	ru	1234.0	1,23 тыс.
+compactUsd	ru	1234.0	1,23 тыс. $
+compact	ru	3000.0	3 тыс.
+compactUsd	ru	3000.0	3 тыс. $
+compact	ru	3450.0	3,45 тыс.
+compactUsd	ru	3450.0	3,45 тыс. $
+compact	ru	10000.0	10 тыс.
+compactUsd	ru	10000.0	10 тыс. $
+compact	ru	99999.0	100 тыс.
+compactUsd	ru	99999.0	100 тыс. $
+compact	ru	999500.0	1 млн
+compactUsd	ru	999500.0	1 млн $
+compact	ru	48200000.0	48,2 млн
+compactUsd	ru	48200000.0	48,2 млн $
+compact	ru	1234567890.0	1,23 млрд
+compactUsd	ru	1234567890.0	1,23 млрд $
+compact	ru	1500000000000.0	1,5 трлн
+compactUsd	ru	1500000000000.0	1,5 трлн $
+price	tr	1234.5	1.234,50
+spoken	tr	1234.5	1.234,50
+price	tr	0.00181	0,001810
+spoken	tr	0.00181	0,001810
+price	tr	0.0001234	0,0₃1234
+spoken	tr	0.0001234	0,0001234
+price	tr	1234567.891	1.234.567,89
+spoken	tr	1234567.891	1.234.567,89
+price	tr	-1234.5	-1.234,50
+spoken	tr	-1234.5	-1.234,50
+percent	tr	-0.4	−0,40%
+percent	tr	1234.5678	+1.234,57%
+change	tr	-2.5	−2,50
+compact	tr	0.5	0,5
+compactUsd	tr	0.5	$0,50
+compact	tr	12.0	12
+compactUsd	tr	12.0	$12,00
+compact	tr	999.0	999
+compactUsd	tr	999.0	$999
+compact	tr	1234.0	1,23 B
+compactUsd	tr	1234.0	$1,23 B
+compact	tr	3000.0	3 B
+compactUsd	tr	3000.0	$3 B
+compact	tr	3450.0	3,45 B
+compactUsd	tr	3450.0	$3,45 B
+compact	tr	10000.0	10 B
+compactUsd	tr	10000.0	$10 B
+compact	tr	99999.0	100 B
+compactUsd	tr	99999.0	$100 B
+compact	tr	999500.0	1 Mn
+compactUsd	tr	999500.0	$1 Mn
+compact	tr	48200000.0	48,2 Mn
+compactUsd	tr	48200000.0	$48,2 Mn
+compact	tr	1234567890.0	1,23 Mr
+compactUsd	tr	1234567890.0	$1,23 Mr
+compact	tr	1500000000000.0	1,5 Tn
+compactUsd	tr	1500000000000.0	$1,5 Tn
+price	uk	1234.5	1 234,50
+spoken	uk	1234.5	1 234,50
+price	uk	0.00181	0,001810
+spoken	uk	0.00181	0,001810
+price	uk	0.0001234	0,0₃1234
+spoken	uk	0.0001234	0,0001234
+price	uk	1234567.891	1 234 567,89
+spoken	uk	1234567.891	1 234 567,89
+price	uk	-1234.5	-1 234,50
+spoken	uk	-1234.5	-1 234,50
+percent	uk	-0.4	−0,40%
+percent	uk	1234.5678	+1 234,57%
+change	uk	-2.5	−2,50
+compact	uk	0.5	0,5
+compactUsd	uk	0.5	0,50 $
+compact	uk	12.0	12
+compactUsd	uk	12.0	12,00 $
+compact	uk	999.0	999
+compactUsd	uk	999.0	999 $
+compact	uk	1234.0	1,23 тис.
+compactUsd	uk	1234.0	1,23 тис. $
+compact	uk	3000.0	3 тис.
+compactUsd	uk	3000.0	3 тис. $
+compact	uk	3450.0	3,45 тис.
+compactUsd	uk	3450.0	3,45 тис. $
+compact	uk	10000.0	10 тис.
+compactUsd	uk	10000.0	10 тис. $
+compact	uk	99999.0	100 тис.
+compactUsd	uk	99999.0	100 тис. $
+compact	uk	999500.0	1 млн
+compactUsd	uk	999500.0	1 млн $
+compact	uk	48200000.0	48,2 млн
+compactUsd	uk	48200000.0	48,2 млн $
+compact	uk	1234567890.0	1,23 млрд
+compactUsd	uk	1234567890.0	1,23 млрд $
+compact	uk	1500000000000.0	1,5 трлн
+compactUsd	uk	1500000000000.0	1,5 трлн $
+price	vi	1234.5	1.234,50
+spoken	vi	1234.5	1.234,50
+price	vi	0.00181	0,001810
+spoken	vi	0.00181	0,001810
+price	vi	0.0001234	0,0₃1234
+spoken	vi	0.0001234	0,0001234
+price	vi	1234567.891	1.234.567,89
+spoken	vi	1234567.891	1.234.567,89
+price	vi	-1234.5	-1.234,50
+spoken	vi	-1234.5	-1.234,50
+percent	vi	-0.4	−0,40%
+percent	vi	1234.5678	+1.234,57%
+change	vi	-2.5	−2,50
+compact	vi	0.5	0,5
+compactUsd	vi	0.5	0,50 $
+compact	vi	12.0	12
+compactUsd	vi	12.0	12,00 $
+compact	vi	999.0	999
+compactUsd	vi	999.0	999 $
+compact	vi	1234.0	1,23 N
+compactUsd	vi	1234.0	1,23 N $
+compact	vi	3000.0	3 N
+compactUsd	vi	3000.0	3 N $
+compact	vi	3450.0	3,45 N
+compactUsd	vi	3450.0	3,45 N $
+compact	vi	10000.0	10 N
+compactUsd	vi	10000.0	10 N $
+compact	vi	99999.0	100 N
+compactUsd	vi	99999.0	100 N $
+compact	vi	999500.0	1 Tr
+compactUsd	vi	999500.0	1 Tr $
+compact	vi	48200000.0	48,2 Tr
+compactUsd	vi	48200000.0	48,2 Tr $
+compact	vi	1234567890.0	1,23 T
+compactUsd	vi	1234567890.0	1,23 T $
+compact	vi	1500000000000.0	1,5 NT
+compactUsd	vi	1500000000000.0	1,5 NT $
+price	zh_Hans	1234.5	1,234.50
+spoken	zh_Hans	1234.5	1,234.50
+price	zh_Hans	0.00181	0.001810
+spoken	zh_Hans	0.00181	0.001810
+price	zh_Hans	0.0001234	0.0₃1234
+spoken	zh_Hans	0.0001234	0.0001234
+price	zh_Hans	1234567.891	1,234,567.89
+spoken	zh_Hans	1234567.891	1,234,567.89
+price	zh_Hans	-1234.5	-1,234.50
+spoken	zh_Hans	-1234.5	-1,234.50
+percent	zh_Hans	-0.4	−0.40%
+percent	zh_Hans	1234.5678	+1,234.57%
+change	zh_Hans	-2.5	−2.50
+compact	zh_Hans	0.5	0.5
+compactUsd	zh_Hans	0.5	$0.50
+compact	zh_Hans	12.0	12
+compactUsd	zh_Hans	12.0	$12.00
+compact	zh_Hans	999.0	999
+compactUsd	zh_Hans	999.0	$999
+compact	zh_Hans	1234.0	1234
+compactUsd	zh_Hans	1234.0	$1234
+compact	zh_Hans	3000.0	3000
+compactUsd	zh_Hans	3000.0	$3000
+compact	zh_Hans	3450.0	3450
+compactUsd	zh_Hans	3450.0	$3450
+compact	zh_Hans	10000.0	1万
+compactUsd	zh_Hans	10000.0	$1万
+compact	zh_Hans	99999.0	10万
+compactUsd	zh_Hans	99999.0	$10万
+compact	zh_Hans	999500.0	100万
+compactUsd	zh_Hans	999500.0	$100万
+compact	zh_Hans	48200000.0	4820万
+compactUsd	zh_Hans	48200000.0	$4820万
+compact	zh_Hans	1234567890.0	12.3亿
+compactUsd	zh_Hans	1234567890.0	$12.3亿
+compact	zh_Hans	1500000000000.0	1.5万亿
+compactUsd	zh_Hans	1500000000000.0	$1.5万亿
+price	zh_Hant	1234.5	1,234.50
+spoken	zh_Hant	1234.5	1,234.50
+price	zh_Hant	0.00181	0.001810
+spoken	zh_Hant	0.00181	0.001810
+price	zh_Hant	0.0001234	0.0₃1234
+spoken	zh_Hant	0.0001234	0.0001234
+price	zh_Hant	1234567.891	1,234,567.89
+spoken	zh_Hant	1234567.891	1,234,567.89
+price	zh_Hant	-1234.5	-1,234.50
+spoken	zh_Hant	-1234.5	-1,234.50
+percent	zh_Hant	-0.4	−0.40%
+percent	zh_Hant	1234.5678	+1,234.57%
+change	zh_Hant	-2.5	−2.50
+compact	zh_Hant	0.5	0.5
+compactUsd	zh_Hant	0.5	$0.50
+compact	zh_Hant	12.0	12
+compactUsd	zh_Hant	12.0	$12.00
+compact	zh_Hant	999.0	999
+compactUsd	zh_Hant	999.0	$999
+compact	zh_Hant	1234.0	1234
+compactUsd	zh_Hant	1234.0	$1234
+compact	zh_Hant	3000.0	3000
+compactUsd	zh_Hant	3000.0	$3000
+compact	zh_Hant	3450.0	3450
+compactUsd	zh_Hant	3450.0	$3450
+compact	zh_Hant	10000.0	1万
+compactUsd	zh_Hant	10000.0	$1万
+compact	zh_Hant	99999.0	10万
+compactUsd	zh_Hant	99999.0	$10万
+compact	zh_Hant	999500.0	100万
+compactUsd	zh_Hant	999500.0	$100万
+compact	zh_Hant	48200000.0	4820万
+compactUsd	zh_Hant	48200000.0	$4820万
+compact	zh_Hant	1234567890.0	12.3亿
+compactUsd	zh_Hant	1234567890.0	$12.3亿
+compact	zh_Hant	1500000000000.0	1.5万亿
+compactUsd	zh_Hant	1500000000000.0	$1.5万亿

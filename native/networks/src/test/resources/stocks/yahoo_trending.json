@@ -1,0 +1,13 @@
+{
+  "finance": {
+    "result": [
+      {
+        "count": 3,
+        "quotes": [{"symbol": "NVDA"}, {"symbol": "btc-usd"}, {"symbol": ""}, {"symbol": "^GSPC"}],
+        "jobTimestamp": 1761940800000,
+        "startInterval": 202511010000
+      }
+    ],
+    "error": null
+  }
+}

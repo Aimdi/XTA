@@ -1,0 +1,25 @@
+{
+  "chart": {
+    "result": [
+      {
+        "meta": {
+          "currency": "USD",
+          "symbol": "^NDX",
+          "instrumentType": "INDEX",
+          "regularMarketTime": 1761940800,
+          "regularMarketPrice": 24172.03,
+          "chartPreviousClose": 24063.4,
+          "currentTradingPeriod": {
+            "pre": {"start": 1761897600, "end": 1761917400},
+            "regular": {"start": 1761917400, "end": 1761940800},
+            "post": {"start": 1761940800, "end": 1761955200}
+          },
+          "dataGranularity": "5m",
+          "range": "1d"
+        },
+        "indicators": {"quote": [{}]}
+      }
+    ],
+    "error": null
+  }
+}
