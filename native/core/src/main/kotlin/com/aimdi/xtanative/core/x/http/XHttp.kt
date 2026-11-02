@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /** One HTTP answer, read whole: X's pages and JSON are small enough. */
 class XResponse(val code: Int, val body: String, private val headers: Map<String, List<String>> = emptyMap()) {
@@ -17,9 +18,13 @@ class XResponse(val code: Int, val body: String, private val headers: Map<String
         headers.entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value?.firstOrNull()
 }
 
-/** The GETs XTA Native makes. An interface, so tests can stand in for x.com. */
+/** The requests XTA Native makes. An interface, so tests can stand in for x.com. */
 fun interface XHttp {
     suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse
+
+    /** An empty POST: X hands out guest tokens no other way. */
+    suspend fun post(url: HttpUrl, headers: Map<String, String>): XResponse =
+        throw UnsupportedOperationException("POST $url")
 }
 
 /**
@@ -43,6 +48,12 @@ class OkHttpXHttp(private val client: OkHttpClient = defaultClient) : XHttp {
             delay(200)
             caller.newCall(request).execute().use { it.toXResponse() }
         }
+
+    override suspend fun post(url: HttpUrl, headers: Map<String, String>): XResponse = withContext(Dispatchers.IO) {
+        val request = Request.Builder().url(url).post(ByteArray(0).toRequestBody(null))
+            .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
+        client.newCall(request).execute().use { it.toXResponse() }
+    }
 
     private fun okhttp3.Response.toXResponse() = XResponse(code, body?.string().orEmpty(), headers.toMultimap())
 

@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XEndpoints
+import com.aimdi.xtanative.core.x.XGuest
 import com.aimdi.xtanative.core.x.XNoAccountException
 import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.core.x.XRequestException
@@ -122,6 +123,46 @@ class XClientTest {
         val error = assertFailsWith<XRequestException> { runBlocking { client(x, listOf(account("a"), account("b"))).profile("quax_tests") } }
         assertEquals(500, error.code)
         assertEquals(1, x.asked.size)
+    }
+
+    @Test
+    fun withoutAnAccountAGuestReadsWithItsOwnBearerAndToken() = runBlocking {
+        var tokens = 0
+        val x = object : XHttp {
+            val asked = ArrayList<Map<String, String>>()
+            override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse {
+                asked += headers
+                return if (headers["x-guest-token"] == "g1") XResponse(403, "") else XResponse(200, profileBody)
+            }
+            override suspend fun post(url: HttpUrl, headers: Map<String, String>): XResponse {
+                tokens++
+                assertEquals(XGuest.BEARER, headers["authorization"])
+                return XResponse(200, """{"guest_token":"g$tokens"}""")
+            }
+        }
+        val reader = XClient(
+            http = x,
+            accounts = { emptyList() },
+            signers = XSigners({ derived++; TransactionSigner(IntArray(48) { it }, "animation") }, clock = { now }),
+            clock = { now },
+            guest = XGuest(x, clock = { now }),
+        )
+        assertEquals("quax_tests", reader.profile("quax_tests").first.screenName)
+        assertEquals(listOf("g1", "g2"), x.asked.map { it["x-guest-token"] }, "a refused token is replaced once")
+        assertTrue(x.asked.all { it["authorization"] == XGuest.BEARER && it["Cookie"] == null })
+
+        reader.profile("quax_tests")
+        assertEquals(2, tokens, "the token that worked is kept")
+    }
+
+    @Test
+    fun aGuestXDoesNotAnswerIsNoAccount() {
+        val x = object : XHttp {
+            override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean) = XResponse(404, "")
+            override suspend fun post(url: HttpUrl, headers: Map<String, String>) = XResponse(200, """{"guest_token":"g"}""")
+        }
+        val reader = XClient(x, { emptyList() }, XSigners({ TransactionSigner(IntArray(48) { it }, "a") }), guest = XGuest(x))
+        assertFailsWith<XNoAccountException> { runBlocking { reader.search("from:nasa") } }
     }
 
     @Test

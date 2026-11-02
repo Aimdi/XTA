@@ -23,4 +23,13 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // RUN_LIVE=true lets XLiveTest read live x.com (see the native workflow's live job).
+    val live = System.getenv("RUN_LIVE") ?: "false"
+    environment("RUN_LIVE", live)
+    inputs.property("live", live)
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = live == "true"
+    }
 }

@@ -83,6 +83,32 @@ jobs:
           path: ${{ runner.temp }}/xta-native-*.apk
 
 
+  # Live x.com, as XTA's own X check reads it: the request signer derived from
+  # x.com's pages with no session, then @X's profile as a guest. It says
+  # whether the native client still reaches X; X's moods hold no prerelease back.
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: native
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Read live x.com as a guest
+        env:
+          RUN_LIVE: 'true'
+        run: ./gradlew :core:test --tests '*XLiveTest*' --rerun --console=plain
+
   # Every screen on an emulator, against the stand-in for X that XTA's own
   # emulator check uses (docs/mock-x.md): no account, no live request. Fails
   # when the app crashes, and keeps a screenshot of each screen.

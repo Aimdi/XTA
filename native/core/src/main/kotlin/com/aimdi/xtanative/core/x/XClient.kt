@@ -33,8 +33,8 @@ class XRequestException(val code: Int, message: String) : XReadException(message
 /** Every account was rate-limited on this endpoint. */
 class XRateLimitedException : XReadException("Every account is rate-limited here for now")
 
-/** There is no X account to read with: XTA's backup has to be imported first. */
-class XNoAccountException : XReadException("No X account")
+/** There is no X account to read with, and X did not answer a guest either: XTA's backup has to be imported first. */
+class XNoAccountException(why: String = "No X account") : XReadException(why)
 
 /**
  * The reads XTA Native asks of X, over XTA's own stored sessions. Read-only:
@@ -50,6 +50,8 @@ class XClient(
     private val signers: XSigners,
     val endpoints: XEndpoints = XEndpoints(),
     private val clock: () -> Long = System::currentTimeMillis,
+    /** Reads as a guest when there is no account, as XTA does; null never does. */
+    private val guest: XGuest? = null,
 ) {
     private val limitedUntil = ConcurrentHashMap<Pair<String, String>, Long>()
 
@@ -153,7 +155,7 @@ class XClient(
     private suspend fun get(endpoint: String, params: Map<String, String>): J {
         val url = endpoints.url(endpoint, params)
         val all = accounts()
-        if (all.isEmpty()) throw XNoAccountException()
+        if (all.isEmpty()) return asGuest(endpoint, url)
         return when (val first = tryAccounts(endpoint, url, all)) {
             is Outcome.Answer -> first.body
             // Every account refused with 404: X answers a stale signature that
@@ -167,6 +169,31 @@ class XClient(
             } else {
                 throw first.error
             }
+        }
+    }
+
+    /**
+     * The read as a guest: X's logged-out bearer, a guest token, and a
+     * signature derived without a session. A refused token is replaced once.
+     */
+    private suspend fun asGuest(endpoint: String, url: HttpUrl): J {
+        val guest = guest ?: throw XNoAccountException()
+        val signer = signers.forSession(null)
+        suspend fun send(fresh: Boolean) = http.get(
+            url,
+            BASE_HEADERS + mapOf(
+                "authorization" to XGuest.BEARER,
+                "x-guest-token" to guest.token(fresh),
+                "x-client-transaction-id" to signer.transactionId("GET", url.encodedPath),
+            ),
+            followRedirects = true,
+        )
+        val first = send(fresh = false)
+        val response = if (first.code == 401 || first.code == 403) send(fresh = true) else first
+        return when {
+            response.isSuccessful -> J.parse(response.body)
+            response.code == 429 -> throw XRateLimitedException()
+            else -> throw XNoAccountException("X did not answer $endpoint for a guest (${response.code})")
         }
     }
 

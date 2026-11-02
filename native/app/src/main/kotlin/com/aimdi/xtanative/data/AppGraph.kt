@@ -3,6 +3,7 @@ package com.aimdi.xtanative.data
 import android.content.Context
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
+import com.aimdi.xtanative.core.x.XGuest
 import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.core.x.signing.FileSignerStore
@@ -29,7 +30,7 @@ class AppGraph(context: Context) {
         if (mock == null) OkHttpXHttp() else OkHttpXHttp(OkHttpXHttp.defaultClient.newBuilder().addInterceptor(MockX.interceptor(mock)).build())
     val signers =
         if (mock == null) XSigners(SigningBootstrap(http), FileSignerStore(File(context.filesDir, "signers.json"))) else XSigners({ MockX.signer })
-    val client = XClient(http, accounts = { sessions.state.value?.accounts.orEmpty() }, signers = signers)
+    val client = XClient(http, accounts = { sessions.state.value?.accounts.orEmpty() }, signers = signers, guest = XGuest(http))
 
     /** The Following feed's cache for null, else the group's. */
     @Synchronized
