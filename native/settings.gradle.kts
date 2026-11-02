@@ -1,7 +1,8 @@
 // XTA Native: a prototype of XTA written for Android alone, beside the Flutter app.
 //
 // :core is plain Kotlin (the X client, the request signer, the parsers, the
-// backup import) and builds anywhere with a JDK. :app is the Android app; it
+// backup import) and builds anywhere with a JDK; so does :networks, the other
+// networks XTA reads. :app is the Android app; it
 // joins the build only where an Android SDK is installed.
 
 pluginManagement {
@@ -31,6 +32,7 @@ dependencyResolutionManagement {
 rootProject.name = "xta-native"
 
 include(":core")
+include(":networks")
 
 val androidSdk = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
 if (androidSdk != null || file("local.properties").exists()) {

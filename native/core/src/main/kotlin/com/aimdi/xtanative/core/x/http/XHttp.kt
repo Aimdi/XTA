@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -24,6 +25,10 @@ fun interface XHttp {
 
     /** An empty POST: X hands out guest tokens no other way. */
     suspend fun post(url: HttpUrl, headers: Map<String, String>): XResponse =
+        throw UnsupportedOperationException("POST $url")
+
+    /** A POST carrying [body] as [contentType]: some networks read through POST (GraphQL forms). */
+    suspend fun post(url: HttpUrl, headers: Map<String, String>, body: String, contentType: String): XResponse =
         throw UnsupportedOperationException("POST $url")
 }
 
@@ -54,6 +59,13 @@ class OkHttpXHttp(private val client: OkHttpClient = defaultClient) : XHttp {
             .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
         client.newCall(request).execute().use { it.toXResponse() }
     }
+
+    override suspend fun post(url: HttpUrl, headers: Map<String, String>, body: String, contentType: String): XResponse =
+        withContext(Dispatchers.IO) {
+            val request = Request.Builder().url(url).post(body.toRequestBody(contentType.toMediaType()))
+                .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
+            client.newCall(request).execute().use { it.toXResponse() }
+        }
 
     private fun okhttp3.Response.toXResponse() = XResponse(code, body?.string().orEmpty(), headers.toMultimap())
 
