@@ -1,0 +1,21 @@
+{
+  "gmetadata": [
+    {
+      "gid": 1,
+      "token": "abc",
+      "title": "T",
+      "title_jpn": "日",
+      "category": "Western",
+      "thumb": "https://ehgt.org/t.webp",
+      "uploader": "u",
+      "posted": "1700000000",
+      "filecount": "5",
+      "rating": "3.2",
+      "tags": ["language:english"]
+    },
+    {
+      "gid": 2,
+      "error": "Key missing, or incorrect key provided."
+    }
+  ]
+}
