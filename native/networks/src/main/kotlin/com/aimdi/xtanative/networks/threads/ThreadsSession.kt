@@ -1,0 +1,144 @@
+package com.aimdi.xtanative.networks.threads
+
+import kotlin.random.Random
+import kotlinx.coroutines.delay
+
+/**
+ * A Threads session the reader pasted, if any: a browser's Cookie header for
+ * threads.com, and an `IGT:2` Bearer for the app API. Optional: public pages
+ * are read without one. [useSessionApis] is the reader's opt-in to spend the
+ * cookies on followed accounts and people search, the one setting that can
+ * cost them their Threads login.
+ */
+data class ThreadsSession(
+    val cookieHeader: String = "",
+    val bearer: String = "",
+    val useSessionApis: Boolean = false,
+) {
+    val cookies: Map<String, String> get() = parseCookieHeader(cookieHeader)
+
+    /** Every cookie the cookie API needs is there. */
+    val hasCookies: Boolean get() = cookies.let { pasted -> REQUIRED_COOKIES.all { !pasted[it].isNullOrEmpty() } }
+
+    /** The Bearer token without its `Bearer ` prefix; null unless it is an `IGT:2` token. */
+    val bearerToken: String? get() = normaliseBearer(bearer)
+
+    val hasBearer: Boolean get() = bearerToken != null
+
+    val hasDirectAuth: Boolean get() = hasCookies || hasBearer
+
+    companion object {
+        /** The cookies a browser session must carry for the cookie API, in the order they are sent. */
+        val REQUIRED_COOKIES = listOf("sessionid", "csrftoken", "ds_user_id", "mid", "ig_did")
+
+        /** A pasted Cookie header (`name=value; …`) as a map. */
+        fun parseCookieHeader(raw: String): Map<String, String> = raw.split(';')
+            .mapNotNull { part ->
+                val equals = part.indexOf('=')
+                if (equals <= 0) return@mapNotNull null
+                val name = part.substring(0, equals).trim()
+                val value = part.substring(equals + 1).trim()
+                (name to value).takeIf { name.isNotEmpty() && value.isNotEmpty() }
+            }
+            .toMap()
+
+        /** [raw] as a Bearer token, with or without its `Bearer ` prefix; null unless it is an `IGT:2` token. */
+        fun normaliseBearer(raw: String): String? {
+            val value = raw.trim()
+            if (value.isEmpty()) return null
+            val token = if (value.lowercase().startsWith("bearer ")) value.substring(7).trim() else value
+            return token.takeIf { it.startsWith("IGT:2:") }
+        }
+    }
+}
+
+/**
+ * What the client keeps between launches, as XTA keeps it in preferences, so
+ * a restart does not ask Meta again what it already answered: the device id
+ * the app API is sent, each handle's numeric id, the last guest LSD token and
+ * when it was taken, and when a parked session may talk to Meta again. Times
+ * are epoch milliseconds.
+ */
+data class ThreadsKept(
+    val deviceId: String? = null,
+    val userIds: Map<String, String> = emptyMap(),
+    val guestLsd: String? = null,
+    val guestLsdAt: Long? = null,
+    val cooldownUntil: Long? = null,
+)
+
+/** Where [ThreadsKept] lives: the app's own storage, or memory alone. */
+interface ThreadsMemory {
+    var kept: ThreadsKept
+
+    /** Kept for as long as the process lives. */
+    class InMemory(initial: ThreadsKept = ThreadsKept()) : ThreadsMemory {
+        @Volatile
+        override var kept: ThreadsKept = initial
+    }
+}
+
+/**
+ * How far apart requests leave: looking like one person reading is the whole
+ * defence a reader has against Meta's ban on scripts. A session read waits
+ * [sessionGapMillis] after the last departure, a guest read, which has no
+ * account to lose, [guestGapMillis]; each with up to its jitter on top.
+ */
+class ThreadsPacing(
+    val sessionGapMillis: Long = 3_000,
+    val guestGapMillis: Long = 550,
+    val sessionJitterMillis: Int = 750,
+    val guestJitterMillis: Int = 350,
+    private val random: Random = Random.Default,
+    internal val sleep: suspend (Long) -> Unit = { delay(it) },
+) {
+    /** The gap before the next departure. */
+    internal fun gap(asGuest: Boolean): Long {
+        val jitter = if (asGuest) guestJitterMillis else sessionJitterMillis
+        return (if (asGuest) guestGapMillis else sessionGapMillis) + (if (jitter > 0) random.nextInt(jitter) else 0)
+    }
+
+    companion object {
+        /** No gap at all: for tests. */
+        val NONE = ThreadsPacing(0, 0, 0, 0)
+    }
+}
+
+/**
+ * Values Meta may change, each with the one XTA ships. XTA's published
+ * repairs (`repairs.json`) can replace one with a value of the same kind, so a
+ * rotated doc id is fixed without a release; nothing here names a host.
+ */
+data class ThreadsRepairs(
+    val guestDocId: String = "6232751443445612",
+    val guestQueryName: String = "BarcelonaProfileThreadsTabQuery",
+    val appId: String = "238260118697367",
+    val asbdId: String = "129477",
+    val appUserAgent: String = "Barcelona 289.0.0.77.109 Android",
+    val webUserAgent: String = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " +
+        "Version/16.6 Mobile/15E148 Safari/604.1",
+) {
+    companion object {
+        private val digits = Regex("[0-9]{1,32}")
+        private val token = Regex("[A-Za-z0-9_-]{1,128}")
+        private val header = Regex("[\\x21-\\x7E](?:[\\x20-\\x7E]{0,398}[\\x21-\\x7E])?")
+
+        /**
+         * The shipped values with [published]'s Threads entries in force: an entry
+         * for a key XTA does not know, or one that does not fit its slot's kind,
+         * changes nothing. A withdrawn entry goes back to the shipped value.
+         */
+        fun published(published: Map<String, String>): ThreadsRepairs {
+            val shipped = ThreadsRepairs()
+            fun take(key: String, kind: Regex, value: String) = published[key]?.takeIf(kind::matches) ?: value
+            return ThreadsRepairs(
+                guestDocId = take("threads.guest_doc_id", digits, shipped.guestDocId),
+                guestQueryName = take("threads.guest_query_name", token, shipped.guestQueryName),
+                appId = take("threads.app_id", digits, shipped.appId),
+                asbdId = take("threads.asbd_id", digits, shipped.asbdId),
+                appUserAgent = take("threads.app_user_agent", header, shipped.appUserAgent),
+                webUserAgent = take("threads.web_user_agent", header, shipped.webUserAgent),
+            )
+        }
+    }
+}

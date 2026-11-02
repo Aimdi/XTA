@@ -1,0 +1,267 @@
+{
+  "data": {
+    "mediaData": {
+      "threads": [
+        {
+          "id": "thread-1",
+          "thread_items": [
+            {
+              "post": {
+                "pk": "3400000000000000001",
+                "id": "3400000000000000001_314216",
+                "code": "DAthread01",
+                "taken_at": 1761900000,
+                "caption": { "text": "Reading with @mosseri: example.com/a… #Books" },
+                "user": {
+                  "pk": "314216",
+                  "username": "zuck",
+                  "full_name": "Mark Zuckerberg",
+                  "profile_pic_url": "https://scontent.cdninstagram.com/v/zuck.jpg?oe=6700",
+                  "is_verified": true
+                },
+                "like_count": 1348,
+                "image_versions2": { "candidates": [] },
+                "text_post_app_info": {
+                  "direct_reply_count": 12,
+                  "repost_count": 4,
+                  "quote_count": 2,
+                  "is_reply": false,
+                  "tag_header": { "display_name": "#Books" },
+                  "text_fragments": {
+                    "fragments": [
+                      { "fragment_type": "plaintext", "plaintext": "Reading with " },
+                      {
+                        "fragment_type": "mention",
+                        "plaintext": "@mosseri",
+                        "mention_fragment": { "mentioned_user": { "username": "mosseri", "pk": "95561" } }
+                      },
+                      { "fragment_type": "plaintext", "plaintext": ": " },
+                      {
+                        "fragment_type": "link",
+                        "plaintext": "example.com/a…",
+                        "link_fragment": { "uri": "https://l.threads.com/?u=https%3A%2F%2Fexample.com%2Farticle&e=AT0" }
+                      },
+                      { "fragment_type": "plaintext", "plaintext": " " },
+                      { "fragment_type": "tag", "plaintext": "#Books", "tag_fragment": { "display_name": "Books" } }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "post": {
+                "pk": "3400000000000000011",
+                "code": "DAthread02",
+                "taken_at": 1761900060,
+                "caption": { "text": "Part two." },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "text_post_app_info": { "is_reply": true, "reply_to_author": { "username": "zuck" } }
+              }
+            },
+            {
+              "post": {
+                "pk": "3400000000000000012",
+                "code": "DAthread03",
+                "taken_at": 1761900120,
+                "caption": { "text": "Part three." },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" }
+              }
+            },
+            {
+              "post": {
+                "pk": "3400000000000000013",
+                "code": "DAthread04",
+                "taken_at": 1761900180,
+                "caption": { "text": "A popular reply." },
+                "user": { "username": "someone", "full_name": "Some One" }
+              }
+            },
+            {
+              "post": {
+                "pk": "3400000000000000014",
+                "code": "DAthread05",
+                "taken_at": 1761900240,
+                "caption": { "text": "Back to it." },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" }
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-2",
+          "thread_items": [
+            {
+              "post": {
+                "pk": "3400000000000000002",
+                "code": "DAcarousel",
+                "taken_at": 1761890000,
+                "caption": { "text": "Kiln day" },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "carousel_media": [
+                  {
+                    "image_versions2": {
+                      "candidates": [
+                        { "url": "https://scontent.cdninstagram.com/a-320.jpg", "width": 320, "height": 400 },
+                        { "url": "https://scontent.cdninstagram.com/a-1080.jpg", "width": 1080, "height": 1350 }
+                      ]
+                    },
+                    "accessibility_caption": " A kiln, open ",
+                    "original_width": 1080,
+                    "original_height": 1350
+                  },
+                  {
+                    "image_versions2": { "candidates": [{ "url": "https://scontent.cdninstagram.com/b.jpg" }] },
+                    "original_width": 1440,
+                    "original_height": 1080
+                  },
+                  {
+                    "image_versions2": {
+                      "candidates": [{ "url": "https://scontent.cdninstagram.com/c-poster.jpg", "width": 720, "height": 1280 }]
+                    },
+                    "video_versions": [
+                      { "type": 101, "url": "https://scontent.cdninstagram.com/c-360.mp4", "width": 360, "height": 640 },
+                      { "type": 102, "url": "https://scontent.cdninstagram.com/c-720.mp4", "width": 720, "height": 1280 }
+                    ]
+                  }
+                ],
+                "text_post_app_info": { "direct_reply_count": 3 }
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-3",
+          "thread_items": [
+            {
+              "post": {
+                "pk": "3400000000000000003",
+                "code": "DArepost01",
+                "taken_at": 1761880000,
+                "caption": null,
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "text_post_app_info": {
+                  "share_info": {
+                    "reposted_post": {
+                      "pk": "3300000000000000001",
+                      "code": "DBmeta0001",
+                      "taken_at": 1761800000,
+                      "caption": { "text": "Connect is on" },
+                      "user": {
+                        "username": "meta",
+                        "full_name": "Meta",
+                        "profile_pic_url": "https://scontent.cdninstagram.com/v/meta.jpg",
+                        "is_verified": true
+                      },
+                      "like_count": 42,
+                      "text_post_app_info": { "direct_reply_count": 3, "repost_count": 7, "quote_count": 1 }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-4",
+          "thread_items": [
+            {
+              "post": {
+                "pk": 3400000000000000004,
+                "code": "DAquote001",
+                "taken_at": 1761870000,
+                "caption": { "text": "Agreed" },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "text_post_app_info": {
+                  "quote_count": 5,
+                  "share_info": {
+                    "quoted_post": {
+                      "pk": "3300000000000000002",
+                      "code": "DCmosseri1",
+                      "caption": { "text": "Original thought" },
+                      "user": { "username": "mosseri", "full_name": "Adam Mosseri" },
+                      "text_post_app_info": {
+                        "share_info": {
+                          "quoted_post": { "pk": "1", "code": "deep", "caption": { "text": "too deep" }, "user": { "username": "deep" } }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-5",
+          "thread_items": [
+            {
+              "post": {
+                "pk": "3400000000000000005",
+                "code": "DAlink0001",
+                "taken_at": 1761860000,
+                "caption": { "text": "Worth a read" },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "text_post_app_info": {
+                  "link_preview_attachment": {
+                    "url": "https://l.threads.com/?u=https%3A%2F%2Fexample.org%2Fstory&e=AT1",
+                    "title": "A story",
+                    "description": "About something",
+                    "image_url": "https://example.org/og.jpg",
+                    "display_url": "example.org"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-6",
+          "thread_items": [
+            {
+              "post": {
+                "pk": "3400000000000000006",
+                "code": "DAvideo001",
+                "taken_at": 1761850000,
+                "caption": { "text": "" },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "original_width": 1080,
+                "original_height": 1920,
+                "image_versions2": {
+                  "candidates": [{ "url": "https://scontent.cdninstagram.com/v-poster.jpg", "width": 1080, "height": 1920 }]
+                },
+                "video_versions": [
+                  { "type": 101, "url": "https://scontent.cdninstagram.com/v-640.mp4", "width": 360, "height": 640 },
+                  { "type": 102, "url": "https://scontent.cdninstagram.com/v-1280.mp4", "width": 720, "height": 1280 },
+                  { "type": 103, "url": "https://scontent.cdninstagram.com/v-1280.mp4", "width": 720, "height": 1280 },
+                  { "type": 104, "url": "https://scontent.cdninstagram.com/v-1280-light.mp4", "width": 720, "height": 1280 },
+                  { "type": 105, "url": "https://scontent.cdninstagram.com/v-1920.mp4", "width": 1080, "height": 1920 },
+                  { "type": 106, "url": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-7",
+          "thread_items": [
+            {
+              "post": {
+                "pk": "3400000000000000007",
+                "code": "DAreply001",
+                "taken_at": 1761840000,
+                "caption": { "text": "Happy birthday!" },
+                "user": { "username": "zuck", "full_name": "Mark Zuckerberg" },
+                "text_post_app_info": { "is_reply": true, "reply_to_author": { "username": " Dana " } }
+              }
+            }
+          ]
+        },
+        {
+          "id": "thread-8",
+          "thread_items": [{ "post": { "pk": "3400000000000000008", "caption": { "text": "Meta sent no author" } } }]
+        }
+      ]
+    }
+  },
+  "extensions": { "is_final": true }
+}

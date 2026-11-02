@@ -1,0 +1,14 @@
+{
+  "pk": "314216",
+  "id": "314216",
+  "username": "zuck",
+  "full_name": "Mark Zuckerberg",
+  "is_verified": true,
+  "is_private": false,
+  "profile_pic_url": "https://example.org/zuck.jpg",
+  "biography": "Building things",
+  "follower_count": 4200000,
+  "following_count": 812,
+  "media_count": 1330,
+  "external_url": "https://example.org"
+}

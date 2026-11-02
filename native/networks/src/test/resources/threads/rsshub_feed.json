@@ -1,0 +1,39 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "Mark Zuckerberg - Threads",
+  "home_page_url": "https://www.threads.com/@zuck",
+  "description": "Mark Zuckerberg's Threads - Powered by RSSHub",
+  "icon": "https://example.org/avatar.jpg",
+  "items": [
+    {
+      "id": "https://www.threads.com/@zuck/post/DRss000001",
+      "url": "https://www.threads.com/@zuck/post/DRss000001",
+      "title": "Hello there",
+      "content_html": "<p>Hello there<br>second line</p><p>New paragraph</p><img src=\"https://example.org/a.jpg\">",
+      "date_published": "2026-08-01T09:00:00.000Z",
+      "attachments": [
+        { "url": "https://example.org/b.jpg", "mime_type": "image/jpeg" },
+        { "url": "https://example.org/c.mp4", "mime_type": "video/mp4" },
+        { "url": "https://example.org/a.jpg", "mime_type": "image/jpeg" }
+      ]
+    },
+    {
+      "id": "https://www.threads.com/@zuck/post/DRss000002",
+      "content_text": "  Plain words win  ",
+      "content_html": "<p>ignored</p>",
+      "authors": [{ "name": "Mark", "avatar": "https://example.org/mark.jpg" }],
+      "date_published": "2026-07-30T18:30:00+02:00"
+    },
+    {
+      "id": "picture-only",
+      "attachments": [{ "url": "https://example.org/only.jpg", "mime_type": "image/jpeg" }]
+    },
+    {
+      "id": "empty",
+      "content_html": "<p>   </p>"
+    },
+    {
+      "content_text": "no id and no link"
+    }
+  ]
+}
