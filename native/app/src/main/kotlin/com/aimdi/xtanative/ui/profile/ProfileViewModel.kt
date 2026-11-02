@@ -82,7 +82,12 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
     val follow: StateFlow<FollowUi> =
         combine(graph.sessions.state.filterNotNull(), state.map { it.user?.id }.distinctUntilChanged()) { session, userId ->
             FollowUi.of(session, userId, screenName)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FollowUi())
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            // From the session already read, so Follow never flashes before Following.
+            FollowUi.of(graph.sessions.state.value ?: Session(), state.value.user?.id, screenName),
+        )
 
     private var posts: MergedTimeline? = null
     private val cursors = HashMap<ProfileTab, String?>()

@@ -44,14 +44,6 @@ class ImportViewModel(private val graph: AppGraph) : ViewModel() {
         }
     }
 
-    /** No backup: profiles and posts are read as a guest, and follows made here make the feed. */
-    fun readWithoutAccount() {
-        viewModelScope.launch {
-            graph.sessions.update { it.copy(guest = true) }
-            state.value = ImportUi.Done
-        }
-    }
-
     fun reset() {
         state.value = ImportUi.Idle
     }

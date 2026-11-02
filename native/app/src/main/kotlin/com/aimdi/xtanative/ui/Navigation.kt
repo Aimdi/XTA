@@ -48,7 +48,7 @@ private object Routes {
 
 private const val SLIDE_MS = 280
 
-/** The app's screens. The first is the import until XTA's backup has given it an account, or reading without one was chosen. */
+/** The app's screens. The first is the import until XTA's backup has given it an account. */
 @Composable
 fun XtaNativeRoot() {
     val graph = LocalGraph.current
@@ -59,7 +59,7 @@ fun XtaNativeRoot() {
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
-    val start = remember { if (loaded.accounts.isEmpty() && !loaded.guest) Routes.IMPORT else Routes.FEED }
+    val start = remember { if (loaded.accounts.isEmpty()) Routes.IMPORT else Routes.FEED }
     val nav = rememberNavController()
     val actions = remember(nav) {
         PostActions(

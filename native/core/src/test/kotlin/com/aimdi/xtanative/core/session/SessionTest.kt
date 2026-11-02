@@ -29,8 +29,6 @@ class SessionTest {
     @Test
     fun aSessionReadsBackAsItWasWritten() {
         assertEquals(session, Session.decode(Session.encode(session)))
-        val guest = Session(guest = true)
-        assertEquals(guest, Session.decode(Session.encode(guest)))
     }
 
     @Test

@@ -51,8 +51,6 @@
     <string name="import_not_a_backup">Diese Datei ist keine Sicherung aus XTA.</string>
     <string name="import_no_accounts">Diese Sicherung enthält keine X-Konten: Exportiere sie noch einmal mit eingeschaltetem „Konten exportieren“.</string>
     <string name="import_use">Diese Sicherung verwenden</string>
-    <string name="import_without_account">Ohne X-Konto lesen</string>
-    <string name="import_without_account_explained">Profile und Beiträge öffnen sich als Gast, und die Konten, denen du hier folgst, ergeben deinen Folge-ich-Feed. Für die Suche auf X braucht es ein Konto.</string>
     <string name="import_privacy">Die Sicherung enthält deine X-Sitzungen. XTA Native behält sie auf diesem Telefon, schickt sie nur an X und postet, liked oder folgt dort nie etwas.</string>
     <plurals name="import_found_accounts">
         <item quantity="one">%d X-Konto</item>

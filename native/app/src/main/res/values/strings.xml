@@ -53,8 +53,6 @@
     <string name="import_not_a_backup">This file isn\'t a backup XTA exported.</string>
     <string name="import_no_accounts">This backup has no X accounts: export again with “Export accounts?” switched on.</string>
     <string name="import_use">Use this backup</string>
-    <string name="import_without_account">Read without an X account</string>
-    <string name="import_without_account_explained">Profiles and posts open as a guest, and the accounts you follow here make your Following feed. Searching X needs an account.</string>
     <string name="import_privacy">The backup holds your X sessions. XTA Native keeps them on this phone, sends them only to X, and never posts, likes or follows anything there.</string>
     <plurals name="import_found_accounts">
         <item quantity="one">%d X account</item>

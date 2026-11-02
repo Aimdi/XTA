@@ -6,8 +6,6 @@
 2. In XTA, open **Settings → Data → Export**, switch on **"Export accounts?"**, and export.
 3. Open XTA Native and choose that file. Your X accounts, the accounts you follow and your groups come with it.
 
-Or choose **Read without an X account**: profiles and posts are then read as a guest, and the accounts you follow in XTA Native make your Following feed. Searching X needs an account.
-
 Like XTA, it only reads X: nothing is posted, liked or followed there. Following an account in XTA Native stays in XTA Native. Your X sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
 
 ### What is in it

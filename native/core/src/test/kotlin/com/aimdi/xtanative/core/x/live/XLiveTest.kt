@@ -33,17 +33,29 @@ class XLiveTest {
         assertEquals("X", user.screenName)
         assertTrue((user.followers ?: 0) > 1_000_000, "@X has its followers: ${user.followers}")
         println("LIVE @X ${user.name}, ${user.followers} followers, key ${signer.keyBytes.size} bytes")
+    }
 
-        // What reading without an account rests on: an account's posts and a conversation.
-        val posts = client.userPosts(user.id)
-        assertTrue(posts.threads.isNotEmpty(), "a guest reads @X's posts")
-        val first = posts.threads.first().posts.first()
-        val conversation = client.conversation(first.id)
-        assertTrue(conversation.threads.any { thread -> thread.posts.any { it.id == first.id } }, "a guest reads a conversation")
-        println("LIVE as a guest: ${posts.threads.size} posts by @X, conversation of ${first.id} with ${conversation.threads.size} threads")
+    /**
+     * What else a guest gets from live X, written to the log and never failed
+     * on: whether reading without an account could be more than profiles.
+     */
+    @Test
+    fun whatAGuestCanReadIsLogged() = runBlocking {
+        assumeTrue(System.getenv("RUN_LIVE") == "true", "Set RUN_LIVE=true to read live x.com")
+        val http = OkHttpXHttp()
+        val client = XClient(http, accounts = { emptyList() }, signers = XSigners(SigningBootstrap(http)), guest = XGuest(http))
+        client.refreshEndpoints()
+        val (user, _) = client.profile("X")
+        probe("posts") { client.userPosts(user.id).threads.size }
+        probe("reposts") { client.userReposts(user.id).threads.size }
+        probe("replies") { client.userReplies(user.id).threads.size }
+        probe("media") { client.userMedia(user.id).threads.size }
+        probe("conversation") { client.conversation("20").threads.size }
+        probe("search") { client.search("from:X").threads.size }
+    }
 
-        // Search is expected to need an account; what X says to a guest is kept in the log.
-        val search = runCatching { client.search("from:X") }
-        println("LIVE search as a guest: " + search.fold({ "${it.threads.size} posts" }, { "refused, ${it::class.simpleName}: ${it.message?.take(120)}" }))
+    private suspend fun probe(what: String, read: suspend () -> Int) {
+        val outcome = runCatching { read() }.fold({ "$it threads" }, { "refused, ${it::class.simpleName}: ${it.message?.take(160)}" })
+        println("LIVE guest $what: $outcome")
     }
 }

@@ -2,8 +2,9 @@ name: Native prototype
 
 # Builds XTA Native, the Android-only prototype in native/, beside the Flutter
 # app. Every push to the prototype's branch builds and tests it; a commit whose
-# message carries [prerelease] also publishes the APK as a GitHub prerelease,
-# never marked latest, so XTA's own releases are untouched.
+# message carries [prerelease], or a manual run with "prerelease" ticked, also
+# publishes the APK as a GitHub prerelease, never marked latest, so XTA's own
+# releases are untouched.
 on:
   push:
     branches: [claude/admiring-mayer-bdfg95]
@@ -11,6 +12,11 @@ on:
       - 'native/**'
       - '.github/workflows/native-prototype.yml'
   workflow_dispatch:
+    inputs:
+      prerelease:
+        description: Publish the APK as a prerelease
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -208,7 +214,7 @@ jobs:
 
   # Published only when the build and the emulator run both passed.
   prerelease:
-    if: contains(github.event.head_commit.message, '[prerelease]')
+    if: contains(github.event.head_commit.message, '[prerelease]') || inputs.prerelease
     needs: [build, screens]
     runs-on: ubuntu-latest
     env:
