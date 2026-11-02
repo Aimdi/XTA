@@ -18,21 +18,21 @@ layer is written in `networks/<id>` first, then moves with its screens into
 
 | XTA | Read | Screens |
 |---|---|---|
-| x (`lib/client`, `plugins/x`) | `core/x` done; trends, communities, lists, quotes, reposters, Spaces, advanced search: `core/x` | feed, post, profile, search done; the rest in the screens wave |
-| reddit | `networks/reddit` | screens wave |
-| bluesky | `networks/bluesky` | screens wave |
+| x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes (238 core tests) | feed, post, profile, search done; trends, communities, lists and the rest in the screens wave |
+| reddit | `networks/reddit` ported (235 tests) | screens wave |
+| bluesky | `networks/bluesky` ported (97 tests, live check passes) | first plugin, being built |
 | mastodon | `networks/mastodon` | screens wave |
-| threads | `networks/threads` | screens wave |
+| threads | `networks/threads` ported (165 tests, live check passes) | screens wave |
 | substack | `networks/substack` | screens wave (reader, podcasts) |
-| booru | `networks/booru` | screens wave |
+| booru | `networks/booru` ported (150 tests) | screens wave |
 | pixiv | `networks/pixiv` | screens wave |
-| ehviewer | `networks/ehviewer` | screens wave |
-| instagram | `networks/instagram` | screens wave |
-| tiktok | `networks/tiktok` | screens wave |
+| ehviewer | `networks/ehviewer` ported (95 tests) | screens wave |
+| instagram | `networks/instagram` ported (50 tests) | screens wave |
+| tiktok | `networks/tiktok` ported (51 tests) | screens wave |
 | rss | `networks/rss` | screens wave |
 | hackernews | `networks/hackernews` | screens wave |
 | websources | `networks/websources` | screens wave |
-| stocks | `networks/stocks` | screens wave |
+| stocks | `networks/stocks` ported (158 tests) | screens wave |
 | immich | `networks/immich` | screens wave |
 | deepmarks | `networks/deepmarks` | screens wave |
 | karakeep | `networks/karakeep` | screens wave |
@@ -65,7 +65,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | settings | `store` (every setting); `ui/settings`; the plugin store in `plugin-host` + `ui/plugins` |
 | catcher | crash reports per platform; a switch in settings |
 | utils | `services` and the platform modules |
-| ui | `ui/common` |
+| ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |
 | l10n | `ui` resources in all 30 of XTA's languages |
 | generated | not needed |
 
