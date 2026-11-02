@@ -1,0 +1,26 @@
+{
+  "id": 10,
+  "created_at_i": 1175714200,
+  "type": "story",
+  "author": "bob",
+  "title": "Ask HN: tools",
+  "url": null,
+  "text": "Which <a href=\"https://example.com\">tools</a> do you use?<p>Asking for a friend.",
+  "points": 4,
+  "children": [
+    {
+      "id": 11,
+      "created_at_i": 1175714300,
+      "type": "comment",
+      "author": "carol",
+      "text": "Try <i>this</i>",
+      "children": [
+        { "id": 12, "type": "comment", "author": "dan", "text": "ok", "children": [] },
+        { "id": 13, "type": "comment", "author": null, "text": null, "children": [
+          { "id": 14, "type": "comment", "author": "erin", "text": "Replying to a deleted one", "children": [] }
+        ] }
+      ]
+    },
+    { "type": "comment", "author": "nobody", "text": "no id, not counted" }
+  ]
+}

@@ -1,0 +1,60 @@
+package com.aimdi.xtanative.networks.rss
+
+import java.time.Instant
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class RssModelsTest {
+    private fun item(id: String, at: Instant? = null, title: String = id) =
+        RssItem(id = id, title = title, feedId = "https://a.example/feed", feedTitle = "A", publishedAt = at)
+
+    @Test
+    fun mergeSortsNewestFirstAndDropsDuplicateIds() {
+        val older = item("a", Instant.parse("2026-01-01T00:00:00Z"))
+        val newer = item("b", Instant.parse("2026-08-01T00:00:00Z"))
+        val updated = item("a", Instant.parse("2026-08-02T00:00:00Z"), title = "a, edited")
+
+        val merged = Rss.merge(listOf(older, newer), listOf(updated))
+
+        assertEquals(listOf("a", "b"), merged.map { it.id })
+        assertEquals(Instant.parse("2026-08-02T00:00:00Z"), merged.first().publishedAt)
+        assertEquals("a, edited", merged.first().title)
+    }
+
+    @Test
+    fun itemsWithoutADateSinkBelowDatedOnes() {
+        val dated = item("dated", Instant.parse("2026-01-01T00:00:00Z"))
+        val undated = item("undated")
+
+        assertEquals(listOf("dated", "undated"), Rss.merge(listOf(undated), listOf(dated)).map { it.id })
+    }
+
+    @Test
+    fun feedIdNormalisesHostCaseAndTrailingSlashes() {
+        assertEquals("https://example.com/feed", Rss.feedId("https://Example.COM/feed/"))
+        assertEquals("https://example.com", Rss.feedId(" https://example.com/// "))
+        assertEquals("https://example.com/feed", Rss.feedId("https://example.com:443/feed?format=rss#top"))
+        assertEquals("http://example.com:8080/feed", Rss.feedId("http://example.com:8080/feed"))
+        assertEquals("example.com/feed", Rss.feedId("example.com/feed"), "what is no web address stays as written")
+    }
+
+    @Test
+    fun recognisesFeedPathsAndNotSiteHomes() {
+        assertTrue(Rss.looksLikeFeedUrl("https://example.com/feed"))
+        assertTrue(Rss.looksLikeFeedUrl("https://example.com/atom.xml"))
+        assertTrue(Rss.looksLikeFeedUrl("https://example.com/blog/rss/"))
+        assertTrue(Rss.looksLikeFeedUrl("https://example.com/index.RSS"))
+        assertFalse(Rss.looksLikeFeedUrl("https://example.com/"))
+        assertFalse(Rss.looksLikeFeedUrl("https://example.com/feedback"))
+        assertFalse(Rss.looksLikeFeedUrl("example.com/feed"))
+    }
+
+    @Test
+    fun aBodyIsWorthReadingWhenItSaysMoreThanItsExcerpt() {
+        assertTrue(item("a").copy(bodyHtml = "<p>Long</p>", excerpt = "Long").hasReadableBody)
+        assertFalse(item("a").copy(bodyHtml = " Same ", excerpt = "Same").hasReadableBody)
+        assertFalse(item("a").copy(bodyHtml = "  ").hasReadableBody)
+    }
+}

@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "id": "tildes",
+  "version": 1,
+  "name": "Tildes",
+  "homepage": "https://tildes.net",
+  "hosts": ["tildes.net"],
+  "layout": "articles",
+  "type": "html",
+  "items": "article.topic",
+  "fields": {
+    "id": "@id",
+    "title": "h1.topic-title a",
+    "link": "h1.topic-title a@href",
+    "text": ".topic-text-excerpt",
+    "date": "time@datetime",
+    "comments": ".topic-info-comments span"
+  },
+  "feeds": [
+    { "id": "all", "name": "All", "url": "https://tildes.net/", "next": "a#next-page@href" }
+  ]
+}

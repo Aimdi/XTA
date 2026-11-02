@@ -1,0 +1,37 @@
+{
+  "nbPages": 2,
+  "page": 0,
+  "hitsPerPage": 30,
+  "hits": [
+    {
+      "objectID": "8863",
+      "title": "My YC app: Dropbox - Throw away your USB drive",
+      "url": "http://www.paulgraham.com/dropbox.html",
+      "author": "pg",
+      "points": 100,
+      "num_comments": 12,
+      "created_at_i": 1175714200,
+      "_tags": ["story", "author_pg", "story_8863", "front_page"]
+    },
+    {
+      "objectID": "121003",
+      "title": "Ask HN: The Arc Effect",
+      "url": null,
+      "story_text": "<i>or</i> HN: the Next Iteration<p>I get the impression that with Arc being released a lot of people...",
+      "author": "tel",
+      "points": 25,
+      "num_comments": 16,
+      "created_at_i": 1203647620,
+      "_tags": ["story", "author_tel", "ask_hn", "front_page"]
+    },
+    {
+      "story_id": 42,
+      "title": "Only a story id",
+      "_tags": ["show_hn"]
+    },
+    {
+      "title": "No id at all",
+      "_tags": ["story"]
+    }
+  ]
+}

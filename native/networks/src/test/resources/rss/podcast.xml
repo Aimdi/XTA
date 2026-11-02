@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <image><url>https://podcast.example/logo.png</url><title>Logo title</title></image>
+  <title>Example Podcast &#8211; Weekly</title>
+  <link>https://podcast.example/</link>
+  <atom:link href="https://podcast.example/feed.xml" rel="self" type="application/rss+xml"/>
+  <description>Talk &amp; music.</description>
+  <item>
+    <title>Episode 1: It&#8217;s here</title>
+    <link>https://podcast.example/1</link>
+    <guid isPermaLink="false">ep-1</guid>
+    <pubDate>Tue, 04 Aug 2026 23:03:08 +0200</pubDate>
+    <author>host@podcast.example (Host)</author>
+    <description>&lt;p&gt;Short and sweet&lt;/p&gt;</description>
+    <content:encoded><![CDATA[<p>The <b>full</b> notes &amp; links.</p><img src="https://podcast.example/notes.jpg">]]></content:encoded>
+    <enclosure url="https://cdn.podcast.example/images/ep1.mp3" length="12345678" type="audio/mpeg"/>
+    <enclosure url="https://cdn.podcast.example/ep1-cover" length="2048" type="image/jpeg"/>
+    <category>Music</category>
+    <category> </category>
+  </item>
+  <item>
+    <title>Video post</title>
+    <link>https://podcast.example/2</link>
+    <dc:date>2026-08-03T10:00:00+02:00</dc:date>
+    <dc:creator></dc:creator>
+    <author>Fallback Author</author>
+    <media:content url="https://cdn.podcast.example/clip.mp4" type="video/mp4" medium="video"/>
+    <media:content url="https://cdn.podcast.example/still.jpg" medium="image"/>
+    <description>Plain text, no markup.</description>
+  </item>
+  <item>
+    <title>Thumbnail only</title>
+    <link>https://podcast.example/3</link>
+    <pubDate>not a date</pubDate>
+    <dc:date>2026-08-02</dc:date>
+    <media:group><media:thumbnail url="https://cdn.podcast.example/thumb.jpg"/></media:group>
+    <description><![CDATA[<p>See <img src="/relative.png"> inside</p>]]></description>
+  </item>
+  <item>
+    <link>https://podcast.example/4</link>
+    <description><![CDATA[<p>Untitled, with a picture <img src="https://podcast.example/4.png"></p>]]></description>
+  </item>
+</channel>
+</rss>

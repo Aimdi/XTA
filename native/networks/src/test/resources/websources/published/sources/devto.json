@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "id": "devto",
+  "version": 1,
+  "name": "DEV Community",
+  "description": "Articles by software developers, from dev.to.",
+  "homepage": "https://dev.to",
+  "color": "#0A0A0A",
+  "hosts": ["dev.to"],
+  "layout": "articles",
+  "type": "json",
+  "items": "$",
+  "fields": {
+    "id": "id",
+    "title": "title",
+    "text": "description",
+    "link": "url",
+    "author": "user.name",
+    "avatar": "user.profile_image_90",
+    "image": "cover_image",
+    "date": "published_at",
+    "score": "public_reactions_count",
+    "comments": "comments_count",
+    "tags": "tag_list[*]"
+  },
+  "feeds": [
+    { "id": "top", "name": "Top this week", "url": "https://dev.to/api/articles?top=7&per_page=30&page={page}" },
+    { "id": "latest", "name": "Latest", "url": "https://dev.to/api/articles/latest?per_page=30&page={page}" }
+  ],
+  "search": { "url": "https://dev.to/api/articles?tag={query}&per_page=30&page={page}" },
+  "article": { "url": "https://dev.to/api/articles/{id}", "html": "body_html" }
+}

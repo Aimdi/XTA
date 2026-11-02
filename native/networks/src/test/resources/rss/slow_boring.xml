@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title><![CDATA[Slow Boring]]></title>
+<description><![CDATA[Pragmatic takes.]]></description>
+<link>https://www.slowboring.com</link>
+<image><url>https://example.org/logo.png</url></image>
+<item>
+<title><![CDATA[Hello]]></title>
+<link>https://www.slowboring.com/p/hello-there</link>
+<guid>https://www.slowboring.com/p/hello-there</guid>
+<pubDate>Tue, 04 Aug 2026 23:03:08 GMT</pubDate>
+<dc:creator>Matt</dc:creator>
+<category>Politics</category>
+<description><![CDATA[<p>An opening paragraph.</p>]]></description>
+<enclosure url="https://example.org/cover.jpg" type="image/jpeg" />
+</item>
+</channel></rss>
