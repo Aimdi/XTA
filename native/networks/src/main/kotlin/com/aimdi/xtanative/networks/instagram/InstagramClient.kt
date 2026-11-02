@@ -195,7 +195,8 @@ class InstagramClient(
 
     private suspend fun get(url: HttpUrl, referer: String? = null, html: Boolean = false): XResponse {
         val response = http.get(url, headers(referer, html), followRedirects = true)
-        remember(response.header("set-cookie"))
+        // Every Set-Cookie line, not only the first: OkHttp keeps them apart.
+        remember(response.headers("set-cookie").joinToString(",").ifEmpty { null })
         refusalOf(response, url, html)?.let { throw it }
         return response
     }

@@ -17,6 +17,10 @@ class XResponse(val code: Int, val body: String, private val headers: Map<String
 
     fun header(name: String): String? =
         headers.entries.firstOrNull { it.key.equals(name, ignoreCase = true) }?.value?.firstOrNull()
+
+    /** Every value of a header sent more than once, such as Set-Cookie. */
+    fun headers(name: String): List<String> =
+        headers.entries.filter { it.key.equals(name, ignoreCase = true) }.flatMap { it.value }
 }
 
 /** The requests XTA Native makes. An interface, so tests can stand in for x.com. */
