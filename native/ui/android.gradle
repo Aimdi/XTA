@@ -1,0 +1,16 @@
+// The Android library settings of :ui. ui/build.gradle.kts applies this only
+// where an Android SDK is installed, which is also the only place the Android
+// plugin's classes are on the build's classpath. It is Groovy because a
+// script applied with apply(from) does not see that classpath when it is
+// compiled, and Groovy finds the android { } settings when it runs instead.
+android {
+    namespace = 'com.aimdi.xtanative.ui'
+    compileSdk = 35
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}

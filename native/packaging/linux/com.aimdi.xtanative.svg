@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72">
+  <!-- The launcher icon (app/src/main/res/drawable/ic_launcher_foreground.xml), cut to what a launcher shows; the window's icon is desktop/.../AppIcon.kt. -->
+  <rect width="72" height="72" rx="16" fill="#000000"/>
+  <path fill="#FFFFFF" d="M20,18 L28,18 L52,54 L44,54 Z"/>
+  <path fill="#1D9BF0" d="M44,18 L52,18 L28,54 L20,54 Z"/>
+</svg>

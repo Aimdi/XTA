@@ -1,4 +1,4 @@
-**XTA Native is a prototype.** It is XTA's X reader written for Android alone, in Kotlin and Jetpack Compose instead of Flutter, so you can compare size, start time and feel with XTA itself. It is not a release and may be withdrawn.
+**XTA Native is a prototype.** It is XTA's X reader written in Kotlin and Compose instead of Flutter, for Android and the Linux desktop from the same screens, so you can compare size, start time and feel with XTA itself. It is not a release and may be withdrawn.
 
 ### Trying it
 
@@ -7,6 +7,13 @@
 3. Open XTA Native and choose that file. Your X accounts, the accounts you follow and your groups come with it.
 
 Like XTA, it only reads X: nothing is posted, liked or followed there. Following an account in XTA Native stays in XTA Native. Your X sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
+
+### On Linux
+
+- **Any distribution:** unpack `xta-native-desktop-…-linux-x64.tar.gz` and run `bin/xta-native`. It brings its own Java runtime.
+- **Arch:** `sudo pacman -U xta-native-…-x86_64.pkg.tar.zst` puts it in your application menu (the PKGBUILD beside it builds the same package).
+
+It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Videos open in your browser or video player; the feed shows their posters.
 
 ### What is in it
 

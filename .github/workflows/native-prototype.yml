@@ -1,10 +1,11 @@
 name: Native prototype
 
-# Builds XTA Native, the Android-only prototype in native/, beside the Flutter
-# app. Every push to the prototype's branch builds and tests it; a commit whose
-# message carries [prerelease] also publishes the APK as a GitHub prerelease,
-# never marked latest, so XTA's own releases are untouched. (A manual run cannot:
-# runs started through the GitHub integration get no release permission.)
+# Builds XTA Native, the prototype in native/ for Android and the Linux desktop,
+# beside the Flutter app. Every push to the prototype's branch builds and tests
+# it; a commit whose message carries [prerelease] also publishes the APK and the
+# Linux tarball and Arch package as a GitHub prerelease, never marked latest, so
+# XTA's own releases are untouched. (A manual run cannot: runs started through
+# the GitHub integration get no release permission.)
 on:
   push:
     branches: [claude/admiring-mayer-bdfg95]
@@ -208,10 +209,132 @@ jobs:
           path: native-screens
           if-no-files-found: ignore
 
-  # Published only when the build and the emulator run both passed.
+  # The Linux app, packed as XTA ships its own (a tarball and an Arch package),
+  # then started from that tarball under a virtual display against the same
+  # stand-in for X: fails when the app does not stay up, and shows its window
+  # in the log.
+  desktop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      VERSION_NAME: 0.1.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the desktop app
+        working-directory: native
+        env:
+          NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
+        run: ./gradlew :desktop:createDistributable --console=plain
+
+      - name: Pack the tarball and the PKGBUILD
+        run: bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
+
+      # makepkg refuses to run as root, and takes the tarball beside the
+      # PKGBUILD rather than downloading it, so this also proves the PKGBUILD.
+      - name: Build the Arch package
+        run: |
+          docker run --rm -v "$RUNNER_TEMP/desktop:/out" archlinux:base-devel bash -euc '
+            useradd -m builder
+            cp -r /out /home/builder/pkg
+            chown -R builder /home/builder/pkg
+            su builder -c "cd /home/builder/pkg && makepkg --force --nodeps --noconfirm"
+            cp /home/builder/pkg/*.pkg.tar.zst /out/'
+          ls -l "$RUNNER_TEMP/desktop"
+          {
+            echo "### XTA Native $VERSION_NAME on Linux"
+            echo
+            for f in "$RUNNER_TEMP"/desktop/*.tar.gz "$RUNNER_TEMP"/desktop/*.pkg.tar.zst; do
+              echo "- $(basename "$f"): $(stat -c %s "$f") bytes"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-desktop-${{ env.VERSION_NAME }}
+          path: |
+            ${{ runner.temp }}/desktop/xta-native-desktop-*.tar.gz
+            ${{ runner.temp }}/desktop/xta-native-*.pkg.tar.zst
+            ${{ runner.temp }}/desktop/PKGBUILD
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: Serve the stand-in for X
+        run: |
+          flutter pub get
+          nohup dart run tool/mock_x/server.dart > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      # Skia draws in software: the virtual display has no GPU.
+      - name: Open it against the stand-in
+        env:
+          XTA_NATIVE_MOCK_X: http://127.0.0.1:8787
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          command -v xvfb-run > /dev/null && command -v import > /dev/null \
+            || { sudo apt-get update -qq && sudo apt-get install -y -qq xvfb imagemagick > /dev/null; }
+          mkdir -p native-desktop
+          tar -xzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" -C "$RUNNER_TEMP"
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+            "$1" > native-desktop/app.log 2>&1 &
+            pid=$!
+            sleep 20
+            import -window root native-desktop/desktop.png
+            if ! kill -0 "$pid" 2> /dev/null; then
+              echo "XTA Native is no longer running:"
+              cat native-desktop/app.log
+              exit 1
+            fi
+            kill "$pid"
+          ' _ "$app"
+          echo "XTA Native was still running after 20 s."
+
+      - name: Keep the logs
+        if: always()
+        run: |
+          mkdir -p native-desktop
+          cp "$RUNNER_TEMP/mock-x.log" native-desktop/ 2>/dev/null || true
+          tail -40 native-desktop/app.log 2>/dev/null || true
+          tail -40 "$RUNNER_TEMP/mock-x.log" || true
+
+      # The window, small, in the log itself, as the screens job shows its screens.
+      - name: Desktop for review
+        if: always()
+        run: |
+          [ -f native-desktop/desktop.png ] || exit 0
+          convert native-desktop/desktop.png -trim +repage -resize 480x -quality 60 "$RUNNER_TEMP/desktop.jpg"
+          echo "==== desktop.jpg"
+          base64 -w 0 "$RUNNER_TEMP/desktop.jpg"
+          echo
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-desktop
+          path: native-desktop
+          if-no-files-found: ignore
+
+  # Published only when the build, the emulator run and the desktop run all passed.
   prerelease:
     if: contains(github.event.head_commit.message, '[prerelease]')
-    needs: [build, screens]
+    needs: [build, screens, desktop]
     runs-on: ubuntu-latest
     env:
       VERSION_NAME: 0.1.${{ github.run_number }}
@@ -225,11 +348,19 @@ jobs:
           name: xta-native-${{ env.VERSION_NAME }}
           path: apk
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-desktop-${{ env.VERSION_NAME }}
+          path: desktop
+
       - name: Prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "native-$VERSION_NAME" "apk/xta-native-$VERSION_NAME.apk" \
+            "desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" \
+            "desktop/xta-native-$VERSION_NAME-1-x86_64.pkg.tar.zst" \
+            desktop/PKGBUILD \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --prerelease \

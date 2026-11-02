@@ -1,10 +1,12 @@
+// The Android app: a shell around :ui's screens (the Application, the activity
+// and its links, signing, the baseline profile).
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("plugin.compose")
 }
 
-// -PmockX=<url> builds an APK that reads XTA's stand-in for X (data/MockX.kt); never set for a release.
+// -PmockX=<url> builds an APK that reads XTA's stand-in for X (:ui's data/MockX.kt); never set for a release.
 val mockX = (findProperty("mockX") as String?).orEmpty()
 
 android {
@@ -76,21 +78,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":core"))
-
-    val compose = platform("androidx.compose:compose-bom:2025.01.01")
-    implementation(compose)
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-core")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-    implementation("androidx.media3:media3-exoplayer:1.5.1")
-    implementation("androidx.media3:media3-ui:1.5.1")
-    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation(project(":ui"))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.kotlinx.coroutines.android)
 }
