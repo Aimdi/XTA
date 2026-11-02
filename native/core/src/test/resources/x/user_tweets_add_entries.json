@@ -1,0 +1,621 @@
+{
+  "entries": [
+    {
+      "content": {
+        "__typename": "TimelineTimelineItem",
+        "clientEventInfo": {
+          "component": "organic_tweets",
+          "element": "tweet"
+        },
+        "entryType": "TimelineTimelineItem",
+        "itemContent": {
+          "__typename": "TimelineTweet",
+          "itemType": "TimelineTweet",
+          "tweetDisplayType": "Tweet",
+          "tweet_results": {
+            "result": {
+              "__typename": "Tweet",
+              "core": {
+                "user_results": {
+                  "result": {
+                    "__typename": "User",
+                    "affiliates_highlighted_label": {},
+                    "has_graduated_access": true,
+                    "has_nft_avatar": false,
+                    "id": "VXNlcjo3ODMyMTQ=",
+                    "is_blue_verified": true,
+                    "legacy": {
+                      "blocked_by": false,
+                      "blocking": false,
+                      "can_dm": false,
+                      "can_media_tag": false,
+                      "created_at": "Tue Feb 20 14:35:54 +0000 2007",
+                      "default_profile": false,
+                      "default_profile_image": false,
+                      "description": "what's happening?!",
+                      "entities": {
+                        "description": {},
+                        "url": {
+                          "urls": [
+                            {
+                              "display_url": "x.com",
+                              "expanded_url": "https://x.com",
+                              "indices": [
+                                0,
+                                23
+                              ],
+                              "url": "https://t.co/Xp0xJlcROt"
+                            }
+                          ]
+                        }
+                      },
+                      "fast_followers_count": 0,
+                      "favourites_count": 5977,
+                      "follow_request_sent": false,
+                      "followed_by": false,
+                      "followers_count": 60809772,
+                      "following": false,
+                      "friends_count": 1,
+                      "has_custom_timelines": true,
+                      "is_translator": false,
+                      "listed_count": 85272,
+                      "location": "everywhere",
+                      "media_count": 2490,
+                      "muting": false,
+                      "name": "X",
+                      "needs_phone_verification": false,
+                      "normal_followers_count": 60809772,
+                      "notifications": false,
+                      "possibly_sensitive": false,
+                      "profile_banner_url": "https://pbs.twimg.com/profile_banners/783214/1690175171",
+                      "profile_image_url_https": "https://pbs.twimg.com/profile_images/1955359038532653056/OSHY3ewP_normal.jpg",
+                      "profile_interstitial_type": "",
+                      "protected": false,
+                      "screen_name": "X",
+                      "statuses_count": 15709,
+                      "time_zone": "",
+                      "translator_type": "regular",
+                      "url": "https://t.co/Xp0xJlcROt",
+                      "utc_offset": 0,
+                      "verified": false,
+                      "verified_type": "Business",
+                      "withheld_description": "",
+                      "withheld_scope": ""
+                    },
+                    "professional": {
+                      "category": [
+                        {
+                          "icon_name": "",
+                          "id": 714,
+                          "name": "Technology Company"
+                        }
+                      ],
+                      "professional_type": "Business",
+                      "rest_id": "1858538123375874167"
+                    },
+                    "profile_image_shape": "Square",
+                    "rest_id": "783214",
+                    "super_follow_eligible": false,
+                    "super_followed_by": false,
+                    "super_following": false
+                  }
+                }
+              },
+              "edit_control": {
+                "edit_tweet_ids": [
+                  "2079275370742677949"
+                ],
+                "editable_until_msecs": "1784576454000",
+                "edits_remaining": "5",
+                "is_edit_eligible": false
+              },
+              "is_translatable": false,
+              "legacy": {
+                "bookmark_count": 41,
+                "bookmarked": false,
+                "conversation_id_str": "2079275369304150492",
+                "created_at": "Mon Jul 20 18:40:54 +0000 2026",
+                "display_text_range": [
+                  0,
+                  144
+                ],
+                "entities": {},
+                "favorite_count": 645,
+                "favorited": false,
+                "full_text": "more upgrades to come including hosting Spaces and performance improvements for older devices\n\nfeel free to reply with any bugs that you catch \ud83d\udc47",
+                "id_str": "2079275370742677949",
+                "in_reply_to_screen_name": "X",
+                "in_reply_to_status_id_str": "2079275369304150492",
+                "in_reply_to_user_id_str": "783214",
+                "is_quote_status": false,
+                "lang": "en",
+                "quote_count": 9,
+                "reply_count": 190,
+                "retweet_count": 43,
+                "retweeted": false,
+                "user_id_str": "783214"
+              },
+              "rest_id": "2079275370742677949",
+              "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+              "unmention_info": {},
+              "views": {
+                "count": "136572",
+                "state": "EnabledWithCount"
+              }
+            }
+          }
+        }
+      },
+      "entryId": "tweet-2079275370742677949",
+      "sortIndex": "2080095664108208128"
+    },
+    {
+      "content": {
+        "__typename": "TimelineTimelineItem",
+        "clientEventInfo": {
+          "component": "organic_tweets",
+          "element": "tweet"
+        },
+        "entryType": "TimelineTimelineItem",
+        "itemContent": {
+          "__typename": "TimelineTweet",
+          "itemType": "TimelineTweet",
+          "tweetDisplayType": "Tweet",
+          "tweet_results": {
+            "result": {
+              "__typename": "Tweet",
+              "card": {
+                "rest_id": "https://t.co/u3vq0ZQeWw"
+              },
+              "core": {
+                "user_results": {
+                  "result": {
+                    "__typename": "User",
+                    "affiliates_highlighted_label": {},
+                    "has_graduated_access": true,
+                    "has_nft_avatar": false,
+                    "id": "VXNlcjo3ODMyMTQ=",
+                    "is_blue_verified": true,
+                    "legacy": {
+                      "blocked_by": false,
+                      "blocking": false,
+                      "can_dm": false,
+                      "can_media_tag": false,
+                      "created_at": "Tue Feb 20 14:35:54 +0000 2007",
+                      "default_profile": false,
+                      "default_profile_image": false,
+                      "description": "what's happening?!",
+                      "entities": {
+                        "description": {},
+                        "url": {
+                          "urls": [
+                            {
+                              "display_url": "x.com",
+                              "expanded_url": "https://x.com",
+                              "indices": [
+                                0,
+                                23
+                              ],
+                              "url": "https://t.co/Xp0xJlcROt"
+                            }
+                          ]
+                        }
+                      },
+                      "fast_followers_count": 0,
+                      "favourites_count": 5977,
+                      "follow_request_sent": false,
+                      "followed_by": false,
+                      "followers_count": 60809772,
+                      "following": false,
+                      "friends_count": 1,
+                      "has_custom_timelines": true,
+                      "is_translator": false,
+                      "listed_count": 85272,
+                      "location": "everywhere",
+                      "media_count": 2490,
+                      "muting": false,
+                      "name": "X",
+                      "needs_phone_verification": false,
+                      "normal_followers_count": 60809772,
+                      "notifications": false,
+                      "possibly_sensitive": false,
+                      "profile_banner_url": "https://pbs.twimg.com/profile_banners/783214/1690175171",
+                      "profile_image_url_https": "https://pbs.twimg.com/profile_images/1955359038532653056/OSHY3ewP_normal.jpg",
+                      "profile_interstitial_type": "",
+                      "protected": false,
+                      "screen_name": "X",
+                      "statuses_count": 15709,
+                      "time_zone": "",
+                      "translator_type": "regular",
+                      "url": "https://t.co/Xp0xJlcROt",
+                      "utc_offset": 0,
+                      "verified": false,
+                      "verified_type": "Business",
+                      "withheld_description": "",
+                      "withheld_scope": ""
+                    },
+                    "professional": {
+                      "category": [
+                        {
+                          "icon_name": "",
+                          "id": 714,
+                          "name": "Technology Company"
+                        }
+                      ],
+                      "professional_type": "Business",
+                      "rest_id": "1858538123375874167"
+                    },
+                    "profile_image_shape": "Square",
+                    "rest_id": "783214",
+                    "super_follow_eligible": false,
+                    "super_followed_by": false,
+                    "super_following": false
+                  }
+                }
+              },
+              "edit_control": {
+                "edit_tweet_ids": [
+                  "2079275369304150492"
+                ],
+                "editable_until_msecs": "1784576453000",
+                "edits_remaining": "5",
+                "is_edit_eligible": false
+              },
+              "is_translatable": false,
+              "legacy": {
+                "bookmark_count": 733,
+                "bookmarked": false,
+                "conversation_id_str": "2079275369304150492",
+                "created_at": "Mon Jul 20 18:40:53 +0000 2026",
+                "display_text_range": [
+                  0,
+                  134
+                ],
+                "entities": {
+                  "media": [
+                    {
+                      "additional_media_info": {
+                        "monetizable": false,
+                        "source_user": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "affiliates_highlighted_label": {
+                                "label": {
+                                  "badge": {
+                                    "url": "https://pbs.twimg.com/profile_images/1955359038532653056/OSHY3ewP_bigger.jpg"
+                                  },
+                                  "description": "X",
+                                  "url": {
+                                    "url": "https://twitter.com/X",
+                                    "urlType": "DeepLink"
+                                  },
+                                  "userLabelDisplayType": "Badge",
+                                  "userLabelType": "BusinessLabel"
+                                }
+                              },
+                              "has_graduated_access": true,
+                              "has_nft_avatar": false,
+                              "id": "VXNlcjo2MzY1MTMyOTY=",
+                              "is_blue_verified": true,
+                              "legacy": {
+                                "blocked_by": false,
+                                "blocking": false,
+                                "can_dm": false,
+                                "can_media_tag": false,
+                                "created_at": "Sun Jul 15 22:44:07 +0000 2012",
+                                "default_profile": false,
+                                "default_profile_image": false,
+                                "description": "head of product @x",
+                                "entities": {
+                                  "description": {}
+                                },
+                                "fast_followers_count": 0,
+                                "favourites_count": 39442,
+                                "follow_request_sent": false,
+                                "followed_by": false,
+                                "followers_count": 1231794,
+                                "following": false,
+                                "friends_count": 2051,
+                                "has_custom_timelines": true,
+                                "is_translator": false,
+                                "listed_count": 6038,
+                                "location": "Palo Alto",
+                                "media_count": 1607,
+                                "muting": false,
+                                "name": "Nikita Bier",
+                                "needs_phone_verification": false,
+                                "normal_followers_count": 1231794,
+                                "notifications": false,
+                                "possibly_sensitive": false,
+                                "profile_banner_url": "https://pbs.twimg.com/profile_banners/636513296/1777070372",
+                                "profile_image_url_https": "https://pbs.twimg.com/profile_images/1755448801957945344/Fh2HNw5Y_normal.jpg",
+                                "profile_interstitial_type": "",
+                                "protected": false,
+                                "screen_name": "nikitabier",
+                                "statuses_count": 11723,
+                                "time_zone": "",
+                                "translator_type": "none",
+                                "url": "",
+                                "utc_offset": 0,
+                                "verified": false,
+                                "withheld_description": "",
+                                "withheld_scope": ""
+                              },
+                              "profile_image_shape": "Circle",
+                              "rest_id": "636513296",
+                              "super_follow_eligible": false,
+                              "super_followed_by": false,
+                              "super_following": false
+                            }
+                          }
+                        }
+                      },
+                      "display_url": "pic.x.com/u3vq0ZQeWw",
+                      "expanded_url": "https://x.com/nikitabier/status/2079273272274026718/video/1",
+                      "ext_media_availability": {
+                        "status": "Available"
+                      },
+                      "id_str": "2079270544470650881",
+                      "indices": [
+                        111,
+                        134
+                      ],
+                      "media_key": "13_2079270544470650881",
+                      "media_url_https": "https://pbs.twimg.com/media/HNsQHs0bAAAMiTJ.jpg",
+                      "original_info": {
+                        "focus_rects": [],
+                        "height": 1080,
+                        "width": 1920
+                      },
+                      "sizes": {
+                        "large": {
+                          "h": 1080,
+                          "resize": "fit",
+                          "w": 1920
+                        },
+                        "medium": {
+                          "h": 675,
+                          "resize": "fit",
+                          "w": 1200
+                        },
+                        "small": {
+                          "h": 383,
+                          "resize": "fit",
+                          "w": 680
+                        },
+                        "thumb": {
+                          "h": 150,
+                          "resize": "crop",
+                          "w": 150
+                        }
+                      },
+                      "source_status_id_str": "2079273272274026718",
+                      "source_user_id_str": "636513296",
+                      "type": "video",
+                      "url": "https://t.co/u3vq0ZQeWw",
+                      "video_info": {
+                        "aspect_ratio": [
+                          16,
+                          9
+                        ],
+                        "duration_millis": 25766,
+                        "variants": [
+                          {
+                            "content_type": "application/x-mpegURL",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/pl/fyIn862qiahOXNRD.m3u8?v=cfc"
+                          },
+                          {
+                            "bitrate": 256000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/480x270/7_TLufCPXh21F-8E.mp4"
+                          },
+                          {
+                            "bitrate": 832000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/640x360/45NzMZRIq6B07a4Q.mp4"
+                          },
+                          {
+                            "bitrate": 2176000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/1280x720/7GEjELvI5gtCqTA9.mp4"
+                          },
+                          {
+                            "bitrate": 10368000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/1920x1080/rsF13dGO8Vi5E8Ns.mp4"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "extended_entities": {
+                  "media": [
+                    {
+                      "additional_media_info": {
+                        "monetizable": false,
+                        "source_user": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "affiliates_highlighted_label": {
+                                "label": {
+                                  "badge": {
+                                    "url": "https://pbs.twimg.com/profile_images/1955359038532653056/OSHY3ewP_bigger.jpg"
+                                  },
+                                  "description": "X",
+                                  "url": {
+                                    "url": "https://twitter.com/X",
+                                    "urlType": "DeepLink"
+                                  },
+                                  "userLabelDisplayType": "Badge",
+                                  "userLabelType": "BusinessLabel"
+                                }
+                              },
+                              "has_graduated_access": true,
+                              "has_nft_avatar": false,
+                              "id": "VXNlcjo2MzY1MTMyOTY=",
+                              "is_blue_verified": true,
+                              "legacy": {
+                                "blocked_by": false,
+                                "blocking": false,
+                                "can_dm": false,
+                                "can_media_tag": false,
+                                "created_at": "Sun Jul 15 22:44:07 +0000 2012",
+                                "default_profile": false,
+                                "default_profile_image": false,
+                                "description": "head of product @x",
+                                "entities": {
+                                  "description": {}
+                                },
+                                "fast_followers_count": 0,
+                                "favourites_count": 39442,
+                                "follow_request_sent": false,
+                                "followed_by": false,
+                                "followers_count": 1231794,
+                                "following": false,
+                                "friends_count": 2051,
+                                "has_custom_timelines": true,
+                                "is_translator": false,
+                                "listed_count": 6038,
+                                "location": "Palo Alto",
+                                "media_count": 1607,
+                                "muting": false,
+                                "name": "Nikita Bier",
+                                "needs_phone_verification": false,
+                                "normal_followers_count": 1231794,
+                                "notifications": false,
+                                "possibly_sensitive": false,
+                                "profile_banner_url": "https://pbs.twimg.com/profile_banners/636513296/1777070372",
+                                "profile_image_url_https": "https://pbs.twimg.com/profile_images/1755448801957945344/Fh2HNw5Y_normal.jpg",
+                                "profile_interstitial_type": "",
+                                "protected": false,
+                                "screen_name": "nikitabier",
+                                "statuses_count": 11723,
+                                "time_zone": "",
+                                "translator_type": "none",
+                                "url": "",
+                                "utc_offset": 0,
+                                "verified": false,
+                                "withheld_description": "",
+                                "withheld_scope": ""
+                              },
+                              "profile_image_shape": "Circle",
+                              "rest_id": "636513296",
+                              "super_follow_eligible": false,
+                              "super_followed_by": false,
+                              "super_following": false
+                            }
+                          }
+                        }
+                      },
+                      "display_url": "pic.x.com/u3vq0ZQeWw",
+                      "expanded_url": "https://x.com/nikitabier/status/2079273272274026718/video/1",
+                      "ext_media_availability": {
+                        "status": "Available"
+                      },
+                      "id_str": "2079270544470650881",
+                      "indices": [
+                        111,
+                        134
+                      ],
+                      "media_key": "13_2079270544470650881",
+                      "media_url_https": "https://pbs.twimg.com/media/HNsQHs0bAAAMiTJ.jpg",
+                      "original_info": {
+                        "focus_rects": [],
+                        "height": 1080,
+                        "width": 1920
+                      },
+                      "sizes": {
+                        "large": {
+                          "h": 1080,
+                          "resize": "fit",
+                          "w": 1920
+                        },
+                        "medium": {
+                          "h": 675,
+                          "resize": "fit",
+                          "w": 1200
+                        },
+                        "small": {
+                          "h": 383,
+                          "resize": "fit",
+                          "w": 680
+                        },
+                        "thumb": {
+                          "h": 150,
+                          "resize": "crop",
+                          "w": 150
+                        }
+                      },
+                      "source_status_id_str": "2079273272274026718",
+                      "source_user_id_str": "636513296",
+                      "type": "video",
+                      "url": "https://t.co/u3vq0ZQeWw",
+                      "video_info": {
+                        "aspect_ratio": [
+                          16,
+                          9
+                        ],
+                        "duration_millis": 25766,
+                        "variants": [
+                          {
+                            "content_type": "application/x-mpegURL",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/pl/fyIn862qiahOXNRD.m3u8?v=cfc"
+                          },
+                          {
+                            "bitrate": 256000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/480x270/7_TLufCPXh21F-8E.mp4"
+                          },
+                          {
+                            "bitrate": 832000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/640x360/45NzMZRIq6B07a4Q.mp4"
+                          },
+                          {
+                            "bitrate": 2176000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/1280x720/7GEjELvI5gtCqTA9.mp4"
+                          },
+                          {
+                            "bitrate": 10368000,
+                            "content_type": "video/mp4",
+                            "url": "https://video.twimg.com/amplify_video/2079270544470650881/vid/avc1/1920x1080/rsF13dGO8Vi5E8Ns.mp4"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "favorite_count": 8058,
+                "favorited": false,
+                "full_text": "big day to be an Android user\n\nwe\u2019ve completely rebuilt X for Android: faster, smoother and way more reliable\n https://t.co/u3vq0ZQeWw",
+                "id_str": "2079275369304150492",
+                "is_quote_status": false,
+                "lang": "en",
+                "possibly_sensitive": false,
+                "possibly_sensitive_editable": true,
+                "quote_count": 243,
+                "reply_count": 1057,
+                "retweet_count": 873,
+                "retweeted": false,
+                "user_id_str": "783214"
+              },
+              "rest_id": "2079275369304150492",
+              "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+              "unmention_info": {},
+              "views": {
+                "count": "2043873",
+                "state": "EnabledWithCount"
+              }
+            }
+          }
+        }
+      },
+      "entryId": "tweet-2079275369304150492",
+      "sortIndex": "2080095664108208127"
+    }
+  ]
+}

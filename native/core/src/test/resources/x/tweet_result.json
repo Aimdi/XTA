@@ -1,0 +1,130 @@
+{
+  "__typename": "Tweet",
+  "core": {
+    "user_results": {
+      "result": {
+        "__typename": "User",
+        "affiliates_highlighted_label": {},
+        "has_graduated_access": true,
+        "has_nft_avatar": false,
+        "id": "VXNlcjo3ODMyMTQ=",
+        "is_blue_verified": true,
+        "legacy": {
+          "blocked_by": false,
+          "blocking": false,
+          "can_dm": false,
+          "can_media_tag": false,
+          "created_at": "Tue Feb 20 14:35:54 +0000 2007",
+          "default_profile": false,
+          "default_profile_image": false,
+          "description": "what's happening?!",
+          "entities": {
+            "description": {},
+            "url": {
+              "urls": [
+                {
+                  "display_url": "x.com",
+                  "expanded_url": "https://x.com",
+                  "indices": [
+                    0,
+                    23
+                  ],
+                  "url": "https://t.co/Xp0xJlcROt"
+                }
+              ]
+            }
+          },
+          "fast_followers_count": 0,
+          "favourites_count": 5977,
+          "follow_request_sent": false,
+          "followed_by": false,
+          "followers_count": 60809772,
+          "following": false,
+          "friends_count": 1,
+          "has_custom_timelines": true,
+          "is_translator": false,
+          "listed_count": 85272,
+          "location": "everywhere",
+          "media_count": 2490,
+          "muting": false,
+          "name": "X",
+          "needs_phone_verification": false,
+          "normal_followers_count": 60809772,
+          "notifications": false,
+          "possibly_sensitive": false,
+          "profile_banner_url": "https://pbs.twimg.com/profile_banners/783214/1690175171",
+          "profile_image_url_https": "https://pbs.twimg.com/profile_images/1955359038532653056/OSHY3ewP_normal.jpg",
+          "profile_interstitial_type": "",
+          "protected": false,
+          "screen_name": "X",
+          "statuses_count": 15709,
+          "time_zone": "",
+          "translator_type": "regular",
+          "url": "https://t.co/Xp0xJlcROt",
+          "utc_offset": 0,
+          "verified": false,
+          "verified_type": "Business",
+          "withheld_description": "",
+          "withheld_scope": ""
+        },
+        "professional": {
+          "category": [
+            {
+              "icon_name": "",
+              "id": 714,
+              "name": "Technology Company"
+            }
+          ],
+          "professional_type": "Business",
+          "rest_id": "1858538123375874167"
+        },
+        "profile_image_shape": "Square",
+        "rest_id": "783214",
+        "super_follow_eligible": false,
+        "super_followed_by": false,
+        "super_following": false
+      }
+    }
+  },
+  "edit_control": {
+    "edit_tweet_ids": [
+      "2079275370742677949"
+    ],
+    "editable_until_msecs": "1784576454000",
+    "edits_remaining": "5",
+    "is_edit_eligible": false
+  },
+  "is_translatable": false,
+  "legacy": {
+    "bookmark_count": 41,
+    "bookmarked": false,
+    "conversation_id_str": "2079275369304150492",
+    "created_at": "Mon Jul 20 18:40:54 +0000 2026",
+    "display_text_range": [
+      0,
+      144
+    ],
+    "entities": {},
+    "favorite_count": 645,
+    "favorited": false,
+    "full_text": "more upgrades to come including hosting Spaces and performance improvements for older devices\n\nfeel free to reply with any bugs that you catch \ud83d\udc47",
+    "id_str": "2079275370742677949",
+    "in_reply_to_screen_name": "X",
+    "in_reply_to_status_id_str": "2079275369304150492",
+    "in_reply_to_user_id_str": "783214",
+    "is_quote_status": false,
+    "lang": "en",
+    "quote_count": 9,
+    "reply_count": 190,
+    "retweet_count": 43,
+    "retweeted": false,
+    "user_id_str": "783214"
+  },
+  "rest_id": "2079275370742677949",
+  "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+  "unmention_info": {},
+  "views": {
+    "count": "136572",
+    "state": "EnabledWithCount"
+  }
+}

@@ -2,7 +2,6 @@ package com.aimdi.xtanative.core.x.signing
 
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.core.x.http.XResponse
-import java.io.IOException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -11,8 +10,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-/** X's pages had no signing data, or the signer could not be found or read. */
-class SigningUnavailableException(message: String) : IOException(message)
+/**
+ * X's pages had no signing data, or the signer could not be found or read.
+ * Not an IOException: it is no network blip, and is not retried at once.
+ */
+class SigningUnavailableException(message: String) : IllegalStateException(message)
 
 /**
  * Derives a [TransactionSigner] from what x.com serves, as XTA's
