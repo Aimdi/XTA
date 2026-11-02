@@ -49,6 +49,7 @@ object XParser {
             following = result["relationship_counts"]["following"].long ?: legacy["friends_count"].long,
             posts = result["tweet_counts"]["tweets"].long ?: legacy["statuses_count"].long,
             createdAt = instant(core["created_at"].string ?: legacy["created_at"].string),
+            descriptionLinks = linksOf(result["profile_bio"]["entities"]["description"]["urls"].list.ifEmpty { legacy["entities"]["description"]["urls"].list }),
         )
     }
 
@@ -106,16 +107,19 @@ object XParser {
         )
     }
 
+    private fun span(entity: J): Pair<Int, Int>? {
+        val indices = entity["indices"].list.mapNotNull { it.int }
+        return if (indices.size == 2) indices[0] to indices[1] else null
+    }
+
+    private fun linksOf(urls: List<J>): List<XEntity.Link> = urls.mapNotNull { url ->
+        val (start, end) = span(url) ?: return@mapNotNull null
+        val short = url["url"].string ?: return@mapNotNull null
+        XEntity.Link(start, end, short, url["expanded_url"].string ?: short, url["display_url"].string ?: short)
+    }
+
     private fun entitiesOf(entities: J): List<XEntity> {
-        fun span(entity: J): Pair<Int, Int>? {
-            val indices = entity["indices"].list.mapNotNull { it.int }
-            return if (indices.size == 2) indices[0] to indices[1] else null
-        }
-        val links = entities["urls"].list.mapNotNull { url ->
-            val (start, end) = span(url) ?: return@mapNotNull null
-            val short = url["url"].string ?: return@mapNotNull null
-            XEntity.Link(start, end, short, url["expanded_url"].string ?: short, url["display_url"].string ?: short)
-        }
+        val links = linksOf(entities["urls"].list)
         val mentions = entities["user_mentions"].list.mapNotNull { mention ->
             val (start, end) = span(mention) ?: return@mapNotNull null
             XEntity.Mention(start, end, mention["screen_name"].string ?: return@mapNotNull null)

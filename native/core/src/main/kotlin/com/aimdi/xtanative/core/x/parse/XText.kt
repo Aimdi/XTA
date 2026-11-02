@@ -2,6 +2,7 @@ package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XUser
 
 /** A piece of a post's text as it is drawn. */
 sealed interface XRun {
@@ -43,6 +44,26 @@ object XText {
         slice(points, cursor, end)?.let { runs.add(XRun.Text(it)) }
         return trimEnd(runs)
     }
+
+    /**
+     * A profile's bio as runs: its links from X's entities, and the @names and
+     * #tags in it, which X does not mark in a bio.
+     */
+    fun bio(user: XUser): List<XRun> {
+        val text = user.description ?: return emptyList()
+        val links = user.descriptionLinks
+        fun points(index: Int) = text.codePointCount(0, index)
+        val marked = bioMarks.findAll(text).mapNotNull { match ->
+            val start = points(match.range.first)
+            val end = points(match.range.last + 1)
+            if (links.any { start < it.end && end > it.start }) return@mapNotNull null
+            val name = match.value.drop(1)
+            if (match.value.startsWith("@")) XEntity.Mention(start, end, name) else XEntity.Hashtag(start, end, name)
+        }.toList()
+        return runs(XPost(id = "", author = user, createdAt = null, text = text, entities = (links + marked).sortedBy { it.start }))
+    }
+
+    private val bioMarks = Regex("""(?<![\w@#])[@#]\w{1,50}""")
 
     /** The whole text, plain: for a screen reader and for copying. */
     fun plain(post: XPost): String = runs(post).joinToString("") { it.text }

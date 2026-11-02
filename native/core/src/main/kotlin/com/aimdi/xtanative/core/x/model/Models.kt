@@ -18,6 +18,8 @@ data class XUser(
     val following: Long? = null,
     val posts: Long? = null,
     val createdAt: Instant? = null,
+    /** The `t.co` links in [description], with where they lead. */
+    val descriptionLinks: List<XEntity.Link> = emptyList(),
 ) {
     /** The avatar at 200 × 200 instead of X's 48 × 48 `_normal`. */
     val largeAvatarUrl: String? get() = avatarUrl?.replace("_normal.", "_200x200.")

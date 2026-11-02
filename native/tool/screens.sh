@@ -29,14 +29,20 @@ for mode in no yes; do
   shot "feed-night-$mode" 12
 done
 
-# The first post of the feed, opened by a tap: it is drawn from what the feed showed.
 size=$(adb shell wm size | sed -n 's/.*: \([0-9]*\)x\([0-9]*\).*/\1 \2/p' | tail -1)
 width=${size% *}
 height=${size#* }
-adb shell input tap $((width / 2)) $((height * 30 / 100))
+
+# The first post of the feed, opened by a tap on its text (below the tabs):
+# it is drawn at once from what the feed showed.
+adb shell input tap $((width * 60 / 100)) $((height * 22 / 100))
 shot post 6
 adb shell input keyevent KEYCODE_BACK
 sleep 2
+
+# The group's tab, by a swipe.
+adb shell input swipe $((width * 80 / 100)) $((height / 2)) $((width * 15 / 100)) $((height / 2)) 250
+shot group 8
 
 open_link "https://x.com/quax_tests"
 shot profile 8

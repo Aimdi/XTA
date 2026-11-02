@@ -27,8 +27,21 @@ fun PostText(
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     maxLines: Int = Int.MAX_VALUE,
 ) {
+    val runs = remember(post) { XText.runs(post) }
+    RunsText(runs, actions, modifier, style, maxLines)
+}
+
+/** Text runs drawn with their links, mentions and tags in blue: a post's text, or a bio. */
+@Composable
+fun RunsText(
+    runs: List<XRun>,
+    actions: PostActions,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.bodyMedium,
+    maxLines: Int = Int.MAX_VALUE,
+) {
     val linkColor = MaterialTheme.colorScheme.primary
-    val text = remember(post, linkColor, actions) { annotated(XText.runs(post), linkColor, actions) }
+    val text = remember(runs, linkColor, actions) { annotated(runs, linkColor, actions) }
     if (text.isEmpty()) return
     Text(text, modifier = modifier, style = style, color = MaterialTheme.colorScheme.onSurface, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
 }

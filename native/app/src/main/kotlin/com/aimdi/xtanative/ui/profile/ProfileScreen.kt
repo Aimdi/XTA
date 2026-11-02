@@ -62,7 +62,9 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.ui.post.PostActions
+import com.aimdi.xtanative.ui.post.RunsText
 import com.aimdi.xtanative.ui.post.ThreadRows
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -102,7 +104,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
             contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp),
             modifier = Modifier.fillMaxSize(),
         ) {
-            item(key = "header", contentType = "header") { Header(state.user, screenName, state.complete) }
+            item(key = "header", contentType = "header") { Header(state.user, screenName, state.complete, actions) }
             val problem = state.problem
             when {
                 state.loading && state.posts.isEmpty() -> item(key = "loading") { LoadingRow() }
@@ -123,7 +125,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
 }
 
 @Composable
-private fun Header(user: XUser?, screenName: String, complete: Boolean) {
+private fun Header(user: XUser?, screenName: String, complete: Boolean, actions: PostActions) {
     val background = MaterialTheme.colorScheme.background
     Column(Modifier.fillMaxWidth()) {
         Box {
@@ -159,7 +161,10 @@ private fun Header(user: XUser?, screenName: String, complete: Boolean) {
                 }
                 Text("@" + (user?.screenName ?: screenName), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            user?.description?.takeIf { it.isNotBlank() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+            if (!user?.description.isNullOrBlank()) {
+                val bio = remember(user) { user?.let(XText::bio).orEmpty() }
+                RunsText(bio, actions)
+            }
             if (complete && user != null) {
                 Meta(user)
                 Counts(user)

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.data
 
 import com.aimdi.xtanative.BuildConfig
+import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XAccount
@@ -34,8 +35,9 @@ object MockX {
     /** The stand-in does not check signatures. */
     val signer = TransactionSigner(IntArray(48) { it }, "mock")
 
-    /** A stand-in account following the two accounts the stand-in has posts for. */
+    /** A stand-in account following the two accounts the stand-in has posts for, one of them in a group. */
     val session = Session(
+        groups = listOf(FollowGroup("mock-tests", "Tests", listOf("2095914123905118211"), emoji = "🧪")),
         accounts = listOf(XAccount("mock", "mock", mapOf("Cookie" to "auth_token=mock; ct0=mock", "x-csrf-token" to "mock"))),
         following = listOf(
             FollowedAccount("2095909295913103360", "quax_tests", "QuaX Tests", null, verified = false, inFeed = true, followedAt = 1),

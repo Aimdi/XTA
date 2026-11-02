@@ -44,6 +44,19 @@ class XParserTest {
     }
 
     @Test
+    fun aBioShowsWhereItsLinksLeadAndMarksItsMentions() {
+        val (user, _) = XParser.profile(fixture("user_modern.json"))!!
+        val runs = XText.bio(user)
+        assertEquals(
+            listOf(XRun.Link("github.com/Teskann/QuaX", "http://github.com/Teskann/QuaX"), XRun.Link("flutter.dev", "https://flutter.dev")),
+            runs.filterIsInstance<XRun.Link>(),
+        )
+        assertEquals(listOf(XRun.Mention("@jack", "jack")), runs.filterIsInstance<XRun.Mention>())
+        assertTrue(runs.none { "t.co" in it.text }, "no t.co address is left in the bio")
+        assertTrue(runs.first().text.startsWith("🧪 Throwaway account"))
+    }
+
+    @Test
     fun anOlderUserResultReadsFromLegacy() {
         val (user, _) = XParser.profile(fixture("user_legacy.json"))!!
         assertEquals("783214", user.id)
