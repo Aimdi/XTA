@@ -18,6 +18,7 @@ kotlin {
 // desktop apps; loading a class is a function each platform gives it.
 dependencies {
     api(project(":core"))
+    api(project(":store"))
     implementation("org.jsoup:jsoup:1.18.3")
     testImplementation(kotlin("test"))
 }

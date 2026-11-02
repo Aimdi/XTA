@@ -33,12 +33,21 @@ compile() { # <out dir> <classpath> <friend dir or empty> <source dirs...>
   [ -f "$dest/META-INF/main.kotlin_module" ] || { echo "COMPILE FAILED: $*"; exit 1; }
 }
 
+# The plain-Kotlin modules a module's build file names with project(":..."), in order.
+deps_of() {
+  grep -o 'project(":[a-z-]*")' "$here/$1/build.gradle.kts" 2> /dev/null | sed 's/project(":\(.*\)")/\1/' | grep -v '^core$' || true
+}
+
 compile "$out/core" "$cp" "" "$here/core/src/main/kotlin"
 classes="$out/core"
 if [ "$module" = core ]; then
   compile "$out/test" "$cp:$classes:$testlibs" "$out/core" "$here/core/src/test/kotlin"
   cp -r "$here/core/src/test/resources/." "$out/test/" 2> /dev/null || true
 else
+  for dep in $(deps_of "$module"); do
+    compile "$out/$dep" "$cp:$classes" "" "$here/$dep/src/main/kotlin"
+    classes="$classes:$out/$dep"
+  done
   compile "$out/$module" "$cp:$classes" "" "$here/$module/src/main/kotlin"
   classes="$classes:$out/$module"
   compile "$out/test" "$cp:$classes:$testlibs" "$out/$module" "$here/$module/src/test/kotlin"
