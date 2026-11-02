@@ -41,6 +41,19 @@ fun XClient.feedReads(): FeedReads {
 data class FeedPage(val threads: List<XThread>, val failures: List<Throwable>, val hasMore: Boolean)
 
 /**
+ * The posts newer than the top of a shown feed. [bridged] says every chunk
+ * was read down to that top (or ran out, or failed): false means more were
+ * written than were read, and the posts above the top have a hole in them.
+ */
+data class NewerPage(val threads: List<XThread>, val bridged: Boolean, val failures: List<Throwable>)
+
+/** Where one chunk's reading stands, so a later launch can read on from it. */
+data class ChunkState(val query: String, val cursor: String?, val exhausted: Boolean, val oldest: Long?, val unread: List<XThread>)
+
+/** Where a whole feed's reading stands, beside the posts it has shown. */
+data class FeedState(val chunks: List<ChunkState>)
+
+/**
  * The Following feed, as XTA's group feed reads it: the followed accounts are
  * packed into as few `from:` searches as fit, each chunk is searched, and a
  * chunk whose search fails falls back to its accounts' own posts.
@@ -102,6 +115,72 @@ class FollowingFeed(
         FeedPage(threads, failures, hasMore())
     }
 
+    /**
+     * The posts written since [than], the newest post shown: each chunk is read
+     * from its top until it reaches [than], at most [pagesPerChunk] pages. The
+     * reading further down is left as it was, so loading more goes on below
+     * what is shown.
+     */
+    suspend fun newer(than: Long, pagesPerChunk: Int = 3): NewerPage = mutex.withLock {
+        val results = coroutineScope {
+            val gate = Semaphore(concurrency)
+            chunks.map { chunk -> async { gate.withPermit { newerIn(chunk, than, pagesPerChunk) } } }.awaitAll()
+        }
+        NewerPage(
+            threads = results.flatMap { it.threads }.filter { shown.add(it.id) }.sortedByDescending(::idOf),
+            bridged = results.all { it.bridged },
+            failures = results.mapNotNull { it.failure },
+        )
+    }
+
+    private class ChunkNewer(val threads: List<XThread>, val bridged: Boolean, val failure: Throwable?)
+
+    private suspend fun newerIn(chunk: Chunk, than: Long, pages: Int): ChunkNewer {
+        val found = ArrayList<XThread>()
+        var cursor: String? = null
+        repeat(pages) {
+            val page = try {
+                reads.search(chunk.query, cursor)
+            } catch (error: Throwable) {
+                if (error is CancellationException) throw error
+                if (cursor == null && fallsBack(error)) {
+                    val own = fallbackThreads(chunk).filter { idOf(it) > than }
+                    return ChunkNewer(own, bridged = true, failure = if (own.isEmpty()) error else null)
+                }
+                // A failure is reported, not taken for a hole: what was read stands.
+                return ChunkNewer(found, bridged = true, failure = error)
+            }
+            found += page.threads.filter(::wanted).filter { idOf(it) > than }
+            val oldest = page.threads.minOfOrNull(::idOf)
+            if (oldest == null || oldest <= than || page.bottomCursor == null) return ChunkNewer(found, bridged = true, failure = null)
+            cursor = page.bottomCursor
+        }
+        return ChunkNewer(found, bridged = false, failure = null)
+    }
+
+    /** Where every chunk's reading stands, to keep beside the posts shown. */
+    suspend fun state(): FeedState = mutex.withLock {
+        FeedState(chunks.map { ChunkState(it.query, it.cursor, it.exhausted, it.oldest, it.unread.toList()) })
+    }
+
+    /**
+     * Reads on from [state], with [shownIds] already on screen. Refused (false)
+     * when the chunks differ: the accounts followed or the switches changed.
+     */
+    suspend fun restore(state: FeedState, shownIds: Collection<String>): Boolean = mutex.withLock {
+        if (state.chunks.map { it.query } != chunks.map { it.query }) return@withLock false
+        chunks.zip(state.chunks).forEach { (chunk, saved) ->
+            chunk.cursor = saved.cursor
+            chunk.exhausted = saved.exhausted
+            chunk.oldest = saved.oldest
+            chunk.unread.clear()
+            chunk.unread += saved.unread
+        }
+        shown.clear()
+        shown += shownIds
+        true
+    }
+
     private fun hasMore() = chunks.any { !it.exhausted } || chunks.any { it.unread.isNotEmpty() }
 
     /** Takes every unread post the feed is complete down to, newest first. */
@@ -144,6 +223,12 @@ class FollowingFeed(
      * their own posts, two at a time, within [fallbackMillis].
      */
     private suspend fun fallback(chunk: Chunk, cause: Throwable): Throwable? {
+        val threads = fallbackThreads(chunk)
+        chunk.unread += threads
+        return if (threads.isEmpty()) cause else null
+    }
+
+    private suspend fun fallbackThreads(chunk: Chunk): List<XThread> {
         val gate = Semaphore(FALLBACK_CONCURRENCY)
         val pages = ArrayList<XTimelinePage>()
         withTimeoutOrNull(fallbackMillis) {
@@ -155,9 +240,7 @@ class FollowingFeed(
                 }.awaitAll()
             }
         }
-        val threads = synchronized(pages) { pages.flatMap { it.threads } }.filter(::wanted)
-        chunk.unread += threads
-        return if (threads.isEmpty()) cause else null
+        return synchronized(pages) { pages.flatMap { it.threads } }.filter(::wanted)
     }
 
     private fun wanted(thread: XThread): Boolean {

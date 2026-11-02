@@ -1,6 +1,21 @@
 package com.aimdi.xtanative.ui.feed
 
 import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -151,6 +166,7 @@ private fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAct
     val vm: FeedViewModel = viewModel(key = "feed-" + (groupId ?: FOLLOWING)) { FeedViewModel(graph, groupId) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     // A page swiped back into view must not answer a tap it already answered.
     var answeredTap by rememberSaveable { mutableIntStateOf(toTop.count) }
     LaunchedEffect(toTop) {
@@ -159,16 +175,64 @@ private fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAct
             list.animateScrollToItem(0)
         }
     }
-    PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = vm::refresh, modifier = Modifier.fillMaxSize()) {
+    // Back at the last place on launch; at the top after a pull.
+    LaunchedEffect(state.jump) {
+        val jump = state.jump ?: return@LaunchedEffect
+        val leading = if (state.partial != null) 1 else 0
+        list.scrollToItem(if (jump.threadIndex == 0 && jump.offset == 0) 0 else jump.threadIndex + leading, jump.offset)
+        vm.jumped()
+    }
+    val keepPlace = {
+        val index = list.firstVisibleItemIndex - if (state.partial != null) 1 else 0
+        if (index >= 0) vm.keepPlace(index, list.firstVisibleItemScrollOffset) else vm.keepPlace(0, 0)
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
+    DisposableEffect(Unit) { onDispose { keepPlace() } }
+    val atTop by remember(list) { derivedStateOf { list.firstVisibleItemIndex == 0 } }
+    LaunchedEffect(atTop) { if (atTop) vm.seenNew() }
+
+    PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         val problem = state.problem
         when {
-            state.threads.isEmpty() && problem != null -> Whole { ProblemView(problem, vm::refresh) }
+            state.threads.isEmpty() && problem != null -> Whole { ProblemView(problem, { vm.refresh() }) }
             state.threads.isEmpty() && state.followed == 0 -> Whole { Message(stringResource(R.string.feed_nobody_followed)) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> Whole { Message(stringResource(R.string.feed_empty)) }
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> Whole { if (!state.refreshing) LoadingRow() }
             else -> FeedList(state, vm, actions, list, contentPadding)
         }
+        AnimatedVisibility(
+            visible = state.newAbove > 0 && !atTop,
+            enter = fadeIn() + slideInVertically { -it },
+            exit = fadeOut() + slideOutVertically { -it },
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 12.dp),
+        ) {
+            NewPostsPill(state.newAbove) {
+                scope.launch { list.animateScrollToItem(0) }
+                vm.seenNew()
+            }
+        }
+    }
+}
+
+/** "↑ 12 new posts": the posts a refresh put above the reader. */
+@Composable
+private fun NewPostsPill(count: Int, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(50))
+            .background(MaterialTheme.colorScheme.primary)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+        Text(
+            pluralStringResource(R.plurals.new_posts, count, count),
+            color = Color.White,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(start = 4.dp),
+        )
     }
 }
 
@@ -200,7 +264,7 @@ private fun FeedList(
             val more = state.moreProblem
             when {
                 state.loadingMore -> LoadingRow()
-                more != null -> ProblemRow(more, vm::loadMore)
+                more != null -> ProblemRow(more, { vm.loadMore() })
                 else -> Box(Modifier.padding(bottom = 48.dp))
             }
         }

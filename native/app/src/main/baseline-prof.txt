@@ -1,0 +1,13 @@
+# Compiled ahead of time when the app is installed, instead of interpreted on
+# its first runs: XTA Native's own code and the libraries every read of X goes
+# through. Compose, Coil and Media3 ship their own rules, which AGP merges in.
+HSPLcom/aimdi/xtanative/**;->**(**)**
+Lcom/aimdi/xtanative/**;
+HSPLokhttp3/**;->**(**)**
+Lokhttp3/**;
+HSPLokio/**;->**(**)**
+Lokio/**;
+HSPLkotlinx/serialization/json/**;->**(**)**
+Lkotlinx/serialization/json/**;
+HSPLorg/jsoup/**;->**(**)**
+Lorg/jsoup/**;

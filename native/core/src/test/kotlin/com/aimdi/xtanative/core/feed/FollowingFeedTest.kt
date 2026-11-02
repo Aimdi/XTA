@@ -27,7 +27,7 @@ class FollowingFeedTest {
 
     /** Stands in for X: each account's search answers page by page, by cursor. */
     private class FakeReads(
-        val pages: Map<Pair<String, String?>, XTimelinePage>,
+        var pages: Map<Pair<String, String?>, XTimelinePage>,
         val failing: Map<String, Throwable> = emptyMap(),
         val profiles: Map<String, XTimelinePage> = emptyMap(),
     ) : FeedReads {
@@ -106,6 +106,71 @@ class FollowingFeedTest {
         )
         val first = FollowingFeed(listOf(a), reads, includeReplies = false, includeReposts = false).first()
         assertEquals(listOf(100L), ids(first))
+    }
+
+    private val original = mapOf(
+        ("a" to null) to page(post(100, a), post(90, a), post(80, a), next = "a2"),
+        ("a" to "a2") to page(post(70, a), post(60, a), next = "a3"),
+        ("a" to "a3") to page(post(30, a), next = null),
+        ("b" to null) to page(post(95, b), post(50, b), next = "b2"),
+        ("b" to "b2") to page(post(40, b), next = null),
+    )
+
+    @Test
+    fun newerPostsAreReadDownToTheTopShownAndTheReadingBelowIsKept() = runBlocking {
+        val reads = FakeReads(original)
+        val feed = FollowingFeed(listOf(a, b), reads, concurrency = 1)
+        assertEquals(listOf(100L, 95, 90, 80), ids(feed.first()))
+
+        // Later: both accounts have written since.
+        reads.pages = original + mapOf(
+            ("a" to null) to page(post(120, a), post(110, a), next = "a-new"),
+            ("a" to "a-new") to page(post(100, a), post(90, a), next = "a2"),
+            ("b" to null) to page(post(130, b), post(95, b), post(50, b), next = "b2"),
+        )
+        val newer = feed.newer(than = 100)
+        assertEquals(listOf(130L, 120, 110), newer.threads.map { it.id.toLong() })
+        assertTrue(newer.bridged)
+
+        assertEquals(listOf(70L, 60, 50, 40, 30), ids(feed.more()), "loading more goes on below what was shown")
+    }
+
+    @Test
+    fun moreWrittenThanReadIsNotBridged() = runBlocking {
+        val reads = FakeReads(mapOf(("a" to null) to page(post(100, a), next = null)))
+        val feed = FollowingFeed(listOf(a), reads)
+        feed.first()
+        reads.pages = mapOf(
+            ("a" to null) to page(post(400, a), post(390, a), next = "p2"),
+            ("a" to "p2") to page(post(380, a), next = "p3"),
+            ("a" to "p3") to page(post(370, a), next = "p4"),
+        )
+        val newer = feed.newer(than = 100, pagesPerChunk = 3)
+        assertFalse(newer.bridged, "three pages did not reach the top shown")
+        assertEquals(listOf(400L, 390, 380, 370), newer.threads.map { it.id.toLong() })
+    }
+
+    @Test
+    fun aSavedFeedReadsOnWhereItWasLeft() = runBlocking {
+        val first = FollowingFeed(listOf(a, b), FakeReads(original), concurrency = 1)
+        val shown = first.first().threads
+        val saved = SavedFeed.decode(SavedFeed.encode(SavedFeed(shown, first.state())))!!
+        assertEquals(shown.map { it.id }, saved.threads.map { it.id })
+
+        val reads = FakeReads(original)
+        val again = FollowingFeed(listOf(a, b), reads, concurrency = 1)
+        assertTrue(again.restore(saved.state!!, saved.threads.map { it.id }))
+        assertEquals(listOf(70L, 60, 50, 40, 30), ids(again.more()))
+        assertTrue(reads.searches.none { it.second == null }, "nothing is read from the top again")
+
+        val others = FollowingFeed(listOf(a), FakeReads(original))
+        assertFalse(others.restore(saved.state!!, emptyList()), "other follows cannot read on from it")
+    }
+
+    @Test
+    fun aPlaceReadsBackAsWritten() {
+        assertEquals(FeedPlace("123", 48), FeedPlace.decode(FeedPlace.encode(FeedPlace("123", 48))))
+        assertEquals(null, FeedPlace.decode("{}"))
     }
 
     @Test

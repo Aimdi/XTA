@@ -1,24 +1,44 @@
 package com.aimdi.xtanative.data
 
-import com.aimdi.xtanative.core.x.model.XCodec
-import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.core.feed.FeedPlace
+import com.aimdi.xtanative.core.feed.SavedFeed
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/** The feed as it was last shown, so a cold start opens on posts instead of a spinner. */
+/**
+ * A feed as it was left, so a cold start opens on the same posts at the same
+ * place, and loads more below them. The place is its own small file: it is
+ * written each time the app goes to the background.
+ */
 class FeedCache(private val file: File) {
-    suspend fun read(): List<XThread> = withContext(Dispatchers.IO) {
-        runCatching { if (file.exists()) XCodec.decode(file.readText()) else emptyList() }.getOrDefault(emptyList())
+    private val placeFile = File(file.parentFile, file.nameWithoutExtension + "-place.json")
+
+    suspend fun read(): SavedFeed? = withContext(Dispatchers.IO) {
+        runCatching { if (file.exists()) SavedFeed.decode(file.readText()) else null }.getOrNull()
     }
 
-    suspend fun write(threads: List<XThread>) = withContext(Dispatchers.IO) {
-        runCatching { file.writeText(XCodec.encode(threads.take(KEPT))) }
+    suspend fun write(saved: SavedFeed) = withContext(Dispatchers.IO) { atomically(file, SavedFeed.encode(saved)) }
+
+    suspend fun readPlace(): FeedPlace? = withContext(Dispatchers.IO) {
+        runCatching { if (placeFile.exists()) FeedPlace.decode(placeFile.readText()) else null }.getOrNull()
     }
 
-    suspend fun clear() = withContext(Dispatchers.IO) { file.delete() }
+    suspend fun writePlace(place: FeedPlace) = withContext(Dispatchers.IO) { atomically(placeFile, FeedPlace.encode(place)) }
 
-    private companion object {
-        const val KEPT = 80
+    private fun atomically(target: File, text: String) {
+        runCatching {
+            val partial = File(target.parentFile, target.name + ".part")
+            partial.writeText(text)
+            if (!partial.renameTo(target)) {
+                target.delete()
+                partial.renameTo(target)
+            }
+        }
+    }
+
+    companion object {
+        /** More than a long read; past it the feed starts from the top next time. */
+        const val KEPT = 600
     }
 }

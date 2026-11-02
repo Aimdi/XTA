@@ -91,4 +91,8 @@
         <item quantity="one">Noch %d Minute</item>
         <item quantity="other">Noch %d Minuten</item>
     </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%d neuer Post</item>
+        <item quantity="other">%d neue Posts</item>
+    </plurals>
 </resources>

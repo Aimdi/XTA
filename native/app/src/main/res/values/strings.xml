@@ -93,4 +93,8 @@
         <item quantity="one">%d minute left</item>
         <item quantity="other">%d minutes left</item>
     </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%d new post</item>
+        <item quantity="other">%d new posts</item>
+    </plurals>
 </resources>

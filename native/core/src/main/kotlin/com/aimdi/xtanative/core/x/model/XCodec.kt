@@ -19,22 +19,22 @@ object XCodec {
 
     fun encode(threads: List<XThread>): String = buildJsonObject {
         put("v", VERSION)
-        put("threads", JsonArray(threads.map(::thread)))
+        put("threads", JsonArray(threads.map(::threadJson)))
     }.toString()
 
     /** The threads in [text]; empty when it is unreadable or of another version. */
     fun decode(text: String): List<XThread> {
         val root = J.parse(text)
         if (root["v"].int != VERSION) return emptyList()
-        return root["threads"].list.mapNotNull(::thread)
+        return root["threads"].list.mapNotNull(::threadOf)
     }
 
-    private fun thread(thread: XThread) = buildJsonObject {
+    internal fun threadJson(thread: XThread) = buildJsonObject {
         put("id", thread.id)
         put("posts", JsonArray(thread.posts.map(::post)))
     }
 
-    private fun thread(json: J): XThread? {
+    internal fun threadOf(json: J): XThread? {
         val id = json["id"].string ?: return null
         val posts = json["posts"].list.mapNotNull(::post)
         return if (posts.isEmpty()) null else XThread(id, posts)
