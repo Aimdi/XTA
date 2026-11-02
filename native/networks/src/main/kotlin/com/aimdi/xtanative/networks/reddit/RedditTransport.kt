@@ -121,7 +121,8 @@ internal class RedditTransport(
      */
     private fun remember(response: XResponse, sent: Map<String, String>) = synchronized(cookies) {
         if (response.code == 200) cookies.putAll(sent)
-        response.header("set-cookie")?.split(cookieSeparator)?.forEach { piece ->
+        // Every Set-Cookie line, not only the first: OkHttp keeps them apart.
+        response.headers("set-cookie").flatMap { it.split(cookieSeparator) }.forEach { piece ->
             val pair = piece.substringBefore(';').trim()
             val equals = pair.indexOf('=')
             if (equals > 0) cookies[pair.substring(0, equals).trim()] = pair.substring(equals + 1).trim()
