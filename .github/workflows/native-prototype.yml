@@ -1,0 +1,94 @@
+name: Native prototype
+
+# Builds XTA Native, the Android-only prototype in native/, beside the Flutter
+# app. Every push to the prototype's branch builds and tests it; a commit whose
+# message carries [prerelease] also publishes the APK as a GitHub prerelease,
+# never marked latest, so XTA's own releases are untouched.
+on:
+  push:
+    branches: [claude/admiring-mayer-bdfg95]
+    paths:
+      - 'native/**'
+      - '.github/workflows/native-prototype.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: native-prototype-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: native
+    env:
+      VERSION_NAME: 0.1.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Core tests
+        run: ./gradlew :core:test --console=plain
+
+      - name: Signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          # The prototype is signed like XTA when the key is there; without it
+          # the build falls back to the debug key, which still installs.
+          if [ -n "$SIGNING_KEY" ]; then
+            echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/native.jks"
+            echo "KEY_PATH=$RUNNER_TEMP/native.jks" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build the APK
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          NATIVE_VERSION_CODE: ${{ github.run_number }}
+          NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
+        run: ./gradlew :app:assembleRelease --console=plain
+
+      - name: Size
+        run: |
+          apk=app/build/outputs/apk/release/app-release.apk
+          cp "$apk" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk"
+          {
+            echo "### XTA Native $VERSION_NAME"
+            echo
+            echo "APK: $(stat -c %s "$apk") bytes"
+            echo
+            echo '```'
+            unzip -lv "$apk" | sort -k1 -n -r | head -15
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-${{ env.VERSION_NAME }}
+          path: ${{ runner.temp }}/xta-native-*.apk
+
+      - name: Prerelease
+        if: contains(github.event.head_commit.message, '[prerelease]')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "native-$VERSION_NAME" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --latest=false \
+            --title "XTA Native $VERSION_NAME (prototype)" \
+            --notes-file PRERELEASE.md
