@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  * The session on disk, in app-private storage that Android backs up nowhere
  * (allowBackup is off): it holds X cookies.
  */
-class SessionStore(private val file: File) {
+class SessionStore(private val file: File, private val initial: Session = Session()) {
     private val current = MutableStateFlow<Session?>(null)
 
     /** Null until the file has been read. */
@@ -26,11 +26,11 @@ class SessionStore(private val file: File) {
         if (current.value != null) return@withLock
         current.value = withContext(Dispatchers.IO) {
             runCatching { Session.decode(file.readText()) }.getOrNull()
-        } ?: Session()
+        } ?: initial
     }
 
     suspend fun update(transform: (Session) -> Session) = mutex.withLock {
-        val next = transform(current.value ?: Session())
+        val next = transform(current.value ?: initial)
         current.value = next
         withContext(Dispatchers.IO) { write(Session.encode(next)) }
     }

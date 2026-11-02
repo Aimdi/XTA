@@ -37,16 +37,16 @@ fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, mo
         },
     ) { measurables, constraints ->
         val loose = constraints.copy(minWidth = 0, minHeight = 0)
-        val width = if (constraints.hasBoundedWidth) constraints.maxWidth else Int.MAX_VALUE
+        val bounded = constraints.hasBoundedWidth
         val timePiece = measurables[3].measure(loose)
         val badgePiece = measurables[1].measure(loose)
-        val nameRoom = (width - timePiece.width - badgePiece.width).coerceAtLeast(0)
-        val namePiece = measurables[0].measure(loose.copy(maxWidth = nameRoom))
-        val handlePiece = measurables[2].measure(loose.copy(maxWidth = (nameRoom - namePiece.width).coerceAtLeast(0)))
+        val nameRoom = (constraints.maxWidth - timePiece.width - badgePiece.width).coerceAtLeast(0)
+        val namePiece = measurables[0].measure(if (bounded) loose.copy(maxWidth = nameRoom) else loose)
+        val handlePiece = measurables[2].measure(if (bounded) loose.copy(maxWidth = (nameRoom - namePiece.width).coerceAtLeast(0)) else loose)
         val placed = listOf(namePiece, badgePiece, handlePiece, timePiece)
         val height = placed.maxOf { it.height }
         val used = placed.sumOf { it.width }
-        layout(if (constraints.hasBoundedWidth) constraints.maxWidth else used, height) {
+        layout(if (bounded) constraints.maxWidth else used, height) {
             var x = 0
             placed.forEach { piece ->
                 piece.placeRelative(x, (height - piece.height) / 2)

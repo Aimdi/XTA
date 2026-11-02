@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.feed.FeedScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
@@ -84,10 +85,18 @@ fun XtaNativeRoot() {
         composable(Routes.FEED) {
             FeedScreen(actions, openSearch = { nav.navigate(Routes.search(null)) }, openSettings = { nav.navigate(Routes.SETTINGS) })
         }
-        composable(Routes.POST, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+        composable(
+            Routes.POST,
+            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+            deepLinks = xLinks(".*/status/{id}"),
+        ) { entry ->
             PostScreen(entry.arguments?.getString("id").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
-        composable(Routes.PROFILE, arguments = listOf(navArgument("screenName") { type = NavType.StringType })) { entry ->
+        composable(
+            Routes.PROFILE,
+            arguments = listOf(navArgument("screenName") { type = NavType.StringType }),
+            deepLinks = xLinks("{screenName}"),
+        ) { entry ->
             ProfileScreen(entry.arguments?.getString("screenName").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
         composable(
@@ -103,6 +112,7 @@ fun XtaNativeRoot() {
         composable(
             Routes.SEARCH,
             arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null }),
+            deepLinks = xLinks("search?q={q}"),
         ) { entry ->
             SearchScreen(entry.arguments?.getString("q"), actions, onBack = { nav.popBackStack() })
         }
@@ -115,6 +125,12 @@ fun XtaNativeRoot() {
         }
     }
 }
+
+/** An x.com or twitter.com link opens here, as it opens XTA. */
+private fun xLinks(path: String) =
+    listOf("x.com", "www.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com", "mobile.x.com").map { host ->
+        navDeepLink { uriPattern = "https://$host/$path" }
+    }
 
 /** To the feed, with nothing to go back to: after an import. */
 private fun NavHostController.goHome() {

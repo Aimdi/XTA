@@ -65,6 +65,8 @@ jobs:
         run: |
           apk=app/build/outputs/apk/release/app-release.apk
           cp "$apk" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk"
+          echo "APK: $(stat -c %s "$apk") bytes"
+          unzip -lv "$apk" | sort -k1 -n -r | head -12
           {
             echo "### XTA Native $VERSION_NAME"
             echo
@@ -80,15 +82,98 @@ jobs:
           name: xta-native-${{ env.VERSION_NAME }}
           path: ${{ runner.temp }}/xta-native-*.apk
 
+
+  # Every screen on an emulator, against the stand-in for X that XTA's own
+  # emulator check uses (docs/mock-x.md): no account, no live request. Fails
+  # when the app crashes, and keeps a screenshot of each screen.
+  screens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build against the stand-in
+        working-directory: native
+        run: ./gradlew :app:assembleRelease -PmockX=http://10.0.2.2:8787 --console=plain
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: Serve the stand-in for X
+        run: |
+          flutter pub get
+          nohup dart run tool/mock_x/server.dart > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      - name: Let the emulator use KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Open each screen
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens
+
+      - name: Keep the stand-in's log
+        if: always()
+        run: cp "$RUNNER_TEMP/mock-x.log" native-screens/ 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-screens
+          path: native-screens
+          if-no-files-found: ignore
+
+  # Published only when the build and the emulator run both passed.
+  prerelease:
+    if: contains(github.event.head_commit.message, '[prerelease]')
+    needs: [build, screens]
+    runs-on: ubuntu-latest
+    env:
+      VERSION_NAME: 0.1.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-${{ env.VERSION_NAME }}
+          path: apk
+
       - name: Prerelease
-        if: contains(github.event.head_commit.message, '[prerelease]')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "native-$VERSION_NAME" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk" \
+          gh release create "native-$VERSION_NAME" "apk/xta-native-$VERSION_NAME.apk" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --prerelease \
             --latest=false \
             --title "XTA Native $VERSION_NAME (prototype)" \
-            --notes-file PRERELEASE.md
+            --notes-file native/PRERELEASE.md
+

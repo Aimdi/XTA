@@ -4,6 +4,9 @@ plugins {
     kotlin("plugin.compose")
 }
 
+// -PmockX=<url> builds an APK that reads XTA's stand-in for X (data/MockX.kt); never set for a release.
+val mockX = (findProperty("mockX") as String?).orEmpty()
+
 android {
     namespace = "com.aimdi.xtanative"
     compileSdk = 35
@@ -15,6 +18,9 @@ android {
         targetSdk = 35
         versionCode = (System.getenv("NATIVE_VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("NATIVE_VERSION_NAME") ?: "0.1.0"
+        buildConfigField("String", "MOCK_X", "\"$mockX\"")
+        // Only the stand-in, on the emulator's host, is reached without TLS.
+        manifestPlaceholders["cleartext"] = mockX.isNotEmpty().toString()
     }
 
     signingConfigs {
@@ -55,6 +61,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {

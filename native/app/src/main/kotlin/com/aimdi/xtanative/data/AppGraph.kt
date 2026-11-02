@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.data
 
 import android.content.Context
+import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
@@ -15,16 +16,19 @@ import kotlinx.coroutines.launch
 class AppGraph(context: Context) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    val sessions = SessionStore(File(context.filesDir, "session.json"))
+    private val mock = MockX.server
+
+    val sessions = SessionStore(File(context.filesDir, "session.json"), initial = if (mock == null) Session() else MockX.session)
     val feedCache = FeedCache(File(context.filesDir, "feed.json"))
     val posts = PostCache()
 
-    private val http = OkHttpXHttp()
-    val signers = XSigners(SigningBootstrap(http))
+    private val http =
+        if (mock == null) OkHttpXHttp() else OkHttpXHttp(OkHttpXHttp.defaultClient.newBuilder().addInterceptor(MockX.interceptor(mock)).build())
+    val signers = if (mock == null) XSigners(SigningBootstrap(http)) else XSigners({ MockX.signer })
     val client = XClient(http, accounts = { sessions.state.value?.accounts.orEmpty() }, signers = signers)
 
     fun start() {
         scope.launch { sessions.load() }
-        scope.launch { client.refreshEndpoints() }
+        if (mock == null) scope.launch { client.refreshEndpoints() }
     }
 }
