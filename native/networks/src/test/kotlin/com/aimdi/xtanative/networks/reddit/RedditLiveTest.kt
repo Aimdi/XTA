@@ -14,8 +14,9 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  * Live Reddit without an account, as XTA's test/live/reddit_smoke_test.dart
  * reads it: a public community's listing and its next page, and one thread.
  * Skipped unless RUN_LIVE=true. Reddit turns some networks away outright,
- * datacenters among them, with "blocked by network security"; the test is
- * skipped there too, saying so, since that answer says nothing about the reader.
+ * datacenters among them (GitHub's runners too), with a 403 and "blocked by
+ * network security"; the test is skipped there too, saying so, since that
+ * answer says nothing about the reader. Run it from a home connection.
  */
 class RedditLiveTest {
     private val reddit = RedditClient(OkHttpXHttp())
@@ -46,7 +47,9 @@ class RedditLiveTest {
     private suspend fun <T> live(read: suspend () -> T): T = try {
         read()
     } catch (e: NetworkRequestException) {
-        assumeFalse("network security" in e.message.orEmpty(), "Reddit refuses this network: ${e.message}")
+        // The block page's text stays with the route that met it; what reaches here is the 403 itself.
+        val turnedAway = "network security" in e.message.orEmpty() || e.code == 403
+        assumeFalse(turnedAway, "Reddit refuses this network: ${e.message}")
         throw e
     }
 }
