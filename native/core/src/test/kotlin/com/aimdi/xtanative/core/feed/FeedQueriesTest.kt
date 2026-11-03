@@ -46,4 +46,27 @@ class FeedQueriesTest {
         val long = "(" + "x".repeat(600) + ")"
         assertEquals(listOf(listOf("from:a"), listOf(long), listOf("from:b")), pack(listOf("from:a", long, "from:b")))
     }
+
+    @Test
+    fun anAccountIsSearchedByItsHandleAndASavedSearchInBracketsKeepingItsOperators() {
+        assertEquals("from:nasa", FeedMember("1", "nasa").term)
+        assertEquals("(list:123)", FeedMember.search("list:123").term)
+        assertEquals("(from:nasa OR from:esa)", FeedQueries.savedSearchTerm("from:nasa OR from:esa"))
+        assertEquals("(from:a OR (list:1)) include:nativeretweets", query(listOf("from:a", FeedQueries.savedSearchTerm("list:1"))))
+    }
+
+    @Test
+    fun aSearchNarrowingAnotherCountsItsLengthAndIsFilledAsFarAsXReads() {
+        val within = "(\"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2\" OR \$WETH)"
+        val chunks = FeedQueries.pack(terms, { it }, includeReplies = true, includeReposts = false, within = within)
+        chunks.forEachIndexed { index, chunk ->
+            val narrowed = FeedQueries.query(chunk, includeReplies = true, includeReposts = false, within = within)
+            assertTrue(narrowed.startsWith("$within (${chunk.first()} OR "))
+            assertTrue(narrowed.length <= FeedQueries.LIMIT)
+            if (index < chunks.lastIndex) {
+                val longer = FeedQueries.query(chunk + chunks[index + 1].first(), includeReplies = true, includeReposts = false, within = within)
+                assertTrue(longer.length > FeedQueries.LIMIT)
+            }
+        }
+    }
 }

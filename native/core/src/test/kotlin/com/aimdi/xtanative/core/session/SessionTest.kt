@@ -3,8 +3,15 @@ package com.aimdi.xtanative.core.session
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.backup.XtaBackup
+import com.aimdi.xtanative.core.feed.ContentFilter
+import com.aimdi.xtanative.core.feed.FeedRules
+import com.aimdi.xtanative.core.feed.FeedSettings
+import com.aimdi.xtanative.core.feed.FeedSort
+import com.aimdi.xtanative.core.feed.KeywordAction
+import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.model.XUser
+import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -101,5 +108,41 @@ class SessionTest {
     fun nothingToReadIsNoSession() {
         assertNull(Session.decode(""))
         assertNull(Session.decode("""{"v": 7}"""))
+    }
+
+    @Test
+    fun aFileWrittenBeforeSearchesGroupsSettingsAndCapsReadsAsItWas() {
+        val older = """
+            {"v":1,"includeReplies":false,"includeReposts":true,"autoplay":false,
+             "accounts":[{"id":"ct0","screenName":"maya","headers":{"Cookie":"auth_token=a; ct0=ct0","x-csrf-token":"ct0"}}],
+             "groups":[{"id":"g2","name":"space","members":["1","2"],"emoji":"🚀","pinned":false,"nsfw":false}],
+             "following":[{"id":"1","screenName":"nasa","name":"NASA","avatar":"https://pbs.twimg.com/a_normal.jpg","verified":true,"inFeed":true,"followedAt":5}]}
+        """.trimIndent()
+        val read = Session.decode(older)!!
+        assertEquals(session.accounts, read.accounts)
+        assertEquals(session.following.take(1), read.following)
+        assertEquals(listOf(session.groups.first()), read.groups)
+        assertEquals(Session(accounts = read.accounts, following = read.following, groups = read.groups, includeReplies = false, autoplay = false), read)
+    }
+
+    @Test
+    fun everythingAFollowAndAGroupKeepReadsBackAsWritten() {
+        val full = session.copy(
+            searches = listOf(SavedSearch("list:123", 7)),
+            feeds = mapOf(
+                "following" to FeedSettings(includeReplies = true, sort = FeedSort.POPULAR),
+                "g2" to FeedSettings(
+                    includeReposts = false,
+                    sort = FeedSort.CUSTOM,
+                    rules = FeedRules(ContentFilter.SFW, minLikes = 10, minReposts = 2, mutedKeywords = listOf(MutedKeyword("spoilers", Instant.parse("2099-01-01T00:00:00Z"), KeywordAction.FOLD))),
+                    catchUp = true,
+                ),
+            ),
+            nesting = mapOf("g3" to "g2"),
+            postCaps = mapOf("1" to 3),
+            offFollowing = setOf("g1"),
+            deck = listOf("g3", "g2"),
+        )
+        assertEquals(full, Session.decode(Session.encode(full)))
     }
 }

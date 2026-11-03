@@ -10,14 +10,17 @@ import kotlinx.serialization.json.put
 /**
  * A feed as it was left: the posts shown and, when it can read on from them,
  * where each chunk's reading stood. Written to disk so a cold start shows the
- * same posts and loads more below them without a hole.
+ * same posts and loads more below them without a hole. [savedAt] (epoch
+ * milliseconds) is when they were read: how old they are when a load fails,
+ * and whether the feed has posts newer than its last read mark.
  */
-data class SavedFeed(val threads: List<XThread>, val state: FeedState?) {
+data class SavedFeed(val threads: List<XThread>, val state: FeedState?, val savedAt: Long? = null) {
     companion object {
         private const val VERSION = 1
 
         fun encode(saved: SavedFeed): String = buildJsonObject {
             put("v", VERSION)
+            saved.savedAt?.let { put("savedAt", it) }
             put("threads", JsonArray(saved.threads.map(XCodec::threadJson)))
             saved.state?.let { state ->
                 put(
@@ -30,6 +33,7 @@ data class SavedFeed(val threads: List<XThread>, val state: FeedState?) {
                                 put("exhausted", chunk.exhausted)
                                 chunk.oldest?.let { put("oldest", it) }
                                 put("unread", JsonArray(chunk.unread.map(XCodec::threadJson)))
+                                if (chunk.failed) put("failed", true)
                             }
                         },
                     ),
@@ -53,11 +57,12 @@ data class SavedFeed(val threads: List<XThread>, val state: FeedState?) {
                             exhausted = chunk["exhausted"].boolean ?: true,
                             oldest = chunk["oldest"].long,
                             unread = chunk["unread"].list.mapNotNull(XCodec::threadOf),
+                            failed = chunk["failed"].boolean ?: false,
                         )
                     },
                 )
             }
-            return SavedFeed(root["threads"].list.mapNotNull(XCodec::threadOf), state)
+            return SavedFeed(root["threads"].list.mapNotNull(XCodec::threadOf), state, root["savedAt"].long)
         }
     }
 }
