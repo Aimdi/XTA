@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.networks.tiktok
 
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
+import com.aimdi.xtanative.networks.DESKTOP_CHROME
 import com.aimdi.xtanative.networks.Page
 import java.time.Instant
 
@@ -140,7 +143,17 @@ data class TikTokSession(val cookies: String = "", val deviceId: String = "")
  * app id every API read carries, and the browser it reads as.
  */
 data class TikTokRepairs(
-    val aid: String = "1988",
-    val userAgent: String =
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-)
+    val aid: String = AID.shipped,
+    val userAgent: String = USER_AGENT.shipped,
+) {
+    companion object {
+        val AID = RepairSlot("tiktok.aid", "1988", RepairKind.DIGITS)
+        val USER_AGENT = RepairSlot("tiktok.user_agent", DESKTOP_CHROME, RepairKind.HEADER)
+
+        /** Every TikTok value `repairs.json` may replace. */
+        val SLOTS = listOf(AID, USER_AGENT)
+
+        /** The shipped values with [published]'s TikTok entries that fit in force. */
+        fun published(published: Map<String, String>) = TikTokRepairs(AID.valueIn(published), USER_AGENT.valueIn(published))
+    }
+}

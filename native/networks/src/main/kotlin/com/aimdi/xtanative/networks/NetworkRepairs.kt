@@ -1,0 +1,25 @@
+package com.aimdi.xtanative.networks
+
+import com.aimdi.xtanative.core.repairs.RepairSlot
+import com.aimdi.xtanative.networks.instagram.InstagramRepairs
+import com.aimdi.xtanative.networks.pixiv.PixivApp
+import com.aimdi.xtanative.networks.reddit.RedditClient
+import com.aimdi.xtanative.networks.stocks.TickerClient
+import com.aimdi.xtanative.networks.threads.ThreadsRepairs
+import com.aimdi.xtanative.networks.tiktok.TikTokRepairs
+
+/** The desktop browser XTA's Instagram and TikTok reads present themselves as, as XTA ships it. */
+const val DESKTOP_CHROME =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+/**
+ * Every value of the networks here that XTA's published `repairs.json` may
+ * replace, each declared beside the client that sends it. A client takes its
+ * values from the published entries with its own `published(...)` (Threads,
+ * Instagram, TikTok, Pixiv) or its slot's `valueIn` (Reddit, Stocks).
+ */
+object NetworkRepairs {
+    val SLOTS: List<RepairSlot> =
+        ThreadsRepairs.SLOTS + InstagramRepairs.SLOTS + TikTokRepairs.SLOTS + PixivApp.SLOTS +
+            RedditClient.REPAIR_SLOTS + TickerClient.REPAIR_SLOTS
+}

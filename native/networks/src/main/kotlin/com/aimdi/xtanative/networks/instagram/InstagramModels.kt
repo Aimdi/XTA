@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.networks.instagram
 
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
+import com.aimdi.xtanative.networks.DESKTOP_CHROME
 import java.time.Instant
 
 /**
@@ -79,7 +82,17 @@ data class InstagramSearchUser(
  * the public web app id every read carries, and the browser it reads as.
  */
 data class InstagramRepairs(
-    val appId: String = "936619743392459",
-    val userAgent: String =
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-)
+    val appId: String = APP_ID.shipped,
+    val userAgent: String = USER_AGENT.shipped,
+) {
+    companion object {
+        val APP_ID = RepairSlot("instagram.app_id", "936619743392459", RepairKind.DIGITS)
+        val USER_AGENT = RepairSlot("instagram.user_agent", DESKTOP_CHROME, RepairKind.HEADER)
+
+        /** Every Instagram value `repairs.json` may replace. */
+        val SLOTS = listOf(APP_ID, USER_AGENT)
+
+        /** The shipped values with [published]'s Instagram entries that fit in force. */
+        fun published(published: Map<String, String>) = InstagramRepairs(APP_ID.valueIn(published), USER_AGENT.valueIn(published))
+    }
+}

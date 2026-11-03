@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.networks.stocks
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.networks.Page
 import java.time.Duration
@@ -118,5 +120,11 @@ class TickerClient(
     companion object {
         /** The agent XTA ships for the price hosts. */
         const val DEFAULT_USER_AGENT = "Mozilla/5.0 (Android) XTA"
+
+        /** The price hosts' agent as `repairs.json` may replace it; give [RepairSlot.valueIn]'s answer as `userAgent`. */
+        val USER_AGENT_SLOT = RepairSlot("stocks.user_agent", DEFAULT_USER_AGENT, RepairKind.HEADER)
+
+        /** Every Stocks value `repairs.json` may replace. */
+        val REPAIR_SLOTS = listOf(USER_AGENT_SLOT)
     }
 }

@@ -10,6 +10,8 @@ import com.aimdi.xtanative.core.x.signing.SigningBootstrap
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.antenna.AntennaStore
 import com.aimdi.xtanative.store.offline.TimelineCache
+import com.aimdi.xtanative.store.published.PublishedDocument
+import com.aimdi.xtanative.store.published.RepairsRegistry
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.reading.ReadingJournal
 import com.aimdi.xtanative.store.saved.ArchiveNotesStore
@@ -95,8 +97,18 @@ class AppGraph(private val files: File, connection: Flow<Boolean>, val version: 
         writes.coroutineContext[Job]?.children?.toList()?.joinAll()
     }
 
+    /**
+     * XTA's published repairs (`repairs.json`): the copy last read is in force
+     * from the start; the networks take their values from [RepairsRegistry.published].
+     */
+    val repairs = RepairsRegistry(PublishedDocument(http, PublishedDocument.REPAIRS_URL, store.file("published/repairs.json")))
+
     fun start() {
         scope.launch { sessions.load() }
         if (mockX == null) scope.launch { client.refreshEndpoints() }
+        scope.launch {
+            repairs.applyKept()
+            if (mockX == null) repairs.refresh()
+        }
     }
 }

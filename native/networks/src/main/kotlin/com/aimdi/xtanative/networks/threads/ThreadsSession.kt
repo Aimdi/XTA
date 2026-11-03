@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.networks.threads
 
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
 import kotlin.random.Random
 import kotlinx.coroutines.delay
 
@@ -110,35 +112,41 @@ class ThreadsPacing(
  * rotated doc id is fixed without a release; nothing here names a host.
  */
 data class ThreadsRepairs(
-    val guestDocId: String = "6232751443445612",
-    val guestQueryName: String = "BarcelonaProfileThreadsTabQuery",
-    val appId: String = "238260118697367",
-    val asbdId: String = "129477",
-    val appUserAgent: String = "Barcelona 289.0.0.77.109 Android",
-    val webUserAgent: String = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " +
-        "Version/16.6 Mobile/15E148 Safari/604.1",
+    val guestDocId: String = GUEST_DOC_ID.shipped,
+    val guestQueryName: String = GUEST_QUERY_NAME.shipped,
+    val appId: String = APP_ID.shipped,
+    val asbdId: String = ASBD_ID.shipped,
+    val appUserAgent: String = APP_USER_AGENT.shipped,
+    val webUserAgent: String = WEB_USER_AGENT.shipped,
 ) {
     companion object {
-        private val digits = Regex("[0-9]{1,32}")
-        private val token = Regex("[A-Za-z0-9_-]{1,128}")
-        private val header = Regex("[\\x21-\\x7E](?:[\\x20-\\x7E]{0,398}[\\x21-\\x7E])?")
+        val GUEST_DOC_ID = RepairSlot("threads.guest_doc_id", "6232751443445612", RepairKind.DIGITS)
+        val GUEST_QUERY_NAME = RepairSlot("threads.guest_query_name", "BarcelonaProfileThreadsTabQuery", RepairKind.TOKEN)
+        val APP_ID = RepairSlot("threads.app_id", "238260118697367", RepairKind.DIGITS)
+        val ASBD_ID = RepairSlot("threads.asbd_id", "129477", RepairKind.DIGITS)
+        val APP_USER_AGENT = RepairSlot("threads.app_user_agent", "Barcelona 289.0.0.77.109 Android", RepairKind.HEADER)
+        val WEB_USER_AGENT = RepairSlot(
+            "threads.web_user_agent",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) " +
+                "Version/16.6 Mobile/15E148 Safari/604.1",
+            RepairKind.HEADER,
+        )
+
+        /** Every Threads value `repairs.json` may replace. */
+        val SLOTS = listOf(GUEST_DOC_ID, GUEST_QUERY_NAME, APP_ID, ASBD_ID, APP_USER_AGENT, WEB_USER_AGENT)
 
         /**
          * The shipped values with [published]'s Threads entries in force: an entry
          * for a key XTA does not know, or one that does not fit its slot's kind,
          * changes nothing. A withdrawn entry goes back to the shipped value.
          */
-        fun published(published: Map<String, String>): ThreadsRepairs {
-            val shipped = ThreadsRepairs()
-            fun take(key: String, kind: Regex, value: String) = published[key]?.takeIf(kind::matches) ?: value
-            return ThreadsRepairs(
-                guestDocId = take("threads.guest_doc_id", digits, shipped.guestDocId),
-                guestQueryName = take("threads.guest_query_name", token, shipped.guestQueryName),
-                appId = take("threads.app_id", digits, shipped.appId),
-                asbdId = take("threads.asbd_id", digits, shipped.asbdId),
-                appUserAgent = take("threads.app_user_agent", header, shipped.appUserAgent),
-                webUserAgent = take("threads.web_user_agent", header, shipped.webUserAgent),
-            )
-        }
+        fun published(published: Map<String, String>): ThreadsRepairs = ThreadsRepairs(
+            guestDocId = GUEST_DOC_ID.valueIn(published),
+            guestQueryName = GUEST_QUERY_NAME.valueIn(published),
+            appId = APP_ID.valueIn(published),
+            asbdId = ASBD_ID.valueIn(published),
+            appUserAgent = APP_USER_AGENT.valueIn(published),
+            webUserAgent = WEB_USER_AGENT.valueIn(published),
+        )
     }
 }

@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.networks.pixiv
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Base64
@@ -13,11 +15,29 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * they travel together and can be replaced as one.
  */
 data class PixivApp(
-    val clientId: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT",
-    val clientSecret: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj",
-    val version: String = "5.0.234",
-    val userAgent: String = "PixivAndroidApp/5.0.234 (Android 11; Pixel 5)",
-)
+    val clientId: String = CLIENT_ID.shipped,
+    val clientSecret: String = CLIENT_SECRET.shipped,
+    val version: String = APP_VERSION.shipped,
+    val userAgent: String = USER_AGENT.shipped,
+) {
+    companion object {
+        val APP_VERSION = RepairSlot("pixiv.app_version", "5.0.234", RepairKind.VERSION)
+        val USER_AGENT = RepairSlot("pixiv.user_agent", "PixivAndroidApp/5.0.234 (Android 11; Pixel 5)", RepairKind.HEADER)
+        val CLIENT_ID = RepairSlot("pixiv.client_id", "MOBrBDS8blbauoSck0ZfDbtuzpyT", RepairKind.TOKEN)
+        val CLIENT_SECRET = RepairSlot("pixiv.client_secret", "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj", RepairKind.TOKEN)
+
+        /** Every Pixiv value `repairs.json` may replace. */
+        val SLOTS = listOf(APP_VERSION, USER_AGENT, CLIENT_ID, CLIENT_SECRET)
+
+        /** The shipped app with [published]'s Pixiv entries that fit in force. */
+        fun published(published: Map<String, String>) = PixivApp(
+            clientId = CLIENT_ID.valueIn(published),
+            clientSecret = CLIENT_SECRET.valueIn(published),
+            version = APP_VERSION.valueIn(published),
+            userAgent = USER_AGENT.valueIn(published),
+        )
+    }
+}
 
 /** Whose a token is, as a token response's `user` names them. */
 data class PixivAuthUser(

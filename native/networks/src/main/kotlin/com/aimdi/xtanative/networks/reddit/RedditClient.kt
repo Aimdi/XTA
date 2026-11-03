@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.networks.reddit
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.repairs.RepairKind
+import com.aimdi.xtanative.core.repairs.RepairSlot
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.networks.NetworkRequestException
@@ -631,6 +633,12 @@ class RedditClient(
         /** For the website, which turns away anything announcing itself as a bot: XTA's shipped `reddit.web_user_agent`. */
         const val WEB_USER_AGENT =
             "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+
+        /** The website's agent as `repairs.json` may replace it; give [RepairSlot.valueIn]'s answer as `webUserAgent`. */
+        val WEB_USER_AGENT_SLOT = RepairSlot("reddit.web_user_agent", WEB_USER_AGENT, RepairKind.HEADER)
+
+        /** Every Reddit value `repairs.json` may replace. */
+        val REPAIR_SLOTS = listOf(WEB_USER_AGENT_SLOT)
 
         /** Reddit's documented value for "do not associate this with a device". */
         const val DEVICE_ID = "DO_NOT_TRACK_THIS_DEVICE"

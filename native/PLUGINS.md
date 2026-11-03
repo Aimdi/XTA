@@ -78,7 +78,9 @@ title and description, home tab and feed-strip screens, client screen,
 settings screen, search, the links it opens, its routes, its backup sections,
 what it stores, uninstall) and `PluginHost`, what the app gives a plugin
 (HTTP, its own `StoreDir`, settings, navigation to posts, profiles, media and
-links, the shared post, media and list components, the X session, services).
+links, the shared post, media and list components, the X session, services,
+and XTA's published repairs: the entries of `repairs.json` the app keeps, from
+which the plugin's clients take their fragile values, see `core/repairs`).
 
 The store screen lists installed plugins, then what is on offer by category,
 with install, update and uninstall, as XTA's store does.
