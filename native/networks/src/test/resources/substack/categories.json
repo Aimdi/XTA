@@ -1,0 +1,8 @@
+[
+  {"id": 1, "name": "Science", "slug": "science"},
+  {"id": 2, "name": " Arts ", "slug": "arts", "parent_tag_id": null},
+  {"id": 3, "name": "Physics", "slug": "physics", "parent_tag_id": 1},
+  {"id": 4, "name": "Old", "slug": "old", "deprecated": true},
+  {"id": "5", "name": "Quoted id", "slug": "quoted"},
+  {"id": 6, "name": "", "slug": "nameless"}
+]

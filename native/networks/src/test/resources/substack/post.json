@@ -1,0 +1,31 @@
+{
+  "id": 990001,
+  "slug": "a-long-read",
+  "title": "A long read for measuring the reader",
+  "subtitle": "The reader by the quiet river",
+  "description": "A longer description of the long read",
+  "post_date": "2026-10-01T08:00:00.000Z",
+  "canonical_url": "https://fieldnotes.substack.com/p/a-long-read",
+  "cover_image": "https://substackcdn.com/image/fetch/w_1456/cover.jpeg",
+  "audience": "everyone",
+  "type": "newsletter",
+  "wordcount": 1200,
+  "reaction_count": 120,
+  "comment_count": 340,
+  "body_html": "<h2>Start</h2><p>A claim<a class=\"footnote-anchor\" id=\"footnote-anchor-1\" href=\"#footnote-1\">1</a>.</p><div class=\"captioned-image-container\"><figure><img src=\"https://substackcdn.com/image/fetch/a.jpeg\" width=\"1456\" height=\"816\" alt=\"\"><figcaption class=\"image-caption\">Figure 1. The river</figcaption></figure></div><div class=\"footnote\"><a id=\"footnote-1\" href=\"#footnote-anchor-1\" class=\"footnote-number\">1</a><div class=\"footnote-content\"><p>The source.</p></div></div>",
+  "publishedBylines": [
+    {
+      "name": "Perf Author",
+      "publicationUsers": [
+        {
+          "publication": {
+            "name": "Field Notes",
+            "subdomain": "fieldnotes",
+            "hero_text": "Notes from the field",
+            "logo_url": "https://substackcdn.com/logo.png"
+          }
+        }
+      ]
+    }
+  ]
+}

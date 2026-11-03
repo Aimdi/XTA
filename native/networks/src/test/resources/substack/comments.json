@@ -1,0 +1,24 @@
+{
+  "comments": [
+    {
+      "id": 1,
+      "name": "ann",
+      "body": "First",
+      "date": "2026-07-01T10:00:00Z",
+      "children": [
+        {"id": 2, "name": "ben", "body": "Reply", "children": []},
+        {
+          "id": 3,
+          "body": "",
+          "children": [{"id": 4, "name": "cay", "body": "Under a deleted reply"}]
+        }
+      ]
+    },
+    {"id": 5, "name": "dan", "body": "Second"},
+    {"id": 6, "body": "Flat reply", "parent_id": 5},
+    {"id": 7, "body": "Other flat reply", "parent": {"id": "6"}},
+    {"id": [], "body": "Bad identity"},
+    42,
+    null
+  ]
+}
