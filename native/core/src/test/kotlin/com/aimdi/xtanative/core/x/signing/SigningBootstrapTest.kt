@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.x.http.XResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -64,6 +65,25 @@ class SigningBootstrapTest {
         SigningBootstrap(x).derive("auth_token=a")
         assertEquals(listOf("https://x.com/home", "https://x.com/search?q=AI&f=live", "https://x.com/i/flow/login", bundle), x.asked)
         assertEquals(listOf("auth_token=a", "auth_token=a", null), x.cookies)
+    }
+
+    @Test
+    fun aFailedBootstrapSaysWhatEachPageLacked() {
+        val keyOnly = "<html><head><title>X</title>" +
+            "<meta name=\"twitter-site-verification\" content=\"${java.util.Base64.getEncoder().encodeToString(ByteArray(48))}\">" +
+            "</head></html>"
+        val x = FakeX { url, _ ->
+            when (url.encodedPath) {
+                "/home" -> XResponse(403, "challenge")
+                "/search" -> XResponse(200, "<html><head><title>Just a moment</title></head></html>")
+                else -> XResponse(200, keyOnly)
+            }
+        }
+        val failure = assertFailsWith<SigningUnavailableException> { runBlocking { SigningBootstrap(x).derive(null) } }
+        val message = failure.message.orEmpty()
+        listOf("/home: HTTP 403", "/search: no verification key", "\"Just a moment\"", "/i/flow/login: 0 loading frames").forEach {
+            assertTrue(it in message, "$it in $message")
+        }
     }
 
     @Test

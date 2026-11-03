@@ -64,17 +64,22 @@ class TransactionSigner(
         fun keyBytesOf(key: String): IntArray = Base64.getDecoder().decode(key).map { it.toInt() and 0xFF }.toIntArray()
 
         /** Whether [page] has the key and four loading animations the signer reads. */
-        fun hasBootstrapData(page: Document): Boolean {
+        fun hasBootstrapData(page: Document): Boolean = missingBootstrapData(page) == null
+
+        /** What [page] lacks of the key and loading animations a signer is derived from; null when it has them. */
+        fun missingBootstrapData(page: Document): String? {
             val key = page.selectFirst("meta[name=twitter-site-verification]")?.attr("content")
-            if (key.isNullOrEmpty()) return false
+            if (key.isNullOrEmpty()) return "no verification key"
             val bytes = try {
                 keyBytesOf(key)
             } catch (_: IllegalArgumentException) {
-                return false
+                return "an unreadable verification key"
             }
-            if (bytes.size < 6) return false
+            if (bytes.size < 6) return "a verification key of ${bytes.size} bytes"
             val frames = animationFrames(page)
-            return frames.size >= 4 && frames.take(4).all { frame -> animationPath(frame)?.let { it.length > 9 && 'C' in it } == true }
+            if (frames.size < 4) return "${frames.size} loading frames"
+            val drawn = frames.take(4).all { frame -> animationPath(frame)?.let { it.length > 9 && 'C' in it } == true }
+            return if (drawn) null else "unreadable loading frames"
         }
 
         private fun animationFrames(page: Document) = page.select("[id^=loading-x-anim]")

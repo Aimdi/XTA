@@ -37,16 +37,26 @@ class SigningBootstrap(private val http: XHttp) {
             SEARCH to cookie,
             LOGIN to null,
         )
+        // What each page lacked, so a failure says which part of x.com changed.
+        val lacked = ArrayList<String>()
         for ((url, pageCookie) in pages) {
             val response = fetchPage(url, pageCookie)
-            if (url != LOGIN && response.code in setOf(403, 404)) continue
+            if (url != LOGIN && response.code in setOf(403, 404)) {
+                lacked += "${url.encodedPath}: HTTP ${response.code}"
+                continue
+            }
             if (!response.isSuccessful) throw SigningUnavailableException("X transaction bootstrap returned HTTP ${response.code}")
             val document = Jsoup.parse(response.body, url.toString())
-            if (!TransactionSigner.hasBootstrapData(document)) continue
+            val missing = TransactionSigner.missingBootstrapData(document)
+            if (missing != null) {
+                lacked += "${url.encodedPath}: $missing (${response.body.length} characters, \"${document.title().take(60)}\")"
+                continue
+            }
             val bundle = ondemandUrlOf(response.body, document) ?: assets.discover(document)
             if (bundle != null) return document to bundle
+            lacked += "${url.encodedPath}: no signing script"
         }
-        throw SigningUnavailableException("X pages did not contain transaction signing data")
+        throw SigningUnavailableException("X pages did not contain transaction signing data: ${lacked.joinToString("; ")}")
     }
 
     private suspend fun fetchPage(start: HttpUrl, cookie: String?): XResponse {
