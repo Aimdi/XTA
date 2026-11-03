@@ -31,6 +31,8 @@ kotlin {
         // What a downloadable plugin builds its screens with is api (PLUGINS.md).
         commonMain.dependencies {
             api(project(":core"))
+            api(project(":store"))
+            api(project(":services"))
             api(libs.compose.runtime)
             api(libs.compose.foundation)
             api(libs.compose.ui)
@@ -47,6 +49,12 @@ kotlin {
             dependencies {
                 // Dispatchers.Main, which view models run on, is the Swing thread here.
                 implementation(libs.kotlinx.coroutines.swing)
+            }
+        }
+        // The screens' plain-Kotlin rules (no Compose), run on the JVM by the desktop job.
+        val desktopTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
         if (androidSdk) {

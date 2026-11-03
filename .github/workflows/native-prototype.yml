@@ -234,7 +234,7 @@ jobs:
         working-directory: native
         env:
           NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
-        run: ./gradlew :desktop:createDistributable --console=plain
+        run: ./gradlew :ui:desktopTest :desktop:createDistributable --console=plain
 
       - name: Pack the tarball and the PKGBUILD
         run: bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"

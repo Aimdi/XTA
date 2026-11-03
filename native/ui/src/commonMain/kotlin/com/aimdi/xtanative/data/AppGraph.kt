@@ -7,6 +7,17 @@ import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.core.x.signing.FileSignerStore
 import com.aimdi.xtanative.core.x.signing.SigningBootstrap
+import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.antenna.AntennaStore
+import com.aimdi.xtanative.store.offline.TimelineCache
+import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
+import com.aimdi.xtanative.store.reading.ReadingJournal
+import com.aimdi.xtanative.store.saved.ArchiveNotesStore
+import com.aimdi.xtanative.store.saved.LikesStore
+import com.aimdi.xtanative.store.saved.LocalPostsStore
+import com.aimdi.xtanative.store.saved.SavedStore
+import com.aimdi.xtanative.store.search.RecentSearches
+import com.aimdi.xtanative.store.settings.SettingsStore
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +45,19 @@ class AppGraph(private val files: File, connection: Flow<Boolean>, val version: 
     val sessions = SessionStore(File(files, "session.json"), initial = if (mockX == null) Session() else MockX.session)
     private val feedCaches = HashMap<String, FeedCache>()
     val posts = PostCache()
+
+    /** What the device keeps beside the session (XTA's database and preferences), each store in its own files. */
+    private val store = StoreDir(File(files, "store"))
+    val settings = SettingsStore(store)
+    val recentSearches = RecentSearches(settings)
+    val saved = SavedStore(store)
+    val likes = LikesStore(store)
+    val localPosts = LocalPostsStore(store)
+    val archiveNotes = ArchiveNotesStore(store)
+    val antennas = AntennaStore(store)
+    val readingJournal = ReadingJournal(store)
+    val readingAppearance = ReadingAppearanceStore(store)
+    val timelineCache = TimelineCache(store)
 
     /** Whether there is a connection, as it changes: the present state first. */
     val online: SharedFlow<Boolean> = connection.shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)

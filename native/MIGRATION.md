@@ -66,7 +66,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | catcher | crash reports per platform; a switch in settings |
 | utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |
-| l10n | `ui` resources in all 30 of XTA's languages |
+| l10n | `ui` resources in all 29 of XTA's languages (`SCREENS.md`) |
 | generated | not needed |
 
 ## Platforms
