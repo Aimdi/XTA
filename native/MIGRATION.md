@@ -18,30 +18,30 @@ layer is written in `networks/<id>` first, then moves with its screens into
 
 | XTA | Read | Screens |
 |---|---|---|
-| x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes (238 core tests) | feed, post, profile, search done; trends, communities, lists and the rest in the screens wave |
-| reddit | `networks/reddit` ported (235 tests) | screens wave |
-| bluesky | `networks/bluesky` ported (97 tests, live check passes) | first plugin, being built |
-| mastodon | `networks/mastodon` | screens wave |
-| threads | `networks/threads` ported (165 tests, live check passes) | screens wave |
-| substack | `networks/substack` | screens wave (reader, podcasts) |
-| booru | `networks/booru` ported (150 tests) | screens wave |
-| pixiv | `networks/pixiv` | screens wave |
-| ehviewer | `networks/ehviewer` ported (95 tests) | screens wave |
-| instagram | `networks/instagram` ported (50 tests) | screens wave |
-| tiktok | `networks/tiktok` ported (51 tests) | screens wave |
-| rss | `networks/rss` | screens wave |
-| hackernews | `networks/hackernews` | screens wave |
-| websources | `networks/websources` | screens wave |
-| stocks | `networks/stocks` ported (158 tests) | screens wave |
-| immich | `networks/immich` | screens wave |
-| deepmarks | `networks/deepmarks` | screens wave |
-| karakeep | `networks/karakeep` | screens wave |
+| x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes | feed, post, profile, search done; trends, communities, lists and the rest in the screens wave |
+| reddit | `networks/reddit` ported (237 tests) | screens wave |
+| bluesky | `networks/bluesky` ported (98 tests, live check passes) | first plugin, being built |
+| mastodon | `networks/mastodon` ported (146 tests) | screens wave |
+| threads | `networks/threads` ported (166 tests, live check passes) | screens wave |
+| substack | `networks/substack` ported (153 tests) | screens wave (reader, podcasts) |
+| booru | `networks/booru` ported (151 tests, live check passes) | screens wave |
+| pixiv | `networks/pixiv` ported (216 tests) | screens wave |
+| ehviewer | `networks/ehviewer` ported (97 tests, live check passes) | screens wave |
+| instagram | `networks/instagram` ported (51 tests) | screens wave |
+| tiktok | `networks/tiktok` ported (52 tests, live check passes) | screens wave |
+| rss | `networks/rss` ported (48 tests) | screens wave |
+| hackernews | `networks/hackernews` ported (18 tests) | screens wave |
+| websources | `networks/websources` ported (73 tests) | screens wave |
+| stocks | `networks/stocks` ported (161 tests, live check passes) | screens wave |
+| immich | `networks/immich` ported (52 tests): saving to the reader's own library | screens wave |
+| deepmarks | `networks/deepmarks` ported (30 tests): saving bookmarks | screens wave |
+| karakeep | `networks/karakeep` ported (23 tests): saving links | screens wave |
 
 ## The app (`lib/`)
 
 | XTA | Goes to |
 |---|---|
-| client | `core/x` (done; missing operations with the X parity work) |
+| client | `core/x` (done) |
 | database | `store` (no SQLite migrations: XTA's data arrives through its backup) |
 | tweet | `ui/post` (done in part); translation in `services` |
 | home | `ui/home`: a tab per followed network and group, deck, For you, saved |
@@ -49,22 +49,22 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | search | `core/x` advanced search; `store` recent searches; `ui/search` |
 | trends | `core/x`; `ui/trends` |
 | subscriptions | `core/session` + `store`; `ui/subscriptions` (list, import, cleanup, groups) |
-| group | `core/feed` rules (custom rules, author caps, catch-up, discovery rotation, combined and deck groups, batch read); `ui/group` |
-| saved | `store` (saved posts, folders, device likes, local notes and posts); `ui/saved` |
-| archive | `store`; `ui/archive` |
-| offline | `store` + `services`; `ui/offline` |
-| downloads | `store` (registry, naming); platform download in `:app` / `:desktop`; `ui/downloads` |
-| reading | `store` (reading places in articles) |
-| article | `services` (article parser, blocks, entities) |
-| links | `services` (opening rules, previews, post context); `ui/links` |
-| speech | `services` (text, languages, chunks); engines per platform; `ui/speech` |
+| group | `core/feed` and `core/session` rules (done: custom rules, post caps, saved searches, batch read, rotation, nesting, combined and deck groups, packs); `ui/group` |
+| saved | `store/saved` (done: saved posts, folders, device likes, local notes and posts); `ui/saved` |
+| archive | `store/saved` (done: notes, highlights, tags); `ui/archive` |
+| offline | `store/offline` (done) + `services`; `ui/offline` |
+| downloads | `store/downloads` (done: queue, resume, history, naming); platform save in `:app` / `:desktop`; `ui/downloads` |
+| reading | `store/reading` (done: reading places, journal, appearance) |
+| article | `services/article` (done) |
+| links | `services/links` (done: opening rules, routing, previews, shared links); `ui/links` |
+| speech | `services/speech` (done: text, languages, chunks, offline voices and their downloads); engines per platform; `ui/speech` |
 | media | per platform (players, continuity, podcasts, audio session); `ui/media` |
 | antenna | `store` (antennas) + `core` (their queries); `ui/antenna` |
 | community | `core/x`; `ui/community` |
 | intro | `ui/intro` |
 | settings | `store` (every setting); `ui/settings`; the plugin store in `plugin-host` + `ui/plugins` |
 | catcher | crash reports per platform; a switch in settings |
-| utils | `services` and the platform modules |
+| utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |
 | l10n | `ui` resources in all 30 of XTA's languages |
 | generated | not needed |
