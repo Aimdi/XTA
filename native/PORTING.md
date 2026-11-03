@@ -73,3 +73,20 @@ KOTLINC=<kotlinc home> LIBS=<dir of jars> bash native/tool/jvmcheck.sh networks 
 ```
 
 Everything you hand back compiles and its tests pass.
+
+## After the port: the plugin
+
+A ported network becomes a downloadable plugin (`PLUGINS.md`) once its screens
+are written: its package moves, unchanged, from `networks/` to
+`plugins/<name>/src/commonMain/kotlin/com/aimdi/xtanative/networks/<name>/`
+(tests to `plugins/<name>/src/desktopTest/kotlin/...`, fixtures to
+`plugins/<name>/src/desktopTest/resources/<name>/`), and the plugin's entry
+class and screens come beside it. "Moving a network into a plugin" in
+`PLUGINS.md` has the steps; `plugins/bluesky` is the first. There it is
+checked with
+
+```bash
+KOTLINC=<kotlinc home> LIBS=<dir of jars> bash native/tool/jvmcheck.sh plugins/<name>
+```
+
+A port keeps to its own package so that the move is a rename of folders.

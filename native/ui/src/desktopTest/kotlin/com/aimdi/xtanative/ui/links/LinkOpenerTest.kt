@@ -29,12 +29,14 @@ class LinkOpenerTest {
     private class Screens {
         val opened = ArrayList<String>()
         var readsNetworks = false
+        var pluginHosts = emptySet<String>()
         val screens = LinkScreens(
             post = { opened += "post $it" },
             profile = { opened += "profile $it" },
             search = { opened += "search $it" },
             browser = { url, from -> opened += "browser $url ${from ?: "-"}" },
             network = { link -> readsNetworks.also { if (it) opened += "network ${link.network}" } },
+            plugin = { url -> (LinkSteps.hostOf(url) in pluginHosts).also { if (it) opened += "plugin $url" } },
         )
     }
 
@@ -157,6 +159,31 @@ class LinkOpenerTest {
         opener.open("https://bsky.app/profile/someone.bsky.social")
         assertTrue(screens.opened.isEmpty())
         assertEquals(1, platform.launched.size)
+    }
+
+    @Test
+    fun anInstalledPluginOpensItsLinksBeforeAnyRule() {
+        val screens = Screens().apply {
+            readsNetworks = true
+            pluginHosts = setOf("bsky.app")
+        }
+        val platform = Platform()
+        val opener = opener(platform, settings("bluesky" to true, "inApp" to false))
+        opener.bind(screens.screens)
+        val links = listOf(
+            "https://bsky.app/profile/someone.bsky.social",
+            "https://bsky.app/profile/someone.bsky.social/post/3l6",
+            "https://bsky.app/profile/other.bsky.social",
+            "https://bsky.app/profile/third.bsky.social",
+        )
+        opener.open(links[0])
+        opener.openPostLink(links[1])
+        assertTrue(opener.openOnScreen(links[2]))
+        assertTrue(opener.openOnNetwork(links[3]))
+        assertEquals(links.map { "plugin $it" }, screens.opened)
+        assertTrue(platform.launched.isEmpty())
+        opener.open("https://x.com/maya")
+        assertEquals("profile maya", screens.opened.last())
     }
 
     @Test

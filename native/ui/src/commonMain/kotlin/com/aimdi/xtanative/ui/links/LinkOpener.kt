@@ -39,6 +39,8 @@ class LinkScreens(
     val community: (id: String, about: Boolean) -> Boolean = { _, _ -> false },
     /** Pixiv's search for a work's id; while it is null, a shared number is searched on X. */
     val pixivWork: ((id: String) -> Unit)? = null,
+    /** An installed plugin's screen for [url] (PLUGINS.md), asked before any other rule: true when one opened it. */
+    val plugin: (url: String) -> Boolean = { false },
 )
 
 /** What only the platform can do with a link that leaves the app for the web. */
@@ -234,6 +236,7 @@ class LinkOpener(
      */
     fun openOnScreen(url: String): Boolean {
         val screens = screens ?: return false
+        if (screens.plugin(url)) return true
         val current = settings()
         return when (val step = LinkSteps.step(url, router(current).route(url), LinkSteps.settingsOf(current), platform.desktop, false, inPost = false)) {
             is LinkStep.Post -> true.also { screens.post(step.id) }
@@ -246,6 +249,7 @@ class LinkOpener(
     /** Opens [url] on a network's screen when one is on and reads it, answering whether one did. */
     fun openOnNetwork(url: String): Boolean {
         val screens = screens ?: return false
+        if (screens.plugin(url)) return true
         val route = router(settings()).route(url) as? NativeRoute.Network ?: return false
         return screens.network(route.link)
     }
@@ -261,6 +265,7 @@ class LinkOpener(
                 return
             }
         }
+        if (screens.plugin(url)) return
         val current = settings()
         val step = LinkSteps.step(url, router(current).route(url), LinkSteps.settingsOf(current), platform.desktop, reopensApp(url), inPost)
         when (step) {

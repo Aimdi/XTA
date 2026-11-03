@@ -1,0 +1,7 @@
+{
+  "id": "bluesky",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.bluesky.BlueskyPlugin",
+  "category": "social",
+  "private": false
+}

@@ -47,6 +47,9 @@ import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
+import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.post.QuotesScreen
@@ -201,15 +204,19 @@ fun XtaNativeRoot() {
         )
     }
     val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
-    val linkScreens = remember(nav, actions) {
+    val plugins = LocalPlugins.current
+    val linkScreens = remember(nav, actions, plugins) {
         LinkScreens(
             post = actions.openPost,
             profile = actions.openProfile,
             search = actions.search,
             browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
+            plugin = plugins::openOnScreen,
         )
     }
     BindLinkScreens(linkScreens)
+    // Where a plugin asks to go lands here too (PLUGINS.md).
+    AttachPluginNavigation(nav, linkScreens)
 
     DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
 }
@@ -454,6 +461,7 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         composable(Routes.ARTICLE, arguments = listOf(navArgument("postId") { type = NavType.StringType })) { entry ->
             ArticleScreen(entry.text("postId").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
+        pluginScreens(nav)
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()

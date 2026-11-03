@@ -1,0 +1,167 @@
+package com.aimdi.xtanative.ui.pluginstore
+
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.savedstate.read
+import com.aimdi.xtanative.data.plugins.AppPlugins
+import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.data.plugins.NavTarget
+import com.aimdi.xtanative.ui.home.LocalHomeNetworks
+import com.aimdi.xtanative.ui.links.LinkOpener
+import com.aimdi.xtanative.ui.links.LinkScreens
+import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.plugins.MediaPager
+import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.settings.SettingsRoutes
+import java.net.URLEncoder
+import kotlinx.coroutines.flow.first
+
+/** The routes of the plugin store, and of each plugin's client, settings, search and own screens, and the media a plugin opens. */
+internal object PluginRoutes {
+    /** What Settings' Plugin store row and the account menu open. */
+    const val STORE = SettingsRoutes.PLUGINS
+    const val CLIENT = "plugin/{pluginId}"
+    const val SETTINGS = "plugin/{pluginId}/settings"
+    const val SEARCH = "plugin/{pluginId}/search?q={q}"
+    const val SCREEN = "plugin/{pluginId}/screen?route={route}"
+    const val MEDIA = "plugin-media/{key}/{index}"
+
+    fun client(id: String) = "plugin/$id"
+    fun settings(id: String) = "plugin/$id/settings"
+    fun search(id: String, query: String?) = if (query.isNullOrBlank()) "plugin/$id/search" else "plugin/$id/search?q=" + encoded(query)
+    fun screen(id: String, route: String) = "plugin/$id/screen?route=" + encoded(route)
+    fun media(key: String, index: Int) = "plugin-media/" + encoded(key) + "/$index"
+
+    /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
+    private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
+}
+
+/** The app's plugins, for the screens: the shell makes them beside the graph (see [PluginsFrame]). */
+val LocalPlugins = staticCompositionLocalOf<AppPlugins> { error("No AppPlugins provided") }
+
+/**
+ * [plugins] for everything inside [content], and their home tabs on Home's
+ * strip ([LocalHomeNetworks]), named in the reader's language.
+ */
+@Composable
+fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
+    val language = currentLanguage()
+    LaunchedEffect(plugins, language) { plugins.useLanguage(language) }
+    val networks = remember(plugins) { PluginHomeNetworks(plugins) }
+    CompositionLocalProvider(LocalPlugins provides plugins, LocalHomeNetworks provides networks, content = content)
+}
+
+/**
+ * Hooks the app's navigation [nav] up for the plugins: where a plugin asks
+ * to go is opened there, X's screens through [x] and a link the way the app
+ * opens links; and the screen the shell asked to open at start is opened once.
+ */
+@Composable
+fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens) {
+    val plugins = LocalPlugins.current
+    val links = LocalLinks.current
+    val uri = LocalUriHandler.current
+    val target = remember(nav, x, links, uri) { PluginNavTarget(nav, x, links, uri) }
+    DisposableEffect(plugins, target) {
+        plugins.navigator.attach(target)
+        onDispose { plugins.navigator.detach(target) }
+    }
+    LaunchedEffect(plugins, target) {
+        val start = plugins.openAtStart ?: return@LaunchedEffect
+        // Once the navigation has its graph and its first screen.
+        nav.currentBackStackEntryFlow.first()
+        plugins.openAtStart = null
+        target.go(start)
+    }
+}
+
+/** The plugin store and each plugin's screens, in the app's navigation graph. */
+fun NavGraphBuilder.pluginScreens(nav: NavHostController) {
+    val pluginId = navArgument("pluginId") { type = NavType.StringType }
+    composable(PluginRoutes.STORE) {
+        PluginStoreScreen(
+            onBack = { nav.popBackStack() },
+            onOpen = { id -> nav.navigate(PluginRoutes.client(id)) },
+            onSettings = { id -> nav.navigate(PluginRoutes.settings(id)) },
+        )
+    }
+    composable(PluginRoutes.CLIENT, arguments = listOf(pluginId)) { entry ->
+        val id = entry.text("pluginId").orEmpty()
+        PluginClientScreen(
+            id,
+            onBack = { nav.popBackStack() },
+            onSearch = { nav.navigate(PluginRoutes.search(id, null)) },
+            onSettings = { nav.navigate(PluginRoutes.settings(id)) },
+        )
+    }
+    composable(PluginRoutes.SETTINGS, arguments = listOf(pluginId)) { entry ->
+        PluginSettingsScreen(entry.text("pluginId").orEmpty(), onBack = { nav.popBackStack() })
+    }
+    composable(
+        PluginRoutes.SEARCH,
+        arguments = listOf(pluginId, navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null }),
+    ) { entry ->
+        PluginSearchScreen(entry.text("pluginId").orEmpty(), entry.text("q"), onBack = { nav.popBackStack() })
+    }
+    composable(
+        PluginRoutes.SCREEN,
+        arguments = listOf(pluginId, navArgument("route") { type = NavType.StringType; nullable = true; defaultValue = null }),
+    ) { entry ->
+        PluginRouteScreen(entry.text("pluginId").orEmpty(), entry.text("route").orEmpty(), onBack = { nav.popBackStack() })
+    }
+    composable(
+        PluginRoutes.MEDIA,
+        arguments = listOf(navArgument("key") { type = NavType.StringType }, navArgument("index") { type = NavType.IntType }),
+        enterTransition = { fadeIn(tween(180)) },
+        exitTransition = { fadeOut(tween(180)) },
+        popEnterTransition = { fadeIn(tween(180)) },
+        popExitTransition = { fadeOut(tween(180)) },
+    ) { entry ->
+        val plugins = LocalPlugins.current
+        val key = entry.text("key").orEmpty()
+        val items = remember(key) { plugins.media.get(key) }
+        MediaPager(items, entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() })
+    }
+}
+
+/** Where the plugins' navigation lands: the app's navigation controller, its X screens and its way of opening links. */
+private class PluginNavTarget(
+    private val nav: NavHostController,
+    private val x: LinkScreens,
+    private val links: LinkOpener?,
+    private val uri: UriHandler,
+) : NavTarget {
+    override fun go(destination: Destination) {
+        when (destination) {
+            is Destination.Link -> links?.open(destination.url) ?: runCatching { uri.openUri(destination.url) }
+            is Destination.XPost -> x.post(destination.id)
+            is Destination.XProfile -> x.profile(destination.screenName)
+            is Destination.XSearch -> x.search(destination.query)
+            Destination.PluginStore -> nav.navigate(PluginRoutes.STORE)
+            is Destination.PluginClient -> nav.navigate(PluginRoutes.client(destination.pluginId))
+            is Destination.PluginRoute -> nav.navigate(PluginRoutes.screen(destination.pluginId, destination.route))
+            is Destination.PluginSearch -> nav.navigate(PluginRoutes.search(destination.pluginId, destination.query))
+            is Destination.PluginSettings -> nav.navigate(PluginRoutes.settings(destination.pluginId))
+            is Destination.Media -> nav.navigate(PluginRoutes.media(destination.key, destination.start))
+            Destination.Back -> nav.popBackStack()
+        }
+    }
+}
+
+/** A route's text argument; null where the route has none. */
+private fun NavBackStackEntry.text(name: String): String? = arguments?.read { getStringOrNull(name) }

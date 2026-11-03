@@ -8,6 +8,8 @@ plugins {
 
 // -PmockX=<url> builds an APK that reads XTA's stand-in for X (:ui's data/MockX.kt); never set for a release.
 val mockX = (findProperty("mockX") as String?).orEmpty()
+// -PpluginCatalogue=<url> reads the plugin catalogue there instead of the published one (CI's emulator check); never set for a release.
+val pluginCatalogue = (findProperty("pluginCatalogue") as String?).orEmpty()
 
 android {
     namespace = "com.aimdi.xtanative"
@@ -21,8 +23,9 @@ android {
         versionCode = (System.getenv("NATIVE_VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("NATIVE_VERSION_NAME") ?: "0.1.0"
         buildConfigField("String", "MOCK_X", "\"$mockX\"")
-        // Only the stand-in, on the emulator's host, is reached without TLS.
-        manifestPlaceholders["cleartext"] = mockX.isNotEmpty().toString()
+        buildConfigField("String", "PLUGIN_CATALOGUE", "\"$pluginCatalogue\"")
+        // Only the stand-ins, on the emulator's host, are reached without TLS.
+        manifestPlaceholders["cleartext"] = (mockX.isNotEmpty() || pluginCatalogue.startsWith("http://")).toString()
     }
 
     // Lifecycle 2.9's lint check for LiveData crashes this Android plugin's lint
@@ -86,6 +89,8 @@ kotlin {
 
 dependencies {
     implementation(project(":ui"))
+    // Its plugin verifier and class loader (plugins/AndroidPlugins.kt).
+    implementation(project(":plugin-host"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.coroutines.android)
 }

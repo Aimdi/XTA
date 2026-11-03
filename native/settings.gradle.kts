@@ -42,6 +42,13 @@ include(":plugin-host")
 include(":ui")
 include(":desktop")
 
+// The downloadable plugins (PLUGINS.md): every folder of plugins/ with a build
+// file is one, :plugins:<id>, configured by plugins/build.gradle.kts.
+file("plugins").listFiles().orEmpty()
+    .filter { File(it, "build.gradle.kts").isFile }
+    .sortedBy { it.name }
+    .forEach { include(":plugins:${it.name}") }
+
 val androidSdk = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
 if (androidSdk != null || file("local.properties").exists()) {
     include(":app")

@@ -8,7 +8,8 @@ Compose UI, shared by Android and the Linux desktop.
 Modules: `:core` (X, feeds, session), `:networks` (the other networks),
 `:store` (device data and the XTA backup), `:services` (articles, links,
 translation, speech text), `:ui` (all screens, Compose Multiplatform),
-`:app` (Android shell), `:desktop` (Linux app).
+`:plugin-host` (the plugin store's engine), `:plugins:<id>` (the downloadable
+plugins), `:app` (Android shell), `:desktop` (Linux app).
 
 ## Networks (`lib/plugins/`)
 
@@ -20,7 +21,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 |---|---|---|
 | x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes | feed, post, profile, search, Discover, communities, list import and antennas done; the rest in the screens wave |
 | reddit | `networks/reddit` ported (237 tests) | screens wave |
-| bluesky | `networks/bluesky` ported (98 tests, live check passes) | first plugin, being built |
+| bluesky | `plugins/bluesky` (the reading layer moved from `networks/bluesky`; 98 tests, live check passes) | the first plugin: Discover and Following on Home's strip, threads, profiles with their tabs, search, its settings |
 | mastodon | `networks/mastodon` ported (146 tests) | screens wave |
 | threads | `networks/threads` ported (166 tests, live check passes) | screens wave |
 | substack | `networks/substack` ported (153 tests) | screens wave (reader, podcasts) |
@@ -62,7 +63,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | antenna | `store` (antennas) + `ui/antenna` (done: list, editor, feed) |
 | community | `ui/community` (done: posts, about, members, links) |
 | intro | `ui/intro` (done) |
-| settings | `store/settings`; `ui/settings` (done: every section, backup export and restore, WebDAV, theme); the plugin store in `plugin-host` + `ui/pluginstore` |
+| settings | `store/settings`; `ui/settings` (done: every section, backup export and restore, WebDAV, theme); the plugin store in `plugin-host` + `ui/pluginstore` (done), the plugin API in `ui/plugins` (done) |
 | catcher | crash reports kept on the device (done; a switch in settings) |
 | utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |

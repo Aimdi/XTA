@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_store">Plugin-Store</string>
+    <string name="plugin_store_show_private">Private Plugins anzeigen</string>
+    <string name="plugin_store_empty">Noch werden keine Plugins angeboten.</string>
+    <string name="plugin_catalogue_unavailable">Die Plugin-Liste konnte nicht geladen werden</string>
+    <string name="plugin_catalogue_cached">Angezeigt wird die zuletzt geladene Liste</string>
+    <string name="plugin_installed">Installiert</string>
+    <string name="plugin_available">Verfügbar</string>
+    <string name="plugin_install">Installieren</string>
+    <string name="plugin_update">Aktualisieren</string>
+    <string name="plugin_open">Öffnen</string>
+    <string name="plugin_uninstall">Deinstallieren</string>
+    <string name="plugin_uninstall_confirm">%1$s entfernen?</string>
+    <string name="plugin_uninstall_confirm_detail">Alles, was es auf diesem Gerät gespeichert hat, verschwindet mit: deine Abos, seine zwischengespeicherten Seiten und seine Einstellungen. Du kannst es später wieder installieren.</string>
+    <string name="plugin_pin">Neben „Für dich“ anheften</string>
+    <string name="plugin_more_options">Weitere Optionen</string>
+    <string name="plugin_downloading">Wird geladen … %1$s</string>
+    <string name="plugin_installing">Wird installiert …</string>
+    <string name="plugin_version">Version %1$s · %2$s</string>
+    <string name="plugin_update_to">Version %1$s · %2$s ist erschienen</string>
+    <string name="plugin_needs_newer_app">Braucht ein neueres XTA Native</string>
+    <string name="plugin_not_started">Installiert, ließ sich aber nicht starten.</string>
+    <string name="plugin_not_running">Dieses Plugin läuft nicht. Der Plugin-Store installiert es.</string>
+    <string name="plugin_storage_empty">Noch nichts gespeichert</string>
+    <string name="plugin_storage_used">%1$d Einträge · %2$s</string>
+    <string name="plugin_failed_not_offered">Dieses Plugin wird nicht mehr angeboten.</string>
+    <string name="plugin_failed_newer_plugin">Diese Version läuft mit dieser App nicht mehr. Ihr Update wird es.</string>
+    <string name="plugin_failed_download">Das Laden ist fehlgeschlagen (%1$d). Versuch es noch einmal.</string>
+    <string name="plugin_failed_download_broke">Das Laden brach ab. Versuch es noch einmal.</string>
+    <string name="plugin_failed_file">Angekommen ist nicht die Datei, die die Plugin-Liste beschreibt; sie wurde gelöscht.</string>
+    <string name="plugin_failed_signature">Es ist nicht mit dem Schlüssel von XTA Native signiert und wurde gelöscht.</string>
+    <string name="plugin_failed_manifest">Seine Datei beschreibt sich nicht als dieses Plugin und wurde gelöscht.</string>
+    <string name="plugin_failed_damaged">Seine Datei hat sich auf diesem Gerät verändert. Installier es noch einmal.</string>
+    <string name="plugin_failed_load">Es ließ sich nicht starten.</string>
+    <string name="plugin_failed_storage">Dieses Gerät konnte seine Dateien nicht speichern oder entfernen.</string>
+    <string name="plugin_category_social">Soziale Netze</string>
+    <string name="plugin_category_communities">Communitys</string>
+    <string name="plugin_category_newsletters">Newsletter</string>
+    <string name="plugin_category_art">Kunst</string>
+    <string name="plugin_category_markets">Märkte</string>
+    <string name="plugin_category_bookmarks">Lesezeichen</string>
+    <string name="plugin_category_media">Medien</string>
+    <string name="plugin_category_sites">Weitere Websites</string>
+    <string name="plugin_category_other">Weitere</string>
+
+    <string name="plugin_post_show">Anzeigen</string>
+    <string name="plugin_stat_replies">Antworten</string>
+    <string name="plugin_problem_no_account">%1$s braucht ein Konto, und keins ist eingerichtet.</string>
+    <string name="plugin_problem_rate_limited">%1$s bremst das Lesen gerade. Versuch es in ein paar Minuten noch einmal.</string>
+    <string name="plugin_problem_offline">Keine Verbindung zu %1$s.</string>
+    <string name="plugin_problem_refused">%1$s hat die Anfrage abgelehnt (%2$d).</string>
+    <string name="plugin_problem_other">Beim Lesen von %1$s ist etwas schiefgegangen.</string>
+</resources>

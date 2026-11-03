@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bluesky's text, English (the default). Written as Android writes strings; the plugins
+     build turns them into the Kotlin object Strings, so they load from any class loader.
+     plugin_name and plugin_description also name the plugin in the store's catalogue. -->
+<resources>
+    <string name="plugin_name">Bluesky</string>
+    <string name="plugin_description">Read Bluesky accounts through the public AppView — no Bluesky login</string>
+
+    <string name="tab_discover">Discover</string>
+    <string name="tab_following">Following</string>
+    <string name="following_empty">Follow someone to fill this feed</string>
+    <string name="feed_empty">No posts in this feed yet</string>
+    <string name="following_partial">Some accounts could not be read</string>
+    <plurals name="following_pending">
+        <item quantity="one">1 more account still to read — pull to refresh</item>
+        <item quantity="other">%1$d more accounts still to read — pull to refresh</item>
+    </plurals>
+    <string name="content_warning">Content warning</string>
+
+    <string name="post_title">Post</string>
+    <string name="post_unavailable">This post is not available</string>
+
+    <string name="profile_posts">Posts</string>
+    <string name="profile_replies">Replies</string>
+    <string name="profile_media">Media</string>
+    <string name="profile_empty">Nothing to read yet</string>
+    <string name="profile_followers">Followers</string>
+    <string name="profile_follows">Following</string>
+    <string name="profile_post_count">Posts</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="followed_here">Followed in XTA Native only: nothing is written to Bluesky.</string>
+
+    <string name="search_hint">Search Bluesky</string>
+    <string name="search_posts">Posts</string>
+    <string name="search_people">People</string>
+    <string name="search_latest">Latest</string>
+    <string name="search_top">Top</string>
+    <string name="search_nothing">Nothing found for “%1$s”</string>
+    <string name="people_empty">No matching accounts</string>
+
+    <string name="settings_feed">Following feed</string>
+    <string name="settings_replies">Show replies</string>
+    <string name="settings_reposts">Show reposts</string>
+    <string name="settings_accounts">Accounts</string>
+    <string name="settings_none_followed">You follow nobody on Bluesky yet. Open a profile, for example through search, and follow it.</string>
+    <string name="settings_intro">Reading works without setup, through Bluesky\'s public AppView. No Bluesky login is used, and nothing is written to Bluesky.</string>
+</resources>

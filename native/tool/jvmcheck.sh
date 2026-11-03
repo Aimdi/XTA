@@ -3,7 +3,7 @@
 # the tests with JUnit's console launcher: a check for machines where Gradle
 # cannot reach Maven Central.
 #
-#   KOTLINC=<kotlinc home> LIBS=<dir of jars> bash native/tool/jvmcheck.sh [core|networks] [package to test]
+#   KOTLINC=<kotlinc home> LIBS=<dir of jars> bash native/tool/jvmcheck.sh [core|networks|plugins/<id>|...] [package to test]
 #
 # LIBS holds okhttp, okio, kotlinx-coroutines-core-jvm,
 # kotlinx-serialization-{core,json}-jvm, jsoup and
@@ -43,6 +43,17 @@ classes="$out/core"
 if [ "$module" = core ]; then
   compile "$out/test" "$cp:$classes:$testlibs" "$out/core" "$here/core/src/test/kotlin"
   cp -r "$here/core/src/test/resources/." "$out/test/" 2> /dev/null || true
+elif [ "${module#plugins/}" != "$module" ]; then
+  # A plugin (plugins/<id>): its reading layer, the plain Kotlin under
+  # src/commonMain/kotlin/com/aimdi/xtanative/networks/<id>, and its tests in
+  # src/desktopTest; its screens are Compose, which uicheck.sh compiles.
+  id=${module#plugins/}
+  compile "$out/networks" "$cp:$classes" "" "$here/networks/src/main/kotlin"
+  classes="$classes:$out/networks"
+  compile "$out/plugin" "$cp:$classes" "" "$here/$module/src/commonMain/kotlin/com/aimdi/xtanative/networks/$id"
+  classes="$classes:$out/plugin"
+  compile "$out/test" "$cp:$classes:$testlibs" "$out/plugin" "$here/$module/src/desktopTest/kotlin/com/aimdi/xtanative/networks/$id"
+  cp -r "$here/$module/src/desktopTest/resources/." "$out/test/" 2> /dev/null || true
 else
   for dep in $(deps_of "$module"); do
     compile "$out/$dep" "$cp:$classes" "" "$here/$dep/src/main/kotlin"

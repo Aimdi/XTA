@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Bluesky</string>
+    <string name="plugin_description">Bluesky-Konten über die öffentliche AppView lesen — ohne Bluesky-Anmeldung</string>
+
+    <string name="tab_discover">Entdecken</string>
+    <string name="tab_following">Folge ich</string>
+    <string name="following_empty">Folge jemandem, um diesen Feed zu füllen</string>
+    <string name="feed_empty">Noch keine Beiträge in diesem Feed</string>
+    <string name="following_partial">Einige Konten konnten nicht gelesen werden</string>
+    <plurals name="following_pending">
+        <item quantity="one">Noch 1 Konto zu lesen — zum Aktualisieren ziehen</item>
+        <item quantity="other">Noch %1$d Konten zu lesen — zum Aktualisieren ziehen</item>
+    </plurals>
+    <string name="content_warning">Inhaltswarnung</string>
+
+    <string name="post_title">Beitrag</string>
+    <string name="post_unavailable">Dieser Beitrag ist nicht verfügbar</string>
+
+    <string name="profile_posts">Beiträge</string>
+    <string name="profile_replies">Antworten</string>
+    <string name="profile_media">Medien</string>
+    <string name="profile_empty">Noch nichts zu lesen</string>
+    <string name="profile_followers">Follower</string>
+    <string name="profile_follows">Folgt</string>
+    <string name="profile_post_count">Beiträge</string>
+    <string name="follow">Folgen</string>
+    <string name="unfollow">Entfolgen</string>
+    <string name="followed_here">Nur in XTA Native gefolgt: Bei Bluesky wird nichts gespeichert.</string>
+
+    <string name="search_hint">Bluesky durchsuchen</string>
+    <string name="search_posts">Beiträge</string>
+    <string name="search_people">Personen</string>
+    <string name="search_latest">Neueste</string>
+    <string name="search_top">Top</string>
+    <string name="search_nothing">Nichts gefunden für „%1$s“</string>
+    <string name="people_empty">Keine passenden Konten</string>
+
+    <string name="settings_feed">Folge-ich-Feed</string>
+    <string name="settings_replies">Antworten zeigen</string>
+    <string name="settings_reposts">Reposts zeigen</string>
+    <string name="settings_accounts">Konten</string>
+    <string name="settings_none_followed">Du folgst noch niemandem auf Bluesky. Öffne ein Profil, etwa über die Suche, und folge ihm.</string>
+    <string name="settings_intro">Lesen klappt ohne Einrichtung, über die öffentliche AppView von Bluesky. Es wird keine Bluesky-Anmeldung genutzt und nichts zu Bluesky geschrieben.</string>
+</resources>

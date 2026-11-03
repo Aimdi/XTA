@@ -16,8 +16,9 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 /** XTA Native on the Linux desktop: the Android app's screens in one window. */
 fun main() {
-    val graph = desktopGraph()
-    graph.start()
+    val app = desktopApp()
+    val graph = app.graph
+    app.start()
     SingletonImageLoader.setSafe { context -> appImageLoader(context) }
     // The process waits for the writes the closing window asked for (the reading place) before it ends.
     application(exitProcessOnExit = false) {
@@ -28,7 +29,7 @@ fun main() {
             state = rememberWindowState(width = 520.dp, height = 860.dp),
         ) {
             CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
-                XtaNativeContent(graph)
+                XtaNativeContent(graph, app.plugins)
             }
         }
     }

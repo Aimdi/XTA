@@ -42,7 +42,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Core tests
-        run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test --console=plain
+        run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test :plugins:test --console=plain
 
       - name: Signing key
         env:
@@ -85,6 +85,30 @@ jobs:
           name: xta-native-${{ env.VERSION_NAME }}
           path: ${{ runner.temp }}/xta-native-*.apk
 
+      # Every plugin as a code-only APK signed like the app (PLUGINS.md), with
+      # its catalogue entry; numbered by the run, so each prerelease's plugins
+      # are newer than the last ones published.
+      - name: Build the Android plugins
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          ./gradlew :plugins:androidPlugins -PpluginBuild=${{ github.run_number }} --console=plain
+          {
+            echo "### Android plugins"
+            echo
+            for f in plugins/build/out/android/*.apk; do
+              echo "- $(basename "$f"): $(stat -c %s "$f") bytes, $(unzip -l "$f" | tail -1 | awk '{print $2}') files"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+          for f in plugins/build/out/android/*.apk; do echo "== $f"; unzip -lv "$f" | sort -k1 -n -r | head -8; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-plugins-android-${{ env.VERSION_NAME }}
+          path: native/plugins/build/out/android
+
 
   # Live x.com, as XTA's own X check reads it: the request signer derived from
   # x.com's pages with no session, then @X's profile as a guest. It says
@@ -110,7 +134,13 @@ jobs:
       - name: Read live x.com and the other networks
         env:
           RUN_LIVE: 'true'
-        run: ./gradlew :core:test --tests '*XLiveTest*' :networks:test --tests '*LiveTest*' --rerun --console=plain
+        run: |
+          # The networks that are plugins test in their own modules.
+          plugins=()
+          for f in plugins/*/build.gradle.kts; do
+            plugins+=(":plugins:$(basename "$(dirname "$f")"):desktopTest" --tests '*LiveTest*')
+          done
+          ./gradlew :core:test --tests '*XLiveTest*' :networks:test --tests '*LiveTest*' "${plugins[@]}" --rerun --console=plain
 
   # Every screen on an emulator, against the stand-in for X that XTA's own
   # emulator check uses (docs/mock-x.md): no account, no live request. Fails
@@ -130,9 +160,19 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # With the plugins of this commit, signed with this runner's debug key as
+      # the app is, and a catalogue the runner serves to the emulator.
       - name: Build against the stand-in
         working-directory: native
-        run: ./gradlew :app:assembleRelease -PmockX=http://10.0.2.2:8787 --console=plain
+        run: ./gradlew :app:assembleRelease :plugins:androidPlugins -PmockX=http://10.0.2.2:8787 -PpluginCatalogue=http://10.0.2.2:8788/plugins.json --console=plain
+
+      - name: Serve a catalogue of this build's plugins
+        run: |
+          python3 native/tool/plugin_catalogue.py --base-url http://10.0.2.2:8788 --android native/plugins/build/out/android \
+            --out "$RUNNER_TEMP/catalogue/plugins.json" --copy-to "$RUNNER_TEMP/catalogue"
+          nohup python3 -m http.server 8788 --bind 127.0.0.1 --directory "$RUNNER_TEMP/catalogue" > "$RUNNER_TEMP/catalogue.log" 2>&1 &
+          sleep 2
+          curl -s -o /dev/null -w 'the catalogue answers %{http_code}\n' http://127.0.0.1:8788/plugins.json
 
       - uses: subosito/flutter-action@v2
         with:
@@ -171,7 +211,8 @@ jobs:
           target: google_apis
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens && bash native/tool/compare.sh native/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/xta.apk" native-screens/compare.txt
+          # The plugin store last, so the measured starts load no plugin.
+          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens && bash native/tool/compare.sh native/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/xta.apk" native-screens/compare.txt && bash native/tool/plugin_screens.sh native-screens
 
       - name: Start, memory and size against XTA
         if: always()
@@ -184,8 +225,9 @@ jobs:
       - name: Keep the stand-in's log
         if: always()
         run: |
-          cp "$RUNNER_TEMP/mock-x.log" native-screens/ 2>/dev/null || true
+          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" native-screens/ 2>/dev/null || true
           tail -40 "$RUNNER_TEMP/mock-x.log" || true
+          tail -20 "$RUNNER_TEMP/catalogue.log" || true
 
       # The top of each screen, small, in the log itself: readable where the
       # artifact store is not.
@@ -230,11 +272,37 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build the desktop app
+      # The desktop app is built with the certificate plugins must be signed
+      # by, and its plugins' JARs are signed with that key: the release key
+      # when the secret is there, else this runner's debug key (a dev build).
+      - name: Signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          if [ -n "$SIGNING_KEY" ]; then
+            echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/native.jks"
+            echo "KEY_PATH=$RUNNER_TEMP/native.jks" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build the desktop app and its plugins
         working-directory: native
         env:
           NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
-        run: ./gradlew :ui:desktopTest :desktop:createDistributable --console=plain
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          ./gradlew :ui:desktopTest :desktop:createDistributable :plugins:desktopPlugins -PpluginBuild=${{ github.run_number }} --console=plain
+          {
+            echo "### Desktop plugins"
+            echo
+            for f in plugins/build/out/desktop/*.jar; do echo "- $(basename "$f"): $(stat -c %s "$f") bytes"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
+          path: native/plugins/build/out/desktop
 
       - name: Pack the tarball and the PKGBUILD
         run: bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
@@ -306,23 +374,74 @@ jobs:
           ' _ "$app"
           echo "XTA Native was still running after 20 s."
 
+      # The plugin store's whole chain on the desktop, from a catalogue the
+      # runner serves: the first plugin downloaded, checked against its size,
+      # SHA-256 and the certificate built into the app, kept, loaded and shown
+      # (the store, then its home tab, which reads live Bluesky); then loaded
+      # again at the next start, pinned on Home's strip, and uninstalled. A
+      # screenshot of each.
+      - name: Install the first plugin from a local catalogue
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          python3 native/tool/plugin_catalogue.py --base-url http://127.0.0.1:8788 --desktop native/plugins/build/out/desktop \
+            --out "$RUNNER_TEMP/catalogue/plugins.json" --copy-to "$RUNNER_TEMP/catalogue"
+          nohup python3 -m http.server 8788 --bind 127.0.0.1 --directory "$RUNNER_TEMP/catalogue" > "$RUNNER_TEMP/catalogue.log" 2>&1 &
+          sleep 2
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          home="$RUNNER_TEMP/plugin-home"
+          run() { # <log> <screenshot> <seconds> <VAR=value>...: the app that long under a virtual display, then its window
+            xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+              env "${@:5}" "$1" > "$2" 2>&1 &
+              pid=$!
+              sleep "$4"
+              import -window root "$3"
+              if ! kill -0 "$pid" 2> /dev/null; then echo "XTA Native is no longer running:"; cat "$2"; exit 1; fi
+              kill "$pid"
+            ' _ "$app" "$@"
+          }
+          common=(XTA_NATIVE_MOCK_X=http://127.0.0.1:8787 XTA_NATIVE_PLUGIN_CATALOGUE=http://127.0.0.1:8788/plugins.json "XDG_DATA_HOME=$home")
+          run native-desktop/plugin-install.log native-desktop/plugin-store.png 30 "${common[@]}" XTA_NATIVE_PLUGIN_INSTALL=bluesky XTA_NATIVE_OPEN=plugins
+          grep "XTA Native: plugin" native-desktop/plugin-install.log || true
+          grep -q "XTA Native: plugin bluesky .* loaded" native-desktop/plugin-install.log \
+            || { echo "Bluesky was not installed and loaded:"; cat native-desktop/plugin-install.log; exit 1; }
+          run native-desktop/plugin-start.log native-desktop/plugin-bluesky.png 30 "${common[@]}" XTA_NATIVE_OPEN=plugin:bluesky
+          grep -q "XTA Native: plugin bluesky .* loaded" native-desktop/plugin-start.log \
+            || { echo "The installed Bluesky did not load at start:"; cat native-desktop/plugin-start.log; exit 1; }
+          ls -l "$home/xta-native/plugins" "$home/xta-native/plugins/bluesky"/* || true
+          # Home, with its timeline pinned on the strip beside For you.
+          run native-desktop/plugin-pin.log native-desktop/plugin-strip.png 25 "${common[@]}" XTA_NATIVE_PLUGIN_PIN=bluesky
+          # Uninstalled as the store's Uninstall does: its code, what it stored and its pin go.
+          run native-desktop/plugin-uninstall.log native-desktop/plugin-uninstalled.png 25 "${common[@]}" XTA_NATIVE_PLUGIN_UNINSTALL=bluesky XTA_NATIVE_OPEN=plugins
+          grep "XTA Native: plugin" native-desktop/plugin-uninstall.log || true
+          grep -q "XTA Native: plugin bluesky uninstalled" native-desktop/plugin-uninstall.log \
+            || { echo "Bluesky was not uninstalled:"; cat native-desktop/plugin-uninstall.log; exit 1; }
+          if [ -e "$home/xta-native/plugins/bluesky" ] || [ -e "$home/xta-native/plugin-data/bluesky" ]; then
+            echo "Bluesky's files outlived its uninstall:"; find "$home/xta-native/plugins" "$home/xta-native/plugin-data" || true; exit 1
+          fi
+          echo "Bluesky was installed from the catalogue, loaded, loaded again at the next start, pinned on Home and uninstalled."
+
       - name: Keep the logs
         if: always()
         run: |
           mkdir -p native-desktop
-          cp "$RUNNER_TEMP/mock-x.log" native-desktop/ 2>/dev/null || true
+          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" native-desktop/ 2>/dev/null || true
           tail -40 native-desktop/app.log 2>/dev/null || true
           tail -40 "$RUNNER_TEMP/mock-x.log" || true
+          tail -20 "$RUNNER_TEMP/catalogue.log" || true
 
-      # The window, small, in the log itself, as the screens job shows its screens.
+      # The windows, small, in the log itself, as the screens job shows its screens.
       - name: Desktop for review
         if: always()
         run: |
-          [ -f native-desktop/desktop.png ] || exit 0
-          convert native-desktop/desktop.png -trim +repage -resize 480x -quality 60 "$RUNNER_TEMP/desktop.jpg"
-          echo "==== desktop.jpg"
-          base64 -w 0 "$RUNNER_TEMP/desktop.jpg"
-          echo
+          for f in native-desktop/*.png; do
+            [ -f "$f" ] || continue
+            name=$(basename "$f" .png)
+            convert "$f" -trim +repage -resize 480x -quality 60 "$RUNNER_TEMP/$name.jpg"
+            echo "==== $name.jpg"
+            base64 -w 0 "$RUNNER_TEMP/$name.jpg"
+            echo
+          done
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -353,6 +472,16 @@ jobs:
           name: xta-native-desktop-${{ env.VERSION_NAME }}
           path: desktop
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-plugins-android-${{ env.VERSION_NAME }}
+          path: plugins-android
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
+          path: plugins-desktop
+
       - name: Prerelease
         env:
           GH_TOKEN: ${{ github.token }}
@@ -367,4 +496,29 @@ jobs:
             --latest=false \
             --title "XTA Native $VERSION_NAME (prototype)" \
             --notes-file native/PRERELEASE.md
+
+      # The plugins and their catalogue, plugins.json (PLUGINS.md), as assets of
+      # one rolling release the app reads the catalogue from: the files first,
+      # then the catalogue that names them, then the files no catalogue names
+      # any more. Never marked latest.
+      - name: Plugins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 native/tool/plugin_catalogue.py \
+            --base-url "https://github.com/$GITHUB_REPOSITORY/releases/download/native-plugins" \
+            --android plugins-android --desktop plugins-desktop --out release/plugins.json --copy-to release
+          cat release/plugins.json
+          if ! gh release view native-plugins --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create native-plugins --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --latest=false \
+              --title "XTA Native plugins" \
+              --notes "The plugins XTA Native's plugin store offers, and plugins.json, the list it reads. Installed from the store, never by hand."
+          fi
+          gh release upload native-plugins release/xta-plugin-* --repo "$GITHUB_REPOSITORY" --clobber
+          gh release upload native-plugins release/plugins.json --repo "$GITHUB_REPOSITORY" --clobber
+          for asset in $(gh release view native-plugins --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name'); do
+            case "$asset" in
+              xta-plugin-*) [ -f "release/$asset" ] || gh release delete-asset native-plugins "$asset" --repo "$GITHUB_REPOSITORY" --yes ;;
+            esac
+          done
 

@@ -14,10 +14,18 @@
 # Downloadable plugins (PLUGINS.md) are compiled against the app's modules and
 # libraries without bundling them, and call them by name once loaded. So every
 # public class and member a plugin may use keeps its name and stays in the APK:
-# XTA Native's own modules (:core, :store, :services, :plugin-host, :plugin-api
-# and :ui's shared components), the Kotlin standard library and kotlinx,
-# Compose, lifecycle, navigation, OkHttp, jsoup and Coil.
--keep public class com.aimdi.xtanative.** { public protected *; }
+# XTA Native's own modules (:core, :store, :services, :ui with its plugin API
+# in ui.plugins and the data package, and the types every network shares, in
+# the networks package itself), the Kotlin standard library and kotlinx,
+# Compose, lifecycle, navigation, OkHttp, jsoup and Coil. A network's own
+# package (networks.<id>) is not kept: what is a plugin is not in the app,
+# and what is not yet one goes unless the app uses it.
+-keep public class com.aimdi.xtanative.core.** { public protected *; }
+-keep public class com.aimdi.xtanative.store.** { public protected *; }
+-keep public class com.aimdi.xtanative.services.** { public protected *; }
+-keep public class com.aimdi.xtanative.networks.* { public protected *; }
+-keep public class com.aimdi.xtanative.ui.** { public protected *; }
+-keep public class com.aimdi.xtanative.data.** { public protected *; }
 -keep public class kotlin.** { public protected *; }
 -keep public class kotlinx.coroutines.** { public protected *; }
 -keep public class kotlinx.serialization.** { public protected *; }

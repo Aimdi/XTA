@@ -33,6 +33,10 @@ kotlin {
             api(project(":core"))
             api(project(":store"))
             api(project(":services"))
+            // The types every network shares (Page, NetworkRequestException), which plugins use.
+            api(project(":networks"))
+            // The plugin store's engine: the app's, not the plugins'.
+            implementation(project(":plugin-host"))
             api(libs.compose.runtime)
             api(libs.compose.foundation)
             api(libs.compose.ui)
@@ -62,6 +66,8 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.media3.exoplayer)
+                // Plugins' videos (Bluesky's among them) come as HLS playlists.
+                implementation(libs.media3.exoplayer.hls)
                 implementation(libs.media3.ui)
             }
         }

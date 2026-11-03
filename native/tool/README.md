@@ -75,3 +75,26 @@ What it cannot check:
 - Behaviour. The generated `Res` finds no files and the stand-in androidx jars
   are only close to Google's, so the output is for compiling against, not for
   shipping or running.
+
+## The downloadable plugins (`PLUGINS.md`)
+
+`plugincheck.sh` compiles a plugin's Compose code as Gradle would, against
+`:ui`: it generates the plugin's `Strings` from `plugins/<id>/strings/` with
+the build's own generator functions (run with `kotlinc -script`), compiles
+`:ui` with `uicheck.sh` (or takes `UI_CLASSES`, the classes an
+`OUT=<dir> uicheck.sh` run left), then the plugin's `commonMain` with
+`:core`, `:networks`, `:store` and `:services`:
+
+```bash
+KOTLINC=<kotlinc home> COMPOSE_LIBS=$COMPOSE_LIBS_HOME/1.8.2 bash native/tool/plugincheck.sh bluesky
+```
+
+`jvmcheck.sh plugins/<id>` compiles its reading layer (`networks.<id>`) with
+`:networks` and runs its tests, as `jvmcheck.sh networks` does for a network
+still in `networks/`.
+
+`plugin_catalogue.py` writes `plugins.json` from the entries and files the
+plugins build made (`--android`, `--desktop`, `--base-url`, `--copy-to`):
+CI's prerelease publishes it, and the emulator and desktop checks serve one of
+their own. `plugin_screens.sh` is the emulator's walk through the store
+(install, open, Home's strip, uninstall), after `screens.sh`.

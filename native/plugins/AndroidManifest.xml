@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every plugin's APK (plugins/android.gradle): code the app loads, with no
+     component, permission or launcher of its own. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:hasCode="true" />
+</manifest>

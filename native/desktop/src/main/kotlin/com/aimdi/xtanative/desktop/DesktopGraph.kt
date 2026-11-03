@@ -1,25 +1,61 @@
 package com.aimdi.xtanative.desktop
 
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.plugins.AppPlugins
+import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.pluginhost.HostPlatform
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import kotlinx.coroutines.flow.flowOf
 
+/** The desktop app's graph and the plugins beside it. */
+internal class DesktopApp(val graph: AppGraph, val plugins: AppPlugins)
+
 /**
  * The app graph on the Linux desktop: its files in ~/.local/share/xta-native,
  * always online, XTA's stand-in for X instead of x.com when
  * XTA_NATIVE_MOCK_X names its address (as CI's desktop check does), and
  * downloads in ~/Downloads/XTA Native.
+ *
+ * Plugins are JARs signed by the certificate the build named, kept in the
+ * same folder's plugins/. CI's desktop check, which cannot tap, also names a
+ * plugin catalogue of its own (XTA_NATIVE_PLUGIN_CATALOGUE), plugins to
+ * install from it at start, put on Home's strip and uninstall
+ * (XTA_NATIVE_PLUGIN_INSTALL, _PIN and _UNINSTALL, ids separated by commas)
+ * and the screen to open (XTA_NATIVE_OPEN: "plugins" for the store,
+ * "plugin:<id>" for a plugin).
  */
-internal fun desktopGraph(): AppGraph = AppGraph(
-    files = dataFolder(),
-    connection = flowOf(true),
-    version = System.getProperty("xtanative.version").orEmpty(),
-    mockX = System.getenv("XTA_NATIVE_MOCK_X")?.takeIf { it.isNotBlank() },
-    platformFiles = DesktopFiles(),
-)
+internal fun desktopApp(): DesktopApp {
+    val files = dataFolder()
+    val graph = AppGraph(
+        files = files,
+        connection = flowOf(true),
+        version = System.getProperty("xtanative.version").orEmpty(),
+        mockX = env("XTA_NATIVE_MOCK_X"),
+        platformFiles = DesktopFiles(),
+    )
+    val platform = HostPlatform.desktop(PLUGIN_CERTIFICATE_SHA256)
+    val plugins = env("XTA_NATIVE_PLUGIN_CATALOGUE")?.let { AppPlugins(files, graph, platform, it) } ?: AppPlugins(files, graph, platform)
+    plugins.openAtStart = when (val open = env("XTA_NATIVE_OPEN")) {
+        null -> null
+        "plugins" -> Destination.PluginStore
+        else -> open.removePrefix("plugin:").takeIf { open.startsWith("plugin:") && it.isNotEmpty() }?.let(Destination::PluginClient)
+    }
+    return DesktopApp(graph, plugins)
+}
+
+/** Starts the graph and the plugins, and does what CI's check asks of the store. */
+internal fun DesktopApp.start() {
+    graph.start()
+    plugins.start()
+    plugins.startWith(ids("XTA_NATIVE_PLUGIN_INSTALL"), ids("XTA_NATIVE_PLUGIN_PIN"), ids("XTA_NATIVE_PLUGIN_UNINSTALL"))
+}
+
+private fun env(name: String): String? = System.getenv(name)?.takeIf { it.isNotBlank() }
+
+private fun ids(name: String): List<String> = env(name)?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
 
 /**
  * xta-native under $XDG_DATA_HOME, ~/.local/share where that is not set. Only
