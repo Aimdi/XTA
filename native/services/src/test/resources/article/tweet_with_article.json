@@ -1,0 +1,73 @@
+{
+  "rest_id": "1890000000000000001",
+  "article": {
+    "article_results": {
+      "result": {
+        "rest_id": "1890000000000000002",
+        "title": "Why readers read",
+        "preview_text": "A short look at reading.",
+        "cover_media": {
+          "media_key": "3_100",
+          "media_info": {"__typename": "ApiImage", "original_img_url": "https://pbs.twimg.com/media/cover.jpg"}
+        },
+        "content_state": {
+          "blocks": [
+            {
+              "key": "a1", "text": "Reading is 😀 good for you.", "type": "unstyled", "depth": 0, "data": {},
+              "inlineStyleRanges": [{"offset": 11, "length": 1, "style": "Bold"}, {"offset": 13, "length": 4, "style": "Italic"}],
+              "entityRanges": [{"key": 0, "offset": 18, "length": 3}]
+            },
+            {"key": "a2", "text": "Chapter one", "type": "header-two", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": []},
+            {"key": "a3", "text": "First", "type": "ordered-list-item", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": []},
+            {"key": "a4", "text": "Second", "type": "ordered-list-item", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": []},
+            {"key": "a5", "text": "Between", "type": "header-one", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": []},
+            {"key": "a6", "text": "Again", "type": "ordered-list-item", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": []},
+            {"key": "a7", "text": " ", "type": "atomic", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": [{"key": 1, "offset": 0, "length": 1}]},
+            {"key": "a8", "text": " ", "type": "atomic", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": [{"key": 4, "offset": 0, "length": 1}]},
+            {"key": "a9", "text": " ", "type": "atomic", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": [{"key": 2, "offset": 0, "length": 1}]},
+            {"key": "b1", "text": " ", "type": "atomic", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": [{"key": 3, "offset": 0, "length": 1}]},
+            {"key": "b2", "text": " ", "type": "atomic", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": [{"key": 5, "offset": 0, "length": 1}]},
+            {
+              "key": "b3", "text": "Read @jack at x.com/jack", "type": "blockquote", "depth": 0,
+              "data": {
+                "mentions": [{"fromIndex": 5, "toIndex": 10, "text": "jack"}],
+                "urls": [{"fromIndex": 14, "toIndex": 24, "text": "x.com/jack"}]
+              },
+              "inlineStyleRanges": [{"offset": 0, "length": 99, "style": "Underline"}],
+              "entityRanges": []
+            },
+            {"key": "b4", "text": "A point", "type": "unordered-list-item", "depth": 0, "data": {}, "inlineStyleRanges": [], "entityRanges": []}
+          ],
+          "entityMap": [
+            {"key": "0", "value": {"type": "LINK", "mutability": "MUTABLE", "data": {"url": "example.com/why"}}},
+            {"key": "1", "value": {"type": "MEDIA", "mutability": "IMMUTABLE", "data": {"entityKey": "1", "mediaItems": [{"localMediaId": "", "mediaCategory": "DraftTweetImage", "mediaId": "111"}]}}},
+            {"key": "2", "value": {"type": "DIVIDER", "mutability": "IMMUTABLE", "data": {}}},
+            {"key": "3", "value": {"type": "MARKDOWN", "mutability": "MUTABLE", "data": {"markdown": "```kotlin\nval answer = 42\n```", "entityKey": "3"}}},
+            {"key": "4", "value": {"type": "MEDIA", "mutability": "IMMUTABLE", "data": {"mediaItems": [{"mediaCategory": "AmplifyVideo", "mediaId": "222"}]}}},
+            {"key": "5", "value": {"type": "MEDIA", "mutability": "IMMUTABLE", "data": {"mediaItems": [{"mediaId": "999"}]}}},
+            {"key": "6", "value": {"type": "TWEET", "mutability": "IMMUTABLE", "data": {"tweetId": "1"}}}
+          ]
+        },
+        "media_entities": [
+          {
+            "media_id": "111", "media_key": "3_111",
+            "media_info": {"__typename": "ApiImage", "original_img_url": "https://pbs.twimg.com/media/one.jpg", "original_img_width": 1200, "original_img_height": 800}
+          },
+          {
+            "media_id": "222", "media_key": "13_222",
+            "media_info": {
+              "__typename": "ApiVideo",
+              "aspect_ratio": {"numerator": 16, "denominator": 9},
+              "preview_image": {"original_img_url": "https://pbs.twimg.com/amplify_video_thumb/222/img/p.jpg"},
+              "variants": [
+                {"content_type": "application/x-mpegURL", "url": "https://video.twimg.com/amplify_video/222/pl/master.m3u8"},
+                {"bit_rate": 832000, "content_type": "video/mp4", "url": "https://video.twimg.com/amplify_video/222/vid/avc1/640x360/a.mp4"},
+                {"bit_rate": 2176000, "content_type": "video/mp4", "url": "https://video.twimg.com/amplify_video/222/vid/avc1/1280x720/b.mp4"}
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
