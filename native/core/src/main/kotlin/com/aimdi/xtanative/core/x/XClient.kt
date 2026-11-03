@@ -510,6 +510,9 @@ class XClient(
     private suspend fun <T> parsing(block: suspend () -> T): T = withContext(Dispatchers.Default) { block() }
 
     companion object {
+        /** What every signed-in request carries before the account's own headers (XTA's headers.dart). */
+        val BASE_HEADERS: Map<String, String> get() = XTransport.BASE_HEADERS
+
         private val TRENDS_AVAILABLE = "https://api.twitter.com/1.1/trends/available.json".toHttpUrl()
         private val TRENDS_PLACE = "https://api.twitter.com/1.1/trends/place.json".toHttpUrl()
         private val BROADCASTS_SHOW = "https://twitter.com/i/api/1.1/broadcasts/show.json".toHttpUrl()
