@@ -1,0 +1,14 @@
+[
+  {
+    "name": "flutter",
+    "url": "https://mastodon.social/tags/flutter",
+    "history": [
+      {"day": "1754006400", "uses": "3", "accounts": "2"},
+      {"day": "1753920000", "uses": "5", "accounts": "4"},
+      {"day": "1753833600", "uses": 2, "accounts": 2},
+      {"day": "1753747200", "uses": "lots", "accounts": "1"}
+    ]
+  },
+  {"name": "", "history": []},
+  {"name": " kotlin ", "url": null, "history": null}
+]

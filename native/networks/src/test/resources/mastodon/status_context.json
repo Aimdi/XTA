@@ -1,0 +1,54 @@
+{
+  "ancestors": [
+    {
+      "id": "110",
+      "created_at": "2026-08-01T08:00:00.000Z",
+      "in_reply_to_id": null,
+      "url": "https://social.example/@writer/110",
+      "content": "<p>The question</p>",
+      "account": {"id": "5", "username": "writer", "acct": "writer", "display_name": "Writer", "note": "", "url": "https://social.example/@writer"}
+    },
+    {
+      "id": "111",
+      "created_at": "2026-08-01T08:10:00.000Z",
+      "in_reply_to_id": "110",
+      "in_reply_to_account_id": "5",
+      "url": "https://social.example/@reader/111",
+      "content": "<p><span class=\"h-card\"><a href=\"https://social.example/@writer\" class=\"u-url mention\">@<span>writer</span></a></span> a reply</p>",
+      "mentions": [{"id": "5", "username": "writer", "acct": "writer"}],
+      "account": {"id": "6", "username": "reader", "acct": "reader", "display_name": "Reader", "note": "", "url": "https://social.example/@reader"}
+    }
+  ],
+  "descendants": [
+    {
+      "id": "113",
+      "created_at": "2026-08-01T08:30:00.000Z",
+      "in_reply_to_id": "112",
+      "in_reply_to_account_id": "6",
+      "url": "https://remote.example/@guest/9001",
+      "content": "<p>From another server</p>",
+      "favourites_count": 9,
+      "mentions": [{"id": "6", "username": "reader", "acct": "reader"}],
+      "account": {"id": "7", "username": "guest", "acct": "guest@remote.example", "display_name": "Guest", "note": "", "url": "https://remote.example/@guest"}
+    },
+    {
+      "id": "114",
+      "created_at": "2026-08-01T08:40:00.000Z",
+      "in_reply_to_id": "113",
+      "in_reply_to_account_id": "7",
+      "url": "https://social.example/@writer/114",
+      "content": "<p>Thanks</p>",
+      "favourites_count": 2,
+      "mentions": [{"id": "7", "username": "guest", "acct": "guest@remote.example"}],
+      "account": {"id": "5", "username": "writer", "acct": "writer", "display_name": "Writer", "note": "", "url": "https://social.example/@writer"}
+    },
+    {
+      "id": "115",
+      "created_at": "2026-08-01T08:35:00.000Z",
+      "in_reply_to_id": "112",
+      "url": "https://social.example/@writer/115",
+      "content": "",
+      "account": {"id": "5", "username": "writer", "acct": "writer"}
+    }
+  ]
+}

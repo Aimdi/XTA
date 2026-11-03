@@ -1,0 +1,20 @@
+{
+  "accounts": [
+    {"id": "1", "username": "alice", "acct": "alice", "display_name": "Alice", "note": "<p>Photographer</p>", "url": "https://mastodon.social/@alice", "followers_count": 1200, "bot": true},
+    {"id": "2", "username": "bob", "acct": "bob@other.social", "display_name": "Bob", "note": "", "url": "https://other.social/@bob", "locked": true}
+  ],
+  "statuses": [
+    {
+      "id": "2",
+      "created_at": "2026-08-01T09:00:00.000Z",
+      "url": "https://mastodon.social/@alice/2",
+      "content": "<p>about <a href=\"https://mastodon.social/tags/photography\" class=\"mention hashtag\" rel=\"tag\">#<span>photography</span></a></p>",
+      "account": {"id": "1", "username": "alice", "acct": "alice", "display_name": "Alice", "note": "", "url": "https://mastodon.social/@alice"}
+    },
+    {"id": "3", "content": "", "account": {"id": "1", "username": "alice", "acct": "alice"}}
+  ],
+  "hashtags": [
+    {"name": "photography", "url": "https://mastodon.social/tags/photography", "history": [{"day": "1754006400", "uses": "12", "accounts": "9"}, {"day": "1753920000", "uses": "8", "accounts": "6"}]},
+    {"name": "PhotographyTips", "url": "https://mastodon.social/tags/PhotographyTips", "history": []}
+  ]
+}
