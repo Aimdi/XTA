@@ -1,0 +1,43 @@
+{
+  "source": "XTA lib/plugins/deepmarks/nostr_event.dart (bip340 0.3.1, bech32 0.2.2), run with fixed time and aux",
+  "nsec": "nsec1vl029mgpspedva04g90vltkh6fvh240zqtv9k0t9af8935ke9laqsnlfe5",
+  "secretKey": "67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa",
+  "publicKey": "7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e",
+  "cases": [
+    {
+      "secretKey": "67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa",
+      "url": "https://x.com/jack/status/20",
+      "title": "Jack (@jack): just setting up my twttr",
+      "description": null,
+      "topics": [],
+      "nowMillis": 1784937600000,
+      "aux": "0000000000000000000000000000000000000000000000000000000000000001",
+      "event": "{\"id\":\"44611071971bc0eb5ce9be9b7856ef0dab41a752ffefb4c9690e80a0815d791b\",\"pubkey\":\"7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e\",\"created_at\":1784937600,\"kind\":39701,\"tags\":[[\"d\",\"https://x.com/jack/status/20\"],[\"title\",\"Jack (@jack): just setting up my twttr\"]],\"content\":\"\",\"sig\":\"d0283ec16d85ee395d57110f7098bef9d457e5c37f27fa196d7c37ba965e4753208515b037c733e9108f0cb0d3dd10f7b8222d27239b95faaf059432eb282f7a\"}"
+    },
+    {
+      "secretKey": "67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa",
+      "url": "https://example.com/a?q=\"x\"&r=\\",
+      "title": "  Quote \"x\" \\ back\nnew\ttab \r\b\f é 🎉 \u0001   / </script>  ",
+      "description": "Ünïcode — “curly” 日本語",
+      "topics": [
+        "Reading",
+        "  ",
+        "BITCOIN",
+        " Nostr "
+      ],
+      "nowMillis": 1784982896789,
+      "aux": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "event": "{\"id\":\"5dd458d150cd74b532adb8dfda6d772c8c3b42fa4c8a7ed0661983146a2c4139\",\"pubkey\":\"7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e\",\"created_at\":1784982896,\"kind\":39701,\"tags\":[[\"d\",\"https://example.com/a?q=\\\"x\\\"&r=\\\\\"],[\"title\",\"Quote \\\"x\\\" \\\\ back\\nnew\\ttab \\r\\b\\f é 🎉 \\u0001   / </script>\"],[\"description\",\"Ünïcode — “curly” 日本語\"],[\"t\",\"reading\"],[\"t\",\"bitcoin\"],[\"t\",\"nostr\"]],\"content\":\"\",\"sig\":\"abef84e037a89e90b4fc92053a37b106e1ab4e08000b56e5c0e4c1b003ba119d35ec9b869cdd8ad567aeea7d942a6a47d0c72d3c9435d538a7da617636da119f\"}"
+    },
+    {
+      "secretKey": "0000000000000000000000000000000000000000000000000000000000000003",
+      "url": "https://example.com/article",
+      "title": "   ",
+      "description": "",
+      "topics": [],
+      "nowMillis": 1700000000000,
+      "aux": "c87aa53824b4d7ae2eb035a2b5bbbccc080e76cdc6d1692c4b0b62d798e6d906",
+      "event": "{\"id\":\"3d1e29a67204339000458f88309ac843054e29b964177976ec7a2d781041eb2c\",\"pubkey\":\"f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9\",\"created_at\":1700000000,\"kind\":39701,\"tags\":[[\"d\",\"https://example.com/article\"]],\"content\":\"\",\"sig\":\"7e4c65b48c59efa31625599d7e9e7dd91cd049ce45365196cbdc24b2fe2939706c355207d6fc7a2a9af024d6b0841103b6c43347ec688e222eec697e5c771485\"}"
+    }
+  ]
+}

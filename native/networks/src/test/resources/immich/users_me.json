@@ -1,0 +1,13 @@
+{
+  "avatarColor": "primary",
+  "createdAt": "2025-11-01T12:00:00.000Z",
+  "email": "me@example.org",
+  "id": "8d2f0c4e-1b3a-4e5f-9a7b-2c6d8e0f1a3b",
+  "isAdmin": true,
+  "name": "Me",
+  "profileChangedAt": "2025-11-01T12:00:00.000Z",
+  "profileImagePath": "",
+  "shouldChangePassword": false,
+  "status": "active",
+  "updatedAt": "2026-07-01T09:00:00.000Z"
+}

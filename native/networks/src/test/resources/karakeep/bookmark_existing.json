@@ -1,0 +1,27 @@
+{
+  "id": "q2w8e4r6t0y3u5i7o9p1a2s4",
+  "createdAt": "2026-03-14T08:15:00.000Z",
+  "modifiedAt": "2026-03-14T08:20:00.000Z",
+  "title": null,
+  "archived": false,
+  "favourited": true,
+  "taggingStatus": "success",
+  "summarizationStatus": "success",
+  "note": null,
+  "summary": null,
+  "source": "extension",
+  "userId": "u7x3k9m2p5q8r1t4v6w0y2z4",
+  "tags": [{"id": "t1", "name": "reading", "attachedBy": "human"}],
+  "content": {
+    "type": "link",
+    "url": "https://example.com",
+    "title": "Example Domain",
+    "description": null,
+    "imageUrl": null,
+    "favicon": null,
+    "htmlContent": null,
+    "crawledAt": "2026-03-14T08:16:00.000Z"
+  },
+  "assets": [],
+  "alreadyExists": true
+}

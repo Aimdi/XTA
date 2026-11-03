@@ -1,0 +1,16 @@
+{
+  "albumName": "New",
+  "albumThumbnailAssetId": null,
+  "albumUsers": [],
+  "assetCount": 0,
+  "assets": [],
+  "createdAt": "2026-07-25T10:00:00.000Z",
+  "description": "",
+  "hasSharedLink": false,
+  "id": "9e4d2b7a-5c1f-4a3e-8b6d-0f2a4c6e8b1d",
+  "isActivityEnabled": true,
+  "order": "desc",
+  "ownerId": "8d2f0c4e-1b3a-4e5f-9a7b-2c6d8e0f1a3b",
+  "shared": false,
+  "updatedAt": "2026-07-25T10:00:00.000Z"
+}
