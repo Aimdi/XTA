@@ -1,0 +1,39 @@
+{
+  "novels": [
+    {
+      "id": 5,
+      "title": " Novel 5 ",
+      "caption": "First line<br />See <a href=\"https://www.pixiv.net/novel/show.php?id=2\">part two</a>",
+      "restrict": 0,
+      "x_restrict": 0,
+      "is_original": true,
+      "image_urls": {
+        "square_medium": "https://i.pximg.net/c/128x128/novel-cover-master/5.jpg",
+        "medium": "https://i.pximg.net/c/176x352/novel-cover-master/5.jpg",
+        "large": "https://i.pximg.net/c/240x480_80/novel-cover-master/5.jpg"
+      },
+      "create_date": "2026-09-01T12:30:00+09:00",
+      "tags": [
+        {"name": "オリジナル", "translated_name": "original", "added_by_uploaded_user": true},
+        {"name": "   ", "translated_name": null},
+        {"name": "秋", "translated_name": null}
+      ],
+      "page_count": 3,
+      "text_length": 15234,
+      "user": {"id": 42, "name": "Mika", "account": "mika", "profile_image_urls": {"medium": "https://i.pximg.net/user-profile/42.jpg"}, "is_followed": true},
+      "series": {"id": 77, "title": "Seasons"},
+      "is_bookmarked": true,
+      "total_bookmarks": 321,
+      "total_view": 4567,
+      "total_comments": 8,
+      "novel_ai_type": 1
+    },
+    {"id": 6, "title": "R-18", "user": {"id": 42}, "x_restrict": 1, "novel_ai_type": 1},
+    {"id": 7, "title": "R-18G and AI", "user": {"id": 42}, "x_restrict": 2, "novel_ai_type": 2},
+    {"id": 8, "title": "AI", "user": {"id": 42}, "x_restrict": 0, "novel_ai_type": 2},
+    {"id": 9, "title": "Withheld", "user": {"id": 42}, "visible": false},
+    {"broken": true},
+    "junk"
+  ],
+  "next_url": "https://app-api.pixiv.net/v1/novel/recommended?offset=30"
+}

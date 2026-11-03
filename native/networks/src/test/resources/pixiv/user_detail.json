@@ -1,0 +1,39 @@
+{
+  "user": {
+    "id": 9,
+    "name": "Mika",
+    "account": "mika",
+    "comment": "Draws cats.",
+    "profile_image_urls": {"medium": "https://i.pximg.net/user-profile/9_170.jpg"},
+    "is_followed": true
+  },
+  "profile": {
+    "webpage": "https://example.com/mika",
+    "gender": "female",
+    "birth": "1990-07-14",
+    "birth_day": "07-14",
+    "birth_year": 1990,
+    "region": "Tokyo, Japan",
+    "job": "Illustrator",
+    "total_follow_users": 1500,
+    "total_mypixiv_users": 2,
+    "total_illusts": 40,
+    "total_manga": 3,
+    "total_novels": 1,
+    "total_illust_bookmarks_public": 812,
+    "background_image_url": "https://i.pximg.net/background/9.jpg",
+    "twitter_account": "mika_draws",
+    "twitter_url": "https://twitter.com/mika_draws",
+    "pawoo_url": "https://pawoo.net/oauth_authentications/9?provider=pixiv",
+    "is_premium": true
+  },
+  "profile_publicity": {
+    "gender": "public",
+    "region": "public",
+    "birth_day": "public",
+    "birth_year": "public",
+    "job": "public",
+    "pawoo": true
+  },
+  "workspace": {"pc": "Desktop"}
+}

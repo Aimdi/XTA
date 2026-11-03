@@ -1,0 +1,17 @@
+{
+  "illust_series_detail": {
+    "id": 266067,
+    "title": "X'max Present",
+    "caption": "Two <b>parts</b>",
+    "cover_image_urls": {"medium": "https://i.pximg.net/cover.jpg"},
+    "series_work_count": 2,
+    "create_date": "2024-12-25T01:27:20+09:00",
+    "watchlist_added": true,
+    "user": {"id": 4004637, "name": "幻羽", "account": "9365710x", "profile_image_urls": {}}
+  },
+  "illusts": [
+    {"id": 11, "title": "Part one", "type": "manga", "image_urls": {"medium": "https://i.pximg.net/11.jpg"}, "user": {"id": 4004637}, "page_count": 3, "x_restrict": 0},
+    {"id": 12, "title": "Part two", "type": "manga", "image_urls": {"medium": "https://i.pximg.net/12.jpg"}, "user": {"id": 4004637}, "page_count": 2, "x_restrict": 1}
+  ],
+  "next_url": null
+}

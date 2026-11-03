@@ -1,0 +1,36 @@
+{
+  "illust": {
+    "id": 120,
+    "title": " Summer Sky ",
+    "type": "illust",
+    "caption": "Line one<br />see <a href=\"https://www.pixiv.net/users/7\">me</a>",
+    "image_urls": {
+      "square_medium": "https://i.pximg.net/c/360x360_70/img-master/img/2026/07/01/00/00/00/120_p0_square1200.jpg",
+      "medium": "https://i.pximg.net/c/540x540_70/img-master/img/2026/07/01/00/00/00/120_p0_master1200.jpg",
+      "large": "https://i.pximg.net/c/600x1200_90/img-master/img/2026/07/01/00/00/00/120_p0_master1200.jpg"
+    },
+    "meta_single_page": {"original_image_url": "https://i.pximg.net/img-original/img/2026/07/01/00/00/00/120_p0.png"},
+    "meta_pages": [],
+    "user": {
+      "id": 7,
+      "name": "Mika",
+      "account": "mika",
+      "profile_image_urls": {"medium": "https://i.pximg.net/user-profile/img/7_170.jpg"},
+      "is_followed": true
+    },
+    "tags": [{"name": "夏", "translated_name": "summer"}, {"name": "  "}],
+    "create_date": "2026-07-01T09:30:00+09:00",
+    "page_count": 1,
+    "width": 1200,
+    "height": 1600,
+    "sanity_level": 4,
+    "x_restrict": 0,
+    "series": {"id": 55, "title": " Seasons "},
+    "total_view": 4567,
+    "total_bookmarks": 321,
+    "total_comments": 12,
+    "is_bookmarked": false,
+    "visible": true,
+    "illust_ai_type": 1
+  }
+}
