@@ -7,7 +7,15 @@
  *
  * Android builds this with ndk-build (Android.mk, from :app); the desktop with
  * cc (tool/voice_engine.py desktop). Strings arrive as NUL-terminated UTF-8.
+ *
+ * On glibc the engine goes into a link-map namespace of its own (dlmopen),
+ * with its own libstdc++: a C++ runtime that another library of the app
+ * carries statically shares the locale facets' ids process-wide (they are
+ * unique symbols), and the engine's calls through std::locale then reached
+ * the wrong facet and crashed. The engine's memory stays its own: what it
+ * allocates goes back through its own calls.
  */
+#define _GNU_SOURCE /* dlmopen and dlinfo, on glibc */
 #include <dlfcn.h>
 #include <jni.h>
 #include <stdint.h>
@@ -19,6 +27,8 @@
 __asm__(".symver dlopen,dlopen@GLIBC_2.2.5");
 __asm__(".symver dlsym,dlsym@GLIBC_2.2.5");
 __asm__(".symver dlerror,dlerror@GLIBC_2.2.5");
+__asm__(".symver dlmopen,dlmopen@GLIBC_2.3.4");
+__asm__(".symver dlinfo,dlinfo@GLIBC_2.3.3");
 #endif
 
 /* sherpa-onnx 1.13.8's c-api.h, as that release's sherpa_onnx package lays it
@@ -112,6 +122,23 @@ static void *find(void *library, const char *name, const char **missing) {
   return symbol;
 }
 
+#if defined(__GLIBC__)
+static Lmid_t engine_namespace = LM_ID_NEWLM;
+
+/* [path] in the engine's namespace, made by its first library; the app's own
+ * where glibc cannot make one (no room left for another libc's TLS). */
+static void *open_library(const char *path) {
+  void *library = dlmopen(engine_namespace, path, RTLD_LAZY | RTLD_LOCAL);
+  if (library && engine_namespace == LM_ID_NEWLM) {
+    Lmid_t made;
+    if (dlinfo(library, RTLD_DI_LMID, &made) == 0) engine_namespace = made;
+  }
+  return library ? library : dlopen(path, RTLD_LAZY);
+}
+#else
+static void *open_library(const char *path) { return dlopen(path, RTLD_LAZY); }
+#endif
+
 /* Opens onnxruntime, then sherpa-onnx's C API, and finds the calls a voice
  * makes; null when it worked, else what went wrong. */
 JNIEXPORT jbyteArray JNICALL Java_com_aimdi_xtanative_services_speech_SherpaJni_nativeOpen(
@@ -122,10 +149,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_aimdi_xtanative_services_speech_SherpaJni_
   jbyteArray error = NULL;
   if (!onnx_path || !sherpa_path) {
     error = bytes_of(env, "out of memory");
-  } else if (!dlopen((const char *)onnx_path, RTLD_LAZY)) {
+  } else if (!open_library((const char *)onnx_path)) {
     error = bytes_of(env, dlerror());
   } else {
-    void *library = dlopen((const char *)sherpa_path, RTLD_LAZY);
+    void *library = open_library((const char *)sherpa_path);
     if (!library) {
       error = bytes_of(env, dlerror());
     } else {

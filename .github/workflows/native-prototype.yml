@@ -540,7 +540,18 @@ jobs:
           ' _ "$app" "$RUNNER_TEMP/voice-home"
           grep "XTA Native: voice check" native-desktop/voice.log || true
           bytes=$(sed -n 's/.*voice check: clip \([0-9]*\) bytes.*/\1/p' native-desktop/voice.log | tail -1)
-          [ "${bytes:-0}" -gt 16000 ] || { echo "The downloaded voice made no clip on the desktop:"; cat native-desktop/voice.log; exit 1; }
+          if [ "${bytes:-0}" -le 16000 ]; then
+            echo "The downloaded voice made no clip on the desktop:"
+            cat native-desktop/voice.log
+            # A crash in native code leaves the JVM's report where it ran: its thread, frames and libraries.
+            for crash in hs_err_pid*.log; do
+              [ -f "$crash" ] || continue
+              cp "$crash" native-desktop/
+              sed -n '1,/^---------------  P R O C E S S/p' "$crash" | head -150 || true
+              grep -A120 '^Dynamic libraries:' "$crash" | grep -E '\.so' | head -90 || true
+            done
+            exit 1
+          fi
           echo "The engine the desktop app carries read a sentence with the downloaded voice: $bytes bytes."
 
       - name: Keep the logs

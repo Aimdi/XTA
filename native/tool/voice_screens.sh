@@ -39,7 +39,7 @@ fail() {
 # Waits up to $2 seconds for the check to log a line beginning with $1 (an extended regular expression).
 wait_for() {
   for _ in $(seq 1 "$2"); do
-    lines | grep -qE "voice check: ($1)" && return 0
+    lines | grep -E "voice check: ($1)" > /dev/null && return 0
     sleep 1
   done
   return 1
@@ -57,8 +57,10 @@ tap_node() {
 }
 
 # The engine downloads with the first voice: the APK carries only the shim that reaches it.
-if unzip -l "$apk" | grep -qE 'lib/[^/]+/lib(onnxruntime|sherpa-onnx-c-api)\.so$'; then fail "The APK carries the voice engine"; fi
-unzip -l "$apk" | grep -qE 'lib/x86_64/libxta_sherpa\.so$' || fail "The APK has no voice shim for the emulator's processor"
+# (The listing is read whole first: grep -q leaving a pipe early fails the pipeline under pipefail.)
+listing=$(unzip -l "$apk")
+if grep -qE 'lib/[^/]+/lib(onnxruntime|sherpa-onnx-c-api)\.so$' <<< "$listing"; then fail "The APK carries the voice engine"; fi
+grep -qE 'lib/x86_64/libxta_sherpa\.so$' <<< "$listing" || fail "The APK has no voice shim for the emulator's processor"
 
 adb logcat -c
 adb shell am force-stop "$pkg"
