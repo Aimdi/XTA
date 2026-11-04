@@ -123,15 +123,7 @@
         <item quantity="many">قراءة في %1$d دقيقة</item>
         <item quantity="other">قراءة في %1$d دقيقة</item>
     </plurals>
-    <string name="reader_appearance">مظهر القراءة</string>
-    <string name="reader_finish">وضع علامة اكتمال القراءة</string>
-    <string name="reader_finished">اكتملت القراءة</string>
     <string name="reader_font">خط المقالات</string>
-    <string name="reader_line_spacing">تباعد الأسطر</string>
-    <string name="reader_opened">تم الفتح</string>
-    <string name="reader_resumed">تم استئناف القراءة</string>
-    <string name="reader_start_over">العودة إلى البداية</string>
-    <string name="reader_text_size">معامل مقياس النص</string>
     <string name="recent_searches">عمليات البحث الأخيرة</string>
     <string name="refresh">تحديث المقال</string>
     <string name="reset_filters">إعادة ضبط الفلاتر</string>

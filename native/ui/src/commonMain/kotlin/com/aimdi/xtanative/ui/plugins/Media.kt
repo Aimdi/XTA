@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.aimdi.xtanative.ui.common.rememberPicture
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.reader_download
@@ -114,7 +115,7 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
 private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifier: Modifier, onClick: () -> Unit) {
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).clickable(onClick = onClick)) {
         AsyncImage(
-            model = rememberMediaModel(item.tileUrl),
+            model = rememberPicture(item.tileUrl),
             contentDescription = item.alt,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize().let { if (hidden) it.blur(24.dp) else it },
@@ -181,7 +182,7 @@ fun MediaPager(
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
-                MediaItem.Kind.PHOTO -> ZoomableImage(rememberMediaModel(item.imageUrl), item.alt, Modifier.fillMaxSize())
+                MediaItem.Kind.PHOTO -> ZoomableImage(rememberPicture(item.imageUrl), item.alt, Modifier.fillMaxSize())
                 MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
             }
         }

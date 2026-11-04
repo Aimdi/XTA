@@ -14,3 +14,15 @@ class PluginPostAction(
     val label: (language: String) -> String,
     val run: suspend (PluginSharedPost) -> Unit,
 )
+
+/**
+ * An entry a plugin adds to a cashtag's sheet ([XtaPlugin.cashtagActions]),
+ * as XTA's Stocks adds Add to watchlist: its [icon], its [label] in a
+ * language, and what it does, [run] once the sheet has closed, beyond the
+ * screen that opened it.
+ */
+class PluginCashtagAction(
+    val icon: ImageVector,
+    val label: (language: String) -> String,
+    val run: suspend () -> Unit,
+)

@@ -15,6 +15,9 @@ abstract class NetworkPrefs(val id: String) : PrefSection() {
 
     /** Its followed accounts also in Following and For you; null where they never join them. */
     open val inHomeFeed: Pref<Boolean>? get() = null
+
+    /** Another network's preferences it writes as well, where XTA's network writes them: the web sources' read marks among RSS's. */
+    open val shared: List<Pref<*>> get() = emptyList()
 }
 
 /** Settings › Plugin store. */
@@ -213,6 +216,9 @@ object WebSourcesPrefs : NetworkPrefs("websources") {
     val follows = text(key("follows"), "[]")
     override val inHomeFeed = flag(key("in_home_feed"), false)
     val checkedAt = text(key("checked_at"), "")
+
+    /** A post finished in the RSS reader is marked read among RSS's items, as XTA's RssReadStore marks it. */
+    override val shared: List<Pref<*>> get() = listOf(RssPrefs.readIds)
 }
 
 /** Pixiv: a private reading network signed in with a refresh token; nothing is posted. */

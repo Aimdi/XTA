@@ -114,15 +114,7 @@
         <item quantity="few">%1$d minute de citit</item>
         <item quantity="other">%1$d de minute de citit</item>
     </plurals>
-    <string name="reader_appearance">Aspectul lecturii</string>
-    <string name="reader_finish">Marchează ca terminat</string>
-    <string name="reader_finished">Terminat</string>
     <string name="reader_font">Fontul articolelor</string>
-    <string name="reader_line_spacing">Spațiere între rânduri</string>
-    <string name="reader_opened">Deschis</string>
-    <string name="reader_resumed">Reluat</string>
-    <string name="reader_start_over">Înapoi la început</string>
-    <string name="reader_text_size">Factorul de scalare a textului</string>
     <string name="recent_searches">Căutări recente</string>
     <string name="refresh">Reîncarcă articolul</string>
     <string name="reset_filters">Resetează filtrele</string>

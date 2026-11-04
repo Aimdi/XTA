@@ -7,6 +7,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonFollowRows
 import com.aimdi.xtanative.networks.mastodon.MastodonSnapshot
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginFeed
@@ -64,6 +65,9 @@ class MastodonPlugin : XtaPlugin() {
     override val feed: PluginFeed get() = app.shared
 
     override val postActions: NetworkPostActions get() = app.actions
+
+    /** A poll's results under one of its posts in the app's shared rows, as XTA's card shows them there. */
+    override fun postExtras(post: NetworkPost): NetworkPostExtras? = app.extrasOf(post)
 
     /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */
     override fun archived(content: JsonElement): NetworkPost? = MastodonSnapshot.fromArchive(content)?.let(app::shown)

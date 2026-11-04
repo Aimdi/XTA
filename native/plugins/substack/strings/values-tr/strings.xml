@@ -111,15 +111,7 @@
         <item quantity="one">%1$d dk okuma</item>
         <item quantity="other">%1$d dk okuma</item>
     </plurals>
-    <string name="reader_appearance">Okuma görünümü</string>
-    <string name="reader_finish">Okuma tamamlandı olarak işaretle</string>
-    <string name="reader_finished">Okuma tamamlandı</string>
     <string name="reader_font">Makale yazı tipi</string>
-    <string name="reader_line_spacing">Satır aralığı</string>
-    <string name="reader_opened">Açıldı</string>
-    <string name="reader_resumed">Okumaya devam edildi</string>
-    <string name="reader_start_over">Başa dön</string>
-    <string name="reader_text_size">Metin ölçek faktörü</string>
     <string name="recent_searches">Son aramalar</string>
     <string name="refresh">Makaleyi yenile</string>
     <string name="reset_filters">Filtreleri sıfırla</string>

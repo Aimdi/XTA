@@ -50,6 +50,8 @@ import com.aimdi.xtanative.networks.substack.SubstackReading
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.offline.OfflineArticleAction
+import com.aimdi.xtanative.ui.plugins.ArticleReaderControls
+import com.aimdi.xtanative.ui.plugins.KeepsReaderPlace
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -89,7 +91,7 @@ internal fun SubstackReaderScreen(app: SubstackApp, link: SubstackPostLink, key:
             if (article?.preview == true) {
                 Text(pluginString(Strings.preview_badge), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
             }
-            reading?.let { ReaderControls(it, supportsAppearance = article != null, canComplete = state.content !is ReaderContent.Loading) { scope.launch { list.scrollToItem(0) } } }
+            reading?.let { ArticleReaderControls(it, supportsAppearance = article != null, canComplete = state.content !is ReaderContent.Loading) { scope.launch { list.scrollToItem(0) } } }
             Box(Modifier.weight(1f)) {
                 ReaderBody(app, model, state, list) { sheet = it }
                 if (state.refreshing) LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -133,7 +135,7 @@ private fun ReaderArticle(app: SubstackApp, state: ReaderModel.State, content: R
             onImage = { image -> app.host.openMedia(images.map(::mediaOf), images.indexOf(image).coerceAtLeast(0)) },
         )
     }
-    KeepsPlace(reading, list, blocks.size)
+    KeepsReaderPlace(reading, list, before = ROWS_BEFORE_BLOCKS, blocks = blocks.size)
     HighlightingSelection(pluginString(Strings.highlight), onHighlight = { selected -> app.launch { app.highlights.add(post, SubstackHighlights.quotes(selected)) } }) {
         ArticleList(
             post = post,

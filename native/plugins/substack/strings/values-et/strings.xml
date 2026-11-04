@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min lugemist</item>
         <item quantity="other">%1$d min lugemist</item>
     </plurals>
-    <string name="reader_appearance">Lugemisvaate välimus</string>
-    <string name="reader_finish">Märgi lõpuni loetuks</string>
-    <string name="reader_finished">Lõpuni loetud</string>
     <string name="reader_font">Artiklite kiri</string>
-    <string name="reader_line_spacing">Reavahe</string>
-    <string name="reader_opened">Avatud</string>
-    <string name="reader_resumed">Jätkatud</string>
-    <string name="reader_start_over">Tagasi algusesse</string>
-    <string name="reader_text_size">Teksti skaleerimistegur</string>
     <string name="recent_searches">Hiljutised otsingud</string>
     <string name="refresh">Värskenda artiklit</string>
     <string name="reset_filters">Lähtesta filtrid</string>

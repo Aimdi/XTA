@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min read</item>
         <item quantity="other">%1$d min read</item>
     </plurals>
-    <string name="reader_appearance">Reading appearance</string>
-    <string name="reader_finish">Mark as finished</string>
-    <string name="reader_finished">Finished</string>
     <string name="reader_font">Article font</string>
-    <string name="reader_line_spacing">Line spacing</string>
-    <string name="reader_opened">Opened</string>
-    <string name="reader_resumed">Resumed</string>
-    <string name="reader_start_over">Back to beginning</string>
-    <string name="reader_text_size">Text size</string>
     <string name="recent_searches">Recent searches</string>
     <string name="refresh">Refresh article</string>
     <string name="reset_filters">Reset filters</string>

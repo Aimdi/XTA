@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 
 class RssClientTest {
-    private fun fixture(name: String) = RssFixtures.text(name)
+    private fun fixture(name: String) = javaClass.getResource("/rss/$name")!!.readText()
 
     /** Answers each address from [pages]; any other is a 404. */
     private class FakeWeb(val pages: Map<String, String>) : XHttp {

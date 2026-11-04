@@ -19,6 +19,7 @@ import com.aimdi.xtanative.ui.plugins.DrawnPosts
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
@@ -214,6 +215,9 @@ internal class MastodonApp(val host: PluginHost) {
         post.quote?.let(drawn::put)
         return MastodonShared.post(post, host.language)
     }
+
+    /** What the app's shared row adds to a post it drew ([shown]): its poll's results. */
+    fun extrasOf(shown: NetworkPost): NetworkPostExtras? = drawn[shown.id]?.let(::sharedExtras)
 
     /** Where a post the app draws leads: its conversation, its author, a tag's timeline, the viewer; its bookmark and the shared post sheet. */
     val actions = NetworkPostActions(

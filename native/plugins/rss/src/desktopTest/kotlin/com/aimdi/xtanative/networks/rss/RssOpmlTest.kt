@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.networks.rss
 
-import com.aimdi.xtanative.networks.RssItem
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -54,18 +53,5 @@ class RssOpmlTest {
         assertEquals(RssOpmlImport(added = 1, alreadyFollowed = 1, failed = 1, total = 3), result)
         assertEquals(listOf(0, 1, 2, 3), heard.map { it.done })
         assertEquals(listOf("https://blog.example/feed", "https://new.example/rss"), followed.map { it.id })
-    }
-
-    @Test
-    fun aRouteKeepsWhatItNeedsToOpenItsScreenAgain() {
-        val item = RssItem(id = "https://blog.example/feed::a&b=c d", title = "Ä title?", feedId = "https://blog.example/feed", feedTitle = "Blog", link = "https://blog.example/a?x=1")
-
-        assertEquals(RssRoute.Item(item.id, item.feedId, "Blog", "Ä title?", item.link), RssRoutes.parse(RssRoutes.item(item)))
-        assertEquals(item.copy(bodyHtml = null), (RssRoutes.parse(RssRoutes.item(item)) as RssRoute.Item).stub)
-        assertEquals(RssRoute.Feed(blog.id, blog.feedUrl, blog.name), RssRoutes.parse(RssRoutes.feed(blog)))
-        assertEquals(RssFeed(id = "https://x.example/feed", feedUrl = "https://x.example/feed", name = ""), (RssRoutes.parse("feed?id=https%3A%2F%2Fx.example%2Ffeed") as RssRoute.Feed).stub)
-        assertEquals(RssRoute.Add, RssRoutes.parse(RssRoutes.ADD))
-        assertEquals(null, RssRoutes.parse("item?title=x"))
-        assertEquals(null, RssRoutes.parse("elsewhere"))
     }
 }

@@ -108,15 +108,7 @@
     <plurals name="read_minutes">
         <item quantity="other">%1$d分で読めます</item>
     </plurals>
-    <string name="reader_appearance">読書画面の表示</string>
-    <string name="reader_finish">読了にする</string>
-    <string name="reader_finished">読了</string>
     <string name="reader_font">記事のフォント</string>
-    <string name="reader_line_spacing">行間</string>
-    <string name="reader_opened">閲覧済み</string>
-    <string name="reader_resumed">続きから再開</string>
-    <string name="reader_start_over">先頭に戻る</string>
-    <string name="reader_text_size">文字サイズ</string>
     <string name="recent_searches">最近の検索</string>
     <string name="refresh">記事を更新</string>
     <string name="reset_filters">フィルターをリセット</string>

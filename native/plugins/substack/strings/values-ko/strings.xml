@@ -108,15 +108,7 @@
     <plurals name="read_minutes">
         <item quantity="other">%1$d분 분량</item>
     </plurals>
-    <string name="reader_appearance">읽기 화면 설정</string>
-    <string name="reader_finish">다 읽음으로 표시</string>
-    <string name="reader_finished">다 읽음</string>
     <string name="reader_font">글꼴</string>
-    <string name="reader_line_spacing">줄 간격</string>
-    <string name="reader_opened">열어봄</string>
-    <string name="reader_resumed">이어서 읽기 복원됨</string>
-    <string name="reader_start_over">처음으로 돌아가기</string>
-    <string name="reader_text_size">텍스트 배율</string>
     <string name="recent_searches">최근 검색</string>
     <string name="refresh">글 새로고침</string>
     <string name="reset_filters">필터 초기화</string>

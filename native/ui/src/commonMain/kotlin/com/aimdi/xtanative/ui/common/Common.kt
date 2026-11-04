@@ -38,10 +38,11 @@ import org.jetbrains.compose.resources.stringResource
 
 val LocalGraph = staticCompositionLocalOf<AppGraph> { error("No AppGraph provided") }
 
+/** A round picture of someone, asked for as its server wants it ([pictureModel]: Pixiv's with its Referer). */
 @Composable
 fun Avatar(url: String?, size: Dp, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
     AsyncImage(
-        model = url,
+        model = url?.let { rememberPicture(it) },
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = modifier

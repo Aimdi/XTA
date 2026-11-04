@@ -38,6 +38,15 @@ class PluginMembersTest {
     }
 
     @Test
+    fun aMembersPageIsAskedOfThePluginWhoseAccountItIs() {
+        assertEquals("websources" to "lobsters/hottest", PluginMembers.owner("websources:lobsters/hottest", setOf("websources", "rss")))
+        assertEquals("rss" to "https://blog.example/feed", PluginMembers.owner("rss:https://blog.example/feed", setOf("rss")), "an account holding a colon keeps it")
+        assertEquals(null, PluginMembers.owner("12", setOf("rss")), "an X account is X's")
+        assertEquals(null, PluginMembers.owner("bluesky:did:plc:maya", setOf("rss")), "a plugin that is not running opens nothing")
+        assertEquals(null, PluginMembers.owner("from:someone", setOf("from"), searches = setOf("from:someone")), "a search followed here stays a search")
+    }
+
+    @Test
     fun aMemberIsThePluginsIdAndItsAccount() {
         assertEquals("bluesky:did:plc:maya", PluginMembers.memberId("bluesky", "did:plc:maya"))
         assertTrue(PluginMembers.accounts(listOf("bluesky:", ":x", "12"), setOf("bluesky", "")).isEmpty(), "no account, or no plugin, is no member")

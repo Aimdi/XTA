@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.plugins
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.ImmichPrefs
+import com.aimdi.xtanative.store.settings.RssPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.StocksPrefs
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
@@ -47,6 +48,16 @@ class PluginSettingsTest {
         assertEquals(listOf("ETH=stock"), now[StocksPrefs.tickerInstruments])
         assertEquals(true, now[GeneralPrefs.cleanLinks], "the app's own settings stay as they were")
         assertEquals(emptySet(), PluginSettings.keysOf("bluesky"), "Bluesky keeps everything under its prefix")
+    }
+
+    @Test
+    fun theWebSourcesMarkTheirPostsReadAmongRssItemsAsXtaDoes(): Unit = runBlocking {
+        val app = MutableStateFlow<Settings?>(start)
+        val websources = PluginSettings("websources", app) { change -> app.value = change(app.value!!) }
+        websources.update { it.with(RssPrefs.readIds, "[\"lobsters:abc\"]").with(RssPrefs.feeds, "[]x") }
+        assertEquals(setOf("plugin.rss.read_ids"), PluginSettings.keysOf("websources"))
+        assertEquals("[\"lobsters:abc\"]", app.value!![RssPrefs.readIds])
+        assertEquals("[]", app.value!![RssPrefs.feeds], "RSS's other keys stay RSS's")
     }
 
     @Test

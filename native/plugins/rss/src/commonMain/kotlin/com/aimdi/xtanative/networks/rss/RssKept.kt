@@ -62,22 +62,6 @@ object RssFeeds {
     }
 }
 
-/** The items read, as XTA keeps them in `plugin.rss.read_ids`: newest first, the latest [CAP]. */
-object RssReadIds {
-    const val CAP = 800
-
-    fun decode(text: String?): List<String> = J.parse(text.orEmpty()).list.mapNotNull { it.string?.ifEmpty { null } }
-
-    fun encode(ids: List<String>): String = JsonArray(ids.map(::JsonPrimitive)).toString()
-
-    /** [ids] with each of [read] not read yet in front; the same list when there is none. */
-    fun marked(ids: List<String>, read: Iterable<String>): List<String> {
-        val known = ids.toSet()
-        val fresh = read.filter { it.isNotEmpty() && it !in known }.distinct()
-        return if (fresh.isEmpty()) ids else (fresh + ids).take(CAP)
-    }
-}
-
 /** Each feed's tags, as XTA keeps them in `plugin.rss.tags`: `{"<feed id>": ["News", "Blogs"]}`. */
 object RssTags {
     private val separators = Regex("[,/]")

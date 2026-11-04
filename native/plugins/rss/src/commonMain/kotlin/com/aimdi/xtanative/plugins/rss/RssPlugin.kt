@@ -2,8 +2,7 @@ package com.aimdi.xtanative.plugins.rss
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.aimdi.xtanative.networks.rss.RssRoute
-import com.aimdi.xtanative.networks.rss.RssRoutes
+import com.aimdi.xtanative.networks.rss.RssFeed
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
@@ -48,6 +47,9 @@ class RssPlugin : XtaPlugin() {
     override val feed: PluginFeed get() = app.shared
 
     override val postActions: NetworkPostActions get() = app.shared.actions
+
+    /** A feed in a group, opened on its own page, as XTA opens an RSS member. */
+    override fun routeForAccount(account: String): String = RssRoutes.feed(app.feedFor(account) ?: RssFeed(account, account, ""))
 
     override fun screen(route: String): PluginScreen? = when (val opened = RssRoutes.parse(route)) {
         is RssRoute.Item -> readerScreen(opened)

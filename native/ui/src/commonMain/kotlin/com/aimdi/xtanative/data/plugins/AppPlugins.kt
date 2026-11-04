@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import com.aimdi.xtanative.ui.post.CashtagLinks
 import com.aimdi.xtanative.ui.saved.FolderFilings
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
@@ -89,7 +90,8 @@ class SheetEntry(val icon: ImageVector, val label: String, val run: () -> Unit)
  * (through LocalPlugins).
  *
  * It also hands them what the post sheets and Saved's folders send on
- * ([sheetEntries], [folderOption], and each post filed in a folder).
+ * ([sheetEntries], [folderOption], and each post filed in a folder), and
+ * what a cashtag opens ([openCashtag], [cashtagEntries]).
  *
  * A plugin's code is kept under `plugins/` of the app's private folder
  * ([files]) and what it stores under `plugin-data/<id>/`. Uninstalling erases
@@ -254,6 +256,26 @@ class AppPlugins(
         guardedNow { running.plugin.routeFor(url) }?.let { Destination.PluginRoute(running.plugin.id, it) }
     }
 
+    /**
+     * The page on its network of group member [memberId] ("<plugin id>:<account>"):
+     * the screen its running plugin has for the account
+     * ([XtaPlugin.routeForAccount]), as XTA opens a group's member there; null
+     * for an X account or a search in [searches], or where the plugin has none.
+     */
+    fun destinationForMember(memberId: String, searches: Set<String> = emptySet()): Destination? {
+        val list = running.value
+        val (id, account) = PluginMembers.owner(memberId, list.mapTo(HashSet()) { it.plugin.id }, searches) ?: return null
+        val plugin = list.firstOrNull { it.plugin.id == id }?.plugin ?: return null
+        return guardedNow { plugin.routeForAccount(account) }?.let { Destination.PluginRoute(id, it) }
+    }
+
+    /** Opens group member [memberId]'s page on its network ([destinationForMember]), answering whether one opened. */
+    fun openMember(memberId: String, searches: Set<String> = emptySet()): Boolean {
+        val destination = destinationForMember(memberId, searches) ?: return false
+        navigator.go(destination)
+        return true
+    }
+
     /** Opens [url] on the screen of a running plugin that reads it, answering whether one did: the app's links ask this first. */
     fun openOnScreen(url: String): Boolean {
         val destination = destinationFor(url) ?: return false
@@ -296,6 +318,24 @@ class AppPlugins(
     fun sheetEntries(post: PluginSharedPost, language: String, plugins: List<RunningPlugin> = running.value): List<SheetEntry> =
         plugins.flatMap { running -> guardedNow { running.plugin.postSheetActions(post) }.orEmpty() }.mapNotNull { action ->
             guardedNow { action.label(language) }?.let { label -> SheetEntry(action.icon, label) { scope.launch { guarded { action.run(post) } } } }
+        }
+
+    /** The screen the first of [plugins] (the running ones) has for cashtag [symbol] ([XtaPlugin.routeForCashtag]); null when none has one. */
+    fun destinationForCashtag(symbol: String, plugins: List<RunningPlugin> = running.value): Destination? = plugins.firstNotNullOfOrNull { each ->
+        guardedNow { each.plugin.routeForCashtag(symbol) }?.let { Destination.PluginRoute(each.plugin.id, it) }
+    }
+
+    /** Cashtag [symbol] opened as a tap on it opens it: a running plugin's screen for it, else X's search for it. */
+    fun openCashtag(symbol: String) = navigator.go(destinationForCashtag(symbol) ?: Destination.XSearch(CashtagLinks.tag(symbol)))
+
+    /**
+     * What [plugins] (the running ones) add to cashtag [symbol]'s sheet, in
+     * [language], below the cashtag: each runs beyond the sheet. A plugin
+     * that fails to say what it offers offers nothing.
+     */
+    fun cashtagEntries(symbol: String, language: String, plugins: List<RunningPlugin> = running.value): List<SheetEntry> =
+        plugins.flatMap { running -> guardedNow { running.plugin.cashtagActions(symbol.uppercase()) }.orEmpty() }.mapNotNull { action ->
+            guardedNow { action.label(language) }?.let { label -> SheetEntry(action.icon, label) { scope.launch { guarded { action.run() } } } }
         }
 
     /** The switch Saved's folder dialog shows: the folder's upload switch, as the first of [plugins] that offers one names it. */

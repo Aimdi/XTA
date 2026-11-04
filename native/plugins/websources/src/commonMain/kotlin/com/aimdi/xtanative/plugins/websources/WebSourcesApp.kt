@@ -6,12 +6,15 @@ import com.aimdi.xtanative.networks.websources.WebSourceClient
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
 import com.aimdi.xtanative.networks.websources.WebSourceFollow
 import com.aimdi.xtanative.networks.websources.WebSourceFollows
+import com.aimdi.xtanative.networks.websources.WebSourceItem
 import com.aimdi.xtanative.networks.websources.WebSourceList
-import com.aimdi.xtanative.networks.websources.WebSourceRoutes
+import com.aimdi.xtanative.networks.websources.WebSourceOpening
+import com.aimdi.xtanative.networks.websources.WebSourceReading
 import com.aimdi.xtanative.networks.websources.WebSourcesInstalled
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.WebSourcesPrefs
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.RssReads
 import com.aimdi.xtanative.ui.plugins.loaded
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
@@ -29,8 +32,8 @@ import kotlinx.coroutines.launch
  * What the web sources plugin's screens share while it runs: the client,
  * the sources installed and the lists followed, as XTA keeps them, in the
  * app's settings under XTA's keys (WebSourcesPrefs), so XTA's backup
- * restores them and the app's carries them; and the posts its reader was
- * opened with.
+ * restores them and the app's carries them; the posts its reader was
+ * opened with, and those read there to their end.
  */
 internal class WebSourcesApp(val host: PluginHost) {
     /** Where what outlives a screen runs: an install, a follow, the reader's last place. */
@@ -40,6 +43,9 @@ internal class WebSourcesApp(val host: PluginHost) {
     /** The sources installed, in the order they were added; null until the settings are read. */
     val installed: StateFlow<List<InstalledWebSource>?> = observe(WebSourcesPrefs.installed, WebSourcesInstalled::decode)
     val follows: StateFlow<List<WebSourceFollow>?> = observe(WebSourcesPrefs.follows, WebSourceFollows::decode)
+
+    /** The posts read to their end in the RSS reader, among RSS's items as XTA keeps them ([RssReads]). */
+    val read: StateFlow<Set<String>> = host.settings.state.map(RssReads::of).stateIn(scope, SharingStarted.Eagerly, emptySet())
 
     /** The followed lists' posts in the app's timelines and groups, and where they lead there. */
     val shared = WebSourceShared(this)
@@ -95,6 +101,9 @@ internal class WebSourcesApp(val host: PluginHost) {
         if (updates.isNotEmpty()) change(WebSourcesPrefs.installed) { WebSourcesInstalled.encode(WebSourcesInstalled.updated(WebSourcesInstalled.decode(it), updates)) }
     }
 
+    /** [id], a post opened in the RSS reader and read to its end, marked read among RSS's items, as XTA's reader marks it. */
+    suspend fun markRead(id: String) = RssReads.mark(host.settings, listOf(id))
+
     // ---- where things open ----
 
     fun openSource(source: WebSourceDefinition, listId: String? = null) = host.open(WebSourceRoutes.source(source.id, listId))
@@ -102,6 +111,33 @@ internal class WebSourcesApp(val host: PluginHost) {
     fun openSearch(source: WebSourceDefinition) = host.open(WebSourceRoutes.search(source.id))
 
     fun openAdd() = host.open(WebSourceRoutes.ADD)
+
+    /**
+     * [item] of [source] opened where the app draws it (Home's timelines, the
+     * groups), as its own lists open it: in the reader with its text, else
+     * with the article its source names, read under a notice, else at its address.
+     */
+    fun openItem(source: WebSourceDefinition, item: WebSourceItem) {
+        when (val opening = WebSourceReading.opening(source, item)) {
+            is WebSourceOpening.Reader -> opened(source, item, opening.html)
+            is WebSourceOpening.Address -> opened(source, item, null)
+            WebSourceOpening.Article -> launch { opened(source, item, host.working(Strings.reading.get(host.language)) { article(source, item) }) }
+        }
+    }
+
+    /** [item] in the reader with [html], its full text; at its address when there is none. */
+    fun opened(source: WebSourceDefinition, item: WebSourceItem, html: String?) {
+        if (!html.isNullOrEmpty()) openReader(source, WebSourceReading.itemOf(source, item, html)) else WebSourceReading.address(item)?.let(host::openLink)
+    }
+
+    /** The full text [source]'s article rule names for [item]; null when it cannot be read. */
+    suspend fun article(source: WebSourceDefinition, item: WebSourceItem): String? = try {
+        client.article(source, item)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        null
+    }
 
     fun openReader(source: WebSourceDefinition, item: RssItem) {
         synchronized(opened) {

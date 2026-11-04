@@ -27,8 +27,12 @@ object PluginMembers {
     /** The plugin accounts among [memberIds], by plugin: those of [plugins] that are no search in [searches]. */
     fun accounts(memberIds: List<String>, plugins: Set<String>, searches: Set<String> = emptySet()): Map<String, List<String>> =
         memberIds.filter { it !in searches }
-            .mapNotNull { id -> split(id)?.takeIf { it.first in plugins } }
+            .mapNotNull { id -> owner(id, plugins) }
             .groupBy({ it.first }, { it.second })
+
+    /** Which of [plugins] member [memberId] is an account of, and that account; null for an X account, or a search in [searches]. */
+    fun owner(memberId: String, plugins: Set<String>, searches: Set<String> = emptySet()): Pair<String, String>? =
+        if (memberId in searches) null else split(memberId)?.takeIf { it.first in plugins }
 
     private fun split(memberId: String): Pair<String, String>? {
         val colon = memberId.indexOf(':')

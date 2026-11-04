@@ -72,14 +72,22 @@ internal fun rememberLinkActions(source: String): NetworkPostActions {
     }
 }
 
-/** A plugin's post among X's: the shared row with its plugin's mark, leading where its plugin says. */
+/**
+ * What [plugin] adds to [post]'s shared row ([XtaPlugin.postExtras]: a
+ * Mastodon poll's results); nothing when it adds nothing, or fails to say.
+ */
+@Composable
+internal fun rememberPostExtras(plugin: XtaPlugin?, post: NetworkPost): NetworkPostExtras =
+    remember(plugin, post) { plugin?.let { runCatching { it.postExtras(post) }.getOrNull() } ?: NetworkPostExtras.None }
+
+/** A plugin's post among X's: the shared row with its plugin's mark and what it adds there, leading where its plugin says. */
 @Composable
 fun PluginPostRow(post: SourcedPost, plugin: XtaPlugin?) {
     val fallback = rememberLinkActions(post.source)
     NetworkPostCard(
         post.post,
         plugin?.postActions ?: fallback,
-        NetworkPostExtras.None,
+        rememberPostExtras(plugin, post.post),
         mark = plugin?.icon,
         markColor = plugin?.brandColor ?: MaterialTheme.colorScheme.primary,
     )

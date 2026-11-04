@@ -108,15 +108,7 @@
     <plurals name="read_minutes">
         <item quantity="other">Đọc trong %1$d phút</item>
     </plurals>
-    <string name="reader_appearance">Giao diện đọc</string>
-    <string name="reader_finish">Đánh dấu đã đọc xong</string>
-    <string name="reader_finished">Đã đọc xong</string>
     <string name="reader_font">Phông chữ bài viết</string>
-    <string name="reader_line_spacing">Giãn dòng</string>
-    <string name="reader_opened">Đã mở</string>
-    <string name="reader_resumed">Đã tiếp tục đọc</string>
-    <string name="reader_start_over">Về đầu bài</string>
-    <string name="reader_text_size">Kích thước chữ</string>
     <string name="recent_searches">Tìm kiếm gần đây</string>
     <string name="refresh">Làm mới bài viết</string>
     <string name="reset_filters">Đặt lại bộ lọc</string>

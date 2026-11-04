@@ -3,9 +3,9 @@ package com.aimdi.xtanative.plugins.stocks
 import com.aimdi.xtanative.networks.stocks.CryptoAsset
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
-import com.aimdi.xtanative.networks.stocks.WatchlistEntryRow
 import com.aimdi.xtanative.networks.stocks.WatchlistRows
 import com.aimdi.xtanative.store.StoreFile
+import com.aimdi.xtanative.store.backup.StockSubscriptionRow
 import com.aimdi.xtanative.store.settings.StocksPrefs
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.observe
@@ -29,7 +29,7 @@ import kotlinx.coroutines.sync.withLock
  * them into (StocksPrefs.watchlistOrder, one of the app's settings).
  */
 internal class StocksWatchlist(private val file: StoreFile, private val settings: PluginSettings, scope: CoroutineScope) {
-    private val rows = MutableStateFlow<List<WatchlistEntryRow>?>(null)
+    private val rows = MutableStateFlow<List<StockSubscriptionRow>?>(null)
     private val unreadable = MutableStateFlow(false)
     private val turns = Mutex()
 
@@ -44,7 +44,7 @@ internal class StocksWatchlist(private val file: StoreFile, private val settings
     /** What is shown now; empty until read. */
     val entries: WatchlistEntries get() = state.value ?: EMPTY
 
-    suspend fun load(): List<WatchlistEntryRow> = turns.withLock { current() }
+    suspend fun load(): List<StockSubscriptionRow> = turns.withLock { current() }
 
     /** [entered], a ticker as typed or a token as encoded, watched. */
     suspend fun add(entered: String) = change { WatchlistRows.added(it, entered, Instant.now()) }
@@ -68,13 +68,13 @@ internal class StocksWatchlist(private val file: StoreFile, private val settings
         rows.value = next
     }
 
-    private suspend fun change(edit: (List<WatchlistEntryRow>) -> List<WatchlistEntryRow>) = turns.withLock {
+    private suspend fun change(edit: (List<StockSubscriptionRow>) -> List<StockSubscriptionRow>) = turns.withLock {
         val next = edit(current())
         file.write(WatchlistRows.encode(next))
         rows.value = next
     }
 
-    private suspend fun current(): List<WatchlistEntryRow> = rows.value ?: try {
+    private suspend fun current(): List<StockSubscriptionRow> = rows.value ?: try {
         WatchlistRows.decode(file.read()).also {
             unreadable.value = false
             rows.value = it

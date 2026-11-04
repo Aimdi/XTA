@@ -50,6 +50,13 @@ elif [ "${module#plugins/}" != "$module" ]; then
   id=${module#plugins/}
   compile "$out/networks" "$cp:$classes" "" "$here/networks/src/main/kotlin"
   classes="$classes:$out/networks"
+  # :store as well, which the plugin build provides beside :networks, for a
+  # reading layer that keeps XTA's rows (Stocks' watchlist).
+  layer=("$here/$module/src/commonMain/kotlin/com/aimdi/xtanative/networks/$id" "$here/$module/src/desktopTest/kotlin/com/aimdi/xtanative/networks/$id")
+  if grep -rqs '^import com\.aimdi\.xtanative\.store\.' "${layer[@]}"; then
+    compile "$out/store" "$cp:$classes" "" "$here/store/src/main/kotlin"
+    classes="$classes:$out/store"
+  fi
   compile "$out/plugin" "$cp:$classes" "" "$here/$module/src/commonMain/kotlin/com/aimdi/xtanative/networks/$id"
   classes="$classes:$out/plugin"
   compile "$out/test" "$cp:$classes:$testlibs" "$out/plugin" "$here/$module/src/desktopTest/kotlin/com/aimdi/xtanative/networks/$id"

@@ -111,15 +111,7 @@
         <item quantity="one">%1$d मिनट में पढ़ें</item>
         <item quantity="other">%1$d मिनट में पढ़ें</item>
     </plurals>
-    <string name="reader_appearance">पढ़ने का स्वरूप</string>
-    <string name="reader_finish">पढ़ना पूरा हुआ चिह्नित करें</string>
-    <string name="reader_finished">पढ़ना पूरा हुआ</string>
     <string name="reader_font">लेख का फ़ॉन्ट</string>
-    <string name="reader_line_spacing">पंक्तियों के बीच दूरी</string>
-    <string name="reader_opened">खोला गया</string>
-    <string name="reader_resumed">पढ़ना फिर शुरू किया</string>
-    <string name="reader_start_over">शुरुआत पर लौटें</string>
-    <string name="reader_text_size">टेक्स्ट स्केल फ़ैक्टर</string>
     <string name="recent_searches">हाल की खोजें</string>
     <string name="refresh">लेख रीफ़्रेश करें</string>
     <string name="reset_filters">फ़िल्टर रीसेट करें</string>

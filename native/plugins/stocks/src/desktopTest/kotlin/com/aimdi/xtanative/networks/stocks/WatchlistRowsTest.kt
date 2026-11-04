@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.networks.stocks
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.store.backup.StockSubscriptionRow
 import java.time.Instant
 import java.time.ZoneOffset
 import kotlin.test.Test
@@ -17,7 +18,7 @@ class WatchlistRowsTest {
     fun aTickerOrATokenIsWatchedOnceAsXtasTableKeepsIt() {
         val rows = WatchlistRows.added(WatchlistRows.added(emptyList(), " \$aapl ", now, ZoneOffset.UTC), pepe.encode(), now, ZoneOffset.UTC)
 
-        assertEquals(listOf(WatchlistEntryRow("aapl", "AAPL", createdAt = "2026-11-04 12:30:00"), WatchlistEntryRow(pepe.id, pepe.encode(), createdAt = "2026-11-04 12:30:00")), rows)
+        assertEquals(listOf(StockSubscriptionRow("aapl", "AAPL", createdAt = "2026-11-04 12:30:00"), StockSubscriptionRow(pepe.id, pepe.encode(), createdAt = "2026-11-04 12:30:00")), rows)
         assertEquals(rows, WatchlistRows.added(rows, "AAPL", now), "a ticker already watched stays as it is")
         assertEquals(rows, WatchlistRows.added(rows, "not a ticker!", now), "what is no ticker changes nothing")
         assertEquals(listOf("AAPL", pepe.encode()), WatchlistRows.symbols(rows))
@@ -25,13 +26,13 @@ class WatchlistRowsTest {
 
     @Test
     fun theRowsAreXtasBackupRowsAndReadBack() {
-        val rows = listOf(WatchlistEntryRow("aapl", "AAPL", createdAt = "2026-01-01 00:00:00"), WatchlistEntryRow("tsla", "TSLA", inFeed = false))
+        val rows = listOf(StockSubscriptionRow("aapl", "AAPL", createdAt = "2026-01-01 00:00:00"), StockSubscriptionRow("tsla", "TSLA", inFeed = false))
         val text = WatchlistRows.encode(rows)
 
         assertEquals(rows, WatchlistRows.decode(text))
         assertEquals(listOf("id", "symbol", "in_feed", "created_at"), J.parse(text)[0].keys.toList())
         assertEquals(1L, J.parse(text)[0]["in_feed"].long)
-        assertEquals(listOf(WatchlistEntryRow("x", "X")), WatchlistRows.decode("""[{"id":"x","symbol":"X"},{"id":"no symbol"},"junk"]"""))
+        assertEquals(listOf(StockSubscriptionRow("x", "X")), WatchlistRows.decode("""[{"id":"x","symbol":"X"},{"id":"no symbol"},"junk"]"""))
         assertEquals(emptyList(), WatchlistRows.decode("nope"))
     }
 

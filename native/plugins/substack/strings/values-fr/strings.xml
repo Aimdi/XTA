@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min de lecture</item>
         <item quantity="other">%1$d min de lecture</item>
     </plurals>
-    <string name="reader_appearance">Apparence de lecture</string>
-    <string name="reader_finish">Marquer comme terminé</string>
-    <string name="reader_finished">Terminé</string>
     <string name="reader_font">Police des articles</string>
-    <string name="reader_line_spacing">Interligne</string>
-    <string name="reader_opened">Ouvert</string>
-    <string name="reader_resumed">Repris</string>
-    <string name="reader_start_over">Revenir au début</string>
-    <string name="reader_text_size">Taille du texte</string>
     <string name="recent_searches">Recherches récentes</string>
     <string name="refresh">Actualiser l’article</string>
     <string name="reset_filters">Réinitialiser les filtres</string>

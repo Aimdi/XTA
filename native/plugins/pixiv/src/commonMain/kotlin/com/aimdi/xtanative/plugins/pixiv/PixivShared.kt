@@ -4,7 +4,6 @@ import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
-import com.aimdi.xtanative.store.downloads.downloadRequestHeaders
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
@@ -38,16 +37,16 @@ internal object PixivShared {
 
     /**
      * [illust] in the shared row (pixiv_group.dart's tile): its creator, title
-     * and first page, its bookmarks, comments and views, its pictures from
-     * [imageHost]. The creator's picture only where its server asks for no
-     * Referer, as the shared avatar sends none.
+     * and first page, its bookmarks, comments and views, its pictures and
+     * its creator's from [imageHost], which the shared row asks for with
+     * the Referer Pixiv's server wants.
      */
     fun post(illust: PixivIllust, imageHost: String): NetworkPost = NetworkPost(
         id = "${illust.id}",
         authorId = "${illust.userId}",
         authorName = illust.userName,
         authorHandle = illust.userAccount,
-        avatarUrl = illust.userAvatarUrl?.let { PixivImages.url(it, imageHost) }?.takeIf { downloadRequestHeaders(it).isEmpty() },
+        avatarUrl = illust.userAvatarUrl?.let { PixivImages.url(it, imageHost) },
         createdAt = illust.createdAt,
         media = listOf(
             MediaItem(

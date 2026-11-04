@@ -26,6 +26,7 @@ import androidx.savedstate.read
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.data.plugins.NavTarget
+import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.RunningPlugin
 import com.aimdi.xtanative.ui.home.LocalHomeNetworks
 import com.aimdi.xtanative.ui.links.LinkOpener
@@ -35,6 +36,7 @@ import com.aimdi.xtanative.ui.plugins.MediaPager
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.post.LocalCashtagOpener
+import com.aimdi.xtanative.ui.post.LocalCashtagSheet
 import com.aimdi.xtanative.ui.post.LocalCashtagStrip
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import java.net.URLEncoder
@@ -66,7 +68,8 @@ val LocalPlugins = staticCompositionLocalOf<AppPlugins> { error("No AppPlugins p
 /**
  * [plugins] for everything inside [content], their home tabs on Home's
  * strip ([LocalHomeNetworks]), named in the reader's language, and what an
- * X post's cashtags do with them ([PluginCashtags]).
+ * X post's cashtags do with them ([PluginCashtags]), a long press on one
+ * opening its sheet ([PluginSheet.Cashtag]).
  */
 @Composable
 fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
@@ -75,11 +78,13 @@ fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
     val networks = remember(plugins) { PluginHomeNetworks(plugins) }
     val running by plugins.running.collectAsState()
     val cashtags = remember(plugins, running) { PluginCashtags(plugins, running) }
+    val cashtagSheet = remember(plugins) { { symbol: String -> plugins.show(PluginSheet.Cashtag(symbol)) } }
     CompositionLocalProvider(
         LocalPlugins provides plugins,
         LocalHomeNetworks provides networks,
         LocalCashtagStrip provides cashtags.strip,
         LocalCashtagOpener provides cashtags.opener,
+        LocalCashtagSheet provides cashtagSheet,
         content = content,
     )
 }
@@ -96,8 +101,8 @@ private class PluginCashtags(private val plugins: AppPlugins, private val runnin
     val opener: ((String) -> Boolean)? = if (running.isEmpty()) null else ::open
 
     private fun open(symbol: String): Boolean {
-        val (id, route) = running.firstNotNullOfOrNull { each -> guarded { each.plugin.routeForCashtag(symbol) }?.let { each.plugin.id to it } } ?: return false
-        plugins.navigator.go(Destination.PluginRoute(id, route))
+        val destination = plugins.destinationForCashtag(symbol, running) ?: return false
+        plugins.navigator.go(destination)
         return true
     }
 

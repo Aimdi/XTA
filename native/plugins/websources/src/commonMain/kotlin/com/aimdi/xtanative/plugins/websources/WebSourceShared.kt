@@ -59,9 +59,13 @@ internal class WebSourceShared(private val app: WebSourcesApp) : PluginFeed() {
         )
     }
 
-    /** Where a post the app draws leads: its link, its list, its pictures, its bookmark and the shared menu. */
+    /**
+     * Where a post the app draws leads, as XTA's card in Home opens it: the
+     * reader (with the text its source's article rule names), else its link;
+     * its list, its pictures, its bookmark and the shared menu.
+     */
     val actions = NetworkPostActions(
-        open = { post -> post.url?.let(app.host::openLink) },
+        open = { post -> entry(post)?.let { (source, item) -> app.openItem(source, item) } ?: post.url?.let(app.host::openLink) },
         openAuthor = { post -> entry(post)?.let { (source, _) -> app.openSource(source, post.authorId.substringAfter('/', "").ifEmpty { null }) } },
         openMention = {},
         openTag = {},

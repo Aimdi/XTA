@@ -4,13 +4,12 @@ import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.networks.rss.RssClient
 import com.aimdi.xtanative.networks.rss.RssFeed
 import com.aimdi.xtanative.networks.rss.RssFeeds
-import com.aimdi.xtanative.networks.rss.RssReadIds
-import com.aimdi.xtanative.networks.rss.RssRoutes
 import com.aimdi.xtanative.networks.rss.RssTags
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.RssPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.RssReads
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +37,7 @@ internal class RssApp(val host: PluginHost) {
 
     /** The followed feeds, newest first as XTA adds them; null until the settings are read. */
     val feeds: StateFlow<List<RssFeed>?> = observe(RssPrefs.feeds) { RssFeeds.decode(it) }
-    val read: StateFlow<Set<String>> = observe(RssPrefs.readIds, emptySet()) { RssReadIds.decode(it).toSet() }
+    val read: StateFlow<Set<String>> = observe(RssPrefs.readIds, emptySet()) { RssReads.decode(it).toSet() }
     val tags: StateFlow<Map<String, List<String>>> = observe(RssPrefs.tags, emptyMap()) { RssTags.decode(it) }
     val timeline = RssTimelineModel(client, scope) { feeds.value.orEmpty() }
     val opml = RssOpmlImports()
@@ -80,7 +79,7 @@ internal class RssApp(val host: PluginHost) {
     /** The feed [item] came from: the followed one, else one made from what the item says of it. */
     fun feedOf(item: RssItem): RssFeed = feedFor(item.feedId) ?: RssFeed(item.feedId, item.feedId, item.feedTitle)
 
-    suspend fun markRead(ids: Iterable<String>) = change(RssPrefs.readIds) { RssReadIds.encode(RssReadIds.marked(RssReadIds.decode(it), ids)) }
+    suspend fun markRead(ids: Iterable<String>) = RssReads.mark(host.settings, ids)
 
     suspend fun setTags(feedId: String, chosen: List<String>) = change(RssPrefs.tags) { RssTags.encode(RssTags.withTags(RssTags.decode(it), feedId, chosen)) }
 

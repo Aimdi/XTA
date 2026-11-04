@@ -98,7 +98,8 @@ compiled, so worktrees checking at once do not share one, and a `:ui` that
 has not changed reuses the compiled `:core` and the others.
 
 `jvmcheck.sh plugins/<id>` compiles its reading layer (`networks.<id>`) with
-`:networks` and runs its tests, as `jvmcheck.sh networks` does for a network
+`:networks` (and `:store`, for a reading layer that imports it, as Stocks'
+keeps XTA's rows) and runs its tests, as `jvmcheck.sh networks` does for a network
 still in `networks/`.
 
 `plugin_catalogue.py` writes `plugins.json` from the entries and files the

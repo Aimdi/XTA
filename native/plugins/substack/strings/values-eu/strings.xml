@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min irakurtzeko</item>
         <item quantity="other">%1$d min irakurtzeko</item>
     </plurals>
-    <string name="reader_appearance">Irakurketa-itxura</string>
-    <string name="reader_finish">Markatu irakurrita</string>
-    <string name="reader_finished">Irakurrita</string>
     <string name="reader_font">Artikuluen letra-tipoa</string>
-    <string name="reader_line_spacing">Lerroartea</string>
-    <string name="reader_opened">Irekita</string>
-    <string name="reader_resumed">Irakurketa jarraituta</string>
-    <string name="reader_start_over">Itzuli hasierara</string>
-    <string name="reader_text_size">Testuaren eskala-faktorea</string>
     <string name="recent_searches">Azken bilaketak</string>
     <string name="refresh">Freskatu artikulua</string>
     <string name="reset_filters">Berrezarri iragazkiak</string>

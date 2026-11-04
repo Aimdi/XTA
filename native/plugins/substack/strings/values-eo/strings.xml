@@ -111,15 +111,7 @@
         <item quantity="one">%1$d minuto da legado</item>
         <item quantity="other">%1$d minutoj da legado</item>
     </plurals>
-    <string name="reader_appearance">Lega aspekto</string>
-    <string name="reader_finish">Marki kiel finlegitan</string>
-    <string name="reader_finished">Finlegita</string>
     <string name="reader_font">Tiparo de artikoloj</string>
-    <string name="reader_line_spacing">Interlinia distanco</string>
-    <string name="reader_opened">Malfermita</string>
-    <string name="reader_resumed">Daŭrigita</string>
-    <string name="reader_start_over">Reiri al la komenco</string>
-    <string name="reader_text_size">Tekstoskaligo</string>
     <string name="recent_searches">Lastatempaj serĉoj</string>
     <string name="refresh">Aktualigi la artikolon</string>
     <string name="reset_filters">Restarigi filtrilojn</string>

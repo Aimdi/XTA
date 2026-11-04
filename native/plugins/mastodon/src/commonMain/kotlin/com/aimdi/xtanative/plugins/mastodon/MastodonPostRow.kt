@@ -79,6 +79,13 @@ internal fun MastodonPostRow(
     if (divider) Hairline()
 }
 
+/**
+ * What the app's shared row adds to [post] among other networks' posts
+ * (XtaPlugin.postExtras), as XTA's card shows it there: its poll's results,
+ * behind its content warning with the rest of it.
+ */
+internal fun sharedExtras(post: MastodonPost): NetworkPostExtras? = post.poll?.let { poll -> NetworkPostExtras(below = { PollResults(poll) }) }
+
 /** XTA's read-only replies, boosts and likes (each a count that leads somewhere), the bookmark, and the browser. */
 @Composable
 private fun EngagementRow(app: MastodonApp, post: MastodonPost, hideCounts: Boolean, onOpen: () -> Unit) {

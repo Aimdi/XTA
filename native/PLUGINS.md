@@ -82,9 +82,12 @@ its plugins have to link against that prerelease's app.
 | `footprint()` | what it keeps on the device, counted in the store |
 | `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
 | `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
+| `postExtras(post)` | what it adds to the shared row where the app draws one of its posts (a `NetworkPostExtras`: Mastodon's poll results), or none |
 | `archived(content)` | one of its posts the archive kept, read back as a `NetworkPost` for Saved ([below](#saved-notes-and-likes)), or null |
 | `cashtagStrip` | what it draws under an X post that names tickers (Stocks' price strip), or none |
 | `routeForCashtag(symbol)` | its own screen for a cashtag tapped in an X post (Stocks' ticker), or null: the tap searches X |
+| `cashtagActions(symbol)` | its entries (`PluginCashtagAction`s) in the sheet a long press on a cashtag opens, below the cashtag itself (Stocks' Add to watchlist), or none |
+| `routeForAccount(account)` | its own screen for one of its accounts as a group holds it (`<id>:<account>`), XTA's destinationFor: the app opens a member there (`AppPlugins.openMember`), or null |
 | `postSheetActions(post)` | its entries in the post sheets for a `PluginSharedPost` ([below](#sending-a-post-to-the-readers-own-server)), or none |
 | `folderOption`, `filed(post)` | its switch in Saved's folder dialog, and a post filed in a folder with it on, as a `PluginFiledPost` ([below](#sending-a-post-to-the-readers-own-server)) |
 
@@ -135,8 +138,11 @@ with a test.
   `NetworkProblemView` and `NetworkProblemRow` with `problemOf`, `RetryRow`,
   `MessageText` and `EmptyPane`.
 - Articles and X posts: `RssReaderScreen`, the article reader RSS and the web
-  sources open (its place kept, an offline copy), and X posts drawn in a
-  plugin with `rememberXPostActions` and `XPostMedia`.
+  sources open (its place kept, an offline copy), with `RssReads`, what it
+  finished as XTA's RssReadStore keeps it for both (`plugin.rss.read_ids`);
+  its `ArticleReaderControls` and `KeepsReaderPlace`, which Substack's own
+  reader draws with too; and X posts drawn in a plugin with
+  `rememberXPostActions` and `XPostMedia`.
 - Screens: `PluginScaffold`, `PluginRoute` (a screen and its arguments as
   text, for `open`), `PluginChipTabs` over a home tab, `WithSettings`,
   `PluginShelf` (what one screen hands the next), `rememberKept` (state kept
@@ -161,10 +167,15 @@ with a test.
 `PluginSettings` reads a preference with `get(pref)` and `observe(pref)` and
 changes one of its own with `set(pref, value)`; its own are the keys under
 `plugin.<id>.` and the few its network's NetworkPrefs keeps where XTA kept
-them (`keysOf`, Stocks' `other.ticker_chart`).
+them (`keysOf`, Stocks' `other.ticker_chart`), another network's among them
+where XTA's writes it (`NetworkPrefs.shared`: the web sources' read marks
+in RSS's `plugin.rss.read_ids`).
 
-`:ui`'s `ui.common` (avatar, hairline, loading row, times) is there too, and a
-plugin may draw with the app's other public building blocks where they fit:
+`:ui`'s `ui.common` (avatar, hairline, loading row, times, `longPressOver`
+for a long press over a whole card, its tappable parts included) is there
+too: its avatar asks for a picture as the tiles do, with the headers its
+server wants (Pixiv's Referer). A plugin may draw with the app's other
+public building blocks where they fit:
 its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
 X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin
 uses is part of the plugin API: `tool/plugin_abi.py` checks that plugins
@@ -217,8 +228,9 @@ The app does the rest, as XTA does (`ui/feed`'s `FeedSources`, `PluginPosts`,
 - **Reading again**: a pull or the refresh button reads every plugin past its
   caches; the connection coming back reads the ones that failed.
 
-A post is drawn with the shared row, the plugin's mark on its avatar, and
-leads where `postActions` says (its link otherwise).
+A post is drawn with the shared row, the plugin's mark on its avatar and
+what `postExtras` adds to it, and leads where `postActions` says (its link
+otherwise).
 
 ### Accounts in the app's groups
 
@@ -304,7 +316,10 @@ to the reader's own account: the only writes any plugin makes, and never to
 the network a post came from. Two hooks carry them; the app's code names no
 plugin.
 
-**The post sheets.** `XtaPlugin.postSheetActions(post)` lists a plugin's
+**The post sheets.** (XTA offers its save targets in an X post's share
+sheet; the app's shared plugin post menu offers them too, and a plugin's own
+sheet that embeds the shared rows does not, as XTA's Pixiv sheets do not.)
+`XtaPlugin.postSheetActions(post)` lists a plugin's
 entries for a post, `PluginPostAction`s (an icon, a label in a language, and
 `run`), as XTA's share sheet offers "Save to Karakeep". The app asks every
 running plugin as a sheet opens and draws their entries below its own, in

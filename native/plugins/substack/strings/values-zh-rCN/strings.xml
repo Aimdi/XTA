@@ -108,15 +108,7 @@
     <plurals name="read_minutes">
         <item quantity="other">阅读需 %1$d 分钟</item>
     </plurals>
-    <string name="reader_appearance">阅读外观</string>
-    <string name="reader_finish">标为已读完</string>
-    <string name="reader_finished">已读完</string>
     <string name="reader_font">文章字体</string>
-    <string name="reader_line_spacing">行间距</string>
-    <string name="reader_opened">已打开</string>
-    <string name="reader_resumed">已恢复阅读位置</string>
-    <string name="reader_start_over">返回开头</string>
-    <string name="reader_text_size">文字缩放比例</string>
     <string name="recent_searches">最近搜索</string>
     <string name="refresh">刷新文章</string>
     <string name="reset_filters">重置筛选</string>

@@ -66,9 +66,10 @@ class PixivSharedTest {
     }
 
     @Test
-    fun theCreatorsPictureIsLeftOutWhereItsServerWantsPixivsReferer() {
-        assertNull(PixivShared.post(illust, PixivImages.HOST).avatarUrl, "the shared avatar sends no Referer")
-        assertEquals("https://i.pximg.net/img-master/img/42_p0.jpg", PixivShared.post(illust, PixivImages.HOST).media.single().imageUrl)
+    fun theCreatorsPictureComesFromPixivsOwnServerToo() {
+        val shown = PixivShared.post(illust, PixivImages.HOST)
+        assertEquals("https://i.pximg.net/user-profile/img/3.jpg", shown.avatarUrl, "the shared avatar asks with Pixiv's Referer")
+        assertEquals("https://i.pximg.net/img-master/img/42_p0.jpg", shown.media.single().imageUrl)
     }
 
     @Test

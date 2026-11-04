@@ -67,6 +67,13 @@ val LocalCashtagStrip = staticCompositionLocalOf<(@Composable (symbols: List<Str
  */
 val LocalCashtagOpener = staticCompositionLocalOf<((symbol: String) -> Boolean)?> { null }
 
+/**
+ * What a long press on a cashtag in a post opens: the app's cashtag sheet
+ * (rich_text.dart's), the cashtag leading where a tap does, with what the
+ * running plugins add for it. Without one, a long press is a tap.
+ */
+val LocalCashtagSheet = staticCompositionLocalOf<((symbol: String) -> Unit)?> { null }
+
 /** One timeline row, or a thread X groups, with the line under it. With [playing], its first video plays in place. */
 @Composable
 fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {

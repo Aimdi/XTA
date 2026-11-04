@@ -90,7 +90,7 @@ class WebSourcesKeptTest {
     }
 
     @Test
-    fun aRouteKeepsWhatItsScreenNeedsAndAPostReadsInTheRssReader() {
+    fun aPostReadsInTheRssReaderAndItsStandInUntilItsCopyIsRead() {
         val item = WebSourceItem(sourceId = lobsters.id, id = "abc", text = "Some words", link = "https://lobste.rs/s/abc", author = "ann")
         val reading = WebSourceReading.itemOf(lobsters, item, "<p>Full</p>")
 
@@ -98,12 +98,21 @@ class WebSourcesKeptTest {
         assertEquals(item.key, reading.id)
         assertEquals("Some words", reading.title, "a post without a title reads under its text")
         assertEquals(lobsters.name, reading.feedTitle)
-        assertEquals(WebSourceRoute.Source(lobsters.id, "hottest"), WebSourceRoutes.parse(WebSourceRoutes.source(lobsters.id, "hottest")))
-        assertEquals(WebSourceRoute.Search(lobsters.id), WebSourceRoutes.parse(WebSourceRoutes.search(lobsters.id)))
-        assertEquals(WebSourceRoute.Reader(lobsters.id, item.key, "Some words", item.link), WebSourceRoutes.parse(WebSourceRoutes.reader(lobsters.id, reading)))
-        assertEquals(WebSourceRoute.Add, WebSourceRoutes.parse(WebSourceRoutes.ADD))
-        assertNull(WebSourceRoutes.parse("reader?key=x"))
-        assertEquals(reading.copy(excerpt = null, bodyHtml = null, author = null), WebSourceReading.stub(lobsters, WebSourceRoutes.parse(WebSourceRoutes.reader(lobsters.id, reading)) as WebSourceRoute.Reader))
+        assertEquals(reading.copy(excerpt = null, bodyHtml = null, author = null), WebSourceReading.stub(lobsters, lobsters.id, item.key, "Some words", item.link))
+        assertEquals(lobsters.id, WebSourceReading.stub(null, lobsters.id, item.key, "Some words", null).feedTitle, "a source removed since goes by its id")
+    }
+
+    @Test
+    fun aTappedPostOpensItsTextItsSourcesArticleOrItsAddress() {
+        val withText = WebSourceItem(sourceId = lemmy.id, id = "1", html = "<p>Full</p>", link = "https://lemmy.example/post/1")
+        val bare = WebSourceItem(sourceId = lemmy.id, id = "2", link = "https://lemmy.example/post/2")
+        val talk = WebSourceItem(sourceId = lobsters.id, id = "3", discussion = "https://lobste.rs/s/3")
+
+        assertEquals(WebSourceOpening.Reader("<p>Full</p>"), WebSourceReading.opening(lemmy, withText), "the text it carries, as read")
+        assertEquals(WebSourceOpening.Article, WebSourceReading.opening(lemmy, bare), "a source with an article rule reads the article first")
+        assertEquals(WebSourceOpening.Address("https://lobste.rs/s/abc"), WebSourceReading.opening(lobsters, WebSourceItem(sourceId = lobsters.id, id = "4", link = "https://lobste.rs/s/abc", discussion = "https://lobste.rs/s/4")))
+        assertEquals(WebSourceOpening.Address("https://lobste.rs/s/3"), WebSourceReading.opening(lobsters, talk), "without a link, its discussion")
+        assertEquals(WebSourceOpening.Address(null), WebSourceReading.opening(lobsters, WebSourceItem(sourceId = lobsters.id, id = "5")))
     }
 
     @Test

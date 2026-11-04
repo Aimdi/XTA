@@ -53,7 +53,7 @@ fun PostText(
     RunsText(runs, actions, modifier, style, maxLines)
 }
 
-/** Text runs drawn with their links, mentions and tags in blue: a post's text, or a bio. */
+/** Text runs drawn with their links, mentions and tags in blue: a post's text, or a bio. A long press on a cashtag opens its sheet. */
 @Composable
 fun RunsText(
     runs: List<XRun>,
@@ -66,7 +66,16 @@ fun RunsText(
     val cashtags = LocalCashtagOpener.current
     val text = remember(runs, linkColor, actions, cashtags) { annotated(runs, linkColor, actions, cashtags) }
     if (text.isEmpty()) return
-    Text(text, modifier = modifier, style = style, color = MaterialTheme.colorScheme.onSurface, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
+    val layout = remember { TextLayoutHolder() }
+    Text(
+        text,
+        modifier = modifier.cashtagPresses(text, layout),
+        style = style,
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis,
+        onTextLayout = layout::take,
+    )
 }
 
 /**
@@ -91,6 +100,7 @@ fun ExpandablePostText(
     var expanded by remember(post.id, post.text) { mutableStateOf(false) }
     var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
+    val laidOut = remember { TextLayoutHolder() }
     Column(modifier.animateContentSize()) {
         val drawn: @Composable () -> Unit = {
             Text(
@@ -99,8 +109,11 @@ fun ExpandablePostText(
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = if (clipped) maxLines!! else Int.MAX_VALUE,
                 overflow = TextOverflow.Clip,
-                onTextLayout = { layout -> if (clipped && layout.hasVisualOverflow) folds = true },
-                modifier = if (clipped && folds) Modifier.fadingBottom() else Modifier,
+                onTextLayout = { layout ->
+                    laidOut.take(layout)
+                    if (clipped && layout.hasVisualOverflow) folds = true
+                },
+                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).cashtagPresses(text, laidOut),
             )
         }
         if (selectable) SelectionContainer { drawn() } else drawn()
@@ -137,7 +150,7 @@ internal fun annotated(runs: List<XRun>, linkColor: Color, actions: PostActions,
                 append(run.text)
             }
             is XRun.Hashtag -> withLink(LinkAnnotation.Clickable("#" + run.tag, styles) { actions.search("#" + run.tag) }) { append(run.text) }
-            is XRun.Cashtag -> withLink(LinkAnnotation.Clickable("$" + run.symbol, styles) { if (cashtags?.invoke(run.symbol) != true) actions.search("$" + run.symbol) }) {
+            is XRun.Cashtag -> withLink(LinkAnnotation.Clickable(CashtagLinks.tag(run.symbol), styles) { if (cashtags?.invoke(run.symbol) != true) actions.search(CashtagLinks.tag(run.symbol)) }) {
                 append(run.text)
             }
         }

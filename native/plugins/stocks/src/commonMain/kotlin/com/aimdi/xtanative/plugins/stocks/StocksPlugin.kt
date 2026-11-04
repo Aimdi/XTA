@@ -1,13 +1,18 @@
 package com.aimdi.xtanative.plugins.stocks
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.stocks.StocksRoute
 import com.aimdi.xtanative.networks.stocks.StocksRoutes
+import com.aimdi.xtanative.networks.stocks.WatchlistRows
 import com.aimdi.xtanative.store.backup.BackupKeys
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginCashtagAction
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
@@ -18,7 +23,7 @@ import com.aimdi.xtanative.ui.plugins.XtaPlugin
  * a watchlist of tickers and tokens with their quotes, X's posts about them,
  * the trending tickers and the markets, each ticker's and token's page, and
  * the price strip under an X post that names tickers, whose cashtags open
- * the ticker's page. Read-only: quotes are shown, nothing is traded, no
+ * the ticker's page and, held, offer it to the watchlist. Read-only: quotes are shown, nothing is traded, no
  * account is needed, and the watchlist stays on the device.
  */
 class StocksPlugin : XtaPlugin() {
@@ -56,6 +61,16 @@ class StocksPlugin : XtaPlugin() {
     override val cashtagStrip: @Composable (List<String>) -> Unit = { symbols -> CashtagStrip(app, symbols) }
 
     override fun routeForCashtag(symbol: String): String? = StocksRoutes.ticker(symbol)
+
+    /** Add to watchlist, or Remove from watchlist for one watched, as XTA's cashtag sheet offers while Stocks runs. */
+    override fun cashtagActions(symbol: String): List<PluginCashtagAction> {
+        val watched = WatchlistRows.watches(app.watchlist.entries.ids, symbol)
+        return listOf(
+            PluginCashtagAction(if (watched) Icons.Filled.Star else Icons.Outlined.Star, { language -> (if (watched) Strings.unwatch else Strings.watch).get(language) }) {
+                if (watched) app.watchlist.remove(symbol) else app.watchlist.add(symbol)
+            },
+        )
+    }
 
     /** The watchlist as XTA's backup holds it: its `stockSubscriptions` rows. Its order and the rest are in the app's settings. */
     override val backupSections: List<PluginBackupSection>

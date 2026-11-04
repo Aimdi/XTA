@@ -40,19 +40,6 @@ class RssKeptTest {
     }
 
     @Test
-    fun readIdsAreNewestFirstAndCapped() {
-        val ids = (1..RssReadIds.CAP).map { "old$it" }
-
-        val marked = RssReadIds.marked(ids, listOf("new", "old1", "", "new"))
-
-        assertEquals(RssReadIds.CAP, marked.size)
-        assertEquals(listOf("new", "old1", "old2"), marked.take(3))
-        assertEquals(ids, RssReadIds.marked(ids, listOf("old5")), "what was read stays where it is")
-        assertEquals(listOf("a", "b"), RssReadIds.decode(RssReadIds.encode(listOf("a", "b"))))
-        assertEquals(listOf("a"), RssReadIds.decode("""["a", "", 3]"""))
-    }
-
-    @Test
     fun tagsAreCleanedSortedAndDroppedWhenEmpty() {
         val tags = RssTags.withTags(emptyMap(), "blog", RssTags.parse(" News, blogs / , Tech"))
 

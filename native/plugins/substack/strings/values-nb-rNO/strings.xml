@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min lesing</item>
         <item quantity="other">%1$d min lesing</item>
     </plurals>
-    <string name="reader_appearance">Lesevisning</string>
-    <string name="reader_finish">Merk som ferdiglest</string>
-    <string name="reader_finished">Ferdiglest</string>
     <string name="reader_font">Skrift i artikler</string>
-    <string name="reader_line_spacing">Linjeavstand</string>
-    <string name="reader_opened">Åpnet</string>
-    <string name="reader_resumed">Gjenopptatt</string>
-    <string name="reader_start_over">Tilbake til begynnelsen</string>
-    <string name="reader_text_size">Tekstskalafaktor</string>
     <string name="recent_searches">Nylige søk</string>
     <string name="refresh">Oppdater artikkelen</string>
     <string name="reset_filters">Nullstill filtre</string>

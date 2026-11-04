@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min lezen</item>
         <item quantity="other">%1$d min lezen</item>
     </plurals>
-    <string name="reader_appearance">Leesweergave</string>
-    <string name="reader_finish">Markeren als uitgelezen</string>
-    <string name="reader_finished">Uitgelezen</string>
     <string name="reader_font">Lettertype van artikelen</string>
-    <string name="reader_line_spacing">Regelafstand</string>
-    <string name="reader_opened">Geopend</string>
-    <string name="reader_resumed">Hervat</string>
-    <string name="reader_start_over">Terug naar het begin</string>
-    <string name="reader_text_size">Tekstschaalfactor</string>
     <string name="recent_searches">Recente zoekopdrachten</string>
     <string name="refresh">Artikel vernieuwen</string>
     <string name="reset_filters">Filters herstellen</string>

@@ -111,7 +111,8 @@ private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String)
  * boosted"), in place of "Reposted by", opening [onRepostLine]; [timeNote]
  * after the post's time ("Edited"); [above] over its text (a content warning
  * that holds the rest back); [below] under its media, card and quote (a
- * poll's results); [footer] in place of the counts (the network's own
+ * poll's results), held back with them by a warning that covers the post's
+ * text ([NetworkPost.coversText]); [footer] in place of the counts (the network's own
  * buttons); [trailing] at the end of the author line (a follow button, see
  * [NetworkHeaderButton]); and what a long press on the row does.
  */
@@ -198,7 +199,7 @@ fun NetworkPostCard(
                 extras.above?.invoke()
                 if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
                 Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 10.dp, playing = playing)
-                extras.below?.invoke()
+                if (!post.textCovered(revealed)) extras.below?.invoke()
                 val footer = extras.footer
                 if (footer != null) footer() else CountsLine(post, rememberArchive(post, actions))
             }

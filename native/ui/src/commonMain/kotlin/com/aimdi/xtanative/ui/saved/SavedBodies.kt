@@ -62,6 +62,7 @@ import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.feed.rememberLinkActions
+import com.aimdi.xtanative.ui.feed.rememberPostExtras
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.offline_title
@@ -254,7 +255,7 @@ private fun KeptNetworkPost(content: SavedContent) {
     val record = content.record.raw
     val shown = remember(plugin, content) { if (plugin == null || record == null) null else runCatching { plugin.archived(record) }.getOrNull() }
     if (plugin != null && shown != null) {
-        NetworkPostCard(shown, plugin.postActions ?: rememberLinkActions(plugin.id))
+        NetworkPostCard(shown, plugin.postActions ?: rememberLinkActions(plugin.id), rememberPostExtras(plugin, shown))
     } else {
         KeptCard.of(content)?.let { KeptCardView(it) } ?: TooLarge()
     }

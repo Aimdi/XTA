@@ -24,6 +24,14 @@ class XtaPrefsTest {
     }
 
     @Test
+    fun whatANetworkWritesOfAnothersIsThatNetworksOwn() {
+        assertEquals(listOf("plugin.rss.read_ids"), WebSourcesPrefs.shared.map { it.key }, "the RSS reader marks a web source's post read among RSS's, as XTA does")
+        XtaPrefs.networks.forEach { network ->
+            network.shared.forEach { pref -> assertTrue(XtaPrefs.networks.any { it !== network && pref in it.prefs }, "${network.id} writes ${pref.key}, which another network declares") }
+        }
+    }
+
+    @Test
     fun theDefaultsXtaWritesAtLaunchAreTheSeeds() {
         val seeded = XtaPrefs.all.filter { it.seed != null }.associate { it.key to it.seed }
         assertEquals(xtaSeeds.keys, seeded.keys, "the keys XTA seeds")

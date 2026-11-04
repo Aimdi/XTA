@@ -54,10 +54,14 @@ class PluginSettings(
 
         /**
          * The keys [id]'s network declares outside its prefix, which are its
-         * all the same: Stocks' `other.ticker_chart` and `other.ticker_instruments`.
+         * all the same: Stocks' `other.ticker_chart` and `other.ticker_instruments`;
+         * and those of another network it writes where XTA's does
+         * (NetworkPrefs.shared): the web sources' read marks among RSS's.
          */
-        fun keysOf(id: String): Set<String> =
-            XtaPrefs.networks.firstOrNull { it.id == id }?.prefs.orEmpty().map { it.key }.filterNot { it.startsWith(prefixOf(id)) }.toSet()
+        fun keysOf(id: String): Set<String> {
+            val network = XtaPrefs.networks.firstOrNull { it.id == id } ?: return emptySet()
+            return (network.prefs.map { it.key }.filterNot { it.startsWith(prefixOf(id)) } + network.shared.map { it.key }).toSet()
+        }
 
         /** [before] with what [after] holds under [prefix] and at [keys], and nothing else of it. */
         internal fun ownChanges(before: Settings, after: Settings, prefix: String, keys: Set<String> = emptySet()): Settings =

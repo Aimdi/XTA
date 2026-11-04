@@ -108,15 +108,7 @@
     <plurals name="read_minutes">
         <item quantity="other">%1$d menit baca</item>
     </plurals>
-    <string name="reader_appearance">Tampilan membaca</string>
-    <string name="reader_finish">Tandai selesai dibaca</string>
-    <string name="reader_finished">Selesai dibaca</string>
     <string name="reader_font">Font artikel</string>
-    <string name="reader_line_spacing">Jarak antarbaris</string>
-    <string name="reader_opened">Dibuka</string>
-    <string name="reader_resumed">Dilanjutkan</string>
-    <string name="reader_start_over">Kembali ke awal</string>
-    <string name="reader_text_size">Faktor skala teks</string>
     <string name="recent_searches">Pencarian terbaru</string>
     <string name="refresh">Muat ulang artikel</string>
     <string name="reset_filters">Atur ulang filter</string>

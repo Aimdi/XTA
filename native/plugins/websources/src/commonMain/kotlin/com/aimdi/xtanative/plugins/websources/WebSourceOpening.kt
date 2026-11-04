@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
 import com.aimdi.xtanative.networks.websources.WebSourceItem
+import com.aimdi.xtanative.networks.websources.WebSourceOpening
 import com.aimdi.xtanative.networks.websources.WebSourceReading
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.pluginString
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -44,15 +44,14 @@ internal fun rememberItemActions(app: WebSourcesApp, source: WebSourceDefinition
     return remember(app, source) {
         ItemActions(
             open = { item ->
-                val html = item.html
-                when {
-                    !html.isNullOrEmpty() -> app.openReader(source, WebSourceReading.itemOf(source, item, html))
-                    source.article == null -> WebSourceReading.address(item)?.let(app.host::openLink)
-                    else -> {
+                when (val opening = WebSourceReading.opening(source, item)) {
+                    is WebSourceOpening.Reader -> app.opened(source, item, opening.html)
+                    is WebSourceOpening.Address -> app.opened(source, item, null)
+                    WebSourceOpening.Article -> {
                         val job = scope.launch {
-                            val fetched = articleOf(app, source, item)
+                            val fetched = app.article(source, item)
                             reading = null
-                            if (!fetched.isNullOrEmpty()) app.openReader(source, WebSourceReading.itemOf(source, item, fetched)) else WebSourceReading.address(item)?.let(app.host::openLink)
+                            app.opened(source, item, fetched)
                         }
                         reading = job to item
                     }
@@ -63,15 +62,6 @@ internal fun rememberItemActions(app: WebSourcesApp, source: WebSourceDefinition
             more = { item -> app.host.openPostMenu(app.shared.menu(source, item)) },
         )
     }
-}
-
-/** The full text the source's article rule names; null when it cannot be read. */
-private suspend fun articleOf(app: WebSourcesApp, source: WebSourceDefinition, item: WebSourceItem): String? = try {
-    app.client.article(source, item)
-} catch (e: CancellationException) {
-    throw e
-} catch (_: Exception) {
-    null
 }
 
 /** "Reading the source…", while a source's file or an article is read; closing it gives up. */

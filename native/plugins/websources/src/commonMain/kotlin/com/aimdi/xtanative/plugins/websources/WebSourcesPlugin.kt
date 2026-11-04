@@ -10,9 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
-import com.aimdi.xtanative.networks.websources.WebSourceReading
-import com.aimdi.xtanative.networks.websources.WebSourceRoute
-import com.aimdi.xtanative.networks.websources.WebSourceRoutes
+import com.aimdi.xtanative.networks.websources.WebSourceFollows
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
@@ -65,6 +63,9 @@ class WebSourcesPlugin : XtaPlugin() {
 
     override val postActions: NetworkPostActions get() = app.shared.actions
 
+    /** A followed list in a group (`lobsters/hottest`), opened on its source's screen at that list, as XTA opens it. */
+    override fun routeForAccount(account: String): String? = WebSourceFollows.parts(account)?.let { (source, list) -> WebSourceRoutes.source(source, list) }
+
     override fun screen(route: String): PluginScreen? = when (val opened = WebSourceRoutes.parse(route)) {
         is WebSourceRoute.Source -> sourceScreen(opened)
         is WebSourceRoute.Search -> searchScreen(opened)
@@ -89,9 +90,10 @@ class WebSourcesPlugin : XtaPlugin() {
         }
     }
 
+    /** A post in the RSS reader, finished there as it was before and marked read once read to its end, as XTA's reader marks it. */
     private fun readerScreen(route: WebSourceRoute.Reader): PluginScreen = {
-        val item = app.openedItem(route.key) ?: WebSourceReading.stub(app.source(route.sourceId)?.source, route)
-        RssReaderScreen(app.host, item, read = false, scope = app.scope) {}
+        val item = app.openedItem(route.key) ?: route.stub(app.source(route.sourceId)?.source)
+        RssReaderScreen(app.host, item, read = item.id in app.read.value, scope = app.scope) { app.markRead(item.id) }
     }
 
     private fun addScreen(): PluginScreen = { WebSourceAddScreen(app) }

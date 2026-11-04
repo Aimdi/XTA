@@ -117,15 +117,7 @@
         <item quantity="many">%1$d хвилин читання</item>
         <item quantity="other">%1$d хвилини читання</item>
     </plurals>
-    <string name="reader_appearance">Вигляд для читання</string>
-    <string name="reader_finish">Позначити як прочитане</string>
-    <string name="reader_finished">Прочитано</string>
     <string name="reader_font">Шрифт статей</string>
-    <string name="reader_line_spacing">Міжрядковий інтервал</string>
-    <string name="reader_opened">Відкрито</string>
-    <string name="reader_resumed">Продовжено</string>
-    <string name="reader_start_over">До початку</string>
-    <string name="reader_text_size">Коефіцієнт масштабування тексту</string>
     <string name="recent_searches">Недавні пошуки</string>
     <string name="refresh">Оновити статтю</string>
     <string name="reset_filters">Скинути фільтри</string>

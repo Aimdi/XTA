@@ -111,15 +111,7 @@
         <item quantity="one">%1$d min de lectura</item>
         <item quantity="other">%1$d min de lectura</item>
     </plurals>
-    <string name="reader_appearance">Aspecte de lectura</string>
-    <string name="reader_finish">Marca com a acabat</string>
-    <string name="reader_finished">Acabat</string>
     <string name="reader_font">Tipus de lletra dels articles</string>
-    <string name="reader_line_spacing">Interlineat</string>
-    <string name="reader_opened">Obert</string>
-    <string name="reader_resumed">Reprès</string>
-    <string name="reader_start_over">Torna al principi</string>
-    <string name="reader_text_size">Factor d\'escala del text</string>
     <string name="recent_searches">Cerques recents</string>
     <string name="refresh">Actualitza l’article</string>
     <string name="reset_filters">Restableix els filtres</string>

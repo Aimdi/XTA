@@ -114,15 +114,7 @@
         <item quantity="few">%1$d minuty čtení</item>
         <item quantity="other">%1$d minut čtení</item>
     </plurals>
-    <string name="reader_appearance">Vzhled čtení</string>
-    <string name="reader_finish">Označit jako dočtené</string>
-    <string name="reader_finished">Dočteno</string>
     <string name="reader_font">Písmo článků</string>
-    <string name="reader_line_spacing">Řádkování</string>
-    <string name="reader_opened">Otevřeno</string>
-    <string name="reader_resumed">Obnoveno</string>
-    <string name="reader_start_over">Zpět na začátek</string>
-    <string name="reader_text_size">Faktor měřítka textu</string>
     <string name="recent_searches">Nedávná hledání</string>
     <string name="refresh">Obnovit článek</string>
     <string name="reset_filters">Obnovit filtry</string>

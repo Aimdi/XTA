@@ -159,6 +159,22 @@ abstract class XtaPlugin {
      */
     open fun routeForCashtag(symbol: String): String? = null
 
+    /**
+     * Its entries in the sheet a long press on a cashtag in an X post opens
+     * ([symbol] without its `$`, upper-cased), below the cashtag itself, which
+     * opens what a tap opens (rich_text.dart's cashtag sheet): Stocks' Add to
+     * watchlist. Asked as the sheet opens, so quick; none by default.
+     */
+    open fun cashtagActions(symbol: String): List<PluginCashtagAction> = emptyList()
+
+    /**
+     * The route of its own screen for [account], one of its accounts as its
+     * [feed] reads it and a group holds it ("<plugin id>:<account>"): its page
+     * there, as XTA's subscription sources open a member (destinationFor).
+     * Null when it has none.
+     */
+    open fun routeForAccount(account: String): String? = null
+
     /** What it keeps that the app's backup holds. */
     open val backupSections: List<PluginBackupSection> get() = emptyList()
 
@@ -178,6 +194,14 @@ abstract class XtaPlugin {
      * opening its link, as the app opens links.
      */
     open val postActions: NetworkPostActions? get() = null
+
+    /**
+     * What it adds to the shared row where the app draws [post], one of its
+     * posts (Home's timelines, the groups, Saved), as XTA's Mastodon card
+     * shows a poll's results there; null adds nothing. Asked as the row is
+     * drawn, so quick.
+     */
+    open fun postExtras(post: NetworkPost): NetworkPostExtras? = null
 
     /**
      * One of its posts the archive kept ([PluginPostArchive.content]), as
