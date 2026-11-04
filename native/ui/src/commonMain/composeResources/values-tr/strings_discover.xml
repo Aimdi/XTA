@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Gruba ekle</string>
     <string name="discover_hide_from_main_feed">Ana akıştan gizle</string>
     <string name="discover_show_in_main_feed">Ana akışta göster</string>
-    <string name="discover_search_or_create">Ara veya oluştur</string>
-    <string name="discover_group_create">“%1$s” oluştur ve ekle</string>
-    <string name="discover_no_groups_yet">Henüz grup yok</string>
-    <string name="discover_no_group_found">Grup bulunamadı</string>
-    <string name="discover_in_no_group">Hiçbir grupta değil</string>
-    <string name="discover_in_group">%1$s grubunda</string>
-    <string name="discover_in_two_groups">%1$s ve %2$s gruplarında</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">%1$d grupta</item>
-        <item quantity="other">%1$d grupta</item>
-    </plurals>
     <string name="discover_advanced_search">Gelişmiş arama</string>
     <string name="discover_search_term">Arama terimi</string>
     <string name="discover_all_of_these_words">Bu kelimelerin tümü</string>

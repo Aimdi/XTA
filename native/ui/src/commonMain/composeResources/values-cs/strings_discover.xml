@@ -23,19 +23,6 @@
     <string name="discover_add_to_group">Přidat do skupiny</string>
     <string name="discover_hide_from_main_feed">Skrýt z hlavního kanálu</string>
     <string name="discover_show_in_main_feed">Zobrazit v hlavním kanálu</string>
-    <string name="discover_search_or_create">Hledat nebo vytvořit</string>
-    <string name="discover_group_create">Vytvořit „%1$s“ a přidat</string>
-    <string name="discover_no_groups_yet">Zatím žádné skupiny</string>
-    <string name="discover_no_group_found">Žádná skupina nenalezena</string>
-    <string name="discover_in_no_group">Není v žádné skupině</string>
-    <string name="discover_in_group">Ve skupině %1$s</string>
-    <string name="discover_in_two_groups">Ve skupinách %1$s a %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">V %1$d skupině</item>
-        <item quantity="few">Ve %1$d skupinách</item>
-        <item quantity="many">V %1$d skupinách</item>
-        <item quantity="other">V %1$d skupinách</item>
-    </plurals>
     <string name="discover_advanced_search">Pokročilé vyhledávání</string>
     <string name="discover_search_term">Hledaný výraz</string>
     <string name="discover_all_of_these_words">Všechna tato slova</string>

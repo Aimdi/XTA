@@ -226,4 +226,21 @@
         <item quantity="one">Seguit per %1$d membre</item>
         <item quantity="other">Seguit per %1$d membres</item>
     </plurals>
+    <string name="groups_discovery_ai">Troba comptes semblants amb IA</string>
+    <string name="groups_discovery_description">Descobreix comptes que no segueixes a partir dels membres d’aquest grup. Obre un perfil per seguir-lo o afegir-lo a un grup.</string>
+    <string name="groups_discovery_other_groups">Altres grups…</string>
+    <string name="groups_discovery_show_post">Mostra la publicació</string>
+    <string name="groups_discovery_open_post">Obre la publicació</string>
+    <string name="groups_discovery_reposted_by">Compartit per %1$s</string>
+    <string name="groups_discovery_quoted_by">Citat per %1$s</string>
+    <string name="groups_discovery_replied_by">Resposta de %1$s</string>
+    <string name="groups_discovery_mentioned_by">Mencionat per %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s ho suggereix per a %2$s</string>
+    <string name="groups_discovery_related_to">Semblant a les obres de %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">i 1 més</item>
+        <item quantity="other">i %1$d més</item>
+    </plurals>
+    <string name="groups_changes_saved">Canvis desats</string>
+    <string name="groups_undo_failed">No s’ha pogut desfer. Pot ser que les dades hagin canviat.</string>
 </resources>

@@ -10,6 +10,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginDiscovery
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
@@ -67,6 +68,8 @@ class MastodonPlugin : XtaPlugin() {
     override val feed: PluginFeed get() = app.shared
 
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
+
+    override val discovery: PluginDiscovery by lazy { MastodonDiscovery(app) }
 
     override val postActions: NetworkPostActions get() = app.actions
 

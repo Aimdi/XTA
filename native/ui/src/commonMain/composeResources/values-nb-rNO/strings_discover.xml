@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Legg til i gruppe</string>
     <string name="discover_hide_from_main_feed">Skjul fra hoved-feed</string>
     <string name="discover_show_in_main_feed">Vis i hoved-feed</string>
-    <string name="discover_search_or_create">Søk eller opprett</string>
-    <string name="discover_group_create">Opprett «%1$s» og legg til</string>
-    <string name="discover_no_groups_yet">Ingen grupper ennå</string>
-    <string name="discover_no_group_found">Fant ingen gruppe</string>
-    <string name="discover_in_no_group">Ikke i noen gruppe</string>
-    <string name="discover_in_group">I %1$s</string>
-    <string name="discover_in_two_groups">I %1$s og %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">I %1$d gruppe</item>
-        <item quantity="other">I %1$d grupper</item>
-    </plurals>
     <string name="discover_advanced_search">Avansert søk</string>
     <string name="discover_search_term">Søkeord</string>
     <string name="discover_all_of_these_words">Alle disse ordene</string>

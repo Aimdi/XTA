@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">समूह में जोड़ें</string>
     <string name="discover_hide_from_main_feed">मुख्य फ़ीड से छुपाएं</string>
     <string name="discover_show_in_main_feed">मुख्य फ़ीड में दिखाएं</string>
-    <string name="discover_search_or_create">खोजें या बनाएँ</string>
-    <string name="discover_group_create">“%1$s” बनाएँ और जोड़ें</string>
-    <string name="discover_no_groups_yet">अभी कोई समूह नहीं</string>
-    <string name="discover_no_group_found">कोई समूह नहीं मिला</string>
-    <string name="discover_in_no_group">किसी समूह में नहीं</string>
-    <string name="discover_in_group">%1$s में</string>
-    <string name="discover_in_two_groups">%1$s और %2$s में</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">%1$d समूह में</item>
-        <item quantity="other">%1$d समूहों में</item>
-    </plurals>
     <string name="discover_advanced_search">उन्नत खोज</string>
     <string name="discover_search_term">खोज शब्द</string>
     <string name="discover_all_of_these_words">ये सभी शब्द</string>

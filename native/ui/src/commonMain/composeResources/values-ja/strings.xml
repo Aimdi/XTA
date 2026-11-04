@@ -48,11 +48,4 @@
     <plurals name="new_posts">
         <item quantity="other">新しいポスト %1$d 件</item>
     </plurals>
-    <string name="follow_here_only">XTA Native の中だけでフォローしています。X には伝わりません。</string>
-    <string name="follow_in_feed">フォロー中のフィードに表示</string>
-    <string name="follow_groups">グループ</string>
-    <string name="follow_new_group">新しいグループ</string>
-    <string name="follow_group_name">グループ名</string>
-    <string name="follow_create">作成</string>
-    <string name="follow_unfollow">フォロー解除</string>
 </resources>

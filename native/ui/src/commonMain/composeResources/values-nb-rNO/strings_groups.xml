@@ -226,4 +226,21 @@
         <item quantity="one">Fulgt av %1$d medlem</item>
         <item quantity="other">Fulgt av %1$d medlemmer</item>
     </plurals>
+    <string name="groups_discovery_ai">Finn lignende kontoer med KI</string>
+    <string name="groups_discovery_description">Oppdag kontoer du ikke følger, basert på medlemmene i denne gruppen. Åpne en profil for å følge den eller legge den til i en gruppe.</string>
+    <string name="groups_discovery_other_groups">Andre grupper…</string>
+    <string name="groups_discovery_show_post">Vis innlegg</string>
+    <string name="groups_discovery_open_post">Åpne innlegg</string>
+    <string name="groups_discovery_reposted_by">Delt av %1$s</string>
+    <string name="groups_discovery_quoted_by">Sitert av %1$s</string>
+    <string name="groups_discovery_replied_by">Besvart av %1$s</string>
+    <string name="groups_discovery_mentioned_by">Nevnt av %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s foreslår dette for %2$s</string>
+    <string name="groups_discovery_related_to">Ligner på verk av %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">og 1 til</item>
+        <item quantity="other">og %1$d til</item>
+    </plurals>
+    <string name="groups_changes_saved">Endringer lagret</string>
+    <string name="groups_undo_failed">Kunne ikke angre. Dataene kan ha blitt endret.</string>
 </resources>

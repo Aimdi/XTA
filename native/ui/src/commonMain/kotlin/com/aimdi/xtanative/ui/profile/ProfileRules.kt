@@ -114,6 +114,9 @@ object ProfileHeader {
 
     /** The search a profile's search button opens: its own posts. */
     fun searchQuery(user: XUser): String = "from:@${user.screenName} "
+
+    /** What a profile's Share hands on: its page under the reader's share address (Settings › General, x.com when none). */
+    fun shareUrl(user: XUser, base: String): String = base.trimEnd('/') + "/" + user.screenName
 }
 
 /** XTA's "Max posts per feed load" for a followed account: off, or one of these. */

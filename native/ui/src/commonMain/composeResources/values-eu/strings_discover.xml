@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Gehitu taldera</string>
     <string name="discover_hide_from_main_feed">Ezkutatu jario nagusitik</string>
     <string name="discover_show_in_main_feed">Erakutsi jario nagusian</string>
-    <string name="discover_search_or_create">Bilatu edo sortu</string>
-    <string name="discover_group_create">Sortu «%1$s» eta gehitu</string>
-    <string name="discover_no_groups_yet">Oraindik ez dago talderik</string>
-    <string name="discover_no_group_found">Ez da talderik aurkitu</string>
-    <string name="discover_in_no_group">Ez dago talde batean ere</string>
-    <string name="discover_in_group">%1$s taldean</string>
-    <string name="discover_in_two_groups">%1$s eta %2$s taldeetan</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">Talde batean</item>
-        <item quantity="other">%1$d taldetan</item>
-    </plurals>
     <string name="discover_advanced_search">Bilaketa aurreratua</string>
     <string name="discover_search_term">Bilatu</string>
     <string name="discover_all_of_these_words">Hitz hauek guztiak</string>

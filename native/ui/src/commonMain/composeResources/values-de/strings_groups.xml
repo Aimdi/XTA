@@ -226,4 +226,21 @@
         <item quantity="one">Gefolgt von %1$d Mitglied</item>
         <item quantity="other">Gefolgt von %1$d Mitgliedern</item>
     </plurals>
+    <string name="groups_discovery_ai">Mit KI sortieren</string>
+    <string name="groups_discovery_description">Konten, denen du noch nicht folgst, gefunden über die Mitglieder dieser Gruppe: wen sie teilen, zitieren, beantworten, erwähnen und wem sie folgen. Das + fügt ein Konto dieser Gruppe hinzu, das Menü bietet mehr.</string>
+    <string name="groups_discovery_other_groups">Andere Gruppen…</string>
+    <string name="groups_discovery_show_post">Beitrag anzeigen</string>
+    <string name="groups_discovery_open_post">Beitrag öffnen</string>
+    <string name="groups_discovery_reposted_by">Geteilt von %1$s</string>
+    <string name="groups_discovery_quoted_by">Zitiert von %1$s</string>
+    <string name="groups_discovery_replied_by">Antwort von %1$s</string>
+    <string name="groups_discovery_mentioned_by">Erwähnt von %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s schlägt dies für %2$s vor</string>
+    <string name="groups_discovery_related_to">Ähnlich zu Werken von %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">und 1 weiteren</item>
+        <item quantity="other">und %1$d weiteren</item>
+    </plurals>
+    <string name="groups_changes_saved">Änderungen gespeichert</string>
+    <string name="groups_undo_failed">Rückgängig machen nicht möglich. Die Daten wurden möglicherweise geändert.</string>
 </resources>

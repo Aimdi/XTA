@@ -15,23 +15,24 @@ import com.aimdi.xtanative.services.ai.GroupingPlan
 object UngroupedPlans {
     private val asciiWords = Regex("[^a-z0-9]+")
 
-    /** The followed accounts in no group; saved searches are not sorted. */
-    fun ungrouped(session: Session): List<GroupingAccount> {
+    /**
+     * The followed accounts in no group, X's and the plugins' ([plugins],
+     * Subscriptions' rows of theirs), as XTA sorts every network's; saved
+     * searches are not sorted.
+     */
+    fun ungrouped(session: Session, plugins: List<SubscriptionRow> = emptyList()): List<GroupingAccount> {
         val grouped = session.groups.flatMapTo(HashSet()) { it.memberIds }
-        return session.following.filter { it.id !in grouped }.map { GroupingAccount(it.id, it.screenName, it.name) }
+        return accounts(session, plugins).filter { it.id !in grouped }
     }
 
     /** Every group with its members, named as they are followed (by id when they are not). */
-    fun groups(session: Session): List<GroupingGroup> {
-        val byId = session.following.associateBy { it.id }
-        return session.groups.map { group ->
-            GroupingGroup(
-                group.id,
-                group.name,
-                group.memberIds.map { id -> byId[id]?.let { GroupingAccount(id, it.screenName, it.name) } ?: GroupingAccount(id, id, id) },
-            )
-        }
+    fun groups(session: Session, plugins: List<SubscriptionRow> = emptyList()): List<GroupingGroup> {
+        val byId = accounts(session, plugins).associateBy { it.id }
+        return session.groups.map { group -> GroupingGroup(group.id, group.name, group.memberIds.map { id -> byId[id] ?: GroupingAccount(id, id, id) }) }
     }
+
+    private fun accounts(session: Session, plugins: List<SubscriptionRow>): List<GroupingAccount> =
+        session.following.map { GroupingAccount(it.id, it.screenName, it.name) } + plugins.filterNot { it.search }.map { GroupingAccount(it.id, it.screenName, it.name) }
 
     /** The words of three letters or more in [text], lower-cased, of the Latin alphabet and digits. */
     fun nameTokens(text: String): Set<String> = text.lowercase().split(asciiWords).filterTo(LinkedHashSet()) { it.length >= 3 }

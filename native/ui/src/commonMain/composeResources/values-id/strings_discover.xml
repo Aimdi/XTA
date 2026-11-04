@@ -23,16 +23,6 @@
     <string name="discover_add_to_group">Tambah ke grup</string>
     <string name="discover_hide_from_main_feed">Sembunyikan dari feed utama</string>
     <string name="discover_show_in_main_feed">Tampilkan di feed utama</string>
-    <string name="discover_search_or_create">Cari atau buat</string>
-    <string name="discover_group_create">Buat “%1$s” dan tambahkan</string>
-    <string name="discover_no_groups_yet">Belum ada grup</string>
-    <string name="discover_no_group_found">Grup tidak ditemukan</string>
-    <string name="discover_in_no_group">Tidak ada di grup mana pun</string>
-    <string name="discover_in_group">Di %1$s</string>
-    <string name="discover_in_two_groups">Di %1$s dan %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="other">Di %1$d grup</item>
-    </plurals>
     <string name="discover_advanced_search">Pencarian lanjutan</string>
     <string name="discover_search_term">Kata pencarian</string>
     <string name="discover_all_of_these_words">Semua kata ini</string>

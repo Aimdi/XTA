@@ -23,18 +23,6 @@
     <string name="discover_add_to_group">Adăugați la grup</string>
     <string name="discover_hide_from_main_feed">Ascundeți din fluxul principal</string>
     <string name="discover_show_in_main_feed">Afișați în fluxul principal</string>
-    <string name="discover_search_or_create">Caută sau creează</string>
-    <string name="discover_group_create">Creează „%1$s” și adaugă</string>
-    <string name="discover_no_groups_yet">Niciun grup încă</string>
-    <string name="discover_no_group_found">Niciun grup găsit</string>
-    <string name="discover_in_no_group">În niciun grup</string>
-    <string name="discover_in_group">În %1$s</string>
-    <string name="discover_in_two_groups">În %1$s și %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">Într-un grup</item>
-        <item quantity="few">În %1$d grupuri</item>
-        <item quantity="other">În %1$d de grupuri</item>
-    </plurals>
     <string name="discover_advanced_search">Căutare avansată</string>
     <string name="discover_search_term">Termen de căutare</string>
     <string name="discover_all_of_these_words">Toate aceste cuvinte</string>

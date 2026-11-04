@@ -220,4 +220,20 @@
     <plurals name="groups_discovery_followed_by">
         <item quantity="other">멤버 %1$d명이 팔로우</item>
     </plurals>
+    <string name="groups_discovery_ai">AI로 비슷한 계정 찾기</string>
+    <string name="groups_discovery_description">이 그룹의 멤버를 바탕으로 아직 팔로우하지 않은 계정을 찾아보세요. 프로필을 열어 팔로우하거나 그룹에 추가하세요.</string>
+    <string name="groups_discovery_other_groups">다른 그룹…</string>
+    <string name="groups_discovery_show_post">게시물 보기</string>
+    <string name="groups_discovery_open_post">게시물 열기</string>
+    <string name="groups_discovery_reposted_by">%1$s님이 재게시</string>
+    <string name="groups_discovery_quoted_by">%1$s님이 인용</string>
+    <string name="groups_discovery_replied_by">%1$s님이 답글</string>
+    <string name="groups_discovery_mentioned_by">%1$s님이 언급</string>
+    <string name="groups_discovery_suggested_for">%1$s가 %2$s님에게 추천</string>
+    <string name="groups_discovery_related_to">%1$s님의 작품과 비슷함</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="other">외 %1$d명</item>
+    </plurals>
+    <string name="groups_changes_saved">변경 사항 저장됨</string>
+    <string name="groups_undo_failed">실행을 취소할 수 없습니다. 데이터가 변경되었을 수 있습니다.</string>
 </resources>

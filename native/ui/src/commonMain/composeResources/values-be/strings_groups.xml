@@ -238,4 +238,23 @@
         <item quantity="many">Сочаць %1$d удзельнікаў</item>
         <item quantity="other">Сочаць %1$d удзельніка</item>
     </plurals>
+    <string name="groups_discovery_ai">Знайсці падобныя акаўнты з дапамогай ШІ</string>
+    <string name="groups_discovery_description">Знаходзьце акаўнты, на якія вы не падпісаны, на аснове ўдзельнікаў групы. Адкрыйце профіль, каб падпісацца або дадаць яго ў групу.</string>
+    <string name="groups_discovery_other_groups">Іншыя групы…</string>
+    <string name="groups_discovery_show_post">Паказаць пост</string>
+    <string name="groups_discovery_open_post">Адкрыць пост</string>
+    <string name="groups_discovery_reposted_by">Рэпост ад %1$s</string>
+    <string name="groups_discovery_quoted_by">Цытуе %1$s</string>
+    <string name="groups_discovery_replied_by">Адказ ад %1$s</string>
+    <string name="groups_discovery_mentioned_by">Згадвае %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s прапануе для %2$s</string>
+    <string name="groups_discovery_related_to">Падобна на працы %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">і яшчэ %1$d</item>
+        <item quantity="few">і яшчэ %1$d</item>
+        <item quantity="many">і яшчэ %1$d</item>
+        <item quantity="other">і яшчэ %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Змены захаваны</string>
+    <string name="groups_undo_failed">Не ўдалося адмяніць. Магчыма, даныя змяніліся.</string>
 </resources>

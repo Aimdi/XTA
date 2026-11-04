@@ -32,6 +32,22 @@ class UngroupedPlansTest {
     }
 
     @Test
+    fun thePluginsAccountsAreSortedBesideXsAndNamedInTheirGroups() {
+        val plugins = listOf(
+            SubscriptionRow("bluesky:did:1", "Space Daily", "spacedaily.bsky.social", plugin = "bluesky"),
+            SubscriptionRow("reddit:space", "r/space", "space", plugin = "reddit"),
+        )
+        val grouped = session.withMembership("space", "reddit:space", member = true)
+        assertEquals(listOf("3", "4", "5", "6", "bluesky:did:1"), UngroupedPlans.ungrouped(grouped, plugins).map { it.id })
+        assertEquals(listOf("nasa", "spacex", "space"), UngroupedPlans.groups(grouped, plugins).single().members.map { it.handle })
+        val plan = UngroupedPlans.planByNames(UngroupedPlans.ungrouped(grouped, plugins), UngroupedPlans.groups(grouped, plugins))
+        assertTrue(plan.assign.any { it.accountId == "bluesky:did:1" && it.groupId == "space" }, "it shares Space's words")
+        val (applied, placed) = UngroupedPlans.applied(grouped, plan, { "new" }, now = 1)
+        assertTrue("bluesky:did:1" in applied.groups.single { it.id == "space" }.memberIds)
+        assertTrue(placed >= 1)
+    }
+
+    @Test
     fun wordsAreTheLatinRunsOfThreeLettersOrMore() {
         assertEquals(setOf("nasa", "jpl"), UngroupedPlans.nameTokens("NASA_JPL"))
         assertEquals(setOf("cats", "daily"), UngroupedPlans.nameTokens("cats & a daily"))

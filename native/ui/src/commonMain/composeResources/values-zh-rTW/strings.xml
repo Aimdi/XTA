@@ -48,11 +48,4 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d 則新貼文</item>
     </plurals>
-    <string name="follow_here_only">只在 XTA Native 追蹤：X 不會知道。</string>
-    <string name="follow_in_feed">顯示在「追蹤中」動態</string>
-    <string name="follow_groups">群組</string>
-    <string name="follow_new_group">新增群組</string>
-    <string name="follow_group_name">群組名稱</string>
-    <string name="follow_create">建立</string>
-    <string name="follow_unfollow">取消追蹤</string>
 </resources>

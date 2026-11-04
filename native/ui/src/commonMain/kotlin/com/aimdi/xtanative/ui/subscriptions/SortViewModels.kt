@@ -3,7 +3,6 @@ package com.aimdi.xtanative.ui.subscriptions
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.core.backup.FollowGroup
-import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.services.ai.AiClient
@@ -51,9 +50,10 @@ data class SortUi(
  * XTA's sorting of ungrouped subscriptions (group_ungrouped_screen.dart,
  * group_ungrouped_model.dart): a plan made on the device from account and
  * group names, or by the reader's AI when they configured one, reviewed and
- * then applied. What it cannot place is sorted one by one.
+ * then applied. What it cannot place is sorted one by one. Every network's
+ * followed accounts are sorted, the plugins' ([follows]) beside X's.
  */
-class SortUngroupedViewModel(private val graph: AppGraph) : ViewModel() {
+class SortUngroupedViewModel(private val graph: AppGraph, private val follows: PluginFollows = PluginFollows.None) : ViewModel() {
     private val state = MutableStateFlow(SortUi())
     val ui: StateFlow<SortUi> = state.asStateFlow()
     private val ai by lazy { AiClient(OkHttpXHttp()) }
@@ -68,8 +68,9 @@ class SortUngroupedViewModel(private val graph: AppGraph) : ViewModel() {
         viewModelScope.launch {
             state.update { it.copy(loading = true) }
             val session = graph.sessions.state.filterNotNull().first()
-            val ungrouped = UngroupedPlans.ungrouped(session)
-            val groups = UngroupedPlans.groups(session)
+            val plugins = follows.current()
+            val ungrouped = UngroupedPlans.ungrouped(session, plugins)
+            val groups = UngroupedPlans.groups(session, plugins)
             val heuristic = UngroupedPlans.planByNames(ungrouped, groups)
             val config = aiConfigOf(graph.settings.load())
             val (plan, aiFailed) = if (useAi && config.isConfigured && ungrouped.isNotEmpty()) askAi(config, ungrouped, groups, heuristic) else heuristic to false
@@ -121,31 +122,37 @@ class SortUngroupedViewModel(private val graph: AppGraph) : ViewModel() {
 
 }
 
-/** The one-by-one sorter at one moment: where it stands, the account it is on, and the groups to put it in. */
+/** The one-by-one sorter at one moment: where it stands, the account it is on (X's or a plugin's), and the groups to put it in. */
 data class SorterUi(
     val sorter: SorterState = SorterState(emptyList()),
-    val accounts: Map<String, FollowedAccount> = emptyMap(),
+    val accounts: Map<String, SubscriptionRow> = emptyMap(),
     val groups: List<FollowGroup> = emptyList(),
     val recentPicks: String = "",
     val failed: Boolean = false,
 ) {
-    val current: FollowedAccount? get() = sorter.current?.let(accounts::get)
+    val current: SubscriptionRow? get() = sorter.current?.let(accounts::get)
 }
 
 /**
  * XTA's one-by-one sorter (group_ungrouped_sorter_screen.dart): each account
  * in turn, a tap on a group puts it there and shows the next. Every choice is
- * saved as it is made, and an undo takes it back out of those groups.
+ * saved as it is made, and an undo takes it back out of those groups. The
+ * plugins' accounts ([follows]) are read once, before the first is shown.
  */
-class UngroupedSorterViewModel(private val graph: AppGraph, accountIds: List<String>) : ViewModel() {
+class UngroupedSorterViewModel(private val graph: AppGraph, accountIds: List<String>, private val follows: PluginFollows = PluginFollows.None) : ViewModel() {
     private val sorter = MutableStateFlow(SorterState(accountIds))
     private val failed = MutableStateFlow(false)
+    private val plugins = MutableStateFlow<List<SubscriptionRow>?>(null)
     val groups = GroupActions(graph, viewModelScope)
 
-    val ui: StateFlow<SorterUi> = combine(sorter, graph.sessions.state.filterNotNull(), graph.settings.settings, failed) { sorter, session, settings, failed ->
+    init {
+        viewModelScope.launch { plugins.value = follows.current() }
+    }
+
+    val ui: StateFlow<SorterUi> = combine(sorter, graph.sessions.state.filterNotNull(), graph.settings.settings, failed, plugins.filterNotNull()) { sorter, session, settings, failed, plugins ->
         SorterUi(
             sorter = sorter,
-            accounts = session.following.associateBy { it.id },
+            accounts = SubscriptionList.rows(session, plugins).filterNot { it.search }.associateBy { it.id },
             groups = GroupBoardModel.ordered(session.groups, settings[SubscriptionPrefs.groupsOrder], settings[SubscriptionPrefs.groupsAscending]),
             recentPicks = settings[SubscriptionPrefs.groupsRecentPicks],
             failed = failed,
@@ -159,6 +166,9 @@ class UngroupedSorterViewModel(private val graph: AppGraph, accountIds: List<Str
         if (now.saving || groupIds.isEmpty()) return
         save({ groups.addTo(account, groupIds) }) { it.decide(groupIds) }
     }
+
+    /** [row]'s page: X's profile, or its plugin's screen. */
+    fun open(row: SubscriptionRow, openProfile: (String) -> Unit) = if (row.plugin != null) follows.open(row) else openProfile(row.screenName)
 
     fun skip() = sorter.update { if (it.current == null || it.saving) it else it.decide(emptyList()) }
 

@@ -54,11 +54,4 @@
         <item quantity="many">%1$d нових дописів</item>
         <item quantity="other">%1$d нового допису</item>
     </plurals>
-    <string name="follow_here_only">Ви стежите лише в XTA Native: X про це не дізнається.</string>
-    <string name="follow_in_feed">У стрічці «Стежу»</string>
-    <string name="follow_groups">Групи</string>
-    <string name="follow_new_group">Нова група</string>
-    <string name="follow_group_name">Назва групи</string>
-    <string name="follow_create">Створити</string>
-    <string name="follow_unfollow">Не стежити</string>
 </resources>

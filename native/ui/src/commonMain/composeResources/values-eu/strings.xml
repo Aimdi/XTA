@@ -50,11 +50,4 @@
         <item quantity="one">Argitalpen berri %1$d</item>
         <item quantity="other">%1$d argitalpen berri</item>
     </plurals>
-    <string name="follow_here_only">XTA Native-n bakarrik jarraitua: X-k ez daki.</string>
-    <string name="follow_in_feed">Jarraitzen jarioan</string>
-    <string name="follow_groups">Taldeak</string>
-    <string name="follow_new_group">Talde berria</string>
-    <string name="follow_group_name">Taldearen izena</string>
-    <string name="follow_create">Sortu</string>
-    <string name="follow_unfollow">Utzi jarraitzeari</string>
 </resources>

@@ -23,19 +23,6 @@
     <string name="discover_add_to_group">Dadać u hrupu</string>
     <string name="discover_hide_from_main_feed">Schavać z hałoŭnaj stužki</string>
     <string name="discover_show_in_main_feed">Pakazać u hałoŭnaj stužcy</string>
-    <string name="discover_search_or_create">Šukać abo stvaryć</string>
-    <string name="discover_group_create">Stvaryć «%1$s» i dadać</string>
-    <string name="discover_no_groups_yet">Pakul niama hrup</string>
-    <string name="discover_no_group_found">Hrupa nie znojdziena</string>
-    <string name="discover_in_no_group">Nie ŭ hrupie</string>
-    <string name="discover_in_group">U hrupie %1$s</string>
-    <string name="discover_in_two_groups">U hrupach %1$s i %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">U %1$d hrupie</item>
-        <item quantity="few">U %1$d hrupach</item>
-        <item quantity="many">U %1$d hrupach</item>
-        <item quantity="other">U %1$d hrupach</item>
-    </plurals>
     <string name="discover_advanced_search">Pašyrany pošuk</string>
     <string name="discover_search_term">Pošukavy zapyt</string>
     <string name="discover_all_of_these_words">Usie hetyja słovy</string>

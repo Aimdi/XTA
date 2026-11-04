@@ -238,4 +238,23 @@
         <item quantity="many">Читают %1$d участников</item>
         <item quantity="other">Читают %1$d участника</item>
     </plurals>
+    <string name="groups_discovery_ai">Найти похожие аккаунты с помощью ИИ</string>
+    <string name="groups_discovery_description">Находите аккаунты, на которые вы не подписаны, на основе участников группы. Откройте профиль, чтобы подписаться или добавить его в группу.</string>
+    <string name="groups_discovery_other_groups">Другие группы…</string>
+    <string name="groups_discovery_show_post">Показать пост</string>
+    <string name="groups_discovery_open_post">Открыть пост</string>
+    <string name="groups_discovery_reposted_by">Репост от %1$s</string>
+    <string name="groups_discovery_quoted_by">Цитирует %1$s</string>
+    <string name="groups_discovery_replied_by">Ответ от %1$s</string>
+    <string name="groups_discovery_mentioned_by">Упоминает %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s предлагает для %2$s</string>
+    <string name="groups_discovery_related_to">Похоже на работы %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">и ещё %1$d</item>
+        <item quantity="few">и ещё %1$d</item>
+        <item quantity="many">и ещё %1$d</item>
+        <item quantity="other">и ещё %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Изменения сохранены</string>
+    <string name="groups_undo_failed">Не удалось отменить. Возможно, данные изменились.</string>
 </resources>

@@ -20,8 +20,8 @@
     <string name="posts_filter_reposts">Retweets</string>
     <string name="posts_filter_videos">Videos</string>
     <string name="posts_filters">Filters</string>
-    <string name="posts_follow">Follow</string>
-    <string name="posts_followed">Following</string>
+    <string name="posts_follow">Subscribe</string>
+    <string name="posts_followed">Subscribed</string>
     <string name="posts_followed_by_one">Followed by %1$s</string>
     <string name="posts_followed_by_two">Followed by %1$s and %2$s</string>
     <string name="posts_followed_by_three">Followed by %1$s, %2$s and %3$s</string>

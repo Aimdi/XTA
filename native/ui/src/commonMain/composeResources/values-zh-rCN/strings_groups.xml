@@ -220,4 +220,20 @@
     <plurals name="groups_discovery_followed_by">
         <item quantity="other">%1$d 位成员关注</item>
     </plurals>
+    <string name="groups_discovery_ai">用 AI 寻找相似账号</string>
+    <string name="groups_discovery_description">根据本组成员发现你尚未关注的账号。打开个人资料即可关注或加入群组。</string>
+    <string name="groups_discovery_other_groups">其他订阅组…</string>
+    <string name="groups_discovery_show_post">显示帖子</string>
+    <string name="groups_discovery_open_post">打开帖子</string>
+    <string name="groups_discovery_reposted_by">%1$s 转发</string>
+    <string name="groups_discovery_quoted_by">%1$s 引用</string>
+    <string name="groups_discovery_replied_by">%1$s 回复过</string>
+    <string name="groups_discovery_mentioned_by">%1$s 提及</string>
+    <string name="groups_discovery_suggested_for">%1$s 为 %2$s 推荐</string>
+    <string name="groups_discovery_related_to">与 %1$s 的作品相似</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="other">及其他 %1$d 位</item>
+    </plurals>
+    <string name="groups_changes_saved">更改已保存</string>
+    <string name="groups_undo_failed">无法撤销。数据可能已更改。</string>
 </resources>

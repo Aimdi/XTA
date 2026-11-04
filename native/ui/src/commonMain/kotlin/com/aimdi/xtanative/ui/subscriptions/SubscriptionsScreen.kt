@@ -87,6 +87,8 @@ class SubscriptionsNavigation(
     val settings: (() -> Unit)? = null,
     val antennas: (() -> Unit)? = null,
     val deck: (() -> Unit)? = null,
+    /** A group's Discover, ranked by the reader's AI: the board's sparkle. */
+    val discoverGroup: ((groupId: String) -> Unit)? = null,
 )
 
 /** A group the edit sheet is open on; [id] null is a new one. */
@@ -165,6 +167,7 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                     onPin = vm.groups::setPinned,
                     onMove = vm::moveGroup,
                     contentPadding = content,
+                    onDiscover = navigation.discoverGroup?.takeIf { state.aiReady },
                 )
                 SubscriptionsTab.PEOPLE -> PeoplePage(
                     state,

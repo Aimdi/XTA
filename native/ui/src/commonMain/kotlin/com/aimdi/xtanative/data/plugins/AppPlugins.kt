@@ -27,11 +27,14 @@ import com.aimdi.xtanative.ui.downloads.PluginBatches
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.feed.PluginFeeds
 import com.aimdi.xtanative.ui.feed.SourceAsk
+import com.aimdi.xtanative.ui.group.DiscoveryPlan
+import com.aimdi.xtanative.ui.group.DiscoveryPlugins
 import com.aimdi.xtanative.ui.home.StripNetwork
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.OLDEST_PLUGIN_API
 import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
+import com.aimdi.xtanative.ui.plugins.PluginDiscovered
 import com.aimdi.xtanative.ui.plugins.PluginDownload
 import com.aimdi.xtanative.ui.plugins.PluginFolderOption
 import com.aimdi.xtanative.ui.plugins.PluginHost
@@ -196,6 +199,9 @@ class AppPlugins(
             .map { networks -> networks.onStart { emit(emptyMap()) }.catch { emit(emptyMap()) } }
         if (each.isEmpty()) flowOf(emptyMap()) else combine(each) { maps -> maps.reversed().fold(emptyMap<String, String>()) { all, map -> all + map } }
     }.flowOn(Dispatchers.Default).stateIn(scope, SharingStarted.Eagerly, emptyMap())
+
+    /** The running plugins' parts of a group's Discover. */
+    val discoveries: DiscoveryPlugins = RunningDiscoveries()
 
     private val mutableProblems = MutableStateFlow<Map<String, String>>(emptyMap())
 
@@ -427,15 +433,46 @@ class AppPlugins(
             if (each.isEmpty()) flowOf(emptyList()) else combine(each) { lists -> lists.flatMap { it } }
         }
 
+        override suspend fun current(): List<SubscriptionRow> = running.value.flatMap { running ->
+            subscriptionsOf(running.plugin).orEmpty().map { SubscriptionList.pluginRow(running.plugin.id, it) }
+        }
+
         private fun rowsOf(id: String, subscriptions: Flow<List<PluginSubscription>>): Flow<List<SubscriptionRow>> =
             subscriptions.map { list -> list.map { SubscriptionList.pluginRow(id, it) } }
                 .onStart { emit(emptyList()) }
                 .catch { emit(emptyList()) }
                 .flowOn(Dispatchers.Default)
 
-        override fun unfollow(row: SubscriptionRow) {
-            val plugin = row.plugin?.let(::runningOf)?.plugin ?: return
-            scope.launch { guarded { subscriptionsOf(plugin)?.firstOrNull { PluginMembers.memberId(plugin.id, it.id) == row.id }?.unfollow?.invoke() } }
+        /**
+         * What the plugin keeps (its backup sections, its own settings) and
+         * the groups [row] was in are read before and once the account has
+         * left the plugin's list; the undo puts them back while the plugin
+         * still keeps what the unfollow left.
+         */
+        override suspend fun unfollow(row: SubscriptionRow): (suspend () -> Boolean)? {
+            val plugin = row.plugin?.let(::runningOf)?.plugin ?: return null
+            val subscription = subscriptionsOf(plugin)?.firstOrNull { PluginMembers.memberId(plugin.id, it.id) == row.id } ?: return null
+            val before = kept(plugin)
+            val groups = sessions.state.value?.groups.orEmpty().filter { row.id in it.memberIds }.map { it.id }
+            guarded { subscription.unfollow() } ?: return null
+            guarded { withTimeoutOrNull(ASKED_MILLIS) { plugin.subscriptions?.first { list -> list.none { it.id == subscription.id } } } }
+            val after = kept(plugin)
+            if (before == after && groups.isEmpty()) return null
+            return { undo(plugin, row.id, before, after, groups) }
+        }
+
+        private suspend fun kept(plugin: XtaPlugin) = PluginKept(
+            sections = guardedNow { plugin.backupSections }.orEmpty().associate { it.name to guarded { it.export() } },
+            settings = PluginUndo.ownSettings(settings.load(), plugin.id),
+        )
+
+        private suspend fun undo(plugin: XtaPlugin, memberId: String, before: PluginKept, after: PluginKept, groups: List<String>): Boolean {
+            if (kept(plugin) != after) return false
+            val sections = guardedNow { plugin.backupSections }.orEmpty().associateBy { it.name }
+            PluginUndo.changedSections(before, after).forEach { (name, text) -> guarded { sections[name]?.import?.invoke(text) } }
+            if (before.settings != after.settings) settings.update { PluginUndo.withOwn(it, plugin.id, before.settings) }
+            if (groups.isNotEmpty()) sessions.update { it.addingTo(memberId, groups) }
+            return true
         }
 
         override fun open(row: SubscriptionRow) {
@@ -450,6 +487,23 @@ class AppPlugins(
         /** What [plugin] follows now, or null when it cannot say in [ASKED_MILLIS]. */
         private suspend fun subscriptionsOf(plugin: XtaPlugin): List<PluginSubscription>? =
             guarded { withTimeoutOrNull(ASKED_MILLIS) { plugin.subscriptions?.first() } }
+    }
+
+    /** The running plugins' parts of a group's Discover ([XtaPlugin.discovery]), each asked off the screen's thread. */
+    private inner class RunningDiscoveries : DiscoveryPlugins {
+        override fun plans(): Map<String, DiscoveryPlan> = running.value.mapNotNull { running ->
+            guardedNow { running.plugin.discovery?.let { DiscoveryPlan(it.perScan, it.scope) } }?.let { running.plugin.id to it }
+        }.toMap()
+
+        override suspend fun around(pluginId: String, account: String): List<PluginDiscovered> = withContext(Dispatchers.Default) {
+            val discovery = runningOf(pluginId)?.plugin?.discovery ?: return@withContext emptyList()
+            try {
+                discovery.around(account)
+            } catch (e: LinkageError) {
+                // Built against an API this app does not have after all: it finds nothing, and the others do.
+                throw IllegalStateException(e)
+            }
+        }
     }
 
     /** [account] of plugin [id] out of every group, as the plugin unfollowed it ([PluginHost.unfollowed]). */

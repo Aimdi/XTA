@@ -238,4 +238,23 @@
         <item quantity="many">Sleduje %1$d člena</item>
         <item quantity="other">Sleduje %1$d členů</item>
     </plurals>
+    <string name="groups_discovery_ai">Najít podobné účty pomocí AI</string>
+    <string name="groups_discovery_description">Objevujte účty, které nesledujete, na základě členů této skupiny. Otevřete profil a začněte jej sledovat nebo jej přidejte do skupiny.</string>
+    <string name="groups_discovery_other_groups">Další skupiny…</string>
+    <string name="groups_discovery_show_post">Zobrazit příspěvek</string>
+    <string name="groups_discovery_open_post">Otevřít příspěvek</string>
+    <string name="groups_discovery_reposted_by">Sdílí %1$s</string>
+    <string name="groups_discovery_quoted_by">Cituje %1$s</string>
+    <string name="groups_discovery_replied_by">Odpovídá %1$s</string>
+    <string name="groups_discovery_mentioned_by">Zmiňuje %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s to navrhuje pro %2$s</string>
+    <string name="groups_discovery_related_to">Podobné dílům od %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">a 1 další</item>
+        <item quantity="few">a %1$d další</item>
+        <item quantity="many">a %1$d dalšího</item>
+        <item quantity="other">a %1$d dalších</item>
+    </plurals>
+    <string name="groups_changes_saved">Změny uloženy</string>
+    <string name="groups_undo_failed">Akci nelze vrátit zpět. Data se mohla změnit.</string>
 </resources>

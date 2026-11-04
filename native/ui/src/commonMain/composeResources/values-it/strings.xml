@@ -50,11 +50,4 @@
         <item quantity="one">%1$d nuovo post</item>
         <item quantity="other">%1$d nuovi post</item>
     </plurals>
-    <string name="follow_here_only">Seguito solo in XTA Native: X non lo sa.</string>
-    <string name="follow_in_feed">Nel feed Seguiti</string>
-    <string name="follow_groups">Gruppi</string>
-    <string name="follow_new_group">Nuovo gruppo</string>
-    <string name="follow_group_name">Nome del gruppo</string>
-    <string name="follow_create">Crea</string>
-    <string name="follow_unfollow">Non seguire più</string>
 </resources>

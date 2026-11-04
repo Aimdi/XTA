@@ -54,11 +54,4 @@
         <item quantity="many">%1$d novych dopisaŭ</item>
         <item quantity="other">%1$d novaha dopisu</item>
     </plurals>
-    <string name="follow_here_only">Vy čytajecie tolki ŭ XTA Native: X pra heta nie daviedajecca.</string>
-    <string name="follow_in_feed">U stužcy «Čytaju»</string>
-    <string name="follow_groups">Hrupy</string>
-    <string name="follow_new_group">Novaja hrupa</string>
-    <string name="follow_group_name">Nazva hrupy</string>
-    <string name="follow_create">Stvaryć</string>
-    <string name="follow_unfollow">Pierastać čytać</string>
 </resources>

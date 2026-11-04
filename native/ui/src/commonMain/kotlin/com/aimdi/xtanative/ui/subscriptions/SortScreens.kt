@@ -63,7 +63,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -110,7 +110,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SortUngroupedScreen(onBack: () -> Unit, onSortOneByOne: (List<String>) -> Unit, onApplied: (leftovers: List<String>) -> Unit) {
     val graph = LocalGraph.current
-    val vm: SortUngroupedViewModel = viewModel { SortUngroupedViewModel(graph) }
+    val follows = LocalPlugins.current.follows
+    val vm: SortUngroupedViewModel = viewModel { SortUngroupedViewModel(graph, follows) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val snackbars = remember { SnackbarHostState() }
@@ -235,7 +236,8 @@ private fun Section(title: org.jetbrains.compose.resources.StringResource) {
 @Composable
 fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Unit, onDone: () -> Unit) {
     val graph = LocalGraph.current
-    val vm: UngroupedSorterViewModel = viewModel { UngroupedSorterViewModel(graph, accountIds) }
+    val follows = LocalPlugins.current.follows
+    val vm: UngroupedSorterViewModel = viewModel { UngroupedSorterViewModel(graph, accountIds, follows) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val snackbars = remember { SnackbarHostState() }
     var several by remember { mutableStateOf(false) }
@@ -300,7 +302,7 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
                                 (fadeOut(tween(160)) + slideOutHorizontally(tween(160)) { -side * it / 12 })
                         },
                     ) { _ ->
-                        AccountCard(account.name, account.screenName, account.avatarUrl) { openProfile(account.screenName) }
+                        AccountCard(account) { vm.open(account, openProfile) }
                     }
                 }
                 item(key = "groups") {
@@ -333,12 +335,13 @@ fun UngroupedSorterScreen(accountIds: List<String>, openProfile: (String) -> Uni
     }
 }
 
+/** Who is being sorted: their face (a plugin's with its network's mark), name and the line under it, and a way to their page. */
 @Composable
-private fun AccountCard(name: String, screenName: String, avatarUrl: String?, onOpen: () -> Unit) {
+private fun AccountCard(row: SubscriptionRow, onOpen: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Avatar(avatarUrl, 72.dp)
-        Text(name, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
-        Text("@$screenName", color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
+        SubscriptionFace(row, 72.dp)
+        Text(row.name, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 12.dp))
+        Text(subscriptionSubtitle(row), color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp))
         TextButton(onClick = onOpen, modifier = Modifier.padding(top = 4.dp)) {
             Icon(GroupIcons.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.groups_open_profile), modifier = Modifier.padding(start = 8.dp))

@@ -67,6 +67,14 @@ sealed interface KeepNotice {
 
     /** Words already in the reader's language: a plugin's (how a post it sent to the reader's own server went), or a screen's own. */
     data class Said(val text: String, override val working: Boolean = false) : KeepNotice
+
+    /** "Changes saved" with XTA's undo (UndoHost): [undo] takes the change back, answering whether it could. */
+    class ChangesSaved(val undo: suspend () -> Boolean) : KeepNotice {
+        override val long get() = true
+    }
+
+    /** The undo could not be made: what it would have put back changed since. */
+    data object UndoFailed : KeepNotice
 }
 
 /** The notice showing now, one at a time: a new one replaces it. [serial] tells two of the same apart. */

@@ -48,11 +48,4 @@
     <plurals name="new_posts">
         <item quantity="other">새 게시물 %1$d개</item>
     </plurals>
-    <string name="follow_here_only">XTA Native에서만 팔로우합니다. X에는 알리지 않습니다.</string>
-    <string name="follow_in_feed">팔로잉 피드에 표시</string>
-    <string name="follow_groups">그룹</string>
-    <string name="follow_new_group">새 그룹</string>
-    <string name="follow_group_name">그룹 이름</string>
-    <string name="follow_create">만들기</string>
-    <string name="follow_unfollow">팔로우 취소</string>
 </resources>

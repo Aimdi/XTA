@@ -220,4 +220,20 @@
     <plurals name="groups_discovery_followed_by">
         <item quantity="other">%1$d 位成員追蹤</item>
     </plurals>
+    <string name="groups_discovery_ai">用 AI 尋找相似帳號</string>
+    <string name="groups_discovery_description">根據本群組成員發現你尚未追蹤的帳號。開啟個人檔案即可追蹤或加入群組。</string>
+    <string name="groups_discovery_other_groups">其他群組…</string>
+    <string name="groups_discovery_show_post">顯示貼文</string>
+    <string name="groups_discovery_open_post">開啟貼文</string>
+    <string name="groups_discovery_reposted_by">%1$s 轉發</string>
+    <string name="groups_discovery_quoted_by">%1$s 引用</string>
+    <string name="groups_discovery_replied_by">%1$s 回覆過</string>
+    <string name="groups_discovery_mentioned_by">%1$s 提及</string>
+    <string name="groups_discovery_suggested_for">%1$s 為 %2$s 推薦</string>
+    <string name="groups_discovery_related_to">與 %1$s 的作品相似</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="other">及其他 %1$d 位</item>
+    </plurals>
+    <string name="groups_changes_saved">變更已儲存</string>
+    <string name="groups_undo_failed">無法復原。資料可能已變更。</string>
 </resources>

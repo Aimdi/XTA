@@ -226,4 +226,21 @@
         <item quantity="one">%1$d सदस्य फ़ॉलो करता है</item>
         <item quantity="other">%1$d सदस्य फ़ॉलो करते हैं</item>
     </plurals>
+    <string name="groups_discovery_ai">AI से मिलते-जुलते खाते खोजें</string>
+    <string name="groups_discovery_description">इस समूह के सदस्यों के आधार पर ऐसे खाते खोजें जिन्हें आप फ़ॉलो नहीं करते। फ़ॉलो करने या समूह में जोड़ने के लिए प्रोफ़ाइल खोलें।</string>
+    <string name="groups_discovery_other_groups">अन्य समूह…</string>
+    <string name="groups_discovery_show_post">पोस्ट दिखाएँ</string>
+    <string name="groups_discovery_open_post">पोस्ट खोलें</string>
+    <string name="groups_discovery_reposted_by">%1$s द्वारा रीपोस्ट किया गया</string>
+    <string name="groups_discovery_quoted_by">%1$s द्वारा उद्धृत</string>
+    <string name="groups_discovery_replied_by">%1$s द्वारा उत्तर दिया गया</string>
+    <string name="groups_discovery_mentioned_by">%1$s द्वारा उल्लेखित</string>
+    <string name="groups_discovery_suggested_for">%1$s इसे %2$s के लिए सुझाता है</string>
+    <string name="groups_discovery_related_to">%1$s के कामों जैसा</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">और 1 अन्य</item>
+        <item quantity="other">और %1$d अन्य</item>
+    </plurals>
+    <string name="groups_changes_saved">बदलाव सहेजे गए</string>
+    <string name="groups_undo_failed">पूर्ववत नहीं किया जा सका। डेटा बदल गया हो सकता है।</string>
 </resources>

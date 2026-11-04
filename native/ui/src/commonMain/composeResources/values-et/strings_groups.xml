@@ -226,4 +226,21 @@
         <item quantity="one">Jälgib %1$d liige</item>
         <item quantity="other">Jälgib %1$d liiget</item>
     </plurals>
+    <string name="groups_discovery_ai">Leia sarnaseid kontosid tehisintellektiga</string>
+    <string name="groups_discovery_description">Avasta kontosid, mida sa ei jälgi, selle rühma liikmete põhjal. Ava profiil, et seda jälgida või rühma lisada.</string>
+    <string name="groups_discovery_other_groups">Teised rühmad…</string>
+    <string name="groups_discovery_show_post">Näita postitust</string>
+    <string name="groups_discovery_open_post">Ava postitus</string>
+    <string name="groups_discovery_reposted_by">Jagas: %1$s</string>
+    <string name="groups_discovery_quoted_by">Tsiteeris: %1$s</string>
+    <string name="groups_discovery_replied_by">Vastas: %1$s</string>
+    <string name="groups_discovery_mentioned_by">Mainis: %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s soovitab seda kasutajale %2$s</string>
+    <string name="groups_discovery_related_to">Sarnane kasutaja %1$s töödega</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">ja veel 1</item>
+        <item quantity="other">ja veel %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Muudatused salvestatud</string>
+    <string name="groups_undo_failed">Tagasivõtmine ebaõnnestus. Andmed võivad olla muutunud.</string>
 </resources>

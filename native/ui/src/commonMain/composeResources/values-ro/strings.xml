@@ -52,11 +52,4 @@
         <item quantity="few">%1$d postări noi</item>
         <item quantity="other">%1$d de postări noi</item>
     </plurals>
-    <string name="follow_here_only">Urmărit doar în XTA Native: X nu află.</string>
-    <string name="follow_in_feed">În fluxul Urmăresc</string>
-    <string name="follow_groups">Grupuri</string>
-    <string name="follow_new_group">Grup nou</string>
-    <string name="follow_group_name">Numele grupului</string>
-    <string name="follow_create">Creează</string>
-    <string name="follow_unfollow">Nu mai urmări</string>
 </resources>

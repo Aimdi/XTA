@@ -18,6 +18,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginDiscovery
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
@@ -77,6 +78,9 @@ class PixivPlugin : XtaPlugin() {
     override val feed: PluginFeed get() = runtime.feed
 
     override val subscriptions: Flow<List<PluginSubscription>> get() = runtime.subscriptions
+
+    /** The creators Pixiv relates to a group's creators, for the group's Discover. */
+    override val discovery: PluginDiscovery get() = PixivDiscover(runtime)
 
     override val postActions: NetworkPostActions get() = runtime.actions
 

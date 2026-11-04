@@ -2,7 +2,6 @@ package com.aimdi.xtanative.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.feed.MergedTimeline
 import com.aimdi.xtanative.core.feed.TimelineSource
 import com.aimdi.xtanative.core.json.J
@@ -76,14 +75,10 @@ data class ProfileUi(
     val repliesHidden: Boolean get() = user?.let { filters.repliesHidden(it.id) } == true
 }
 
-/** A group, and whether the account is in it. */
-data class GroupChoice(val id: String, val name: String, val emoji: String?, val member: Boolean)
-
 /** How the account is followed here: in XTA Native alone, never on X; its feed cap; who of the follows follows it. */
 data class FollowUi(
     val followed: Boolean = false,
     val inFeed: Boolean = true,
-    val groups: List<GroupChoice> = emptyList(),
     /** XTA's "Max posts per feed load" for it, when followed. */
     val maxPosts: Int? = null,
     val followedBy: FollowedBy = FollowedBy(),
@@ -94,9 +89,6 @@ data class FollowUi(
             return FollowUi(
                 followed = account != null,
                 inFeed = account?.inFeed ?: true,
-                groups = FollowGroup.ordered(session.groups).map { group ->
-                    GroupChoice(group.id, group.name, group.emoji, account != null && account.id in group.memberIds)
-                },
                 maxPosts = account?.let { QuietAccount.choiceOf(session.postCaps[it.id]) },
                 followedBy = userId?.let { FollowedBy.of(it, remembered, session.following) } ?: FollowedBy(),
             )
@@ -388,21 +380,6 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
 
     /** XTA's "Max posts per feed load": off, or a cap on the account's posts in each group feed load. */
     fun capPosts(max: Int?) = changeFollow { user, session -> session.withPostCap(user.id, max) }
-
-    fun followHere() = changeFollow { user, session -> session.follow(user, System.currentTimeMillis()) }
-
-    fun unfollow() = changeFollow { user, session -> session.unfollow(user.id) }
-
-    fun showInFeed(shown: Boolean) = changeFollow { user, session -> session.withInFeed(user.id, shown) }
-
-    /** Into [groupId] or out of it; into a group follows the account here first. */
-    fun putInGroup(groupId: String, member: Boolean) = changeFollow { user, session ->
-        (if (member) session.follow(user, System.currentTimeMillis()) else session).withMembership(groupId, user.id, member)
-    }
-
-    fun newGroup(name: String) = changeFollow { user, session ->
-        session.follow(user, System.currentTimeMillis()).withNewGroup(java.util.UUID.randomUUID().toString(), name, listOf(user.id))
-    }
 
     private fun changeFollow(change: (XUser, Session) -> Session) {
         val user = state.value.user ?: return

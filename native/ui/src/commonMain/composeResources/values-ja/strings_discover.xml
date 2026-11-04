@@ -23,16 +23,6 @@
     <string name="discover_add_to_group">グループに追加</string>
     <string name="discover_hide_from_main_feed">メインフィードから非表示</string>
     <string name="discover_show_in_main_feed">メインフィードに表示</string>
-    <string name="discover_search_or_create">検索または作成</string>
-    <string name="discover_group_create">「%1$s」を作成して追加</string>
-    <string name="discover_no_groups_yet">グループはまだありません</string>
-    <string name="discover_no_group_found">グループが見つかりません</string>
-    <string name="discover_in_no_group">どのグループにも入っていません</string>
-    <string name="discover_in_group">%1$sに入っています</string>
-    <string name="discover_in_two_groups">%1$sと%2$sに入っています</string>
-    <plurals name="discover_in_groups">
-        <item quantity="other">%1$d個のグループに入っています</item>
-    </plurals>
     <string name="discover_advanced_search">高度な検索</string>
     <string name="discover_search_term">検索語</string>
     <string name="discover_all_of_these_words">次のキーワードをすべて含む</string>

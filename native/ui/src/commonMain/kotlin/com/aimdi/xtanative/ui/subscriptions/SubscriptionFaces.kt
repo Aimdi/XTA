@@ -7,12 +7,16 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_search_term
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
@@ -43,6 +47,26 @@ private fun PluginAccountFace(row: SubscriptionRow, size: Dp) {
         PluginMark(owner, row.name, size)
     } else {
         MarkedAvatar(url, owner?.plugin?.icon, owner?.plugin?.brandColor ?: Color.Unspecified, size)
+    }
+}
+
+/**
+ * Everything followed (X's accounts and searches, then the running plugins'
+ * accounts) in Subscriptions' order: what a group can be made of wherever
+ * its sheet opens, as XTA's lists every network's.
+ */
+@Composable
+fun rememberFollowedRows(session: Session): List<SubscriptionRow> {
+    val plugins by LocalPlugins.current.follows.rows.collectAsStateWithLifecycle(emptyList())
+    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val loaded = settings ?: return SubscriptionList.rows(session, plugins)
+    return remember(session, plugins, loaded) {
+        SubscriptionList.ordered(
+            SubscriptionList.rows(session, plugins),
+            loaded[SubscriptionPrefs.order],
+            loaded[SubscriptionPrefs.ascending],
+            loaded[SubscriptionPrefs.customOrder],
+        )
     }
 }
 

@@ -226,4 +226,21 @@
         <item quantity="one">Suivi par %1$d membre</item>
         <item quantity="other">Suivi par %1$d membres</item>
     </plurals>
+    <string name="groups_discovery_ai">Trouver des comptes similaires avec l’IA</string>
+    <string name="groups_discovery_description">Découvrez des comptes que vous ne suivez pas à partir des membres de ce groupe. Ouvrez un profil pour le suivre ou l’ajouter à un groupe.</string>
+    <string name="groups_discovery_other_groups">Autres groupes…</string>
+    <string name="groups_discovery_show_post">Afficher la publication</string>
+    <string name="groups_discovery_open_post">Ouvrir la publication</string>
+    <string name="groups_discovery_reposted_by">Partagé par %1$s</string>
+    <string name="groups_discovery_quoted_by">Cité par %1$s</string>
+    <string name="groups_discovery_replied_by">Réponse de %1$s</string>
+    <string name="groups_discovery_mentioned_by">Mentionné par %1$s</string>
+    <string name="groups_discovery_suggested_for">Suggéré par %1$s pour %2$s</string>
+    <string name="groups_discovery_related_to">Proche des œuvres de %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">et 1 autre</item>
+        <item quantity="other">et %1$d autres</item>
+    </plurals>
+    <string name="groups_changes_saved">Modifications enregistrées</string>
+    <string name="groups_undo_failed">Impossible d’annuler. Les données ont peut-être changé.</string>
 </resources>

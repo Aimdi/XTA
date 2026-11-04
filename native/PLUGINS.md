@@ -52,9 +52,10 @@ plugin, the chip tabs, the shelf, the recent searches, the action row,
 `postExtras`, `routeForAccount`, `subscriptions` with `PluginSubscription`,
 `PluginHost.unfollowed` and `RssReads`; 4 adds `contractNetworks` (the
 networks of the contracts a plugin watches, for X posts' text),
-`postCard`, `routeForOffline`, `PluginHost.likedOnDevice`,
-`SwipeToUnfollow` and, in `ui.common`, `rememberSwitchedHaptics`. A
-plugin's `xta-plugin.json` names the version it was built against.
+`postCard`, `routeForOffline`, `discovery` with `PluginDiscovery` (its part
+of a group's Discover), `PluginHost.likedOnDevice`, `SwipeToUnfollow` and,
+in `ui.common`, `rememberSwitchedHaptics`. A plugin's `xta-plugin.json`
+names the version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -90,6 +91,7 @@ its plugins have to link against that prerelease's app.
 | `footprint()` | what it keeps on the device, counted in the store |
 | `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
 | `subscriptions` | the accounts it follows, as they change, for the app's Subscriptions list ([below](#accounts-in-the-apps-groups)), or none |
+| `discovery` | its part of a group's Discover: the accounts its members in a group point at on its network (a `PluginDiscovery`, [below](#a-groups-discover)), or none |
 | `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
 | `postExtras(post)` | what it adds to the shared row where the app draws one of its posts (a `NetworkPostExtras`: Mastodon's poll results), or none |
 | `postCard(post)` | its own card for one of its posts where the app draws it among others' (Home's timelines, the groups), in place of the shared row, as XTA draws RSS's article row with its read mark there; the card draws its line under it, the app its colour down its side; or none |
@@ -298,6 +300,35 @@ plugin's member, and so does a plugin's held-back rows reaching it later; an
 export writes them back bare. Where a plugin reads an account by another
 name than XTA keeps, `PluginSubscription.backupId` is XTA's (Bluesky: the
 DID read, the handle kept).
+
+### A group's Discover
+
+A group's Discover (XTA's group_discovery_sources.dart) suggests accounts
+its members point at that the reader does not follow: X's from what the
+group feed kept, the members' latest posts and their Following lists, and
+every other network's through its plugin's `XtaPlugin.discovery`, a
+`PluginDiscovery` (version 3):
+
+| Member | What it is |
+|---|---|
+| `around(account)` | what one of its group members (as the group holds it) points at: `PluginDiscovered`s; it throws when that could not be read |
+| `perScan` | how many members one open asks about (6; twice that on Scan more) |
+| `scope` | what the answers depend on besides the member (the account signed in, the reader's filters): a change asks again |
+
+A `PluginDiscovered` is the account (`id` as its group members name it,
+`handle`, `name`, `avatarUrl`, `bio`), its `signal` (`DiscoverySignal`:
+reposted, quoted, replied, mentioned, followed, suggested, related) and
+`pointedAt`, the post that shows it (`text`, `postUrl`, `postedAt` and
+`post`, drawn with the shared row when the reader opens the row), its
+`route` (the plugin's screen for it) and `follow` (followed in the plugin,
+as adding it to a group does first). The app picks the members, the least
+lately asked first, keeps each answer ten minutes, leaves out the group's
+members and what the reader follows, merges what every network found and
+ranks it as XTA does (the members vouching, the strength of their signals,
+the reader's "more / less like this", the newest), its AI ordering it on
+"Rank with AI". Bluesky answers the AppView's suggestions for a member, else
+what it reposted and quoted; Mastodon what a member boosted and quoted;
+Pixiv the creators it relates to a member.
 
 ### Saved, notes and likes
 

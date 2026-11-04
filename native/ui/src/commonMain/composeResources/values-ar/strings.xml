@@ -58,11 +58,4 @@
         <item quantity="many">%1$d منشورًا جديدًا</item>
         <item quantity="other">%1$d منشور جديد</item>
     </plurals>
-    <string name="follow_here_only">متابَع في XTA Native فقط: لا يُبلَّغ X بذلك.</string>
-    <string name="follow_in_feed">في موجز «المتابَعون»</string>
-    <string name="follow_groups">المجموعات</string>
-    <string name="follow_new_group">مجموعة جديدة</string>
-    <string name="follow_group_name">اسم المجموعة</string>
-    <string name="follow_create">إنشاء</string>
-    <string name="follow_unfollow">إلغاء المتابعة</string>
 </resources>

@@ -226,4 +226,21 @@
         <item quantity="one">Sekvata de %1$d membro</item>
         <item quantity="other">Sekvata de %1$d membroj</item>
     </plurals>
+    <string name="groups_discovery_ai">Trovi similajn kontojn per artefarita intelekto</string>
+    <string name="groups_discovery_description">Malkovru kontojn, kiujn vi ne sekvas, surbaze de la membroj de ĉi tiu grupo. Malfermu profilon por sekvi ĝin aŭ aldoni ĝin al grupo.</string>
+    <string name="groups_discovery_other_groups">Aliaj grupoj…</string>
+    <string name="groups_discovery_show_post">Montri afiŝon</string>
+    <string name="groups_discovery_open_post">Malfermi la afiŝon</string>
+    <string name="groups_discovery_reposted_by">Diskonigita de %1$s</string>
+    <string name="groups_discovery_quoted_by">Citita de %1$s</string>
+    <string name="groups_discovery_replied_by">Respondita de %1$s</string>
+    <string name="groups_discovery_mentioned_by">Menciita de %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s proponas ĉi tion por %2$s</string>
+    <string name="groups_discovery_related_to">Simila al verkoj de %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">kaj 1 plia</item>
+        <item quantity="other">kaj %1$d pliaj</item>
+    </plurals>
+    <string name="groups_changes_saved">Ŝanĝoj konservitaj</string>
+    <string name="groups_undo_failed">Ne eblis malfari. La datumoj eble ŝanĝiĝis.</string>
 </resources>

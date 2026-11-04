@@ -27,17 +27,6 @@
     <string name="discover_add_to_group">Add to group</string>
     <string name="discover_hide_from_main_feed">Hide from main feed</string>
     <string name="discover_show_in_main_feed">Show in main feed</string>
-    <string name="discover_search_or_create">Search or create</string>
-    <string name="discover_group_create">Create “%1$s” and add</string>
-    <string name="discover_no_groups_yet">No groups yet</string>
-    <string name="discover_no_group_found">No group found</string>
-    <string name="discover_in_no_group">Not in a group</string>
-    <string name="discover_in_group">In %1$s</string>
-    <string name="discover_in_two_groups">In %1$s and %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">In %1$d group</item>
-        <item quantity="other">In %1$d groups</item>
-    </plurals>
 
     <string name="discover_advanced_search">Advanced search</string>
     <string name="discover_search_term">Search term</string>

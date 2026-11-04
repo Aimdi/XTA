@@ -48,11 +48,4 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d bài đăng mới</item>
     </plurals>
-    <string name="follow_here_only">Chỉ theo dõi trong XTA Native: X không được báo.</string>
-    <string name="follow_in_feed">Trong bảng tin Đang theo dõi</string>
-    <string name="follow_groups">Nhóm</string>
-    <string name="follow_new_group">Nhóm mới</string>
-    <string name="follow_group_name">Tên nhóm</string>
-    <string name="follow_create">Tạo</string>
-    <string name="follow_unfollow">Bỏ theo dõi</string>
 </resources>

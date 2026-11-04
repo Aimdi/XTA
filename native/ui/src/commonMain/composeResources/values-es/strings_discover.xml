@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Añadir al grupo</string>
     <string name="discover_hide_from_main_feed">Ocultar del feed principal</string>
     <string name="discover_show_in_main_feed">Mostrar en el feed principal</string>
-    <string name="discover_search_or_create">Buscar o crear</string>
-    <string name="discover_group_create">Crear «%1$s» y añadir</string>
-    <string name="discover_no_groups_yet">Aún no hay grupos</string>
-    <string name="discover_no_group_found">No se encontró ningún grupo</string>
-    <string name="discover_in_no_group">No está en ningún grupo</string>
-    <string name="discover_in_group">En %1$s</string>
-    <string name="discover_in_two_groups">En %1$s y %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">En %1$d grupo</item>
-        <item quantity="other">En %1$d grupos</item>
-    </plurals>
     <string name="discover_advanced_search">Búsqueda avanzada</string>
     <string name="discover_search_term">Término de búsqueda</string>
     <string name="discover_all_of_these_words">Todas estas palabras</string>

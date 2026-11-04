@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Aldoni al grupo</string>
     <string name="discover_hide_from_main_feed">Kaŝi el ĉefa fluo</string>
     <string name="discover_show_in_main_feed">Montri en ĉefa fluo</string>
-    <string name="discover_search_or_create">Serĉi aŭ krei</string>
-    <string name="discover_group_create">Krei „%1$s“ kaj aldoni</string>
-    <string name="discover_no_groups_yet">Ankoraŭ neniuj grupoj</string>
-    <string name="discover_no_group_found">Neniu grupo trovita</string>
-    <string name="discover_in_no_group">En neniu grupo</string>
-    <string name="discover_in_group">En %1$s</string>
-    <string name="discover_in_two_groups">En %1$s kaj %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">En %1$d grupo</item>
-        <item quantity="other">En %1$d grupoj</item>
-    </plurals>
     <string name="discover_advanced_search">Altnivela serĉo</string>
     <string name="discover_search_term">Termino de serĉo</string>
     <string name="discover_all_of_these_words">Ĉiuj ĉi tiuj vortoj</string>

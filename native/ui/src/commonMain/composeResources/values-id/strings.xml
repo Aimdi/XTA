@@ -48,11 +48,4 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d postingan baru</item>
     </plurals>
-    <string name="follow_here_only">Diikuti hanya di XTA Native: X tidak diberi tahu.</string>
-    <string name="follow_in_feed">Di umpan Mengikuti</string>
-    <string name="follow_groups">Grup</string>
-    <string name="follow_new_group">Grup baru</string>
-    <string name="follow_group_name">Nama grup</string>
-    <string name="follow_create">Buat</string>
-    <string name="follow_unfollow">Berhenti mengikuti</string>
 </resources>

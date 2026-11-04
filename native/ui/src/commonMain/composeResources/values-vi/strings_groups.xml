@@ -220,4 +220,20 @@
     <plurals name="groups_discovery_followed_by">
         <item quantity="other">Được %1$d thành viên theo dõi</item>
     </plurals>
+    <string name="groups_discovery_ai">Tìm tài khoản tương tự bằng AI</string>
+    <string name="groups_discovery_description">Khám phá các tài khoản bạn chưa theo dõi dựa trên thành viên nhóm này. Mở hồ sơ để theo dõi hoặc thêm vào nhóm.</string>
+    <string name="groups_discovery_other_groups">Nhóm khác…</string>
+    <string name="groups_discovery_show_post">Hiện bài đăng</string>
+    <string name="groups_discovery_open_post">Mở bài đăng</string>
+    <string name="groups_discovery_reposted_by">Được đăng lại bởi %1$s</string>
+    <string name="groups_discovery_quoted_by">Được trích dẫn bởi %1$s</string>
+    <string name="groups_discovery_replied_by">Được trả lời bởi %1$s</string>
+    <string name="groups_discovery_mentioned_by">Được nhắc đến bởi %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s gợi ý cho %2$s</string>
+    <string name="groups_discovery_related_to">Tương tự tác phẩm của %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="other">và %1$d người khác</item>
+    </plurals>
+    <string name="groups_changes_saved">Đã lưu thay đổi</string>
+    <string name="groups_undo_failed">Không thể hoàn tác. Dữ liệu có thể đã thay đổi.</string>
 </resources>

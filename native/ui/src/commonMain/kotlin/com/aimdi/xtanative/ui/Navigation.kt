@@ -45,6 +45,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
+import com.aimdi.xtanative.ui.group.GroupDiscoveryScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
@@ -118,7 +119,7 @@ private object Routes {
     const val PROFILE = "profile/{screenName}"
     const val MEDIA = "media/{postId}/{index}"
     const val GALLERY = "gallery/{key}/{index}?post={post}&at={at}"
-    const val SEARCH = "search?q={q}&tab={tab}"
+    const val SEARCH = "search?q={q}&tab={tab}&focus={focus}"
     const val SETTINGS = "settings"
     const val TRENDS = "trends"
     const val COMMUNITY = "community/{id}"
@@ -147,6 +148,7 @@ private object Routes {
     const val SUBSCRIPTIONS_SORT = "subscriptions/sort"
     const val SUBSCRIPTIONS_SORT_ONE = "subscriptions/sort-one?ids={ids}"
     const val GROUP = "group/{id}"
+    const val GROUP_DISCOVER = "group/{id}/discover"
     const val QUOTES = "post/{id}/quotes"
     const val REPOSTERS = "post/{id}/reposters"
     const val FOLLOWING = "profile/{screenName}/following"
@@ -164,9 +166,9 @@ private object Routes {
         "gallery/" + encoded(key) + "/$index" + (page?.let { "?post=" + encoded(it.postId) + "&at=" + it.index } ?: "")
     fun search(query: String?) = search(query, null)
 
-    /** The search of [query] on [tab] (a [SearchTab.routeName]); either may be left out. */
-    fun search(query: String?, tab: String?): String {
-        val params = listOfNotNull(query?.takeIf { it.isNotBlank() }?.let { "q=" + encoded(it) }, tab?.let { "tab=$it" })
+    /** The search of [query] on [tab] (a [SearchTab.routeName]); either may be left out. With [focus], the field takes the keyboard, the query ready to add to. */
+    fun search(query: String?, tab: String?, focus: Boolean = false): String {
+        val params = listOfNotNull(query?.takeIf { it.isNotBlank() }?.let { "q=" + encoded(it) }, tab?.let { "tab=$it" }, "focus=1".takeIf { focus })
         return if (params.isEmpty()) "search" else "search?" + params.joinToString("&")
     }
     fun community(id: String) = "community/" + encoded(id)
@@ -180,6 +182,7 @@ private object Routes {
     fun browser(url: String, from: String?) = "browser?url=" + encoded(url) + (from?.let { "&from=" + encoded(it) } ?: "")
     fun image(url: String, name: String) = "image?url=" + encoded(url) + "&name=" + encoded(name)
     fun group(id: String) = "group/" + encoded(id)
+    fun groupDiscover(id: String) = "group/" + encoded(id) + "/discover"
     fun importList(list: String?) = if (list.isNullOrBlank()) "subscriptions/import-list" else "subscriptions/import-list?list=" + encoded(list)
     fun sortOne(ids: List<String>) = "subscriptions/sort-one?ids=" + encoded(ids.joinToString(","))
     fun quotes(id: String) = "post/$id/quotes"
@@ -422,7 +425,9 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             arguments = listOf(navArgument("screenName") { type = NavType.StringType }),
             deepLinks = xLinks("{screenName}"),
         ) { entry ->
-            ProfileScreen(entry.text("screenName").orEmpty(), actions, onBack = { nav.popBackStack() })
+            ProfileScreen(entry.text("screenName").orEmpty(), actions, onBack = { nav.popBackStack() }) { query ->
+                nav.navigate(Routes.search(query, SearchTab.LATEST.routeName, focus = true))
+            }
         }
         composable(
             Routes.MEDIA,
@@ -461,10 +466,11 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             arguments = listOf(
                 navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null },
                 navArgument("tab") { type = NavType.StringType; nullable = true; defaultValue = null },
+                navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
             deepLinks = xLinks("search?q={q}"),
         ) { entry ->
-            SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() })
+            SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() }, focusOnOpen = entry.text("focus") == "1")
         }
         composable(Routes.TRENDS) {
             TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
@@ -623,6 +629,9 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 nav.backToHome()
             })
         }
+        composable(Routes.GROUP_DISCOVER, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            GroupDiscoveryScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
+        }
         composable(Routes.QUOTES, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             QuotesScreen(entry.text("id").orEmpty(), reposters = false, actions, onBack = { nav.popBackStack() })
         }
@@ -681,6 +690,7 @@ private fun subscriptionsNavigation(nav: NavHostController, actions: PostActions
     settings = { nav.navigate(Routes.SETTINGS) },
     antennas = { nav.navigate(Routes.ANTENNAS) },
     deck = { nav.navigate(Routes.DECK) },
+    discoverGroup = { id -> nav.navigate(Routes.groupDiscover(id)) },
 )
 
 /** Where Saved leads, whether it is a page of Home's bar or a screen of its own. */

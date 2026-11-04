@@ -238,4 +238,23 @@
         <item quantity="many">Стежать %1$d учасників</item>
         <item quantity="other">Стежать %1$d учасника</item>
     </plurals>
+    <string name="groups_discovery_ai">Знайти схожі облікові записи за допомогою ШІ</string>
+    <string name="groups_discovery_description">Знаходьте облікові записи, на які ви не підписані, на основі учасників групи. Відкрийте профіль, щоб підписатися або додати його до групи.</string>
+    <string name="groups_discovery_other_groups">Інші групи…</string>
+    <string name="groups_discovery_show_post">Показати допис</string>
+    <string name="groups_discovery_open_post">Відкрити допис</string>
+    <string name="groups_discovery_reposted_by">Репост від %1$s</string>
+    <string name="groups_discovery_quoted_by">Цитує %1$s</string>
+    <string name="groups_discovery_replied_by">Відповідь від %1$s</string>
+    <string name="groups_discovery_mentioned_by">Згадує %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s пропонує для %2$s</string>
+    <string name="groups_discovery_related_to">Схоже на роботи %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">і ще %1$d</item>
+        <item quantity="few">і ще %1$d</item>
+        <item quantity="many">і ще %1$d</item>
+        <item quantity="other">і ще %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Зміни збережено</string>
+    <string name="groups_undo_failed">Не вдалося скасувати. Можливо, дані змінилися.</string>
 </resources>

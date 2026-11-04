@@ -50,11 +50,4 @@
         <item quantity="one">%1$d नई पोस्ट</item>
         <item quantity="other">%1$d नई पोस्ट</item>
     </plurals>
-    <string name="follow_here_only">सिर्फ़ XTA Native में फ़ॉलो किया गया: X को नहीं बताया जाता।</string>
-    <string name="follow_in_feed">फ़ॉलोइंग फ़ीड में</string>
-    <string name="follow_groups">समूह</string>
-    <string name="follow_new_group">नया समूह</string>
-    <string name="follow_group_name">समूह का नाम</string>
-    <string name="follow_create">बनाएँ</string>
-    <string name="follow_unfollow">अनफ़ॉलो करें</string>
 </resources>

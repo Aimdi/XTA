@@ -23,16 +23,6 @@
     <string name="discover_add_to_group">Thêm vào nhóm</string>
     <string name="discover_hide_from_main_feed">Ẩn trong trang chủ</string>
     <string name="discover_show_in_main_feed">Hiện trong trang chủ</string>
-    <string name="discover_search_or_create">Tìm hoặc tạo</string>
-    <string name="discover_group_create">Tạo “%1$s” và thêm</string>
-    <string name="discover_no_groups_yet">Chưa có nhóm nào</string>
-    <string name="discover_no_group_found">Không tìm thấy nhóm</string>
-    <string name="discover_in_no_group">Chưa thuộc nhóm nào</string>
-    <string name="discover_in_group">Trong %1$s</string>
-    <string name="discover_in_two_groups">Trong %1$s và %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="other">Trong %1$d nhóm</item>
-    </plurals>
     <string name="discover_advanced_search">Tìm kiếm nâng cao</string>
     <string name="discover_search_term">Lọc tìm kiếm</string>
     <string name="discover_all_of_these_words">Tất cả những từ này</string>

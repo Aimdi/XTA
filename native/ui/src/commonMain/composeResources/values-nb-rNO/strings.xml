@@ -50,11 +50,4 @@
         <item quantity="one">%1$d nytt innlegg</item>
         <item quantity="other">%1$d nye innlegg</item>
     </plurals>
-    <string name="follow_here_only">Fulgt bare i XTA Native: X får ikke vite det.</string>
-    <string name="follow_in_feed">I Følger-feeden</string>
-    <string name="follow_groups">Grupper</string>
-    <string name="follow_new_group">Ny gruppe</string>
-    <string name="follow_group_name">Gruppenavn</string>
-    <string name="follow_create">Opprett</string>
-    <string name="follow_unfollow">Slutt å følge</string>
 </resources>

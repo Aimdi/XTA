@@ -238,4 +238,23 @@
         <item quantity="many">Obserwuje %1$d członków</item>
         <item quantity="other">Obserwuje %1$d członka</item>
     </plurals>
+    <string name="groups_discovery_ai">Znajdź podobne konta za pomocą AI</string>
+    <string name="groups_discovery_description">Odkrywaj nieobserwowane konta na podstawie członków tej grupy. Otwórz profil, aby go obserwować lub dodać do grupy.</string>
+    <string name="groups_discovery_other_groups">Inne grupy…</string>
+    <string name="groups_discovery_show_post">Pokaż wpis</string>
+    <string name="groups_discovery_open_post">Otwórz wpis</string>
+    <string name="groups_discovery_reposted_by">Udostępnione przez %1$s</string>
+    <string name="groups_discovery_quoted_by">Cytowane przez %1$s</string>
+    <string name="groups_discovery_replied_by">Odpowiedź od %1$s</string>
+    <string name="groups_discovery_mentioned_by">Wspomniane przez %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s proponuje to dla %2$s</string>
+    <string name="groups_discovery_related_to">Podobne do prac %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">i 1 więcej</item>
+        <item quantity="few">i %1$d więcej</item>
+        <item quantity="many">i %1$d więcej</item>
+        <item quantity="other">i %1$d więcej</item>
+    </plurals>
+    <string name="groups_changes_saved">Zapisano zmiany</string>
+    <string name="groups_undo_failed">Nie udało się cofnąć. Dane mogły się zmienić.</string>
 </resources>

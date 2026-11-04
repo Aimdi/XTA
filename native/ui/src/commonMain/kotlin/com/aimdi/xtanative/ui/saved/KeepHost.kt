@@ -31,6 +31,9 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_batch
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_failed
+import com.aimdi.xtanative.ui.generated.resources.groups_changes_saved
+import com.aimdi.xtanative.ui.generated.resources.groups_undo
+import com.aimdi.xtanative.ui.generated.resources.groups_undo_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.generated.resources.downloads_retry_hint
 import com.aimdi.xtanative.ui.generated.resources.downloads_saved_to
@@ -74,6 +77,7 @@ private fun KeepNoticeHost() {
         delay(
             when {
                 current.notice.working -> 60_000L
+                current.notice is KeepNotice.ChangesSaved -> 8_000L
                 current.notice.long -> 6_000L
                 else -> 4_000L
             },
@@ -88,6 +92,13 @@ private fun KeepNoticeHost() {
                 KeepNotices.hide(current)
                 scope.launch { if (!graph.platformFiles.open(saved.savedUri, saved.fileName)) KeepNotices.show(KeepNotice.OpenFailed) }
             }) { Text(stringResource(Res.string.downloads_open_file), color = MaterialTheme.colorScheme.inversePrimary) }
+        }
+    } ?: (current.notice as? KeepNotice.ChangesSaved)?.let { changed ->
+        {
+            TextButton(onClick = {
+                KeepNotices.hide(current)
+                graph.keep { if (!changed.undo()) KeepNotices.show(KeepNotice.UndoFailed) }
+            }) { Text(stringResource(Res.string.groups_undo), color = MaterialTheme.colorScheme.inversePrimary) }
         }
     }
     val position = remember(lift) { FootOfWindow(lift) }
@@ -128,6 +139,8 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     KeepNotice.NoteSaved -> stringResource(Res.string.saved_note_saved)
     KeepNotice.SomethingWentWrong -> stringResource(Res.string.saved_something_wrong)
     is KeepNotice.Said -> notice.text
+    is KeepNotice.ChangesSaved -> stringResource(Res.string.groups_changes_saved)
+    KeepNotice.UndoFailed -> stringResource(Res.string.groups_undo_failed)
 }
 
 /** The line behind the lock: what the open tab keeps stays on this device. */

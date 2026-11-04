@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Aan groep toevoegen</string>
     <string name="discover_hide_from_main_feed">Verbergen uit hoofd-feed</string>
     <string name="discover_show_in_main_feed">Weergeven in hoofd-feed</string>
-    <string name="discover_search_or_create">Zoeken of maken</string>
-    <string name="discover_group_create">‘%1$s’ maken en toevoegen</string>
-    <string name="discover_no_groups_yet">Nog geen groepen</string>
-    <string name="discover_no_group_found">Geen groep gevonden</string>
-    <string name="discover_in_no_group">In geen enkele groep</string>
-    <string name="discover_in_group">In %1$s</string>
-    <string name="discover_in_two_groups">In %1$s en %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">In %1$d groep</item>
-        <item quantity="other">In %1$d groepen</item>
-    </plurals>
     <string name="discover_advanced_search">Geavanceerd zoeken</string>
     <string name="discover_search_term">Zoekterm</string>
     <string name="discover_all_of_these_words">Al deze woorden</string>

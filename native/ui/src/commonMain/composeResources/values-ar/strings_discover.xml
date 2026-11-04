@@ -23,21 +23,6 @@
     <string name="discover_add_to_group">أضف إلى المجموعة</string>
     <string name="discover_hide_from_main_feed">إخفاء من الخلاصة الرئيسية</string>
     <string name="discover_show_in_main_feed">إظهار في الخلاصة الرئيسية</string>
-    <string name="discover_search_or_create">ابحث أو أنشئ</string>
-    <string name="discover_group_create">إنشاء «%1$s» والإضافة إليها</string>
-    <string name="discover_no_groups_yet">لا توجد مجموعات بعد</string>
-    <string name="discover_no_group_found">لم يُعثر على مجموعة</string>
-    <string name="discover_in_no_group">ليس في أي مجموعة</string>
-    <string name="discover_in_group">في %1$s</string>
-    <string name="discover_in_two_groups">في %1$s و%2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="zero">ليس في أي مجموعة</item>
-        <item quantity="one">في مجموعة واحدة</item>
-        <item quantity="two">في مجموعتين</item>
-        <item quantity="few">في %1$d مجموعات</item>
-        <item quantity="many">في %1$d مجموعة</item>
-        <item quantity="other">في %1$d مجموعة</item>
-    </plurals>
     <string name="discover_advanced_search">البحث المتقدم</string>
     <string name="discover_search_term">مصطلح البحث</string>
     <string name="discover_all_of_these_words">كل هذه الكلمات</string>

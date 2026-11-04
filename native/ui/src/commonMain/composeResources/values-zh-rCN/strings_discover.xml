@@ -23,16 +23,6 @@
     <string name="discover_add_to_group">添加到订阅组</string>
     <string name="discover_hide_from_main_feed">从主信息流中隐藏</string>
     <string name="discover_show_in_main_feed">在主信息流中显示</string>
-    <string name="discover_search_or_create">搜索或新建</string>
-    <string name="discover_group_create">新建“%1$s”并加入</string>
-    <string name="discover_no_groups_yet">还没有分组</string>
-    <string name="discover_no_group_found">未找到订阅组</string>
-    <string name="discover_in_no_group">不在任何订阅组中</string>
-    <string name="discover_in_group">在%1$s中</string>
-    <string name="discover_in_two_groups">在%1$s和%2$s中</string>
-    <plurals name="discover_in_groups">
-        <item quantity="other">在 %1$d 个订阅组中</item>
-    </plurals>
     <string name="discover_advanced_search">高级搜索</string>
     <string name="discover_search_term">搜索词</string>
     <string name="discover_all_of_these_words">包含以下所有字词</string>

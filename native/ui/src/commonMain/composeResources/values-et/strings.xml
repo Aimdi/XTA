@@ -50,11 +50,4 @@
         <item quantity="one">%1$d uus postitus</item>
         <item quantity="other">%1$d uut postitust</item>
     </plurals>
-    <string name="follow_here_only">Jälgitav ainult XTA Native’is: X ei saa sellest teada.</string>
-    <string name="follow_in_feed">Voos Jälgin</string>
-    <string name="follow_groups">Grupid</string>
-    <string name="follow_new_group">Uus grupp</string>
-    <string name="follow_group_name">Grupi nimi</string>
-    <string name="follow_create">Loo</string>
-    <string name="follow_unfollow">Lõpeta jälgimine</string>
 </resources>

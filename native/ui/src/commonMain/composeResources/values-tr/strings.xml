@@ -50,11 +50,4 @@
         <item quantity="one">%1$d yeni gönderi</item>
         <item quantity="other">%1$d yeni gönderi</item>
     </plurals>
-    <string name="follow_here_only">Yalnızca XTA Native içinde takip ediliyor: X bunu bilmez.</string>
-    <string name="follow_in_feed">Takip edilenler akışında</string>
-    <string name="follow_groups">Gruplar</string>
-    <string name="follow_new_group">Yeni grup</string>
-    <string name="follow_group_name">Grup adı</string>
-    <string name="follow_create">Oluştur</string>
-    <string name="follow_unfollow">Takibi bırak</string>
 </resources>

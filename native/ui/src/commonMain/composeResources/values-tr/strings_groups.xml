@@ -226,4 +226,21 @@
         <item quantity="one">%1$d üye takip ediyor</item>
         <item quantity="other">%1$d üye takip ediyor</item>
     </plurals>
+    <string name="groups_discovery_ai">Yapay zekâyla benzer hesapları bul</string>
+    <string name="groups_discovery_description">Bu grubun üyelerine göre, takip etmediğiniz hesapları keşfedin. Takip etmek veya bir gruba eklemek için profili açın.</string>
+    <string name="groups_discovery_other_groups">Diğer gruplar…</string>
+    <string name="groups_discovery_show_post">Gönderiyi göster</string>
+    <string name="groups_discovery_open_post">Gönderiyi aç</string>
+    <string name="groups_discovery_reposted_by">%1$s tarafından paylaşıldı</string>
+    <string name="groups_discovery_quoted_by">%1$s tarafından alıntılandı</string>
+    <string name="groups_discovery_replied_by">%1$s tarafından yanıtlandı</string>
+    <string name="groups_discovery_mentioned_by">%1$s tarafından bahsedildi</string>
+    <string name="groups_discovery_suggested_for">%1$s bunu %2$s için öneriyor</string>
+    <string name="groups_discovery_related_to">%1$s eserlerine benzer</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">ve 1 kişi daha</item>
+        <item quantity="other">ve %1$d kişi daha</item>
+    </plurals>
+    <string name="groups_changes_saved">Değişiklikler kaydedildi</string>
+    <string name="groups_undo_failed">Geri alınamadı. Veriler değişmiş olabilir.</string>
 </resources>

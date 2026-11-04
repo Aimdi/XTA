@@ -226,4 +226,21 @@
         <item quantity="one">Gevolgd door %1$d lid</item>
         <item quantity="other">Gevolgd door %1$d leden</item>
     </plurals>
+    <string name="groups_discovery_ai">Vergelijkbare accounts vinden met AI</string>
+    <string name="groups_discovery_description">Ontdek accounts die je niet volgt op basis van leden van deze groep. Open een profiel om het te volgen of aan een groep toe te voegen.</string>
+    <string name="groups_discovery_other_groups">Andere groepen…</string>
+    <string name="groups_discovery_show_post">Bericht tonen</string>
+    <string name="groups_discovery_open_post">Bericht openen</string>
+    <string name="groups_discovery_reposted_by">Gedeeld door %1$s</string>
+    <string name="groups_discovery_quoted_by">Geciteerd door %1$s</string>
+    <string name="groups_discovery_replied_by">Beantwoord door %1$s</string>
+    <string name="groups_discovery_mentioned_by">Genoemd door %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s stelt dit voor bij %2$s</string>
+    <string name="groups_discovery_related_to">Lijkt op werk van %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">en 1 andere</item>
+        <item quantity="other">en %1$d anderen</item>
+    </plurals>
+    <string name="groups_changes_saved">Wijzigingen opgeslagen</string>
+    <string name="groups_undo_failed">Ongedaan maken mislukt. De gegevens zijn mogelijk gewijzigd.</string>
 </resources>

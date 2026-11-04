@@ -226,4 +226,21 @@
         <item quantity="one">Followed by %1$d member</item>
         <item quantity="other">Followed by %1$d members</item>
     </plurals>
+    <string name="groups_discovery_ai">Rank with AI</string>
+    <string name="groups_discovery_description">Accounts you don't follow yet, found through the members of this group: who they repost, quote, reply to, mention and follow. The + adds one to this group; the menu has more.</string>
+    <string name="groups_discovery_other_groups">Other groups…</string>
+    <string name="groups_discovery_show_post">Show post</string>
+    <string name="groups_discovery_open_post">Open post</string>
+    <string name="groups_discovery_reposted_by">Reposted by %1$s</string>
+    <string name="groups_discovery_quoted_by">Quoted by %1$s</string>
+    <string name="groups_discovery_replied_by">Replied to by %1$s</string>
+    <string name="groups_discovery_mentioned_by">Mentioned by %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s suggests this for %2$s</string>
+    <string name="groups_discovery_related_to">Similar to works by %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">and 1 more</item>
+        <item quantity="other">and %1$d more</item>
+    </plurals>
+    <string name="groups_changes_saved">Changes saved</string>
+    <string name="groups_undo_failed">Could not undo. The data may have changed.</string>
 </resources>

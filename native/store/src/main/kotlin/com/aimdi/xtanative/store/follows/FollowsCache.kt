@@ -89,24 +89,11 @@ class FollowsCache(
     ): FollowsRead {
         val ordered = prioritize(members)
         val pending = ordered.filterNot(::fresh).take(maxFetches.coerceAtLeast(0))
-        val error = AtomicReference<Throwable?>(null)
-        val gate = Semaphore(CONCURRENCY)
-        coroutineScope {
-            pending.forEach { member ->
-                launch {
-                    gate.withPermit {
-                        try {
-                            remember(member, withTimeout(timeoutMillis) { fetch(member) })
-                            onPartial(known(ordered))
-                        } catch (failure: Throwable) {
-                            if (failure is CancellationException && failure !is TimeoutCancellationException) throw failure
-                            error.compareAndSet(null, failure)
-                        }
-                    }
-                }
-            }
+        val error = FollowsOrder.eachWithin(pending, CONCURRENCY, timeoutMillis, fetch) { member, follows ->
+            remember(member, follows)
+            onPartial(known(ordered))
         }
-        return FollowsRead(known(ordered), error.get())
+        return FollowsRead(known(ordered), error)
     }
 
     private fun fresh(member: String): Boolean = memory[member]?.let { clock() - it.at <= ttlMillis } == true
@@ -172,9 +159,41 @@ class FollowsCache(
     }
 }
 
-/** The order lists are read in. */
+/** The order lists are read in, and how a few of them are read at once. */
 object FollowsOrder {
     /** [keys] never attempted first, then the longest ago; ties keep their order. */
     fun prioritized(keys: List<String>, attemptedAt: (String) -> Long?): List<String> =
         keys.withIndex().sortedWith(compareBy({ attemptedAt(it.value) ?: Long.MIN_VALUE }, { it.index })).map { it.value }
+
+    /**
+     * [fetch] for each of [keys], [concurrency] at a time and each within
+     * [timeoutMillis], every answer handed to [answered] as it comes; one that
+     * fails or runs out of time leaves the others reading, and the first
+     * failure is what comes back.
+     */
+    suspend fun <T> eachWithin(
+        keys: List<String>,
+        concurrency: Int,
+        timeoutMillis: Long,
+        fetch: suspend (String) -> T,
+        answered: suspend (String, T) -> Unit,
+    ): Throwable? {
+        val error = AtomicReference<Throwable?>(null)
+        val gate = Semaphore(concurrency.coerceAtLeast(1))
+        coroutineScope {
+            keys.forEach { key ->
+                launch {
+                    gate.withPermit {
+                        try {
+                            answered(key, withTimeout(timeoutMillis) { fetch(key) })
+                        } catch (failure: Throwable) {
+                            if (failure is CancellationException && failure !is TimeoutCancellationException) throw failure
+                            error.compareAndSet(null, failure)
+                        }
+                    }
+                }
+            }
+        }
+        return error.get()
+    }
 }

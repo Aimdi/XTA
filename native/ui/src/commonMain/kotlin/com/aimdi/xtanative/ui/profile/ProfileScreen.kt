@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -107,6 +108,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_tab_posts
 import com.aimdi.xtanative.ui.generated.resources.posts_tab_replies
 import com.aimdi.xtanative.ui.generated.resources.posts_tab_saved
 import com.aimdi.xtanative.ui.generated.resources.posts_user_not_found
+import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.media.MediaGridLook
 import com.aimdi.xtanative.ui.media.MediaGridRows
@@ -121,6 +123,8 @@ import com.aimdi.xtanative.ui.post.SensitiveGate
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.VerifiedBadges
 import com.aimdi.xtanative.ui.post.LocalPostScope
+import com.aimdi.xtanative.ui.post.rememberPostPrefs
+import com.aimdi.xtanative.ui.plugins.rememberShareText
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -133,16 +137,19 @@ import org.jetbrains.compose.resources.stringResource
  * opening the follows lists, who of the reader's follows follows it, the
  * private note), then Posts, Replies, Media and Saved, each with its
  * filter. A protected account's posts and a sensitive profile wait behind
- * their gates.
+ * their gates. Its bar's Search opens [searchPosts] on "from:@name", its
+ * Share hands the profile's link on.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) {
+fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit, searchPosts: (query: String) -> Unit = actions.search) {
     val graph = LocalGraph.current
     val vm: ProfileViewModel = viewModel(key = "profile-" + screenName.lowercase()) { ProfileViewModel(graph, screenName) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val follow by vm.follow.collectAsStateWithLifecycle()
     val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val share = rememberShareText()
+    val shareBase = rememberPostPrefs().shareBase
     var sheet by rememberSaveable { mutableStateOf(ProfileSheet.NONE) }
     val tab = state.of(state.tab)
     val list = rememberLazyListState()
@@ -154,7 +161,6 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
         }
     }
     LaunchedEffect(nearEnd, tab.threads.size, tab.tiles.size, state.tab) { if (nearEnd) vm.loadMore() }
-    LaunchedEffect(follow.followed) { if (!follow.followed && sheet == ProfileSheet.FOLLOW) sheet = ProfileSheet.NONE }
     val scrolled by remember(list) { derivedStateOf { list.firstVisibleItemIndex > 3 } }
     val user = state.user
     val shownName = user?.screenName ?: screenName
@@ -167,7 +173,8 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
                 actions = {
                     if (user != null) {
-                        IconButton(onClick = { actions.search(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
+                        IconButton(onClick = { searchPosts(ProfileHeader.searchQuery(user)) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
+                        IconButton(onClick = { share(ProfileHeader.shareUrl(user, shareBase)) }) { Icon(Icons.Outlined.Share, stringResource(Res.string.reader_link_share)) }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -197,7 +204,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     item(key = "header", contentType = "header") {
-                        Header(state, follow, screenName, actions, onSheet = { sheet = it }, onFollow = vm::followHere)
+                        Header(state, follow, screenName, actions, onSheet = { sheet = it })
                     }
                     val problem = state.problem
                     when {
@@ -227,17 +234,6 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
     }
     when (sheet) {
         ProfileSheet.NONE -> Unit
-        ProfileSheet.FOLLOW -> if (follow.followed) {
-            FollowSheet(
-                screenName = shownName,
-                follow = follow,
-                onInFeed = vm::showInFeed,
-                onGroup = vm::putInGroup,
-                onNewGroup = vm::newGroup,
-                onUnfollow = vm::unfollow,
-                onDismiss = { sheet = ProfileSheet.NONE },
-            )
-        }
         ProfileSheet.FILTERS -> FeedSettingsSheet(state, follow, vm, onDismiss = { sheet = ProfileSheet.NONE })
         ProfileSheet.NOTE -> NoteSheet(state.note, onSave = { note ->
             vm.saveNote(note)
@@ -248,7 +244,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
 }
 
 /** The sheets a profile opens over itself. */
-enum class ProfileSheet { NONE, FOLLOW, FILTERS, NOTE, FOLLOWED_BY }
+enum class ProfileSheet { NONE, FILTERS, NOTE, FOLLOWED_BY }
 
 /** What a tab shows: Posts (the pinned post first), Replies, the media grid, or the device's Saved. */
 private fun LazyListScope.tabContent(state: ProfileUi, tab: TabUi, actions: PostActions, grid: MediaGridRows) {
@@ -415,7 +411,7 @@ private fun FailurePage(failure: ProfileFailure) {
 }
 
 @Composable
-private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actions: PostActions, onSheet: (ProfileSheet) -> Unit, onFollow: () -> Unit) {
+private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actions: PostActions, onSheet: (ProfileSheet) -> Unit) {
     val user = state.user
     val background = MaterialTheme.colorScheme.background
     Column(Modifier.fillMaxWidth()) {
@@ -447,7 +443,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
         ) {
             if (user != null && state.complete) {
                 IconButton(onClick = { onSheet(ProfileSheet.FILTERS) }) { Icon(PostIcons.Tune, stringResource(Res.string.posts_filters)) }
-                FollowButton(follow.followed, follow.inFeed, onFollow = onFollow, onManage = { onSheet(ProfileSheet.FOLLOW) })
+                ProfileFollowButton(user)
             }
         }
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {

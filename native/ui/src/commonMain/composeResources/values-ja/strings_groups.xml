@@ -220,4 +220,20 @@
     <plurals name="groups_discovery_followed_by">
         <item quantity="other">メンバー%1$d人がフォロー中</item>
     </plurals>
+    <string name="groups_discovery_ai">AIで似たアカウントを探す</string>
+    <string name="groups_discovery_description">このグループのメンバーをもとに、まだフォローしていないアカウントを探します。プロフィールを開くと、フォローやグループへの追加ができます。</string>
+    <string name="groups_discovery_other_groups">他のグループ…</string>
+    <string name="groups_discovery_show_post">投稿を表示</string>
+    <string name="groups_discovery_open_post">投稿を開く</string>
+    <string name="groups_discovery_reposted_by">%1$s がリポスト</string>
+    <string name="groups_discovery_quoted_by">%1$s が引用</string>
+    <string name="groups_discovery_replied_by">%1$s が返信</string>
+    <string name="groups_discovery_mentioned_by">%1$s がメンション</string>
+    <string name="groups_discovery_suggested_for">%1$s が %2$s に関連しておすすめ</string>
+    <string name="groups_discovery_related_to">%1$s の作品に似ています</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="other">他%1$d人</item>
+    </plurals>
+    <string name="groups_changes_saved">変更を保存しました</string>
+    <string name="groups_undo_failed">元に戻せませんでした。データが変更された可能性があります。</string>
 </resources>

@@ -232,4 +232,22 @@
         <item quantity="few">Urmărit de %1$d membri</item>
         <item quantity="other">Urmărit de %1$d de membri</item>
     </plurals>
+    <string name="groups_discovery_ai">Găsește conturi similare cu AI</string>
+    <string name="groups_discovery_description">Descoperă conturi pe care nu le urmărești, pe baza membrilor acestui grup. Deschide un profil pentru a-l urmări sau a-l adăuga într-un grup.</string>
+    <string name="groups_discovery_other_groups">Alte grupuri…</string>
+    <string name="groups_discovery_show_post">Afișează postarea</string>
+    <string name="groups_discovery_open_post">Deschide postarea</string>
+    <string name="groups_discovery_reposted_by">Distribuit de %1$s</string>
+    <string name="groups_discovery_quoted_by">Citat de %1$s</string>
+    <string name="groups_discovery_replied_by">Răspuns de la %1$s</string>
+    <string name="groups_discovery_mentioned_by">Menționat de %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s sugerează asta pentru %2$s</string>
+    <string name="groups_discovery_related_to">Similar cu lucrările lui %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">și încă 1</item>
+        <item quantity="few">și încă %1$d</item>
+        <item quantity="other">și încă %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Modificări salvate</string>
+    <string name="groups_undo_failed">Nu s-a putut anula. Este posibil ca datele să se fi schimbat.</string>
 </resources>

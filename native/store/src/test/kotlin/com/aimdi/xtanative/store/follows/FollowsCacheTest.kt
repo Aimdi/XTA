@@ -110,6 +110,25 @@ class FollowsCacheTest {
     }
 
     @Test
+    fun aFewAreReadAtOnceAndTheFirstFailureComesBackWithTheRestRead() {
+        runBlocking {
+            var running = 0
+            var most = 0
+            val answered = mutableListOf<String>()
+            val error = FollowsOrder.eachWithin(listOf("a", "b", "c", "d"), concurrency = 2, timeoutMillis = 1_000, fetch = { key ->
+                synchronized(answered) { most = maxOf(most, ++running) }
+                delay(20)
+                synchronized(answered) { running-- }
+                if (key == "b") throw IOException("offline")
+                key.uppercase()
+            }) { key, value -> synchronized(answered) { answered += "$key=$value" } }
+            assertIs<IOException>(error)
+            assertEquals(setOf("a=A", "c=C", "d=D"), answered.toSet())
+            assertEquals(2, most)
+        }
+    }
+
+    @Test
     fun anUnreadableFileIsAListNeverRead() {
         runBlocking {
             dir.file("follows/a.json").write("{ not json")

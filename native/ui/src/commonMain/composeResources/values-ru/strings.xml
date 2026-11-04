@@ -54,11 +54,4 @@
         <item quantity="many">%1$d новых постов</item>
         <item quantity="other">%1$d нового поста</item>
     </plurals>
-    <string name="follow_here_only">Вы читаете только в XTA Native: X об этом не узнаёт.</string>
-    <string name="follow_in_feed">В ленте «Читаю»</string>
-    <string name="follow_groups">Группы</string>
-    <string name="follow_new_group">Новая группа</string>
-    <string name="follow_group_name">Название группы</string>
-    <string name="follow_create">Создать</string>
-    <string name="follow_unfollow">Перестать читать</string>
 </resources>

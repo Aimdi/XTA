@@ -250,4 +250,25 @@
         <item quantity="many">يتابعه %1$d عضوًا</item>
         <item quantity="other">يتابعه %1$d عضو</item>
     </plurals>
+    <string name="groups_discovery_ai">العثور على حسابات مشابهة بالذكاء الاصطناعي</string>
+    <string name="groups_discovery_description">اكتشف حسابات لا تتابعها بناءً على أعضاء هذه المجموعة. افتح الملف الشخصي لمتابعته أو إضافته إلى مجموعة.</string>
+    <string name="groups_discovery_other_groups">مجموعات أخرى…</string>
+    <string name="groups_discovery_show_post">عرض المنشور</string>
+    <string name="groups_discovery_open_post">فتح المنشور</string>
+    <string name="groups_discovery_reposted_by">أعاد نشره %1$s</string>
+    <string name="groups_discovery_quoted_by">اقتبسه %1$s</string>
+    <string name="groups_discovery_replied_by">رد عليه %1$s</string>
+    <string name="groups_discovery_mentioned_by">ذكره %1$s</string>
+    <string name="groups_discovery_suggested_for">يقترحه %1$s لـ %2$s</string>
+    <string name="groups_discovery_related_to">مشابه لأعمال %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="zero">ولا أحد غيره</item>
+        <item quantity="one">وواحد آخر</item>
+        <item quantity="two">واثنان آخران</item>
+        <item quantity="few">و%1$d آخرين</item>
+        <item quantity="many">و%1$d آخرين</item>
+        <item quantity="other">و%1$d آخرين</item>
+    </plurals>
+    <string name="groups_changes_saved">تم حفظ التغييرات</string>
+    <string name="groups_undo_failed">تعذّر التراجع. ربما تغيّرت البيانات.</string>
 </resources>

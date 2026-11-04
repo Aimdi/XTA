@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.search.LoadedSearchButton
 import com.aimdi.xtanative.ui.subscriptions.GroupEditSheet
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import com.aimdi.xtanative.ui.subscriptions.rememberFollowedRows
 import com.aimdi.xtanative.ui.subscriptions.rememberPackSaver
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -96,6 +97,15 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: (() -> Unit)?
     // A pushed group answers F5 and Ctrl+R (_feed_shell.dart); as a page of Home's bar, Home's keys refresh it.
     if (onBack != null) DesktopShortcuts(refresh = { vm.refresh() }, turn = {}, isOpen = { layer != null || discovering }, close = { if (layer != null) layer = null else discovering = false })
     RetapsToTop(list)
+    var rankRequest by rememberSaveable(shownId) { mutableStateOf(0) }
+    val onRank: (() -> Unit)? = if (!rememberAiReady()) {
+        null
+    } else {
+        {
+            discovering = true
+            rankRequest++
+        }
+    }
     val mediaKeys by MediaModes.keys.collectAsStateWithLifecycle()
     val mediaOnly = shownId in mediaKeys
     BackHandling(enabled = layer == GroupLayer.CUSTOM) { layer = null }
@@ -106,7 +116,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: (() -> Unit)?
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 Column {
-                    GroupTopBar(state, vm, list, discovering, onBack, onFeed, open = { layer = it }, onSwitch = { id -> if (id != shownId) shownId = id })
+                    GroupTopBar(state, vm, list, discovering, onBack, onFeed, open = { layer = it }, onSwitch = { id -> if (id != shownId) shownId = id }, onRank = onRank)
                     ControlBar(
                         state,
                         GroupChips(discovering, mediaOnly),
@@ -124,7 +134,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: (() -> Unit)?
         ) { padding ->
             Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
                 if (discovering) {
-                    DiscoveryPane(shownId, state.group?.name.orEmpty(), actions)
+                    DiscoveryPane(shownId, state.group?.name.orEmpty(), actions, rankRequest = rankRequest)
                 } else {
                     GroupFeedBody(state, vm, actions, list, PaddingValues(bottom = padding.calculateBottomPadding()), mediaOnly)
                 }
@@ -139,7 +149,8 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: (() -> Unit)?
 /**
  * The bar over a group's feed: back, the title and its menu, then the feed's
  * actions; while Discover is open, only a way to read it again, since the
- * feed's actions would act on the feed it hides.
+ * feed's actions would act on the feed it hides. [onRank], with an AI set
+ * up, opens Discover ranked by it (XTA's sparkle), in both.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,6 +163,7 @@ private fun GroupTopBar(
     onFeed: ((String) -> Unit)?,
     open: (GroupLayer) -> Unit,
     onSwitch: (String) -> Unit,
+    onRank: (() -> Unit)? = null,
 ) {
     var menu by remember { mutableStateOf(false) }
     TopAppBar(
@@ -177,7 +189,10 @@ private fun GroupTopBar(
                 )
             }
         },
-        actions = { GroupActions(state, vm, list, discovering, open) },
+        actions = {
+            onRank?.let { RankWithAiButton(onClick = it) }
+            GroupActions(state, vm, list, discovering, open)
+        },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
     )
 }
@@ -217,7 +232,7 @@ private fun GroupSheets(layer: GroupLayer?, state: GroupFeedUi, vm: GroupFeedVie
             onCreate = { onLayer(GroupLayer.CREATE) },
             onDismiss = { onLayer(null) },
         )
-        GroupLayer.CREATE -> GroupEditSheet(state.session, state.people, null, vm.groupActions, savePack, onDismiss = { onLayer(null) })
+        GroupLayer.CREATE -> GroupEditSheet(state.session, rememberFollowedRows(state.session), null, vm.groupActions, savePack, onDismiss = { onLayer(null) })
         GroupLayer.CUSTOM, GroupLayer.LOADED_SEARCH, null -> Unit
     }
 }

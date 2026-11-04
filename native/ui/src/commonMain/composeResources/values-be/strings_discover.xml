@@ -23,19 +23,6 @@
     <string name="discover_add_to_group">Дадаць у групу</string>
     <string name="discover_hide_from_main_feed">Схаваць з галоўнай стужкі</string>
     <string name="discover_show_in_main_feed">Паказаць у галоўнай стужцы</string>
-    <string name="discover_search_or_create">Шукаць або стварыць</string>
-    <string name="discover_group_create">Стварыць «%1$s» і дадаць</string>
-    <string name="discover_no_groups_yet">Пакуль няма груп</string>
-    <string name="discover_no_group_found">Група не знойдзена</string>
-    <string name="discover_in_no_group">Не ў групе</string>
-    <string name="discover_in_group">У групе %1$s</string>
-    <string name="discover_in_two_groups">У групах %1$s і %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">У %1$d групе</item>
-        <item quantity="few">У %1$d групах</item>
-        <item quantity="many">У %1$d групах</item>
-        <item quantity="other">У %1$d групах</item>
-    </plurals>
     <string name="discover_advanced_search">Пашыраны пошук</string>
     <string name="discover_search_term">Пошукавы запыт</string>
     <string name="discover_all_of_these_words">Усе гэтыя словы</string>

@@ -23,16 +23,6 @@
     <string name="discover_add_to_group">그룹에 추가</string>
     <string name="discover_hide_from_main_feed">메인 피드에서 숨기기</string>
     <string name="discover_show_in_main_feed">메인 피드에 표시</string>
-    <string name="discover_search_or_create">검색하거나 만들기</string>
-    <string name="discover_group_create">‘%1$s’ 만들고 추가</string>
-    <string name="discover_no_groups_yet">아직 그룹이 없습니다</string>
-    <string name="discover_no_group_found">그룹을 찾을 수 없음</string>
-    <string name="discover_in_no_group">그룹에 없음</string>
-    <string name="discover_in_group">%1$s에 있음</string>
-    <string name="discover_in_two_groups">%1$s, %2$s에 있음</string>
-    <plurals name="discover_in_groups">
-        <item quantity="other">그룹 %1$d개에 있음</item>
-    </plurals>
     <string name="discover_advanced_search">고급 검색</string>
     <string name="discover_search_term">검색어</string>
     <string name="discover_all_of_these_words">다음 단어 모두 포함</string>

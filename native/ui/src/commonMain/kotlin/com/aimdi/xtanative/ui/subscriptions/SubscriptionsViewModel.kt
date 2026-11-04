@@ -188,9 +188,17 @@ class SubscriptionsViewModel(private val graph: AppGraph, private val follows: P
         settings { it.with(SubscriptionPrefs.customOrder, SubscriptionList.customOrder(SubscriptionList.moved(rows, from, to))) }
     }
 
-    /** [row] unfollowed and out of every group: a plugin's account by its plugin, as XTA's stores remove theirs. */
-    fun unfollow(row: SubscriptionRow) {
-        if (row.plugin != null) follows.unfollow(row) else session { if (row.search) it.unfollowSearch(row.id) else it.unfollow(row.id) }
+    /**
+     * [row] unfollowed and out of every group, with XTA's undo: a plugin's
+     * account by its plugin, as XTA's stores remove theirs. It runs to its end
+     * whatever screen is up.
+     */
+    fun unfollow(row: SubscriptionRow) = graph.keep {
+        when {
+            row.plugin != null -> follows.unfollow(row)?.let(Unfollowing::offer)
+            row.search -> Unfollowing.search(graph, row.id)
+            else -> Unfollowing.accounts(graph, listOf(row.id))
+        }
     }
 
     /** A plugin's account's page, in its plugin. */

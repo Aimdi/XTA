@@ -18,7 +18,8 @@ import kotlinx.serialization.json.JsonElement
  * held cashtag's entries, a post's extras, an account's route and the
  * accounts a plugin follows, for Subscriptions (native-0.1.52); 4 adds a
  * post's own card, the networks of the contracts a plugin watches, for X
- * posts' text, and the likes a network keeps on the device.
+ * posts' text, the likes a network keeps on the device, a kept article's
+ * reader and a plugin's part of a group's Discover.
  */
 const val PLUGIN_API_VERSION: Int = 3
 
@@ -219,6 +220,13 @@ abstract class XtaPlugin {
      * (XTA's SubscriptionSource). Null when it follows none.
      */
     open val subscriptions: Flow<List<PluginSubscription>>? get() = null
+
+    /**
+     * Its part of a group's Discover: the accounts its members in the group
+     * point at on its network (XTA's Bluesky, Mastodon and Pixiv sources).
+     * Null when it finds none.
+     */
+    open val discovery: PluginDiscovery? get() = null
 
     /**
      * Where its posts lead where the app draws them (Home's timelines, the

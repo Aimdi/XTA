@@ -105,10 +105,12 @@ class SearchActions(val openCommunity: (id: String) -> Unit, val openAntennas: (
  * XTA's search of X: the field (with the advanced search behind its filter
  * button), Popular, Recent, Media, Accounts and Communities; recent searches
  * until something is searched, and the filters set as chips above the results.
+ * The field takes the keyboard when nothing is searched yet, or with
+ * [focusOnOpen] (a profile's search, its query ready to add to).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, searchActions: SearchActions, onBack: () -> Unit) {
+fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, searchActions: SearchActions, onBack: () -> Unit, focusOnOpen: Boolean = false) {
     val graph = LocalGraph.current
     val vm: SearchViewModel = viewModel { SearchViewModel(graph, initial, initialTab) }
     val state by vm.ui.collectAsStateWithLifecycle()
@@ -119,7 +121,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
     }
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    LaunchedEffect(Unit) { if (initial.isNullOrBlank()) focus.requestFocus() }
+    LaunchedEffect(Unit) { if (initial.isNullOrBlank() || focusOnOpen) focus.requestFocus() }
     val searchField = @Composable { modifier: Modifier ->
         SearchField(
             value = field,

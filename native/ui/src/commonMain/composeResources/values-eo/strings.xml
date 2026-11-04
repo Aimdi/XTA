@@ -50,11 +50,4 @@
         <item quantity="one">%1$d nova afiŝo</item>
         <item quantity="other">%1$d novaj afiŝoj</item>
     </plurals>
-    <string name="follow_here_only">Sekvata nur en XTA Native: X ne ekscias.</string>
-    <string name="follow_in_feed">En la fluo Abonoj</string>
-    <string name="follow_groups">Grupoj</string>
-    <string name="follow_new_group">Nova grupo</string>
-    <string name="follow_group_name">Nomo de la grupo</string>
-    <string name="follow_create">Krei</string>
-    <string name="follow_unfollow">Ĉesi sekvi</string>
 </resources>

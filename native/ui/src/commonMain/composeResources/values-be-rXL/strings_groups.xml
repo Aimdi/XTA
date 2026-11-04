@@ -238,4 +238,23 @@
         <item quantity="many">Sočać %1$d udzielnikaŭ</item>
         <item quantity="other">Sočać %1$d udzielnika</item>
     </plurals>
+    <string name="groups_discovery_ai">Znajści padobnyja akaŭnty z dapamohaj ŠI</string>
+    <string name="groups_discovery_description">Znachodźcie akaŭnty, na jakija vy nie padpisany, na asnovie ŭdzielnikaŭ hrupy. Adkryjcie profil, kab padpisacca abo dadać jaho ŭ hrupu.</string>
+    <string name="groups_discovery_other_groups">Inšyja hrupy…</string>
+    <string name="groups_discovery_show_post">Pakazać post</string>
+    <string name="groups_discovery_open_post">Adkryć post</string>
+    <string name="groups_discovery_reposted_by">Repost ad %1$s</string>
+    <string name="groups_discovery_quoted_by">Cytuje %1$s</string>
+    <string name="groups_discovery_replied_by">Adkaz ad %1$s</string>
+    <string name="groups_discovery_mentioned_by">Zhadvaje %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s prapanuje dla %2$s</string>
+    <string name="groups_discovery_related_to">Padobna na pracy %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">i jašče %1$d</item>
+        <item quantity="few">i jašče %1$d</item>
+        <item quantity="many">i jašče %1$d</item>
+        <item quantity="other">i jašče %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Zmieny zachavany</string>
+    <string name="groups_undo_failed">Nie ŭdałosia admianić. Mahčyma, danyja źmianilisia.</string>
 </resources>

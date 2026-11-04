@@ -220,4 +220,20 @@
     <plurals name="groups_discovery_followed_by">
         <item quantity="other">Diikuti oleh %1$d anggota</item>
     </plurals>
+    <string name="groups_discovery_ai">Cari akun serupa dengan AI</string>
+    <string name="groups_discovery_description">Temukan akun yang belum Anda ikuti berdasarkan anggota grup ini. Buka profil untuk mengikutinya atau menambahkannya ke grup.</string>
+    <string name="groups_discovery_other_groups">Grup lain…</string>
+    <string name="groups_discovery_show_post">Tampilkan postingan</string>
+    <string name="groups_discovery_open_post">Buka postingan</string>
+    <string name="groups_discovery_reposted_by">Diposting ulang oleh %1$s</string>
+    <string name="groups_discovery_quoted_by">Dikutip oleh %1$s</string>
+    <string name="groups_discovery_replied_by">Dibalas oleh %1$s</string>
+    <string name="groups_discovery_mentioned_by">Disebut oleh %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s menyarankan ini untuk %2$s</string>
+    <string name="groups_discovery_related_to">Mirip dengan karya %1$s</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="other">dan %1$d lainnya</item>
+    </plurals>
+    <string name="groups_changes_saved">Perubahan disimpan</string>
+    <string name="groups_undo_failed">Tidak dapat mengurungkan. Data mungkin telah berubah.</string>
 </resources>

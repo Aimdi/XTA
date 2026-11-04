@@ -50,11 +50,4 @@
         <item quantity="one">%1$d publicació nova</item>
         <item quantity="other">%1$d publicacions noves</item>
     </plurals>
-    <string name="follow_here_only">Seguit només a XTA Native: X no se n'assabenta.</string>
-    <string name="follow_in_feed">Al feed Seguint</string>
-    <string name="follow_groups">Grups</string>
-    <string name="follow_new_group">Grup nou</string>
-    <string name="follow_group_name">Nom del grup</string>
-    <string name="follow_create">Crea</string>
-    <string name="follow_unfollow">Deixa de seguir</string>
 </resources>

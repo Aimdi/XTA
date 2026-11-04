@@ -54,11 +54,4 @@
         <item quantity="many">%1$d nowych wpisów</item>
         <item quantity="other">%1$d nowego wpisu</item>
     </plurals>
-    <string name="follow_here_only">Obserwowane tylko w XTA Native: X się o tym nie dowie.</string>
-    <string name="follow_in_feed">W kanale Obserwowani</string>
-    <string name="follow_groups">Grupy</string>
-    <string name="follow_new_group">Nowa grupa</string>
-    <string name="follow_group_name">Nazwa grupy</string>
-    <string name="follow_create">Utwórz</string>
-    <string name="follow_unfollow">Przestań obserwować</string>
 </resources>

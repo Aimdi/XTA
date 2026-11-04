@@ -226,4 +226,21 @@
         <item quantity="one">Kide %1$dek jarraitzen du</item>
         <item quantity="other">%1$d kidek jarraitzen dute</item>
     </plurals>
+    <string name="groups_discovery_ai">Bilatu antzeko kontuak AArekin</string>
+    <string name="groups_discovery_description">Aurkitu jarraitzen ez dituzun kontuak talde honetako kideetan oinarrituta. Ireki profila jarraitzeko edo talde batera gehitzeko.</string>
+    <string name="groups_discovery_other_groups">Beste talde batzuk…</string>
+    <string name="groups_discovery_show_post">Erakutsi argitalpena</string>
+    <string name="groups_discovery_open_post">Ireki argitalpena</string>
+    <string name="groups_discovery_reposted_by">Partekatu du: %1$s</string>
+    <string name="groups_discovery_quoted_by">Aipatu du: %1$s</string>
+    <string name="groups_discovery_replied_by">Erantzun du: %1$s</string>
+    <string name="groups_discovery_mentioned_by">Aipamena: %1$s</string>
+    <string name="groups_discovery_suggested_for">%1$s-k %2$s erabiltzailearentzat proposatua</string>
+    <string name="groups_discovery_related_to">%1$s erabiltzailearen lanen antzekoa</string>
+    <plurals name="groups_discovery_and_more">
+        <item quantity="one">eta beste 1</item>
+        <item quantity="other">eta beste %1$d</item>
+    </plurals>
+    <string name="groups_changes_saved">Aldaketak gorde dira</string>
+    <string name="groups_undo_failed">Ezin izan da desegin. Baliteke datuak aldatu izana.</string>
 </resources>

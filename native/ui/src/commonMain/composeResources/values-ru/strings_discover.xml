@@ -23,19 +23,6 @@
     <string name="discover_add_to_group">Добавить в группу</string>
     <string name="discover_hide_from_main_feed">Скрыть из основной ленты</string>
     <string name="discover_show_in_main_feed">Показать в основной ленте</string>
-    <string name="discover_search_or_create">Найти или создать</string>
-    <string name="discover_group_create">Создать «%1$s» и добавить</string>
-    <string name="discover_no_groups_yet">Пока нет групп</string>
-    <string name="discover_no_group_found">Группа не найдена</string>
-    <string name="discover_in_no_group">Ни в одной группе</string>
-    <string name="discover_in_group">В группе %1$s</string>
-    <string name="discover_in_two_groups">В группах %1$s и %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">В %1$d группе</item>
-        <item quantity="few">В %1$d группах</item>
-        <item quantity="many">В %1$d группах</item>
-        <item quantity="other">В %1$d группах</item>
-    </plurals>
     <string name="discover_advanced_search">Расширенный поиск</string>
     <string name="discover_search_term">Поисковый запрос</string>
     <string name="discover_all_of_these_words">Все эти слова</string>

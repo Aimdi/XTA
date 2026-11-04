@@ -23,17 +23,6 @@
     <string name="discover_add_to_group">Lisa gruppi</string>
     <string name="discover_hide_from_main_feed">Peida põhivoost</string>
     <string name="discover_show_in_main_feed">Kuva põhivoos</string>
-    <string name="discover_search_or_create">Otsi või loo</string>
-    <string name="discover_group_create">Loo „%1$s“ ja lisa</string>
-    <string name="discover_no_groups_yet">Gruppe pole veel</string>
-    <string name="discover_no_group_found">Gruppi ei leitud</string>
-    <string name="discover_in_no_group">Pole üheski grupis</string>
-    <string name="discover_in_group">Grupis %1$s</string>
-    <string name="discover_in_two_groups">Gruppides %1$s ja %2$s</string>
-    <plurals name="discover_in_groups">
-        <item quantity="one">%1$d grupis</item>
-        <item quantity="other">%1$d grupis</item>
-    </plurals>
     <string name="discover_advanced_search">Täpsem otsing</string>
     <string name="discover_search_term">Otsingusõna</string>
     <string name="discover_all_of_these_words">Kõik need sõnad</string>

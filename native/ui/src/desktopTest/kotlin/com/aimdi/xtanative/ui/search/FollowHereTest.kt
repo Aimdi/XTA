@@ -50,46 +50,10 @@ class FollowHereTest {
     }
 
     @Test
-    fun thePickerListsGroupsInXtasOrderWithTheirMembers() {
-        val picks = GroupPicker.picks(session, "2")
-        assertEquals(listOf("g-art", "g-cats", "g-news"), picks.map { it.id })
-        assertEquals(listOf(false, true, true), picks.map { it.member })
-        assertEquals("🎨 Art", picks.first().label)
-        assertEquals(Placed.Two("Cats", "News"), GroupPicker.placed(picks))
-        assertEquals(Placed.None, GroupPicker.placed(GroupPicker.picks(session, "1")))
-    }
-
-    @Test
-    fun typingFiltersTheGroupsAndOffersANewOne() {
-        val picks = GroupPicker.picks(session, "2")
-        assertEquals(listOf("g-cats"), GroupPicker.matching(picks, " cAt").map { it.id })
-        assertEquals(picks, GroupPicker.matching(picks, ""))
-        assertTrue(GroupPicker.canCreate(picks, "Dogs"))
-        assertFalse(GroupPicker.canCreate(picks, " news "))
-        assertFalse(GroupPicker.canCreate(picks, "  "))
-    }
-
-    @Test
-    fun puttingInAGroupFollowsFirst() {
-        val account = FollowTarget.Account(maya)
-        val inArt = GroupPicker.inGroup(session, account, "g-art", member = true, at = 7)
-        assertEquals(Followed(followed = true, inFeed = true), account.state(inArt))
-        assertEquals(listOf("1"), inArt.groups.first { it.id == "g-art" }.memberIds)
-
-        val out = GroupPicker.inGroup(inArt, account, "g-art", member = false, at = 8)
-        assertEquals(emptyList(), out.groups.first { it.id == "g-art" }.memberIds)
-        assertTrue(account.state(out).followed)
-    }
-
-    @Test
-    fun aNewGroupHoldsTheSearchFollowed() {
-        val search = FollowTarget.Search("cats")
-        val created = GroupPicker.created(session, search, "g-new", " Felines ", at = 1)
-        assertEquals("Felines", created.groups.last().name)
-        assertEquals(listOf("cats"), created.groups.last().memberIds)
-        assertTrue(search.state(created).followed)
-        val everywhere = created.copy(groups = created.groups.map { it.copy(memberIds = listOf("cats")) })
-        assertEquals(Placed.Many(4), GroupPicker.placed(GroupPicker.picks(everywhere, "cats")))
-        assertEquals(Placed.One("Felines"), GroupPicker.placed(GroupPicker.picks(created, "cats")))
+    fun followingAgainKeepsAnAccountsPlaceAndSwitches() {
+        val again = FollowTarget.Account(XUser("2", "jo", "Jo B")).followed(session, at = 99)
+        assertEquals(5, again.followed("2")?.followedAt)
+        assertFalse(again.followed("2")?.inFeed ?: true)
+        assertEquals(listOf("g-news", "g-cats"), again.groups.filter { "2" in it.memberIds }.map { it.id })
     }
 }

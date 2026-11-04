@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.session.GroupBoard
 import com.aimdi.xtanative.store.settings.GroupsLayout
+import com.aimdi.xtanative.ui.group.RankWithAiButton
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_censored
 import com.aimdi.xtanative.ui.generated.resources.groups_create
@@ -83,11 +84,12 @@ fun GroupsPage(
     onPin: (String, Boolean) -> Unit,
     onMove: (Int, Int) -> Unit,
     contentPadding: PaddingValues,
+    onDiscover: ((String) -> Unit)? = null,
 ) {
     when {
         state.groupCount == 0 -> EmptyGroups(onCreate, contentPadding)
-        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, contentPadding)
-        else -> GroupsBoard(state, onOpen, onEdit, contentPadding)
+        state.layout == GroupsLayout.LIST -> GroupsList(state, onOpen, onEdit, onPin, onMove, contentPadding, onDiscover)
+        else -> GroupsBoard(state, onOpen, onEdit, contentPadding, onDiscover)
     }
 }
 
@@ -115,7 +117,7 @@ private fun EmptyGroups(onCreate: () -> Unit, contentPadding: PaddingValues) {
 private fun tileColor(): Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.055f).compositeOver(MaterialTheme.colorScheme.background)
 
 @Composable
-private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit: (String) -> Unit, contentPadding: PaddingValues) {
+private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit: (String) -> Unit, contentPadding: PaddingValues, onDiscover: ((String) -> Unit)?) {
     // Compact tiles sit two to a phone row, like the large ones.
     val chosen = if (state.compact) 2 else state.columns
     val textScale = LocalDensity.current.fontScale
@@ -137,12 +139,12 @@ private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit
             modifier = Modifier.fillMaxSize(),
         ) {
             items(state.board.safe, key = { it.id }) { tile ->
-                GroupTileView(tile, state.compact, fixedHeight, ratio, { onOpen(tile.id) }, { onEdit(tile.id) })
+                GroupTileView(tile, state.compact, fixedHeight, ratio, { onOpen(tile.id) }, { onEdit(tile.id) }, onDiscover?.let { { it(tile.id) } })
             }
             if (state.board.nsfw.isNotEmpty()) {
                 item(key = "censored", span = { GridItemSpan(maxLineSpan) }) { CensoredHeader() }
                 items(state.board.nsfw, key = { it.id }) { tile ->
-                    GroupTileView(tile, state.compact, fixedHeight, ratio, { onOpen(tile.id) }, { onEdit(tile.id) })
+                    GroupTileView(tile, state.compact, fixedHeight, ratio, { onOpen(tile.id) }, { onEdit(tile.id) }, onDiscover?.let { { it(tile.id) } })
                 }
             }
         }
@@ -153,11 +155,12 @@ private fun GroupsBoard(state: SubscriptionsUi, onOpen: (String) -> Unit, onEdit
  * One group on the board (group_tile.dart): a flat card with a hairline
  * border, its members' faces or its mark, its name after the pinned and NSFW
  * marks, and its member count. A colour the reader chose tints its border
- * and washes over it faintly.
+ * and washes over it faintly. With [onDiscover], its sparkle opens its
+ * Discover ranked by the reader's AI.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?, ratio: Float, onTap: () -> Unit, onLongPress: () -> Unit) {
+private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?, ratio: Float, onTap: () -> Unit, onLongPress: () -> Unit, onDiscover: (() -> Unit)?) {
     val group = tile.group
     val base = tileColor()
     val chosen = group.color?.let(::groupColor)
@@ -176,7 +179,10 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
     ) {
         val cover = Modifier.let { if (group.nsfw) it.blur(8.dp) else it }
         if (compact) {
-            Row(Modifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.fillMaxSize().padding(start = 10.dp, end = if (onDiscover == null) 10.dp else 48.dp, top = 6.dp, bottom = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 GroupCover(tile, base, GroupBoard.COMPACT_COVER.dp, cover.size(GroupBoard.COMPACT_COVER.dp))
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
@@ -194,6 +200,9 @@ private fun GroupTileView(tile: GroupTile, compact: Boolean, fixedHeight: Float?
             }
         }
         if (tile.unread) UnreadDot(Modifier.align(Alignment.TopEnd).padding(8.dp))
+        if (onDiscover != null) {
+            RankWithAiButton(Modifier.align(if (compact) Alignment.CenterEnd else Alignment.TopEnd).padding(2.dp), iconSize = 20.dp, onClick = onDiscover)
+        }
     }
 }
 
@@ -260,6 +269,7 @@ private fun GroupsList(
     onPin: (String, Boolean) -> Unit,
     onMove: (Int, Int) -> Unit,
     contentPadding: PaddingValues,
+    onDiscover: ((String) -> Unit)?,
 ) {
     val list = rememberRetappedList()
     val drag = rememberRowDrag(list)
@@ -287,6 +297,7 @@ private fun GroupsList(
                         onOpen = { onOpen(tile.id) },
                         onEdit = { onEdit(tile.id) },
                         onPin = { onPin(tile.id, !tile.group.pinned) },
+                        onDiscover = onDiscover?.let { { it(tile.id) } },
                         handle = if (!state.canDragGroups) {
                             null
                         } else {
@@ -311,7 +322,7 @@ private fun GroupsList(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit, onPin: () -> Unit, handle: Modifier?) {
+private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit, onPin: () -> Unit, onDiscover: (() -> Unit)?, handle: Modifier?) {
     val group = tile.group
     val count = pluralStringResource(Res.plurals.groups_member_count, tile.memberCount, tile.memberCount)
     val hidden = tile.memberCount - tile.faces.size
@@ -348,6 +359,7 @@ private fun GroupListRow(tile: GroupTile, onOpen: () -> Unit, onEdit: () -> Unit
                 }
             }
         }
+        if (onDiscover != null) RankWithAiButton(iconSize = 20.dp, onClick = onDiscover)
         IconButton(onClick = onPin) {
             Icon(
                 if (group.pinned) GroupIcons.PushPin else GroupIcons.PushPinOutlined,
