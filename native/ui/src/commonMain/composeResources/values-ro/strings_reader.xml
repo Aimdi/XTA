@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Copiază linkul</string>
     <string name="reader_link_copied">Link copiat</string>
     <string name="reader_link_share">Distribuie linkul</string>
+    <string name="reader_share_image">Partajează imaginea</string>
     <string name="reader_link_reload">Reîncarcă pagina</string>
     <string name="reader_link_back_to_post">Înapoi la postare</string>
     <string name="reader_link_secure">Conexiune securizată</string>

@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Kopier lenke</string>
     <string name="reader_link_copied">Lenke kopiert</string>
     <string name="reader_link_share">Del lenke</string>
+    <string name="reader_share_image">Del bilde</string>
     <string name="reader_link_reload">Last inn siden på nytt</string>
     <string name="reader_link_back_to_post">Tilbake til innlegget</string>
     <string name="reader_link_secure">Sikker tilkobling</string>

@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Kopírovat odkaz</string>
     <string name="reader_link_copied">Odkaz zkopírován</string>
     <string name="reader_link_share">Sdílet odkaz</string>
+    <string name="reader_share_image">Sdílet obrázek</string>
     <string name="reader_link_reload">Znovu načíst stránku</string>
     <string name="reader_link_back_to_post">Zpět na příspěvek</string>
     <string name="reader_link_secure">Zabezpečené připojení</string>

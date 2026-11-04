@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Sao chép liên kết</string>
     <string name="reader_link_copied">Đã sao chép liên kết</string>
     <string name="reader_link_share">Chia sẻ liên kết</string>
+    <string name="reader_share_image">Chia sẻ ảnh</string>
     <string name="reader_link_reload">Tải lại trang</string>
     <string name="reader_link_back_to_post">Quay lại bài đăng</string>
     <string name="reader_link_secure">Kết nối an toàn</string>

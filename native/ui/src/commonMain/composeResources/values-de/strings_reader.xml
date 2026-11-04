@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Link kopieren</string>
     <string name="reader_link_copied">Link kopiert</string>
     <string name="reader_link_share">Link teilen</string>
+    <string name="reader_share_image">Bild teilen</string>
     <string name="reader_link_reload">Seite neu laden</string>
     <string name="reader_link_back_to_post">Zurück zum Beitrag</string>
     <string name="reader_link_secure">Sichere Verbindung</string>

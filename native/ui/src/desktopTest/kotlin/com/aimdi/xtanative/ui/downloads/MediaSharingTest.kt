@@ -61,4 +61,13 @@ class MediaSharingTest {
         assertEquals("maya-face_400x400.jpg", MediaSharing.fileName(banner.copy(fileName = "maya-face_400x400.jpg")))
         folder.deleteRecursively()
     }
+
+    @Test
+    fun theButtonSaysAPictureGoesOnlyWhereThePictureItselfIsShared() {
+        val folder = File("shared")
+        val video = banner.copy(kind = XMedia.Kind.VIDEO)
+        assertTrue(MediaSharing.sharesPicture(SharingFiles(folder), banner))
+        assertFalse(MediaSharing.sharesPicture(SharingFiles(folder), video), "a video shares its address")
+        assertFalse(MediaSharing.sharesPicture(SharingFiles(null), banner), "the desktop shares the address")
+    }
 }

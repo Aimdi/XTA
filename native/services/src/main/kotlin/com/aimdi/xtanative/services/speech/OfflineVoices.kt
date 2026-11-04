@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.services.speech
 
+import com.aimdi.xtanative.core.format.Languages
 import java.io.File
 
 /** Which sherpa-onnx model family a voice is, which decides how it loads. */
@@ -117,7 +118,6 @@ object OfflineVoices {
     /** The voice among [installed] that reads [language] (`de`, `en-GB`, `de_AT`), the preferred one when several do. */
     fun pick(installed: Iterable<OfflineVoice>, language: String?): OfflineVoice? {
         if (language.isNullOrEmpty()) return null
-        val base = language.replace('-', '_').substringBefore('_').lowercase()
-        return installed.filter { it.language == base }.maxByOrNull { it.preference }
+        return installed.filter { Languages.same(it.language, language) }.maxByOrNull { it.preference }
     }
 }

@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Kopeeri link</string>
     <string name="reader_link_copied">Link kopeeritud</string>
     <string name="reader_link_share">Jaga linki</string>
+    <string name="reader_share_image">Jaga pilti</string>
     <string name="reader_link_reload">Laadi leht uuesti</string>
     <string name="reader_link_back_to_post">Tagasi postituse juurde</string>
     <string name="reader_link_secure">Turvaline ühendus</string>

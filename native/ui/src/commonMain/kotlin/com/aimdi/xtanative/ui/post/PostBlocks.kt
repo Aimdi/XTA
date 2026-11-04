@@ -58,6 +58,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_sensitive_show
 import com.aimdi.xtanative.ui.generated.resources.posts_spaces
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
+import com.aimdi.xtanative.ui.links.LocalLinks
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -112,10 +113,12 @@ fun SensitiveGate(reveal: SensitiveReveal, message: String? = null, framed: Bool
 /**
  * A post X will not show (deleted, withheld, its account private or
  * suspended): one tap finds it in the Wayback Machine when its author and
- * id are known (unavailable_post.dart).
+ * id are known, opened as a link in a post is, so XTA's browser screen shows
+ * it when the reader keeps links in the app (unavailable_post.dart).
  */
 @Composable
 fun UnavailablePost(message: String, archiveUrl: String?, actions: PostActions, modifier: Modifier = Modifier) {
+    val links = LocalLinks.current
     Embed(modifier) {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -128,7 +131,7 @@ fun UnavailablePost(message: String, archiveUrl: String?, actions: PostActions, 
                 )
             }
             if (archiveUrl != null) {
-                TextButton(onClick = { actions.openLink(archiveUrl) }) {
+                TextButton(onClick = { links?.openPostLink(archiveUrl) ?: actions.openLink(archiveUrl) }) {
                     Icon(PostIcons.History, null, modifier = Modifier.size(18.dp))
                     Text(stringResource(Res.string.posts_open_on_web_archive), modifier = Modifier.padding(start = 8.dp))
                 }

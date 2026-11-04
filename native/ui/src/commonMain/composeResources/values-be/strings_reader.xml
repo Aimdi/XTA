@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Скапіяваць спасылку</string>
     <string name="reader_link_copied">Спасылка скапіявана</string>
     <string name="reader_link_share">Падзяліцца спасылкай</string>
+    <string name="reader_share_image">Падзяліцца выявай</string>
     <string name="reader_link_reload">Перазагрузіць старонку</string>
     <string name="reader_link_back_to_post">Назад да допісу</string>
     <string name="reader_link_secure">Абароненае злучэнне</string>

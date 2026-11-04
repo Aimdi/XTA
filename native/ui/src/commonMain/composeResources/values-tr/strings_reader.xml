@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Bağlantıyı kopyala</string>
     <string name="reader_link_copied">Bağlantı kopyalandı</string>
     <string name="reader_link_share">Bağlantıyı paylaş</string>
+    <string name="reader_share_image">Görseli paylaş</string>
     <string name="reader_link_reload">Sayfayı yeniden yükle</string>
     <string name="reader_link_back_to_post">Gönderiye dön</string>
     <string name="reader_link_secure">Güvenli bağlantı</string>

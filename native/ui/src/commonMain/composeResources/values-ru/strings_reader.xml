@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Копировать ссылку</string>
     <string name="reader_link_copied">Ссылка скопирована</string>
     <string name="reader_link_share">Поделиться ссылкой</string>
+    <string name="reader_share_image">Поделиться изображением</string>
     <string name="reader_link_reload">Перезагрузить страницу</string>
     <string name="reader_link_back_to_post">Назад к посту</string>
     <string name="reader_link_secure">Защищённое соединение</string>

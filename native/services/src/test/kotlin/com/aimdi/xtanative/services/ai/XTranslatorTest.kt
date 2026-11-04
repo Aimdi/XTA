@@ -155,6 +155,9 @@ class XTranslatorTest {
         assertTrue(XTranslator.offers("de", "en"))
         assertFalse(XTranslator.offers("en", "en"))
         assertFalse(XTranslator.offers("en-GB", "en_US"))
+        assertFalse(XTranslator.offers("in", "id-ID"), "X's old code for Indonesian, to a reader on Java 17")
+        assertFalse(XTranslator.offers("iw", "he"))
+        assertTrue(XTranslator.offers("in", "en"))
         XTranslator.UNTRANSLATABLE.forEach { assertFalse(XTranslator.offers(it, "en"), it) }
         assertTrue(XTranslator.offers(null, "en"), "an idle button beats a stranded reader")
         assertTrue(XTranslator.offers("", "en"))

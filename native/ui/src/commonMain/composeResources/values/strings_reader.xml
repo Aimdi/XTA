@@ -15,6 +15,7 @@
     <string name="reader_link_copy">Copy link</string>
     <string name="reader_link_copied">Link copied</string>
     <string name="reader_link_share">Share link</string>
+    <string name="reader_share_image">Share image</string>
     <string name="reader_link_reload">Reload page</string>
     <string name="reader_link_back_to_post">Back to post</string>
     <string name="reader_link_secure">Secure connection</string>

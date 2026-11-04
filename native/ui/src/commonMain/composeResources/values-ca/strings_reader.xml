@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Copia l’enllaç</string>
     <string name="reader_link_copied">Enllaç copiat</string>
     <string name="reader_link_share">Comparteix l’enllaç</string>
+    <string name="reader_share_image">Comparteix la imatge</string>
     <string name="reader_link_reload">Torna a carregar la pàgina</string>
     <string name="reader_link_back_to_post">Torna a la publicació</string>
     <string name="reader_link_secure">Connexió segura</string>

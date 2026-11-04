@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Salin tautan</string>
     <string name="reader_link_copied">Tautan disalin</string>
     <string name="reader_link_share">Bagikan tautan</string>
+    <string name="reader_share_image">Bagikan gambar</string>
     <string name="reader_link_reload">Muat ulang halaman</string>
     <string name="reader_link_back_to_post">Kembali ke postingan</string>
     <string name="reader_link_secure">Koneksi aman</string>

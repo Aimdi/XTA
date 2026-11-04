@@ -13,6 +13,7 @@
     <string name="reader_link_copy">リンクをコピー</string>
     <string name="reader_link_copied">リンクをコピーしました</string>
     <string name="reader_link_share">リンクを共有</string>
+    <string name="reader_share_image">画像を共有</string>
     <string name="reader_link_reload">ページを再読み込み</string>
     <string name="reader_link_back_to_post">投稿に戻る</string>
     <string name="reader_link_secure">安全な接続</string>

@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Kopiatu esteka</string>
     <string name="reader_link_copied">Esteka kopiatu da</string>
     <string name="reader_link_share">Partekatu esteka</string>
+    <string name="reader_share_image">Partekatu irudia</string>
     <string name="reader_link_reload">Kargatu berriro orria</string>
     <string name="reader_link_back_to_post">Itzuli argitalpenera</string>
     <string name="reader_link_secure">Konexio segurua</string>

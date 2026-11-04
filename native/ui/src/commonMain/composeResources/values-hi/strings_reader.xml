@@ -13,6 +13,7 @@
     <string name="reader_link_copy">लिंक कॉपी करें</string>
     <string name="reader_link_copied">लिंक कॉपी हो गया</string>
     <string name="reader_link_share">लिंक साझा करें</string>
+    <string name="reader_share_image">छवि साझा करें</string>
     <string name="reader_link_reload">पेज फिर से लोड करें</string>
     <string name="reader_link_back_to_post">पोस्ट पर वापस जाएँ</string>
     <string name="reader_link_secure">सुरक्षित कनेक्शन</string>

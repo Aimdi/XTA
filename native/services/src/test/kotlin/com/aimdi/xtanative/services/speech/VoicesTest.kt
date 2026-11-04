@@ -68,6 +68,8 @@ class VoicesTest {
         assertNull(OfflineVoices.pick(emptyList(), "de"))
         assertEquals(kokoro, OfflineVoices.pick(listOf(libritts, kokoro), "en"))
         assertEquals(kokoro, OfflineVoices.pick(listOf(kokoro, libritts), "en"))
+        val indonesian = kokoro.copy(id = "id-voice", locale = "id_ID")
+        assertEquals(indonesian, OfflineVoices.pick(listOf(libritts, indonesian), "in"), "Android and X still say in for Indonesian")
         assertEquals(listOf("model.int8.onnx", "tokens.txt", "espeak-ng-data/phontab", "voices.bin"), kokoro.requiredFiles)
     }
 

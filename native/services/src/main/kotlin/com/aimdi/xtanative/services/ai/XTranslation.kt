@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.services.ai
 
+import com.aimdi.xtanative.core.format.Languages
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XTranslationException
@@ -135,7 +136,7 @@ class XTranslator(
         fun offers(lang: String?, appLanguage: String): Boolean {
             if (lang.isNullOrEmpty()) return true
             if (lang in UNTRANSLATABLE) return false
-            return lang.substringBefore('-').lowercase() != appLanguage.substringBefore('-').substringBefore('_').lowercase()
+            return !Languages.same(lang, appLanguage)
         }
 
         /**

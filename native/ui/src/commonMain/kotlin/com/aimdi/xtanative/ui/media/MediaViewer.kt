@@ -75,6 +75,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.generated.resources.reader_media_next
 import com.aimdi.xtanative.ui.generated.resources.reader_media_previous
 import com.aimdi.xtanative.ui.generated.resources.reader_media_unknown
+import com.aimdi.xtanative.ui.generated.resources.reader_share_image
 import com.aimdi.xtanative.ui.links.LocalLinks
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -169,7 +170,8 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit) {
                     IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
                 }
                 if (save != null) {
-                    IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(Res.string.reader_link_share), tint = Color.White) }
+                    val label = if (MediaSharing.sharesPicture(graph.platformFiles, save)) Res.string.reader_share_image else Res.string.reader_link_share
+                    IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(label), tint = Color.White) }
                 }
             }
             Box(Modifier.weight(1f).fillMaxWidth()) {

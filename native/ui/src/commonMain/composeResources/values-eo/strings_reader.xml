@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Kopii ligilon</string>
     <string name="reader_link_copied">Ligilo kopiita</string>
     <string name="reader_link_share">Kunhavigi ligilon</string>
+    <string name="reader_share_image">Kunhavigi bildon</string>
     <string name="reader_link_reload">Reŝargi la paĝon</string>
     <string name="reader_link_back_to_post">Reen al la afiŝo</string>
     <string name="reader_link_secure">Sekura konekto</string>

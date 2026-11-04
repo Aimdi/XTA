@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Копіювати посилання</string>
     <string name="reader_link_copied">Посилання скопійовано</string>
     <string name="reader_link_share">Поділитися посиланням</string>
+    <string name="reader_share_image">Поділитися зображенням</string>
     <string name="reader_link_reload">Перезавантажити сторінку</string>
     <string name="reader_link_back_to_post">Назад до допису</string>
     <string name="reader_link_secure">Захищене з'єднання</string>

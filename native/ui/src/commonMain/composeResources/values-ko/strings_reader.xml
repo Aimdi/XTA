@@ -13,6 +13,7 @@
     <string name="reader_link_copy">링크 복사</string>
     <string name="reader_link_copied">링크를 복사했습니다</string>
     <string name="reader_link_share">링크 공유</string>
+    <string name="reader_share_image">이미지 공유</string>
     <string name="reader_link_reload">페이지 새로고침</string>
     <string name="reader_link_back_to_post">게시물로 돌아가기</string>
     <string name="reader_link_secure">안전한 연결</string>

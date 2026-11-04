@@ -13,6 +13,7 @@
     <string name="reader_link_copy">Link kopiëren</string>
     <string name="reader_link_copied">Link gekopieerd</string>
     <string name="reader_link_share">Link delen</string>
+    <string name="reader_share_image">Afbeelding delen</string>
     <string name="reader_link_reload">Pagina opnieuw laden</string>
     <string name="reader_link_back_to_post">Terug naar bericht</string>
     <string name="reader_link_secure">Beveiligde verbinding</string>

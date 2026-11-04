@@ -18,9 +18,12 @@ import kotlinx.coroutines.withContext
  * shares the address instead.
  */
 object MediaSharing {
+    /** Whether [share] hands [save] over as the picture itself: a photo, where the platform shares files. */
+    fun sharesPicture(files: PlatformFiles, save: MediaSave): Boolean = save.kind == XMedia.Kind.PHOTO && files.shareFolder() != null
+
     /** Shares [save] as a file; false when it is no photo, the platform cannot, or the host sent nothing. */
     suspend fun share(files: PlatformFiles, save: MediaSave, http: MediaHttp = OkHttpMediaHttp()): Boolean {
-        if (save.kind != XMedia.Kind.PHOTO) return false
+        if (!sharesPicture(files, save)) return false
         val folder = files.shareFolder() ?: return false
         val file = fetch(http, save.url, folder, fileName(save)) ?: return false
         return files.shareFile(file, mimeTypeFor(file.name))
