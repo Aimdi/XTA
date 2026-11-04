@@ -53,4 +53,11 @@
     <string name="home_import">XTA-Sicherung importieren</string>
     <string name="home_zen_end">Das ist erstmal alles</string>
     <string name="home_zen_more">Trotzdem mehr laden</string>
+
+    <string name="home_home">Start</string>
+    <string name="home_networks">Netzwerke</string>
+    <string name="home_networks_recent">Zuletzt</string>
+    <string name="home_networks_all">Alle Netzwerke</string>
+    <string name="home_posts">Tweets</string>
+    <string name="home_media">Medien</string>
 </resources>

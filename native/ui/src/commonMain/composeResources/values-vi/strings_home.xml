@@ -52,4 +52,11 @@
     <string name="home_import">Nhập một bản sao lưu XTA</string>
     <string name="home_zen_end">Tạm thời chỉ có vậy</string>
     <string name="home_zen_more">Vẫn tải thêm</string>
+
+    <string name="home_home">Trang chủ</string>
+    <string name="home_networks">Mạng</string>
+    <string name="home_networks_recent">Gần đây</string>
+    <string name="home_networks_all">Tất cả mạng</string>
+    <string name="home_posts">Bài viết</string>
+    <string name="home_media">Đa phương tiện</string>
 </resources>

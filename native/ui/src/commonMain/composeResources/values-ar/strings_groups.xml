@@ -219,4 +219,35 @@
         <item quantity="many">تم تخطي %1$d اشتراكًا</item>
         <item quantity="other">تم تخطي %1$d اشتراك</item>
     </plurals>
+
+    <string name="groups_discover">اكتشف</string>
+    <string name="groups_media">الوسائط</string>
+    <string name="groups_media_empty">لم يُعثر على أي تغريدات تحتوي على وسائط من الأيام الـ7 الماضية!</string>
+    <string name="groups_discovery_scan_more">فحص المزيد</string>
+    <string name="groups_discovery_empty">لم تُعثر على حسابات مشابهة لا تتابعها بعد. حاول مجددًا بعد أن يشارك أعضاء المجموعة المزيد من المنشورات.</string>
+    <string name="groups_discovery_partial">تعذر تحميل بعض المصادر. اسحب لأسفل لإعادة المحاولة.</string>
+    <string name="groups_discovery_add_to_group">إضافة إلى ”%1$s“</string>
+    <string name="groups_discovery_added">تمت الإضافة</string>
+    <string name="groups_discovery_more_like">المزيد مثل هذا</string>
+    <string name="groups_discovery_less_like">أقل مثل هذا</string>
+    <string name="groups_discovery_hide">إخفاء</string>
+    <string name="groups_discovery_feedback_saved">تم تحديث الاقتراحات</string>
+    <string name="groups_discovery_reset">إعادة تعيين الاقتراحات</string>
+    <string name="groups_add_member_failed">تعذّرت المتابعة</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="zero">بناءً على %1$d من %2$d أعضاء</item>
+        <item quantity="one">بناءً على %1$d من عضو واحد</item>
+        <item quantity="two">بناءً على %1$d من عضوين</item>
+        <item quantity="few">بناءً على %1$d من %2$d أعضاء</item>
+        <item quantity="many">بناءً على %1$d من %2$d عضوًا</item>
+        <item quantity="other">بناءً على %1$d من %2$d عضو</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="zero">لا يتابعه أي عضو</item>
+        <item quantity="one">يتابعه عضو واحد</item>
+        <item quantity="two">يتابعه عضوان</item>
+        <item quantity="few">يتابعه %1$d أعضاء</item>
+        <item quantity="many">يتابعه %1$d عضوًا</item>
+        <item quantity="other">يتابعه %1$d عضو</item>
+    </plurals>
 </resources>

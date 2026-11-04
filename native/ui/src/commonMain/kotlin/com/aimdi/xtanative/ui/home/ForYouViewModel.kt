@@ -89,7 +89,7 @@ class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFe
             combine(graph.sessions.state.filterNotNull(), graph.settings.settings) { session, settings ->
                 Shape(
                     accounts = session.accounts,
-                    off = settings[AccountPrefs.forYouHiddenAccountIds].toSet(),
+                    off = settings[AccountPrefs.disabledAccountIds].toSet(),
                     excluded = session.excludedFromFollowing,
                     pageCap = ForYouRules.pageCap(settings[PostsPrefs.zenMode], settings[PostsPrefs.zenPageCap]),
                 )

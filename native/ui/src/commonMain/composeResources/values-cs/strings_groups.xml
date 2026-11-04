@@ -211,4 +211,31 @@
         <item quantity="many">Přeskočeno %1$d odběrů</item>
         <item quantity="other">Přeskočeno %1$d odběrů</item>
     </plurals>
+
+    <string name="groups_discover">Objevovat</string>
+    <string name="groups_media">Média</string>
+    <string name="groups_media_empty">Nepodařilo se nalézt žádné tweety s médii z posledních 7 dnů!</string>
+    <string name="groups_discovery_scan_more">Prohledat další</string>
+    <string name="groups_discovery_empty">Zatím nebyly nalezeny podobné účty, které nesledujete. Zkuste to znovu, až členové skupiny nasdílí další příspěvky.</string>
+    <string name="groups_discovery_partial">Některé zdroje se nepodařilo načíst. Tažením dolů to zkuste znovu.</string>
+    <string name="groups_discovery_add_to_group">Přidat do „%1$s“</string>
+    <string name="groups_discovery_added">Přidáno</string>
+    <string name="groups_discovery_more_like">Více podobného</string>
+    <string name="groups_discovery_less_like">Méně podobného</string>
+    <string name="groups_discovery_hide">Skrýt</string>
+    <string name="groups_discovery_feedback_saved">Návrhy aktualizovány</string>
+    <string name="groups_discovery_reset">Obnovit návrhy</string>
+    <string name="groups_add_member_failed">Nepodařilo se to sledovat</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Na základě %1$d z %2$d člena</item>
+        <item quantity="few">Na základě %1$d ze %2$d členů</item>
+        <item quantity="many">Na základě %1$d z %2$d člena</item>
+        <item quantity="other">Na základě %1$d z %2$d členů</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Sleduje %1$d člen</item>
+        <item quantity="few">Sledují %1$d členové</item>
+        <item quantity="many">Sleduje %1$d člena</item>
+        <item quantity="other">Sleduje %1$d členů</item>
+    </plurals>
 </resources>

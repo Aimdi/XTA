@@ -4,14 +4,15 @@ import java.net.URLEncoder
 
 /**
  * Where the account menu leads, by the name of each screen's route: XTA's
- * drawer buttons, its bar's pages, and the screens it reaches from them.
+ * drawer buttons, its bar's pages ([barPage], their id on the bar), and the
+ * screens it reaches from them.
  */
-enum class HomeDestination(val route: String) {
+enum class HomeDestination(val route: String, val barPage: String? = null) {
     SEARCH("search"),
     SETTINGS("settings"),
-    SUBSCRIPTIONS("subscriptions"),
-    TRENDS("trends"),
-    SAVED("saved"),
+    SUBSCRIPTIONS("subscriptions", HomeBar.SUBSCRIPTIONS),
+    TRENDS("trends", HomeBar.TRENDING),
+    SAVED("saved", HomeBar.SAVED),
     DOWNLOADS("downloads"),
     ANTENNAS("antennas"),
     PLUGINS("plugins"),
@@ -36,10 +37,11 @@ object HomeMenu {
 
     /**
      * The entries of [entries] the menu shows: those whose screen the app has
-     * ([exists] asks its navigation), the deck only where it fits the window.
+     * ([exists] asks its navigation), the deck only where it fits the window,
+     * and none of the pages on the bar ([onBar], their ids), a tap away there.
      */
-    fun shown(entries: List<HomeDestination>, exists: (String) -> Boolean, deckFits: Boolean): List<HomeDestination> =
-        entries.filter { exists(it.route) && (it != HomeDestination.DECK || deckFits) }
+    fun shown(entries: List<HomeDestination>, exists: (String) -> Boolean, deckFits: Boolean, onBar: Set<String> = emptySet()): List<HomeDestination> =
+        entries.filter { exists(it.route) && (it != HomeDestination.DECK || deckFits) && it.barPage !in onBar }
 }
 
 /**

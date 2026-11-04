@@ -39,6 +39,8 @@ import com.aimdi.xtanative.ui.feed.FeedScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
+import com.aimdi.xtanative.ui.home.HomeBarScreens
+import com.aimdi.xtanative.ui.home.HomeRequests
 import com.aimdi.xtanative.ui.home.HomeRoutes
 import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
@@ -53,8 +55,8 @@ import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
-import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
@@ -312,7 +314,14 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             )
         }
         composable(Routes.HOME) {
-            HomeScreen(actions, homeRoutes)
+            val screens = remember(nav, actions, trendsActions) {
+                HomeBarScreens(
+                    subscriptions = { SubscriptionsScreen(subscriptionsNavigation(nav, actions)) },
+                    trends = { TrendsScreen(trendsActions) },
+                    saved = { SavedScreen(actions, savedLinks(nav)) },
+                )
+            }
+            HomeScreen(actions, homeRoutes, screens)
         }
         composable(Routes.DECK) {
             DeckScreen(actions, onBack = { nav.popBackStack() })
@@ -408,37 +417,13 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             )
         }
         composable(Routes.SAVED) {
-            SavedScreen(
-                actions,
-                SavedLinks(
-                    openFolders = { nav.navigate(Routes.SAVED_FOLDERS) },
-                    openThread = { rootId -> nav.navigate(Routes.noteThread(rootId)) },
-                    openDownloads = { nav.navigate(Routes.DOWNLOADS) },
-                    openOffline = { nav.navigate(Routes.OFFLINE) },
-                    openSettings = { nav.navigate(Routes.SETTINGS) },
-                    searchLibrary = { nav.navigate(Routes.library(null)) },
-                ),
-                onBack = { nav.popBackStack() },
-            )
+            SavedScreen(actions, savedLinks(nav), onBack = { nav.popBackStack() })
         }
         composable(Routes.LIBRARY, arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
             LibrarySearchScreen(entry.text("q"), open = { target -> nav.navigate(Routes.of(target)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.SUBSCRIPTIONS) {
-            SubscriptionsScreen(
-                SubscriptionsNavigation(
-                    openProfile = actions.openProfile,
-                    search = actions.search,
-                    openGroup = { id -> nav.navigate(Routes.group(id)) },
-                    importFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) },
-                    importList = { nav.navigate(Routes.importList(null)) },
-                    sortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) },
-                    settings = { nav.navigate(Routes.SETTINGS) },
-                    antennas = { nav.navigate(Routes.ANTENNAS) },
-                    deck = { nav.navigate(Routes.DECK) },
-                ),
-                onBack = { nav.popBackStack() },
-            )
+            SubscriptionsScreen(subscriptionsNavigation(nav, actions), onBack = { nav.popBackStack() })
         }
         composable(Routes.SAVED_FOLDERS) { SavedFoldersScreen(onBack = { nav.popBackStack() }) }
         composable(
@@ -518,7 +503,10 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             )
         }
         composable(Routes.GROUP, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
-            GroupFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
+            GroupFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() }, onFeed = { tabKey ->
+                HomeRequests.show(tabKey)
+                nav.backToHome()
+            })
         }
         composable(Routes.QUOTES, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             QuotesScreen(entry.text("id").orEmpty(), reposters = false, actions, onBack = { nav.popBackStack() })
@@ -560,3 +548,31 @@ private fun NavBackStackEntry.text(name: String): String? = arguments?.read { ge
 private fun NavHostController.startOver(route: String) {
     navigate(route) { popUpTo(Routes.ROOT) { inclusive = true } }
 }
+
+/** Back to Home, whatever lies between (a group's title menu picking one of Home's feeds); Home again when it was not under. */
+private fun NavHostController.backToHome() {
+    if (!popBackStack(Routes.HOME, inclusive = false)) startOver(Routes.HOME)
+}
+
+/** Where Subscriptions leads, whether it is a page of Home's bar or a screen of its own. */
+private fun subscriptionsNavigation(nav: NavHostController, actions: PostActions) = SubscriptionsNavigation(
+    openProfile = actions.openProfile,
+    search = actions.search,
+    openGroup = { id -> nav.navigate(Routes.group(id)) },
+    importFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) },
+    importList = { nav.navigate(Routes.importList(null)) },
+    sortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) },
+    settings = { nav.navigate(Routes.SETTINGS) },
+    antennas = { nav.navigate(Routes.ANTENNAS) },
+    deck = { nav.navigate(Routes.DECK) },
+)
+
+/** Where Saved leads, whether it is a page of Home's bar or a screen of its own. */
+private fun savedLinks(nav: NavHostController) = SavedLinks(
+    openFolders = { nav.navigate(Routes.SAVED_FOLDERS) },
+    openThread = { rootId -> nav.navigate(Routes.noteThread(rootId)) },
+    openDownloads = { nav.navigate(Routes.DOWNLOADS) },
+    openOffline = { nav.navigate(Routes.OFFLINE) },
+    openSettings = { nav.navigate(Routes.SETTINGS) },
+    searchLibrary = { nav.navigate(Routes.library(null)) },
+)

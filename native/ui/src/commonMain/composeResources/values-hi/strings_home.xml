@@ -53,4 +53,11 @@
     <string name="home_import">XTA बैकअप इंपोर्ट करें</string>
     <string name="home_zen_end">अभी के लिए बस इतना ही</string>
     <string name="home_zen_more">फिर भी और लोड करें</string>
+
+    <string name="home_home">होम</string>
+    <string name="home_networks">नेटवर्क</string>
+    <string name="home_networks_recent">हालिया</string>
+    <string name="home_networks_all">सभी नेटवर्क</string>
+    <string name="home_posts">पोस्ट</string>
+    <string name="home_media">मीडिया</string>
 </resources>

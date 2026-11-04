@@ -109,8 +109,13 @@ object AccountPrefs : PrefSection() {
     /** The picture's revision; 0 shows the monogram. */
     val avatarRevision = whole("chrome.avatar_revision", 0)
 
-    /** Accounts kept out of the merged For you, as a JSON array; a new account joins until turned off. */
-    val forYouHiddenAccountIds = jsonList("home.feed_disabled_account_ids")
+    /**
+     * The X accounts turned off, as a JSON array (XTA's AccountFetchGate): For
+     * you leaves them out, and every read goes to the accounts left on while
+     * there is one. A new account is on until turned off here or in Home feed
+     * accounts. The key is XTA's, from when the switch was For you's alone.
+     */
+    val disabledAccountIds = jsonList("home.feed_disabled_account_ids")
 }
 
 /** Settings › Posts: how posts read, the feeds' defaults, zen and calm, and the language filter. */

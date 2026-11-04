@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.group
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -60,7 +58,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -70,7 +67,6 @@ import com.aimdi.xtanative.core.feed.CatchUpMessage
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedPause
 import com.aimdi.xtanative.core.feed.FeedSort
-import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -94,12 +90,12 @@ import com.aimdi.xtanative.ui.generated.resources.groups_content_default
 import com.aimdi.xtanative.ui.generated.resources.groups_content_nsfw
 import com.aimdi.xtanative.ui.generated.resources.groups_content_sfw
 import com.aimdi.xtanative.ui.generated.resources.groups_custom
+import com.aimdi.xtanative.ui.generated.resources.groups_discover
 import com.aimdi.xtanative.ui.generated.resources.groups_feed_empty
 import com.aimdi.xtanative.ui.generated.resources.groups_feed_issue
 import com.aimdi.xtanative.ui.generated.resources.groups_feed_unrelated
+import com.aimdi.xtanative.ui.generated.resources.groups_media
 import com.aimdi.xtanative.ui.generated.resources.groups_filters
-import com.aimdi.xtanative.ui.generated.resources.groups_fold_hide_again
-import com.aimdi.xtanative.ui.generated.resources.groups_fold_matched
 import com.aimdi.xtanative.ui.generated.resources.groups_more_info
 import com.aimdi.xtanative.ui.generated.resources.groups_never_show_again
 import com.aimdi.xtanative.ui.generated.resources.groups_no_members
@@ -110,7 +106,11 @@ import com.aimdi.xtanative.ui.generated.resources.groups_retry
 import com.aimdi.xtanative.ui.generated.resources.groups_scroll_to_top
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_end
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_load_more
+import com.aimdi.xtanative.ui.feed.FeedMediaGrid
 import com.aimdi.xtanative.ui.feed.FeedMix
+import com.aimdi.xtanative.ui.feed.FeedThread
+import com.aimdi.xtanative.ui.feed.MediaFoot
+import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.NewPostsPill
 import com.aimdi.xtanative.ui.feed.Placed
 import com.aimdi.xtanative.ui.feed.PluginPostsOnly
@@ -122,7 +122,6 @@ import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.post.PostActions
-import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.hasVideo
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.search.LoadedSearchButton
@@ -136,113 +135,231 @@ import org.jetbrains.compose.resources.stringResource
 /** The link XTA gives for the unrelated-posts bug. */
 private const val UNRELATED_INFO = "https://github.com/Teskann/QuaX/issues/26"
 
+/** What a group's screen has open over its feed. */
+private enum class GroupLayer { SETTINGS, CUSTOM, SWITCHER, CREATE, LOADED_SEARCH }
+
 /**
  * A group's feed (group_screen.dart, _feed.dart, _feed_shell.dart): its
- * title opens the group switcher, which swaps the group in place so Back
- * returns to wherever the first one was opened from; its bar has the search
- * of the posts loaded, the filters, a way to the top and a refresh; its
- * chips pick the order.
+ * title opens the feed menu (Home's feeds, the pinned groups, every group),
+ * whose groups swap in place so Back returns to wherever the first one was
+ * opened from, and whose feeds go back to Home on them ([onFeed], a tab's
+ * key); its bar has the search of the posts loaded, the filters, a way to
+ * the top and a refresh; its chips pick the order, open Discover and show the
+ * media alone. Without [onBack] it is a page of Home's bar: no way back, and
+ * its title is only its name, as XTA's group pages are.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
+fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: (() -> Unit)?, onFeed: ((String) -> Unit)? = null) {
     var shownId by rememberSaveable { mutableStateOf(groupId) }
     val graph = LocalGraph.current
     val feeds = LocalPlugins.current.feeds
     val vm: GroupFeedViewModel = viewModel(key = "group-feed-$shownId") { GroupFeedViewModel(graph, shownId, feeds) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    var settings by rememberSaveable { mutableStateOf(false) }
-    var custom by rememberSaveable { mutableStateOf(false) }
-    var switcher by rememberSaveable { mutableStateOf(false) }
-    var creating by rememberSaveable { mutableStateOf(false) }
-    var searchingLoaded by rememberSaveable { mutableStateOf(false) }
-    val savePack = rememberPackSaver()
-    val reduced = LocalReducedMotion.current
-    BackHandling(enabled = custom) { custom = false }
+    var layer by rememberSaveable { mutableStateOf<GroupLayer?>(null) }
+    var discovering by rememberSaveable(shownId) { mutableStateOf(false) }
+    val mediaKeys by MediaModes.keys.collectAsStateWithLifecycle()
+    val mediaOnly = shownId in mediaKeys
+    BackHandling(enabled = layer == GroupLayer.CUSTOM) { layer = null }
+    BackHandling(enabled = discovering && layer == null) { discovering = false }
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 Column {
-                    TopAppBar(
-                        navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
-                        title = { GroupFeedTitle(state, onClick = { switcher = true }) },
-                        actions = {
-                            LoadedSearchButton { searchingLoaded = true }
-                            IconButton(onClick = { settings = true }) { Icon(GroupIcons.Build, stringResource(Res.string.groups_filters)) }
-                            IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
-                                Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
-                            }
-                            IconButton(onClick = { vm.refresh() }) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) }
+                    GroupTopBar(state, vm, list, discovering, onBack, onFeed, open = { layer = it }, onSwitch = { id -> if (id != shownId) shownId = id })
+                    ControlBar(
+                        state,
+                        GroupChips(discovering, mediaOnly),
+                        onSort = { sort ->
+                            discovering = false
+                            if (sort == FeedSort.CUSTOM && state.settings.sort == FeedSort.CUSTOM) layer = GroupLayer.CUSTOM else vm.settingsActions.setSort(sort)
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                        onCustom = { layer = GroupLayer.CUSTOM },
+                        onDiscover = { discovering = it },
+                        onMedia = { MediaModes.set(shownId, !mediaOnly) },
                     )
-                    ControlBar(state, onSort = { sort ->
-                        if (sort == FeedSort.CUSTOM && state.settings.sort == FeedSort.CUSTOM) custom = true else vm.settingsActions.setSort(sort)
-                    }, onCustom = { custom = true })
                     Hairline()
                 }
             },
         ) { padding ->
             Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-                GroupFeedBody(state, vm, actions, list, PaddingValues(bottom = padding.calculateBottomPadding()))
+                if (discovering) {
+                    DiscoveryPane(shownId, state.group?.name.orEmpty(), actions)
+                } else {
+                    GroupFeedBody(state, vm, actions, list, PaddingValues(bottom = padding.calculateBottomPadding()), mediaOnly)
+                }
             }
         }
-        if (custom) CustomSettingsScreen(state, vm.settingsActions, onBack = { custom = false })
-        if (searchingLoaded) LoadedFeedSearchScreen(state.run.shown.threads, actions, onBack = { searchingLoaded = false })
+        if (layer == GroupLayer.CUSTOM) CustomSettingsScreen(state, vm.settingsActions, onBack = { layer = null })
+        if (layer == GroupLayer.LOADED_SEARCH) LoadedFeedSearchScreen(state.run.shown.threads, actions, onBack = { layer = null })
     }
+    GroupSheets(layer, state, vm, onLayer = { layer = it }, onSwitch = { id -> if (id != shownId) shownId = id })
+}
 
-    if (settings) {
-        FeedSettingsSheet(state, vm.settingsActions, onCustom = {
-            settings = false
-            custom = true
-        }, onDismiss = { settings = false })
+/**
+ * The bar over a group's feed: back, the title and its menu, then the feed's
+ * actions; while Discover is open, only a way to read it again, since the
+ * feed's actions would act on the feed it hides.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GroupTopBar(
+    state: GroupFeedUi,
+    vm: GroupFeedViewModel,
+    list: LazyListState,
+    discovering: Boolean,
+    onBack: (() -> Unit)?,
+    onFeed: ((String) -> Unit)?,
+    open: (GroupLayer) -> Unit,
+    onSwitch: (String) -> Unit,
+) {
+    var menu by remember { mutableStateOf(false) }
+    TopAppBar(
+        navigationIcon = {
+            if (onBack != null) IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }
+        },
+        title = {
+            Box {
+                GroupFeedTitle(state, onClick = if (onBack != null) ({ menu = true }) else null)
+                FeedSwitcherMenu(
+                    expanded = menu,
+                    state = state,
+                    onFeed = onFeed,
+                    onGroup = { id ->
+                        menu = false
+                        onSwitch(id)
+                    },
+                    onAllGroups = {
+                        menu = false
+                        open(GroupLayer.SWITCHER)
+                    },
+                    onDismiss = { menu = false },
+                )
+            }
+        },
+        actions = { GroupActions(state, vm, list, discovering, open) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+    )
+}
+
+@Composable
+private fun GroupActions(state: GroupFeedUi, vm: GroupFeedViewModel, list: LazyListState, discovering: Boolean, open: (GroupLayer) -> Unit) {
+    val scope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
+    val groupId = state.group?.id
+    if (discovering && groupId != null) {
+        val discovery = discoveryViewModel(groupId)
+        IconButton(onClick = discovery::load) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) }
+        return
     }
-    if (switcher) {
-        GroupSwitcherSheet(
+    LoadedSearchButton { open(GroupLayer.LOADED_SEARCH) }
+    IconButton(onClick = { open(GroupLayer.SETTINGS) }) { Icon(GroupIcons.Build, stringResource(Res.string.groups_filters)) }
+    IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
+        Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
+    }
+    IconButton(onClick = { vm.refresh() }) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) }
+}
+
+/** The sheets a group's screen opens: its filters, the full group switcher and a new group. */
+@Composable
+private fun GroupSheets(layer: GroupLayer?, state: GroupFeedUi, vm: GroupFeedViewModel, onLayer: (GroupLayer?) -> Unit, onSwitch: (String) -> Unit) {
+    val savePack = rememberPackSaver()
+    when (layer) {
+        GroupLayer.SETTINGS -> FeedSettingsSheet(state, vm.settingsActions, onCustom = { onLayer(GroupLayer.CUSTOM) }, onDismiss = { onLayer(null) })
+        GroupLayer.SWITCHER -> GroupSwitcherSheet(
             state,
             onSwitch = { id ->
-                switcher = false
-                if (id != shownId) shownId = id
+                onLayer(null)
+                onSwitch(id)
             },
             onToggle = vm::toggleAlongside,
             onClear = vm::clearAlongside,
-            onCreate = {
-                switcher = false
-                creating = true
-            },
-            onDismiss = { switcher = false },
+            onCreate = { onLayer(GroupLayer.CREATE) },
+            onDismiss = { onLayer(null) },
         )
+        GroupLayer.CREATE -> GroupEditSheet(state.session, state.people, null, vm.groupActions, savePack, onDismiss = { onLayer(null) })
+        GroupLayer.CUSTOM, GroupLayer.LOADED_SEARCH, null -> Unit
     }
-    if (creating) GroupEditSheet(state.session, state.people, null, vm.groupActions, savePack, onDismiss = { creating = false })
 }
 
-/** The order chips (group_chrome.dart): Recent, Popular, Custom with how many rules are on, and the content filter when it filters. */
+/** What the chips show besides the order: Discover open, and the media alone. */
+private data class GroupChips(val discovering: Boolean, val mediaOnly: Boolean)
+
+/**
+ * The chips (group_chrome.dart): Recent, Popular, Custom with how many rules
+ * are on, Discover, Media and the content filter when it filters. While
+ * Discover is open it is the only chip, and closing it goes back to the feed.
+ */
 @Composable
-private fun ControlBar(state: GroupFeedUi, onSort: (FeedSort) -> Unit, onCustom: () -> Unit) {
-    val sort = state.settings.sort
+private fun ControlBar(
+    state: GroupFeedUi,
+    chips: GroupChips,
+    onSort: (FeedSort) -> Unit,
+    onCustom: () -> Unit,
+    onDiscover: (Boolean) -> Unit,
+    onMedia: () -> Unit,
+) {
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OrderChip(stringResource(Res.string.groups_recent), sort == FeedSort.RECENT) { onSort(FeedSort.RECENT) }
-        OrderChip(stringResource(Res.string.groups_popular), sort == FeedSort.POPULAR) { onSort(FeedSort.POPULAR) }
-        val filters = state.activeFilters
-        val label = stringResource(Res.string.groups_custom)
-        OrderChip(if (filters > 0) "$label ($filters)" else label, sort == FeedSort.CUSTOM) { onSort(FeedSort.CUSTOM) }
-        state.contentChip?.let { filter ->
-            FilterChip(
-                selected = true,
-                onClick = onCustom,
-                label = { Text(contentFilterLabel(filter)) },
-                leadingIcon = { Icon(GroupIcons.FilterAltOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
-            )
+        if (chips.discovering) {
+            DiscoverChip(selected = true) { onDiscover(false) }
+        } else {
+            OrderChips(state, onSort)
+            DiscoverChip(selected = false) { onDiscover(true) }
+            MediaChip(chips.mediaOnly, onMedia)
+            state.contentChip?.let { filter ->
+                FilterChip(
+                    selected = true,
+                    onClick = onCustom,
+                    label = { Text(contentFilterLabel(filter)) },
+                    leadingIcon = { Icon(GroupIcons.FilterAltOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun OrderChips(state: GroupFeedUi, onSort: (FeedSort) -> Unit) {
+    val sort = state.settings.sort
+    OrderChip(stringResource(Res.string.groups_recent), sort == FeedSort.RECENT) { onSort(FeedSort.RECENT) }
+    OrderChip(stringResource(Res.string.groups_popular), sort == FeedSort.POPULAR) { onSort(FeedSort.POPULAR) }
+    val filters = state.activeFilters
+    val label = stringResource(Res.string.groups_custom)
+    OrderChip(if (filters > 0) "$label ($filters)" else label, sort == FeedSort.CUSTOM) { onSort(FeedSort.CUSTOM) }
+}
+
+/** Discover's chip: a way into it, or, while it is open, its name with the way back to the feed. */
+@Composable
+private fun DiscoverChip(selected: Boolean, onClick: () -> Unit) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(stringResource(Res.string.groups_discover), fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
+        leadingIcon = { Icon(if (selected) DiscoveryIcons.Explore else DiscoveryIcons.ExploreOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
+        trailingIcon = if (selected) {
+            { Icon(Icons.Filled.Close, stringResource(Res.string.close), modifier = Modifier.size(18.dp)) }
+        } else {
+            null
+        },
+    )
+}
+
+/** Media: the feed's photos and videos alone, as a grid. */
+@Composable
+private fun MediaChip(selected: Boolean, onClick: () -> Unit) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(stringResource(Res.string.groups_media), fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium) },
+        leadingIcon = { Icon(if (selected) DiscoveryIcons.PhotoLibrary else GroupIcons.PhotoLibraryOutlined, contentDescription = null, modifier = Modifier.size(18.dp)) },
+    )
 }
 
 @Composable
@@ -263,12 +380,14 @@ fun contentFilterLabel(filter: ContentFilter): String = stringResource(
     },
 )
 
+/** The feed under the chips; with [mediaOnly], its media alone (group_media_page.dart). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues) {
+private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues, mediaOnly: Boolean) {
     val graph = LocalGraph.current
     val plugin by vm.plugin.collectAsStateWithLifecycle()
     val plugins = rememberRunningPlugins()
+    val media = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val reduced = LocalReducedMotion.current
     val run = state.run
@@ -301,6 +420,15 @@ private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: P
             threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
             threads.isEmpty() && run.answered && !run.refreshing -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
             threads.isEmpty() -> Whole { if (!run.refreshing) LoadingRow() }
+            mediaOnly -> FeedMediaGrid(
+                threads,
+                canLoadMore = run.shown.canLoadMore && run.moreProblem == null && !run.fromCache,
+                foot = MediaFoot(run.loadingMore, run.moreProblem) { vm.loadMore() },
+                actions = actions,
+                list = media,
+                contentPadding = contentPadding,
+                onMore = vm::loadMore,
+            )
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { session?.autoplay ?: true }) {
                 FeedList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
@@ -359,7 +487,7 @@ private fun FeedList(
             if (index == divider) CaughtUpDivider()
             val reason = run.shown.folds[thread.id]
             Placed(buckets, index, plugins) {
-                if (reason != null) FoldedThread(thread, reason, actions, thread.id == playingId) else ThreadRows(thread, actions, playing = thread.id == playingId)
+                FeedThread(thread, reason, actions, playing = thread.id == playingId)
             }
         }
         item(key = "footer", contentType = "footer") {
@@ -372,30 +500,6 @@ private fun FeedList(
                 else -> Spacer(Modifier.heightIn(min = 48.dp))
             }
         }
-    }
-}
-
-/** A thread folded behind why (folded_chain.dart): a tap shows it, and hides it again. */
-@Composable
-private fun FoldedThread(thread: XThread, reason: String, actions: PostActions, playing: Boolean) {
-    var open by rememberSaveable(thread.id) { mutableStateOf(false) }
-    Column(Modifier.animateContentSize()) {
-        Row(
-            Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable { open = !open }.padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            val accent = if (open) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-            Icon(if (open) GroupIcons.ExpandLess else GroupIcons.VisibilityOffOutlined, contentDescription = null, tint = accent, modifier = Modifier.size(20.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(
-                if (open) stringResource(Res.string.groups_fold_hide_again) else stringResource(Res.string.groups_fold_matched, reason),
-                style = if (open) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
-                color = accent,
-                modifier = Modifier.weight(1f),
-            )
-            if (!open) Icon(GroupIcons.ExpandMore, contentDescription = null, tint = accent, modifier = Modifier.size(20.dp))
-        }
-        if (open) ThreadRows(thread, actions, playing = playing) else Hairline()
     }
 }
 

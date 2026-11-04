@@ -203,4 +203,27 @@
         <item quantity="one">Skipped %1$d subscription</item>
         <item quantity="other">Skipped %1$d subscriptions</item>
     </plurals>
+
+    <string name="groups_discover">Discover</string>
+    <string name="groups_media">Media</string>
+    <string name="groups_media_empty">Couldn't find any posts with media from the last 7 days!</string>
+    <string name="groups_discovery_scan_more">Scan more</string>
+    <string name="groups_discovery_empty">No similar unfollowed accounts found yet. Try again after group members share more posts.</string>
+    <string name="groups_discovery_partial">Some sources could not be loaded.</string>
+    <string name="groups_discovery_add_to_group">Add to “%1$s”</string>
+    <string name="groups_discovery_added">Added</string>
+    <string name="groups_discovery_more_like">More like this</string>
+    <string name="groups_discovery_less_like">Less like this</string>
+    <string name="groups_discovery_hide">Hide</string>
+    <string name="groups_discovery_feedback_saved">Suggestions updated</string>
+    <string name="groups_discovery_reset">Reset suggestions</string>
+    <string name="groups_add_member_failed">Could not follow that</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">%1$d of %2$d member</item>
+        <item quantity="other">%1$d of %2$d members</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Followed by %1$d member</item>
+        <item quantity="other">Followed by %1$d members</item>
+    </plurals>
 </resources>

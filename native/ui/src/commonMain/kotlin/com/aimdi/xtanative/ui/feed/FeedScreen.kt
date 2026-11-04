@@ -90,7 +90,6 @@ import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.PostActions
-import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.hasVideo
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.search.LoadedSearchButton
@@ -204,16 +203,17 @@ internal fun feedViewModel(groupId: String?): FeedViewModel {
     return viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId, feeds) }
 }
 
-/** One tab: a feed with its own pull to refresh, place and cache. */
+/** One tab: a feed with its own pull to refresh, place and cache; with [mediaOnly], its media alone. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues) {
+internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues, mediaOnly: Boolean = false) {
     val graph = LocalGraph.current
     val vm = feedViewModel(groupId)
     val state by vm.ui.collectAsStateWithLifecycle()
     val plugin by vm.plugin.collectAsStateWithLifecycle()
     val plugins = rememberRunningPlugins()
     val list = rememberLazyListState()
+    val media = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val reduced = LocalReducedMotion.current
     // A page swiped back into view must not answer a tap it already answered.
@@ -221,7 +221,7 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
     LaunchedEffect(toTop) {
         if (toTop.page == page && toTop.count > answeredTap) {
             answeredTap = toTop.count
-            list.scrollToTop(reduced)
+            (if (mediaOnly) media else list).scrollToTop(reduced)
         }
     }
     // Back at the last place on launch; at the top after a pull.
@@ -258,6 +258,15 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
             state.threads.isEmpty() && state.answered && !state.refreshing -> Whole { Message(stringResource(Res.string.feed_empty)) }
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> Whole { if (!state.refreshing) LoadingRow() }
+            mediaOnly -> FeedMediaGrid(
+                state.threads,
+                canLoadMore = state.hasMore && state.moreProblem == null,
+                foot = MediaFoot(state.loadingMore, state.moreProblem) { vm.loadMore() },
+                actions = actions,
+                list = media,
+                contentPadding = contentPadding,
+                onMore = vm::loadMore,
+            )
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { autoplay }) {
                 FeedList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
@@ -344,7 +353,7 @@ private fun FeedList(
             item(key = "partial", contentType = "notice") { PartialNotice(partial, vm::dismissPartial) }
         }
         itemsIndexed(state.threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
-            Placed(buckets, index, plugins) { ThreadRows(thread, actions, playing = thread.id == playingId) }
+            Placed(buckets, index, plugins) { FeedThread(thread, state.folds[thread.id], actions, playing = thread.id == playingId) }
         }
         item(key = "footer", contentType = "footer") {
             val more = state.moreProblem

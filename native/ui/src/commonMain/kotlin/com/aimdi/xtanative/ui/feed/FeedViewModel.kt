@@ -2,9 +2,9 @@ package com.aimdi.xtanative.ui.feed
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aimdi.xtanative.core.feed.FeedMember
 import com.aimdi.xtanative.core.feed.FeedPlace
-import com.aimdi.xtanative.core.feed.FollowingFeed
+import com.aimdi.xtanative.core.feed.GroupFeed
+import com.aimdi.xtanative.core.feed.GroupFeedPlan
 import com.aimdi.xtanative.core.feed.SavedFeed
 import com.aimdi.xtanative.core.feed.feedReads
 import com.aimdi.xtanative.core.session.Session
@@ -13,11 +13,13 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.FeedCache
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.plugins.PluginMembers
-import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.group.FeedPrefs
+import com.aimdi.xtanative.ui.group.GroupFeedRules
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.problemOf
+import java.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +36,8 @@ data class Jump(val threadIndex: Int, val offset: Int, val token: Int)
 
 data class FeedUi(
     val threads: List<XThread> = emptyList(),
+    /** Why the folded threads are folded, by thread id: the feed's rules fold rather than hide. */
+    val folds: Map<String, String> = emptyMap(),
     /** Read from disk: what the feed showed last, until X answers. */
     val fromCache: Boolean = false,
     val refreshing: Boolean = false,
@@ -53,11 +57,13 @@ data class FeedUi(
 )
 
 /**
- * The Following feed for a null [groupId], else that group's feed, without
- * the reposts and replies the reader hid on profiles ([HiddenPosts]), with
- * the plugins' posts mixed in by time ([feeds]): on the Following feed those
- * of every plugin whose "show in the home timeline" switch is on, on a group's
- * its members of other networks.
+ * The Following feed for a null [groupId], else that group's feed, read as
+ * its plan says (XTA's Following is its group `-1`): its order and custom
+ * rules, its own reply and repost choices, the language filter and zen mode,
+ * without the reposts and replies the reader hid on profiles ([HiddenPosts]);
+ * with the plugins' posts mixed in by time ([feeds]): on the Following feed
+ * those of every plugin whose "show in the home timeline" switch is on, on a
+ * group's its members of other networks.
  */
 class FeedViewModel(private val graph: AppGraph, private val groupId: String?, feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
     private val cache = graph.feedCache(groupId)
@@ -74,31 +80,34 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
     /** The plugins' posts this feed mixes in. */
     val plugin: StateFlow<PluginPostsState> = mixed.posts.state
 
-    private var feed: FollowingFeed? = null
+    private var feed: GroupFeed? = null
 
     /** The feed's reading matches what is shown: newer posts can go above it, and more below. */
     private var continuous = false
+
+    /** A popular feed is ordered by likes: newer posts do not go above it, it is read from the top again. */
+    private var popular = false
     private var refreshJob: Job? = null
     private var resets = 0
     private var jumps = 0
 
-    private data class Shape(val members: List<FeedMember>, val replies: Boolean, val reposts: Boolean, val hidden: ProfileFilters)
-
     init {
         viewModelScope.launch { retryWhenBackOnline() }
         viewModelScope.launch {
-            var saved = restoreFromDisk()
-            combine(graph.sessions.state.filterNotNull(), HiddenPosts.of(graph.profileFilters)) { session, hidden ->
-                Shape(session.membersOf(groupId), session.includeReplies, session.includeReposts, hidden)
-            }.distinctUntilChanged().collect { shape ->
-                val shaping = HiddenPosts.shaping(shape.hidden)
-                val next = FollowingFeed(shape.members, graph.client.feedReads(), shape.replies, shape.reposts, graph.feedConcurrency(), shaping = shaping)
+            var saved: SavedFeed? = null
+            var first = true
+            combine(graph.sessions.state.filterNotNull(), graph.settings.settings, HiddenPosts.of(graph.profileFilters)) { session, settings, hidden ->
+                GroupFeedRules.plan(session, FeedPrefs.of(settings), groupId, emptySet(), hidden)
+            }.distinctUntilChanged().collect { plan ->
+                if (first) saved = restoreFromDisk(plan).also { first = false }
+                val next = GroupFeed(plan, graph.client.feedReads(), graph.feedConcurrency())
                 // The saved reading is good for the follows and switches it was saved with only.
                 val savedState = saved?.state
                 continuous = savedState != null && next.restore(savedState, state.value.threads.map { it.id })
                 saved = null
                 feed = next
-                state.update { it.copy(followed = shape.members.size, hasMore = continuous && savedState?.hasMore == true) }
+                popular = plan.popular
+                state.update { it.copy(followed = plan.members.size, hasMore = continuous && savedState?.hasMore == true) }
                 refresh(byReader = false)
             }
         }
@@ -127,18 +136,23 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
         return FeedSources.asks(ids, members, home = groupId == null, inHome = { PluginSettings.inHomeFeed(settings, it) }, kinds = kinds)
     }
 
-    /** The posts and place of the last run, shown at once, without what the reader hid since. */
-    private suspend fun restoreFromDisk(): SavedFeed? {
+    /** The posts and place of the last run, shown at once, as the feed's rules see them now ([plan]). */
+    private suspend fun restoreFromDisk(plan: GroupFeedPlan): SavedFeed? {
         val saved = cache.read()?.takeIf { it.threads.isNotEmpty() } ?: return null
-        val threads = HiddenPosts.visible(saved.threads, graph.profileFilters.filters())
+        val shown = FeedPreview.of(saved.threads, plan.shaping, Instant.now())
         val place = cache.readPlace()
-        graph.posts.remember(threads)
-        val index = place?.let { p -> threads.indexOfFirst { it.id == p.postId } } ?: -1
+        graph.posts.remember(shown.threads)
+        val index = place?.let { p -> shown.threads.indexOfFirst { it.id == p.postId } } ?: -1
         state.update {
             if (it.threads.isNotEmpty()) {
                 it
             } else {
-                it.copy(threads = threads, fromCache = true, jump = if (index >= 0 && place != null) Jump(index, place.offset, ++jumps) else null)
+                it.copy(
+                    threads = shown.threads,
+                    folds = shown.folds,
+                    fromCache = true,
+                    jump = if (index >= 0 && place != null) Jump(index, place.offset, ++jumps) else null,
+                )
             }
         }
         return saved
@@ -156,13 +170,13 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
         refreshJob = viewModelScope.launch {
             state.update { it.copy(refreshing = true, problem = null, moreProblem = null) }
             val top = state.value.threads.firstOrNull()?.id?.toLongOrNull()
-            if (continuous && top != null && putNewerAbove(feed, top, byReader)) return@launch
+            if (continuous && !popular && top != null && putNewerAbove(feed, top, byReader)) return@launch
             startOver(feed)
         }
     }
 
     /** True when the newer posts met the ones shown; false when a fresh start is needed. */
-    private suspend fun putNewerAbove(feed: FollowingFeed, top: Long, byReader: Boolean): Boolean {
+    private suspend fun putNewerAbove(feed: GroupFeed, top: Long, byReader: Boolean): Boolean {
         val newer = try {
             feed.newer(than = top)
         } catch (error: CancellationException) {
@@ -177,6 +191,7 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
             val fresh = newer.threads.filter { thread -> it.threads.none { shown -> shown.id == thread.id } }
             it.copy(
                 threads = fresh + it.threads,
+                folds = it.folds + newer.foldReasons,
                 fromCache = false,
                 refreshing = false,
                 answered = true,
@@ -190,7 +205,7 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
     }
 
     /** The newest posts from the top, in place of what was shown. */
-    private suspend fun startOver(feed: FollowingFeed) {
+    private suspend fun startOver(feed: GroupFeed) {
         resets++
         val page = try {
             feed.first()
@@ -211,6 +226,7 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
         state.update {
             it.copy(
                 threads = page.threads,
+                folds = page.foldReasons,
                 fromCache = false,
                 refreshing = false,
                 hasMore = page.hasMore,
@@ -248,6 +264,7 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?, f
                 val known = it.threads.mapTo(HashSet()) { thread -> thread.id }
                 it.copy(
                     threads = it.threads + page.threads.filter { thread -> thread.id !in known },
+                    folds = it.folds + page.foldReasons,
                     loadingMore = false,
                     hasMore = page.hasMore,
                     moreProblem = if (page.threads.isEmpty()) Problem.of(page.failures) else null,

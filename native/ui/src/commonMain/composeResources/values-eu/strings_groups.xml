@@ -203,4 +203,27 @@
         <item quantity="one">Harpidetza %1$d saltatu da</item>
         <item quantity="other">%1$d harpidetza saltatu dira</item>
     </plurals>
+
+    <string name="groups_discover">Ezagutu</string>
+    <string name="groups_media">Multimedia</string>
+    <string name="groups_media_empty">Ezin izan da azken 7 egunetako multimedia duen txiorik aurkitu!</string>
+    <string name="groups_discovery_scan_more">Gehiago aztertu</string>
+    <string name="groups_discovery_empty">Oraindik ez da aurkitu jarraitzen ez duzun antzeko konturik. Saiatu berriro taldekideek argitalpen gehiago partekatzen dituztenean.</string>
+    <string name="groups_discovery_partial">Ezin izan dira iturri batzuk kargatu. Tira beherantz berriro saiatzeko.</string>
+    <string name="groups_discovery_add_to_group">Gehitu “%1$s” taldean</string>
+    <string name="groups_discovery_added">Gehituta</string>
+    <string name="groups_discovery_more_like">Antzeko gehiago</string>
+    <string name="groups_discovery_less_like">Antzeko gutxiago</string>
+    <string name="groups_discovery_hide">Ezkutatu</string>
+    <string name="groups_discovery_feedback_saved">Proposamenak eguneratu dira</string>
+    <string name="groups_discovery_reset">Berrezarri proposamenak</string>
+    <string name="groups_add_member_failed">Ezin izan da jarraitu</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Kide %2$detik %1$d oinarri hartuta</item>
+        <item quantity="other">%2$d kidetik %1$d oinarri hartuta</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Kide %1$dek jarraitzen du</item>
+        <item quantity="other">%1$d kidek jarraitzen dute</item>
+    </plurals>
 </resources>

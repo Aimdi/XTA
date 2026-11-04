@@ -7,6 +7,8 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.store.follows.KnownFollow
+import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.offline.TimelineCache
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
 
@@ -173,29 +175,10 @@ class PeoplePaging {
     }
 }
 
-/** One followed account's Following list as last read: when, and whom it follows, newest follow first. */
-data class RememberedFollows(val at: Long, val ids: List<String>)
-
-/**
- * The Following lists of followed accounts that XTA Native has read, kept
- * for this run: what "Followed by" answers from, so opening a profile asks X
- * for nothing (profile_followed_by.dart). A list older than [retentionMillis]
- * is no longer trusted.
- */
-class FollowsMemory(private val clock: () -> Long = System::currentTimeMillis, private val retentionMillis: Long = 30L * 24 * 60 * 60 * 1000) {
-    private val kept = HashMap<String, RememberedFollows>()
-
-    @Synchronized
-    fun remember(memberId: String, follows: List<XUser>) {
-        kept[memberId] = RememberedFollows(clock(), follows.map { it.id })
-    }
-
-    @Synchronized
-    fun remembered(): Map<String, RememberedFollows> = kept.filterValues { clock() - it.at <= retentionMillis }
-
-    companion object {
-        val shared = FollowsMemory()
-    }
+/** A followed account's Following list as the cache keeps it: who it follows, newest follow first. */
+object KnownFollows {
+    fun of(users: List<XUser>): List<KnownFollow> =
+        users.filter { it.id.isNotEmpty() }.map { KnownFollow(it.id, it.screenName, it.name, it.avatarUrl, it.description) }
 }
 
 /** Which followed accounts follow a profile, and how many of the reader's follows that could be checked for. */

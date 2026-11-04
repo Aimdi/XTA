@@ -44,7 +44,7 @@ data class HomeFilterDraft(val accountsOff: Set<String> = emptySet(), val groups
 object HomeFilter {
     /** The filter as kept: the accounts For you leaves out (settings) and the groups off the home feeds (the session). */
     fun draftOf(session: Session, settings: Settings): HomeFilterDraft =
-        HomeFilterDraft(settings[AccountPrefs.forYouHiddenAccountIds].toSet(), session.offFollowing)
+        HomeFilterDraft(settings[AccountPrefs.disabledAccountIds].toSet(), session.offFollowing)
 
     /** How many accounts and groups that exist are turned off: the dot on the button. */
     fun turnedOff(draft: HomeFilterDraft, accounts: List<XAccount>, groups: List<FollowGroup>): Int =
@@ -52,7 +52,7 @@ object HomeFilter {
 
     /** [settings] holding [draft]: For you's accounts, and XTA's own copy of the groups kept off. */
     fun applied(settings: Settings, draft: HomeFilterDraft): Settings = settings
-        .with(AccountPrefs.forYouHiddenAccountIds, draft.accountsOff.toList())
+        .with(AccountPrefs.disabledAccountIds, draft.accountsOff.toList())
         .with(HomePrefs.followingHiddenGroupIds, draft.groupsOff.toList())
 
     /** [session] with exactly the groups of [draft] kept off the home feeds. */

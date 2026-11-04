@@ -203,4 +203,27 @@
         <item quantity="one">S'ha omès %1$d subscripció</item>
         <item quantity="other">S'han omès %1$d subscripcions</item>
     </plurals>
+
+    <string name="groups_discover">Descobreix</string>
+    <string name="groups_media">Mèdia</string>
+    <string name="groups_media_empty">No s'han trobat tuits amb multimèdia dels últims 7 dies!</string>
+    <string name="groups_discovery_scan_more">Explora’n més</string>
+    <string name="groups_discovery_empty">Encara no s’han trobat comptes semblants que no segueixis. Torna-ho a provar quan els membres comparteixin més publicacions.</string>
+    <string name="groups_discovery_partial">No s’han pogut carregar algunes fonts. Llisca cap avall per tornar-ho a provar.</string>
+    <string name="groups_discovery_add_to_group">Afegeix a «%1$s»</string>
+    <string name="groups_discovery_added">Afegit</string>
+    <string name="groups_discovery_more_like">Més contingut semblant</string>
+    <string name="groups_discovery_less_like">Menys contingut semblant</string>
+    <string name="groups_discovery_hide">Amaga</string>
+    <string name="groups_discovery_feedback_saved">Suggeriments actualitzats</string>
+    <string name="groups_discovery_reset">Restableix els suggeriments</string>
+    <string name="groups_add_member_failed">No s’ha pogut seguir</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Basat en %1$d d’%2$d membre</item>
+        <item quantity="other">Basat en %1$d de %2$d membres</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Seguit per %1$d membre</item>
+        <item quantity="other">Seguit per %1$d membres</item>
+    </plurals>
 </resources>

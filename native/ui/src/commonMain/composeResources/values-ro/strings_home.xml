@@ -54,4 +54,11 @@
     <string name="home_import">Importă o copie de rezervă XTA</string>
     <string name="home_zen_end">Asta e tot deocamdată</string>
     <string name="home_zen_more">Încarcă mai mult oricum</string>
+
+    <string name="home_home">Acasă</string>
+    <string name="home_networks">Rețele</string>
+    <string name="home_networks_recent">Recente</string>
+    <string name="home_networks_all">Toate rețelele</string>
+    <string name="home_posts">Postări</string>
+    <string name="home_media">Media</string>
 </resources>

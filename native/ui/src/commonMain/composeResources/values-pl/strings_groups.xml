@@ -211,4 +211,31 @@
         <item quantity="many">Pominięto %1$d subskrypcji</item>
         <item quantity="other">Pominięto %1$d subskrypcji</item>
     </plurals>
+
+    <string name="groups_discover">Odkrywaj</string>
+    <string name="groups_media">Multimedia</string>
+    <string name="groups_media_empty">Nie udało się znaleźć żadnych tweetów z multimediami z ostatnich 7 dni!</string>
+    <string name="groups_discovery_scan_more">Przeszukaj więcej</string>
+    <string name="groups_discovery_empty">Nie znaleziono jeszcze podobnych nieobserwowanych kont. Spróbuj ponownie, gdy członkowie grupy udostępnią więcej wpisów.</string>
+    <string name="groups_discovery_partial">Nie udało się wczytać części źródeł. Pociągnij w dół, aby ponowić.</string>
+    <string name="groups_discovery_add_to_group">Dodaj do „%1$s”</string>
+    <string name="groups_discovery_added">Dodano</string>
+    <string name="groups_discovery_more_like">Więcej podobnych</string>
+    <string name="groups_discovery_less_like">Mniej podobnych</string>
+    <string name="groups_discovery_hide">Ukryj</string>
+    <string name="groups_discovery_feedback_saved">Sugestie zaktualizowane</string>
+    <string name="groups_discovery_reset">Zresetuj sugestie</string>
+    <string name="groups_add_member_failed">Nie udało się zaobserwować</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Na podstawie %1$d z %2$d członka</item>
+        <item quantity="few">Na podstawie %1$d z %2$d członków</item>
+        <item quantity="many">Na podstawie %1$d z %2$d członków</item>
+        <item quantity="other">Na podstawie %1$d z %2$d członka</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Obserwuje %1$d członek</item>
+        <item quantity="few">Obserwuje %1$d członków</item>
+        <item quantity="many">Obserwuje %1$d członków</item>
+        <item quantity="other">Obserwuje %1$d członka</item>
+    </plurals>
 </resources>

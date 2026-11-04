@@ -44,7 +44,7 @@ class HomeFilterTest {
         val session = Session(accounts = accounts, groups = groups, offFollowing = setOf("g1"))
         val draft = HomeFilterDraft(accountsOff = setOf("2"), groupsOff = setOf("g2"))
         val settings = HomeFilter.applied(Settings(), draft)
-        assertEquals(listOf("2"), settings[AccountPrefs.forYouHiddenAccountIds])
+        assertEquals(listOf("2"), settings[AccountPrefs.disabledAccountIds])
         assertEquals(listOf("g2"), settings[HomePrefs.followingHiddenGroupIds])
         assertEquals(setOf("g2"), HomeFilter.applied(session, draft).offFollowing)
         assertEquals(draft, HomeFilter.draftOf(HomeFilter.applied(session, draft), settings))

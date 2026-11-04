@@ -54,14 +54,13 @@ class HomeStripTest {
     }
 
     @Test
-    fun theBarPagesThatAreScreensOpenOverHome() {
-        assertEquals("subscriptions", HomeStrip.startRoute("subscriptions"))
-        assertEquals("trends", HomeStrip.startRoute("trending"))
-        assertEquals("saved", HomeStrip.startRoute("saved"))
-        assertNull(HomeStrip.startRoute("feed"))
-        assertNull(HomeStrip.startRoute("group-g1"))
+    fun theBarsScreenPagesAreNoTimelineOfTheStrip() {
         assertNull(HomeStrip.pageKey("saved"))
+        assertNull(HomeStrip.pageKey("subscriptions"))
+        assertNull(HomeStrip.pageKey("trending"))
         assertNull(HomeStrip.pageKey("feed"))
+        assertEquals("group:g1", HomeStrip.pageKey("group-g1"))
+        assertEquals(HomeTab.Network("reddit").key, HomeStrip.pageKey("reddit"))
     }
 
     @Test

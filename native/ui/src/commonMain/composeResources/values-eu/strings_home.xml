@@ -53,4 +53,11 @@
     <string name="home_import">Inportatu XTAren babeskopia bat</string>
     <string name="home_zen_end">Hori da dena oraingoz</string>
     <string name="home_zen_more">Kargatu gehiago hala ere</string>
+
+    <string name="home_home">Hasiera</string>
+    <string name="home_networks">Sareak</string>
+    <string name="home_networks_recent">Azkenak</string>
+    <string name="home_networks_all">Sare guztiak</string>
+    <string name="home_posts">Txioak</string>
+    <string name="home_media">Multimedia</string>
 </resources>

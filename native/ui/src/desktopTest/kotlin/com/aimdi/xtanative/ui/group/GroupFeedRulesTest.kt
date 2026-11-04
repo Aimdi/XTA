@@ -54,6 +54,20 @@ class GroupFeedRulesTest {
     }
 
     @Test
+    fun followingIsReadWithItsOwnOrderAndRulesAsXtasGroupMinusOne() {
+        val rules = FeedRules(minLikes = 10)
+        val following = session.copy(feeds = session.feeds + ("following" to FeedSettings(includeReposts = true, sort = FeedSort.CUSTOM, rules = rules)))
+        val plan = GroupFeedRules.plan(following, FeedPrefs(languages = "en", languageAction = LanguageAction.HIDE), null, setOf("g"))
+        assertEquals(listOf("1", "2"), plan.members.map { it.id }, "everyone in the Following feed, nothing read alongside")
+        assertTrue(plan.includeReposts, "its own choice over the session's")
+        assertTrue(plan.includeReplies)
+        assertEquals(FeedSort.CUSTOM, plan.shaping.sort)
+        assertEquals(rules, plan.shaping.rules)
+        assertEquals(listOf("en"), plan.shaping.language.allowed)
+        assertEquals("following", plan.key)
+    }
+
+    @Test
     fun theGroupsPlanHidesWhatTheReaderHidOnProfiles() {
         val hidden = ProfileFilters(hiddenReposts = mapOf("1" to "user1"), hiddenReplies = mapOf("2" to "user2"))
         val plan = GroupFeedRules.plan(session, FeedPrefs(zen = true), "g", emptySet(), hidden)

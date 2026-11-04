@@ -116,7 +116,7 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
     val session by vm.session.collectAsStateWithLifecycle()
     var deleting by remember { mutableStateOf<String?>(null) }
     var clearing by remember { mutableStateOf(false) }
-    val hidden = settings[AccountPrefs.forYouHiddenAccountIds]
+    val hidden = settings[AccountPrefs.disabledAccountIds]
     val ids = session.accounts.map { it.id }
     SettingsPage(
         title,
@@ -148,8 +148,8 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
                             enabled = !on || ForYouAccounts.canTurnOff(account.id, ids, hidden),
                             onCheckedChange = { next ->
                                 vm.update { current ->
-                                    ForYouAccounts.toggled(current[AccountPrefs.forYouHiddenAccountIds], account.id, next, ids)
-                                        ?.let { current.with(AccountPrefs.forYouHiddenAccountIds, it) } ?: current
+                                    ForYouAccounts.toggled(current[AccountPrefs.disabledAccountIds], account.id, next, ids)
+                                        ?.let { current.with(AccountPrefs.disabledAccountIds, it) } ?: current
                                 }
                             },
                         )
@@ -175,7 +175,7 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
         ) {
             deleting = null
             vm.updateSession { it.copy(accounts = it.accounts.filterNot { account -> account.id == id }) }
-            vm.update { it.with(AccountPrefs.forYouHiddenAccountIds, it[AccountPrefs.forYouHiddenAccountIds] - id) }
+            vm.update { it.with(AccountPrefs.disabledAccountIds, it[AccountPrefs.disabledAccountIds] - id) }
         }
     }
     if (clearing) {

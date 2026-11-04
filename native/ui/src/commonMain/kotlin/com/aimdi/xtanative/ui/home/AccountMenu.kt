@@ -61,8 +61,9 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The account menu (XTA's home drawer): the reader's account at the top, then
- * search and settings, the screens of XTA's bar and beside it, and the groups,
- * which are this app's lists and what the reader reaches for most.
+ * search and settings, the screens beside the bar and those of its pages the
+ * reader took off it, and the groups, which are this app's lists and what the
+ * reader reaches for most.
  */
 @Composable
 internal fun AccountMenu(
@@ -92,7 +93,7 @@ internal fun AccountMenu(
                 }
             }
         }
-        items(HomeMenu.shown(HomeMenu.list, routes.exists, deckFits), key = { it.route }) { destination ->
+        items(HomeMenu.shown(HomeMenu.list, routes.exists, deckFits, onBar = ui.bar.mapTo(HashSet()) { it.id }), key = { it.route }) { destination ->
             NavigationDrawerItem(
                 label = { Text(labelOf(destination)) },
                 selected = false,

@@ -199,4 +199,25 @@
     <plurals name="groups_sort_skipped">
         <item quantity="other">구독 %1$d개를 건너뛰었습니다</item>
     </plurals>
+
+    <string name="groups_discover">탐색</string>
+    <string name="groups_media">미디어</string>
+    <string name="groups_media_empty">지난 7일간 미디어가 있는 트윗을 찾을 수 없습니다!</string>
+    <string name="groups_discovery_scan_more">더 스캔</string>
+    <string name="groups_discovery_empty">아직 팔로우하지 않은 비슷한 계정을 찾지 못했습니다. 그룹 멤버가 게시물을 더 공유한 후 다시 시도하세요.</string>
+    <string name="groups_discovery_partial">일부 소스를 불러오지 못했습니다. 아래로 당겨 다시 시도하세요.</string>
+    <string name="groups_discovery_add_to_group">“%1$s”에 추가</string>
+    <string name="groups_discovery_added">추가됨</string>
+    <string name="groups_discovery_more_like">비슷한 콘텐츠 더 보기</string>
+    <string name="groups_discovery_less_like">비슷한 콘텐츠 덜 보기</string>
+    <string name="groups_discovery_hide">숨기기</string>
+    <string name="groups_discovery_feedback_saved">추천이 업데이트됨</string>
+    <string name="groups_discovery_reset">추천 초기화</string>
+    <string name="groups_add_member_failed">팔로우하지 못했습니다</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="other">%2$d명 중 %1$d명의 멤버 기준</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="other">멤버 %1$d명이 팔로우</item>
+    </plurals>
 </resources>

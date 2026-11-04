@@ -52,11 +52,13 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * A group feed's filters (_settings.dart): its own reply and repost choices,
  * which show the session's until it has one, catch-up mode for a
- * chronological feed, the deck column and the order.
+ * chronological feed, the deck column and the order. The Following feed
+ * ([following]) keeps its place by itself and is no deck column: it has
+ * neither row.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCustom: () -> Unit, onDismiss: () -> Unit) {
+fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCustom: () -> Unit, onDismiss: () -> Unit, following: Boolean = false) {
     var orders by rememberSaveable { mutableStateOf(false) }
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
@@ -69,10 +71,12 @@ fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCusto
             SwitchRow(Res.string.groups_include_replies, null, state.includeReplies, actions::setIncludeReplies)
             SwitchRow(Res.string.groups_include_reposts, null, state.includeReposts, actions::setIncludeReposts)
             // Only a chronological feed has a place where the reader left off.
-            if (state.settings.sort != FeedSort.POPULAR) {
+            if (state.settings.sort != FeedSort.POPULAR && !following) {
                 SwitchRow(Res.string.groups_catch_up_mode, Res.string.groups_catch_up_mode_description, state.settings.catchUp, actions::setCatchUp)
             }
-            SwitchRow(if (state.inDeck) Res.string.groups_deck_unpin else Res.string.groups_deck_pin, Res.string.groups_deck, state.inDeck) { actions.toggleDeck() }
+            if (!following) {
+                SwitchRow(if (state.inDeck) Res.string.groups_deck_unpin else Res.string.groups_deck_pin, Res.string.groups_deck, state.inDeck) { actions.toggleDeck() }
+            }
             Column(Modifier.animateContentSize()) {
                 Row(
                     Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { orders = !orders }.padding(horizontal = 16.dp, vertical = 8.dp),

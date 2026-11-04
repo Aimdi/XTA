@@ -203,4 +203,27 @@
         <item quantity="one">%1$d सदस्यता छोड़ी गई</item>
         <item quantity="other">%1$d सदस्यताएँ छोड़ी गईं</item>
     </plurals>
+
+    <string name="groups_discover">खोजें</string>
+    <string name="groups_media">मीडिया</string>
+    <string name="groups_media_empty">पिछले 7 दिनों की मीडिया वाली कोई पोस्ट नहीं मिली!</string>
+    <string name="groups_discovery_scan_more">और खोजें</string>
+    <string name="groups_discovery_empty">अभी ऐसे मिलते-जुलते खाते नहीं मिले जिन्हें आप फ़ॉलो नहीं करते। समूह के सदस्य और पोस्ट साझा करें, तब फिर कोशिश करें।</string>
+    <string name="groups_discovery_partial">कुछ स्रोत लोड नहीं हो सके। फिर कोशिश करने के लिए नीचे खींचें।</string>
+    <string name="groups_discovery_add_to_group">“%1$s” में जोड़ें</string>
+    <string name="groups_discovery_added">जोड़ा गया</string>
+    <string name="groups_discovery_more_like">ऐसी और सामग्री</string>
+    <string name="groups_discovery_less_like">ऐसी कम सामग्री</string>
+    <string name="groups_discovery_hide">छिपाएँ</string>
+    <string name="groups_discovery_feedback_saved">सुझाव अपडेट किए गए</string>
+    <string name="groups_discovery_reset">सुझाव रीसेट करें</string>
+    <string name="groups_add_member_failed">इसे फ़ॉलो नहीं किया जा सका</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">%2$d में से %1$d सदस्य के आधार पर</item>
+        <item quantity="other">%2$d में से %1$d सदस्यों के आधार पर</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">%1$d सदस्य फ़ॉलो करता है</item>
+        <item quantity="other">%1$d सदस्य फ़ॉलो करते हैं</item>
+    </plurals>
 </resources>

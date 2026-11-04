@@ -55,4 +55,11 @@
     <string name="home_import">Importovat zálohu XTA</string>
     <string name="home_zen_end">To je prozatím vše</string>
     <string name="home_zen_more">Přesto načíst další</string>
+
+    <string name="home_home">Domů</string>
+    <string name="home_networks">Sítě</string>
+    <string name="home_networks_recent">Nedávné</string>
+    <string name="home_networks_all">Všechny sítě</string>
+    <string name="home_posts">Tweety</string>
+    <string name="home_media">Média</string>
 </resources>

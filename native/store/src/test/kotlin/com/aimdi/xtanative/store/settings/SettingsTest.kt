@@ -83,7 +83,7 @@ class SettingsTest {
 
     @Test
     fun aJsonListIsWrittenAsTheJsonXtaWrites() {
-        val settings = Settings().with(AccountPrefs.forYouHiddenAccountIds, listOf("a", "b"))
+        val settings = Settings().with(AccountPrefs.disabledAccountIds, listOf("a", "b"))
         assertEquals(PrefValue.Text("""["a","b"]"""), settings.values["home.feed_disabled_account_ids"])
         assertEquals(listOf("flutter"), Settings(mapOf("plugin.threads.search_history" to PrefValue.Text("""["flutter",3]""")))[ThreadsPrefs.searchHistory])
     }

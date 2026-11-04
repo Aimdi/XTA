@@ -52,4 +52,11 @@
     <string name="home_import">XTA 백업 가져오기</string>
     <string name="home_zen_end">지금은 여기까지입니다</string>
     <string name="home_zen_more">그래도 더 불러오기</string>
+
+    <string name="home_home">홈</string>
+    <string name="home_networks">네트워크</string>
+    <string name="home_networks_recent">최근</string>
+    <string name="home_networks_all">모든 네트워크</string>
+    <string name="home_posts">트윗</string>
+    <string name="home_media">미디어</string>
 </resources>

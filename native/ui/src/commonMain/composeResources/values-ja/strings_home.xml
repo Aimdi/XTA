@@ -52,4 +52,11 @@
     <string name="home_import">XTA のバックアップをインポート</string>
     <string name="home_zen_end">今はここまでです</string>
     <string name="home_zen_more">それでももっと読み込む</string>
+
+    <string name="home_home">ホーム</string>
+    <string name="home_networks">ネットワーク</string>
+    <string name="home_networks_recent">最近</string>
+    <string name="home_networks_all">すべてのネットワーク</string>
+    <string name="home_posts">ツイート</string>
+    <string name="home_media">メディア</string>
 </resources>

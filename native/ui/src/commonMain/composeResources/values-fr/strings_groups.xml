@@ -203,4 +203,27 @@
         <item quantity="one">%1$d abonnement ignoré</item>
         <item quantity="other">%1$d abonnements ignorés</item>
     </plurals>
+
+    <string name="groups_discover">Découvrir</string>
+    <string name="groups_media">Médias</string>
+    <string name="groups_media_empty">Impossible de trouver des tweets avec médias des 7 derniers jours !</string>
+    <string name="groups_discovery_scan_more">Analyser plus</string>
+    <string name="groups_discovery_empty">Aucun compte similaire que vous ne suivez pas n’a encore été trouvé. Réessayez lorsque les membres auront partagé d’autres publications.</string>
+    <string name="groups_discovery_partial">Certaines sources n’ont pas pu être chargées. Tirez vers le bas pour réessayer.</string>
+    <string name="groups_discovery_add_to_group">Ajouter à « %1$s »</string>
+    <string name="groups_discovery_added">Ajouté</string>
+    <string name="groups_discovery_more_like">Plus de contenus similaires</string>
+    <string name="groups_discovery_less_like">Moins de contenus similaires</string>
+    <string name="groups_discovery_hide">Masquer</string>
+    <string name="groups_discovery_feedback_saved">Suggestions mises à jour</string>
+    <string name="groups_discovery_reset">Réinitialiser les suggestions</string>
+    <string name="groups_add_member_failed">Impossible de suivre cela</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">D’après %1$d membre sur %2$d</item>
+        <item quantity="other">D’après %1$d membres sur %2$d</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Suivi par %1$d membre</item>
+        <item quantity="other">Suivi par %1$d membres</item>
+    </plurals>
 </resources>

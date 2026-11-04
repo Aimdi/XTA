@@ -53,4 +53,11 @@
     <string name="home_import">Importa una còpia de seguretat de l'XTA</string>
     <string name="home_zen_end">Això és tot per ara</string>
     <string name="home_zen_more">Carrega'n més igualment</string>
+
+    <string name="home_home">Inici</string>
+    <string name="home_networks">Xarxes</string>
+    <string name="home_networks_recent">Recents</string>
+    <string name="home_networks_all">Totes les xarxes</string>
+    <string name="home_posts">Tuits</string>
+    <string name="home_media">Mèdia</string>
 </resources>

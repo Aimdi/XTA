@@ -203,4 +203,27 @@
         <item quantity="one">%1$d abonelik atlandı</item>
         <item quantity="other">%1$d abonelik atlandı</item>
     </plurals>
+
+    <string name="groups_discover">Keşfet</string>
+    <string name="groups_media">Medya</string>
+    <string name="groups_media_empty">Son 7 güne ait medya içeren herhangi bir tweet bulunamadı!</string>
+    <string name="groups_discovery_scan_more">Daha fazla tara</string>
+    <string name="groups_discovery_empty">Henüz takip etmediğiniz benzer hesaplar bulunamadı. Grup üyeleri daha fazla gönderi paylaştığında tekrar deneyin.</string>
+    <string name="groups_discovery_partial">Bazı kaynaklar yüklenemedi. Tekrar denemek için aşağı çekin.</string>
+    <string name="groups_discovery_add_to_group">“%1$s” grubuna ekle</string>
+    <string name="groups_discovery_added">Eklendi</string>
+    <string name="groups_discovery_more_like">Bunun gibi daha fazla</string>
+    <string name="groups_discovery_less_like">Bunun gibi daha az</string>
+    <string name="groups_discovery_hide">Gizle</string>
+    <string name="groups_discovery_feedback_saved">Öneriler güncellendi</string>
+    <string name="groups_discovery_reset">Önerileri sıfırla</string>
+    <string name="groups_add_member_failed">Bu takip edilemedi</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">%2$d üyeden %1$d üyeye göre</item>
+        <item quantity="other">%2$d üyeden %1$d üyeye göre</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">%1$d üye takip ediyor</item>
+        <item quantity="other">%1$d üye takip ediyor</item>
+    </plurals>
 </resources>

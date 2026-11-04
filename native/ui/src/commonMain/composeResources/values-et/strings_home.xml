@@ -53,4 +53,11 @@
     <string name="home_import">Impordi XTA varukoopia</string>
     <string name="home_zen_end">Praegu on see kõik</string>
     <string name="home_zen_more">Laadi ikkagi rohkem</string>
+
+    <string name="home_home">Koduleht</string>
+    <string name="home_networks">Võrgustikud</string>
+    <string name="home_networks_recent">Hiljutised</string>
+    <string name="home_networks_all">Kõik võrgustikud</string>
+    <string name="home_posts">Säutsud</string>
+    <string name="home_media">Meedia</string>
 </resources>

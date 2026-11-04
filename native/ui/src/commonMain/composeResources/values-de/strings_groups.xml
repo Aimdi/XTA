@@ -203,4 +203,27 @@
         <item quantity="one">%1$d Abo übersprungen</item>
         <item quantity="other">%1$d Abos übersprungen</item>
     </plurals>
+
+    <string name="groups_discover">Entdecken</string>
+    <string name="groups_media">Medien</string>
+    <string name="groups_media_empty">Keine Tweets mit Medien aus den letzten 7 Tagen gefunden!</string>
+    <string name="groups_discovery_scan_more">Mehr scannen</string>
+    <string name="groups_discovery_empty">Noch keine ähnlichen Konten gefunden, denen du nicht folgst. Versuche es erneut, wenn Gruppenmitglieder weitere Beiträge geteilt haben.</string>
+    <string name="groups_discovery_partial">Einige Quellen konnten nicht geladen werden.</string>
+    <string name="groups_discovery_add_to_group">Zu „%1$s“ hinzufügen</string>
+    <string name="groups_discovery_added">Hinzugefügt</string>
+    <string name="groups_discovery_more_like">Mehr davon</string>
+    <string name="groups_discovery_less_like">Weniger davon</string>
+    <string name="groups_discovery_hide">Ausblenden</string>
+    <string name="groups_discovery_feedback_saved">Vorschläge aktualisiert</string>
+    <string name="groups_discovery_reset">Vorschläge zurücksetzen</string>
+    <string name="groups_add_member_failed">Konnte nicht abonniert werden</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">%1$d von %2$d Mitglied</item>
+        <item quantity="other">%1$d von %2$d Mitgliedern</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Gefolgt von %1$d Mitglied</item>
+        <item quantity="other">Gefolgt von %1$d Mitgliedern</item>
+    </plurals>
 </resources>

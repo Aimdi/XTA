@@ -211,4 +211,31 @@
         <item quantity="many">Пропущено %1$d подписок</item>
         <item quantity="other">Пропущено %1$d подписки</item>
     </plurals>
+
+    <string name="groups_discover">Обзор</string>
+    <string name="groups_media">Медиа</string>
+    <string name="groups_media_empty">Не удаётся найти какие-либо твиты с медиа за последние 7 дней!</string>
+    <string name="groups_discovery_scan_more">Проверить ещё</string>
+    <string name="groups_discovery_empty">Похожие аккаунты, на которые вы не подписаны, пока не найдены. Повторите попытку, когда участники группы поделятся новыми публикациями.</string>
+    <string name="groups_discovery_partial">Не удалось загрузить некоторые источники. Потяните вниз, чтобы повторить.</string>
+    <string name="groups_discovery_add_to_group">Добавить в «%1$s»</string>
+    <string name="groups_discovery_added">Добавлено</string>
+    <string name="groups_discovery_more_like">Больше похожего</string>
+    <string name="groups_discovery_less_like">Меньше похожего</string>
+    <string name="groups_discovery_hide">Скрыть</string>
+    <string name="groups_discovery_feedback_saved">Рекомендации обновлены</string>
+    <string name="groups_discovery_reset">Сбросить рекомендации</string>
+    <string name="groups_add_member_failed">Не удалось подписаться</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">На основе %1$d из %2$d участника</item>
+        <item quantity="few">На основе %1$d из %2$d участников</item>
+        <item quantity="many">На основе %1$d из %2$d участников</item>
+        <item quantity="other">На основе %1$d из %2$d участника</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Читает %1$d участник</item>
+        <item quantity="few">Читают %1$d участника</item>
+        <item quantity="many">Читают %1$d участников</item>
+        <item quantity="other">Читают %1$d участника</item>
+    </plurals>
 </resources>

@@ -53,4 +53,11 @@
     <string name="home_import">Bir XTA yedeğini içe aktar</string>
     <string name="home_zen_end">Şimdilik hepsi bu</string>
     <string name="home_zen_more">Yine de daha fazla yükle</string>
+
+    <string name="home_home">Ana sayfa</string>
+    <string name="home_networks">Ağlar</string>
+    <string name="home_networks_recent">Son kullanılanlar</string>
+    <string name="home_networks_all">Tüm ağlar</string>
+    <string name="home_posts">Tweet'ler</string>
+    <string name="home_media">Medya</string>
 </resources>

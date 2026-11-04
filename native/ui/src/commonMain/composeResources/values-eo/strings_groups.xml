@@ -203,4 +203,27 @@
         <item quantity="one">Preterpasis %1$d abonon</item>
         <item quantity="other">Preterpasis %1$d abonojn</item>
     </plurals>
+
+    <string name="groups_discover">Malkovri</string>
+    <string name="groups_media">Plurmedio</string>
+    <string name="groups_media_empty">Ne eblas trovi iujn ajn pepojn kun plurmedioj de antaŭ 7 tagoj!</string>
+    <string name="groups_discovery_scan_more">Skani pli</string>
+    <string name="groups_discovery_empty">Ankoraŭ neniuj similaj nesekvataj kontoj troviĝis. Reprovu post kiam grupanoj diskonigos pliajn afiŝojn.</string>
+    <string name="groups_discovery_partial">Kelkaj fontoj ne povis esti ŝargitaj. Tiru malsupren por reprovi.</string>
+    <string name="groups_discovery_add_to_group">Aldoni al „%1$s“</string>
+    <string name="groups_discovery_added">Aldonita</string>
+    <string name="groups_discovery_more_like">Pli da similaj</string>
+    <string name="groups_discovery_less_like">Malpli da similaj</string>
+    <string name="groups_discovery_hide">Kaŝi</string>
+    <string name="groups_discovery_feedback_saved">Proponoj ĝisdatigitaj</string>
+    <string name="groups_discovery_reset">Restarigi proponojn</string>
+    <string name="groups_add_member_failed">Ne eblis aboni tion</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Surbaze de %1$d el %2$d membro</item>
+        <item quantity="other">Surbaze de %1$d el %2$d membroj</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Sekvata de %1$d membro</item>
+        <item quantity="other">Sekvata de %1$d membroj</item>
+    </plurals>
 </resources>

@@ -211,4 +211,31 @@
         <item quantity="many">Прапушчана %1$d падпісак</item>
         <item quantity="other">Прапушчана %1$d падпіскі</item>
     </plurals>
+
+    <string name="groups_discover">Агляд</string>
+    <string name="groups_media">Медыя</string>
+    <string name="groups_media_empty">Не атрымліваецца знайсці якія-небудзь твіты з медыя за апошнія 7 дзён!</string>
+    <string name="groups_discovery_scan_more">Праверыць яшчэ</string>
+    <string name="groups_discovery_empty">Падобныя акаўнты, на якія вы не падпісаны, пакуль не знойдзены. Паспрабуйце зноў, калі ўдзельнікі групы падзеляцца новымі допісамі.</string>
+    <string name="groups_discovery_partial">Не атрымалася загрузіць некаторыя крыніцы. Пацягніце ўніз, каб паўтарыць.</string>
+    <string name="groups_discovery_add_to_group">Дадаць у «%1$s»</string>
+    <string name="groups_discovery_added">Дададзена</string>
+    <string name="groups_discovery_more_like">Больш падобнага</string>
+    <string name="groups_discovery_less_like">Менш падобнага</string>
+    <string name="groups_discovery_hide">Схаваць</string>
+    <string name="groups_discovery_feedback_saved">Рэкамендацыі абноўлены</string>
+    <string name="groups_discovery_reset">Скінуць рэкамендацыі</string>
+    <string name="groups_add_member_failed">Не ўдалося падпісацца</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">На аснове %1$d з %2$d удзельніка</item>
+        <item quantity="few">На аснове %1$d з %2$d удзельнікаў</item>
+        <item quantity="many">На аснове %1$d з %2$d удзельнікаў</item>
+        <item quantity="other">На аснове %1$d з %2$d удзельніка</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Сочыць %1$d удзельнік</item>
+        <item quantity="few">Сочаць %1$d удзельнікі</item>
+        <item quantity="many">Сочаць %1$d удзельнікаў</item>
+        <item quantity="other">Сочаць %1$d удзельніка</item>
+    </plurals>
 </resources>

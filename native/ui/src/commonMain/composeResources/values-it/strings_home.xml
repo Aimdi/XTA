@@ -53,4 +53,11 @@
     <string name="home_import">Importa un backup di XTA</string>
     <string name="home_zen_end">Per ora è tutto</string>
     <string name="home_zen_more">Carica altro comunque</string>
+
+    <string name="home_home">Home</string>
+    <string name="home_networks">Reti</string>
+    <string name="home_networks_recent">Recenti</string>
+    <string name="home_networks_all">Tutte le reti</string>
+    <string name="home_posts">Tweet</string>
+    <string name="home_media">Contenuti</string>
 </resources>

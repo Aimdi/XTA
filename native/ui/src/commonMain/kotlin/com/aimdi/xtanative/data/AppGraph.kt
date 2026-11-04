@@ -13,6 +13,8 @@ import com.aimdi.xtanative.store.downloads.DownloadQueue
 import com.aimdi.xtanative.store.downloads.DownloadTransfer
 import com.aimdi.xtanative.store.downloads.FileDownloadHistory
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
+import com.aimdi.xtanative.store.follows.DiscoveryFeedbackStore
+import com.aimdi.xtanative.store.follows.FollowsCache
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.offline.TimelineCache
 import com.aimdi.xtanative.store.published.PublishedDocument
@@ -87,6 +89,10 @@ class AppGraph(
     val readingAppearance = ReadingAppearanceStore(store)
     val timelineCache = TimelineCache(store)
     val noteDrafts = NoteDrafts(store)
+
+    /** Whom followed accounts follow, as last read: "Followed by" on a profile, and a group's Discover. */
+    val follows = FollowsCache(store)
+    val discoveryFeedback = DiscoveryFeedbackStore(store)
 
     /** Pictures and videos, streamed for downloads and the offline library. */
     private val mediaHttp = OkHttpMediaHttp()

@@ -199,4 +199,25 @@
     <plurals name="groups_sort_skipped">
         <item quantity="other">已略過 %1$d 個訂閱</item>
     </plurals>
+
+    <string name="groups_discover">探索</string>
+    <string name="groups_media">媒體</string>
+    <string name="groups_media_empty">找不到最近 7 天內包含媒體的任何推文！</string>
+    <string name="groups_discovery_scan_more">繼續掃描</string>
+    <string name="groups_discovery_empty">尚未發現你未追蹤的相似帳號。請在群組成員分享更多貼文後重試。</string>
+    <string name="groups_discovery_partial">部分來源無法載入。下拉重試。</string>
+    <string name="groups_discovery_add_to_group">加入「%1$s」</string>
+    <string name="groups_discovery_added">已加入</string>
+    <string name="groups_discovery_more_like">多推薦類似內容</string>
+    <string name="groups_discovery_less_like">少推薦類似內容</string>
+    <string name="groups_discovery_hide">隱藏</string>
+    <string name="groups_discovery_feedback_saved">推薦已更新</string>
+    <string name="groups_discovery_reset">重設推薦</string>
+    <string name="groups_add_member_failed">無法追蹤</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="other">根據 %2$d 位成員中的 %1$d 位</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="other">%1$d 位成員追蹤</item>
+    </plurals>
 </resources>

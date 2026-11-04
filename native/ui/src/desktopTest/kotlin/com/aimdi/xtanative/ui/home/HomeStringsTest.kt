@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.w3c.dom.Element
 
-/** The home strings, and the app's shared ones, in every language of XTA (SCREENS.md's table). */
+/** The home and group strings, and the app's shared ones, in every language of XTA (SCREENS.md's table). */
 class HomeStringsTest {
     private val folders = listOf(
         "ar", "be", "ca", "cs", "de", "eo", "es", "et", "eu", "fr", "hi", "id", "it", "ja", "ko", "nl", "pl", "pt", "ro", "ru",
@@ -57,10 +57,10 @@ class HomeStringsTest {
         assertTrue("other" in translated, "$where has no other")
         val wanted = placeholders(english.getValue("other"))
         translated.forEach { (quantity, text) ->
-            // "One vote" or Arabic's dual may say the number in words; every other number stays.
-            val optional = if (quantity in setOf("zero", "one", "two")) setOf("%1\$d") else emptySet()
+            // "One vote" or Arabic's dual may say the number counted in words; every other number stays.
             val found = placeholders(text)
-            assertTrue(found == wanted || found == wanted - optional, "$where/$quantity: $text")
+            val inWords = quantity in setOf("zero", "one", "two") && wanted.containsAll(found) && wanted.size - found.size <= 1
+            assertTrue(found == wanted || inWords, "$where/$quantity: $text")
         }
     }
 
@@ -72,5 +72,10 @@ class HomeStringsTest {
     @Test
     fun theSharedStringsAreInEveryLanguage() {
         check("strings.xml", skipped = setOf("app_name"))
+    }
+
+    @Test
+    fun theGroupStringsAreInEveryLanguage() {
+        check("strings_groups.xml")
     }
 }

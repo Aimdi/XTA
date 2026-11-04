@@ -53,4 +53,11 @@
     <string name="home_import">Een XTA-back-up importeren</string>
     <string name="home_zen_end">Dat is alles voor nu</string>
     <string name="home_zen_more">Toch meer laden</string>
+
+    <string name="home_home">Startpagina</string>
+    <string name="home_networks">Netwerken</string>
+    <string name="home_networks_recent">Recent</string>
+    <string name="home_networks_all">Alle netwerken</string>
+    <string name="home_posts">Berichten</string>
+    <string name="home_media">Media</string>
 </resources>

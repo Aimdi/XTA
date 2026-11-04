@@ -203,4 +203,27 @@
         <item quantity="one">%1$d abonnement overgeslagen</item>
         <item quantity="other">%1$d abonnementen overgeslagen</item>
     </plurals>
+
+    <string name="groups_discover">Ontdekken</string>
+    <string name="groups_media">Media</string>
+    <string name="groups_media_empty">Kon geen tweets met media van de laatste 7 dagen vinden!</string>
+    <string name="groups_discovery_scan_more">Meer scannen</string>
+    <string name="groups_discovery_empty">Nog geen vergelijkbare accounts gevonden die je niet volgt. Probeer het opnieuw wanneer groepsleden meer berichten hebben gedeeld.</string>
+    <string name="groups_discovery_partial">Sommige bronnen konden niet worden geladen. Trek omlaag om opnieuw te proberen.</string>
+    <string name="groups_discovery_add_to_group">Toevoegen aan ‘%1$s’</string>
+    <string name="groups_discovery_added">Toegevoegd</string>
+    <string name="groups_discovery_more_like">Meer zoals dit</string>
+    <string name="groups_discovery_less_like">Minder zoals dit</string>
+    <string name="groups_discovery_hide">Verbergen</string>
+    <string name="groups_discovery_feedback_saved">Suggesties bijgewerkt</string>
+    <string name="groups_discovery_reset">Suggesties resetten</string>
+    <string name="groups_add_member_failed">Kon dit niet volgen</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Op basis van %1$d van %2$d lid</item>
+        <item quantity="other">Op basis van %1$d van %2$d leden</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Gevolgd door %1$d lid</item>
+        <item quantity="other">Gevolgd door %1$d leden</item>
+    </plurals>
 </resources>

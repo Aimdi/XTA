@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,20 +28,32 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_clear
 import com.aimdi.xtanative.ui.generated.resources.groups_combine_hint
 import com.aimdi.xtanative.ui.generated.resources.groups_combined_count
 import com.aimdi.xtanative.ui.generated.resources.groups_create
+import com.aimdi.xtanative.ui.generated.resources.groups_groups
 import com.aimdi.xtanative.ui.generated.resources.groups_member_count
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
 import com.aimdi.xtanative.ui.generated.resources.groups_switch_group
+import com.aimdi.xtanative.ui.generated.resources.home_for_you
+import com.aimdi.xtanative.ui.home.HomeNetworks
+import com.aimdi.xtanative.ui.home.HomeStrip
+import com.aimdi.xtanative.ui.home.HomeTab
+import com.aimdi.xtanative.ui.home.LocalHomeNetworks
+import com.aimdi.xtanative.ui.home.StripNetwork
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupLook
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
@@ -50,13 +64,15 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * A group feed's title (group_feed_title.dart, group_switcher.dart): the
  * group's mark, its name and how many accounts the feed reads, with how many
- * groups are read alongside, as a button that opens the switcher.
+ * groups are read alongside, as a button that opens the switcher; without
+ * [onClick], a page of Home's bar, it is the title alone.
  */
 @Composable
-fun GroupFeedTitle(state: GroupFeedUi, onClick: () -> Unit) {
+fun GroupFeedTitle(state: GroupFeedUi, onClick: (() -> Unit)?) {
     val group = state.group
+    val switchLabel = stringResource(Res.string.groups_switch_group)
     Row(
-        Modifier.clip(RoundedCornerShape(50)).clickable(onClickLabel = stringResource(Res.string.groups_switch_group), onClick = onClick).padding(horizontal = 8.dp),
+        Modifier.clip(RoundedCornerShape(50)).let { if (onClick != null) it.clickable(onClickLabel = switchLabel, onClick = onClick) else it }.padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (group != null) {
@@ -69,7 +85,7 @@ fun GroupFeedTitle(state: GroupFeedUi, onClick: () -> Unit) {
                 if (state.alsoRead.isNotEmpty()) {
                     Text("+${state.alsoRead.size}", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 6.dp))
                 }
-                Icon(GroupIcons.ExpandMore, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(20.dp))
+                if (onClick != null) Icon(GroupIcons.ExpandMore, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(20.dp))
             }
             // An empty line while the group loads keeps the name from shifting when the count arrives.
             Text(
@@ -168,5 +184,80 @@ private fun SwitcherRow(group: FollowGroup, current: Boolean, combined: Boolean,
             combined -> Icon(GroupIcons.PlaylistAddCheck, contentDescription = null, tint = tint)
             group.pinned -> Icon(GroupIcons.PushPin, contentDescription = null, modifier = Modifier.size(16.dp))
         }
+    }
+}
+
+/**
+ * The menu hanging from a group's title (feed_switcher_menu.dart): Home's
+ * feeds (Following, For you and the networks on the strip), which [onFeed]
+ * takes the reader back to Home on, the pinned groups but this one, and
+ * Groups, the full switcher.
+ */
+@Composable
+fun FeedSwitcherMenu(
+    expanded: Boolean,
+    state: GroupFeedUi,
+    onFeed: ((String) -> Unit)?,
+    onGroup: (String) -> Unit,
+    onAllGroups: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+        if (onFeed != null) {
+            HomeFeedItems { key ->
+                onDismiss()
+                onFeed(key)
+            }
+            HorizontalDivider()
+        }
+        FeedSwitcher.pinned(state.groups, state.group?.id).forEach { group ->
+            DropdownMenuItem(
+                text = { Text(group.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                leadingIcon = { GroupMark(group, 24.dp) },
+                onClick = { onGroup(group.id) },
+            )
+        }
+        DropdownMenuItem(
+            text = { Text(stringResource(Res.string.groups_groups)) },
+            leadingIcon = { Icon(GroupIcons.FolderOutlined, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+            trailingIcon = { Icon(GroupIcons.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+            onClick = onAllGroups,
+        )
+    }
+}
+
+/** Following, For you and the networks pinned on Home's strip, as the menu's rows; [onPick] gets the tab's key. */
+@Composable
+private fun HomeFeedItems(onPick: (String) -> Unit) {
+    val graph = LocalGraph.current
+    val networks = LocalHomeNetworks.current
+    val available by networks.available.collectAsStateWithLifecycle()
+    val pins by graph.settings.observe(HomePrefs.feedStripNetworks).collectAsStateWithLifecycle(emptyList())
+    val usable = available.mapTo(HashSet()) { it.id }
+    HomeStrip.tabs(pins, usable::contains, emptyList()).forEach { tab ->
+        DropdownMenuItem(
+            text = { Text(feedLabel(tab, available), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            leadingIcon = { FeedIcon(tab, networks) },
+            onClick = { onPick(tab.key) },
+        )
+    }
+}
+
+@Composable
+private fun feedLabel(tab: HomeTab, available: List<StripNetwork>): String = when (tab) {
+    HomeTab.Following -> stringResource(Res.string.following)
+    HomeTab.ForYou -> stringResource(Res.string.home_for_you)
+    is HomeTab.Network -> available.firstOrNull { it.id == tab.id }?.title ?: tab.id
+    is HomeTab.Group -> tab.label
+}
+
+@Composable
+private fun FeedIcon(tab: HomeTab, networks: HomeNetworks) {
+    val tint = MaterialTheme.colorScheme.onSurfaceVariant
+    when (tab) {
+        HomeTab.Following -> Icon(GroupIcons.PeopleOutlined, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+        HomeTab.ForYou -> Icon(GroupIcons.AutoAwesomeOutlined, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+        is HomeTab.Network -> networks.Mark(tab.id, 20.dp)
+        is HomeTab.Group -> Unit
     }
 }

@@ -44,9 +44,11 @@ object HomeStrip {
     /** XTA's older name of For you in its default feed setting. */
     private const val LEGACY_FOR_YOU = "foryou"
 
-    /** XTA's initial page for its home feed, and the prefix of a group's page. */
-    private const val FEED_PAGE = "feed"
+    /** The prefix of a group's page among XTA's initial pages. */
     private const val GROUP_PAGE = "group-"
+
+    /** The bar's pages that are screens of their own: none is a timeline of the strip. */
+    private val SCREEN_PAGES = setOf(HomeBar.SUBSCRIPTIONS, HomeBar.TRENDING, HomeBar.SAVED)
 
     /**
      * Following and For you, the pinned networks that can show ([usable]) in
@@ -76,7 +78,7 @@ object HomeStrip {
         val page = initialPage.trim()
         return when {
             page.startsWith(GROUP_PAGE) -> HomeTab.GROUP + page.removePrefix(GROUP_PAGE)
-            page.isEmpty() || page == FEED_PAGE || startRoute(page) != null -> null
+            page.isEmpty() || page == HomeBar.FEED || page in SCREEN_PAGES -> null
             else -> HomeTab.Network(page).key
         }
     }
@@ -88,14 +90,6 @@ object HomeStrip {
     fun initialIndex(tabs: List<HomeTab>, initialPage: String, defaultFeed: String): Int {
         val keys = tabs.map { it.key }
         return listOfNotNull(pageKey(initialPage), feedKey(defaultFeed)).firstNotNullOfOrNull { key -> keys.indexOf(key).takeIf { it >= 0 } } ?: 0
-    }
-
-    /** The screen XTA's initial page opens over Home: its bar's pages that are screens of their own here. */
-    fun startRoute(initialPage: String): String? = when (initialPage.trim()) {
-        "subscriptions" -> HomeDestination.SUBSCRIPTIONS.route
-        "trending" -> HomeDestination.TRENDS.route
-        "saved" -> HomeDestination.SAVED.route
-        else -> null
     }
 
     /** Where the tab [key] sits now; Following's place when it went, as XTA falls back to Following. */

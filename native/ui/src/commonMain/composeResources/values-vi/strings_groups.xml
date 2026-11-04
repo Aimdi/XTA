@@ -199,4 +199,25 @@
     <plurals name="groups_sort_skipped">
         <item quantity="other">Đã bỏ qua %1$d đăng ký</item>
     </plurals>
+
+    <string name="groups_discover">Khám phá</string>
+    <string name="groups_media">Đa phương tiện</string>
+    <string name="groups_media_empty">Không thể tìm bài viết nào có nội dung đa phương tiện trong 7 ngày vừa qua!</string>
+    <string name="groups_discovery_scan_more">Quét thêm</string>
+    <string name="groups_discovery_empty">Chưa tìm thấy tài khoản tương tự mà bạn chưa theo dõi. Hãy thử lại khi thành viên nhóm chia sẻ thêm bài viết.</string>
+    <string name="groups_discovery_partial">Không thể tải một số nguồn. Kéo xuống để thử lại.</string>
+    <string name="groups_discovery_add_to_group">Thêm vào “%1$s”</string>
+    <string name="groups_discovery_added">Đã thêm</string>
+    <string name="groups_discovery_more_like">Thêm nội dung tương tự</string>
+    <string name="groups_discovery_less_like">Bớt nội dung tương tự</string>
+    <string name="groups_discovery_hide">Ẩn</string>
+    <string name="groups_discovery_feedback_saved">Đã cập nhật gợi ý</string>
+    <string name="groups_discovery_reset">Đặt lại gợi ý</string>
+    <string name="groups_add_member_failed">Không theo dõi được</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="other">Dựa trên %1$d trong %2$d thành viên</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="other">Được %1$d thành viên theo dõi</item>
+    </plurals>
 </resources>

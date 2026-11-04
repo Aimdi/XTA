@@ -80,7 +80,7 @@ class FollowsViewModel(private val graph: AppGraph, private val screenName: Stri
             try {
                 val id = userId ?: graph.client.profile(screenName).first.also(graph.posts::remember).id.also { userId = it }
                 val page = if (followers) graph.client.followers(id, cursor, PAGE) else graph.client.following(id, cursor, PAGE)
-                if (cursor == null && !followers && graph.sessions.state.value?.followed(id) != null) FollowsMemory.shared.remember(id, page.users)
+                if (cursor == null && !followers && graph.sessions.state.value?.followed(id) != null) graph.follows.remember(id, KnownFollows.of(page.users))
                 val fresh = paging.page(page.users, page.bottomCursor, cursor)
                 fresh.people.forEach(graph.posts::remember)
                 state.update { it.copy(people = it.people + fresh.people, loading = false, loadingMore = false, cursor = fresh.next) }

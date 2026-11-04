@@ -53,12 +53,13 @@ object GroupFeedRules {
     val THRESHOLDS = listOf(0, 10, 50, 100, 500, 1000)
 
     /**
-     * [groupId]'s plan, with [alsoRead] read alongside, the language filter,
-     * zen mode and the reposts and replies the reader hid on profiles
+     * [groupId]'s plan (the Following feed's for null, as XTA's Following is
+     * its group `-1`), with [alsoRead] read alongside a group, the language
+     * filter, zen mode and the reposts and replies the reader hid on profiles
      * ([hidden]) added, and the rules reading what X says of each post.
      */
-    fun plan(session: Session, prefs: FeedPrefs, groupId: String, alsoRead: Set<String>, hidden: ProfileFilters = ProfileFilters()): GroupFeedPlan {
-        val plan = session.feedPlan(groupId, alsoRead - groupId)
+    fun plan(session: Session, prefs: FeedPrefs, groupId: String?, alsoRead: Set<String>, hidden: ProfileFilters = ProfileFilters()): GroupFeedPlan {
+        val plan = session.feedPlan(groupId, groupId?.let { alsoRead - it }.orEmpty())
         val language = LanguageFilter(LanguageFilter.parseLanguages(prefs.languages), prefs.languageAction)
         return plan.copy(shaping = HiddenPosts.shaping(hidden, plan.shaping.copy(language = language, zen = prefs.zen, facts = XPostFacts)))
     }

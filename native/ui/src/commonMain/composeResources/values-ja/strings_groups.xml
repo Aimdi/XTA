@@ -199,4 +199,25 @@
     <plurals name="groups_sort_skipped">
         <item quantity="other">%1$d 件の購読をスキップしました</item>
     </plurals>
+
+    <string name="groups_discover">見つける</string>
+    <string name="groups_media">メディア</string>
+    <string name="groups_media_empty">過去7日間にメディア付きのツイートが見つかりませんでした！</string>
+    <string name="groups_discovery_scan_more">さらにスキャン</string>
+    <string name="groups_discovery_empty">まだフォローしていない類似アカウントは見つかりませんでした。グループのメンバーがさらに投稿を共有してから、もう一度お試しください。</string>
+    <string name="groups_discovery_partial">一部のソースを読み込めませんでした。下に引いて再試行してください。</string>
+    <string name="groups_discovery_add_to_group">「%1$s」に追加</string>
+    <string name="groups_discovery_added">追加済み</string>
+    <string name="groups_discovery_more_like">似た内容を増やす</string>
+    <string name="groups_discovery_less_like">似た内容を減らす</string>
+    <string name="groups_discovery_hide">非表示</string>
+    <string name="groups_discovery_feedback_saved">おすすめを更新しました</string>
+    <string name="groups_discovery_reset">おすすめをリセット</string>
+    <string name="groups_add_member_failed">フォローできませんでした</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="other">%2$d人中%1$d人のメンバーに基づく</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="other">メンバー%1$d人がフォロー中</item>
+    </plurals>
 </resources>

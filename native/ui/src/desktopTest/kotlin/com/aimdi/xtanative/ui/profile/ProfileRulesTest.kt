@@ -9,6 +9,7 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -123,9 +124,9 @@ class ProfileRulesTest {
         fun followed(id: String) = FollowedAccount(id, id, id.uppercase(), null, false, true, 0)
         val following = listOf(followed("a"), followed("b"), followed("c"), followed("d"), followed("p"))
         val remembered = mapOf(
-            "a" to RememberedFollows(0, listOf("x", "p")),
-            "b" to RememberedFollows(0, listOf("p")),
-            "c" to RememberedFollows(0, listOf("y")),
+            "a" to RememberedFollows(0, KnownFollows.of(listOf(user("x"), user("p")))),
+            "b" to RememberedFollows(0, KnownFollows.of(listOf(user("p")))),
+            "c" to RememberedFollows(0, KnownFollows.of(listOf(user("y")))),
         )
         val followedBy = FollowedBy.of("p", remembered, following)
         assertEquals(listOf("b", "a"), followedBy.followers.map { it.id }, "b followed most recently")
@@ -147,12 +148,8 @@ class ProfileRulesTest {
     }
 
     @Test
-    fun aRememberedListIsTrustedForAMonth() {
-        var now = 0L
-        val memory = FollowsMemory(clock = { now }, retentionMillis = 100)
-        memory.remember("a", listOf(user("p")))
-        assertEquals(listOf("p"), memory.remembered().getValue("a").ids)
-        now = 101
-        assertTrue(memory.remembered().isEmpty())
+    fun aFollowingListIsKeptAsWhoItFollowsNewestFirst() {
+        val kept = KnownFollows.of(listOf(user("p"), user(""), user("q")))
+        assertEquals(listOf("p", "q"), kept.map { it.id })
     }
 }

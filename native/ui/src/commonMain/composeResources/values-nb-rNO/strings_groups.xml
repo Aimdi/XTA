@@ -203,4 +203,27 @@
         <item quantity="one">Hoppet over %1$d abonnement</item>
         <item quantity="other">Hoppet over %1$d abonnementer</item>
     </plurals>
+
+    <string name="groups_discover">Oppdag</string>
+    <string name="groups_media">Media</string>
+    <string name="groups_media_empty">Kunne ikke finne noen tweets med media fra de siste 7 dagene!</string>
+    <string name="groups_discovery_scan_more">Søk gjennom flere</string>
+    <string name="groups_discovery_empty">Ingen lignende kontoer du ikke følger er funnet ennå. Prøv igjen når gruppemedlemmene har delt flere innlegg.</string>
+    <string name="groups_discovery_partial">Noen kilder kunne ikke lastes. Dra ned for å prøve igjen.</string>
+    <string name="groups_discovery_add_to_group">Legg til i «%1$s»</string>
+    <string name="groups_discovery_added">Lagt til</string>
+    <string name="groups_discovery_more_like">Mer som dette</string>
+    <string name="groups_discovery_less_like">Mindre som dette</string>
+    <string name="groups_discovery_hide">Skjul</string>
+    <string name="groups_discovery_feedback_saved">Forslag oppdatert</string>
+    <string name="groups_discovery_reset">Tilbakestill forslag</string>
+    <string name="groups_add_member_failed">Kunne ikke følge dette</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Basert på %1$d av %2$d medlem</item>
+        <item quantity="other">Basert på %1$d av %2$d medlemmer</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Fulgt av %1$d medlem</item>
+        <item quantity="other">Fulgt av %1$d medlemmer</item>
+    </plurals>
 </resources>

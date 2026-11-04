@@ -53,4 +53,11 @@
     <string name="home_import">Importi savkopion de XTA</string>
     <string name="home_zen_end">Jen ĉio nuntempe</string>
     <string name="home_zen_more">Tamen ŝargi pli</string>
+
+    <string name="home_home">Hejmo</string>
+    <string name="home_networks">Retoj</string>
+    <string name="home_networks_recent">Lastaj</string>
+    <string name="home_networks_all">Ĉiuj retoj</string>
+    <string name="home_posts">Pepoj</string>
+    <string name="home_media">Plurmedio</string>
 </resources>

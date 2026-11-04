@@ -203,4 +203,27 @@
         <item quantity="one">Jäeti vahele %1$d tellimus</item>
         <item quantity="other">Jäeti vahele %1$d tellimust</item>
     </plurals>
+
+    <string name="groups_discover">Avasta</string>
+    <string name="groups_media">Meedia</string>
+    <string name="groups_media_empty">Viimase 7 päeva andmetest ei leidu ühtegi meediaga säutsu!</string>
+    <string name="groups_discovery_scan_more">Otsi veel</string>
+    <string name="groups_discovery_empty">Sarnaseid jälgimata kontosid pole veel leitud. Proovi uuesti, kui rühma liikmed on jaganud rohkem postitusi.</string>
+    <string name="groups_discovery_partial">Mõnda allikat ei saanud laadida. Uuesti proovimiseks tõmba alla.</string>
+    <string name="groups_discovery_add_to_group">Lisa rühma „%1$s“</string>
+    <string name="groups_discovery_added">Lisatud</string>
+    <string name="groups_discovery_more_like">Rohkem sellist</string>
+    <string name="groups_discovery_less_like">Vähem sellist</string>
+    <string name="groups_discovery_hide">Peida</string>
+    <string name="groups_discovery_feedback_saved">Soovitused uuendatud</string>
+    <string name="groups_discovery_reset">Lähtesta soovitused</string>
+    <string name="groups_add_member_failed">Jälgimine ebaõnnestus</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Põhineb %1$d liikmel %2$d-st</item>
+        <item quantity="other">Põhineb %1$d liikmel %2$d-st</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Jälgib %1$d liige</item>
+        <item quantity="other">Jälgib %1$d liiget</item>
+    </plurals>
 </resources>

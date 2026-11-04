@@ -111,7 +111,7 @@ object SettingsStart {
      * on while there is one (XTA's AccountFetchGate).
      */
     suspend fun keepAccountsOffInStep(settings: SettingsStore, gate: (Set<String>) -> Unit) {
-        settings.observe(AccountPrefs.forYouHiddenAccountIds).collect { gate(it.toSet()) }
+        settings.observe(AccountPrefs.disabledAccountIds).collect { gate(it.toSet()) }
     }
 
     /** Rotated X query ids repaired from the published list, unless the reader turned that off; when it answered is noted. */

@@ -53,4 +53,11 @@
     <string name="home_import">Import an XTA backup</string>
     <string name="home_zen_end">That's everything for now</string>
     <string name="home_zen_more">Load more anyway</string>
+
+    <string name="home_home">Home</string>
+    <string name="home_networks">Networks</string>
+    <string name="home_networks_recent">Recent</string>
+    <string name="home_networks_all">All networks</string>
+    <string name="home_posts">Posts</string>
+    <string name="home_media">Media</string>
 </resources>

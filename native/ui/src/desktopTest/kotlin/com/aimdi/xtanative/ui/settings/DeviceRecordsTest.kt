@@ -118,9 +118,9 @@ class SettingsStartTest {
         val keeping = launch { SettingsStart.keepAccountsOffInStep(settings) { off = it } }
         withTimeout(5_000) { while (off == null) delay(10) }
         assertEquals(emptySet<String>(), off)
-        settings.set(AccountPrefs.forYouHiddenAccountIds, listOf("2", "3"))
+        settings.set(AccountPrefs.disabledAccountIds, listOf("2", "3"))
         withTimeout(5_000) { while (off != setOf("2", "3")) delay(10) }
-        settings.set(AccountPrefs.forYouHiddenAccountIds, listOf("3"))
+        settings.set(AccountPrefs.disabledAccountIds, listOf("3"))
         withTimeout(5_000) { while (off != setOf("3")) delay(10) }
         keeping.cancel()
     }

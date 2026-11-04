@@ -52,4 +52,11 @@
     <string name="home_import">Impor cadangan XTA</string>
     <string name="home_zen_end">Itu saja untuk saat ini</string>
     <string name="home_zen_more">Tetap muat lebih banyak</string>
+
+    <string name="home_home">Beranda</string>
+    <string name="home_networks">Jaringan</string>
+    <string name="home_networks_recent">Terbaru</string>
+    <string name="home_networks_all">Semua jaringan</string>
+    <string name="home_posts">Cuitan</string>
+    <string name="home_media">Media</string>
 </resources>

@@ -55,4 +55,11 @@
     <string name="home_import">Импортировать резервную копию XTA</string>
     <string name="home_zen_end">Пока это всё</string>
     <string name="home_zen_more">Всё равно загрузить ещё</string>
+
+    <string name="home_home">Главная</string>
+    <string name="home_networks">Сети</string>
+    <string name="home_networks_recent">Недавние</string>
+    <string name="home_networks_all">Все сети</string>
+    <string name="home_posts">Твиты</string>
+    <string name="home_media">Медиа</string>
 </resources>

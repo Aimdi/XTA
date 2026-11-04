@@ -12,6 +12,7 @@ import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.saved.XtaTweetJson
@@ -86,7 +87,7 @@ data class FollowUi(
     val followedBy: FollowedBy = FollowedBy(),
 ) {
     companion object {
-        fun of(session: Session, userId: String?, screenName: String): FollowUi {
+        fun of(session: Session, userId: String?, screenName: String, remembered: Map<String, RememberedFollows> = emptyMap()): FollowUi {
             val account = userId?.let(session::followed) ?: session.following.firstOrNull { it.screenName.equals(screenName, ignoreCase = true) }
             return FollowUi(
                 followed = account != null,
@@ -95,7 +96,7 @@ data class FollowUi(
                     GroupChoice(group.id, group.name, group.emoji, account != null && account.id in group.memberIds)
                 },
                 maxPosts = account?.let { QuietAccount.choiceOf(session.postCaps[it.id]) },
-                followedBy = userId?.let { FollowedBy.of(it, FollowsMemory.shared.remembered(), session.following) } ?: FollowedBy(),
+                followedBy = userId?.let { FollowedBy.of(it, remembered, session.following) } ?: FollowedBy(),
             )
         }
     }
@@ -114,7 +115,7 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
 
     val follow: StateFlow<FollowUi> =
         combine(graph.sessions.state.filterNotNull(), state.map { it.user?.id }.distinctUntilChanged()) { session, userId ->
-            FollowUi.of(session, userId, screenName)
+            FollowUi.of(session, userId, screenName, graph.follows.remembered())
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

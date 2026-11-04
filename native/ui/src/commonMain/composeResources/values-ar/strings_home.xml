@@ -57,4 +57,11 @@
     <string name="home_import">استيراد نسخة XTA الاحتياطية</string>
     <string name="home_zen_end">هذا كل شيء حتى الآن</string>
     <string name="home_zen_more">تحميل المزيد على أي حال</string>
+
+    <string name="home_home">الرئيسية</string>
+    <string name="home_networks">الشبكات</string>
+    <string name="home_networks_recent">الأخيرة</string>
+    <string name="home_networks_all">كل الشبكات</string>
+    <string name="home_posts">التغريدات</string>
+    <string name="home_media">الوسائط</string>
 </resources>

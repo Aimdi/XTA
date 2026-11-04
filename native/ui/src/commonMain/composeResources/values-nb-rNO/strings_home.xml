@@ -53,4 +53,11 @@
     <string name="home_import">Importer en XTA-sikkerhetskopi</string>
     <string name="home_zen_end">Det var alt for nå</string>
     <string name="home_zen_more">Last inn mer likevel</string>
+
+    <string name="home_home">Hjem</string>
+    <string name="home_networks">Nettverk</string>
+    <string name="home_networks_recent">Nylige</string>
+    <string name="home_networks_all">Alle nettverk</string>
+    <string name="home_posts">Tvitringer</string>
+    <string name="home_media">Media</string>
 </resources>

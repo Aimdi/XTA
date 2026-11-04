@@ -207,4 +207,29 @@
         <item quantity="few">Au fost omise %1$d abonamente</item>
         <item quantity="other">Au fost omise %1$d de abonamente</item>
     </plurals>
+
+    <string name="groups_discover">Descoperă</string>
+    <string name="groups_media">Media</string>
+    <string name="groups_media_empty">Nu am putut găsi niciun tweet cu conținut media din ultimele 7 zile!</string>
+    <string name="groups_discovery_scan_more">Scanează mai mult</string>
+    <string name="groups_discovery_empty">Nu s-au găsit încă conturi similare pe care nu le urmărești. Încearcă din nou când membrii grupului distribuie mai multe postări.</string>
+    <string name="groups_discovery_partial">Unele surse nu au putut fi încărcate. Trage în jos pentru a reîncerca.</string>
+    <string name="groups_discovery_add_to_group">Adaugă în „%1$s”</string>
+    <string name="groups_discovery_added">Adăugat</string>
+    <string name="groups_discovery_more_like">Mai multe similare</string>
+    <string name="groups_discovery_less_like">Mai puține similare</string>
+    <string name="groups_discovery_hide">Ascunde</string>
+    <string name="groups_discovery_feedback_saved">Sugestii actualizate</string>
+    <string name="groups_discovery_reset">Resetează sugestiile</string>
+    <string name="groups_add_member_failed">Nu a putut fi urmărit</string>
+    <plurals name="groups_discovery_coverage">
+        <item quantity="one">Pe baza a %1$d din %2$d membru</item>
+        <item quantity="few">Pe baza a %1$d din %2$d membri</item>
+        <item quantity="other">Pe baza a %1$d din %2$d de membri</item>
+    </plurals>
+    <plurals name="groups_discovery_followed_by">
+        <item quantity="one">Urmărit de %1$d membru</item>
+        <item quantity="few">Urmărit de %1$d membri</item>
+        <item quantity="other">Urmărit de %1$d de membri</item>
+    </plurals>
 </resources>
