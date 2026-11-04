@@ -27,6 +27,8 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")/.." && pwd)
 module=$(cd "${1:-$here/ui}" && pwd)
 K=${KOTLINC:?set KOTLINC to a kotlinc home}
+# kotlinc asks for 512 MB; the whole :ui with the Compose plugin needs more.
+export JAVA_OPTS="${JAVA_OPTS:--Xmx2g -Xms256M -Xss4m}"
 LIBS=${COMPOSE_LIBS:?set COMPOSE_LIBS to the directory compose-libs.sh filled}
 [ -f "$K/lib/compose-compiler-plugin.jar" ] || { echo "no compose-compiler-plugin.jar in $K/lib"; exit 1; }
 jars=$(find "$LIBS" -maxdepth 1 -name '*.jar' | sort | tr '\n' ':')
