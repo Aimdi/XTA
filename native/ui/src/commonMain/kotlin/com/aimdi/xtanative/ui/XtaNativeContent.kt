@@ -8,6 +8,7 @@ import coil3.request.crossfade
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
 import com.aimdi.xtanative.ui.downloads.DownloadsFrame
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
@@ -28,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
     CompositionLocalProvider(LocalGraph provides graph) {
-        XtaTheme { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { XtaNativeRoot() } } } } } }
+        XtaTheme { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { XtaNativeRoot() } } } } } } }
     }
 }
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Lukk XTA?</string>
+    <string name="chrome_update_available">En oppdatering for XTA er tilgjengelig! 🚀</string>
+    <string name="chrome_update_view_version">Se versjon %1$s på GitHub</string>
+    <string name="chrome_update_view">Se på GitHub</string>
+    <string name="chrome_update_download">Last ned</string>
+    <string name="chrome_licences_legalese">Utgitt under MIT-lisensen</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d lisens</item>
+        <item quantity="other">%1$d lisenser</item>
+    </plurals>
+</resources>

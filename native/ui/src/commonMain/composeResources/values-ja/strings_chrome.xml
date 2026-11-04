@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">XTA を終了しますか？</string>
+    <string name="chrome_update_available">XTA の更新が利用可能です！🚀</string>
+    <string name="chrome_update_view_version">GitHub でバージョン %1$s を見る</string>
+    <string name="chrome_update_view">GitHub で見る</string>
+    <string name="chrome_update_download">ダウンロード</string>
+    <string name="chrome_licences_legalese">MITライセンスで公開</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="other">ライセンス: %1$d 件</item>
+    </plurals>
+</resources>

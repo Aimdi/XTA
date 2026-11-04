@@ -45,7 +45,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +58,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Graphemes
+import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
@@ -216,7 +216,8 @@ internal class PixivHaptics(private val play: (HapticFeedbackType) -> Unit, priv
 
 @Composable
 internal fun rememberHaptics(): PixivHaptics {
-    val feedback = LocalHapticFeedback.current
+    // The app's haptic feedback switch first, in a sheet too, then Pixiv's own (XTA's PixivHaptics).
+    val feedback = rememberSwitchedHaptics()
     val runtime = LocalPixiv.current
     return remember(feedback, runtime) { PixivHaptics(feedback::performHapticFeedback) { runtime.settings[PixivPrefs.haptics] } }
 }

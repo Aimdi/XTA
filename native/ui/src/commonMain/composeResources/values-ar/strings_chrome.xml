@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">هل أنت متأكد من أنك تريد إغلاق XTA؟</string>
+    <string name="chrome_update_available">هناك تحديث متاح لـ XTA! 🚀</string>
+    <string name="chrome_update_view_version">عرض الإصدار %1$s على GitHub</string>
+    <string name="chrome_update_view">عرض على GitHub</string>
+    <string name="chrome_update_download">تحميل</string>
+    <string name="chrome_licences_legalese">منشور تحت رخصة الإم أي تي (MIT License)</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="zero">ما مِن تراخيص</item>
+        <item quantity="one">ترخيص واحد</item>
+        <item quantity="two">ترخيصان</item>
+        <item quantity="few">%1$d تراخيص</item>
+        <item quantity="many">%1$d ترخيصًا</item>
+        <item quantity="other">%1$d ترخيص</item>
+    </plurals>
+</resources>

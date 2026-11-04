@@ -134,3 +134,34 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.coroutines.android)
 }
+
+// Settings › App info › Licences: what each variant's APK ships, with the licences (gradle/licences.gradle.kts).
+apply(from = rootProject.file("gradle/licences.gradle.kts"))
+@Suppress("UNCHECKED_CAST")
+val writeLicences = extra["writeLicences"] as (String, File) -> Unit
+
+abstract class VariantLicences : DefaultTask() {
+    @get:OutputDirectory
+    abstract val output: DirectoryProperty
+
+    @get:Internal
+    var write: (File) -> Unit = {}
+
+    @TaskAction
+    fun run() {
+        val folder = output.get().asFile
+        folder.deleteRecursively()
+        write(folder)
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val licences = tasks.register<VariantLicences>("${variant.name}Licences") {
+            // The libraries are Gradle's to resolve each build; listing them is quick.
+            outputs.upToDateWhen { false }
+            write = { folder -> writeLicences("${variant.name}RuntimeClasspath", folder) }
+        }
+        variant.sources.resources?.addGeneratedSourceDirectory(licences, VariantLicences::output)
+    }
+}

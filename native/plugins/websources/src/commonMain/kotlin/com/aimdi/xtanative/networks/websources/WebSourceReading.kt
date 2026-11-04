@@ -23,6 +23,9 @@ object WebSourceReading {
     /** The RSS reader's feed id for [sourceId]'s posts: `websources:<source>`. */
     fun feedId(sourceId: String): String = "${WebSources.NETWORK}:$sourceId"
 
+    /** The source whose posts read in the RSS reader as [feedId]; null for an RSS feed's. */
+    fun sourceOf(feedId: String): String? = feedId.removePrefix(feedId("")).takeIf { it != feedId && it.isNotEmpty() }
+
     /** [item] of [source] with [html], its full text, as the RSS reader shows it. */
     fun itemOf(source: WebSourceDefinition, item: WebSourceItem, html: String): RssItem = RssItem(
         id = item.key,

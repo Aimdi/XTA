@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">确定要关闭 XTA 吗？</string>
+    <string name="chrome_update_available">XTA 有新版本 🚀</string>
+    <string name="chrome_update_view_version">在 GitHub 上查看版本 %1$s</string>
+    <string name="chrome_update_view">在 GitHub 上查看</string>
+    <string name="chrome_update_download">下载</string>
+    <string name="chrome_licences_legalese">以 MIT 许可证发布</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="other">%1$d 份许可</item>
+    </plurals>
+</resources>

@@ -15,6 +15,7 @@ import com.aimdi.xtanative.pluginhost.PluginLoad
 import com.aimdi.xtanative.pluginhost.PluginManager
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.backup.NetworkAccount
+import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.reading.ReadingJournal
@@ -302,6 +303,19 @@ class AppPlugins(
     /** Opens group member [memberId]'s page on its network ([destinationForMember]), answering whether one opened. */
     fun openMember(memberId: String, searches: Set<String> = emptySet()): Boolean {
         val destination = destinationForMember(memberId, searches) ?: return false
+        navigator.go(destination)
+        return true
+    }
+
+    /**
+     * Opens [article], kept in the offline collection, in the reader of the
+     * running plugin it came from ([XtaPlugin.routeForOffline]), as XTA's
+     * offline library does; false when none reads it.
+     */
+    fun openOffline(article: OfflineArticle): Boolean {
+        val destination = running.value.firstNotNullOfOrNull { running ->
+            guardedNow { running.plugin.routeForOffline(article) }?.let { Destination.PluginRoute(running.plugin.id, it) }
+        } ?: return false
         navigator.go(destination)
         return true
     }

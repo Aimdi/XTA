@@ -22,7 +22,7 @@ class VoiceSources(private val server: String?, private val releaseTag: String) 
         /** The system property the Android app sets from -PvoiceServer, a CI build's; never set for a release. */
         const val SERVER_PROPERTY = "xtanative.voice_server"
 
-        /** The system property the Android app sets to the prerelease it is built for. */
+        /** The system property the Android app sets, and the desktop's build passes, to the prerelease it is built for. */
         const val RELEASE_TAG_PROPERTY = "xtanative.release_tag"
 
         /** As the app's shell set them for this process. */

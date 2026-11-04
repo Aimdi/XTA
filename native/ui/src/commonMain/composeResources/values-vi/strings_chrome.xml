@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Bạn có chắc muốn đóng XTA không?</string>
+    <string name="chrome_update_available">Đã có cập nhật cho XTA 🚀</string>
+    <string name="chrome_update_view_version">Xem bản %1$s ở GitHub</string>
+    <string name="chrome_update_view">Xem ở GitHub</string>
+    <string name="chrome_update_download">Tải xuống</string>
+    <string name="chrome_licences_legalese">Phát hành theo giấy phép MIT</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="other">%1$d giấy phép</item>
+    </plurals>
+</resources>

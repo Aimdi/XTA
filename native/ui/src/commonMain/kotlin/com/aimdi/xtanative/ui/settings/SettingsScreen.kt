@@ -32,14 +32,12 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +53,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
@@ -79,6 +76,11 @@ object SettingsRoutes {
     const val SIGN_IN = "signin"
     const val DOWNLOADS = "downloads"
     const val OFFLINE = "offline"
+
+    /** Settings › App info › Licences, and one library's licences there. */
+    const val LICENCES = "licences"
+
+    fun licence(module: String): String = "licences/library?module=" + java.net.URLEncoder.encode(module, "UTF-8")
 
     /** Read aloud's own screen (ui.speech), which Settings lists among its sections. */
     const val SPEECH = "speech/settings"
@@ -150,7 +152,7 @@ private fun SettingsHome(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, sna
     }
     if (advanced) SettingsSection.advanced.forEach { SectionRow(it, onOpen) }
     SettingsHeader(stringResource(Res.string.settings_app_info))
-    AboutRows(onIntroAgain, snackbar, vm)
+    AboutRows(onOpen, onIntroAgain, snackbar, vm)
 }
 
 @Composable
@@ -177,11 +179,10 @@ private fun sectionIcon(section: SettingsSection): ImageVector = when (section) 
 
 /** Settings › App info (_about.dart): the version, where XTA lives, its licences, and the first-launch cards again. */
 @Composable
-private fun AboutRows(onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
+private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
     val clipboard = LocalClipboardManager.current
     val links = LocalUriHandler.current
     val scope = rememberCoroutineScope()
-    var licenses by remember { mutableStateOf(false) }
     val version = vm.graph.version.ifEmpty { "dev" }
     val copied = stringResource(Res.string.settings_version_copied)
     NavigationRow(stringResource(Res.string.settings_version_label), version, Icons.Outlined.Info, chevron = false) {
@@ -194,8 +195,8 @@ private fun AboutRows(onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm:
     NavigationRow(stringResource(Res.string.settings_report_bug), stringResource(Res.string.settings_report_bug_description), Icons.Outlined.Warning, chevron = false) {
         runCatching { links.openUri("$REPOSITORY/issues") }
     }
-    NavigationRow(stringResource(Res.string.settings_licenses), stringResource(Res.string.settings_licenses_description), Icons.AutoMirrored.Outlined.List, chevron = false) {
-        licenses = true
+    NavigationRow(stringResource(Res.string.settings_licenses), stringResource(Res.string.settings_licenses_description), Icons.AutoMirrored.Outlined.List) {
+        onOpen(SettingsRoutes.LICENCES)
     }
     NavigationRow(stringResource(Res.string.settings_intro_again), stringResource(Res.string.settings_intro_again_description), Icons.Outlined.Refresh, chevron = false) {
         vm.graph.keep {
@@ -203,41 +204,6 @@ private fun AboutRows(onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm:
         }
         onIntroAgain()
     }
-    if (licenses) LicensesDialog(version) { licenses = false }
-}
-
-/** The software XTA Native is built with and the licence of each: names are not translated. */
-private val LIBRARIES = listOf(
-    "Kotlin, kotlinx.coroutines, kotlinx.serialization" to "Apache-2.0",
-    "Compose Multiplatform, Jetpack Compose, AndroidX" to "Apache-2.0",
-    "Material Components and icons" to "Apache-2.0",
-    "OkHttp, Okio" to "Apache-2.0",
-    "Coil" to "Apache-2.0",
-    "Media3" to "Apache-2.0",
-    // The voice engine downloaded voices read with; sherpa-onnx links espeak-ng in, as XTA's licence page says.
-    "sherpa-onnx, ONNX Runtime, espeak-ng" to VoiceEngines.LICENCES,
-    "jsoup" to "MIT",
-    "XTA, Fritter, Quacker" to "MIT",
-)
-
-@Composable
-private fun LicensesDialog(version: String, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.settings_licenses)) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text("XTA Native $version", style = MaterialTheme.typography.titleMedium)
-                LIBRARIES.forEach { (name, licence) ->
-                    Row(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                        Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                        Text(licence, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.settings_ok)) } },
-    )
 }
 
 @Composable

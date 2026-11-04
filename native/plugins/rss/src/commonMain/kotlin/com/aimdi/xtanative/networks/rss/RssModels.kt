@@ -35,6 +35,13 @@ object Rss {
 
     private val feedPath = Regex("""(?:^|/)(?:feed|rss|atom)(?:[./]|$)|\.(?:xml|rss|atom)$""")
 
+    /**
+     * Whether [feedId] is one of RSS's feeds, which are named by their
+     * addresses ([com.aimdi.xtanative.networks.RssParser.feedId]), not a
+     * web source's (`websources:lobsters`), which reads in the same reader.
+     */
+    fun isFeedId(feedId: String): Boolean = feedId.startsWith("https://") || feedId.startsWith("http://")
+
     /** Whether [raw] already names a feed document rather than a site's home page. */
     fun looksLikeFeedUrl(raw: String): Boolean {
         val url = raw.trim().toHttpUrlOrNull() ?: return false

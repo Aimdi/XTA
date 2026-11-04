@@ -3,7 +3,9 @@ package com.aimdi.xtanative.plugins.rss
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.rss.Rss
 import com.aimdi.xtanative.networks.rss.RssFeed
+import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
@@ -14,6 +16,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
+import com.aimdi.xtanative.ui.plugins.RssOffline
 import com.aimdi.xtanative.ui.plugins.RssReaderScreen
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import kotlinx.coroutines.flow.Flow
@@ -59,6 +62,9 @@ class RssPlugin : XtaPlugin() {
 
     /** A feed in a group, opened on its own page, as XTA opens an RSS member. */
     override fun routeForAccount(account: String): String = RssRoutes.feed(app.feedFor(account) ?: RssFeed(account, account, ""))
+
+    /** An article kept offline from one of its feeds (their ids are their addresses), in its reader, as XTA's offline library opens it. */
+    override fun routeForOffline(article: OfflineArticle): String? = RssOffline.itemOf(article)?.takeIf { Rss.isFeedId(it.feedId) }?.let(RssRoutes::item)
 
     override fun screen(route: String): PluginScreen? = when (val opened = RssRoutes.parse(route)) {
         is RssRoute.Item -> readerScreen(opened)

@@ -32,6 +32,14 @@ class DesktopKeysTest {
     }
 
     @Test
+    fun onTheFirstScreenTheMouseBackButtonClosesTheAppAndTheKeysDoNothing() {
+        assertEquals(DeskAction.LEAVE_APP, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = false))
+        assertEquals(DeskAction.CLOSE, DesktopKeys.mouseBack(canGoBack = false, somethingOpen = true))
+        assertEquals(DeskAction.BACK, DesktopKeys.mouseBack(canGoBack = true, somethingOpen = false))
+        assertEquals(DeskAction.NONE, action(DeskKey.ESCAPE, canGoBack = false))
+    }
+
+    @Test
     fun altLeftAndTheBackKeyGoBackFromAnywhere() {
         assertEquals(DeskAction.BACK, action(DeskKey.LEFT, alt = true, focusInside = true))
         assertEquals(DeskAction.BACK, action(DeskKey.BACK, focusInside = true))

@@ -13,6 +13,9 @@ enum class DeskAction {
     REFRESH,
     PREVIOUS_PAGE,
     NEXT_PAGE,
+
+    /** The app closes, asking first as XTA's back from Home does. */
+    LEAVE_APP,
     NONE,
 }
 
@@ -45,12 +48,16 @@ object DesktopKeys {
         else -> DeskAction.NONE
     }
 
-    /** Going back: what is open closes first; the first screen is never left. */
+    /** Going back: what is open closes first; the keys never leave the first screen. */
     fun back(canGoBack: Boolean, somethingOpen: Boolean): DeskAction = when {
         somethingOpen -> DeskAction.CLOSE
         canGoBack -> DeskAction.BACK
         else -> DeskAction.NONE
     }
+
+    /** The mouse's back button: as the keys, but on the first screen it closes the app, as XTA's goes back from Home. */
+    fun mouseBack(canGoBack: Boolean, somethingOpen: Boolean): DeskAction =
+        back(canGoBack, somethingOpen).takeIf { it != DeskAction.NONE } ?: DeskAction.LEAVE_APP
 
     /** The page [by] away from [page] of [count], or null at either end (XTA's pager does not wrap). */
     fun turned(page: Int, count: Int, by: Int): Int? = (page + by).takeIf { it in 0 until count }

@@ -143,4 +143,11 @@ class WebSourcesKeptTest {
         assertEquals(1, WebSourceReading.columns(360f, 2f), "large text takes wider pictures")
         assertEquals(4, WebSourceReading.columns(2000f, 1f))
     }
+
+    @Test
+    fun aSourcesPostsReadInTheReaderUnderAFeedOfItsOwn() {
+        assertEquals("lobsters", WebSourceReading.sourceOf(WebSourceReading.feedId("lobsters")))
+        assertNull(WebSourceReading.sourceOf("https://example.com/feed"), "an RSS feed's")
+        assertNull(WebSourceReading.sourceOf("websources:"))
+    }
 }

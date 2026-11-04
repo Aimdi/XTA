@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +33,11 @@ import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
 import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.archive.ArchiveScreen
 import com.aimdi.xtanative.ui.article.ArticleScreen
+import com.aimdi.xtanative.ui.chrome.CardBacks
+import com.aimdi.xtanative.ui.chrome.CloseOnBack
+import com.aimdi.xtanative.ui.chrome.ConfirmClose
+import com.aimdi.xtanative.ui.chrome.SwipeBackCard
+import com.aimdi.xtanative.ui.chrome.UpdateCheck
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.common.ProblemActions
@@ -83,6 +89,8 @@ import com.aimdi.xtanative.ui.search.SearchScreen
 import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.ui.settings.AttachPluginBackups
 import com.aimdi.xtanative.ui.settings.BackupScreen
+import com.aimdi.xtanative.ui.settings.LicenceScreen
+import com.aimdi.xtanative.ui.settings.LicencesScreen
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.settings.SettingsScreen
@@ -128,6 +136,7 @@ private object Routes {
     const val ARCHIVE = "archive?id={id}"
     const val SETTINGS_SECTION = "settings/{section}?focus={focus}"
     const val BACKUP = "backup"
+    const val LICENCE = "licences/library?module={module}"
     const val INTRO = "intro"
     const val BROWSER = "browser?url={url}&from={from}"
     const val IMAGE = "image?url={url}&name={name}"
@@ -206,18 +215,30 @@ private typealias Exit = AnimatedContentTransitionScope<NavBackStackEntry>.() ->
  * the media viewer, and nothing while Settings › Accessibility › Disable
  * animations is on ([reduced]), as XTA then pushes its screens without a
  * transition. [reduced] is read as each change starts, so the switch applies at once.
+ * An opened post moves itself as a card over a picture of the screen it
+ * came from (SwipeBackCard), so that screen stays still under it.
  */
 private class ScreenMotion(private val reduced: State<Boolean>) {
     val enter: Enter = entering { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) }
-    val exit: Exit = leaving { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 } }
-    val popEnter: Enter = entering { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 } }
+    val exit: Exit = leaving {
+        if (targetState.isCard()) ExitTransition.None else slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 }
+    }
+    val popEnter: Enter = entering {
+        if (initialState.isCard()) EnterTransition.None else slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 }
+    }
     val popExit: Exit = leaving { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) }
     val fadeEnter: Enter = entering { fadeIn(tween(FADE_MS)) }
     val fadeExit: Exit = leaving { fadeOut(tween(FADE_MS)) }
 
+    /** The card comes and goes by itself. */
+    val cardEnter: Enter = { EnterTransition.None }
+    val cardExit: Exit = { ExitTransition.None }
+
     private fun entering(moving: Enter): Enter = { if (reduced.value) EnterTransition.None else moving(this) }
 
     private fun leaving(moving: Exit): Exit = { if (reduced.value) ExitTransition.None else moving(this) }
+
+    private fun NavBackStackEntry.isCard(): Boolean = destination.route == Routes.POST
 }
 
 /** The app's screens. The first is the import until XTA's backup has given it an account. */
@@ -242,9 +263,12 @@ fun XtaNativeRoot() {
     }
     val nav = rememberNavController()
     val links = LocalLinks.current
+    val backs = remember { CardBacks() }
+    val opening = rememberCoroutineScope()
     val actions = remember(nav, links) {
         PostActions(
-            openPost = { id -> nav.navigate(Routes.post(id)) },
+            // A post opens as a card over a picture of the screen it is opened from.
+            openPost = { id -> backs.open(opening) { nav.navigate(Routes.post(id)) } },
             openProfile = { name -> nav.navigate(Routes.profile(name)) },
             openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
             search = { query -> nav.navigate(Routes.search(query)) },
@@ -298,8 +322,10 @@ fun XtaNativeRoot() {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems) {
-        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
+        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs)) }
     }
+    ConfirmClose()
+    UpdateCheck()
 }
 
 /** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
@@ -309,19 +335,28 @@ private fun OpenVoiceSettingsWhenAsked(nav: NavHostController) {
     LaunchedEffect(speech, nav) { speech.voiceSettingsAsked.collect { nav.navigate(Routes.SPEECH_SETTINGS) } }
 }
 
-/** What the screens are given to reach one another. */
-private class ScreenActions(val posts: PostActions, val search: SearchActions, val trends: TrendsActions, val home: HomeRoutes)
+/** What the screens are given to reach one another, and the pictures the opened posts are dragged off. */
+private class ScreenActions(val posts: PostActions, val search: SearchActions, val trends: TrendsActions, val home: HomeRoutes, val backs: CardBacks)
 
 /** Every screen, by route; [start] is the first. */
 @Composable
 private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
+    val reduced = rememberUpdatedState(LocalReducedMotion.current)
+    val motion = remember(reduced) { ScreenMotion(reduced) }
+    all.backs.Recorded { ScreenHost(nav, start, all, motion) }
+    // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
+    KeepHost()
+    // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups.
+    PluginSheetHost()
+}
+
+@Composable
+private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions, motion: ScreenMotion) {
     val graph = LocalGraph.current
     val actions = all.posts
     val searchActions = all.search
     val trendsActions = all.trends
     val homeRoutes = all.home
-    val reduced = rememberUpdatedState(LocalReducedMotion.current)
-    val motion = remember(reduced) { ScreenMotion(reduced) }
     NavHost(
         navController = nav,
         startDestination = start,
@@ -363,6 +398,8 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
                     saved = { SavedScreen(actions, savedLinks(nav)) },
                 )
             }
+            // Back on Home closes the app, asking first as XTA does; Home's own sheets and menus close before.
+            CloseOnBack(enabled = nav.previousBackStackEntry == null)
             HomeScreen(actions, homeRoutes, screens)
         }
         composable(Routes.DECK) {
@@ -372,8 +409,13 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             Routes.POST,
             arguments = listOf(navArgument("id") { type = NavType.StringType }, navArgument("media") { type = NavType.IntType; defaultValue = 0 }),
             deepLinks = xLinks(".*/status/{id}"),
+            enterTransition = motion.cardEnter,
+            popExitTransition = motion.cardExit,
         ) { entry ->
-            PostScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() }, startMedia = entry.arguments?.read { getIntOrNull("media") } ?: 0)
+            val canLeave = remember(entry.id) { nav.previousBackStackEntry != null }
+            SwipeBackCard(all.backs.claim(entry), canLeave, leave = { nav.popIfOn(entry) }) { back ->
+                PostScreen(entry.text("id").orEmpty(), actions, onBack = back, startMedia = entry.arguments?.read { getIntOrNull("media") } ?: 0)
+            }
         }
         composable(
             Routes.PROFILE,
@@ -481,7 +523,11 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             SavedScreen(actions, savedLinks(nav), onBack = { nav.popBackStack() })
         }
         composable(Routes.LIBRARY, arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
-            LibrarySearchScreen(entry.text("q"), open = { target -> nav.navigate(Routes.of(target)) }, onBack = { nav.popBackStack() })
+            LibrarySearchScreen(
+                entry.text("q"),
+                open = { target -> if (target is LibraryTarget.XPost) actions.openPost(target.id) else nav.navigate(Routes.of(target)) },
+                onBack = { nav.popBackStack() },
+            )
         }
         composable(Routes.SUBSCRIPTIONS) {
             SubscriptionsScreen(subscriptionsNavigation(nav, actions), onBack = { nav.popBackStack() })
@@ -495,10 +541,12 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(Routes.DOWNLOADS) { DownloadsScreen(onBack = { nav.popBackStack() }) }
         composable(Routes.OFFLINE) {
+            val plugins = LocalPlugins.current
             OfflineLibraryScreen(
                 onBack = { nav.popBackStack() },
                 openMedia = { id -> nav.navigate(Routes.offlineMedia(id)) },
-                openArticle = { id -> nav.navigate(Routes.archive(id)) },
+                // In the reader of the plugin it came from (RSS's, Substack's), else the archive's page of the copy.
+                openArticle = { article -> if (!plugins.openOffline(article)) nav.navigate(Routes.archive(article.id)) },
             )
         }
         composable(
@@ -530,6 +578,12 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(Routes.BACKUP) {
             BackupScreen(onBack = { nav.popBackStack() })
+        }
+        composable(SettingsRoutes.LICENCES) {
+            LicencesScreen(onOpen = { module -> nav.navigate(SettingsRoutes.licence(module)) }, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.LICENCE, arguments = listOf(navArgument("module") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
+            LicenceScreen(entry.text("module").orEmpty(), onBack = { nav.popBackStack() })
         }
         composable(Routes.SUBSCRIPTIONS_IMPORT) {
             ImportFollowingScreen(onBack = { nav.popBackStack() }, onSortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) })
@@ -587,10 +641,6 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         // A plugin's media viewer fades as the app's does, and not at all while animations are off.
         pluginScreens(nav, motion.fadeEnter, motion.fadeExit)
     }
-    // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
-    KeepHost()
-    // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups.
-    PluginSheetHost()
 }
 
 /** An x.com or twitter.com link opens here, as it opens XTA. Only Android is handed links. */
@@ -608,6 +658,11 @@ private fun NavBackStackEntry.text(name: String): String? = arguments?.read { ge
 /** To [route] with nothing to go back to: the feed after an import, the import after removing everything. */
 private fun NavHostController.startOver(route: String) {
     navigate(route) { popUpTo(Routes.ROOT) { inclusive = true } }
+}
+
+/** [entry] taken off, when it is still the screen on top: a card that has gone leaves once. */
+private fun NavHostController.popIfOn(entry: NavBackStackEntry) {
+    if (currentBackStackEntry?.id == entry.id) popBackStack()
 }
 
 /** Back to Home, whatever lies between (a group's title menu picking one of Home's feeds); Home again when it was not under. */

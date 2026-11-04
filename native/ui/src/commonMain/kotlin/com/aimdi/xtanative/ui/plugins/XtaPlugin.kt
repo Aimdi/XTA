@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.store.offline.OfflineArticle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonElement
 
@@ -189,6 +190,15 @@ abstract class XtaPlugin {
      * Null when it has none.
      */
     open fun routeForAccount(account: String): String? = null
+
+    /**
+     * The route of its own screen for [article], one the app's offline
+     * collection keeps (its `kind` says whose: `rss`, `substack`), as XTA's
+     * offline library opens a kept article in the reader it came from; the
+     * reader takes the kept copy. Null when the article is none of its, and
+     * the app shows the copy itself.
+     */
+    open fun routeForOffline(article: OfflineArticle): String? = null
 
     /** What it keeps that the app's backup holds. */
     open val backupSections: List<PluginBackupSection> get() = emptyList()

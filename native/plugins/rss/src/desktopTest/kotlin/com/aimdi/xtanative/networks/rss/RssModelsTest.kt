@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.networks.rss
 
 import com.aimdi.xtanative.networks.RssItem
+import com.aimdi.xtanative.networks.RssParser
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -41,5 +42,12 @@ class RssModelsTest {
         assertFalse(Rss.looksLikeFeedUrl("https://example.com/"))
         assertFalse(Rss.looksLikeFeedUrl("https://example.com/feedback"))
         assertFalse(Rss.looksLikeFeedUrl("example.com/feed"))
+    }
+
+    @Test
+    fun aFeedIsNamedByItsAddressAndAWebSourcesListIsNotOne() {
+        assertTrue(Rss.isFeedId(RssParser.feedId("https://example.com/feed/")))
+        assertTrue(Rss.isFeedId("http://example.com/rss"))
+        assertFalse(Rss.isFeedId("websources:lobsters"))
     }
 }

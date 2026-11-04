@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineAvailability
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
@@ -84,12 +85,13 @@ import org.jetbrains.compose.resources.stringResource
  * The offline collection (offline_library_screen.dart): how much of its
  * storage is used, and the articles and saved posts' media kept to read
  * without the network. An entry opens its media (a sensitive one once the
- * reader agrees) or its article in [openArticle]; its menu removes it or
- * opens the original.
+ * reader agrees) or its article, read from the device, in [openArticle]
+ * (the reader it came from, as XTA opens it); its menu removes it or opens
+ * the original.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, openArticle: (id: String) -> Unit) {
+fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, openArticle: (OfflineArticle) -> Unit) {
     val graph = LocalGraph.current
     val store = graph.offline
     val state by store.state.collectAsStateWithLifecycle()
@@ -106,8 +108,9 @@ fun OfflineLibraryScreen(onBack: () -> Unit, openMedia: (id: String) -> Unit, op
             // An article that no longer reads says so, and the library is read again from disk.
             OfflineOpen.ARTICLE -> {
                 scope.launch {
-                    if (store.article(entry.id) != null) {
-                        openArticle(entry.id)
+                    val article = store.article(entry.id)
+                    if (article != null) {
+                        openArticle(article)
                     } else {
                         KeepNotices.show(KeepNotice.OfflineUnavailable)
                         store.refresh()

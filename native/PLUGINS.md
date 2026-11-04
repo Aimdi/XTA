@@ -52,8 +52,9 @@ plugin, the chip tabs, the shelf, the recent searches, the action row,
 `postExtras`, `routeForAccount`, `subscriptions` with `PluginSubscription`,
 `PluginHost.unfollowed` and `RssReads`; 4 adds `contractNetworks` (the
 networks of the contracts a plugin watches, for X posts' text),
-`postCard`, `PluginHost.likedOnDevice` and `SwipeToUnfollow`. A plugin's
-`xta-plugin.json` names the version it was built against.
+`postCard`, `routeForOffline`, `PluginHost.likedOnDevice`,
+`SwipeToUnfollow` and, in `ui.common`, `rememberSwitchedHaptics`. A
+plugin's `xta-plugin.json` names the version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -98,6 +99,7 @@ its plugins have to link against that prerelease's app.
 | `cashtagActions(symbol)` | its entries (`PluginCashtagAction`s) in the sheet a long press on a cashtag opens, below the cashtag itself (Stocks' Add to watchlist), or none |
 | `contractNetworks` | the networks of the tokens it watches by their contract addresses, as they change: an X post's text cuts a contract address in the middle and writes a watched token's network before it (Stocks' "Base · 0x23a2…fe51"), the app matching addresses as `:networks`' `CryptoAddresses` compares them; or none |
 | `routeForAccount(account)` | its own screen for one of its accounts as a group holds it (`<id>:<account>`), XTA's destinationFor: the app opens a member there (`AppPlugins.openMember`), or null |
+| `routeForOffline(article)` | its own screen for an article the app's offline collection keeps (an `OfflineArticle`, whose `kind` says whose), as XTA's offline library opens a kept RSS item or Substack post in its reader: the app opens it there (`AppPlugins.openOffline`), or shows the copy itself when no plugin answers |
 | `postSheetActions(post)` | its entries in the post sheets for a `PluginSharedPost` ([below](#sending-a-post-to-the-readers-own-server)), or none |
 | `folderOption`, `filed(post)` | its switch in Saved's folder dialog, and a post filed in a folder with it on, as a `PluginFiledPost` ([below](#sending-a-post-to-the-readers-own-server)) |
 
@@ -190,10 +192,12 @@ in RSS's `plugin.rss.read_ids`).
 for a long press over a whole card, its tappable parts included, a
 picture's marks as XTA draws them: `MediaBadge`, `AltBadge` with
 `AltTextDialog`, and `ShowMediaTile` with `mediaShown` for Settings ›
-Media's "Load media manually", and `rememberCopyContract` for a contract
-address copied whole) is there too: its avatar asks for a picture as the
-tiles do, with the headers its server wants (Pixiv's Referer). A plugin
-may draw with the app's other
+Media's "Load media manually", `rememberCopyContract` for a contract
+address copied whole, and `rememberSwitchedHaptics`, the haptics behind
+the reader's Haptic feedback switch, which a sheet's own window needs:
+everywhere else `LocalHapticFeedback` is behind it already) is there too:
+its avatar asks for a picture as the tiles do, with the headers its
+server wants (Pixiv's Referer). A plugin may draw with the app's other
 public building blocks where they fit:
 its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
 X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin

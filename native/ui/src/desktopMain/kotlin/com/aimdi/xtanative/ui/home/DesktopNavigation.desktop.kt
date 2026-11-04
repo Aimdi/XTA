@@ -29,6 +29,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavHostController
+import com.aimdi.xtanative.ui.chrome.AppClosing
 import kotlinx.coroutines.delay
 
 /**
@@ -57,6 +58,10 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
         DeskAction.REFRESH -> actions.refresh()
         DeskAction.PREVIOUS_PAGE -> actions.turn(-1)
         DeskAction.NEXT_PAGE -> actions.turn(1)
+        DeskAction.LEAVE_APP -> {
+            AppClosing.ask()
+            true
+        }
         DeskAction.NONE -> false
     }
 
@@ -75,7 +80,7 @@ actual fun DesktopNavigation(nav: NavHostController, content: @Composable () -> 
                         while (true) {
                             val event = awaitPointerEvent(PointerEventPass.Initial)
                             if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
-                                act(DesktopKeys.back(nav.previousBackStackEntry != null, actions.somethingOpen()))
+                                act(DesktopKeys.mouseBack(nav.previousBackStackEntry != null, actions.somethingOpen()))
                             }
                         }
                     }

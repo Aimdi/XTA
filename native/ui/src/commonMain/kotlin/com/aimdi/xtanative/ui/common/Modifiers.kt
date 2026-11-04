@@ -15,7 +15,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalHapticFeedback
 
 /** A tap target for a line of text, without the ripple a row would show. */
 fun Modifier.clickableNoRipple(onClick: () -> Unit): Modifier = composed {
@@ -28,10 +27,10 @@ fun Modifier.clickableNoRipple(onClick: () -> Unit): Modifier = composed {
  * it, and a drag or a scroll to what moves; a press held past the long
  * press timeout instead runs [onLongPress] with where it was pressed, and
  * what is under it does not take it for a tap. A press [accepts] turns down
- * where it starts is left alone.
+ * where it starts is left alone. It buzzes while Haptic feedback is on.
  */
 fun Modifier.longPressOver(accepts: (Offset) -> Boolean = { true }, onLongPress: (Offset) -> Unit): Modifier = composed {
-    val haptics = LocalHapticFeedback.current
+    val haptics = rememberSwitchedHaptics()
     val takes by rememberUpdatedState(accepts)
     val press by rememberUpdatedState(onLongPress)
     pointerInput(Unit) {

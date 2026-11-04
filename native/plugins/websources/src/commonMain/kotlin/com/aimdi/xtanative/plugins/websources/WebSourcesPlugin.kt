@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
 import com.aimdi.xtanative.networks.websources.WebSourceFollows
+import com.aimdi.xtanative.networks.websources.WebSourceReading
+import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
@@ -23,6 +25,7 @@ import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
+import com.aimdi.xtanative.ui.plugins.RssOffline
 import com.aimdi.xtanative.ui.plugins.RssReaderScreen
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -73,6 +76,12 @@ class WebSourcesPlugin : XtaPlugin() {
 
     /** A followed list in a group (`lobsters/hottest`), opened on its source's screen at that list, as XTA opens it. */
     override fun routeForAccount(account: String): String? = WebSourceFollows.parts(account)?.let { (source, list) -> WebSourceRoutes.source(source, list) }
+
+    /** A post of one of its sources kept offline (`websources:<source>` is the feed it reads in), in the RSS reader, as XTA's offline library opens it. */
+    override fun routeForOffline(article: OfflineArticle): String? {
+        val item = RssOffline.itemOf(article) ?: return null
+        return WebSourceReading.sourceOf(item.feedId)?.let { source -> WebSourceRoutes.reader(source, item) }
+    }
 
     override fun screen(route: String): PluginScreen? = when (val opened = WebSourceRoutes.parse(route)) {
         is WebSourceRoute.Source -> sourceScreen(opened)

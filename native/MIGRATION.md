@@ -53,7 +53,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | group | `core/feed` and `core/session` rules; `ui/group` (done: the group feed with progress, retries, folds, catch-up; feed settings; Media; Discover from the members' follows, kept in `store/follows`) |
 | saved | `store/saved`; `ui/saved` (done: tabs, folders, save sheet, device likes, notes and their editor, profile Saved tab) |
 | archive | `store/saved`; `ui/archive` (done: highlights, tags, AI transcription) |
-| offline | `store/offline`; `ui/offline` (done: collection and media) |
+| offline | `store/offline`; `ui/offline` (done: collection and media; a kept article opens in the reader of the plugin it came from, `XtaPlugin.routeForOffline`) |
 | downloads | `store/downloads`; `ui/downloads` (done; MediaStore on Android, `~/Downloads` on the desktop) |
 | reading | `store/reading` (done: reading places, journal, appearance) |
 | article | `services/article`; `ui/article` (done) |
@@ -63,7 +63,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | antenna | `store` (antennas) + `ui/antenna` (done: list, editor, feed) |
 | community | `ui/community` (done: posts, about, members, links) |
 | intro | `ui/intro` (done) |
-| settings | `store/settings`; `ui/settings` (done: every section, backup export and restore, WebDAV, theme); the plugin store in `plugin-host` + `ui/pluginstore` (done), the plugin API in `ui/plugins` (done) |
+| settings | `store/settings`; `ui/settings` (done: every section, backup export and restore, WebDAV, theme, the licences of every library the build resolves, `gradle/licences.gradle.kts`); the plugin store in `plugin-host` + `ui/pluginstore` (done), the plugin API in `ui/plugins` (done) |
 | catcher | crash reports kept on the device (done; a switch in settings) |
 | utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |

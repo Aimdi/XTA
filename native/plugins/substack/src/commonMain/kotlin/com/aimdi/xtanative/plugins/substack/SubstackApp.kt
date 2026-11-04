@@ -159,6 +159,12 @@ internal class SubstackApp(val host: PluginHost) {
         host.open(SubstackRoutes.post(post))
     }
 
+    /** The reader's route for a post the app's offline collection keeps ([article]), its kept copy at hand there; null for another's. */
+    fun routeForKept(article: OfflineArticle): String? = SubstackOffline.postOf(article)?.let { post ->
+        opened.posts.keep(post.key, post)
+        SubstackRoutes.post(post)
+    }
+
     fun openComments(post: SubstackPost) {
         opened.posts.keep(post.key, post)
         host.open(SubstackRoutes.comments(post))

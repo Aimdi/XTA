@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.substack.SubstackRoute
 import com.aimdi.xtanative.networks.substack.SubstackRoutes
+import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
@@ -55,6 +56,9 @@ class SubstackPlugin : XtaPlugin() {
     override val search: PluginSearch by lazy { SubstackSearchUi(app) }
 
     override fun routeFor(url: String): String? = SubstackRoutes.forUrl(url, app.publications.value.orEmpty().map { it.baseUrl })
+
+    /** A post kept offline, in the reader, as XTA's offline library opens it. */
+    override fun routeForOffline(article: OfflineArticle): String? = app.routeForKept(article)
 
     override fun screen(route: String): PluginScreen? = when (val opened = SubstackRoutes.parse(route)) {
         is SubstackRoute.Post -> readerScreen(opened)

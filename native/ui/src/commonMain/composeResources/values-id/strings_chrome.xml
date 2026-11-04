@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Apakah Anda yakin ingin menutup XTA?</string>
+    <string name="chrome_update_available">Pembaruan untuk XTA tersedia! 🚀</string>
+    <string name="chrome_update_view_version">Lihat versi %1$s di GitHub</string>
+    <string name="chrome_update_view">Lihat di GitHub</string>
+    <string name="chrome_update_download">Unduh</string>
+    <string name="chrome_licences_legalese">Dirilis di bawah Lisensi MIT</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="other">%1$d lisensi</item>
+    </plurals>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Opravdu chcete zavřít XTA?</string>
+    <string name="chrome_update_available">Je dostupná aktualizace XTA! 🚀</string>
+    <string name="chrome_update_view_version">Zobrazit verzi %1$s na GitHubu</string>
+    <string name="chrome_update_view">Zobrazit na GitHubu</string>
+    <string name="chrome_update_download">Stáhnout</string>
+    <string name="chrome_licences_legalese">Vydáno pod licencí MIT</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d licence</item>
+        <item quantity="few">%1$d licence</item>
+        <item quantity="many">%1$d licence</item>
+        <item quantity="other">%1$d licencí</item>
+    </plurals>
+</resources>

@@ -31,6 +31,8 @@ dependencies {
 }
 
 val versionName = System.getenv("NATIVE_VERSION_NAME") ?: "0.1.0"
+// A build CI numbered is that prerelease, which the update check compares by (ui/chrome/Updates.kt); a local build has none.
+val releaseTag = System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
 
 // The SHA-256 of the certificate every plugin JAR must be signed by, built
 // into the app (PLUGINS.md): the signing key's (see the root build file), or
@@ -64,6 +66,23 @@ val pluginCertificate by tasks.registering {
 }
 kotlin.sourceSets["main"].kotlin.srcDir(pluginCertificate)
 
+// Settings › App info › Licences: what the app ships, with the licences (gradle/licences.gradle.kts).
+apply(from = rootProject.file("gradle/licences.gradle.kts"))
+@Suppress("UNCHECKED_CAST")
+val writeLicences = extra["writeLicences"] as (String, File) -> Unit
+val appLicences by tasks.registering {
+    val out = layout.buildDirectory.dir("generated/licences")
+    outputs.dir(out)
+    // The libraries are Gradle's to resolve each build; listing them is quick.
+    outputs.upToDateWhen { false }
+    doLast {
+        val folder = out.get().asFile
+        folder.deleteRecursively()
+        writeLicences("runtimeClasspath", folder)
+    }
+}
+sourceSets["main"].resources.srcDir(appLicences)
+
 /** The SHA-256 of the certificate under [signing]'s alias, as keytool prints it, without the colons. */
 fun certificateSha256(signing: Map<String, String>): String {
     val store = KeyStore.getInstance(File(signing.getValue("path")), signing.getValue("storePassword").toCharArray())
@@ -76,6 +95,7 @@ compose.desktop {
         mainClass = "com.aimdi.xtanative.desktop.MainKt"
         // Settings shows it; the Android app reads its own from the package.
         jvmArgs("-Dxtanative.version=$versionName")
+        if (releaseTag.isNotEmpty()) jvmArgs("-Dxtanative.release_tag=$releaseTag")
         nativeDistributions {
             packageName = "xta-native"
             packageVersion = versionName
