@@ -25,15 +25,17 @@ open class PluginStrings(tables: Map<String, Map<String, String>>) {
     /**
      * The plural named [name] for [count], filled with [args]: the form
      * [count] takes ([pluralCategory]: "few" for 3 in Russian, "zero" for 0 in
-     * Arabic) in the first of [language]'s tables that has the plural, the
-     * default's counted as English, else that table's "other".
+     * Arabic), else "other", from the first of [language]'s tables that has
+     * either. The default's forms are counted as English counts them.
      */
     fun plural(name: String, count: Int, language: String, vararg args: Any): String {
         val tag = normalized(language)
-        val found = listOf(tag, tag.substringBefore('-'), "").firstOrNull { byTag[it]?.containsKey("$name#other") == true } ?: return name
-        val forms = byTag.getValue(found)
-        val form = pluralCategory(count.toLong(), found.ifEmpty { "en" })
-        return fill(forms["$name#$form"] ?: forms.getValue("$name#other"), language, args)
+        val text = listOf(tag, tag.substringBefore('-'), "").firstNotNullOfOrNull { table ->
+            val forms = byTag[table].orEmpty()
+            val form = pluralCategory(count.toLong(), if (table.isEmpty()) "en" else tag)
+            forms["$name#$form"] ?: forms["$name#other"]
+        } ?: return name
+        return fill(text, language, args)
     }
 
     /** The text named [name], for the generated object's properties. */
